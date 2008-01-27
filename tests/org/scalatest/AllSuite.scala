@@ -15,13 +15,16 @@
  */
 package org.scalatest
 
+import org.scalatest.fun.FunSuiteSuite
+
 class AllSuite extends SuperSuite(
   List(
     new DiscoverySuiteSuite,
     new CatchReporterSuite,
     new RunnerSuite,
     new SuiteDiscoveryHelperSuite,
-    new SuiteSuite
+    new SuiteSuite,
+    new FunSuiteSuite
   )
 )
 {}
