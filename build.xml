@@ -32,27 +32,23 @@
     <mkdir dir="${jdoc}"/>
         <path id="scala.compile.class.path">
             <pathelement location="${lib}/scala-library.jar"/>
-            <pathelement location="${lib}/testng-5.6-jdk15.jar"/>
         </path>
 
         <path id="scala.tools.class.path">
             <pathelement location="${build}/tools"/>
             <pathelement location="${lib}/scala-library.jar"/>
-            <pathelement location="${lib}/testng-5.6-jdk15.jar"/>
         </path>
 
         <path id="test.class.path">
             <pathelement location="${dist}/lib/scalatest.jar"/>
             <pathelement location="${dist}/lib/scalatest-wbt.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
-            <pathelement location="${lib}/testng-5.6-jdk15.jar"/>
         </path>
 
         <taskdef resource="scala/tools/ant/antlib.xml">
           <classpath>
             <pathelement location="${lib}/scala-compiler.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
-            <pathelement location="${lib}/testng-5.6-jdk15.jar"/>
           </classpath>
         </taskdef>
 
@@ -82,10 +78,10 @@
       <include name="org/scalatest/Ignore.java"/>
     </javac>
     <!-- Then compile the Scala code from ${src} into ${build} -->
-    <scalac srcdir="${src}" destdir="${build}" target="jvm-1.5" classpath="${build}:${lib}/scala-library.jar:${lib}/testng-5.6-jdk15.jar"/>
+    <scalac srcdir="${src}" destdir="${build}" classpath="${build}:${lib}/scala-library.jar"/>
 
     <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
-    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpath="${build}:${build.tests}:${lib}/scala-library.jar">
+    <scalac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${build.tests}:${lib}/scala-library.jar">
       <include name="org/scalatest/EasySuite.scala"/>
     </scalac>
     <!-- Compile the Java code from ${tests} into ${build.tests} -->
