@@ -912,7 +912,7 @@ object Runner {
 
               if (membersOnlyAndBeginsWithListsAreEmpty && suitesList.isEmpty) {
                 // In this case, they didn't specify any -w, -m, or -s on the command line, so the default
-                // is to run any accessible Suite's discovered on the runpath
+                // is to run any accessible Suites discovered on the runpath
                 (Nil, List(new DiscoverySuite("", accessibleSuites, true, loader)))
               }
               else {
