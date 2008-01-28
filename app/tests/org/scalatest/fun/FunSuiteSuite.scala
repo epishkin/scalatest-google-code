@@ -166,16 +166,14 @@ class FunSuiteSuite extends Suite {
       b.groups
     }
 
-/*
     val c = new FunSuite {
-      @Ignore
-      def testThis() = ()
-      @Ignore
-      def testThat(reporter: Reporter) = ()
+      ignore("test this") {}
+      ignoreWithReporter("test that") { Reporter => () }
     }
 
-    assert(c.groups === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat(Reporter)" -> Set("org.scalatest.Ignore")))
+    assert(c.groups === Map("test this" -> Set("org.scalatest.Ignore"), "test that (Reporter)" -> Set("org.scalatest.Ignore")))
 
+/*
     val d = new FunSuite {
       @SlowAsMolasses
       def testThis() = ()
