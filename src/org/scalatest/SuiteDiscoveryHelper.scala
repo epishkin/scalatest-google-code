@@ -100,10 +100,11 @@ private[scalatest] class SuiteDiscoveryHelper() {
   private def transformToClassName(fileName: String, fileSeparator: Char): Option[String] = {
 
     // If the fileName starts with a file separator char, lop that off
-    val fn = if (!fileName.isEmpty && fileName(0) == fileSeparator)
-      fileName.substring(1)
-    else
-      fileName
+    val fn =
+      if (!fileName.isEmpty && fileName(0) == fileSeparator)
+        fileName.substring(1)
+      else
+        fileName
 
     if (fn.endsWith(".class") && fn != ".class")
       Some(fn.substring(0, fn.length - 6).replace(fileSeparator, '.'))
@@ -120,6 +121,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
           Modifier.isPublic(clazz.getConstructor(emptyClassArray).getModifiers)
       }
       catch {
+        case ncdfe: NoClassDefFoundError => false // This can happen if the Suite is non-public in its package
         case nsme: NoSuchMethodException => false
         case se: SecurityException => false
       }
@@ -131,6 +133,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
     }
     catch {
       case e: ClassNotFoundException => false
+      case ncdfe: NoClassDefFoundError => false // This can happen if the Suite is non-public in its package
     }
   }
 
