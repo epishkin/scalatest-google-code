@@ -118,10 +118,10 @@ private[scalatest] class SuiteDiscoveryHelper() {
       try {
         classOf[Suite].isAssignableFrom(clazz) &&
           Modifier.isPublic(clazz.getModifiers) &&
+          !Modifier.isAbstract(clazz.getModifiers) &&
           Modifier.isPublic(clazz.getConstructor(emptyClassArray).getModifiers)
       }
       catch {
-        case ncdfe: NoClassDefFoundError => false // This can happen if the Suite is non-public in its package
         case nsme: NoSuchMethodException => false
         case se: SecurityException => false
       }
@@ -133,7 +133,6 @@ private[scalatest] class SuiteDiscoveryHelper() {
     }
     catch {
       case e: ClassNotFoundException => false
-      case ncdfe: NoClassDefFoundError => false // This can happen if the Suite is non-public in its package
     }
   }
 

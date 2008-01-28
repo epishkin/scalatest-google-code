@@ -1,6 +1,6 @@
 package org.scalatest.fun
 
-class FunSuite extends Suite {
+abstract class FunSuite extends Suite {
 
   private val ReporterInParens = " (Reporter)"
   private val IgnoreGroupName = "org.scalatest.Ignore"

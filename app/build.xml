@@ -41,7 +41,6 @@
 
         <path id="test.class.path">
             <pathelement location="${dist}/lib/scalatest.jar"/>
-            <pathelement location="${dist}/lib/scalatest-wbt.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
         </path>
 
@@ -187,7 +186,7 @@
     <java classname="org.scalatest.Runner" classpathref="test.class.path" fork="true">
 
         <arg value="-p"/>
-        <arg value="build_tests"/>
+        <arg value="build_tests build"/>
 
        <arg value="-g"/>
        <arg value="-o"/>
