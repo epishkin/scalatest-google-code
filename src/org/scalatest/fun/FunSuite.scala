@@ -1,5 +1,7 @@
 package org.scalatest.fun
 
+trait Group
+
 abstract class FunSuite extends Suite {
 
   private val ReporterInParens = " (Reporter)"
@@ -12,33 +14,40 @@ abstract class FunSuite extends Suite {
   private var testsMap: Map[String, Test] = Map()
   private var groupsMap: Map[String, Set[String]] = Map()
 
-  protected def test(msg: String)(f: => Unit) {
+  protected def test(msg: String, groupClasses: Group*)(f: => Unit) {
     assume(!testsMap.keySet.contains(msg))
     testsMap += (msg -> PlainOldTest(msg, f _))
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    if (!groupNames.isEmpty)
+      groupsMap += (msg -> groupNames)
   }
 
-  protected def testWithReporter(msg: String)(f: (Reporter) => Unit) {
+  protected def testWithReporter(msg: String, groupClasses: Group*)(f: (Reporter) => Unit) {
     assume(!testsMap.keySet.contains(msg))
     testsMap += (msg -> ReporterTest(msg, f))
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    if (!groupNames.isEmpty)
+      groupsMap += (msg + ReporterInParens -> groupNames)
   }
 
-  protected def ignore(msg: String)(f: => Unit) {
+  protected def ignore(msg: String, groupClasses: Group*)(f: => Unit) {
     test(msg)(f _) 
-    groupsMap += (msg -> Set(IgnoreGroupName))
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    groupsMap += (msg -> (groupNames + IgnoreGroupName))
   }
 
-  protected def ignoreWithReporter(msg: String)(f: (Reporter) => Unit) {
+  protected def ignoreWithReporter(msg: String, groupClasses: Group*)(f: (Reporter) => Unit) {
     testWithReporter(msg)(f) 
-    groupsMap += (msg + ReporterInParens -> Set(IgnoreGroupName))
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    groupsMap += (msg + ReporterInParens -> (groupNames + IgnoreGroupName))
   }
 
-  protected def specify(msg: String)(f: => Unit) {
-    test(msg)(f _) 
-    // testsMap += (msg -> PlainOldTest(msg, f _))
+  protected def specify(msg: String, groupClasses: Group*)(f: => Unit) {
+    test(msg, groupClasses: _*)(f _) 
   }
 
-  protected def specifyWithReporter(msg: String)(f: (Reporter) => Unit) {
-    testWithReporter(msg)(f) 
+  protected def specifyWithReporter(msg: String, groupClasses: Group*)(f: (Reporter) => Unit) {
+    testWithReporter(msg, groupClasses: _*)(f) 
   }
 
   override def testNames: Set[String] = {
