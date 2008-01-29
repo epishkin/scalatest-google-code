@@ -29,6 +29,10 @@ class SuiteFriend(suite: Suite) {
 }
 */
 
+// Group classes used in tests
+private case class SlowAsMolasses extends Group
+private case class WeakAsAKitten extends Group
+
 class FunSuiteSuite extends Suite {
 
   def testTestNames() {
@@ -152,7 +156,6 @@ class FunSuiteSuite extends Suite {
       ignore("test this") {}
       testWithReporter("test that") { Reporter => () }
     }
-
     expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
       a.groups
     }
@@ -161,7 +164,6 @@ class FunSuiteSuite extends Suite {
       test("test this") {}
       ignoreWithReporter("test that") { Reporter => () }
     }
-
     expect(Map("test that (Reporter)" -> Set("org.scalatest.Ignore"))) {
       b.groups
     }
@@ -170,23 +172,30 @@ class FunSuiteSuite extends Suite {
       ignore("test this") {}
       ignoreWithReporter("test that") { Reporter => () }
     }
-
-    assert(c.groups === Map("test this" -> Set("org.scalatest.Ignore"), "test that (Reporter)" -> Set("org.scalatest.Ignore")))
-
-/*
-    val d = new FunSuite {
-      @SlowAsMolasses
-      def testThis() = ()
-      @SlowAsMolasses
-      @Ignore
-      def testThat(reporter: Reporter) = ()
+    expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that (Reporter)" -> Set("org.scalatest.Ignore"))) {
+      c.groups
     }
 
-    assert(d.groups === Map("testThis" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Reporter)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
+    val d = new FunSuite {
+      test("test this", SlowAsMolasses) {}
+      ignoreWithReporter("test that", SlowAsMolasses) { Reporter => () }
+    }
+    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses"), "test that (Reporter)" -> Set("org.scalatest.Ignore", "org.scalatest.fun.SlowAsMolasses"))) {
+      d.groups
+    }
 
     val e = new FunSuite {}
-    assert(e.groups === Map())
-*/
+    expect(Map()) {
+      e.groups
+    }
+
+    val f = new FunSuite {
+      specify("test this", SlowAsMolasses, WeakAsAKitten) {}
+      specifyWithReporter("test that", SlowAsMolasses) { Reporter => () }
+    }
+    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses", "org.scalatest.fun.WeakAsAKitten"), "test that (Reporter)" -> Set("org.scalatest.fun.SlowAsMolasses"))) {
+      f.groups
+    }
   }
 
 /*
