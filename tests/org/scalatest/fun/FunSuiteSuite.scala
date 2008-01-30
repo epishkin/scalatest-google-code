@@ -198,18 +198,17 @@ class FunSuiteSuite extends Suite {
     }
   }
 
-/*
   def testExecuteOneTest() {
     
-    class MySuite extends Suite {
+    class MySuite extends FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      def testThis() { theTestThisCalled = true }
-      def testThat() { theTestThatCalled = true }
+      test("test this") { theTestThisCalled = true }
+      test("test that") { theTestThatCalled = true }
     }
 
     val a = new MySuite 
-    a.execute("testThis")
+    a.execute("test this")
     assert(a.theTestThisCalled)
     assert(!a.theTestThatCalled)
 
@@ -219,6 +218,7 @@ class FunSuiteSuite extends Suite {
     assert(b.theTestThatCalled)
   }
 
+/*
   class MyReporter extends Reporter {
     var testIgnoredCalled = false
     var lastReport: Report = null
