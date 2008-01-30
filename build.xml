@@ -39,9 +39,11 @@
             <pathelement location="${lib}/scala-library.jar"/>
         </path>
 
+        <!-- this is the class path used to run ScalaTest to test itself, in the "test" target -->
         <path id="test.class.path">
             <pathelement location="${dist}/lib/scalatest.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
+            <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
         </path>
 
         <taskdef resource="scala/tools/ant/antlib.xml">
@@ -77,7 +79,7 @@
       <include name="org/scalatest/Ignore.java"/>
     </javac>
     <!-- Then compile the Scala code from ${src} into ${build} -->
-    <scalac srcdir="${src}" destdir="${build}" classpath="${build}:${lib}/scala-library.jar"/>
+    <scalac srcdir="${src}" destdir="${build}" classpath="${build}:${lib}/testng-5.7-jdk15.jar:${lib}/scala-library.jar"/>
 
     <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
     <scalac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${build.tests}:${lib}/scala-library.jar">
@@ -86,7 +88,7 @@
     <!-- Compile the Java code from ${tests} into ${build.tests} -->
     <javac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${lib}/scala-library.jar" debug="yes"/>
     <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
-    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpath="${build}:${build.tests}:${lib}/scala-library.jar"/>
+    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpath="${build}:${build.tests}:${lib}/testng-5.7-jdk15.jar:${lib}/scala-library.jar"/>
     <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${build}/org/scalatest"/>
     <copy todir="${build}/images">
         <fileset dir="${src}/images"/>
@@ -191,6 +193,14 @@
        <arg value="-g"/>
        <arg value="-o"/>
 
+    	<arg value="-m"/>
+    	<arg value="org.scalatest"/>
+ 
+    	<arg value="-m"/>
+    	<arg value="org.scalatest.fun"/>
+ 
+    	<arg value="-m"/>
+    	<arg value="org.scalatest.testng"/>
     </java>
   </target>
 
