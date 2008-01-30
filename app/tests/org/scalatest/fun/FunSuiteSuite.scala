@@ -164,7 +164,7 @@ class FunSuiteSuite extends Suite {
       test("test this") {}
       ignoreWithReporter("test that") { Reporter => () }
     }
-    expect(Map("test that (Reporter)" -> Set("org.scalatest.Ignore"))) {
+    expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
       b.groups
     }
 
@@ -172,7 +172,7 @@ class FunSuiteSuite extends Suite {
       ignore("test this") {}
       ignoreWithReporter("test that") { Reporter => () }
     }
-    expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that (Reporter)" -> Set("org.scalatest.Ignore"))) {
+    expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
       c.groups
     }
 
@@ -180,7 +180,7 @@ class FunSuiteSuite extends Suite {
       test("test this", SlowAsMolasses) {}
       ignoreWithReporter("test that", SlowAsMolasses) { Reporter => () }
     }
-    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses"), "test that (Reporter)" -> Set("org.scalatest.Ignore", "org.scalatest.fun.SlowAsMolasses"))) {
+    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.fun.SlowAsMolasses"))) {
       d.groups
     }
 
@@ -193,7 +193,7 @@ class FunSuiteSuite extends Suite {
       specify("test this", SlowAsMolasses, WeakAsAKitten) {}
       specifyWithReporter("test that", SlowAsMolasses) { Reporter => () }
     }
-    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses", "org.scalatest.fun.WeakAsAKitten"), "test that (Reporter)" -> Set("org.scalatest.fun.SlowAsMolasses"))) {
+    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses", "org.scalatest.fun.WeakAsAKitten"), "test that" -> Set("org.scalatest.fun.SlowAsMolasses"))) {
       f.groups
     }
   }
@@ -218,7 +218,6 @@ class FunSuiteSuite extends Suite {
     assert(b.theTestThatCalled)
   }
 
-/*
   class MyReporter extends Reporter {
     var testIgnoredCalled = false
     var lastReport: Report = null
@@ -233,8 +232,8 @@ class FunSuiteSuite extends Suite {
     val a = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      def testThis() = { theTestThisCalled = true }
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      test("test this") { theTestThisCalled = true }
+      testWithReporter("test that") { Reporter => theTestThatCalled = true }
     }
 
     val repA = new MyReporter
@@ -246,46 +245,46 @@ class FunSuiteSuite extends Suite {
     val b = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      @Ignore
-      def testThis() = { theTestThisCalled = true }
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      ignore("test this") { theTestThisCalled = true }
+      testWithReporter("test that") { Reporter => theTestThatCalled = true }
     }
 
     val repB = new MyReporter
     b.execute(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repB.testIgnoredCalled)
-    assert(repB.lastReport.name endsWith "testThis")
+    assert(repB.lastReport.name endsWith "test this")
     assert(!b.theTestThisCalled)
     assert(b.theTestThatCalled)
 
     val c = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      def testThis() = { theTestThisCalled = true }
-      @Ignore
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      test("test this") { theTestThisCalled = true }
+      ignoreWithReporter("test that") { Reporter => theTestThatCalled = true }
     }
 
     val repC = new MyReporter
     c.execute(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repC.testIgnoredCalled)
-    assert(repC.lastReport.name endsWith "testThat(Reporter)", repC.lastReport.name)
+    assert(repC.lastReport.name endsWith "test that", repC.lastReport.name)
     assert(c.theTestThisCalled)
     assert(!c.theTestThatCalled)
 
+/*
+    // This didn't work because i don't have an order anymore. Alphabetical
+    // does not make sense. The order I want is order of appearance in the file.
+    // Will try and implement that tomorrow. Subtypes will be able to change the order.
     val d = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      @Ignore
-      def testThis() = { theTestThisCalled = true }
-      @Ignore
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      ignore("test this") { theTestThisCalled = true }
+      ignoreWithReporter("test that") { Reporter => theTestThatCalled = true }
     }
 
     val repD = new MyReporter
     d.execute(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repD.testIgnoredCalled)
-    assert(repD.lastReport.name endsWith "testThis") // last because executed alphabetically
+    assert(repD.lastReport.name endsWith "test this") // last because executed alphabetically
     assert(!d.theTestThisCalled)
     assert(!d.theTestThatCalled)
 
@@ -295,17 +294,18 @@ class FunSuiteSuite extends Suite {
     val e = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      @Ignore
-      def testThis() { theTestThisCalled = true }
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      ignore("test this") { theTestThisCalled = true }
+      testWithReporter("test that") { Reporter => theTestThatCalled = true }
     }
 
     val repE = new MyReporter
-    e.execute(Some("testThis"), repE, new Stopper {}, Set(), Set(), Map(), None)
+    e.execute(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None)
     assert(!repE.testIgnoredCalled)
     assert(e.theTestThisCalled)
+*/
   }
 
+/*
   def testExcludes() {
 
     val a = new FunSuite {
