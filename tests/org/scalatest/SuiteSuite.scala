@@ -123,8 +123,8 @@ class SuiteSuite extends Suite {
     val a = new Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      def testThis() = { theTestThisCalled = true }
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      def testThis() { theTestThisCalled = true }
+      def testThat(reporter: Reporter) { theTestThatCalled = true }
     }
 
     val repA = new MyReporter
@@ -137,8 +137,8 @@ class SuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       @Ignore
-      def testThis() = { theTestThisCalled = true }
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      def testThis() { theTestThisCalled = true }
+      def testThat(reporter: Reporter) { theTestThatCalled = true }
     }
 
     val repB = new MyReporter
@@ -151,9 +151,9 @@ class SuiteSuite extends Suite {
     val c = new Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      def testThis() = { theTestThisCalled = true }
+      def testThis() { theTestThisCalled = true }
       @Ignore
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      def testThat(reporter: Reporter) { theTestThatCalled = true }
     }
 
     val repC = new MyReporter
@@ -167,9 +167,9 @@ class SuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       @Ignore
-      def testThis() = { theTestThisCalled = true }
+      def testThis() { theTestThisCalled = true }
       @Ignore
-      def testThat(reporter: Reporter) = { theTestThatCalled = true }
+      def testThat(reporter: Reporter) { theTestThatCalled = true }
     }
 
     val repD = new MyReporter

@@ -27,19 +27,21 @@ abstract class FunSuite extends Suite {
     testsMap += (msg -> ReporterTest(msg, f))
     val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
     if (!groupNames.isEmpty)
-      groupsMap += (msg + ReporterInParens -> groupNames)
+      groupsMap += (msg -> groupNames)
   }
 
   protected def ignore(msg: String, groupClasses: Group*)(f: => Unit) {
-    test(msg)(f _) 
+    test(msg)(f _) // Call test without passing the groups
     val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
     groupsMap += (msg -> (groupNames + IgnoreGroupName))
   }
 
   protected def ignoreWithReporter(msg: String, groupClasses: Group*)(f: (Reporter) => Unit) {
-    testWithReporter(msg)(f) 
+    testWithReporter(msg)(f) // Call testWithReporter without passing the groups
     val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
-    groupsMap += (msg + ReporterInParens -> (groupNames + IgnoreGroupName))
+    groupsMap += (msg -> (groupNames + IgnoreGroupName))
+    println("testsMap: " + testsMap)
+    println("groupsMap: " + groupsMap)
   }
 
   protected def specify(msg: String, groupClasses: Group*)(f: => Unit) {
