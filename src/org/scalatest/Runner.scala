@@ -866,8 +866,28 @@ object Runner {
       doneListener: RunDoneListener) = {
 
     // TODO: add more, and to RunnerThread too
+    if (dispatchReporter == null)
+      throw new NullPointerException
+    if (suitesList == null)
+      throw new NullPointerException
+    if (stopper == null)
+      throw new NullPointerException
+    if (includes == null)
+      throw new NullPointerException
+    if (excludes == null)
+      throw new NullPointerException
+    if (propertiesMap == null)
+      throw new NullPointerException
+    if (membersOnlyList == null)
+      throw new NullPointerException
+    if (wildcardList == null)
+      throw new NullPointerException
+    if (runpath == null)
+      throw new NullPointerException
     if (loader == null)
-      throw new NullPointerException("That was it")
+      throw new NullPointerException
+    if (doneListener == null)
+      throw new NullPointerException
 
     try {
       val loadProblemsExist =
