@@ -999,6 +999,7 @@ object Runner {
 
     val loader: ClassLoader = getRunpathClassLoader(runpathList)
     try {
+      Thread.currentThread.setContextClassLoader(loader)
       try {
         val dispatchReporter = getDispatchReporter(reporterSpecs, graphicReporter, loader)
         try {
