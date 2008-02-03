@@ -17,7 +17,6 @@ package org.scalatest
 
 class RunnerSuite() extends Suite {
 
-
   def testParseArgsIntoLists() {
 
     // this is how i solved the problem of wanting to reuse these val names, runpathList, reportersList, etc.
@@ -405,14 +404,35 @@ class RunnerSuite() extends Suite {
   }
 
 /*
-OK, here's what I think we want for the property checks. I'd like to have the ability to call check like I can call assert, so that
-means that check needs to be a method in Suite. But sometimes people will want to know how many tests were run. To do that, I'll let
-you pass a reporter into check. That means you need to write your test method that takes a reporter. The info will come out as infoProvided.
-So,
+  def testRunpathPropertyAddedToPropertiesMap() {
+    val a = new Suite {
+      var theProperties: Map[String, Any] = Map()
+      override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+          properties: Map[String, Any], distributor: Option[Distributor]) {
+        theProperties = properties
+      }
+    }
 
-def testSomething(reporter: Reporter) {
-  val concatListsProp = property((l1: List[Int], l2: List[Int]) => l1.size + l2.size == (l1 ::: l2).size)
-  check(concatListsProp, reporter)
-}) 
+    val dispatchReporter = new DispatchReporter(Nil, System.out)
+    val suitesList = List("org.scalatest.usefulstuff.RunpathPropCheckerSuite")
+
+    // Runner.doRunRunRunADoRunRun(new DispatchReporter)
+    // Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, Set(), Set(), Map(), false,
+         List(), List(), runpath: "build_tests", loader: ClassLoader,
+      doneListener: RunDoneListener) = {
+
+    ()
+  }
+}
+
+package org.scalatest.usefulstuff {
+
+  class RunpathPropCheckerSuite extends Suite {
+    var theProperties: Map[String, Any] = Map()
+    override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+        properties: Map[String, Any], distributor: Option[Distributor]) {
+      theProperties = properties
+    }
+  }
 */
 }

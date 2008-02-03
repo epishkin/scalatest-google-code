@@ -15,21 +15,57 @@
  */
 package org.scalatest.prop
 
-class ScalaCheckSuiteSuite() extends Suite {
+import org.scalacheck._
+import Arbitrary._
+import Prop._
+
+class ScalaCheckSuiteSuite extends ScalaCheckSuite {
 
   def testCheckProp() {
     
-  }
+    // Ensure a success does not fail in an exception
+    val propConcatLists = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+    checkProperty(propConcatLists)
+
+    // Ensure a failed property does throw an assertion error
+    val propConcatListsBadly = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size + 1)
+    intercept(classOf[AssertionError]) {
+      checkProperty(propConcatListsBadly)
+    }
+
+    // Ensure a property that throws an exception causes an assertion error
+/*
+    val propConcatListsExceptionally = property((a: List[Int], b: List[Int]) => throw new StringIndexOutOfBoundsException)
+    intercept(classOf[AssertionError]) {
+      checkProperty(propConcatListsExceptionally)
+    }
+This generates a GenException, not a PropException. A bug in ScalaCheck?
+*/
+
+    // Ensure a property that doesn't generate enough test cases throws an assertion error
+    val propTrivial = property( (n: Int) => (n == 0) ==> (n == 0) )
+    intercept(classOf[AssertionError]) {
+      checkProperty(propTrivial)
+    }
+
+    // Make sure a Generator that doesn't throw an exception works OK
+    val smallInteger = Gen.choose(0, 100)
+    val propSmallInteger = Prop.forAll(smallInteger)(n => n >= 0 && n <= 100)
+    checkProperty(propSmallInteger)
+
+    // Make sure a Generator that doesn't throw an exception works OK
+    val smallEvenInteger = Gen.choose(0, 200) suchThat (_ % 2 == 0)
+    val propEvenInteger = Prop.forAll(smallEvenInteger)(n => n >= 0 && n <= 200 && n % 2 == 0)
+    checkProperty(propEvenInteger)
 
 /*
-OK, here's what I think we want for the property checks. I'd like to have the ability to call check like I can call assert, so that
-means that check needs to be a method in Suite. But sometimes people will want to know how many tests were run. To do that, I'll let
-you pass a reporter into check. That means you need to write your test method that takes a reporter. The info will come out as infoProvided.
-So,
-
-def testSomething(reporter: Reporter) {
-  val concatListsProp = property((l1: List[Int], l2: List[Int]) => l1.size + l2.size == (l1 ::: l2).size)
-  check(concatListsProp, reporter)
-}) 
+    // Make sure a Generator t throws an exception results in an AssertionError
+    val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (throw new ArrayIndexOutOfBoundsException)
+    val propEvenIntegerWithBuggyGen = Prop.forAll(smallEvenIntegerWithBug)(n => n >= 0 && n <= 200 && n % 2 == 0)
+    intercept(classOf[AssertionError]) {
+      checkProperty(propEvenIntegerWithBuggyGen)
+    }
+This one fails with an ArrayIndexOutOfBoundsException. I think he has another bug.
 */
+  }
 }
