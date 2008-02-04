@@ -30,6 +30,7 @@
     <mkdir dir="${demodoc}"/>
     <mkdir dir="${doc}"/>
     <mkdir dir="${jdoc}"/>
+  	
         <path id="scala.compile.class.path">
             <pathelement location="${lib}/scala-library.jar"/>
         </path>
@@ -44,9 +45,21 @@
             <pathelement location="${dist}/lib/scalatest.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
             <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
+        	<pathelement location="${lib}/jmock-2.4.0.jar"/>
+        	<pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
         </path>
 
+        <path id="build.test.class.path">
+            <pathelement location="${build}"/>
+            <pathelement location="${build.tests}"/>
+            <pathelement location="${lib}/scala-library.jar"/>
+            <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
+            <pathelement location="${lib}/jmock-2.4.0.jar"/>
+            <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
+            <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
+        </path>
+  	
         <taskdef resource="scala/tools/ant/antlib.xml">
           <classpath>
             <pathelement location="${lib}/scala-compiler.jar"/>
@@ -83,13 +96,14 @@
     <scalac srcdir="${src}" destdir="${build}" classpath="${build}:${lib}/testng-5.7-jdk15.jar:${lib}/ScalaCheck-1.1.1.jar:${lib}/scala-library.jar"/>
 
     <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
-    <scalac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${build.tests}:${lib}/scala-library.jar">
+    <scalac srcdir="${tests}" destdir="${build.tests}" classpathref="build.test.class.path">
       <include name="org/scalatest/EasySuite.scala"/>
     </scalac>
-    <!-- Compile the Java code from ${tests} into ${build.tests} -->
+    
+  	<!-- Compile the Java code from ${tests} into ${build.tests} -->
     <javac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${lib}/scala-library.jar" debug="yes"/>
     <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
-    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpath="${build}:${build.tests}:${lib}/testng-5.7-jdk15.jar:${lib}/ScalaCheck-1.1.1.jar:${lib}/scala-library.jar"/>
+    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path"/>
     <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${build}/org/scalatest"/>
     <copy todir="${build}/images">
         <fileset dir="${src}/images"/>
@@ -185,7 +199,6 @@
   </target>
 
     <target name="test" depends="dist">
-    <!-- Delete the ${build} and ${dist} directory trees -->
     <java classname="org.scalatest.Runner" classpathref="test.class.path" fork="true">
 
         <arg value="-p"/>
@@ -208,6 +221,20 @@
     </java>
   </target>
 
+  <target name="testng-example" depends="dist">
+    <java classname="org.scalatest.Runner" classpathref="test.class.path" fork="true">
+
+    	<arg value="-p"/>
+        <arg value="build_tests build"/>
+
+        <arg value="-g"/>
+        <arg value="-o"/>
+     
+        <arg value="-m"/>
+        <arg value="org.scalatest.testng.example"/>
+    </java>
+  </target>
+	
   <target name="allfiles" depends="dist, doc, demo"/>
 
 </project>

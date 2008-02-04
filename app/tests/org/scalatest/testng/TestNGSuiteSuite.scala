@@ -18,6 +18,7 @@ package org.scalatest.testng {
    import org.scalatest.Suite
    import org.scalatest.fun.FunSuite
    import org.testng.annotations.Test
+   import testng.test._
 
    //execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
    class TestNGSuiteSuite extends FunSuite {
@@ -27,7 +28,7 @@ package org.scalatest.testng {
        val testReporter = new TestReporter
 
        // when
-       new testng.test.SuccessTestNGSuite().runTestNG(testReporter)
+       new SuccessTestNGSuite().runTestNG(testReporter)
 
        // then
        assert( testReporter.successCount === 1 )
@@ -39,34 +40,87 @@ package org.scalatest.testng {
        val testReporter = new TestReporter
 
        // when
-       new testng.test.FailureTestNGSuite().runTestNG(testReporter)
+       new FailureTestNGSuite().runTestNG(testReporter)
 
        // then
        assert( testReporter.failureCount === 1 )
      }
-  
-  
-  
-     /**
-      * This class only exists because I cant get jmock to work with Scala. 
-      * Other people seem to do it. Frustrating. 
-      */
-     class TestReporter extends Reporter{
-       var successCount = 0;
-       override def testSucceeded(report: Report){ successCount = successCount + 1 }
-       var failureCount = 0;
-       override def testFailed(report: Report){ failureCount = failureCount + 1 }
+
+     
+     test( "If a test fails due to an exception, Report should have the exception" ){
+       
+       val testReporter = new TestReporter
+
+       // when
+       new FailureTestNGSuite().runTestNG(testReporter)
+
+       // then
+       assert( testReporter.errorMessage === "fail" )
      }
-  
+     
+
+     test( "Report should be generated for each invocation" ){
+       
+       val testReporter = new TestReporter
+
+       // when
+       new TestNGSuiteWithInvocationCount().runTestNG(testReporter)
+
+       // then
+       assert( testReporter.successCount === 10 )
+     }
+     
+     
+     test( "Report should be notified when test is skipped" ){
+       
+       val testReporter = new TestReporter
+
+       // when
+       new SuiteWithSkippedTest().runTestNG(testReporter)
+
+       // then
+       assert( testReporter.ignoreCount === 1 )
+     }
+     
+
+     
+     test( "Only the correct method should be run when specifying a single method to run" ){
+       
+       val testReporter = new TestReporter
+
+       // when
+       new SuiteWithTwoTests().runTestNG("testThatPasses", testReporter)
+
+       // then
+       assert( testReporter.successCount === 1 )
+     }
+     
    }
 
    package test{
+     
      class FailureTestNGSuite extends TestNGSuite {
-       @Test def testThatFails() { throw new Exception }
+       @Test def testThatFails() { throw new Exception("fail") }
      }
+     
      class SuccessTestNGSuite extends TestNGSuite {
        @Test def testThatPasses() {}
      }
+     
+     class TestNGSuiteWithInvocationCount extends TestNGSuite {
+       @Test{val invocationCount=10} def testThatPassesTenTimes() {}
+     }
+     
+     class SuiteWithSkippedTest extends TestNGSuite {
+       @Test{val groups=Array("run")} def dependeeThatFails() { throw new Exception("fail") }
+       @Test{val dependsOnGroups=Array("run")} def depender() {}
+     } 
+
+     class SuiteWithTwoTests extends TestNGSuite {
+       @Test def testThatPasses() {}
+       @Test def anotherTestThatPasses() {}
+     }      
+     
    }
 }
 
