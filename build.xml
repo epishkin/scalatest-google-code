@@ -30,7 +30,7 @@
     <mkdir dir="${demodoc}"/>
     <mkdir dir="${doc}"/>
     <mkdir dir="${jdoc}"/>
-  	
+      
         <path id="scala.compile.class.path">
             <pathelement location="${lib}/scala-library.jar"/>
         </path>
@@ -45,8 +45,8 @@
             <pathelement location="${dist}/lib/scalatest.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
             <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
-        	<pathelement location="${lib}/jmock-2.4.0.jar"/>
-        	<pathelement location="${lib}/hamcrest-all-1.1.jar"/>
+            <pathelement location="${lib}/jmock-2.4.0.jar"/>
+            <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
         </path>
 
@@ -59,7 +59,7 @@
             <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
         </path>
-  	
+      
         <taskdef resource="scala/tools/ant/antlib.xml">
           <classpath>
             <pathelement location="${lib}/scala-compiler.jar"/>
@@ -100,7 +100,7 @@
       <include name="org/scalatest/EasySuite.scala"/>
     </scalac>
     
-  	<!-- Compile the Java code from ${tests} into ${build.tests} -->
+      <!-- Compile the Java code from ${tests} into ${build.tests} -->
     <javac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${lib}/scala-library.jar" debug="yes"/>
     <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
     <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path"/>
@@ -126,7 +126,7 @@
         doctitle="ScalaTest ${release}"
         bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved."/>
 
-    <scaladoc srcdir="${src}" destdir="${doc}" classpath="${build}:${lib}/scala-library.jar"
+    <scaladoc srcdir="${src}" destdir="${doc}" classpathref="build.test.class.path"
         windowtitle="ScalaTest ${release}"
         doctitle="ScalaTest ${release}"
         bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved.">
@@ -153,13 +153,13 @@
         includes="org/scalatest/*.class, org/scalatest/*.properties, images/*">
         <manifest>
             <attribute name="Main-Class" value="org.scalatest.Runner"/>
-        	<attribute name="Class-Path" value="junit-4.1.jar"/>
+            <attribute name="Class-Path" value="junit-4.1.jar"/>
         </manifest>
      </jar>
      <jar jarfile="${dist}/lib/scalatest-wbt.jar" basedir="${build.tests}"
         includes="org/scalatest/*.class"/>
 
-	 <echo message="All finished building ${project.name}!"/>
+     <echo message="All finished building ${project.name}!"/>
   </target>
 
   <target name="zipper" depends="allfiles">
@@ -167,16 +167,16 @@
     <mkdir dir="${zipper}"/>
 
     <copy file="${dist}/lib/scalatest.jar"
-		tofile="${zipper}/scalatest-${release}/scalatest-${release}.jar"/>
+        tofile="${zipper}/scalatest-${release}/scalatest-${release}.jar"/>
     <copy file="${dist}/lib/scalatest-wbt.jar"
-		tofile="${zipper}/scalatest-${release}/scalatest-${release}-tests.jar"/>
+        tofile="${zipper}/scalatest-${release}/scalatest-${release}-tests.jar"/>
 
     <copy file="README.txt"
-		tofile="${zipper}/scalatest-${release}/README.txt"/>
+        tofile="${zipper}/scalatest-${release}/README.txt"/>
     <copy file="LICENSE"
-		tofile="${zipper}/scalatest-${release}/LICENSE"/>
+        tofile="${zipper}/scalatest-${release}/LICENSE"/>
     <copy file="NOTICE"
-		tofile="${zipper}/scalatest-${release}/NOTICE"/>
+        tofile="${zipper}/scalatest-${release}/NOTICE"/>
 
     <copy todir="${zipper}/scalatest-${release}/doc">
         <fileset dir="${doc}/"/>
@@ -207,24 +207,24 @@
        <arg value="-g"/>
        <arg value="-o"/>
 
-    	<arg value="-m"/>
-    	<arg value="org.scalatest"/>
+        <arg value="-m"/>
+        <arg value="org.scalatest"/>
  
-    	<arg value="-m"/>
-    	<arg value="org.scalatest.fun"/>
+        <arg value="-m"/>
+        <arg value="org.scalatest.fun"/>
  
-    	<arg value="-m"/>
-    	<arg value="org.scalatest.testng"/>
+        <arg value="-m"/>
+        <arg value="org.scalatest.testng"/>
  
-    	<arg value="-m"/>
-    	<arg value="org.scalatest.prop"/>
+        <arg value="-m"/>
+        <arg value="org.scalatest.prop"/>
     </java>
   </target>
 
   <target name="testng-example" depends="dist">
     <java classname="org.scalatest.Runner" classpathref="test.class.path" fork="true">
 
-    	<arg value="-p"/>
+        <arg value="-p"/>
         <arg value="build_tests build"/>
 
         <arg value="-g"/>
@@ -234,7 +234,7 @@
         <arg value="org.scalatest.testng.example"/>
     </java>
   </target>
-	
+    
   <target name="allfiles" depends="dist, doc, demo"/>
 
 </project>
