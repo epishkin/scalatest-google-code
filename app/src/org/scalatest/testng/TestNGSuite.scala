@@ -1,3 +1,18 @@
+/*
+ * Copyright 2001-2008 Artima, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.scalatest.testng;
 
 import org.scalatest.Suite
@@ -18,7 +33,7 @@ trait TestNGSuite extends Suite{
       excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
     
     runTestNG(testName, reporter, includes, excludes);
-    //super.execute(testName, reporter, stopper, includes, excludes, properties, distributor)
+    //super.execute(XtestName, Xreporter, stopper, Xincludes, Xexcludes, properties, distributor)
   }
   
   private[testng] def runTestNG(reporter: Reporter) : TestListenerAdapter = {
@@ -37,15 +52,16 @@ trait TestNGSuite extends Suite{
     testng.setTestClasses(Array(this.getClass))
     
     
-    if( testName.isDefined ){
-      handleGroupsForRunningSingleMethod( testName.get, testng );
-    }
-    else{
-      testng.setGroups(groupsToInclude.foldLeft(""){_+","+_})
-      testng.setExcludedGroups(groupsToExclude.foldLeft(""){_+","+_})
+    testName match {
+      case Some(tn) => handleGroupsForRunningSingleMethod(tn, testng)
+      case None => handleGroups( groupsToInclude, groupsToExclude, testng )
     }
 
+    this.run(testng, reporter)
     
+  }
+  
+  private[testng] def run( testng: TestNG, reporter: Reporter ): TestListenerAdapter = {
     val tla = new MyTestListenerAdapter(reporter)
     testng.addListener(tla)
     testng.run()
@@ -54,7 +70,12 @@ trait TestNGSuite extends Suite{
   }
   
   
-  def handleGroupsForRunningSingleMethod( testName: String, testng: TestNG ) = {
+  private[testng] def handleGroups( groupsToInclude: Set[String], groupsToExclude: Set[String], testng: TestNG){
+    testng.setGroups(groupsToInclude.mkString(","))
+    testng.setExcludedGroups(groupsToExclude.mkString(","))
+  }
+  
+  private def handleGroupsForRunningSingleMethod( testName: String, testng: TestNG ) = {
     
     class MyTransformer extends IAnnotationTransformer {
       override def transform( annotation: ITest, testClass: Class, testConstructor: Constructor, testMethod: Method){
@@ -68,30 +89,37 @@ trait TestNGSuite extends Suite{
   }
   
 
-  private class MyTestListenerAdapter( reporter: Reporter ) extends TestListenerAdapter{
+  private[testng] class MyTestListenerAdapter( reporter: Reporter ) extends TestListenerAdapter{
     
     val className = TestNGSuite.this.getClass.getName
     
     override def onTestStart(result: ITestResult) = {
-      reporter.testStarting( buildReport( result, None ))
+      reporter.testStarting( buildReport( result, None ) )
     }
     
     override def onTestSuccess(itr: ITestResult) = {
-      val report = buildReport( itr, None )
-      reporter.testSucceeded( report )
+      reporter.testSucceeded( buildReport( itr, None ) )
     }
     
     override def onTestFailure(itr: ITestResult) = {
-      reporter.testFailed( buildReport( itr, Some(itr.getThrowable)))
+      reporter.testFailed( buildReport( itr, Some(itr.getThrowable)) )
     }
     
     override def onTestSkipped(itr: ITestResult) = {
-      reporter.testIgnored( buildReport( itr, Some(itr.getThrowable)))
+      reporter.testIgnored( buildReport( itr, None) )
+    }
+
+    override def onConfigurationFailure(itr: ITestResult) = {
+      reporter.testFailed( new Report(itr.getName, className, Some(itr.getThrowable), None) )
+      //reporter.infoProvided( new Report(itr.getName, className, Some(itr.getThrowable), None) )
+    }
+
+    override def onConfigurationSuccess(itr: ITestResult) = {
+      reporter.infoProvided( new Report(itr.getName, className) )
     }
     
     private def buildReport( itr: ITestResult, t: Option[Throwable] ): Report = {
-      val testName = itr.getName
-      new Report(testName, className, t, Some(new TestRerunner(className, testName)) )
+      new Report(itr.getName, className, t, Some(new TestRerunner(className, itr.getName)) )
     }
   }
   
@@ -103,16 +131,6 @@ trait TestNGSuite extends Suite{
     (12:02:34 AM) bvenners: maybe a testSucceeded with some extra info in the report
     (12:02:49 AM) bvenners: onStart and onFinish are starting and finishing what, a run?
     (12:02:57 AM) bvenners: if so then runStarting and runCompleted
-    (12:03:14 AM) bvenners: onConfiguration/Success/Failure we don't have, so put that in an infoProvided
-    (12:03:29 AM) joshcoughx: ok
-    (12:03:50 AM) bvenners: i
-    (12:03:56 AM) bvenners: i'm not sure what a config success failure is
-    (12:04:18 AM) joshcoughx: me either. 
-    (12:04:22 AM) joshcoughx: and no javadoc.
-    (12:05:57 AM) joshcoughx: i can ask him though
-    (12:06:11 AM) joshcoughx: and i can always look at the code
-    (12:06:14 AM) joshcoughx: i have it 
-    (12:06:51 AM) bvenners: whatever it is i'm pretty sure it will map to infoProvided in ScalaTest
     **/    
     
       
