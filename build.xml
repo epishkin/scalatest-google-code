@@ -30,7 +30,7 @@
     <mkdir dir="${demodoc}"/>
     <mkdir dir="${doc}"/>
     <mkdir dir="${jdoc}"/>
-      
+    <mkdir dir="${jdoc}"/>
         <path id="scala.compile.class.path">
             <pathelement location="${lib}/scala-library.jar"/>
         </path>
@@ -40,16 +40,26 @@
             <pathelement location="${lib}/scala-library.jar"/>
         </path>
 
+        <path id="build.class.path">
+        	<pathelement location="${build}"/>
+            <pathelement location="${lib}/scala-library.jar"/>
+            <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
+        	<pathelement location="${lib}/hamcrest-all-1.1.jar"/>
+            <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
+            <pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
+        	<pathelement location="${lib}/jmock-2.4.0.jar"/>
+        </path>
+  	
         <!-- this is the class path used to run ScalaTest to test itself, in the "test" target -->
         <path id="test.class.path">
             <pathelement location="${dist}/lib/scalatest.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
             <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
-            <pathelement location="${lib}/jmock-2.4.0.jar"/>
-            <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
+        	<pathelement location="${lib}/jmock-2.4.0.jar"/>
+        	<pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
+        	<pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
         </path>
-
         <path id="build.test.class.path">
             <pathelement location="${build}"/>
             <pathelement location="${build.tests}"/>
@@ -58,8 +68,9 @@
             <pathelement location="${lib}/jmock-2.4.0.jar"/>
             <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
+        	<pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
         </path>
-      
+  	
         <taskdef resource="scala/tools/ant/antlib.xml">
           <classpath>
             <pathelement location="${lib}/scala-compiler.jar"/>
@@ -93,7 +104,7 @@
       <include name="org/scalatest/Ignore.java"/>
     </javac>
     <!-- Then compile the Scala code from ${src} into ${build} -->
-    <scalac srcdir="${src}" destdir="${build}" classpath="${build}:${lib}/testng-5.7-jdk15.jar:${lib}/ScalaCheck-1.1.1.jar:${lib}/scala-library.jar"/>
+    <scalac srcdir="${src}" destdir="${build}" classpathref="build.class.path"/>
 
     <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
     <scalac srcdir="${tests}" destdir="${build.tests}" classpathref="build.test.class.path">
@@ -103,7 +114,17 @@
       <!-- Compile the Java code from ${tests} into ${build.tests} -->
     <javac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${lib}/scala-library.jar" debug="yes"/>
     <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
-    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path"/>
+    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5"  classpathref="build.test.class.path">
+    	<exclude name="org/scalatest/testng/*.scala"/>
+    	<exclude name="org/scalatest/testng/example/*.scala"/>
+    	<include name="**/*.scala"/>
+    </scalac>	
+  	
+    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5"  generics="true" classpathref="build.test.class.path">
+    	<include name="org/scalatest/testng/*.scala"/>
+    	<include name="org/scalatest/testng/example/*.scala"/>
+   	</scalac>	
+  	
     <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${build}/org/scalatest"/>
     <copy todir="${build}/images">
         <fileset dir="${src}/images"/>
@@ -126,7 +147,9 @@
         doctitle="ScalaTest ${release}"
         bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved."/>
 
-    <scaladoc srcdir="${src}" destdir="${doc}" classpathref="build.test.class.path"
+    <!-- I can't get build.class.path to work with scaladoc target. Weird. So repeating it here for now to get this target to work. --> 
+    <scaladoc srcdir="${src}" destdir="${doc}"
+        classpath="${build}:${lib}/scala-library.jar:${lib}/testng-5.7-jdk15.jar:${lib}/hamcrest-all-1.1.jar:${lib}/ScalaCheck-1.1.1.jar:${lib}/specs-1.2.3-SNAPSHOT.jar:${lib}/jmock-2.4.0.jar"
         windowtitle="ScalaTest ${release}"
         doctitle="ScalaTest ${release}"
         bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved.">
@@ -220,11 +243,10 @@
         <arg value="org.scalatest.prop"/>
     </java>
   </target>
-
   <target name="testng-example" depends="dist">
     <java classname="org.scalatest.Runner" classpathref="test.class.path" fork="true">
 
-        <arg value="-p"/>
+    	<arg value="-p"/>
         <arg value="build_tests build"/>
 
         <arg value="-g"/>
@@ -234,7 +256,7 @@
         <arg value="org.scalatest.testng.example"/>
     </java>
   </target>
-    
+	
   <target name="allfiles" depends="dist, doc, demo"/>
 
 </project>
