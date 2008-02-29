@@ -21,13 +21,7 @@ import org.specs.mock.JMocker._
 trait SMocker extends JMocker{
 
   def expecting(block: => Any) = expect{ block }
-  
-  def expecting( desc: String )(block: => Any) = expect{ block }
 
-  def when(block: => Any) = block
-  
-  def when( desc: String )(block: => Any) = block
-  
   def withMock(f: => Unit): Unit = {
     try{
       restart

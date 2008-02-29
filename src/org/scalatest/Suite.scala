@@ -29,7 +29,7 @@ import java.lang.annotation.ElementType
 import scala.collection.immutable.TreeSet
 
 /**
- * <p>
+ * </p>
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
  * suite (i.e., a collection) of tests. This trait defines a default way to create
  * and execute tests, which involves writing <em>test methods</em>. This approach will likely suffice
@@ -1575,7 +1575,7 @@ trait Suite {
    * @throws AssertionError if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
    */
-  def intercept(clazz: Class[_], message: Any)(f: => Unit): Throwable = {
+  def intercept(clazz: Class, message: Any)(f: => Unit): Throwable = {
     val caught = try {
       f
       None
@@ -1621,7 +1621,7 @@ trait Suite {
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
    */
-  def intercept(clazz: Class[_])(f: => Unit): Throwable = {
+  def intercept(clazz: Class)(f: => Unit): Throwable = {
     intercept(clazz, "")(f)
   }
 
@@ -1690,10 +1690,10 @@ private[scalatest] object Suite {
       fullyQualifiedName
   }
   
-  private[scalatest] def checkForPublicNoArgConstructor(clazz: Class[T] forSome { type T }) = {
+  private[scalatest] def checkForPublicNoArgConstructor(clazz: Class) = {
     
     try {
-      val constructor = clazz.getConstructor(new Array[Class[T] forSome { type T}](0))
+      val constructor = clazz.getConstructor(new Array[Class](0))
 
       Modifier.isPublic(constructor.getModifiers)
     }
