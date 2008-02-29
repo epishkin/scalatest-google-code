@@ -177,8 +177,8 @@ class FunSuiteSuite extends Suite {
     }
 
     val d = new FunSuite {
-      test("test this", new SlowAsMolasses) {}
-      ignoreWithReporter("test that", new SlowAsMolasses) { Reporter => () }
+      test("test this", SlowAsMolasses) {}
+      ignoreWithReporter("test that", SlowAsMolasses) { Reporter => () }
     }
     expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.fun.SlowAsMolasses"))) {
       d.groups
@@ -190,8 +190,8 @@ class FunSuiteSuite extends Suite {
     }
 
     val f = new FunSuite {
-      specify("test this", new SlowAsMolasses, new WeakAsAKitten) {}
-      specifyWithReporter("test that", new SlowAsMolasses) { Reporter => () }
+      specify("test this", SlowAsMolasses, WeakAsAKitten) {}
+      specifyWithReporter("test that", SlowAsMolasses) { Reporter => () }
     }
     expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses", "org.scalatest.fun.WeakAsAKitten"), "test that" -> Set("org.scalatest.fun.SlowAsMolasses"))) {
       f.groups

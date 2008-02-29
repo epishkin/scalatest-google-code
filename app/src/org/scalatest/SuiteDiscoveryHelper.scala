@@ -18,7 +18,7 @@ package org.scalatest
 import java.lang.reflect.Modifier
 import java.util.Enumeration
 import java.util.jar.JarFile
-import java.util.jar.JarEntry
+import java.util.zip.ZipEntry
 import scala.collection.mutable
 import java.io.File
 import java.net.URL
@@ -112,11 +112,11 @@ private[scalatest] class SuiteDiscoveryHelper() {
       None
   }
 
-  private val emptyClassArray = new Array[Class[T] forSome { type T }](0)
+  private val emptyClassArray = new Array[Class](0)
 
-  private def isAccessibleSuite(clazz: Class[T] forSome { type T }): Boolean = {
+  private def isAccessibleSuite(clazz: Class): Boolean = {
       try {
-        classOf[Suite].isAssignableFrom(clazz) && 
+        classOf[Suite].isAssignableFrom(clazz) &&
           Modifier.isPublic(clazz.getModifiers) &&
           !Modifier.isAbstract(clazz.getModifiers) &&
           Modifier.isPublic(clazz.getConstructor(emptyClassArray).getModifiers)
@@ -188,12 +188,12 @@ private[scalatest] class SuiteDiscoveryHelper() {
 
   private def getFileNamesIteratorFromJar(file: JarFile): Iterator[String] = {
 
-    class EnumerationWrapper[T](e: Enumeration[T]) extends Iterator[T] {
-      def next: T = e.nextElement
+    class EnumerationWrapper[T](e: Enumeration) extends Iterator[T] {
+      def next: T = e.nextElement.asInstanceOf[T]
       def hasNext: Boolean = e.hasMoreElements
     }
 
-    new EnumerationWrapper[JarEntry](file.entries).map(_.getName)
+    new EnumerationWrapper[ZipEntry](file.entries).map(_.getName)
   }
 
   private def extractClassNames(fileNames: Iterator[String], fileSeparator: Char): Iterator[String] = {
