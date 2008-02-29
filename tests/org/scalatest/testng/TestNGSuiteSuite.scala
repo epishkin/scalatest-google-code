@@ -20,21 +20,20 @@ package org.scalatest.testng {
    import org.scalatest.jmock.SMockFunSuite
    import testng.test._
 
-   //execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
-   class TestNGSuiteSuite extends SMockFunSuite{
+   class TestNGSuiteSuite extends SMockFunSuite with TestNGSuiteExpectations{
 
      
      mockTest( "Reporter Should Be Notified When Test Passes" ){
     
        val reporter = mock(classOf[Reporter])
 
-       expecting { 
-         one(reporter).testStarting(any(classOf[Report])) 
-         one(reporter).testSucceeded(any(classOf[Report])) 
+       expecting{
+         singleTestToPass( reporter )
        }
-
-       // when
-       new SuccessTestNGSuite().runTestNG(reporter)
+       
+       when{
+         new SuccessTestNGSuite().runTestNG(reporter)
+       }
      }
   
 
@@ -43,12 +42,12 @@ package org.scalatest.testng {
        val reporter = mock(classOf[Reporter])
 
        expecting { 
-         one(reporter).testStarting(any(classOf[Report])) 
-         one(reporter).testFailed(any(classOf[Report])) 
+         singleTestToFail( reporter )
        }
 
-       // when
-       new FailureTestNGSuite().runTestNG(reporter)
+       when{
+         new FailureTestNGSuite().runTestNG(reporter)
+       }
      }
 
      
@@ -68,48 +67,43 @@ package org.scalatest.testng {
        
        val reporter = mock(classOf[Reporter])
 
-       for( i <- 1 to 10 ){
-         expecting { 
-           one(reporter).testStarting(any(classOf[Report])) 
-           one(reporter).testSucceeded(any(classOf[Report])) 
-         }
+       expecting( "reporter gets 10 passing reports because invocationCount=10" ) {
+         nTestsToPass( 10, reporter )
        }
 
-       // when
-       new TestNGSuiteWithInvocationCount().runTestNG(reporter)
-
+       when ( "run the suite with method that has invocationCount=10" ){
+        new TestNGSuiteWithInvocationCount().runTestNG(reporter)
+       }
      }
      
-     
-     mockTest( "Report should be notified when test is skipped" ){
+     mockTest( "Reporter should be notified when test is skipped" ){
        
        val reporter = mock(classOf[Reporter])
 
-       expecting { 
+       expecting ( "a single test should fail, followed by a single test being skipped" ){ 
+         one(reporter).runStarting(0) 
          one(reporter).testStarting(any(classOf[Report])) 
          one(reporter).testFailed(any(classOf[Report])) 
-         one(reporter).testIgnored(any(classOf[Report])) 
+         one(reporter).testIgnored(any(classOf[Report]))
+         one(reporter).runCompleted()
        }
 
-       // when
-       new SuiteWithSkippedTest().runTestNG(reporter)
-
+       when ( "run the suite with a test that should fail and a test that should be skipped" ){
+         new SuiteWithSkippedTest().runTestNG(reporter)
+       }
      }
-     
-
      
      mockTest( "Only the correct method should be run when specifying a single method to run" ){
        
        val reporter = mock(classOf[Reporter])
 
        expecting { 
-         one(reporter).testStarting(any(classOf[Report])) 
-         one(reporter).testSucceeded(any(classOf[Report])) 
+         singleTestToPass( reporter )
        }
        
-       // when
-       new SuiteWithTwoTests().runTestNG("testThatPasses", reporter)
-
+       when {
+         new SuiteWithTwoTests().runTestNG("testThatPasses", reporter)
+       }
      }
      
      

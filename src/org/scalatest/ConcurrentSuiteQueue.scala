@@ -29,11 +29,11 @@ private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporte
     excludes: Set[String], propertiesMap: Map[String, Any]) extends Distributor {
 
   private val execSvc: ExecutorService = Executors.newCachedThreadPool()
-  private val futureQueue = new LinkedBlockingQueue // TODO: Figure out how to connect this to the Java generics
+  private val futureQueue = new LinkedBlockingQueue[Future[T] forSome { type T }]
 
   def put(suite: Suite) = {
     val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopper, includes, excludes, propertiesMap, Some(this))
-    val future = execSvc.submit(suiteRunner)
+    val future: Future[T] forSome { type T } = execSvc.submit(suiteRunner)
     futureQueue.put(future)
   }
 
@@ -41,6 +41,6 @@ private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporte
 
   def waitUntilDone(): Unit = {
     while (futureQueue.peek != null)
-      futureQueue.poll().asInstanceOf[Future].get()
+      futureQueue.poll().get()
   }
 }

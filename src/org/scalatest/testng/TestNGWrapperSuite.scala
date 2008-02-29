@@ -28,7 +28,11 @@ import java.lang.reflect.Method
 import java.lang.reflect.Constructor
 
 
-class TestNGWrapperSuite(suiteXMLFilePaths: List[String]) extends TestNGSuite{
+class TestNGWrapperSuite(xmlSuitesPropertyName: String) extends TestNGSuite{
+  
+  if( getSuites == null ) throw new IllegalArgumentException("no property: " + xmlSuitesPropertyName )
+  
+  def getSuites: String = System.getProperty(xmlSuitesPropertyName)
   
   override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], 
       excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
@@ -36,18 +40,34 @@ class TestNGWrapperSuite(suiteXMLFilePaths: List[String]) extends TestNGSuite{
     runTestNG(reporter, includes, excludes);
   }
   
+  override private[testng] def runTestNG(reporter: Reporter) : TestListenerAdapter = {
+    runTestNG( reporter, Set(), Set() )
+  }
   
   private[testng] def runTestNG(reporter: Reporter, groupsToInclude: Set[String], 
       groupsToExclude: Set[String]) : TestListenerAdapter = {
     
     val testng = new TestNG()
     handleGroups( groupsToInclude, groupsToExclude, testng )
-    
-    val files = new java.util.ArrayList
-    suiteXMLFilePaths.foreach( { files add _ } )
-    testng.setTestSuites(files)
+    handleXmlSuites( testng )
     
     run( testng, reporter )
   }
+  
+  private def handleXmlSuites( testng: TestNG ){
+    import java.io.File
+    import java.io.FileNotFoundException
+    
+    val files = new java.util.ArrayList[String]
+    
+    getSuites.split(",").foreach( { name => 
+        val f = new File( name )
+        if( ! f.exists ) throw new FileNotFoundException( f.getAbsolutePath )
+        files add name
+      } 
+    )
+    testng.setTestSuites(files)
+  }
+  
   
 }
