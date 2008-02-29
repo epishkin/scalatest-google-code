@@ -823,7 +823,7 @@ object Runner {
 
   private def getCustomReporter(reporterClassName: String, loader: ClassLoader, argString: String): Reporter = {
     try {
-      val reporterClass: Class = loader.loadClass(reporterClassName)
+      val reporterClass: Class[T] forSome { type T } = loader.loadClass(reporterClassName)
       reporterClass.newInstance.asInstanceOf[Reporter]
     }    // Could probably catch ClassCastException too
     catch {
