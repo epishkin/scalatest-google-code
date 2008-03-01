@@ -34,7 +34,7 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
     m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator))).asInstanceOf[Iterator[String]]
   }
 
-  def isAccessibleSuite(clazz: Class): Boolean = {
+  def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
     val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("isAccessibleSuite",
       Array(classOf[Class]))
     m.setAccessible(true)

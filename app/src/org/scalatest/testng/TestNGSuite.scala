@@ -78,7 +78,7 @@ trait TestNGSuite extends Suite{
   private def handleGroupsForRunningSingleMethod( testName: String, testng: TestNG ) = {
     
     class MyTransformer extends IAnnotationTransformer {
-      override def transform( annotation: ITest, testClass: Class, testConstructor: Constructor, testMethod: Method){
+      override def transform( annotation: ITest, testClass: java.lang.Class[_], testConstructor: Constructor[_], testMethod: Method){
         if (testName.equals(testMethod.getName)) {
           annotation.setGroups(Array("org.scalatest.testng.singlemethodrun.methodname"))  
         }
@@ -127,7 +127,7 @@ trait TestNGSuite extends Suite{
   
   /**
      TODO
-    (12:02:27 AM) bvenners: onTestFailedButWithinSuccessPercentage(ITestResult tr) 
+    (12:02:27 AM) bvenners: onTestFailedButWithinSuccessPercentage(ITestResult tr)
     (12:02:34 AM) bvenners: maybe a testSucceeded with some extra info in the report
     (12:02:49 AM) bvenners: onStart and onFinish are starting and finishing what, a run?
     (12:02:57 AM) bvenners: if so then runStarting and runCompleted

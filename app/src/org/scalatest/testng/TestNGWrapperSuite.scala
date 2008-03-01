@@ -43,7 +43,7 @@ class TestNGWrapperSuite(suiteXMLFilePaths: List[String]) extends TestNGSuite{
     val testng = new TestNG()
     handleGroups( groupsToInclude, groupsToExclude, testng )
     
-    val files = new java.util.ArrayList
+    val files = new java.util.ArrayList[String]
     suiteXMLFilePaths.foreach( { files add _ } )
     testng.setTestSuites(files)
     
