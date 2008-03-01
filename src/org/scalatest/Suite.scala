@@ -1575,7 +1575,7 @@ trait Suite {
    * @throws AssertionError if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
    */
-  def intercept(clazz: Class, message: Any)(f: => Unit): Throwable = {
+  def intercept(clazz: java.lang.Class[_ <: AnyRef], message: Any)(f: => Unit): Throwable = {
     val caught = try {
       f
       None
@@ -1621,7 +1621,7 @@ trait Suite {
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
    */
-  def intercept(clazz: Class)(f: => Unit): Throwable = {
+  def intercept(clazz: java.lang.Class[_ <: AnyRef])(f: => Unit): Throwable = {
     intercept(clazz, "")(f)
   }
 
@@ -1690,10 +1690,10 @@ private[scalatest] object Suite {
       fullyQualifiedName
   }
   
-  private[scalatest] def checkForPublicNoArgConstructor(clazz: Class) = {
+  private[scalatest] def checkForPublicNoArgConstructor(clazz: java.lang.Class[_]) = {
     
     try {
-      val constructor = clazz.getConstructor(new Array[Class](0))
+      val constructor = clazz.getConstructor(new Array[java.lang.Class[T] forSome { type T }](0))
 
       Modifier.isPublic(constructor.getModifiers)
     }
