@@ -104,7 +104,7 @@
       <include name="org/scalatest/Ignore.java"/>
     </javac>
     <!-- Then compile the Scala code from ${src} into ${build} -->
-    <scalac srcdir="${src}" destdir="${build}" target="jvm-1.5" generics="true" classpathref="build.class.path"/>
+    <scalac srcdir="${src}" destdir="${build}" target="jvm-1.5" classpathref="build.class.path"/>
 
     <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
     <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
@@ -114,13 +114,13 @@
       <!-- Compile the Java code from ${tests} into ${build.tests} -->
     <javac srcdir="${tests}" destdir="${build.tests}" classpath="${build}:${lib}/scala-library.jar" debug="yes"/>
     <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
-    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5"  generics="true" classpathref="build.test.class.path">
+    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
     	<exclude name="org/scalatest/testng/*.scala"/>
     	<exclude name="org/scalatest/testng/example/*.scala"/>
     	<include name="**/*.scala"/>
     </scalac>	
   	
-    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5"  generics="true" classpathref="build.test.class.path">
+    <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
     	<include name="org/scalatest/testng/*.scala"/>
     	<include name="org/scalatest/testng/example/*.scala"/>
    	</scalac>	
