@@ -240,7 +240,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * a <code>runStopped</code> method and handles it by printing an error message to the
    * standard error stream.
    */
-  override def runStopped() = julia ! RunStopped
+  override def runStopped() = julia ! RunStopped()
 
   /**
    * Indicates a run has aborted prior to completion.
@@ -271,7 +271,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * a <code>runCompleted</code> method and handles it by printing an error message to the
    * standard error stream.
    */
-  override def runCompleted() = julia ! RunCompleted
+  override def runCompleted() = julia ! RunCompleted()
 
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this
@@ -284,7 +284,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * a <code>dispose</code> method and handles it by printing an error message to the
    * standard error stream.
    */
-  override def dispose() = julia ! Dispose
+  override def dispose() = julia ! Dispose()
 
   private def dispatch(methodName: String, methodCall: (Reporter) => Unit) {
  
