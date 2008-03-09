@@ -36,8 +36,8 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
 
   def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
     val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("isAccessibleSuite",
-      // Array(classOf[Class[_]])) // This one works in 2.7
-      Array(classOf[Class])) // This one works in 2.6
+      Array(classOf[Class[_]])) // This one works in 2.7
+      // Array(classOf[Class])) // This one works in 2.6
     m.setAccessible(true)
     m.invoke(sdt, Array[Object](clazz)).asInstanceOf[Boolean]
   }
