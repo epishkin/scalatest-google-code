@@ -51,6 +51,9 @@ import javax.swing.event.ListSelectionEvent
 import javax.swing.event.ListSelectionListener
 import Runner.usingEventDispatchThread
 import Runner.withClassLoaderAndDispatchReporter
+import java.util.concurrent.Semaphore
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 
 /**
  * The main class for Runner's GUI.
@@ -118,6 +121,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   private val graphicRerunReporter: Reporter = new GraphicRerunReporter
 
   private val stopper = new SimpleStopper
+
+  private val exitSemaphore = new Semaphore(1)
 
   initialize()
 
@@ -301,14 +306,23 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     runJButton.setPreferredSize(preferredSize)
     rerunJButton.setPreferredSize(preferredSize)
 
+    exitSemaphore.acquire()
+    addWindowListener(
+      new WindowAdapter {
+        override def windowClosed(e: WindowEvent) { exitSemaphore.release() }
+      }
+    )
+
     pack()
+
     val dim: Dimension = getSize()
-
     dim.height = dim.height / 5 + dim.height
-
     dim.width = dim.height / 3 * 4
-
     setSize(dim)
+  }
+
+  private[scalatest] def blockUntilWindowClosed() {
+    exitSemaphore.acquire()
   }
 
   // This initialize method idiom is a way to get rid of a var
