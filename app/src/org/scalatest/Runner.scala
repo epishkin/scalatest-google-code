@@ -24,6 +24,7 @@ import java.net.URLClassLoader
 import java.io.File
 import java.io.IOException
 import javax.swing.SwingUtilities
+import java.util.concurrent.ArrayBlockingQueue
 
 /**
  * <p>
@@ -383,6 +384,7 @@ object Runner {
     fullReporterSpecs.graphicReporterSpec match {
       case Some(GraphicReporterSpec(configSet)) => {
         val graphicConfigSet = if (configSet.isEmpty) ReporterOpts.allOptions else configSet
+        val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
           val rjf = new RunnerJFrame(recipeName, graphicConfigSet, reporterSpecs, suitesList, runpathList,
             includes, excludes, propertiesMap, concurrent, membersOnlyList, wildcardList) 
@@ -390,7 +392,12 @@ object Runner {
           rjf.setVisible(true)
           rjf.prepUIForRunning()
           rjf.runFromGUI()
+          abq.put(rjf)
         }
+        // To get the Ant task to work, the main thread needs to block until
+        // The GUI window exits.
+        val rjf = abq.take()
+        rjf.blockUntilWindowClosed()
       }
       case None => { // Run the test without a GUI
         withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, None) {
