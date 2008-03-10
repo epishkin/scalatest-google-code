@@ -46,7 +46,7 @@ abstract class FunSuite extends Suite {
   }
 
   protected def ignore(msg: String, groupClasses: Group*)(f: => Unit) {
-    test(msg)(f _) // Call test without passing the groups
+    test(msg)(f) // Call test without passing the groups
     val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
     groupsMap += (msg -> (groupNames + IgnoreGroupName))
   }
