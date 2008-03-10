@@ -301,15 +301,13 @@ class FunSuiteSuite extends Suite {
     assert(e.theTestThisCalled)
   }
 
-/*
   def testExcludes() {
 
     val a = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      @SlowAsMolasses
-      def testThis() { theTestThisCalled = true }
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      test("test this", new SlowAsMolasses) { theTestThisCalled = true }
+      testWithReporter("test that") { Reporter => theTestThatCalled = true }
     }
     val repA = new MyReporter
     a.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
@@ -320,12 +318,11 @@ class FunSuiteSuite extends Suite {
     val b = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      @SlowAsMolasses
-      def testThis() { theTestThisCalled = true }
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      test("test this", new SlowAsMolasses) { theTestThisCalled = true }
+      testWithReporter("test that") { Reporter => theTestThatCalled = true }
     }
     val repB = new MyReporter
-    b.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
+    b.execute(None, repB, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set(), Map(), None)
     assert(!repB.testIgnoredCalled)
     assert(b.theTestThisCalled)
     assert(!b.theTestThatCalled)
@@ -333,17 +330,16 @@ class FunSuiteSuite extends Suite {
     val c = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      @SlowAsMolasses
-      def testThis() { theTestThisCalled = true }
-      @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      test("test this", new SlowAsMolasses) { theTestThisCalled = true }
+      testWithReporter("test that", new SlowAsMolasses) { reporter => theTestThatCalled = true }
     }
     val repC = new MyReporter
-    c.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
+    c.execute(None, repB, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set(), Map(), None)
     assert(!repC.testIgnoredCalled)
     assert(c.theTestThisCalled)
     assert(c.theTestThatCalled)
 
+/*
     val d = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
@@ -494,8 +490,10 @@ class FunSuiteSuite extends Suite {
     assert(!k.theTestThisCalled)
     assert(!k.theTestThatCalled)
     assert(!k.theTestTheOtherCalled)
+*/
   }
 
+/*
   def testTestCount() {
 
     val a = new FunSuite {

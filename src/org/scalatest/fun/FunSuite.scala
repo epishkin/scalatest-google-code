@@ -55,8 +55,6 @@ abstract class FunSuite extends Suite {
     testWithReporter(msg)(f) // Call testWithReporter without passing the groups
     val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
     groupsMap += (msg -> (groupNames + IgnoreGroupName))
-    println("testsMap: " + testsMap)
-    println("groupsMap: " + groupsMap)
   }
 
   protected def specify(msg: String, groupClasses: Group*)(f: => Unit) {
