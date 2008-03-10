@@ -270,9 +270,7 @@ class FunSuiteSuite extends Suite {
     assert(c.theTestThisCalled)
     assert(!c.theTestThatCalled)
 
-/*
-    // This didn't work because i don't have an order anymore. Alphabetical
-    // does not make sense. The order I want is order of appearance in the file.
+    // The order I want is order of appearance in the file.
     // Will try and implement that tomorrow. Subtypes will be able to change the order.
     val d = new FunSuite {
       var theTestThisCalled = false
@@ -284,13 +282,12 @@ class FunSuiteSuite extends Suite {
     val repD = new MyReporter
     d.execute(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repD.testIgnoredCalled)
-    assert(repD.lastReport.name endsWith "test this") // last because executed alphabetically
+    assert(repD.lastReport.name endsWith "test that") // last because should be in order of appearance
     assert(!d.theTestThisCalled)
     assert(!d.theTestThatCalled)
 
     // If I provide a specific testName to execute, then it should ignore an Ignore on that test
     // method and actually invoke it.
-
     val e = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
@@ -302,7 +299,6 @@ class FunSuiteSuite extends Suite {
     e.execute(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None)
     assert(!repE.testIgnoredCalled)
     assert(e.theTestThisCalled)
-*/
   }
 
 /*
