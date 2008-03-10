@@ -506,71 +506,49 @@ class FunSuiteSuite extends Suite {
     assert(f.expectedTestCount(Set(), Set()) === 10)
   }
 
-/*
-  def testNamesAndGroupsMethodsDiscovered() {
-
-    val a = new FunSuite {
-      def testNames(reporter: Reporter): Unit = ()
-    }
-    assert(a.expectedTestCount(Set(), Set()) === 1)
-    val tnResult: Set[String] = a.testNames
-    val gResult: Map[String, Set[String]] = a.groups
-    assert(tnResult.size === 1)
-    assert(gResult.keySet.size === 0)
-  }
-
   def testThatTestMethodsWithNoGroupsDontShowUpInGroupsMap() {
     
     val a = new FunSuite {
-      def testNotInAGroup() = ()
+      test("test not in a group") {}
     }
     assert(a.groups.keySet.size === 0)
   }
 
-  def testThatTestMethodsThatReturnNonUnitAreDiscovered() {
+  def testThatTestFunctionsThatResultInNonUnitAreRegistered() {
     val a = new FunSuite {
-      def testThis(): Int = 1
-      def testThat(reporter: Reporter): String = "hi"
+      test("test this") { 1 }
+      testWithReporter("test that") { reporter => "hi" }
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
     assert(a.testNames.size === 2)
     assert(a.groups.keySet.size === 0)
   }
 
-  def testThatOverloadedTestMethodsAreDiscovered() {
-    val a = new FunSuite {
-      def testThis() = ()
-      def testThis(reporter: Reporter) = ()
+  def testThatTestNameCantBeReused() {
+    intercept(classOf[IllegalArgumentException]) {
+      new FunSuite {
+        test("test this") {}
+        test("test this") {}
+      }
     }
-    assert(a.expectedTestCount(Set(), Set()) === 2)
-    assert(a.testNames.size === 2)
-    assert(a.groups.keySet.size === 0)
+    intercept(classOf[IllegalArgumentException]) {
+      new FunSuite {
+        ignore("test this") {}
+        test("test this") {}
+      }
+    }
+    intercept(classOf[IllegalArgumentException]) {
+      new FunSuite {
+        test("test this") {}
+        ignore("test this") {}
+      }
+    }
+    intercept(classOf[IllegalArgumentException]) {
+      new FunSuite {
+        test("test this") {}
+        testWithReporter("test this") { reporter => () }
+      }
+    }
   }
-
-  def testThatInterceptCatchesSubtypes() {
-    class MyException extends RuntimeException
-    class MyExceptionSubClass extends MyException
-    intercept(classOf[MyException]) {
-      throw new MyException
-    }
-    intercept(classOf[MyException]) {
-      throw new MyExceptionSubClass
-    }
-    // Try with a trait
-    trait MyTrait
-    class AnotherException extends RuntimeException with MyTrait
-    intercept(classOf[MyTrait]) {
-      throw new AnotherException
-    }
-  }
-
-  def testThatInterceptReturnsTheCaughtException() {
-    val e = new RuntimeException
-    val result = intercept(classOf[RuntimeException]) {
-      throw e
-    }
-    assert(result === e)
-  }
-*/
 }
 
