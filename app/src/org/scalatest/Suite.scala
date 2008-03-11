@@ -29,7 +29,7 @@ import java.lang.annotation.ElementType
 import scala.collection.immutable.TreeSet
 
 /**
- * </p>
+ * <p>
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
  * suite (i.e., a collection) of tests. This trait defines a default way to create
  * and execute tests, which involves writing <em>test methods</em>. This approach will likely suffice
