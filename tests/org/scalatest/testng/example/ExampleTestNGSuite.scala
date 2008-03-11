@@ -22,8 +22,6 @@ import org.testng.annotations.BeforeSuite
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.AfterClass
 import org.testng.annotations.AfterSuite
-import org.scalatest.Report
-import org.scalatest.Reporter
 import org.specs.mock._
 
 class ExampleTestNGSuite extends TestNGSuite with JMocker{
