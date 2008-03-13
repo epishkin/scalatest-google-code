@@ -57,14 +57,6 @@ abstract class FunSuite extends Suite {
     groupsMap += (msg -> (groupNames + IgnoreGroupName))
   }
 
-  protected def specify(msg: String, groupClasses: Group*)(f: => Unit) {
-    test(msg, groupClasses: _*)(f _) 
-  }
-
-  protected def specifyWithReporter(msg: String, groupClasses: Group*)(f: (Reporter) => Unit) {
-    testWithReporter(msg, groupClasses: _*)(f) 
-  }
-
   override def testNames: Set[String] = {
     Set() ++ testsMap.keySet
   }
