@@ -155,7 +155,11 @@ private[scalatest] class SuiteDiscoveryHelper() {
       for (className <- extractClassNames(fileNames, fileSeparator))
         yield processClassName(className, loader)
 
-    Set[String]() ++ classNameOptions.filter(_.isDefined).map(_.get)
+    val classNames = 
+      for (Some(className) <- classNameOptions)
+        yield className
+
+    Set[String]() ++ classNames
   }
 
   private def getFileNamesSetFromFile(file: File, fileSeparator: Char): Set[String] = {
