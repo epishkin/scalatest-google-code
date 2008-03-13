@@ -54,8 +54,8 @@ class FunSuiteSuite extends Suite {
     }
 
     val c = new FunSuite {
-      specify("test this") {}
-      specifyWithReporter("test that") { reporter => () }
+      test("test this") {}
+      testWithReporter("test that") { reporter => () }
     }
 
     expect(TreeSet("test this", "test that")) {
@@ -102,51 +102,51 @@ class FunSuiteSuite extends Suite {
 
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        specify("test this") {}
-        specifyWithReporter("test this") { reporter => () }
+        test("test this") {}
+        testWithReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        specifyWithReporter("test this") { reporter => () }
-        specify("test this") {}
+        testWithReporter("test this") { reporter => () }
+        test("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        specifyWithReporter("test this") { reporter => () }
+        testWithReporter("test this") { reporter => () }
         ignore("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        specify("test this") {}
+        test("test this") {}
         ignoreWithReporter("test this") { reporter => () }
       }
     }
 
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        specifyWithReporter("test this") { reporter => () }
+        testWithReporter("test this") { reporter => () }
         test("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        specify("test this") {}
+        test("test this") {}
         testWithReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        specifyWithReporter("test this") { reporter => () }
+        testWithReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         testWithReporter("test this") { reporter => () }
-        specify("test this") {}
+        test("test this") {}
       }
     }
   }
@@ -191,8 +191,8 @@ class FunSuiteSuite extends Suite {
     }
 
     val f = new FunSuite {
-      specify("test this", new SlowAsMolasses, new WeakAsAKitten) {}
-      specifyWithReporter("test that", new SlowAsMolasses) { reporter => () }
+      test("test this", new SlowAsMolasses, new WeakAsAKitten) {}
+      testWithReporter("test that", new SlowAsMolasses) { reporter => () }
     }
     expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses", "org.scalatest.fun.WeakAsAKitten"), "test that" -> Set("org.scalatest.fun.SlowAsMolasses"))) {
       f.groups
