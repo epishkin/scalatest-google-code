@@ -133,6 +133,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
     }
     catch {
       case e: ClassNotFoundException => false
+      case e: NoClassDefFoundError => false
     }
   }
 
