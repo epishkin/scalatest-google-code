@@ -17,7 +17,9 @@ package org.scalatest.fun
 
 abstract class FunSuite1[F] extends FunSuite {
 
-  private case class Test(msg: String, f: (F) => Unit)
+  private trait Test
+  private case class PlainOldTest(msg: String, f: (F) => Unit) extends Test
+  private case class ReporterTest(msg: String, f: (F, Reporter) => Unit) extends Test
 
   private var fixtureTestsMap: Map[String, Test] = Map()
 
@@ -28,11 +30,11 @@ abstract class FunSuite1[F] extends FunSuite {
   protected def withFixture(f: F => Unit) // this must be abstract
 
   protected def testWithFixture(msg: String)(f: F => Unit) {
-    fixtureTestsMap = fixtureTestsMap + (msg -> Test(msg, f))
+    fixtureTestsMap = fixtureTestsMap + (msg -> PlainOldTest(msg, f))
   }
 
-  protected def specifyWithFixture(msg: String)(f: F => Unit) {
-    fixtureTestsMap = fixtureTestsMap + (msg -> Test(msg, f))
+  protected def testWithFixtureAndReporter(msg: String)(f: (F, Reporter) => Unit) {
+    fixtureTestsMap = fixtureTestsMap + (msg -> ReporterTest(msg, f))
   }
 
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
@@ -48,7 +50,11 @@ abstract class FunSuite1[F] extends FunSuite {
       wrappedReporter.testStarting(report)
   
       try {
-        withFixture(fixtureTestsMap(testName).f)
+        
+        fixtureTestsMap(testName) match {
+          case PlainOldTest(msg, f) => withFixture(f)
+          case ReporterTest(msg, f) => withFixture(f(_, reporter))
+        }
   
         val report = new Report(getTestNameForReport(testName), this.getClass.getName)
   
