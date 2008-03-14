@@ -123,7 +123,7 @@ trait FunSuite1[F] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def testWithFixture(testName: String)(f: F => Unit) {
+  protected def testWithFixture(testName: String, groupClasses: Group*)(f: F => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -132,11 +132,14 @@ trait FunSuite1[F] extends Suite {
 
     testsMap = testsMap + (testName -> FixtureTest(testName, f))
     testNamesList ::= testName
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    if (!groupNames.isEmpty)
+      groupsMap += (testName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def testWithFixtureAndReporter(testName: String)(f: (F, Reporter) => Unit) {
+  protected def testWithFixtureAndReporter(testName: String, groupClasses: Group*)(f: (F, Reporter) => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -145,6 +148,35 @@ trait FunSuite1[F] extends Suite {
 
     testsMap = testsMap + (testName -> FixtureReporterTest(testName, f))
     testNamesList ::= testName
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    if (!groupNames.isEmpty)
+      groupsMap += (testName -> groupNames)
+
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+  }
+
+  protected def ignoreWithFixture(testName: String, groupClasses: Group*)(f: F => Unit) {
+
+    testWithFixture(testName)(f) // Call test without passing the groups
+
+    val oldBundle = atomic.get
+    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    groupsMap += (testName -> (groupNames + IgnoreGroupName))
+
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+  }
+
+  protected def ignoreWithFixtureAndReporter(testName: String, groupClasses: Group*)(f: (F, Reporter) => Unit) {
+
+    testWithFixtureAndReporter(testName)(f) // Call testWithReporter without passing the groups
+
+    val oldBundle = atomic.get
+    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
