@@ -26,6 +26,9 @@ appear in the file.
 */
 abstract class FunSuite extends Suite {
 
+  // Until it shows up in Predef
+  private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
+
   private val ReporterInParens = " (Reporter)"
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
@@ -37,7 +40,7 @@ abstract class FunSuite extends Suite {
   private var groupsMap: Map[String, Set[String]] = Map()
 
   protected def test(msg: String, groupClasses: Group*)(f: => Unit) {
-    assume(!testsMap.keySet.contains(msg))
+    require(!testsMap.keySet.contains(msg), "Duplicate test name: " + msg)
     testsMap += (msg -> PlainOldTest(msg, f _))
     val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
     if (!groupNames.isEmpty)
@@ -45,7 +48,7 @@ abstract class FunSuite extends Suite {
   }
 
   protected def testWithReporter(msg: String, groupClasses: Group*)(f: (Reporter) => Unit) {
-    assume(!testsMap.keySet.contains(msg))
+    require(!testsMap.keySet.contains(msg), "Duplicate test name: " + msg)
     testsMap += (msg -> ReporterTest(msg, f))
     val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
     if (!groupNames.isEmpty)
