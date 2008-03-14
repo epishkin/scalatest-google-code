@@ -31,7 +31,6 @@ abstract class FunSuite extends Suite {
   // Until it shows up in Predef
   private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
 
-  private val ReporterInParens = " (Reporter)"
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
   private trait Test

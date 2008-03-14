@@ -15,26 +15,87 @@
  */
 package org.scalatest.fun
 
-abstract class FunSuite1[F] extends FunSuite {
+import scala.collection.immutable.ListSet
+
+abstract class FunSuite1[F] extends Suite {
+
+  // Until it shows up in Predef
+  private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
+
+  private val IgnoreGroupName = "org.scalatest.Ignore"
 
   private trait Test
-  private case class PlainOldTest(msg: String, f: (F) => Unit) extends Test
-  private case class ReporterTest(msg: String, f: (F, Reporter) => Unit) extends Test
+  private case class PlainOldTest(testName: String, f: () => Unit) extends Test
+  private case class ReporterTest(testName: String, f: (Reporter) => Unit) extends Test
+  private case class FixtureTest(msg: String, f: (F) => Unit) extends Test
+  private case class FixtureReporterTest(msg: String, f: (F, Reporter) => Unit) extends Test
 
-  private var fixtureTestsMap: Map[String, Test] = Map()
+  // Access to these vars must be synchronized, because the test methods are invoked by
+  // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
+  // by execute. When running tests concurrently with ScalaTest Runner, different threads can
+  // instantiate and execute the Suite.
+  private var testNamesList: List[String] = Nil // Test names in reverse order of test registration method invocations
+  private var testsMap: Map[String, Test] = Map()
+  private var groupsMap: Map[String, Set[String]] = Map()
 
   override def testNames: Set[String] = {
-    super.testNames ++ fixtureTestsMap.keySet
+    synchronized {
+      ListSet(testNamesList.toArray: _*)
+    }
   }
 
   protected def withFixture(f: F => Unit) // this must be abstract
 
-  protected def testWithFixture(msg: String)(f: F => Unit) {
-    fixtureTestsMap = fixtureTestsMap + (msg -> PlainOldTest(msg, f))
+  protected def test(testName: String, groupClasses: Group*)(f: => Unit) {
+    synchronized {
+      require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
+      testsMap += (testName -> PlainOldTest(testName, f _))
+      testNamesList ::= testName
+      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+      if (!groupNames.isEmpty)
+        groupsMap += (testName -> groupNames)
+    }
   }
 
-  protected def testWithFixtureAndReporter(msg: String)(f: (F, Reporter) => Unit) {
-    fixtureTestsMap = fixtureTestsMap + (msg -> ReporterTest(msg, f))
+  protected def testWithReporter(testName: String, groupClasses: Group*)(f: (Reporter) => Unit) {
+    synchronized {
+      require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
+      testsMap += (testName -> ReporterTest(testName, f))
+      testNamesList ::= testName
+      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+      if (!groupNames.isEmpty)
+        groupsMap += (testName -> groupNames)
+    }
+  }
+
+  protected def ignore(testName: String, groupClasses: Group*)(f: => Unit) {
+    synchronized {
+      test(testName)(f) // Call test without passing the groups
+      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+      groupsMap += (testName -> (groupNames + IgnoreGroupName))
+    }
+  }
+
+  protected def ignoreWithReporter(testName: String, groupClasses: Group*)(f: (Reporter) => Unit) {
+    synchronized {
+      testWithReporter(testName)(f) // Call testWithReporter without passing the groups
+      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+      groupsMap += (testName -> (groupNames + IgnoreGroupName))
+    }
+  }
+
+  protected def testWithFixture(testName: String)(f: F => Unit) {
+    synchronized {
+      testsMap = testsMap + (testName -> FixtureTest(testName, f))
+      testNamesList ::= testName
+    }
+  }
+
+  protected def testWithFixtureAndReporter(testName: String)(f: (F, Reporter) => Unit) {
+    synchronized {
+      testsMap = testsMap + (testName -> FixtureReporterTest(testName, f))
+      testNamesList ::= testName
+    }
   }
 
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
@@ -42,35 +103,34 @@ abstract class FunSuite1[F] extends FunSuite {
     if (testName == null || reporter == null || stopper == null || properties == null)
       throw new NullPointerException
 
-    if (fixtureTestsMap.keySet.contains(testName)) {
-      val wrappedReporter = reporter
-  
-      val report = new Report(testName, this.getClass.getName)
-  
-      wrappedReporter.testStarting(report)
-  
-      try {
-        
-        fixtureTestsMap(testName) match {
-          case PlainOldTest(msg, f) => withFixture(f)
-          case ReporterTest(msg, f) => withFixture(f(_, reporter))
-        }
-  
-        val report = new Report(getTestNameForReport(testName), this.getClass.getName)
-  
-        wrappedReporter.testSucceeded(report)
-      }
-      catch { 
-        case e: Exception => {
-          handleFailedTest(e, false, testName, None, wrappedReporter)
-        }
-        case ae: AssertionError => {
-          handleFailedTest(ae, false, testName, None, wrappedReporter)
+    val wrappedReporter = reporter
+
+    val report = new Report(testName, this.getClass.getName)
+
+    wrappedReporter.testStarting(report)
+
+    try {
+
+      synchronized {
+        testsMap(testName) match {
+          case PlainOldTest(testName, f) => f()
+          case ReporterTest(testName, f) => f(reporter)
+          case FixtureTest(msg, f) => withFixture(f)
+          case FixtureReporterTest(msg, f) => withFixture(f(_, reporter))
         }
       }
+
+      val report = new Report(getTestNameForReport(testName), this.getClass.getName)
+
+      wrappedReporter.testSucceeded(report)
     }
-    else {
-      super.runTest(testName, reporter, stopper, properties)
+    catch { 
+      case e: Exception => {
+        handleFailedTest(e, false, testName, None, wrappedReporter)
+      }
+      case ae: AssertionError => {
+        handleFailedTest(ae, false, testName, None, wrappedReporter)
+      }
     }
   }
 
@@ -87,4 +147,6 @@ abstract class FunSuite1[F] extends FunSuite {
 
     reporter.testFailed(report)
   }
+
+  override def groups: Map[String, Set[String]] = synchronized { groupsMap }
 }
