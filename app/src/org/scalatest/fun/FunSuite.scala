@@ -15,6 +15,8 @@
  */
 package org.scalatest.fun
 
+import scala.collection.immutable.ListSet
+
 trait Group
 
 /*
@@ -40,6 +42,7 @@ abstract class FunSuite extends Suite {
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
   // by execute. When running tests concurrently with ScalaTest Runner, different threads can
   // instantiate and execute the Suite.
+  private var testNamesList: List[String] = Nil // Test names in reverse order of test registration method invocations
   private var testsMap: Map[String, Test] = Map()
   private var groupsMap: Map[String, Set[String]] = Map()
 
@@ -47,6 +50,7 @@ abstract class FunSuite extends Suite {
     synchronized {
       require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
       testsMap += (testName -> PlainOldTest(testName, f _))
+      testNamesList ::= testName
       val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
       if (!groupNames.isEmpty)
         groupsMap += (testName -> groupNames)
@@ -57,6 +61,7 @@ abstract class FunSuite extends Suite {
     synchronized {
       require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
       testsMap += (testName -> ReporterTest(testName, f))
+      testNamesList ::= testName
       val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
       if (!groupNames.isEmpty)
         groupsMap += (testName -> groupNames)
@@ -81,7 +86,7 @@ abstract class FunSuite extends Suite {
 
   override def testNames: Set[String] = {
     synchronized {
-      Set() ++ testsMap.keySet
+      ListSet(testNamesList.toArray: _*)
     }
   }
 
