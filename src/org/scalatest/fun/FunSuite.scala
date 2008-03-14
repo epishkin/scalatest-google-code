@@ -16,6 +16,8 @@
 package org.scalatest.fun
 
 import scala.collection.immutable.ListSet
+import java.util.ConcurrentModificationException
+import java.util.concurrent.atomic.AtomicReference
 
 trait Group
 
@@ -37,56 +39,90 @@ trait FunSuite extends Suite {
   private case class PlainOldTest(testName: String, f: () => Unit) extends Test
   private case class ReporterTest(testName: String, f: (Reporter) => Unit) extends Test
 
-  // Access to these vars must be synchronized, because the test methods are invoked by
+  // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
   // by execute. When running tests concurrently with ScalaTest Runner, different threads can
-  // instantiate and execute the Suite.
-  private var testNamesList: List[String] = Nil // Test names in reverse order of test registration method invocations
-  private var testsMap: Map[String, Test] = Map()
-  private var groupsMap: Map[String, Set[String]] = Map()
+  // instantiate and execute the Suite. Instead of synchronizing, I put them in an immutable Bundle object (and
+  // all three collections--testNamesList, testsMap, and groupsMap--are immuable collections), then I put the Bundle
+  // in an AtomicReference. Since the expected use case is the test, testWithReporter, etc., methods will be called
+  // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
+  // If two threads every called test at the same time, they could get a ConcurrentModificationException.
+  // Test names are in reverse order of test registration method invocations
+  private class Bundle private(val testNamesList: List[String], val testsMap: Map[String, Test], val groupsMap: Map[String, Set[String]]) {
+    def unpack = (testNamesList, testsMap, groupsMap)
+  }
+  private object Bundle {
+    def apply(testNamesList: List[String], testsMap: Map[String, Test], groupsMap: Map[String, Set[String]]): Bundle =
+      new Bundle(testNamesList, testsMap, groupsMap)
+  }
+
+  private val atomic = new AtomicReference[Bundle](Bundle(Nil, Map(), Map()))
+
+  private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
+    if (!atomic.compareAndSet(oldBundle, newBundle))
+      throw new ConcurrentModificationException
+  }
 
   protected def test(testName: String, groupClasses: Group*)(f: => Unit) {
-    synchronized {
-      require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
-      testsMap += (testName -> PlainOldTest(testName, f _))
-      testNamesList ::= testName
-      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
-      if (!groupNames.isEmpty)
-        groupsMap += (testName -> groupNames)
-    }
+
+    val oldBundle = atomic.get
+    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+
+    require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
+
+    testsMap += (testName -> PlainOldTest(testName, f _))
+    testNamesList ::= testName
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    if (!groupNames.isEmpty)
+      groupsMap += (testName -> groupNames)
+
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
   protected def testWithReporter(testName: String, groupClasses: Group*)(f: (Reporter) => Unit) {
-    synchronized {
-      require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
-      testsMap += (testName -> ReporterTest(testName, f))
-      testNamesList ::= testName
-      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
-      if (!groupNames.isEmpty)
-        groupsMap += (testName -> groupNames)
-    }
+
+    val oldBundle = atomic.get
+    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+
+    require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
+
+    testsMap += (testName -> ReporterTest(testName, f))
+    testNamesList ::= testName
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    if (!groupNames.isEmpty)
+      groupsMap += (testName -> groupNames)
+
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
   protected def ignore(testName: String, groupClasses: Group*)(f: => Unit) {
-    synchronized {
-      test(testName)(f) // Call test without passing the groups
-      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
-      groupsMap += (testName -> (groupNames + IgnoreGroupName))
-    }
+
+    test(testName)(f) // Call test without passing the groups
+
+    val oldBundle = atomic.get
+    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    groupsMap += (testName -> (groupNames + IgnoreGroupName))
+
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
   protected def ignoreWithReporter(testName: String, groupClasses: Group*)(f: (Reporter) => Unit) {
-    synchronized {
-      testWithReporter(testName)(f) // Call testWithReporter without passing the groups
-      val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
-      groupsMap += (testName -> (groupNames + IgnoreGroupName))
-    }
+
+    testWithReporter(testName)(f) // Call testWithReporter without passing the groups
+
+    val oldBundle = atomic.get
+    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+
+    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    groupsMap += (testName -> (groupNames + IgnoreGroupName))
+
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
   override def testNames: Set[String] = {
-    synchronized {
-      ListSet(testNamesList.toArray: _*)
-    }
+    ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
@@ -102,11 +138,9 @@ trait FunSuite extends Suite {
 
     try {
 
-      synchronized {
-        testsMap(testName) match {
-          case PlainOldTest(testName, f) => f()
-          case ReporterTest(testName, f) => f(reporter)
-        }
+      atomic.get.testsMap(testName) match {
+        case PlainOldTest(testName, f) => f()
+        case ReporterTest(testName, f) => f(reporter)
       }
 
       val report = new Report(getTestNameForReport(testName), this.getClass.getName)
@@ -137,5 +171,5 @@ trait FunSuite extends Suite {
     reporter.testFailed(report)
   }
 
-  override def groups: Map[String, Set[String]] = synchronized { groupsMap }
+  override def groups: Map[String, Set[String]] = atomic.get.groupsMap
 }
