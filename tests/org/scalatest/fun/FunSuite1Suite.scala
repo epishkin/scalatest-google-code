@@ -18,49 +18,11 @@ package org.scalatest.fun
 import org.scalatest._
 import scala.collection.immutable.TreeSet
 
-/*
-class SuiteFriend(suite: Suite) {
-
-  def simpleNameForTest(testName: String) = {
-    val m = Class.forName("org.scalatest.Suite$class").getDeclaredMethod("simpleNameForTest", Array(classOf[org.scalatest.Suite], classOf[String]))
-    m.setAccessible(true)
-    m.invoke(suite, Array[Object](suite, testName)).asInstanceOf[String]
-  }
-}
-*/
-
 class FunSuite1Suite extends Suite {
 
-  def testTestNames() {
-
-/*
+  def testAllTestNames() {
     val a = new FunSuite1[Int] {
-      testWithFixture("test this") {}
-      testWithReporter("test that") { reporter => () }
-      def withFixture(f: Int => Unit) {
-        f(8)
-      }
-    }
-
-    expect(TreeSet("test this", "test that")) {
-      a.testNames
-    }
-
-    val b = new FunSuite1[Int] {
-      testWithFixture("test this") {}
-      testWithReporter("test that") { reporter => () }
-      testWithFixture("test with fixture") { fixture => () }
-      def withFixture(f: Int => Unit) {
-        f(8)
-      }
-    }
-
-    expect(TreeSet("test this", "test that", "test with fixture")) {
-      b.testNames
-    }
-
-    val c = new FunSuite1[Int] {
-      testWithFixture("test this") {}
+      test("test this") {}
       testWithReporter("test that") { reporter => () }
       testWithFixture("test with fixture") { fixture => () }
       testWithFixtureAndReporter("test with fixture and reporter") { (fixture, reporter) => () }
@@ -70,19 +32,32 @@ class FunSuite1Suite extends Suite {
     }
 
     expect(TreeSet("test this", "test that", "test with fixture", "test with fixture and reporter")) {
-      c.testNames
+      a.testNames
     }
+  }
 
-    val d = new FunSuite1[Int] {
+  def testThatFixtureActuallyGetsCalled() {
+
+    val a = new FunSuite1[Int] {
+      var withFixtureMethodCalledCount = 0
+      test("test this") {}
+      testWithReporter("test that") { reporter => () }
+      testWithFixture("test with fixture") { fixture => () }
+      testWithFixtureAndReporter("test with fixture and reporter") { (fixture, reporter) => () }
       def withFixture(f: Int => Unit) {
+        withFixtureMethodCalledCount += 1
         f(8)
       }
     }
 
-    expect(TreeSet[String]()) {
-      d.testNames
+    a.execute()
+
+    expect(2) {
+      a.withFixtureMethodCalledCount
     }
-*/
+  }
+
+  def testTestNames() {
 
     val a = new FunSuite1[Int] {
       testWithFixture("test this") { fixture => () }
