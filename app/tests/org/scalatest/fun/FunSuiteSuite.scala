@@ -16,8 +16,6 @@
 package org.scalatest.fun
 
 import org.scalatest._
-import scala.collection.immutable.TreeSet
-import scala.collection.immutable.ListSet
 
 /*
 class SuiteFriend(suite: Suite) {
@@ -35,26 +33,6 @@ case class SlowAsMolasses extends Group
 case class FastAsLight extends Group
 case class WeakAsAKitten extends Group
 
-/*
-This didn't work out. I'll delete it on the next check in.
-class OrderedElements private(private val listSet: ListSet[String]) {
-  if (listSet == null) throw new NullPointerException
-  override def equals(o: Any): Boolean = o match {
-    case oe: OrderedElements => listSet.elements equals oe.listSet.elements
-    case _ => false
-  }
-  override def hashCode() = listSet.hashCode
-}
-object OrderedElements {
-  def apply(elements: String*): OrderedElements = {
-    var ls = new ListSet[String]
-    for (ele <- elements)
-      ls += ele
-    new OrderedElements(ls)
-  }
-}
-*/
-
 class FunSuiteSuite extends Suite {
 
   def testTestNames() {
@@ -70,8 +48,8 @@ class FunSuiteSuite extends Suite {
 
     val b = new FunSuite {}
 
-    expect(TreeSet[String]()) {
-      b.testNames
+    expect(List[String]()) {
+      b.testNames.elements.toList
     }
 
     val c = new FunSuite {
@@ -79,8 +57,8 @@ class FunSuiteSuite extends Suite {
       testWithReporter("test that") { reporter => () }
     }
 
-    expect(ListSet("test this", "test that")) {
-      c.testNames
+    expect(List("test this", "test that")) {
+      c.testNames.elements.toList
     }
 
     // Test duplicate names
