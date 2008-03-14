@@ -21,13 +21,6 @@ import java.util.concurrent.atomic.AtomicReference
 
 trait Group
 
-/*
-I figured out that TreeSet doesn't override equals, so it may
-be that I thought I was testing the order of test names in my
-Suite tests, and it was only looking at what names were in the Set.
-Here, I'd like the order to be the order in which the "test" calls 
-appear in the file.
-*/
 trait FunSuite extends Suite {
 
   // Until it shows up in Predef
