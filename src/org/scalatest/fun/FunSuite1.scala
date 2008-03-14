@@ -17,7 +17,7 @@ package org.scalatest.fun
 
 import scala.collection.immutable.ListSet
 
-abstract class FunSuite1[F] extends Suite {
+trait FunSuite1[F] extends Suite {
 
   // Until it shows up in Predef
   private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }

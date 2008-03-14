@@ -26,7 +26,7 @@ Suite tests, and it was only looking at what names were in the Set.
 Here, I'd like the order to be the order in which the "test" calls 
 appear in the file.
 */
-abstract class FunSuite extends Suite {
+trait FunSuite extends Suite {
 
   // Until it shows up in Predef
   private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
