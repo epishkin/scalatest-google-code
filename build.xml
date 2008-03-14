@@ -3,8 +3,10 @@
   <!-- set global properties for this build -->
   <property name="src" value="src"/>
   <property name="tests" value="tests"/>
+  <property name="generators" value="generators"/>
   <property name="build" value="build"/>
   <property name="build.tests" value="build_tests"/>
+  <property name="build.generators" value="build_generators"/>
   <property name="dist"  value="dist"/>
   <property name="doc"  value="doc"/>
   <property name="jdoc"  value="jdoc"/>
@@ -26,6 +28,7 @@
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
     <mkdir dir="${build.tests}"/>
+    <mkdir dir="${build.generators}"/>
     <mkdir dir="${dist}"/>
     <mkdir dir="${demodoc}"/>
     <mkdir dir="${doc}"/>
@@ -73,6 +76,18 @@
         	<pathelement location="${lib}/commons-io-1.3.2.jar"/>
         </path>
   	
+        <path id="build.generators.class.path">
+            <pathelement location="${lib}/stringtemplate.jar"/>
+            <pathelement location="${lib}/antlr-2.7.7.jar"/>
+        </path>
+  	
+        <path id="run.generators.class.path">
+            <pathelement location="${build.generators}"/>
+            <pathelement location="${lib}/scala-library.jar"/>
+            <pathelement location="${lib}/string-template.jar"/>
+            <pathelement location="${lib}/antlr-2.7.7.jar"/>
+        </path>
+  	
         <taskdef resource="scala/tools/ant/antlib.xml">
           <classpath>
             <pathelement location="${lib}/scala-compiler.jar"/>
@@ -91,7 +106,7 @@
   <delete dir="${dist}"/>
   <delete dir="${zipper}"/>
   <!-- Clean out just the class files in the demo directory, because the demo source files
-       are compiled into the same directory.  I.e., the class files sit alonside the java files.  -->
+       are compiled into the same directory.  I.e., the class files sit alongside the java files.  -->
   <delete>
     <fileset dir="${demo}" includes="**/*.class"/>
   </delete>
@@ -99,7 +114,16 @@
 
   </target>
 
-  <target name="compile" depends="init">
+  <target name="gencode" depends="init">
+    <!-- First, compile the code generator from ${generators} into ${build.generators} -->
+    <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path">
+      <include name="GenFunSuiteN.scala"/>
+    </scalac>
+    <!-- Then, run it. -->
+    <java classname="GenFunSuiteN" classpathref="run.generators.class.path" fork="false"/>
+  </target>
+
+  <target name="compile" depends="gencode">
 
     <!-- Compile the Java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" classpath="${build}" debug="yes">
