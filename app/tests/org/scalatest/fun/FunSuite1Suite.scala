@@ -16,7 +16,6 @@
 package org.scalatest.fun
 
 import org.scalatest._
-import scala.collection.immutable.TreeSet
 
 class FunSuite1Suite extends Suite {
 
@@ -31,8 +30,8 @@ class FunSuite1Suite extends Suite {
       }
     }
 
-    expect(TreeSet("test this", "test that", "test with fixture", "test with fixture and reporter")) {
-      a.testNames
+    expect(List("test this", "test that", "test with fixture", "test with fixture and reporter")) {
+      a.testNames.elements.toList
     }
   }
 
@@ -65,16 +64,16 @@ class FunSuite1Suite extends Suite {
       def withFixture(f: Int => Unit) { f }
     }
 
-    expect(TreeSet("test this", "test that")) {
-      a.testNames
+    expect(List("test this", "test that")) {
+      a.testNames.elements.toList
     }
 
     val b = new FunSuite1[Int] {
       def withFixture(f: Int => Unit) { f }
     }
 
-    expect(TreeSet[String]()) {
-      b.testNames
+    expect(List[String]()) {
+      b.testNames.elements.toList
     }
 
     val c = new FunSuite1[Int] {
@@ -85,8 +84,8 @@ class FunSuite1Suite extends Suite {
       }
     }
 
-    expect(TreeSet("test this", "test that")) {
-      c.testNames
+    expect(List("test this", "test that")) {
+      c.testNames.elements.toList
     }
 
     // Test duplicate names
