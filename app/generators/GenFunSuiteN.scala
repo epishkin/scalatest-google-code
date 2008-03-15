@@ -25,7 +25,7 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
-trait FunSuite1[F] extends Suite {
+trait FunSuite$num$[F] extends Suite {
 
   // Until it shows up in Predef
   private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
@@ -238,12 +238,16 @@ trait FunSuite1[F] extends Suite {
 
   val dir = new File("generated/org/scalatest/fun")
   dir.mkdirs()
-  val bw = new BufferedWriter(new FileWriter("generated/org/scalatest/fun/FunSuite1.scala"))
-  try {
-    bw.write(template)
-  }
-  finally {
-    bw.close()
+  for (i <- 1 to 9) {
+    val bw = new BufferedWriter(new FileWriter("generated/org/scalatest/fun/FunSuite" + i + ".scala"))
+    try {
+      val st = new org.antlr.stringtemplate.StringTemplate(template)
+      st.setAttribute("num", i);
+      bw.write(st.toString)
+    }
+    finally {
+      bw.close()
+    }
   }
 }
 
