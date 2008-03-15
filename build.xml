@@ -98,6 +98,10 @@
           </classpath>
         </taskdef>
 
+        <path id="scaladoc.source.path">
+            <pathelement location="${src}"/>
+            <pathelement location="${generated}"/>
+        </path>
 
   </target>
 
@@ -176,9 +180,8 @@
         doctitle="ScalaTest ${release}"
         bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved."/>
 
-    <!-- I can't get build.class.path to work with scaladoc target. Weird. So repeating it here for now to get this target to work. --> 
-    <scaladoc srcdir="${src}" destdir="${doc}"
-        classpath="${build}:${lib}/scala-library.jar:${lib}/testng-5.7-jdk15.jar:${lib}/hamcrest-all-1.1.jar:${lib}/ScalaCheck-1.1.1.jar:${lib}/specs-1.2.3-SNAPSHOT.jar:${lib}/jmock-2.4.0.jar"
+    <scaladoc srcref="scaladoc.source.path" destdir="${doc}"
+        classpathref="build.class.path"
         windowtitle="ScalaTest ${release}"
         doctitle="ScalaTest ${release}"
         bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved.">
