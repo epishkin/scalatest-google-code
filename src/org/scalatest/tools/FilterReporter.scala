@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.tools
 
  /**
  * FiterReporter catches exceptions that may be thrown by custom reporters, and doesn't forward

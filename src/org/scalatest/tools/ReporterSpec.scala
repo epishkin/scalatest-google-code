@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.tools
 
 // Another thing is dang this is concise way to create types. So it makes it easier (lower cost, lower risk) to
 // represent things in the type system compared to Java. Note also that in Java each of these darn things would

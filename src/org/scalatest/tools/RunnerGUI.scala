@@ -13,13 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.tools
 
 /**
- * Called when the run has been finished. TODO: Justify this one.
+ * Trait implemented by RunnerJFrame, which can be passed to the RunnerGUI State objects,
+ * allowing them to call back into RunnerJFrame.
  *
  * @author Bill Venners
  */
-private[scalatest] trait RunDoneListener {
-    def done() = ()
+private[scalatest] trait RunnerGUI {
+
+  def prepUIForReady(): Unit
+  def prepUIForRunning(): Unit
+  def prepUIForRerunning(): Unit
+  def prepUIWhileRunning(): Unit
+  def prepUIWhileRerunning(): Unit
+  def prepUIForStopping(): Unit
+  def prepUIForReStopping(): Unit
+  def showErrorDialog(title: String, msg: String): Unit
+  def getSelectedRerunnable(): Option[Rerunnable]
+  def runFromGUI(): Unit
+  def rerunFromGUI(rerunnable: Rerunnable): Unit
+  def requestStop(): Unit
 }
