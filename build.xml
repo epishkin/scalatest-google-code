@@ -80,15 +80,14 @@
         </path>
   	
         <path id="build.generators.class.path">
-            <pathelement location="${lib}/scala-library.jar"/>
             <pathelement location="${lib}/stringtemplate.jar"/>
-            <pathelement location="${lib}/antlr-2.7.7.jar"/>
+            <pathelement location="${lib}/scala-library.jar"/>
         </path>
   	
         <path id="run.generators.class.path">
             <pathelement location="${build.generators}"/>
             <pathelement location="${lib}/scala-library.jar"/>
-            <pathelement location="${lib}/string-template.jar"/>
+            <pathelement location="${lib}/stringtemplate.jar"/>
             <pathelement location="${lib}/antlr-2.7.7.jar"/>
         </path>
   	
@@ -121,9 +120,7 @@
 
   <target name="gencode" depends="init">
     <!-- First, compile the code generator from ${generators} into ${build.generators} -->
-    <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path">
-      <include name="GenFunSuiteN.scala"/>
-    </scalac>
+    <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path"/>
     <!-- Then, run it. -->
     <java classname="GenFunSuiteN" classpathref="run.generators.class.path" fork="false"/>
   </target>
