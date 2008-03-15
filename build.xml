@@ -4,6 +4,7 @@
   <property name="src" value="src"/>
   <property name="tests" value="tests"/>
   <property name="generators" value="generators"/>
+  <property name="generated" value="generated"/>
   <property name="build" value="build"/>
   <property name="build.tests" value="build_tests"/>
   <property name="build.generators" value="build_generators"/>
@@ -27,6 +28,7 @@
     <tstamp/>
     <!-- Create the build directory structure used by compile -->
     <mkdir dir="${build}"/>
+    <mkdir dir="${generated}"/>
     <mkdir dir="${build.tests}"/>
     <mkdir dir="${build.generators}"/>
     <mkdir dir="${dist}"/>
@@ -44,13 +46,14 @@
         </path>
 
         <path id="build.class.path">
-        	<pathelement location="${build}"/>
+            <pathelement location="${build}"/>
+            <pathelement location="${generated}"/>
             <pathelement location="${lib}/scala-library.jar"/>
             <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
-        	<pathelement location="${lib}/hamcrest-all-1.1.jar"/>
+            <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
             <pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
-        	<pathelement location="${lib}/jmock-2.4.0.jar"/>
+            <pathelement location="${lib}/jmock-2.4.0.jar"/>
         </path>
   	
         <!-- this is the class path used to run ScalaTest to test itself, in the "test" target -->
@@ -58,11 +61,11 @@
             <pathelement location="${dist}/lib/scalatest.jar"/>
             <pathelement location="${lib}/scala-library.jar"/>
             <pathelement location="${lib}/testng-5.7-jdk15.jar"/>
-        	<pathelement location="${lib}/jmock-2.4.0.jar"/>
-        	<pathelement location="${lib}/hamcrest-all-1.1.jar"/>
+            <pathelement location="${lib}/jmock-2.4.0.jar"/>
+            <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
-        	<pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
-        	<pathelement location="${lib}/commons-io-1.3.2.jar"/>
+            <pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
+            <pathelement location="${lib}/commons-io-1.3.2.jar"/>
         </path>
         <path id="build.test.class.path">
             <pathelement location="${build}"/>
@@ -72,8 +75,8 @@
             <pathelement location="${lib}/jmock-2.4.0.jar"/>
             <pathelement location="${lib}/hamcrest-all-1.1.jar"/>
             <pathelement location="${lib}/ScalaCheck-1.1.1.jar"/>
-        	<pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
-        	<pathelement location="${lib}/commons-io-1.3.2.jar"/>
+            <pathelement location="${lib}/specs-1.2.3-SNAPSHOT.jar"/>
+            <pathelement location="${lib}/commons-io-1.3.2.jar"/>
         </path>
   	
         <path id="build.generators.class.path">
@@ -102,6 +105,7 @@
   <target name="clean" depends="init">
   <delete dir="${build}"/>
   <delete dir="${build.tests}"/>
+  <delete dir="${generated}"/>
   <delete dir="${doc}"/>
   <delete dir="${jdoc}"/>
   <delete dir="${dist}"/>
