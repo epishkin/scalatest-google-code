@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.tools
 
 import scala.collection.mutable
 import java.io.File
@@ -114,7 +114,7 @@ class SuiteDiscoveryHelperSuite extends Suite {
     val classNames3 =
       Set(
         "org.scalatest.EasySuite",
-        "org.scalatest.RunnerSuite",
+        // "org.scalatest.RunnerSuite", dropped this when moved RunnerSuite to tools
         "org.scalatest.SuiteSuite"
       )
     val discoveredSet3 = sdtf.processFileNames(fileNames3.elements, '/', loader)

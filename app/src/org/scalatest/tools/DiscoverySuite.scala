@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.tools
 
 /**
  * A Suite that contains as nested suites accessible suites on the runpath whose fully qualified

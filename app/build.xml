@@ -205,9 +205,9 @@
 
     <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
     <jar jarfile="${dist}/lib/scalatest.jar" basedir="${build}"
-        includes="org/scalatest/*.class, org/scalatest/*.properties, images/*">
+        includes="org/scalatest/**/*.class, org/scalatest/*.properties, images/*">
         <manifest>
-            <attribute name="Main-Class" value="org.scalatest.Runner"/>
+            <attribute name="Main-Class" value="org.scalatest.tools.Runner"/>
             <attribute name="Class-Path" value="junit-4.1.jar"/>
         </manifest>
      </jar>
@@ -254,7 +254,7 @@
   </target>
 
     <target name="test" depends="dist">
-    <java classname="org.scalatest.Runner" classpathref="test.class.path" fork="true">
+    <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
 
         <arg value="-p"/>
         <arg value="build_tests build"/>
@@ -292,7 +292,7 @@
 	
 	
   <target name="testng-example" depends="dist">
-    <java classname="org.scalatest.Runner" classpathref="example.class.path" fork="true">
+    <java classname="org.scalatest.tools.Runner" classpathref="example.class.path" fork="true">
 		
     	<arg value="-p"/>
         <arg value="build_tests build"/>
