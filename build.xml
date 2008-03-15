@@ -136,6 +136,7 @@
     </javac>
     <!-- Then compile the Scala code from ${src} into ${build} -->
     <scalac srcdir="${src}" destdir="${build}" target="jvm-1.5" classpathref="build.class.path"/>
+    <scalac srcdir="${generated}" destdir="${build}" target="jvm-1.5" classpathref="build.class.path"/>
 
     <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
     <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
