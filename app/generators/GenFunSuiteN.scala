@@ -25,7 +25,7 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
-trait FunSuite$num$[F] extends Suite {
+trait FunSuite$num$[$typeParams$] extends Suite {
 
   // Until it shows up in Predef
   private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
@@ -35,8 +35,8 @@ trait FunSuite$num$[F] extends Suite {
   private trait Test
   private case class PlainOldTest(testName: String, f: () => Unit) extends Test
   private case class ReporterTest(testName: String, f: (Reporter) => Unit) extends Test
-  private case class FixtureTest(msg: String, f: (F) => Unit) extends Test
-  private case class FixtureReporterTest(msg: String, f: (F, Reporter) => Unit) extends Test
+  private case class FixtureTest(msg: String, f: ($typeParams$) => Unit) extends Test
+  private case class FixtureReporterTest(msg: String, f: ($typeParams$, Reporter) => Unit) extends Test
 
   // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
@@ -62,7 +62,7 @@ trait FunSuite$num$[F] extends Suite {
       throw new ConcurrentModificationException
   }
 
-  protected def withFixture(f: F => Unit) // this must be abstract
+  protected def withFixture(f: ($typeParams$) => Unit) // this must be abstract
 
   protected def test(testName: String, groupClasses: Group*)(f: => Unit) {
 
@@ -122,7 +122,7 @@ trait FunSuite$num$[F] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def testWithFixture(testName: String, groupClasses: Group*)(f: F => Unit) {
+  protected def testWithFixture(testName: String, groupClasses: Group*)(f: ($typeParams$) => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -138,7 +138,7 @@ trait FunSuite$num$[F] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def testWithFixtureAndReporter(testName: String, groupClasses: Group*)(f: (F, Reporter) => Unit) {
+  protected def testWithFixtureAndReporter(testName: String, groupClasses: Group*)(f: ($typeParams$, Reporter) => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -154,7 +154,7 @@ trait FunSuite$num$[F] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def ignoreWithFixture(testName: String, groupClasses: Group*)(f: F => Unit) {
+  protected def ignoreWithFixture(testName: String, groupClasses: Group*)(f: ($typeParams$) => Unit) {
 
     testWithFixture(testName)(f) // Call test without passing the groups
 
@@ -167,7 +167,7 @@ trait FunSuite$num$[F] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def ignoreWithFixtureAndReporter(testName: String, groupClasses: Group*)(f: (F, Reporter) => Unit) {
+  protected def ignoreWithFixtureAndReporter(testName: String, groupClasses: Group*)(f: ($typeParams$, Reporter) => Unit) {
 
     testWithFixtureAndReporter(testName)(f) // Call testWithReporter without passing the groups
 
@@ -201,7 +201,7 @@ trait FunSuite$num$[F] extends Suite {
         case PlainOldTest(testName, f) => f()
         case ReporterTest(testName, f) => f(reporter)
         case FixtureTest(msg, f) => withFixture(f)
-        case FixtureReporterTest(msg, f) => withFixture(f(_, reporter))
+        case FixtureReporterTest(msg, f) => withFixture(f($underscores$, reporter))
       }
 
       val report = new Report(getTestNameForReport(testName), this.getClass.getName)
@@ -236,6 +236,32 @@ trait FunSuite$num$[F] extends Suite {
 }
 """
 
+  val typeParams = Array(
+    "F",
+    "F, U",
+    "F, U, N",
+    "F, U, N, C",
+    "F, U, N, C, T",
+    "F, U, N, C, T, I",
+    "F, U, N, C, T, I, O",
+    "F, U, N, C, T, I, O, N2",
+    "F, U, N, C, T, I, O, N2, A",
+    "F, U, N, C, T, I, O, N2, A, L"
+  )
+
+  val underscores = Array(
+    "_",
+    "_, _",
+    "_, _, _",
+    "_, _, _, _",
+    "_, _, _, _, _",
+    "_, _, _, _, _, _",
+    "_, _, _, _, _, _, _",
+    "_, _, _, _, _, _, _, _",
+    "_, _, _, _, _, _, _, _, _",
+    "_, _, _, _, _, _, _, _, _, _"
+  )
+
   val dir = new File("generated/org/scalatest/fun")
   dir.mkdirs()
   for (i <- 1 to 9) {
@@ -243,6 +269,8 @@ trait FunSuite$num$[F] extends Suite {
     try {
       val st = new org.antlr.stringtemplate.StringTemplate(template)
       st.setAttribute("num", i);
+      st.setAttribute("typeParams", typeParams(i - 1));
+      st.setAttribute("underscores", underscores(i - 1));
       bw.write(st.toString)
     }
     finally {
