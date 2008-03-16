@@ -20,12 +20,12 @@ trait TestNGSuiteExpectations extends SMocker{
   }
 
   def expectNTestsToRun(n: int, reporter: Reporter)(f: => Unit) = {
-    one(reporter).runStarting(0)
+    one(reporter).suiteStarting(any(classOf[Report])) 
     for( i <- 1 to n ){
       one(reporter).testStarting(any(classOf[Report])) 
       f
     }
-    one(reporter).runCompleted()
+    one(reporter).suiteCompleted(any(classOf[Report])) 
   }
   
 }

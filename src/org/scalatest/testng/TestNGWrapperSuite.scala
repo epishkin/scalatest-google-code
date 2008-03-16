@@ -57,11 +57,7 @@ import org.testng.TestListenerAdapter
  *
  * @author Josh Cough
  */
-class TestNGWrapperSuite(xmlSuitesPropertyName: String) extends TestNGSuite{
-  
-  if( getSuites == null ) throw new IllegalArgumentException("no property: " + xmlSuitesPropertyName )
-  
-  def getSuites: String = System.getProperty(xmlSuitesPropertyName)
+class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
   
   /**
    * Runs TestNG with the xml suites provided via the constructor. <br>
@@ -134,7 +130,7 @@ class TestNGWrapperSuite(xmlSuitesPropertyName: String) extends TestNGSuite{
     
     val files = new java.util.ArrayList[String]
     
-    getSuites.split(",").foreach( { name => 
+    xmlSuiteFilenames.foreach( { name => 
         val f = new File( name )
         if( ! f.exists ) throw new FileNotFoundException( f.getAbsolutePath )
         files add name
