@@ -81,11 +81,11 @@ package org.scalatest.testng {
        val reporter = mock(classOf[Reporter])
 
        expecting ( "a single test should fail, followed by a single test being skipped" ){ 
-         one(reporter).runStarting(0) 
+         one(reporter).suiteStarting(any(classOf[Report])) 
          one(reporter).testStarting(any(classOf[Report])) 
          one(reporter).testFailed(any(classOf[Report])) 
          one(reporter).testIgnored(any(classOf[Report]))
-         one(reporter).runCompleted()
+         one(reporter).suiteCompleted(any(classOf[Report])) 
        }
 
        when ( "run the suite with a test that should fail and a test that should be skipped" ){

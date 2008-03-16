@@ -21,13 +21,13 @@ package org.scalatest.testng{
       
     mockTest("wrapper suite properly notifies reporter when tests start, and pass"){
     
-      this.createSuite( legacySuiteXml )
+      val xmlSuiteFile = this.createSuite( legacySuiteXml )
           
       val reporter = mock(classOf[Reporter])
 
       expecting { singleTestToPass( reporter ) }
       
-      when { new TestNGWrapperSuite(XML_SUITES_PROPERTY).runTestNG(reporter) }
+      when { new TestNGWrapperSuite(List(xmlSuiteFile)).runTestNG(reporter) }
     }
 
     val legacySuiteWithThreeTestsXml = 
@@ -42,7 +42,7 @@ package org.scalatest.testng{
     
     mockTest("wrapper suite should be notified for all tests"){
       
-      this.createSuite( legacySuiteWithThreeTestsXml )
+      val xmlSuiteFile = this.createSuite( legacySuiteWithThreeTestsXml )
           
       val reporter = mock(classOf[Reporter])
 
@@ -50,14 +50,14 @@ package org.scalatest.testng{
         nTestsToPass( 3, reporter ) 
       }
       
-      when{ new TestNGWrapperSuite(XML_SUITES_PROPERTY).runTestNG(reporter) }
+      when{ new TestNGWrapperSuite(List(xmlSuiteFile)).runTestNG(reporter) }
     }
     
     
-    def createSuite( suiteNode: scala.xml.Elem ) = {
+    def createSuite( suiteNode: scala.xml.Elem ) : String = {
       val tmp = File.createTempFile( "testng", "wrapper" )
       FileUtils.writeStringToFile( tmp, suiteNode.toString )
-      System.setProperty( XML_SUITES_PROPERTY, tmp.getAbsolutePath )
+      tmp.getAbsolutePath
     }
     
   }

@@ -193,22 +193,22 @@ trait TestNGSuite extends Suite{
     private val className = TestNGSuite.this.getClass.getName
 
     /**
-     * This method is called when TestNG starts, and maps to ScalaTest's runStarting. 
+     * This method is called when TestNG starts, and maps to ScalaTest's suiteStarting. 
      * @TODO TestNG doesn't seem to know how many tests are going to be executed.
      * We are currently telling ScalaTest that 0 tests are about to be run. Investigate
      * and/or chat with Cedric to determine if its possible to get this number from TestNG.
      */
     override def onStart(itc: ITestContext) = {
-      reporter.runStarting( 0 )
+      reporter.suiteStarting( new Report(itc.getName, className, None, None ) )
     }
 
     /**
-     * TestNG's onFinish maps cleanly to runCompleted.
+     * TestNG's onFinish maps cleanly to suiteCompleted.
      * TODO: TestNG does have some extra info here. One thing we could do is map the info
      * in the ITestContext object into ScalaTest Reports and call reporter.infoProvided.
      */
     override def onFinish(itc: ITestContext) = {
-      reporter.runCompleted()
+       reporter.suiteCompleted( new Report(itc.getName, className, None, None ) )
     }
     
     /**
