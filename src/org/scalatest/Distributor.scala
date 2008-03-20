@@ -33,7 +33,7 @@ package org.scalatest
  * <pre>
  * override protected def runNestedSuites(reporter: Reporter, stopper: Stopper,
  *     includes: Set[String], excludes: Set[String], properties: Map[String, Any],
- *     puttable: Option[Distributor]) {
+ *     distributor: Option[Distributor]) {
  *
  *   // Execute nested suites sequentially
  *   super.runNestedSuites(reporter, stopper, includes, excludes, properties, None)
