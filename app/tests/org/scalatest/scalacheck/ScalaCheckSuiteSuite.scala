@@ -22,7 +22,7 @@ import Prop._
 class ScalaCheckSuiteSuite extends ScalaCheckSuite {
 
   def testCheckProp() {
-    
+
     // Ensure a success does not fail in an exception
     val propConcatLists = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
     checkProperty(propConcatLists)
@@ -34,13 +34,10 @@ class ScalaCheckSuiteSuite extends ScalaCheckSuite {
     }
 
     // Ensure a property that throws an exception causes an assertion error
-/*
     val propConcatListsExceptionally = property((a: List[Int], b: List[Int]) => throw new StringIndexOutOfBoundsException)
     intercept(classOf[AssertionError]) {
       checkProperty(propConcatListsExceptionally)
     }
-This generates a GenException, not a PropException. A bug in ScalaCheck?
-*/
 
     // Ensure a property that doesn't generate enough test cases throws an assertion error
     val propTrivial = property( (n: Int) => (n == 0) ==> (n == 0) )
@@ -58,14 +55,12 @@ This generates a GenException, not a PropException. A bug in ScalaCheck?
     val propEvenInteger = Prop.forAll(smallEvenInteger)(n => n >= 0 && n <= 200 && n % 2 == 0)
     checkProperty(propEvenInteger)
 
-/*
     // Make sure a Generator t throws an exception results in an AssertionError
-    val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (throw new ArrayIndexOutOfBoundsException)
+    // val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (throw new ArrayIndexOutOfBoundsException)
+    val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (n => throw new ArrayIndexOutOfBoundsException)
     val propEvenIntegerWithBuggyGen = Prop.forAll(smallEvenIntegerWithBug)(n => n >= 0 && n <= 200 && n % 2 == 0)
     intercept(classOf[AssertionError]) {
       checkProperty(propEvenIntegerWithBuggyGen)
     }
-This one fails with an ArrayIndexOutOfBoundsException. I think he has another bug.
-*/
   }
 }
