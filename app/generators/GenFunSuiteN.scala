@@ -244,9 +244,8 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     "F, U, N, C, T",
     "F, U, N, C, T, I",
     "F, U, N, C, T, I, O",
-    "F, U, N, C, T, I, O, N2",
-    "F, U, N, C, T, I, O, N2, A",
-    "F, U, N, C, T, I, O, N2, A, L"
+    "F, U, N, C, T, I, O, NA",
+    "F, U, N, C, T, I, O, NA, L"
   )
 
   val underscores = Array(
@@ -258,8 +257,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     "_, _, _, _, _, _",
     "_, _, _, _, _, _, _",
     "_, _, _, _, _, _, _, _",
-    "_, _, _, _, _, _, _, _, _",
-    "_, _, _, _, _, _, _, _, _, _"
+    "_, _, _, _, _, _, _, _, _"
   )
 
   val dir = new File("generated/org/scalatest/fun")
