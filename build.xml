@@ -272,7 +272,7 @@
         <arg value="org.scalatest.testng"/>
  
         <arg value="-m"/>
-        <arg value="org.scalatest.prop"/>
+        <arg value="org.scalatest.scalacheck"/>
     </java>
   </target>
 	
