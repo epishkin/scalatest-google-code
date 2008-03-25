@@ -27,7 +27,9 @@ package org.scalatest.testng {
      // TESTS FOR INCLUDE
      //////////////////////////////////////////////////////////
      
-     test( "Groups with one method should run" ){ testIncludeGroups(Set("runMe"), 1 ) } 
+     test("Groups with one method should run") {
+       testIncludeGroups(Set("runMe"), 1)
+     } 
      
      test( "Groups with more than one method should run" ){ testIncludeGroups(Set("runMeToo"), 2 ) }     
      
