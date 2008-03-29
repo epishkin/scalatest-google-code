@@ -19,7 +19,33 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
-trait Group
+/**
+ * Abstract class whose subclasses can be as to <code>FunSuite</code> and <code>FunSuiteN</code>'s test
+ * registration methods to place tests into groups. For example, if you define:
+ * <pre>
+ * case class SlowTest extends Group("SlowTest")
+ * </pre>
+ *
+ * then you can place a test into the <code>SlowTest</code> group like this:
+ * <pre>
+ * class MySuite extends FunSuite {
+ *
+ *   test("my test", SlowTest()) {
+ *     Thread.sleep(1000)
+ *   }
+ * }
+ * </pre>
+ *
+ * If you have created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply use
+ * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
+ * defined a Java annotation interface with fully qualified name, <code>com.mycompany.groups.SlowTest</code>, then you could
+ * create a matching group for <code>FunSuite</code>s like this:
+ * <pre>
+ * case class SlowTest extends Group("com.mycompany.groups.SlowTest")
+ * </pre>
+ */
+abstract class Group(val name: String)
 
 trait FunSuite extends Suite {
 
@@ -65,7 +91,7 @@ trait FunSuite extends Suite {
 
     testsMap += (testName -> PlainOldTest(testName, f _))
     testNamesList ::= testName
-    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    val groupNames = Set[String]() ++ groupClasses.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
@@ -81,7 +107,7 @@ trait FunSuite extends Suite {
 
     testsMap += (testName -> ReporterTest(testName, f))
     testNamesList ::= testName
-    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    val groupNames = Set[String]() ++ groupClasses.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
@@ -95,7 +121,7 @@ trait FunSuite extends Suite {
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
 
-    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    val groupNames = Set[String]() ++ groupClasses.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
@@ -108,7 +134,7 @@ trait FunSuite extends Suite {
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
 
-    val groupNames = Set[String]() ++ groupClasses.map(_.getClass.getName)
+    val groupNames = Set[String]() ++ groupClasses.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))

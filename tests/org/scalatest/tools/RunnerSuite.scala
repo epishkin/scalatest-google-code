@@ -31,10 +31,22 @@ class RunnerSuite() extends Suite {
       expectedExcludesList: List[String],
       expectedConcurrentList: List[String],
       expectedMemberOfList: List[String],
-      expectedBeginsWithList: List[String]
+      expectedBeginsWithList: List[String],
+      expectedTestNGList: List[String]
     ) = {
 
-      val (runpathList, reportersList, suitesList, propsList, includesList, excludesList, concurrentList, memberOfList, beginsWithList) = Runner.parseArgs(args)
+      val (
+        runpathList,
+        reportersList,
+        suitesList,
+        propsList,
+        includesList,
+        excludesList,
+        concurrentList,
+        memberOfList,
+        beginsWithList,
+        testNGList
+      ) = Runner.parseArgs(args)
 
       assert(runpathList === expectedRunpathList)
       assert(reportersList === expectedReporterList)
@@ -45,6 +57,7 @@ class RunnerSuite() extends Suite {
       assert(concurrentList === expectedConcurrentList)
       assert(memberOfList === expectedMemberOfList)
       assert(beginsWithList === expectedBeginsWithList)
+      assert(testNGList === expectedTestNGList)
     }
 
     verify(
@@ -54,6 +67,7 @@ class RunnerSuite() extends Suite {
       List("-g", "-g", "-f", "file.out"),
       Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
+      Nil,
       Nil,
       Nil,
       Nil,
@@ -73,11 +87,13 @@ class RunnerSuite() extends Suite {
       Nil,
       Nil,
       Nil,
+      Nil,
       Nil
     )
 
     verify(
       Array(),
+      Nil,
       Nil,
       Nil,
       Nil,
@@ -101,6 +117,7 @@ class RunnerSuite() extends Suite {
       Nil,
       Nil,
       Nil,
+      Nil,
       Nil
     )
 
@@ -114,6 +131,7 @@ class RunnerSuite() extends Suite {
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
       List("-x", "SlowTests"),
+      Nil,
       Nil,
       Nil,
       Nil
@@ -130,6 +148,7 @@ class RunnerSuite() extends Suite {
       List("-n", "One Two Three"),
       List("-x", "SlowTests"),
       List("-c"),
+      Nil,
       Nil,
       Nil
     )
@@ -147,7 +166,25 @@ class RunnerSuite() extends Suite {
       List("-x", "SlowTests"),
       List("-c"),
       List("-m", "com.example.webapp"),
-      List("-w", "com.example.root")
+      List("-w", "com.example.root"),
+      Nil
+    )
+    // Try a TestNGSuite
+    verify(
+      Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
+          "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out",
+          "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo", "-m", "com.example.webapp",
+          "-w", "com.example.root", "-t", "some/path/file.xml"),
+      List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
+      List("-g", "-g", "-f", "file.out"),
+      List("-s", "SuiteOne", "-s", "SuiteTwo"),
+      List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
+      List("-n", "One Two Three"),
+      List("-x", "SlowTests"),
+      List("-c"),
+      List("-m", "com.example.webapp"),
+      List("-w", "com.example.root"),
+      List("-t", "some/path/file.xml")
     )
   }
 
