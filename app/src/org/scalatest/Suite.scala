@@ -325,7 +325,8 @@ import scala.collection.immutable.TreeSet
  * In some cases, however, a shared fixture may be changed by a test method such that
  * it needs to be recreated or reinitialized before each test. It may also need to 
  * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you override <code>runTest</code>.
+ * <code>tearDown</code> for this purpose. In ScalaTest, if you feel you must reassign variables,
+ * you can override <code>runTest</code>.
  * Here's an example:
  * </p>
  *
@@ -373,6 +374,37 @@ import scala.collection.immutable.TreeSet
  * the buffer.
  * </p>
  *
+ * <p>
+ * An alternative approach that avoids using any <code>var</code>s is to write a <code>createFixture</code> method
+ * that returns a new instance of the fixture object (or returns a tuple of new instances of
+ * fixture objects) each time it is called. You can then call <code>createFixture</code> at the beginning of each
+ * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest._
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MySuite extends Suite {
+ *
+ *   def createFixture = (new StringBuilder("ScalaTest is "), new ListBuffer[String])
+ *
+ *   def testEasy() {
+ *     val (sb, lb) = createFixture
+ *     sb.append("easy!")
+ *     assert(sb.toString === "ScalaTest is easy!")
+ *     assert(lb.isEmpty)
+ *     lb += "sweet"
+ *   }
+ *
+ *   def testFun() {
+ *     val (sb, lb) = createFixture
+ *     sb.append("fun!")
+ *     assert(sb.toString === "ScalaTest is fun!")
+ *     assert(lb.isEmpty)
+ *   }
+ * }
+ * </pre>
  * <p>
  * <strong>Properties</strong>
  * </p>

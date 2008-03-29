@@ -25,18 +25,20 @@ import java.io.File
 import java.io.IOException
 import javax.swing.SwingUtilities
 import java.util.concurrent.ArrayBlockingQueue
+import org.scalatest.testng.TestNGWrapperSuite
 
 /**
  * <p>
  * Application that runs a suite of tests.
  * The application accepts command line arguments that specify optional <em>user-defined properties</em>, an optional 
  * <em>runpath</em>, zero to many <code>Reporter</code>s, optional lists of test groups to include and/or exclude, zero to many
- * <code>Suite</code> class names, zero to many "members-only" <code>Suite</code> paths, and zero to many "wildcard" <code>Suite</code> paths.
+ * <code>Suite</code> class names, zero to many "members-only" <code>Suite</code> paths, zero to many "wildcard" <code>Suite</code> paths,
+ * and zero to many testNG config file paths.
  * All of these arguments are described in more detail below. Here's a summary:
  * </p>
  *
  * <p>
- * <code>scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.Runner [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] [-n &lt;includes&gt;] [-x &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; [...]] [-m &lt;members-only suite path&gt; [...]] [-w &lt;wildcard suite path&gt; [...]]</code>
+ * <code>scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.Runner [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] [-n &lt;includes&gt;] [-x &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; [...]] [-m &lt;members-only suite path&gt; [...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file path&gt; [...]]</code>
  * </p>
  *
  * <p>
@@ -322,7 +324,21 @@ import java.util.concurrent.ArrayBlockingQueue
  * in the runpath.
  * </p>
  *
+ * <p>
+ * <strong>Specifying TestNG config file paths</strong>
+ * </p>
+ *
+ * <p>
+ * If you specify one ore more file paths with <code>-t</code>, <code>Runner</code> will create a <code>org.scalatest.testng.TestNGWrapperSuite</code>,
+ * passing in a <code>List</code> of the specified paths. When executed, the <code>TestNGWrapperSuite</code> will create one <code>TestNG</code> instance
+ * and pass each specified file path to it for running. If you include <code>-t</code> arguments, you must include TestNG's jar file on the class path or runpath.
+ * The <code>-t</code> argument will enable you to run existing <code>TestNG</code> tests, including tests written in Java, as part of a ScalaTest run.
+ * You need not use <code>-t</code> to run suites written in Scala that extend <code>TestNGSuite</code>. You can simply run such suites with 
+ * <code>-s</code>, <code>-m</code>, or </code>-w</code> parameters.
+ * </p>
+ *
  * @author Bill Venners
+ * @author Josh Cough
  */
 object Runner {
 
@@ -346,7 +362,18 @@ object Runner {
       case None =>
     }
 
-    val (runpathArgsList, reporterArgsList, suiteArgsList, propertiesArgsList, includesArgsList, excludesArgsList, concurrentList, membersOnlyArgsList, wildcardArgsList) = parseArgs(args)
+    val (
+      runpathArgsList,
+      reporterArgsList,
+      suiteArgsList,
+      propertiesArgsList,
+      includesArgsList,
+      excludesArgsList,
+      concurrentList,
+      membersOnlyArgsList,
+      wildcardArgsList,
+      testNGArgsList
+    ) = parseArgs(args)
 
     val fullReporterSpecs: ReporterSpecs =
       if (reporterArgsList.isEmpty)
@@ -363,10 +390,15 @@ object Runner {
     val concurrent: Boolean = !concurrentList.isEmpty
     val membersOnlyList: List[String] = parseSuiteArgsIntoNameStrings(membersOnlyArgsList, "-m")
     val wildcardList: List[String] = parseSuiteArgsIntoNameStrings(wildcardArgsList, "-w")
+    val testNGList: List[String] = parseSuiteArgsIntoNameStrings(testNGArgsList, "-t")
 
     // Not yet supported
     val recipeName: Option[String] = None
 
+    // If there's a graphic reporter, we need to leave it out of
+    // reporterSpecs, because we want to pass all reporterSpecs except
+    // the graphic reporter's to the RunnerJFrame (because RunnerJFrame *is*
+    // the graphic reporter).
     val reporterSpecs: ReporterSpecs =
       fullReporterSpecs.graphicReporterSpec match {
         case None => fullReporterSpecs
@@ -387,7 +419,7 @@ object Runner {
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
           val rjf = new RunnerJFrame(recipeName, graphicConfigSet, reporterSpecs, suitesList, runpathList,
-            includes, excludes, propertiesMap, concurrent, membersOnlyList, wildcardList) 
+            includes, excludes, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList) 
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
           rjf.prepUIForRunning()
@@ -403,7 +435,7 @@ object Runner {
         withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, None) {
           (loader, dispatchReporter) => {
             doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, includes, excludesWithIgnore(excludes),
-                propertiesMap, concurrent, membersOnlyList, wildcardList, runpathList, loader, new RunDoneListener {}) 
+                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}) 
           }
         }
       }
@@ -420,7 +452,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-s") || s.startsWith("-m") || s.startsWith("-w")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-s") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
         if (it.hasNext)
           it.next
       }
@@ -446,6 +478,7 @@ object Runner {
     val concurrent = new ListBuffer[String]()
     val membersOnly = new ListBuffer[String]()
     val wildcard = new ListBuffer[String]()
+    val testNGXMLFiles = new ListBuffer[String]()
 
     val it = args.elements
     while (it.hasNext) {
@@ -512,12 +545,29 @@ object Runner {
 
         concurrent += s
       }
+      else if (s.startsWith("-t")) {
+
+        testNGXMLFiles += s
+        if (it.hasNext)
+          testNGXMLFiles += it.next
+      }
       else {
         throw new IllegalArgumentException("Unrecognized argument: " + s)
       }
     }
 
-    (runpath.toList, reporters.toList, suites.toList, props.toList, includes.toList, excludes.toList, concurrent.toList, membersOnly.toList, wildcard.toList)
+    (
+      runpath.toList,
+      reporters.toList,
+      suites.toList,
+      props.toList,
+      includes.toList,
+      excludes.toList,
+      concurrent.toList,
+      membersOnly.toList,
+      wildcard.toList,
+      testNGXMLFiles.toList
+    )
   }
 
   /**
@@ -667,7 +717,7 @@ object Runner {
     if (args.exists(_ == null))
       throw new NullPointerException("an arg String was null")
 
-    if (dashArg != "-s" && dashArg != "-w" && dashArg != "-m")
+    if (dashArg != "-s" && dashArg != "-w" && dashArg != "-m" && dashArg != "-t")
       throw new NullPointerException("dashArg invalid: " + dashArg)
 
     val lb = new ListBuffer[String]
@@ -867,10 +917,21 @@ object Runner {
     }
   }
 
-  private[scalatest] def doRunRunRunADoRunRun(dispatchReporter: DispatchReporter, suitesList: List[String],
-      stopper: Stopper, includes: Set[String], excludes: Set[String],
-      propertiesMap: Map[String, String], concurrent: Boolean, membersOnlyList: List[String], wildcardList: List[String], runpath: List[String], loader: ClassLoader,
-      doneListener: RunDoneListener) = {
+  private[scalatest] def doRunRunRunADoRunRun(
+    dispatchReporter: DispatchReporter,
+    suitesList: List[String],
+    stopper: Stopper,
+    includes: Set[String],
+    excludes: Set[String],
+    propertiesMap: Map[String, String],
+    concurrent: Boolean,
+    membersOnlyList: List[String],
+    wildcardList: List[String],
+    testNGList: List[String],
+    runpath: List[String],
+    loader: ClassLoader,
+    doneListener: RunDoneListener
+  ) = {
 
     // TODO: add more, and to RunnerThread too
     if (dispatchReporter == null)
@@ -927,6 +988,12 @@ object Runner {
                 clazz.newInstance.asInstanceOf[Suite]
               }
 
+          val testNGWrapperSuiteList: List[TestNGWrapperSuite] =
+            if (!testNGList.isEmpty)
+              List(new TestNGWrapperSuite(testNGList))
+            else
+              Nil
+
           val (membersOnlySuiteInstances, wildcardSuiteInstances) = {
 
             val membersOnlyAndBeginsWithListsAreEmpty = membersOnlyList.isEmpty && wildcardList.isEmpty // They didn't specify any -m's or -w's on the command line
@@ -956,7 +1023,7 @@ object Runner {
             }
           }
 
-          val suiteInstances: List[Suite] = namedSuiteInstances ::: membersOnlySuiteInstances ::: wildcardSuiteInstances
+          val suiteInstances: List[Suite] = namedSuiteInstances ::: membersOnlySuiteInstances ::: wildcardSuiteInstances ::: testNGWrapperSuiteList
 
           val testCountList =
             for (suite <- suiteInstances)
