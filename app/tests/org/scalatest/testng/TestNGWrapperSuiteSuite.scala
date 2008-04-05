@@ -1,12 +1,11 @@
 import org.scalatest.testng._
-import org.scalatest.jmock.SMocker
-import org.scalatest.jmock.SMockFunSuite
+import org.scalatest.jmock._
 import java.io.File
 import org.apache.commons.io.FileUtils
 
 package org.scalatest.testng{
 
-  class TestNGWrapperSuiteSuite extends SMockFunSuite with TestNGSuiteExpectations{
+  class TestNGWrapperSuiteSuite extends SMockFunSuite with SuiteExpectations{
   
     val XML_SUITES_PROPERTY = "xml_suites"
       

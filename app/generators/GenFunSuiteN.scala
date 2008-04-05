@@ -260,10 +260,10 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     "_, _, _, _, _, _, _, _, _"
   )
 
-  val dir = new File("generated/org/scalatest/fun")
+  val dir = new File("build/generated/org/scalatest/fun")
   dir.mkdirs()
   for (i <- 1 to 9) {
-    val bw = new BufferedWriter(new FileWriter("generated/org/scalatest/fun/FunSuite" + i + ".scala"))
+    val bw = new BufferedWriter(new FileWriter("build/generated/org/scalatest/fun/FunSuite" + i + ".scala"))
     try {
       val st = new org.antlr.stringtemplate.StringTemplate(template)
       st.setAttribute("num", i);
