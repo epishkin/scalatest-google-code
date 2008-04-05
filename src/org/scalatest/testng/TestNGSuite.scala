@@ -280,7 +280,14 @@ trait TestNGSuite extends Suite{
      * Constructs the report ojbect.
      */
     private def buildReport( itr: ITestResult, t: Option[Throwable] ): Report = {
-      new Report(itr.getName, className, t, Some(new TestRerunner(className, itr.getName)) )
+      
+      val params =
+        itr.getParameters match {   
+          case Array() => ""
+          case _ => "(" + itr.getParameters.mkString(",") + ")"
+        }
+      
+      new Report(itr.getName + params, className, t, Some(new TestRerunner(className, itr.getName)) )
     }
   }
   

@@ -22,6 +22,7 @@ import org.testng.annotations.BeforeSuite
 import org.testng.annotations.AfterMethod
 import org.testng.annotations.AfterClass
 import org.testng.annotations.AfterSuite
+import org.testng.annotations.DataProvider
 import org.specs.mock._
 
 class ExampleTestNGSuite extends TestNGSuite with JMocker{
@@ -47,6 +48,17 @@ class ExampleTestNGSuite extends TestNGSuite with JMocker{
   @Test{val groups=Array("runMe")} def testWithAssertFail = assert( 1 === 2, "assert fail!!!" )
   
   @Test{val dependsOnMethods=Array("testWithException")} def testToGetSkipped = {}
+  
+  @DataProvider{val name="andValues"}
+  def andValues = { 
+    val and = Array("0", "1")
+    for( x <- and; y <- and ) yield Array(x,y)
+  }
+  
+  @Test{ val dataProvider="andValues" }
+  def testAndStates(a: String, b: String){
+    println("a=" + a + ", b=" + b)
+  }
   
 }
 
