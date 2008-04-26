@@ -8,7 +8,7 @@ import org.scalacheck.Test.Params
 import org.scalacheck.Test
 import org.scalacheck.Test._
 
-trait ScalaCheckSuite extends Suite {
+trait CheckSuite extends Suite {
 
   /**
    * Convert the passed 1-arg function into a property, and check it.
