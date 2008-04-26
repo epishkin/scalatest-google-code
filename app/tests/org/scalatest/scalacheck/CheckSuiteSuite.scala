@@ -19,7 +19,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ScalaCheckSuiteSuite extends ScalaCheckSuite {
+class CheckSuiteSuite extends CheckSuite {
 
   def testCheckProp() {
 
