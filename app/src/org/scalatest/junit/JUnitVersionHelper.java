@@ -26,7 +26,7 @@ import junit.framework.TestCase;
  * Work around for some changes to the public JUnit API between
  * different JUnit releases.
  */
-public class JUnitVersionHelper {
+class JUnitVersionHelper {
 
     private static Method testCaseName = null;
     static {
