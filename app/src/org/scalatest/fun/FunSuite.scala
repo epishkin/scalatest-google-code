@@ -65,7 +65,7 @@ trait FunSuite extends Suite {
   // all three collections--testNamesList, testsMap, and groupsMap--are immuable collections), then I put the Bundle
   // in an AtomicReference. Since the expected use case is the test, testWithReporter, etc., methods will be called
   // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
-  // If two threads every called test at the same time, they could get a ConcurrentModificationException.
+  // If two threads ever called test at the same time, they could get a ConcurrentModificationException.
   // Test names are in reverse order of test registration method invocations
   private class Bundle private(val testNamesList: List[String], val testsMap: Map[String, Test], val groupsMap: Map[String, Set[String]]) {
     def unpack = (testNamesList, testsMap, groupsMap)
@@ -82,7 +82,15 @@ trait FunSuite extends Suite {
       throw new ConcurrentModificationException
   }
 
-  protected def test(testName: String, groupClasses: Group*)(f: => Unit) {
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes no arguments.
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed test name must not have been registered previously on
+   * this <code>FunSuite</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def test(testName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -91,14 +99,23 @@ trait FunSuite extends Suite {
 
     testsMap += (testName -> PlainOldTest(testName, f _))
     testNamesList ::= testName
-    val groupNames = Set[String]() ++ groupClasses.map(_.name)
+    val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def testWithReporter(testName: String, groupClasses: Group*)(f: (Reporter) => Unit) {
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code>.
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
+   * The passed test name must not have been registered previously on
+   * this <code>FunSuite</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def testWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -107,34 +124,54 @@ trait FunSuite extends Suite {
 
     testsMap += (testName -> ReporterTest(testName, f))
     testNamesList ::= testName
-    val groupNames = Set[String]() ++ groupClasses.map(_.name)
+    val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def ignore(testName: String, groupClasses: Group*)(f: => Unit) {
+  /**
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes a no arguments.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>test</code>
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
+   * this <code>FunSuite</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
 
     test(testName)(f) // Call test without passing the groups
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
 
-    val groupNames = Set[String]() ++ groupClasses.map(_.name)
+    val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
-  protected def ignoreWithReporter(testName: String, groupClasses: Group*)(f: (Reporter) => Unit) {
+  /**
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes a <code>Reporter</code>.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>testWithReporter</code>
+   * to <code>ignoreWithReporter</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
+   * this <code>FunSuite</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def ignoreWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
 
     testWithReporter(testName)(f) // Call testWithReporter without passing the groups
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
 
-    val groupNames = Set[String]() ++ groupClasses.map(_.name)
+    val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
@@ -190,5 +227,14 @@ trait FunSuite extends Suite {
     reporter.testFailed(report)
   }
 
+  /**
+   * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>FunSuite</code> belong, and values
+   * the <code>Set</code> of test names that belong to each group. If this <code>FunSuite</code> contains no groups, this method returns an empty <code>Map</code>.
+   *
+   * <p>
+   * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
+   * methods <code>test</code>, <code>testWithReporter</code>, <code>ignore</code>, and <code>ignoreWithReporter</code>. 
+   * </p>
+   */
   override def groups: Map[String, Set[String]] = atomic.get.groupsMap
 }
