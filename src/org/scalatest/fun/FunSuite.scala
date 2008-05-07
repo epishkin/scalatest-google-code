@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReference
  * </pre>
  *
  * If you have created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply use
+ * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
  * defined a Java annotation interface with fully qualified name, <code>com.mycompany.groups.SlowTest</code>, then you could
  * create a matching group for <code>FunSuite</code>s like this:
@@ -133,6 +133,59 @@ abstract class Group(val name: String)
  *
  * <p>
  * <strong>Test groups</strong>
+ * </p>
+ *
+ * <p>
+ * A <code>FunSuite</code>'s tests may be classified into named <em>groups</em>.
+ * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
+ * optionally be included and/or excluded. To place <code>FunSuite</code> tests into
+ * groups, you pass objects that extend abstract class <code>org.scalatest.fun.Group</code> to methods
+ * that register tests. Class <code>Group</code> takes one type parameter, a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
+ * create matching groups for <code>FunSuite</code>s like this:
+ * </p>
+ * <pre>
+ * object SlowTest extends Group("com.mycompany.groups.SlowTest")
+ * object DBTest extends Group("com.mycompany.groups.DBTest")
+ * </pre>
+ *
+ * <p>
+ * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
+ * </p>
+ * <pre>
+ * import org.scalatest.FunSuite
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   test("addition", SlowTest) {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   test("subtraction", SlowTest, DBTest) {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *     assert(diff - 2 === 1)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code places both tests, <code>addition</code> and <code>subtraction</code>, into the <code>com.mycompany.groups.SlowTest</code> group, 
+ * and test <code>subtraction</code> into the <code>com.mycompany.groups.DBTest</code> group.
+ * </p>
+ *
+ * <p>
+ * The primary execute method takes two <code>Set[String]</code>s called <code>includes</code> and
+ * <code>excludes</code>. If <code>includes</code> is empty, all tests will be executed
+ * except those those belonging to groups listed in the
+ * <code>excludes</code> <code>Set</code>. If <code>includes</code> is non-empty, only tests
+ * belonging to groups mentioned in <code>includes</code>, and not mentioned in <code>excludes</code>,
+ * will be executed.
  * </p>
  *
  * <p>
