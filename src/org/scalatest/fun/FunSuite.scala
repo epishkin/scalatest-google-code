@@ -23,14 +23,14 @@ import java.util.concurrent.atomic.AtomicReference
  * Abstract class whose subclasses can be as to <code>FunSuite</code> and <code>FunSuiteN</code>'s test
  * registration methods to place tests into groups. For example, if you define:
  * <pre>
- * case class SlowTest extends Group("SlowTest")
+ * object SlowTest extends Group("SlowTest")
  * </pre>
  *
  * then you can place a test into the <code>SlowTest</code> group like this:
  * <pre>
  * class MySuite extends FunSuite {
  *
- *   test("my test", SlowTest()) {
+ *   test("my test", SlowTest) {
  *     Thread.sleep(1000)
  *   }
  * }
@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicReference
  * defined a Java annotation interface with fully qualified name, <code>com.mycompany.groups.SlowTest</code>, then you could
  * create a matching group for <code>FunSuite</code>s like this:
  * <pre>
- * case class SlowTest extends Group("com.mycompany.groups.SlowTest")
+ * object SlowTest extends Group("com.mycompany.groups.SlowTest")
  * </pre>
  */
 abstract class Group(val name: String)
