@@ -70,6 +70,79 @@ abstract class Group(val name: String)
  * }
  * </pre>
  *
+ * "<code>test</code>" is a method defined in <code>FunSuite</code>, which will be invoked
+ * by the primary constructor of <code>MySuite</code>. You specify the name of the test as
+ * a string between the parentheses, and the test code itself between curly braces.
+ * The test code is a function passed as a by-name parameter to <code>test</code>, which registers
+ * it for later execution. One benefit of <code>FunSuite</code> compared to <code>Suite</code> is you need not name all your
+ * tests starting with "<code>test</code>". In addition, you can more easily give long names to
+ * your tests, because you need not encode them in camel case, as you must do
+ * with test methods.
+ *
+ * <p>
+ * <strong>Test fixtures</strong>
+ * </p>
+ * 
+ * <p>
+ * If you want to write tests that need the same mutable fixture objects, you can
+ * extend one of the traits <code>FunSuite1</code> through <code>FunSuite9</code>. If you need three
+ * fixture objects, for example, you would extend <code>FunSuite3</code>. Here's an example
+ * that extends <code>FunSuite1</code>, to initialize a <code>StringBuilder</code> fixture object for each test:
+ * </p>
+ * 
+ * <pre>
+ * import org.scalatest.fun.FunSuite1
+ *
+ * class EasySuite extends FunSuite1[StringBuilder] {
+ *
+ *   testWithFixture("easy test") {
+ *     sb => {
+ *       sb.append("easy!")
+ *       assert(sb.toString === "Testing is easy!")
+ *     }
+ *   }
+ *
+ *   testWithFixture("fun test") {
+ *     sb => {
+ *       sb.append("fun!")
+ *       assert(sb.toString === "Testing is fun!")
+ *     }
+ *   }
+ *
+ *   def withFixture(f: StringBuilder => Unit) {
+ *     val sb = new StringBuilder("Testing is ")
+ *     f(sb)
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * In the class declaration of this example, <code>FunSuite1</code> is parameterized with the type of the
+ * lone fixture object, <code>StringBuilder</code>. Two tests are defined with
+ * <code>testWithFixture</code>. The function values provided here take the fixture object,
+ * a <code>StringBuilder</code>, as a parameter and use it in the test code. Note that
+ * the fixture object, referenced by <code>sb</code>, is mutated by both tests with the call to <code>append</code>. Lastly, a <code>withFixture</code>
+ * method is provided that takes a test function. This method creates a new <code>StringBuilder</code>,
+ * initializes it to <code>"Testing is "</code>, and passes it to the test function.
+ * When ScalaTest runs this suite, it will pass each test function to <code>withFixture</code>.
+ * The <code>withFixture</code> method will create and initialize a new <code>StringBuilder</code> object and
+ * pass that to the test function. In this way, each test function will get a fresh copy
+ * of the fixture. For more information on using <code>FunSuite</code>s with fixtures, see the documentation
+ * for <code>FunSuite1</code> through <code>FunSuite9</code>.
+ * </p>
+ *
+ * <p>
+ * <strong>Test groups</strong>
+ * </p>
+ *
+ * <p>
+ * <strong>Ignored tests</strong>
+ * </p>
+ *
+ * <p>
+ * <strong>Reporters</strong>
+ * </p>
+ *
  */
 trait FunSuite extends Suite {
 
