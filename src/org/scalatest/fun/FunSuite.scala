@@ -52,7 +52,7 @@ abstract class Group(val name: String)
  * Here's an example <code>FunSuite</code>:
  *
  * <pre>
- * import org.scalatest.FunSuite
+ * import org.scalatest.fun.FunSuite
  *
  * class MySuite extends FunSuite {
  *
@@ -155,7 +155,7 @@ abstract class Group(val name: String)
  * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
  * </p>
  * <pre>
- * import org.scalatest.FunSuite
+ * import org.scalatest.fun.FunSuite
  *
  * class MySuite extends FunSuite {
  *
@@ -199,7 +199,7 @@ abstract class Group(val name: String)
  * </p>
  *
  * <pre>
- * import org.scalatest.FunSuite
+ * import org.scalatest.fun.FunSuite
  *
  * class MySuite extends FunSuite {
  *
@@ -242,6 +242,43 @@ abstract class Group(val name: String)
  * <strong>Reporters</strong>
  * </p>
  *
+ * <p>
+ * One of the parameters to the primary <code>execute</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, you can optionally register a test with a function value that takes a <code>Reporter</code> parameter via the &#8220;<code>...WithReporter</code>
+ * variants of the test registration methods. You can then
+ * pass extra information to the <code>Reporter</code>'s <code>infoProvided</code> method in the body of the test functions.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fun.FunSuite
+ * import org.scalatest.Report
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   testWithReporter("addition") {
+ *     reporter => {
+ *       val sum = 1 + 1
+ *       assert(sum === 2)
+ *       assert(sum + 2 === 4)
+ *       val report = new Report("MySuite.addition", "Addition seems to work.")
+ *       reporter.infoProvided(report)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>Suite</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ *
+ * <pre>
+ * Info Provided: MySuite.addition: Addition seems to work.
+ * </pre>
  */
 trait FunSuite extends Suite {
 
