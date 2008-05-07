@@ -255,13 +255,13 @@ class FunSuite1Suite extends Suite {
     }
 
     val d = new FunSuite1[Int] {
-      testWithFixture("test this", new SlowAsMolasses) { fixture => () }
-      ignoreWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => () }
+      testWithFixture("test this", SlowAsMolasses) { fixture => () }
+      ignoreWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => () }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
-    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.fun.SlowAsMolasses"))) {
+    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
       d.groups
     }
 
@@ -275,13 +275,13 @@ class FunSuite1Suite extends Suite {
     }
 
     val f = new FunSuite1[Int] {
-      testWithFixture("test this", new SlowAsMolasses, new WeakAsAKitten) { fixture => () }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => () }
+      testWithFixture("test this", SlowAsMolasses, WeakAsAKitten) { fixture => () }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => () }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
-    expect(Map("test this" -> Set("org.scalatest.fun.SlowAsMolasses", "org.scalatest.fun.WeakAsAKitten"), "test that" -> Set("org.scalatest.fun.SlowAsMolasses"))) {
+    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
       f.groups
     }
   }
@@ -412,7 +412,7 @@ class FunSuite1Suite extends Suite {
     val a = new FunSuite1[Int] {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      testWithFixture("test this", new SlowAsMolasses) { fixture => theTestThisCalled = true }
+      testWithFixture("test this", SlowAsMolasses) { fixture => theTestThisCalled = true }
       testWithFixtureAndReporter("test that") { (fixture, reporter) => theTestThatCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
@@ -427,14 +427,14 @@ class FunSuite1Suite extends Suite {
     val b = new FunSuite1[Int] {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      testWithFixture("test this", new SlowAsMolasses) { fixture => theTestThisCalled = true }
+      testWithFixture("test this", SlowAsMolasses) { fixture => theTestThisCalled = true }
       testWithFixtureAndReporter("test that") { (fixture, reporter) => theTestThatCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repB = new MyReporter
-    b.execute(None, repB, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set(), Map(), None)
+    b.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
     assert(!repB.testIgnoredCalled)
     assert(b.theTestThisCalled)
     assert(!b.theTestThatCalled)
@@ -442,14 +442,14 @@ class FunSuite1Suite extends Suite {
     val c = new FunSuite1[Int] {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      testWithFixture("test this", new SlowAsMolasses) { fixture => theTestThisCalled = true }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      testWithFixture("test this", SlowAsMolasses) { fixture => theTestThisCalled = true }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repC = new MyReporter
-    c.execute(None, repB, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set(), Map(), None)
+    c.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
     assert(!repC.testIgnoredCalled)
     assert(c.theTestThisCalled)
     assert(c.theTestThatCalled)
@@ -457,14 +457,14 @@ class FunSuite1Suite extends Suite {
     val d = new FunSuite1[Int] {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      ignoreWithFixture("test this", new SlowAsMolasses) { fixture => theTestThisCalled = true }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      ignoreWithFixture("test this", SlowAsMolasses) { fixture => theTestThisCalled = true }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repD = new MyReporter
-    d.execute(None, repD, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None)
+    d.execute(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None)
     assert(repD.testIgnoredCalled)
     assert(!d.theTestThisCalled)
     assert(d.theTestThatCalled)
@@ -473,15 +473,15 @@ class FunSuite1Suite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      testWithFixture("test this", new SlowAsMolasses, new FastAsLight) { fixture => theTestThisCalled = true }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      testWithFixture("test this", SlowAsMolasses, FastAsLight) { fixture => theTestThisCalled = true }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       testWithFixtureAndReporter("test the other") { (fixture, reporter) => theTestTheOtherCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repE = new MyReporter
-    e.execute(None, repE, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set("org.scalatest.fun.FastAsLight"),
+    e.execute(None, repE, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None)
     assert(!repE.testIgnoredCalled)
     assert(!e.theTestThisCalled)
@@ -492,15 +492,15 @@ class FunSuite1Suite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      ignoreWithFixture("test this", new SlowAsMolasses, new FastAsLight) { fixture => theTestThisCalled = true }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      ignoreWithFixture("test this", SlowAsMolasses, FastAsLight) { fixture => theTestThisCalled = true }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       testWithFixtureAndReporter("test the other") { (fixture, reporter) => theTestTheOtherCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repF = new MyReporter
-    f.execute(None, repF, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set("org.scalatest.fun.FastAsLight"),
+    f.execute(None, repF, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None)
     assert(!repF.testIgnoredCalled)
     assert(!f.theTestThisCalled)
@@ -511,15 +511,15 @@ class FunSuite1Suite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      testWithFixture("test this", new SlowAsMolasses, new FastAsLight) { fixture => theTestThisCalled = true }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      testWithFixture("test this", SlowAsMolasses, FastAsLight) { fixture => theTestThisCalled = true }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       ignoreWithFixtureAndReporter("test the other") { (fixture, reporter) => theTestTheOtherCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repG = new MyReporter
-    g.execute(None, repG, new Stopper {}, Set("org.scalatest.fun.SlowAsMolasses"), Set("org.scalatest.fun.FastAsLight"),
+    g.execute(None, repG, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None)
     assert(!repG.testIgnoredCalled)
     assert(!g.theTestThisCalled)
@@ -530,15 +530,15 @@ class FunSuite1Suite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      testWithFixture("test this", new SlowAsMolasses, new FastAsLight) { fixture => theTestThisCalled = true }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      testWithFixture("test this", SlowAsMolasses, FastAsLight) { fixture => theTestThisCalled = true }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       testWithFixtureAndReporter("test the other") { (fixture, reporter) => theTestTheOtherCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repH = new MyReporter
-    h.execute(None, repH, new Stopper {}, Set(), Set("org.scalatest.fun.FastAsLight"), Map(), None)
+    h.execute(None, repH, new Stopper {}, Set(), Set("org.scalatest.FastAsLight"), Map(), None)
     assert(!repH.testIgnoredCalled)
     assert(!h.theTestThisCalled)
     assert(h.theTestThatCalled)
@@ -548,15 +548,15 @@ class FunSuite1Suite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      testWithFixture("test this", new SlowAsMolasses, new FastAsLight) { fixture => theTestThisCalled = true }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      testWithFixture("test this", SlowAsMolasses, FastAsLight) { fixture => theTestThisCalled = true }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       testWithFixtureAndReporter("test the other") { (fixture, reporter) => theTestTheOtherCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repI = new MyReporter
-    i.execute(None, repI, new Stopper {}, Set(), Set("org.scalatest.fun.SlowAsMolasses"), Map(), None)
+    i.execute(None, repI, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
     assert(!repI.testIgnoredCalled)
     assert(!i.theTestThisCalled)
     assert(!i.theTestThatCalled)
@@ -566,15 +566,15 @@ class FunSuite1Suite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      ignoreWithFixture("test this", new SlowAsMolasses, new FastAsLight) { fixture => theTestThisCalled = true }
-      ignoreWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      ignoreWithFixture("test this", SlowAsMolasses, FastAsLight) { fixture => theTestThisCalled = true }
+      ignoreWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       testWithFixtureAndReporter("test the other") { (fixture, reporter) => theTestTheOtherCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repJ = new MyReporter
-    j.execute(None, repJ, new Stopper {}, Set(), Set("org.scalatest.fun.SlowAsMolasses"), Map(), None)
+    j.execute(None, repJ, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
     assert(!repI.testIgnoredCalled)
     assert(!j.theTestThisCalled)
     assert(!j.theTestThatCalled)
@@ -584,15 +584,15 @@ class FunSuite1Suite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      ignoreWithFixture("test this", new SlowAsMolasses, new FastAsLight) { fixture => theTestThisCalled = true }
-      ignoreWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
+      ignoreWithFixture("test this", SlowAsMolasses, FastAsLight) { fixture => theTestThisCalled = true }
+      ignoreWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => theTestThatCalled = true }
       ignoreWithFixtureAndReporter("test the other") { (fixture, reporter) => theTestTheOtherCalled = true }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
     val repK = new MyReporter
-    k.execute(None, repK, new Stopper {}, Set(), Set("org.scalatest.fun.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None)
+    k.execute(None, repK, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None)
     assert(repK.testIgnoredCalled)
     assert(!k.theTestThisCalled)
     assert(!k.theTestThatCalled)
@@ -620,39 +620,39 @@ class FunSuite1Suite extends Suite {
     assert(b.expectedTestCount(Set(), Set()) === 1)
 
     val c = new FunSuite1[Int] {
-      testWithFixture("test this", new FastAsLight) { fixture => () }
+      testWithFixture("test this", FastAsLight) { fixture => () }
       testWithFixtureAndReporter("test that") { (fixture, reporter) => () }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
-    assert(c.expectedTestCount(Set("org.scalatest.fun.FastAsLight"), Set()) === 1)
-    assert(c.expectedTestCount(Set(), Set("org.scalatest.fun.FastAsLight")) === 1)
+    assert(c.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
+    assert(c.expectedTestCount(Set(), Set("org.scalatest.FastAsLight")) === 1)
 
     val d = new FunSuite1[Int] {
-      testWithFixture("test this", new FastAsLight, new SlowAsMolasses) { fixture => () }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => () }
+      testWithFixture("test this", FastAsLight, SlowAsMolasses) { fixture => () }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => () }
       testWithFixtureAndReporter("test the other thing") { (fixture, reporter) => () }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
-    assert(d.expectedTestCount(Set("org.scalatest.fun.FastAsLight"), Set()) === 1)
-    assert(d.expectedTestCount(Set("org.scalatest.fun.SlowAsMolasses"), Set("org.scalatest.fun.FastAsLight")) === 1)
-    assert(d.expectedTestCount(Set(), Set("org.scalatest.fun.SlowAsMolasses")) === 1)
+    assert(d.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
+    assert(d.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
+    assert(d.expectedTestCount(Set(), Set("org.scalatest.SlowAsMolasses")) === 1)
     assert(d.expectedTestCount(Set(), Set()) === 3)
 
     val e = new FunSuite1[Int] {
-      testWithFixture("test this", new FastAsLight, new SlowAsMolasses) { fixture => () }
-      testWithFixtureAndReporter("test that", new SlowAsMolasses) { (fixture, reporter) => () }
+      testWithFixture("test this", FastAsLight, SlowAsMolasses) { fixture => () }
+      testWithFixtureAndReporter("test that", SlowAsMolasses) { (fixture, reporter) => () }
       ignoreWithFixtureAndReporter("test the other thing") { (fixture, reporter) => () }
       def withFixture(f: Int => Unit) {
         f(8)
       }
     }
-    assert(e.expectedTestCount(Set("org.scalatest.fun.FastAsLight"), Set()) === 1)
-    assert(e.expectedTestCount(Set("org.scalatest.fun.SlowAsMolasses"), Set("org.scalatest.fun.FastAsLight")) === 1)
-    assert(e.expectedTestCount(Set(), Set("org.scalatest.fun.SlowAsMolasses")) === 0)
+    assert(e.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
+    assert(e.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
+    assert(e.expectedTestCount(Set(), Set("org.scalatest.SlowAsMolasses")) === 0)
     assert(e.expectedTestCount(Set(), Set()) === 2)
 
     val f = new SuperSuite(List(a, b, c, d, e))
