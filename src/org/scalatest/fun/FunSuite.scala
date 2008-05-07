@@ -47,6 +47,30 @@ import java.util.concurrent.atomic.AtomicReference
  */
 abstract class Group(val name: String)
 
+/**
+ * A suite of tests in which each test is represented as a function value. The "<code>Fun</code>" in <code>FunSuite</code> stands for functional.
+ * Here's an example <code>FunSuite</code>:
+ *
+ * <pre>
+ * import org.scalatest.FunSuite
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   test("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   test("subtraction") {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *     assert(diff - 2 === 1)
+ *   }
+ * }
+ * </pre>
+ *
+ */
 trait FunSuite extends Suite {
 
   // Until it shows up in Predef
