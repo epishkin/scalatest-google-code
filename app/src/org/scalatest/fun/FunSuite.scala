@@ -177,7 +177,16 @@ trait FunSuite extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+  * An immutable <code>Set</code> of test names. If this <code>Suite</code> contains no tests, this method returns an empty <code>Set</code>.
+  *
+  * <p>
+  * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's iterator will
+  * return those names in the order in which the tests were registered.
+  * </p>
+  */
   override def testNames: Set[String] = {
+    // I'm returning a ListSet here so that they tests will be executed in registration order
     ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
