@@ -190,6 +190,17 @@ trait FunSuite extends Suite {
     ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
+  // runTest should throw IAE if a test name is passed that doesn't exist. Looks like right now it just reports a test failure.
+  /**
+   * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
+   *
+   * @param testName the name of one test to execute.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   *     is <code>null</code>.
+   */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
 
     if (testName == null || reporter == null || stopper == null || properties == null)
