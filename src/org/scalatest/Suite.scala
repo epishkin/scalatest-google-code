@@ -776,10 +776,8 @@ trait Suite {
   }
 
   /**
-   * <p>
    * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>Suite</code> belong, and values
    * the <code>Set</code> of test names that belong to each group.  If this <code>Suite</code> contains no groups, this method returns an empty <code>Map</code>.
-   * </p>
    *
    * <p>
    * This trait's implementation uses Java reflection to discover any Java annotations attached to its test methods. Each unique
@@ -1499,7 +1497,6 @@ trait Suite {
   }
 
   /**
-   * <p>
    * Assert that an <code>Option[String]</code> is <code>None</code>. 
    * If the condition is <code>None</code>, this method returns normally.
    * Else, it throws <code>AssertionError</code> with the <code>String</code>
@@ -1507,7 +1504,6 @@ trait Suite {
    * <code>String</code> obtained by invoking <code>toString</code> on the
    * specified <code>message</code>,
    * included in the <code>AssertionError</code>'s detail message.
-   * </p>
    *
    * <p>
    * This form of <code>assert</code> is usually called in conjunction with an
