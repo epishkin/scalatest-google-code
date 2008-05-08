@@ -365,7 +365,7 @@ trait FunSuite extends Suite {
   }
 
   /**
-   * Register a test to ignore, which has the specified name, optional groups, and function value that takes a no arguments.
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
    * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>test</code>
    * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
@@ -411,7 +411,7 @@ trait FunSuite extends Suite {
   }
 
   /**
-  * An immutable <code>Set</code> of test names. If this <code>Suite</code> contains no tests, this method returns an empty <code>Set</code>.
+  * An immutable <code>Set</code> of test names. If this <code>FunSuite</code> contains no tests, this method returns an empty <code>Set</code>.
   *
   * <p>
   * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's iterator will
