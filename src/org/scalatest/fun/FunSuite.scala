@@ -44,6 +44,8 @@ import java.util.concurrent.atomic.AtomicReference
  * <pre>
  * object SlowTest extends Group("com.mycompany.groups.SlowTest")
  * </pre>
+ *
+ * @author Bill Venners
  */
 abstract class Group(val name: String)
 
@@ -279,6 +281,8 @@ abstract class Group(val name: String)
  * <pre>
  * Info Provided: MySuite.addition: Addition seems to work.
  * </pre>
+ *
+ * @author Bill Venners
  */
 trait FunSuite extends Suite {
 

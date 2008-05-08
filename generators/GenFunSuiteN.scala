@@ -65,6 +65,8 @@ $endif$
  * variables and shared by all test methods that need them. Since they aren't mutable, they can't be "corrupted"
  * by one test and rendered unusable by the next. For mutable fixture objects, though, this trait allows you
  * to reinitialize and pass in a fresh set of fixture objects to each test function that needs them.
+ *
+ * @author Bill Venners
  */
 trait FunSuite$num$[$typeParams$] extends Suite {
 
