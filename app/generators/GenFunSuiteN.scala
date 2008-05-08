@@ -25,6 +25,36 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
+/**
+$if (moreThanOne)$
+ * A suite of tests in which each test is represented as a function value that takes $num$ parameters that
+ * are intended to serve as fixture objects for the suite's tests. Clients must parameterize <code>FunSuite$num$</code> with the types of each 
+ * of the fixture objects. Most often this will be done explicitly by subclasses that have tests that need the fixture objects. Here's an example:
+$else$
+ * A suite of tests in which each test is represented as a function value that takes 1 parameter that
+ * is intended to serve as a fixture object for the suite's tests. Clients must parameterize <code>FunSuite1</code> with the type of the
+ * fixture object. Most often this will be done explicitly by subclasses that have tests that need the fixture object. Here's an example:
+$endif$
+ <pre>
+ * class MySuite extends FunSuite$num$[$exampleParams$] {
+ *
+ *   testWithFixture("example test") {
+ *     ($exampleArgs$) => {
+ *       // test code that uses the passed fixture object$if (moreThanOne)$s$endif$...
+ *     }
+ *   }
+ *
+ *   def withFixture(f: ($exampleParams$) => Unit) {
+ *
+ *      // Create the fixture objects
+ *      $argDefinitions$
+ *
+ *      // Pass the fixture objects to the test function
+ *      f($exampleArgs$)
+ *   }
+ * }
+ * </pre>
+ */
 trait FunSuite$num$[$typeParams$] extends Suite {
 
   // Until it shows up in Predef
@@ -260,14 +290,55 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     "_, _, _, _, _, _, _, _, _"
   )
 
+  val exampleParams = Array(
+    "Float",
+    "Float, Int",
+    "Float, Int, Long",
+    "Float, Int, Long, String",
+    "Float, Int, Long, String, Boolean",
+    "Float, Int, Long, String, Boolean, Short",
+    "Float, Int, Long, String, Boolean, Short, Double",
+    "Float, Int, Long, String, Boolean, Short, Double, Byte",
+    "Float, Int, Long, String, Boolean, Short, Double, Byte, String"
+  )
+
+  val exampleArgs = Array(
+    "f",
+    "f, i",
+    "f, i, x",
+    "f, i, x, t",
+    "f, i, x, t, ",
+    "f, i, x, t, u, r",
+    "f, i, x, t, u, r, e",
+    "f, i, x, t, u, r, e, o",
+    "f, i, x, t, u, r, e, o, b"
+  )
+
+  val argDefinitions = Array(
+    "val f = 1.1f",
+    "val f = 1.1f<br />      val float = 1.1f",
+    "val f = 1.1f<br />      val i = 7<br />      val x = 21L",
+    "val f = 1.1f<br />      val i = 7<br />      val x = 21L<br />      val t = \"hi\"",
+    "val f = 1.1f<br />      val i = 7<br />      val x = 21L<br />      val t = \"hi\"<br />      val u = true",
+    "val f = 1.1f<br />      val i = 7<br />      val x = 21L<br />      val t = \"hi\"<br />      val u = true, val r = 2",
+    "val f = 1.1f<br />      val i = 7<br />      val x = 21L<br />      val t = \"hi\"<br />      val u = true<br />      val r = 2<br />      val e = 2.0",
+    "val f = 1.1f<br />      val i = 7<br />      val x = 21L<br />      val t = \"hi\"<br />      val u = true<br />      val r = 2<br />      val e = 2.0<br />      val o = 128",
+    "val f = 1.1f<br />      val i = 7<br />      val x = 21L<br />      val t = \"hi\"<br />      val u = true<br />      val r = 2<br />      val e = 2.0<br />      val o = 128<br />      val b = \"fixtures are easy!\""
+  )
+
   val dir = new File("build/generated/org/scalatest/fun")
   dir.mkdirs()
   for (i <- 1 to 9) {
     val bw = new BufferedWriter(new FileWriter("build/generated/org/scalatest/fun/FunSuite" + i + ".scala"))
     try {
       val st = new org.antlr.stringtemplate.StringTemplate(template)
+      st.setAttribute("moreThanOne", i != 1);
+      st.setAttribute("moreThanFour", i > 4);
       st.setAttribute("num", i);
       st.setAttribute("typeParams", typeParams(i - 1));
+      st.setAttribute("exampleParams", exampleParams(i - 1));
+      st.setAttribute("exampleArgs", exampleArgs(i - 1));
+      st.setAttribute("argDefinitions", argDefinitions(i - 1));
       st.setAttribute("underscores", underscores(i - 1));
       bw.write(st.toString)
     }
@@ -277,3 +348,11 @@ trait FunSuite$num$[$typeParams$] extends Suite {
   }
 }
 
+/*
+$if (moreThanFour)$
+ * <pre>
+ * class MySuite extends FunSuite$num$[
+ *   $exampleParams$
+ * ] {
+$else$
+*/
