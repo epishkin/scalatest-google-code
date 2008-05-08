@@ -4,6 +4,8 @@ import java.io.BufferedWriter
 
 object GenFunSuiteN extends Application {
 
+// For some reason that I don't understand, I need to leave off the stars before the <pre> when 
+// they are next to ST commands. So I say  "   <pre>" sometimes instead of " * <pre>".
 val template = """/*
  * Copyright 2001-2008 Artima, Inc.
  *
@@ -46,14 +48,23 @@ $endif$
  *
  *   def withFixture(f: ($exampleParams$) => Unit) {
  *
- *      // Create the fixture objects
+ *      // Create the fixture objects (as in JUnit 3's setUp method)
  *      $argDefinitions$
  *
  *      // Pass the fixture objects to the test function
  *      f($exampleArgs$)
+ *
+ *      // If need be, perform any cleanup (as in JUnit 3's tearDown method)
  *   }
  * }
  * </pre>
+ *
+ * This is a contrived example, because normally you would only pass fixture objects in this manner if
+ * they are mutable. (The reason we used immutable objects in this example was just to make the type names fit
+ * more easily on the page.) If they aren't mutable, then the fixture objects can simply be referenced from instance
+ * variables and shared by all test methods that need them. Since they aren't mutable, they can't be "corrupted"
+ * by one test and rendered unusable by the next. For mutable fixture objects, though, this trait allows you
+ * to reinitialize and pass in a fresh set of fixture objects to each test function that needs them.
  */
 trait FunSuite$num$[$typeParams$] extends Suite {
 
@@ -92,8 +103,24 @@ trait FunSuite$num$[$typeParams$] extends Suite {
       throw new ConcurrentModificationException
   }
 
+  /**
+   * Create $if (!moreThanOne)$a $endif$fixture object$if (moreThanOne)$s$endif$ and pass $if (moreThanOne)$them$else$it$endif$ to the specified
+   * test function value, <code>f</code>, performing any necessary cleanup afterwards. This method serves the same purpose as the <code>setUp</code>
+   * and <code>tearDown</code> methods of JUnit 3, the <code>@Before</code> and <code>@After</code> method annotations of JUnit 4, or the
+   * <code>@Configuration(beforeTestMethod = true)</code> and <code>@Configuration(afterTestMethod = true)</code> method annotations of TestNG. Override this method
+   * if you have $if (!moreThanOne)$a $endif$fixture object$if (moreThanOne)$s$endif$ that are either themselves mutable, or provide access to
+   * some other resource that tests may mutate in some way that needs to be reset for other tests.
+   */
   protected def withFixture(f: ($typeParams$) => Unit) // this must be abstract
 
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes no arguments.
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def test(testName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
@@ -110,6 +137,15 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code>.
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
+   * The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def testWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
 
     val oldBundle = atomic.get
@@ -126,6 +162,16 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes no arguments.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>test</code>
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
 
     test(testName)(f) // Call test without passing the groups
@@ -139,6 +185,16 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes a <code>Reporter</code>.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>testWithReporter</code>
+   * to <code>ignoreWithReporter</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def ignoreWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
 
     testWithReporter(testName)(f) // Call testWithReporter without passing the groups
@@ -152,6 +208,16 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes $num$ argument$if (moreThanOne)$s$endif$.
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance. This trait will not invoke any test functions registered via this method directly, but 
+   * will instead pass each test function registered with this method to <code>withFixture</code>. It is the responsibility of
+   * subclass implementations of <code>withFixture</code> to invoke the test method, passing in the required fixture object$if (moreThanOne)$s$endif$.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def testWithFixture(testName: String, testGroups: Group*)(f: ($typeParams$) => Unit) {
 
     val oldBundle = atomic.get
@@ -168,6 +234,17 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes $num$ argument$if (moreThanOne)$s$endif$ and a <code>Reporter</code>.
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be partially applied to the function value, and 
+   * the resulting function will be passed to <code>withFixture</code>. Thus, this trait will not invoke any test functions registered via this method directly, but 
+   * will instead pass each test function registered with this method to <code>withFixture</code>. It is the responsibility of
+   * subclass implementations of <code>withFixture</code> to invoke the test method, passing in the required fixture object$if (moreThanOne)$s$endif$.
+   * The passed test name must not have been registered previously on this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def testWithFixtureAndReporter(testName: String, testGroups: Group*)(f: ($typeParams$, Reporter) => Unit) {
 
     val oldBundle = atomic.get
@@ -184,6 +261,16 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes $num$ argument$if (moreThanOne)$s$endif$.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>testWithFixture</code>
+   * to <code>ignoreWithFixture</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def ignoreWithFixture(testName: String, testGroups: Group*)(f: ($typeParams$) => Unit) {
 
     testWithFixture(testName)(f) // Call test without passing the groups
@@ -197,6 +284,16 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes $num$ argument$if (moreThanOne)$s$endif$ and a <code>Reporter</code>.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>testWithFixtureAndReporter</code>
+   * to <code>ignoreWithFixtureAndReporter</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
   protected def ignoreWithFixtureAndReporter(testName: String, testGroups: Group*)(f: ($typeParams$, Reporter) => Unit) {
 
     testWithFixtureAndReporter(testName)(f) // Call testWithReporter without passing the groups
@@ -210,10 +307,29 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
   }
 
+  /**
+  * An immutable <code>Set</code> of test names. If this <code>FunSuite$num$</code> contains no tests, this method returns an empty <code>Set</code>.
+  *
+  * <p>
+  * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's iterator will
+  * return those names in the order in which the tests were registered.
+  * </p>
+  */
   override def testNames: Set[String] = {
     ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
+  // runTest should throw IAE if a test name is passed that doesn't exist. Looks like right now it just reports a test failure.
+  /**
+   * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
+   *
+   * @param testName the name of one test to execute.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   *     is <code>null</code>.
+   */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
 
     if (testName == null || reporter == null || stopper == null || properties == null)
@@ -262,6 +378,15 @@ trait FunSuite$num$[$typeParams$] extends Suite {
     reporter.testFailed(report)
   }
 
+  /**
+   * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>FunSuite$num$</code> belong, and values
+   * the <code>Set</code> of test names that belong to each group. If this <code>FunSuite$num$</code> contains no groups, this method returns an empty <code>Map</code>.
+   *
+   * <p>
+   * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
+   * methods <code>test</code>, <code>testWithReporter</code>, <code>ignore</code>, and <code>ignoreWithReporter</code>. 
+   * </p>
+   */
   override def groups: Map[String, Set[String]] = atomic.get.groupsMap
 }
 """
