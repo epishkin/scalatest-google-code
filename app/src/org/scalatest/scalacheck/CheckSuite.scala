@@ -53,6 +53,8 @@ import org.scalacheck.Test._
  * For more information on using ScalaCheck properties, see the documentation for ScalaCheck, which is available
  * from <a href="http://code.google.com/p/scalacheck/">http://code.google.com/p/scalacheck/</a>.
  * </p>
+ *
+ * @author Bill Venners
  */
 trait CheckSuite extends Suite {
 
