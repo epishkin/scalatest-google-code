@@ -22,11 +22,44 @@ import _root_.junit.framework._
 import _root_.junit.textui._
 
 /**
+ * A suite of tests that can be run with either JUnit 3 or ScalaTest. This trait allows you to write JUnit 3 tests
+ * with ScalaTest's more concise assertion syntax as well as JUnit's assertions (<code>assertEquals</code>, etc.).
+ * You create tests by defining methods that start with <code>test</code>, and can create fixtures with methods
+ * named <code>setUp</code> and <code>tearDown</code>. For example:
+ *
+ * <pre>
+ * import org.scalatest.junit.JUnit3Suite
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class TwoSuite extends JUnit3Suite {
+ *
+ *   var sb: StringBuilder = _
+ *   var lb: ListBuffer[String] = _
+ *
+ *   override def setUp() {
+ *     sb = new StringBuilder("ScalaTest is ")
+ *     lb = new ListBuffer[String]
+ *   }
+ *
+ *   def testEasy() {
+ *     sb.append("easy!")
+ *     assert(sb.toString === "ScalaTest is easy!")
+ *     assert(lb.isEmpty)
+ *     lb += "sweet"
+ *   }
+ *
+ *   def testFun() {
+ *     sb.append("fun!")
+ *     assert(sb.toString === "ScalaTest is fun!")
+ *     assert(lb.isEmpty)
+ *   }
+ * }
+ * </pre>
+ * 
  * @author Josh Cough
  */
-class JUnit3Suite extends TestCase with Suite {
+trait JUnit3Suite extends TestCase with Suite {
 
-  
   /**
    * Runs JUnit. <br>
    * 
@@ -39,12 +72,40 @@ class JUnit3Suite extends TestCase with Suite {
    * @param   properties	Currently ignored. see note above...should we be ignoring these?
    * @param   distributor	Currently ignored.
    */
+  /**
+   * Execute this <code>JUnit3Suite</code>.
+   *
+   * <p>If <code>testName</code> is <code>None</code>, this trait's implementation of this method
+   * calls these two methods on this object in this order:</p>
+   *
+   * <ol>
+   * <li><code>runNestedSuites(wrappedReporter, stopper, includes, excludes, properties, distributor)</code></li>
+   * <li><code>runTests(testName, wrappedReporter, stopper, includes, excludes, properties)</code></li>
+   * </ol>
+   *
+   * <p>
+   * If <code>testName</code> is <code>Some</code>, then this trait's implementation of this method
+   * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>.
+   * </p>
+   *
+   * @param testName an optional name of one test to execute. If <code>None</code>, all tests will be executed.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all tests in this <code>JUnit3Suite</code>.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param includes a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Suite</code>
+   * @param excludes a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Suite</code>
+   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
+   *         
+   *
+   * @throws NullPointerException if any passed parameter is <code>null</code>.
+   */
   override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], 
       excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
-    
+
     runJUnit(testName, reporter, includes, excludes);
   }
-  
 
   /**
    * Runs JUnit. The meat and potatoes. 

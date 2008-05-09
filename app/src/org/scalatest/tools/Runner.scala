@@ -38,7 +38,7 @@ import org.scalatest.testng.TestNGWrapperSuite
  * </p>
  *
  * <p>
- * <code>scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.Runner [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] [-n &lt;includes&gt;] [-x &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; [...]] [-m &lt;members-only suite path&gt; [...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file path&gt; [...]]</code>
+ * <code>scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.tools.Runner [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] [-n &lt;includes&gt;] [-x &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; [...]] [-m &lt;members-only suite path&gt; [...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file path&gt; [...]]</code>
  * </p>
  *
  * <p>
@@ -46,7 +46,7 @@ import org.scalatest.testng.TestNGWrapperSuite
  * </p>
  *
  * <p>
- * <code>scala -classpath scalatest-&lt;version&gt;.jar org.scalatest.Runner -p compiled_tests</code>
+ * <code>scala -classpath scalatest-&lt;version&gt;.jar org.scalatest.tools.Runner -p compiled_tests</code>
  * </p>
  *
  * <p>
@@ -284,8 +284,8 @@ import org.scalatest.testng.TestNGWrapperSuite
  * <p>
  * <code>Runner</code> is intended to be used from the command line. It is included in <code>org.scalatest</code>
  * package as a convenience for the user. If this package is incorporated into tools, such as IDEs, which take
- * over the role of runner, object <code>org.scalatest.Runner</code> may be excluded from that implementation of the package.
- * All other public types declared in package <code>org.scalatest.Runner</code> should be included in any such usage, however,
+ * over the role of runner, object <code>org.scalatest.tools.Runner</code> may be excluded from that implementation of the package.
+ * All other public types declared in package <code>org.scalatest.tools.Runner</code> should be included in any such usage, however,
  * so client software can count on them being available.
  * </p>
  *
@@ -963,7 +963,7 @@ object Runner {
           val unassignableList = suitesList.filter(className => !classOf[Suite].isAssignableFrom(loader.loadClass(className)))
           if (!unassignableList.isEmpty) {
             val names = for (className <- unassignableList) yield " " + className
-            val report = new Report("org.scalatest.Runner", Resources("nonSuite") + names)
+            val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names)
             dispatchReporter.runAborted(report)
             true
           }
@@ -973,7 +973,7 @@ object Runner {
         }
         catch {
           case e: ClassNotFoundException => {
-            val report = new Report("org.scalatest.Runner", Resources("cannotLoadSuite"), Some(e), None)
+            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite"), Some(e), None)
             dispatchReporter.runAborted(report)
             true
           }
@@ -1062,20 +1062,20 @@ object Runner {
         catch {
           case ex: InstantiationException => {
             val report =
-                new Report("org.scalatest.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+                new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
             dispatchReporter.runAborted(report)
           }
           case ex: IllegalAccessException => {
             val report
-                = new Report("org.scalatest.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+                = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
             dispatchReporter.runAborted(report)
           }
           case ex: NoClassDefFoundError => {
-            val report = new Report("org.scalatest.Runner", Resources("cannotLoadClass"), Some(ex), None)
+            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass"), Some(ex), None)
             dispatchReporter.runAborted(report)
           }
           case ex: Throwable => {
-            val report = new Report("org.scalatest.Runner", Resources("bigProblems"), Some(ex), None)
+            val report = new Report("org.scalatest.tools.Runner", Resources("bigProblems"), Some(ex), None)
             dispatchReporter.runAborted(report)
           }
         }

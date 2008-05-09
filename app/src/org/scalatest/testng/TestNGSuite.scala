@@ -23,55 +23,66 @@ import org.testng.TestNG
 import org.testng.TestListenerAdapter
 
 /**
- * <p>
- * Extending <code>TestNGSuite</code> enables you to write TestNG tests in Scala, continue to run them in your 
- * standard TestNG runner, <em>and</em> run them in ScalaTest runners.
+ * A suite of tests that can be run with either TestNG or ScalaTest. This trait allows you to mark any
+ * method as a test using TestNG's <code>@Test</code> annotation, and supports all other TestNG annotations.
+ * Here's an example:
  * </p>
  *
- * <p>
- * Doing so is very straightforward - simply write a Scala class that extends <code>TestNGSuite</code> and 
- * add standard TestNG annotations to your methods. Here is a simple example that demonstrates the use of 
- * a number of TestNG features. 
- * </p>
- * 
  * <pre>
- * class ExampleTestNGSuite extends TestNGSuite{
- *  
- *   @Test{val invocationCount=10} def thisTestRunsTenTimes = {}
+ * import org.scalatest.testng.TestNGSuite
+ * import org.testng.annotations.Test
+ * import org.testng.annotations.Configuration
+ * import scala.collection.mutable.ListBuffer
  * 
- *   @Test{val groups=Array("runMe")} 
- *   def testWithException(){ 
- *     throw new Exception("exception!!!") 
+ * class MySuite extends TestNGSuite {
+ * 
+ *   var sb: StringBuilder = _
+ *   var lb: ListBuffer[String] = _
+ * 
+ *   @Configuration { val beforeTestMethod = true }
+ *   def setUpFixture() {
+ *     sb = new StringBuilder("ScalaTest is ")
+ *     lb = new ListBuffer[String]
+ *   }
+ * 
+ *   @Test { val invocationCount = 3 }
+ *   def easyTest() {
+ *     sb.append("easy!")
+ *     assert(sb.toString === "ScalaTest is easy!")
+ *     assert(lb.isEmpty)
+ *     lb += "sweet"
+ *   }
+ * 
+ *   @Test { val groups = Array("com.mycompany.groups.SlowTest") }
+ *   def funTest() {
+ *     sb.append("fun!")
+ *     assert(sb.toString === "ScalaTest is fun!")
+ *     assert(lb.isEmpty)
  *   }
  * }
  * </pre>
  *
- * <p>
- * Notice that other than a few minor details (or if you are wearing sunglasses), you could almost trick 
- * yourself into thinking this was Java code. That is the point. The idea is to make the transition to 
- * Scala as simple as possible. Starting in this comfort zone should make it easier to transition into 
- * some of ScalaTest's more advanced features.
- * </p>
- *
  * @author Josh Cough
  */
-trait TestNGSuite extends Suite{
+trait TestNGSuite extends Suite {
 
   /**
-   * Runs TestNG. <br>
+   * Execute this <code>TestNGSuite</code>.
    * 
-   * @param   testName   If present (Some), then only the method with the supplied name is executed and groups will be ignored.
+   * @param testName an optional name of one test to execute. If <code>None</code>, this class will execute all relevant tests.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>TestNGSuite</code>.
    * @param   reporter	 The reporter to be notified of test events (success, failure, etc).
    * @param   groupsToInclude	Contains the names of groups to run. Only tests in these groups will be executed.
    * @param   groupsToExclude	Tests in groups in this Set will not be executed.
    *
-   * @param   stopper    	Ignored. TestNG doesn't have a stopping mechanism.
-   * @param   properties	Currently ignored. see note above...should we be ignoring these?
-   * @param   distributor	Ignored. TestNG handles its own concurrency. We consciously chose to leave that as it was. 
+   * @param stopper the <code>Stopper</code> may be used to request an early termination of a suite of tests. However, because TestNG does
+   *                not support the notion of aborting a run early, this class ignores this parameter.
+   * @param   properties         a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests. This class
+   *                      does not use this parameter.
+   * @param distributor an optional <code>Distributor</code>, into which nested <code>Suite</code>s could be put to be executed
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
+   *              Because TestNG handles its own concurrency, this class ignores this parameter.
    * <br><br>
-   * TODO: Currently doing nothing with properties. Should we be?<br>
-   * NOTE: TestNG doesn't have a stopping mechanism. Stopper is ignored.<br>
-   * NOTE: TestNG handles its own concurrency. Distributor is ignored.<br>
    */
   override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], 
       excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {

@@ -68,29 +68,29 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
     }
     catch { // CLOSE THIS
       case ex: ClassNotFoundException => {
-        val report = new Report("org.scalatest.Runner", Resources("cannotLoadSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite"), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: InstantiationException => {
-        val report = new Report("org.scalatest.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: IllegalAccessException => {
-        val report = new Report("org.scalatest.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
         reporter.runAborted(report)
       }
       case e: SecurityException => {
-        val report = new Report("org.scalatest.Runner", Resources("securityWhenReruning"), Some(e), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("securityWhenReruning"), Some(e), None)
         reporter.runAborted(report)
       }
       case ex: NoClassDefFoundError => {
             // Suggest the problem might be a bad runpath
             // Maybe even print out the current runpath
-        val report = new Report("org.scalatest.Runner", Resources("cannotLoadClass"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass"), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: Throwable => {
-        val report = new Report("org.scalatest.Runner", Resources("bigProblems"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("bigProblems"), Some(ex), None)
         reporter.runAborted(report)
       }
     }

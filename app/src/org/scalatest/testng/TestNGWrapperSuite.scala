@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2001-2008 Artima, Inc.
  *
@@ -21,66 +20,55 @@ import org.testng.TestListenerAdapter
 
 /**
  * <p>
- * Extending <code>TestNGWrapperSuite</code> enables you to run TestNG xml suites in ScalaTest. 
+ * Suite that wraps existing TestNG test suites, described by TestNG XML files. This class allows
+ * existing TestNG tests written in Java to be run by ScalaTest.
  * </p>
  *
  * <p>
- * Users will be (and should be) reluctant to stop running old tests. This complicates moving to a 
- * new test framework because now two frameworks would have to be supported. TestNGWrapper suite 
- * solves this by allowing users to run their legacy TestNG tests together with new tests written in Scala.
+ * One way to use this class is to extend it and provide a list of one or more
+ * names of TestNG XML suite file names to run. Here's an example:
  * </p>
+ *
+ * <pre>
+ * class MyWrapperSuite extends TestNGWrapperSuite(
+ *   List("oneTest.xml", "twoTest.xml", "redTest.xml", "blueTest.xml")
+ * )
+ * </pre>
  * 
  * <p>
- * But, making this all happen by extending this class is a little painful. We will soon be adding support
- * to <code>org.scalatest.tools.Runner</code> to make this far easier. The goal is to simply set a property
- * via the command line, or the Ant task, and we'll take care of the test. This will be something like: 
- * </p>
- *
- * <p>
- * scala -classpath scalatest-0.9.1.jar org.scalatest.Runner -p legacy-tests.jar -testngxml mysuite1.xml,mysuite2.xml
- * </p>
- *
- * <p>
- * There may be cases in which providing the property at the command line isn't good enough, though I'm not going
- * to try to guess at the reasons why. In this situation, one can extend TestNGWrapperSuite, providing the 
- * name of the property containing the xml suite file names. Here is a simple example:
- * </p>
- *
- * <pre>class ExampleTestNGWrapperSuite extends TestNGWrapperSuite( "testngXmlSuite" ) {}</pre>
- * 
- * <p>
- * This class can then be incuded in any ScalaTest suite. At runtime, the property provided in the constuctor
- * (in this case "testngXmlSuite") will be looked up, parsed, and the List of filenames will be passed 
- * to TestNG. If the property is not available, an IllegalArgumentException will be thrown
- * If any files contained in the property cannot be found, a FileNotFoundException will be thrown.
+ * You can also specify TestNG XML files on <code>Runner</code>'s command line with <code>-t</code> parameters. See
+ * the documentation for <code>Runner</code> for more information.
  * </p>
  *
  * @author Josh Cough
  */
 class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
-  
+
+// Probably mention FileNotFoundException here
+// If any files contained in the property cannot be found, a FileNotFoundException will be thrown.
   /**
-   * Runs TestNG with the xml suites provided via the constructor. <br>
+   * Runs TestNG with the XML suites provided via the primary constructor.
    * 
    * @param   testName   If present (Some), then only the method with the supplied name is executed and groups will be ignored.
    * @param   reporter         The reporter to be notified of test events (success, failure, etc).
    * @param   groupsToInclude        Contains the names of groups to run. Only tests in these groups will be executed.
-   * @param   groupsToExclude        Tests in groups in this Set will not be executed.
+   * @param   groupsToExclude        Tests in groups in this set will not be executed.
    *
-   * @param   stopper            Ignored. TestNG doesn't have a stopping mechanism.
-   * @param   properties        Currently ignored. see note above...should we be ignoring these?
-   * @param   distributor        Ignored. TestNG handles its own concurrency. We consciously chose to leave that as it was. 
+   * @param stopper the <code>Stopper</code> may be used to request an early termination of a suite of tests. However, because TestNG does
+   *                not support the notion of aborting a run early, this class ignores this parameter.
+   * @param   properties         a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests. This class
+   *                      does not use this parameter.
+   * @param distributor an optional <code>Distributor</code>, into which nested <code>Suite</code>s could be put to be executed
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
+   *              Because TestNG handles its own concurrency, this class ignores this parameter.
    * <br><br>
-   * TODO: Currently doing nothing with properties. Should we be?<br>
-   * NOTE: TestNG doesn't have a stopping mechanism. Stopper is ignored.<br>
-   * NOTE: TestNG handles its own concurrency. Distributor is ignored.<br>
    */
   override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], 
       excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
     
     runTestNG(reporter, includes, excludes);
   }
-  
+
   /**
    * Runs all tests in the xml suites.
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
@@ -138,6 +126,4 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
     )
     testng.setTestSuites(files)
   }
-  
-  
 }
