@@ -161,6 +161,8 @@ import java.util.ArrayList;
  *     &lt;membersonly package="com.artima.serviceuitest"/&gt;
  *     &lt;wildcard package="com.artima.joker"/&gt;
  * </pre>
+ *
+ * @author George Berger
  */
 public class ScalaTestTask extends Task {
     private String includes;

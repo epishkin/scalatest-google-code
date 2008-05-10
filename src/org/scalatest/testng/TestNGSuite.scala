@@ -62,6 +62,11 @@ import org.testng.TestListenerAdapter
  * }
  * </pre>
  *
+ * <p>
+ * To execute <code>TestNGSuite</code>s with ScalaTest's <code>Runner</code>, you must include TestNG's jar file on the class path or runpath.
+ * This version of <code>TestNGSuite</code> was tested with TestNG version 5.7.
+ * </p>
+ *
  * @author Josh Cough
  */
 trait TestNGSuite extends Suite {
