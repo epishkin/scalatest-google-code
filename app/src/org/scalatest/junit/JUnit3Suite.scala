@@ -81,29 +81,18 @@ trait JUnit3Suite extends TestCase with Suite {
   /**
    * Execute this <code>JUnit3Suite</code>.
    *
-   * <p>If <code>testName</code> is <code>None</code>, this trait's implementation of this method
-   * calls these two methods on this object in this order:</p>
-   *
-   * <ol>
-   * <li><code>runNestedSuites(wrappedReporter, stopper, includes, excludes, properties, distributor)</code></li>
-   * <li><code>runTests(testName, wrappedReporter, stopper, includes, excludes, properties)</code></li>
-   * </ol>
-   *
-   * <p>
-   * If <code>testName</code> is <code>Some</code>, then this trait's implementation of this method
-   * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>.
-   * </p>
-   *
    * @param testName an optional name of one test to execute. If <code>None</code>, all tests will be executed.
    *                 I.e., <code>None</code> acts like a wildcard that means execute all tests in this <code>JUnit3Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param includes a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Suite</code>
-   * @param excludes a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Suite</code>
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
+   * @param includes Contains the names of groups to run. This class ignores this parameter.
+   * @param excludes Tests in groups in this Set will not be executed. This class ignores this parameter.
+   *
+   * @param stopper the <code>Stopper</code> may be used to request an early termination of a suite of tests. Currently, this class ignores this parameter.
+   * @param   properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests. This class
+   *                      does not use this parameter.
+   * @param distributor an optional <code>Distributor</code>, into which nested <code>Suite</code>s could be put to be executed
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
-   *         
+   *              Currently, this class ignores this parameter.
    *
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */

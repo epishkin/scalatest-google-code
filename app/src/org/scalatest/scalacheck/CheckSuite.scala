@@ -54,6 +54,11 @@ import org.scalacheck.Test._
  * from <a href="http://code.google.com/p/scalacheck/">http://code.google.com/p/scalacheck/</a>.
  * </p>
  *
+ * <p>
+ * To execute <code>CheckSuite</code>s with ScalaTest's <code>Runner</code>, you must include ScalaCheck's jar file on the class path or runpath.
+ * This version of <code>CheckSuite</code> was tested with ScalaCheck version 1.1.1.
+ * </p>
+ *
  * @author Bill Venners
  */
 trait CheckSuite extends Suite {

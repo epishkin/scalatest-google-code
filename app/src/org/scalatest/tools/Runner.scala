@@ -33,7 +33,7 @@ import org.scalatest.testng.TestNGWrapperSuite
  * The application accepts command line arguments that specify optional <em>user-defined properties</em>, an optional 
  * <em>runpath</em>, zero to many <code>Reporter</code>s, optional lists of test groups to include and/or exclude, zero to many
  * <code>Suite</code> class names, zero to many "members-only" <code>Suite</code> paths, zero to many "wildcard" <code>Suite</code> paths,
- * and zero to many testNG config file paths.
+ * and zero to many TestNG XML config file paths.
  * All of these arguments are described in more detail below. Here's a summary:
  * </p>
  *
@@ -325,11 +325,11 @@ import org.scalatest.testng.TestNGWrapperSuite
  * </p>
  *
  * <p>
- * <strong>Specifying TestNG config file paths</strong>
+ * <strong>Specifying TestNG XML config file paths</strong>
  * </p>
  *
  * <p>
- * If you specify one ore more file paths with <code>-t</code>, <code>Runner</code> will create a <code>org.scalatest.testng.TestNGWrapperSuite</code>,
+ * If you specify one or more file paths with <code>-t</code>, <code>Runner</code> will create a <code>org.scalatest.testng.TestNGWrapperSuite</code>,
  * passing in a <code>List</code> of the specified paths. When executed, the <code>TestNGWrapperSuite</code> will create one <code>TestNG</code> instance
  * and pass each specified file path to it for running. If you include <code>-t</code> arguments, you must include TestNG's jar file on the class path or runpath.
  * The <code>-t</code> argument will enable you to run existing <code>TestNG</code> tests, including tests written in Java, as part of a ScalaTest run.
