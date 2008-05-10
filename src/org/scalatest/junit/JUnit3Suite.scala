@@ -56,7 +56,13 @@ import _root_.junit.textui._
  * }
  * </pre>
  * 
+ * <p>
+ * To execute <code>JUnit3Suite</code>s with ScalaTest's <code>Runner</code>, you must include JUnit3's jar file on the class path or runpath.
+ * This version of <code>JUnit3Suite</code> was tested with JUnit version 3.8.1.
+ * </p>
+ *
  * @author Josh Cough
+ * @author Bill Venners
  */
 trait JUnit3Suite extends TestCase with Suite {
 
@@ -116,7 +122,10 @@ trait JUnit3Suite extends TestCase with Suite {
    * @param   groupsToExclude    tests in groups in this Set will not be executed
    */  
   private def runJUnit(testName: Option[String], reporter: Reporter, groupsToInclude: Set[String], groupsToExclude: Set[String]) {
-    runJUnit(reporter)
+    testName match {
+      case Some(name) => runSingleTest(name, reporter)
+      case None => runJUnit(reporter)
+    }
   }   
    
   private def buildReport( testName: String, t: Option[Throwable] ): Report = {
