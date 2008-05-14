@@ -339,7 +339,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
 
     val wrappedReporter = reporter
 
-    val report = new Report(testName, this.getClass.getName)
+    val report = new Report(getTestNameForReport(testName), "")
 
     wrappedReporter.testStarting(report)
 
@@ -352,7 +352,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
         case FixtureReporterTest(msg, f) => withFixture(f($underscores$, reporter))
       }
 
-      val report = new Report(getTestNameForReport(testName), this.getClass.getName)
+      val report = new Report(getTestNameForReport(testName), "")
 
       wrappedReporter.testSucceeded(report)
     }
