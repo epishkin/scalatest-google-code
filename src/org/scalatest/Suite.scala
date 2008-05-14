@@ -918,9 +918,9 @@ trait Suite {
      
     val report =
       if (hasPublicNoArgConstructor)
-        new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass, None, rerunnable)
+        new Report(getTestNameForReport(testName), "", None, rerunnable)
       else
-        new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass)
+        new Report(getTestNameForReport(testName), "")
 
     wrappedReporter.testStarting(report)
 
@@ -931,9 +931,9 @@ trait Suite {
 
       val report =
         if (hasPublicNoArgConstructor)
-          new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass, None, rerunnable)
+          new Report(getTestNameForReport(testName), "", None, rerunnable)
         else 
-          new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass)
+          new Report(getTestNameForReport(testName), "")
 
       wrappedReporter.testSucceeded(report)
     }
@@ -1045,7 +1045,7 @@ trait Suite {
         for (tn <- testNames) {
           if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (excludes.contains(IgnoreAnnotation) && groups.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
-              wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), getSimpleNameOfThisObjectsClass))
+              wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
             }
             else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, wrappedReporter, stopper, properties)
@@ -1200,7 +1200,7 @@ trait Suite {
 
         val rerunnable =
           if (hasPublicNoArgConstructor)
-            Some(new SuiteRerunner(getSimpleNameOfClass(nestedSuite.getClass.getName)))
+            Some(new SuiteRerunner(nestedSuite.getClass.getName))
           else
             None
 
@@ -1287,8 +1287,7 @@ trait Suite {
     getSimpleNameOfThisObjectsClass + "." + testName
   }
 
-  private[scalatest] def getSimpleNameOfThisObjectsClass = getSimpleNameOfClass(getClass().getName())
-  private def getSimpleNameOfClass(className: String): String = stripDollars(parseSimpleName(className))
+  private def getSimpleNameOfThisObjectsClass = stripDollars(parseSimpleName(getClass().getName()))
 
   /**
    * The total number of tests that are expected to run when this <code>Suite</code>'s <code>execute</code> method is invoked.
