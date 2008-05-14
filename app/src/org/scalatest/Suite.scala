@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import Suite.parseSimpleName
+import Suite.stripDollars
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
@@ -917,9 +918,9 @@ trait Suite {
      
     val report =
       if (hasPublicNoArgConstructor)
-        new Report(getTestNameForReport(testName), this.getClass.getName, None, rerunnable)
+        new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass, None, rerunnable)
       else
-        new Report(getTestNameForReport(testName), this.getClass.getName)
+        new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass)
 
     wrappedReporter.testStarting(report)
 
@@ -930,9 +931,9 @@ trait Suite {
 
       val report =
         if (hasPublicNoArgConstructor)
-          new Report(getTestNameForReport(testName), this.getClass.getName, None, rerunnable)
+          new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass, None, rerunnable)
         else 
-          new Report(getTestNameForReport(testName), this.getClass.getName)
+          new Report(getTestNameForReport(testName), getSimpleNameOfThisObjectsClass)
 
       wrappedReporter.testSucceeded(report)
     }
@@ -1044,7 +1045,7 @@ trait Suite {
         for (tn <- testNames) {
           if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (excludes.contains(IgnoreAnnotation) && groups.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
-              wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), this.getClass.getName))
+              wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), getSimpleNameOfThisObjectsClass))
             }
             else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, wrappedReporter, stopper, properties)
@@ -1199,7 +1200,7 @@ trait Suite {
 
         val rerunnable =
           if (hasPublicNoArgConstructor)
-            Some(new SuiteRerunner(nestedSuite.getClass.getName))
+            Some(new SuiteRerunner(getSimpleNameOfClass(nestedSuite.getClass.getName)))
           else
             None
 
@@ -1286,7 +1287,8 @@ trait Suite {
     getSimpleNameOfThisObjectsClass + "." + testName
   }
 
-  private def getSimpleNameOfThisObjectsClass = parseSimpleName(getClass().getName())
+  private[scalatest] def getSimpleNameOfThisObjectsClass = getSimpleNameOfClass(getClass().getName())
+  private def getSimpleNameOfClass(className: String): String = stripDollars(parseSimpleName(className))
 
   /**
    * The total number of tests that are expected to run when this <code>Suite</code>'s <code>execute</code> method is invoked.
@@ -1715,6 +1717,24 @@ private[scalatest] object Suite {
     }
     catch {
       case nsme: NoSuchMethodException => false
+    }
+  }
+
+  private[scalatest] def stripDollars(s: String): String = {
+    val lastDollarIndex = s.lastIndexOf('$')
+    if (lastDollarIndex < s.length - 1)
+      if (lastDollarIndex == -1) s else s.substring(lastDollarIndex + 1)
+    else {
+      // The last char is a dollar sign
+      val lastNonDollarChar = s.reverse.find(_ != '$')
+      lastNonDollarChar match {
+        case None => s
+        case Some(c) => {
+          val lastNonDollarIndex = s.lastIndexOf(c)
+          if (lastNonDollarIndex == -1) s
+          else stripDollars(s.substring(0, lastNonDollarIndex + 1))
+        }
+      }
     }
   }
 }
