@@ -508,5 +508,26 @@ class SuiteSuite extends Suite {
     }
     assert(result === e)
   }
+
+  def testStripDollars() {
+    expect("MySuite") {
+     Suite.stripDollars("line8$object$$iw$$iw$$iw$$iw$$iw$MySuite") 
+    }
+    expect("MySuite") {
+     Suite.stripDollars("MySuite") 
+    }
+    expect("nested.MySuite") {
+     Suite.stripDollars("nested.MySuite") 
+    }
+    expect("$$$") {
+     Suite.stripDollars("$$$") 
+    }
+    expect("DollarAtEnd") {
+     Suite.stripDollars("DollarAtEnd$") 
+    }
+    expect("DollarAtEnd") {
+     Suite.stripDollars("line8$object$$iw$$iw$$iw$$iw$$iw$DollarAtEnd$")
+    }
+  }
 }
 
