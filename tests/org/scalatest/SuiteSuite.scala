@@ -528,6 +528,9 @@ class SuiteSuite extends Suite {
     expect("DollarAtEnd") {
      Suite.stripDollars("line8$object$$iw$$iw$$iw$$iw$$iw$DollarAtEnd$")
     }
+    expect("MySuite$1") {
+     Suite.stripDollars("MySuite$1")
+    }
   }
 }
 

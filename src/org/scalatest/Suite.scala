@@ -1722,7 +1722,7 @@ private[scalatest] object Suite {
   private[scalatest] def stripDollars(s: String): String = {
     val lastDollarIndex = s.lastIndexOf('$')
     if (lastDollarIndex < s.length - 1)
-      if (lastDollarIndex == -1) s else s.substring(lastDollarIndex + 1)
+      if (lastDollarIndex == -1 || !s.startsWith("line")) s else s.substring(lastDollarIndex + 1)
     else {
       // The last char is a dollar sign
       val lastNonDollarChar = s.reverse.find(_ != '$')
