@@ -243,7 +243,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   }
 
   private def makeReport(report: Report, resourceName: String) {
-       
+
     if (report == null)
       throw new NullPointerException("report is null")
 
@@ -251,7 +251,9 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     val message = report.message
     val throwable = report.throwable
 
-    val stringToPrint = Resources(resourceName, name, message)
+    val resName = if (message.trim.isEmpty) resourceName + "NoMessage" else resourceName
+
+    val stringToPrint = Resources(resName, name, message)
 
     pw.println(stringToPrint)
     throwable match {
