@@ -445,7 +445,7 @@ trait FunSuite extends Suite {
 
     val wrappedReporter = reporter
 
-    val report = new Report(testName, "")
+    val report = new Report(getTestNameForReport(testName), "")
 
     wrappedReporter.testStarting(report)
 
@@ -456,7 +456,7 @@ trait FunSuite extends Suite {
         case ReporterTest(testName, f) => f(reporter)
       }
 
-      val report = new Report(getTestNameForReport(testName), this.getClass.getName)
+      val report = new Report(getTestNameForReport(testName), "")
 
       wrappedReporter.testSucceeded(report)
     }
