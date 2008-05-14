@@ -1284,7 +1284,7 @@ trait Suite {
     if (testName == null)
       throw new NullPointerException("testName was null")
 
-    getSimpleNameOfThisObjectsClass + "." + testName
+    suiteName + "." + testName
   }
 
   private def getSimpleNameOfThisObjectsClass = stripDollars(parseSimpleName(getClass().getName()))
