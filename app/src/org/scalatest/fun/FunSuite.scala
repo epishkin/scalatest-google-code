@@ -540,6 +540,20 @@ trait FunSuite extends Suite with Checkers {
   }
 
   /**
+   * Convert the passed 1-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify[A1,P](testName: String, f: A1 => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1]
+    ) {
+    test(testName, f, testGroups: _*)
+  }
+
+  /**
    * Convert the passed 2-arg function into a property, and register it as a test.
    *
    * @param f the function to be converted into a property and checked

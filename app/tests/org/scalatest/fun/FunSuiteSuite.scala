@@ -614,13 +614,17 @@ class FunSuiteCheckSuite extends FunSuite {
   specify("tests that take properties get executed") {
 
     val a = new FunSuite {
-      var propUsed = false
-      val fun = (a: Int) => { propUsed = true; true }
-      test("this test", fun)
+      var prop1Used = false
+      var prop2Used = false
+      val fun1 = (a: Int) => { prop1Used = true; true }
+      val fun2 = (a: Int) => { prop2Used = true; true }
+      test("this test", fun1)
+      specify("that test", fun2)
     }
-
     a.execute("this test")
-    assert(a.propUsed)
+    a.execute("that test")
+    assert(a.prop1Used)
+    assert(a.prop2Used)
   }
 }
 
