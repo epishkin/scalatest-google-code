@@ -625,6 +625,71 @@ class FunSuiteCheckSuite extends FunSuite {
     a.execute("that test")
     assert(a.prop1Used)
     assert(a.prop2Used)
+
+    val b = new FunSuite {
+      var prop1Used = false
+      var prop2Used = false
+      val fun1 = (a: Int, b: Int) => { prop1Used = true; true }
+      val fun2 = (a: Int, b: Int) => { prop2Used = true; true }
+      test("this test", fun1)
+      specify("that test", fun2)
+    }
+    b.execute("this test")
+    b.execute("that test")
+    assert(b.prop1Used)
+    assert(b.prop2Used)
+
+    val c = new FunSuite {
+      var prop1Used = false
+      var prop2Used = false
+      val fun1 = (a: Int, b: Int, c: Int) => { prop1Used = true; true }
+      val fun2 = (a: Int, b: Int, c: Int) => { prop2Used = true; true }
+      test("this test", fun1)
+      specify("that test", fun2)
+    }
+    c.execute("this test")
+    c.execute("that test")
+    assert(c.prop1Used)
+    assert(c.prop2Used)
+
+    val d = new FunSuite {
+      var prop1Used = false
+      var prop2Used = false
+      val fun1 = (a: Int, b: Int, c: Int, d: Int) => { prop1Used = true; true }
+      val fun2 = (a: Int, b: Int, c: Int, d: Int) => { prop2Used = true; true }
+      test("this test", fun1)
+      specify("that test", fun2)
+    }
+    d.execute("this test")
+    d.execute("that test")
+    assert(d.prop1Used)
+    assert(d.prop2Used)
+
+    val e = new FunSuite {
+      var prop1Used = false
+      var prop2Used = false
+      val fun1 = (a: Int, b: Int, c: Int, d: Int, e: Int) => { prop1Used = true; true }
+      val fun2 = (a: Int, b: Int, c: Int, d: Int, e: Int) => { prop2Used = true; true }
+      test("this test", fun1)
+      specify("that test", fun2)
+    }
+    e.execute("this test")
+    e.execute("that test")
+    assert(e.prop1Used)
+    assert(e.prop2Used)
+
+    val f = new FunSuite {
+      var prop1Used = false
+      var prop2Used = false
+      val fun1 = (a: Int, b: Int, c: Int, d: Int, e: Int, f: Int) => { prop1Used = true; true }
+      val fun2 = (a: Int, b: Int, c: Int, d: Int, e: Int, f: Int) => { prop2Used = true; true }
+      test("this test", fun1)
+      specify("that test", fun2)
+    }
+    f.execute("this test")
+    f.execute("that test")
+    assert(f.prop1Used)
+    assert(f.prop2Used)
   }
 }
 
