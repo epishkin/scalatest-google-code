@@ -19,10 +19,10 @@ import org.scalatest.fun.FunSuite
 import org.scalatest.fun.Group
 import org.scalatest.matchers.SpecsMatchers
 
- /**
+/**
  * @author Bill Venners
  */
-abstract class Spec(specName: String) extends FunSuite with SpecsMatchers {
+abstract class Spec(specName: String) extends FunSuite {
 
   def this() = this("")
 
@@ -41,12 +41,15 @@ abstract class Spec(specName: String) extends FunSuite with SpecsMatchers {
       spec.registerExample(example, f)
     }
   }
+
   class ShouldWrapper(spec: Spec, sut: String) {
     spec.registerSut(sut)
     def should(f: => Unit) {
       f
     }
   }
-  implicit def stringToShouldWrapper(sut: String): ShouldWrapper = new ShouldWrapper(this, sut)
-  implicit def stringToInWrapper(example: String): InWrapper = new InWrapper(this, example)
+
+  implicit def declare(sut: String): ShouldWrapper = new ShouldWrapper(this, sut)
+  implicit def forExample(example: String): InWrapper = new InWrapper(this, example)
 }
+
