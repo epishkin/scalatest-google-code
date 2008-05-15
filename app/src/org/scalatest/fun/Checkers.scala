@@ -33,7 +33,7 @@ import org.scalacheck.Test._
  * Here's an example of using ScalaCheck from a ScalaTest suite:
  * <pre>
  * import org.scalatest.Suite
- * import org.scalatest.props.Checkers
+ * import org.scalatest.fun.Checkers
  * import org.scalacheck.Arbitrary._
  * import org.scalacheck.Prop._
  *
