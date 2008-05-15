@@ -16,7 +16,6 @@
 package org.scalatest.specs
 
 import org.scalatest.fun.FunSuite
-import org.scalatest.matchers.SpecsMatchers
 
 /**
  * @author Bill Venners
