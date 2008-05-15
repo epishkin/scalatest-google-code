@@ -610,5 +610,17 @@ class FunSuiteCheckSuite extends FunSuite {
       check(propEvenIntegerWithBuggyGen)
     }
   }
+
+  specify("tests that take properties get executed") {
+
+    val a = new FunSuite {
+      var propUsed = false
+      val fun = (a: Int) => { propUsed = true; true }
+      test("this test", fun)
+    }
+
+    a.execute("this test")
+    assert(a.propUsed)
+  }
 }
 

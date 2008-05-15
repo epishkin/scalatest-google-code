@@ -195,7 +195,6 @@ trait Checkers {
       case r: PropException => fail()
       case r: GenException => fail()
     }
-    println("********" + result)
   }
 
   /**
