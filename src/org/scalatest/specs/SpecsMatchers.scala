@@ -1,4 +1,4 @@
-package org.scalatest.matchers
+package org.scalatest.specs
 
 import org.specs.specification._
 import org.specs.matcher._
