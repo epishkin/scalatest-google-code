@@ -15,12 +15,12 @@
  */
 package org.scalatest.specs
 
-import org.scalatest.fun.FunSuite
+import org.scalatest.Suite
 
 /**
  * @author Bill Venners
  */
-abstract class Spec(specName: String) extends FunSuite {
+abstract class SpecSuite(specName: String) extends Suite {
 
   def this() = this("")
 
@@ -34,8 +34,8 @@ abstract class Spec(specName: String) extends FunSuite {
     println("registered doAfter")
   }
 
-  protected def skip(f: => Unit) {
-    println("registered skip")
+  protected def ignore(f: => Unit) {
+    println("registered ignore")
   }
 
   private def registerShould(sut: String) {
@@ -58,7 +58,7 @@ abstract class Spec(specName: String) extends FunSuite {
     println("registered example: " + example)
   }
 
-  class InWrapper(spec: Spec, example: String) {
+  class InWrapper(spec: SpecSuite, example: String) {
     def >>(f: => Unit) {
       in(f)
     }
@@ -67,7 +67,7 @@ abstract class Spec(specName: String) extends FunSuite {
     }
   }
 
-  class CanWrapper(spec: Spec, sut: String) {
+  class CanWrapper(spec: SpecSuite, sut: String) {
     def can(f: => Unit) {
       spec.registerCan(sut)
       f
@@ -75,7 +75,7 @@ abstract class Spec(specName: String) extends FunSuite {
     }
   }
 
-  class ShouldWrapper(spec: Spec, sut: String) {
+  class ShouldWrapper(spec: SpecSuite, sut: String) {
     def should(f: => Unit) {
       spec.registerShould(sut)
       f
