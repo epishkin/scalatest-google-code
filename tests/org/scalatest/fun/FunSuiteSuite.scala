@@ -566,6 +566,7 @@ class FunSuiteSuite extends Suite {
   }
 }
 
+/*
 class FunSuiteCheckSuite extends FunSuite {
 
   test("check method callable directly on FunSuite") {
@@ -611,4 +612,5 @@ class FunSuiteCheckSuite extends FunSuite {
     }
   }
 }
+*/
 
