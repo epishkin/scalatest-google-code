@@ -569,6 +569,21 @@ trait FunSuite extends Suite with Checkers {
   }
 
   /**
+   * Convert the passed 2-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify[A1,A2,P](testName: String, f: (A1,A2) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2]
+    ) {
+    test(testName, f, testGroups: _*)
+  }
+
+  /**
    * Convert the passed 3-arg function into a property, and register it as a test.
    *
    * @param f the function to be converted into a property and checked
@@ -582,6 +597,22 @@ trait FunSuite extends Suite with Checkers {
       a3: Arb[A3] => Arbitrary[A3]
     ) {
     test(testName, Prop.property(f)(p, a1, a2, a3))
+  }
+
+  /**
+   * Convert the passed 3-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify[A1,A2,A3,P](testName: String, f: (A1,A2,A3) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3]
+    ) {
+    test(testName, f, testGroups: _*)
   }
 
   /**
@@ -602,6 +633,23 @@ trait FunSuite extends Suite with Checkers {
   }
 
   /**
+   * Convert the passed 4-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify[A1,A2,A3,A4,P](testName: String, f: (A1,A2,A3,A4) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3],
+      a4: Arb[A4] => Arbitrary[A4]
+    ) {
+    test(testName, f, testGroups: _*)
+  }
+
+  /**
    * Convert the passed 5-arg function into a property, and register it as a test.
    *
    * @param f the function to be converted into a property and checked
@@ -617,6 +665,24 @@ trait FunSuite extends Suite with Checkers {
       a5: Arb[A5] => Arbitrary[A5]
     ) {
     test(testName, Prop.property(f)(p, a1, a2, a3, a4, a5))
+  }
+
+  /**
+   * Convert the passed 5-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify[A1,A2,A3,A4,A5,P](testName: String, f: (A1,A2,A3,A4,A5) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3],
+      a4: Arb[A4] => Arbitrary[A4],
+      a5: Arb[A5] => Arbitrary[A5]
+    ) {
+    test(testName, f, testGroups: _*)
   }
 
   /**
@@ -639,6 +705,25 @@ trait FunSuite extends Suite with Checkers {
   }
 
   /**
+   * Convert the passed 6-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify[A1,A2,A3,A4,A5,A6,P](testName: String, f: (A1,A2,A3,A4,A5,A6) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3],
+      a4: Arb[A4] => Arbitrary[A4],
+      a5: Arb[A5] => Arbitrary[A5],
+      a6: Arb[A6] => Arbitrary[A6]
+    ) {
+    test(testName, f, testGroups: _*)
+  }
+
+  /**
    * Register as a test a property with the given testing parameters.
    *
    * @param p the property to check
@@ -652,6 +737,17 @@ trait FunSuite extends Suite with Checkers {
   }
 
   /**
+   * Register as a test a property with the given testing parameters (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param p the property to check
+   * @param prms the test parameters
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify(testName: String, p: Prop, prms: Params, testGroups: Group*) {
+    test(testName, p, prms, testGroups: _*)
+  }
+
+  /**
    * Register a property as a test.
    *
    * @param p the property to check
@@ -659,5 +755,15 @@ trait FunSuite extends Suite with Checkers {
    */
   def test(testName: String, p: Prop, testGroups: Group*) {
     test(testName, p, Test.defaultParams)
+  }
+
+  /**
+   * Register a property as a test (a convenience method for those who prefer "specify" to "test").
+   *
+   * @param p the property to check
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def specify(testName: String, p: Prop, testGroups: Group*) {
+    test(testName, p, testGroups: _*)
   }
 }
