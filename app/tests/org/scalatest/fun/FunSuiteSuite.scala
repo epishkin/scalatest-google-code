@@ -566,10 +566,9 @@ class FunSuiteSuite extends Suite {
   }
 }
 
-/*
 class FunSuiteCheckSuite extends FunSuite {
 
-  test("check method callable directly on FunSuite") {
+  specify("Checkers' check methods must be callable directly from FunSuite") {
 
     // Ensure a success does not fail in an exception
     val propConcatLists = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
@@ -612,5 +611,4 @@ class FunSuiteCheckSuite extends FunSuite {
     }
   }
 }
-*/
 
