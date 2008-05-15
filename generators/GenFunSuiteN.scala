@@ -70,9 +70,6 @@ $endif$
  */
 trait FunSuite$num$[$typeParams$] extends FunSuite {
 
-  // Until it shows up in Predef
-  private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
-
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
   private trait Test

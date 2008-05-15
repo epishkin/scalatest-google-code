@@ -286,9 +286,6 @@ abstract class Group(val name: String)
  */
 trait FunSuite extends Suite {
 
-  // Until it shows up in Predef
-  private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
-
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
   private trait Test
