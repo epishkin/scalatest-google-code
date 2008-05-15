@@ -16,6 +16,9 @@
 package org.scalatest.fun
 
 import org.scalatest._
+import org.scalacheck._
+import Arbitrary._
+import Prop._
 
 /*
 class SuiteFriend(suite: Suite) {
@@ -559,6 +562,52 @@ class FunSuiteSuite extends Suite {
         test("test this") {}
         testWithReporter("test this") { reporter => () }
       }
+    }
+  }
+}
+
+class FunSuiteCheckSuite extends FunSuite {
+
+  test("check method callable directly on FunSuite") {
+
+    // Ensure a success does not fail in an exception
+    val propConcatLists = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+    check(propConcatLists)
+
+    // Ensure a failed property does throw an assertion error
+    val propConcatListsBadly = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size + 1)
+    intercept(classOf[AssertionError]) {
+      check(propConcatListsBadly)
+    }
+
+    // Ensure a property that throws an exception causes an assertion error
+    val propConcatListsExceptionally = property((a: List[Int], b: List[Int]) => throw new StringIndexOutOfBoundsException)
+    intercept(classOf[AssertionError]) {
+      check(propConcatListsExceptionally)
+    }
+
+    // Ensure a property that doesn't generate enough test cases throws an assertion error
+    val propTrivial = property( (n: Int) => (n == 0) ==> (n == 0) )
+    intercept(classOf[AssertionError]) {
+      check(propTrivial)
+    }
+
+    // Make sure a Generator that doesn't throw an exception works OK
+    val smallInteger = Gen.choose(0, 100)
+    val propSmallInteger = Prop.forAll(smallInteger)(n => n >= 0 && n <= 100)
+    check(propSmallInteger)
+
+    // Make sure a Generator that doesn't throw an exception works OK
+    val smallEvenInteger = Gen.choose(0, 200) suchThat (_ % 2 == 0)
+    val propEvenInteger = Prop.forAll(smallEvenInteger)(n => n >= 0 && n <= 200 && n % 2 == 0)
+    check(propEvenInteger)
+
+    // Make sure a Generator t throws an exception results in an AssertionError
+    // val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (throw new ArrayIndexOutOfBoundsException)
+    val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (n => throw new ArrayIndexOutOfBoundsException)
+    val propEvenIntegerWithBuggyGen = Prop.forAll(smallEvenIntegerWithBug)(n => n >= 0 && n <= 200 && n % 2 == 0)
+    intercept(classOf[AssertionError]) {
+      check(propEvenIntegerWithBuggyGen)
     }
   }
 }

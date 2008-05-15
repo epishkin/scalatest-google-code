@@ -18,6 +18,7 @@ package org.scalatest.fun
 import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
+import org.scalatest.props.Checkers
 
 /**
  * Abstract class whose subclasses can be as to <code>FunSuite</code> and <code>FunSuiteN</code>'s test
@@ -284,7 +285,7 @@ abstract class Group(val name: String)
  *
  * @author Bill Venners
  */
-trait FunSuite extends Suite {
+trait FunSuite extends Suite with Checkers {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
