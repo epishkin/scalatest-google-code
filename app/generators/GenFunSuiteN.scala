@@ -68,7 +68,7 @@ $endif$
  *
  * @author Bill Venners
  */
-trait FunSuite$num$[$typeParams$] extends Suite {
+trait FunSuite$num$[$typeParams$] extends FunSuite {
 
   // Until it shows up in Predef
   private def require(b: Boolean, msg: String) { if (!b) throw new IllegalArgumentException(msg) }
@@ -123,7 +123,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def test(testName: String, testGroups: Group*)(f: => Unit) {
+  protected override def test(testName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -148,7 +148,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def specify(testName: String, testGroups: Group*)(f: => Unit) {
+  protected override def specify(testName: String, testGroups: Group*)(f: => Unit) {
     test(testName, testGroups: _*)(f)
   }
 
@@ -161,7 +161,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def testWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
+  protected override def testWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
@@ -187,7 +187,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def specifyWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
+  protected override def specifyWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
     testWithReporter(testName, testGroups: _*)(f)
   }
 
@@ -201,7 +201,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
+  protected override def ignore(testName: String, testGroups: Group*)(f: => Unit) {
 
     test(testName)(f) // Call test without passing the groups
 
@@ -224,7 +224,7 @@ trait FunSuite$num$[$typeParams$] extends Suite {
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def ignoreWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
+  protected override def ignoreWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
 
     testWithReporter(testName)(f) // Call testWithReporter without passing the groups
 
