@@ -35,6 +35,18 @@ object WeakAsAKitten extends Group("org.scalatest.WeakAsAKitten")
 
 class FunSuiteSuite extends Suite {
 
+  def testSpecifyMethods() {
+
+    val a = new FunSuite {
+      specify("test this") {}
+      specifyWithReporter("test that") { reporter => () }
+    }
+
+    expect(List("test this", "test that")) {
+      a.testNames.elements.toList
+    }
+  }
+
   def testTestNames() {
 
     val a = new FunSuite {

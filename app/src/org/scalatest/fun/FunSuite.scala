@@ -344,6 +344,19 @@ trait FunSuite extends Suite {
   }
 
   /**
+   * Register a test with the specified name, optional groups, and function value that takes no arguments (a convenience
+   * method for those who prefer "specify" to "test").
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed test name must not have been registered previously on
+   * this <code>FunSuite</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def specify(testName: String, testGroups: Group*)(f: => Unit) {
+    test(testName, testGroups: _*)(f)
+  }
+
+  /**
    * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code>.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
    * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
@@ -366,6 +379,20 @@ trait FunSuite extends Suite {
       groupsMap += (testName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+  }
+
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code> (a
+   * convenience method for those who prefer "specify" to "test").
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
+   * The passed test name must not have been registered previously on
+   * this <code>FunSuite</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def specifyWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
+    testWithReporter(testName, testGroups: _*)(f)
   }
 
   /**
