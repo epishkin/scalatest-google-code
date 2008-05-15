@@ -284,7 +284,7 @@ abstract class Group(val name: String)
  *
  * @author Bill Venners
  */
-trait FunSuite extends Suite {
+trait FunSuite extends Suite with Checkers {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
