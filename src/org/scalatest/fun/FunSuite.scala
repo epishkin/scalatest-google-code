@@ -18,6 +18,12 @@ package org.scalatest.fun
 import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
+import org.scalacheck.Arbitrary
+import org.scalacheck.Arb
+import org.scalacheck.Prop
+import org.scalacheck.Test.Params
+import org.scalacheck.Test
+import org.scalacheck.Test._
 
 /**
  * Abstract class whose subclasses can be as to <code>FunSuite</code> and <code>FunSuiteN</code>'s test
@@ -518,4 +524,126 @@ trait FunSuite extends Suite with Checkers {
    * </p>
    */
   override def groups: Map[String, Set[String]] = atomic.get.groupsMap
+
+  /**
+   * Convert the passed 1-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test[A1,P](testName: String, f: A1 => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1]
+    ) {
+    test(testName, Prop.property(f)(p, a1))
+  }
+
+  /**
+   * Convert the passed 2-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test[A1,A2,P](testName: String, f: (A1,A2) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2]
+    ) {
+    test(testName, Prop.property(f)(p, a1, a2))
+  }
+
+  /**
+   * Convert the passed 3-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test[A1,A2,A3,P](testName: String, f: (A1,A2,A3) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3]
+    ) {
+    test(testName, Prop.property(f)(p, a1, a2, a3))
+  }
+
+  /**
+   * Convert the passed 4-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test[A1,A2,A3,A4,P](testName: String, f: (A1,A2,A3,A4) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3],
+      a4: Arb[A4] => Arbitrary[A4]
+    ) {
+    test(testName, Prop.property(f)(p, a1, a2, a3, a4))
+  }
+
+  /**
+   * Convert the passed 5-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test[A1,A2,A3,A4,A5,P](testName: String, f: (A1,A2,A3,A4,A5) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3],
+      a4: Arb[A4] => Arbitrary[A4],
+      a5: Arb[A5] => Arbitrary[A5]
+    ) {
+    test(testName, Prop.property(f)(p, a1, a2, a3, a4, a5))
+  }
+
+  /**
+   * Convert the passed 6-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test[A1,A2,A3,A4,A5,A6,P](testName: String, f: (A1,A2,A3,A4,A5,A6) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arb[A1] => Arbitrary[A1],
+      a2: Arb[A2] => Arbitrary[A2],
+      a3: Arb[A3] => Arbitrary[A3],
+      a4: Arb[A4] => Arbitrary[A4],
+      a5: Arb[A5] => Arbitrary[A5],
+      a6: Arb[A6] => Arbitrary[A6]
+    ) {
+    test(testName, Prop.property(f)(p, a1, a2, a3, a4, a5, a6))
+  }
+
+  /**
+   * Register as a test a property with the given testing parameters.
+   *
+   * @param p the property to check
+   * @param prms the test parameters
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test(testName: String, p: Prop, prms: Params, testGroups: Group*) {
+    test(testName, testGroups: _*) {
+      check(p, prms)
+    }
+  }
+
+  /**
+   * Register a property as a test.
+   *
+   * @param p the property to check
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def test(testName: String, p: Prop, testGroups: Group*) {
+    test(testName, p, Test.defaultParams)
+  }
 }
