@@ -1,4 +1,4 @@
-package org.scalatest.props
+package org.scalatest.fun
 
 import org.scalatest.Suite
 import org.scalacheck.Arbitrary

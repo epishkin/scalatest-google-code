@@ -18,7 +18,6 @@ package org.scalatest.fun
 import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
-import org.scalatest.props.Checkers
 
 /**
  * Abstract class whose subclasses can be as to <code>FunSuite</code> and <code>FunSuiteN</code>'s test
