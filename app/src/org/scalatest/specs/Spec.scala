@@ -22,7 +22,7 @@ import org.scalatest.matchers.SpecsMatchers
  /**
  * @author Bill Venners
  */
-abstract class Spec(specName: String) extends FunSuite {
+abstract class Spec(specName: String) extends FunSuite with SpecsMatchers {
 
   def this() = this("")
 
