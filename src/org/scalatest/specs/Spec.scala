@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.spec
+package org.scalatest.specs
 
 import org.scalatest.fun.FunSuite
-import org.scalatest.fun.Group
 import org.scalatest.matchers.SpecsMatchers
 
 /**
@@ -37,6 +36,9 @@ abstract class Spec(specName: String) extends FunSuite {
   }
 
   class InWrapper(spec: Spec, example: String) {
+    def >>(f: => Unit) {
+      in(f)
+    }
     def in(f: => Unit) {
       spec.registerExample(example, f)
     }
