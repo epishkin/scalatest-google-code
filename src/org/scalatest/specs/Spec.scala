@@ -27,8 +27,32 @@ abstract class Spec(specName: String) extends FunSuite {
 
   override def suiteName = specName
 
-  private def registerSut(sut: String) {
-    println("registered sut: " + sut)
+  protected def doBefore(f: => Unit) {
+    println("registered doBefore")
+  }
+
+  protected def doAfter(f: => Unit) {
+    println("registered doAfter")
+  }
+
+  protected def skip(f: => Unit) {
+    println("registered skip")
+  }
+
+  private def registerShould(sut: String) {
+    println("registered sut with should: " + sut)
+  }
+
+  private def registerCan(sut: String) {
+    println("registered sut with can: " + sut)
+  }
+
+  private def unregisterShould(sut: String) {
+    println("unregistered sut with should: " + sut)
+  }
+
+  private def unregisterCan(sut: String) {
+    println("unregistered sut with can: " + sut)
   }
 
   private def registerExample(example: String, f: => Unit) {
@@ -44,14 +68,24 @@ abstract class Spec(specName: String) extends FunSuite {
     }
   }
 
-  class ShouldWrapper(spec: Spec, sut: String) {
-    spec.registerSut(sut)
-    def should(f: => Unit) {
+  class CanWrapper(spec: Spec, sut: String) {
+    def can(f: => Unit) {
+      spec.registerCan(sut)
       f
+      spec.unregisterCan(sut)
+    }
+  }
+
+  class ShouldWrapper(spec: Spec, sut: String) {
+    def should(f: => Unit) {
+      spec.registerShould(sut)
+      f
+      spec.unregisterShould(sut)
     }
   }
 
   implicit def declare(sut: String): ShouldWrapper = new ShouldWrapper(this, sut)
   implicit def forExample(example: String): InWrapper = new InWrapper(this, example)
+  implicit def declareCan(sut: String): CanWrapper = new CanWrapper(this, sut)
 }
 
