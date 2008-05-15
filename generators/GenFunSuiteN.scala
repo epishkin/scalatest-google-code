@@ -140,6 +140,19 @@ trait FunSuite$num$[$typeParams$] extends Suite {
   }
 
   /**
+   * Register a test with the specified name, optional groups, and function value that takes no
+   * arguments (a convenience method for those who prefer "specify" to "test").
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def specify(testName: String, testGroups: Group*)(f: => Unit) {
+    test(testName, testGroups: _*)(f)
+  }
+
+  /**
    * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code>.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
    * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
@@ -162,6 +175,20 @@ trait FunSuite$num$[$typeParams$] extends Suite {
       groupsMap += (testName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+  }
+
+  /**
+   * Register a test with the specified name, optional groups, and function value that takes
+   * a <code>Reporter</code> (a convenience method for those who prefer "specify" to "test").
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
+   * The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def specifyWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
+    testWithReporter(testName, testGroups: _*)(f)
   }
 
   /**
@@ -237,6 +264,22 @@ trait FunSuite$num$[$typeParams$] extends Suite {
   }
 
   /**
+   * Register a test with the specified name, optional groups, and function value that
+   * takes $num$ argument$if (moreThanOne)$s$endif$. (a convenience method for those who
+   * prefer "specify" to "test").
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed test name must not have been registered previously on
+   * this <code>FunSuite$num$</code> instance. This trait will not invoke any test functions registered via this method directly, but 
+   * will instead pass each test function registered with this method to <code>withFixture</code>. It is the responsibility of
+   * subclass implementations of <code>withFixture</code> to invoke the test method, passing in the required fixture object$if (moreThanOne)$s$endif$.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def specifyWithFixture(testName: String, testGroups: Group*)(f: ($typeParams$) => Unit) {
+    testWithFixture(testName, testGroups: _*)(f)
+  }
+
+  /**
    * Register a test with the specified name, optional groups, and function value that takes $num$ argument$if (moreThanOne)$s$endif$ and a <code>Reporter</code>.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
    * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be partially applied to the function value, and 
@@ -261,6 +304,23 @@ trait FunSuite$num$[$typeParams$] extends Suite {
       groupsMap += (testName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+  }
+
+  /**
+   * Register a test with the specified name, optional groups, and function value that
+   * takes $num$ argument$if (moreThanOne)$s$endif$ and a <code>Reporter</code>. (a convenience method
+   * for those who prefer "specify" to "test").
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be partially applied to the function value, and 
+   * the resulting function will be passed to <code>withFixture</code>. Thus, this trait will not invoke any test functions registered via this method directly, but 
+   * will instead pass each test function registered with this method to <code>withFixture</code>. It is the responsibility of
+   * subclass implementations of <code>withFixture</code> to invoke the test method, passing in the required fixture object$if (moreThanOne)$s$endif$.
+   * The passed test name must not have been registered previously on this <code>FunSuite$num$</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   */
+  protected def specifyWithFixtureAndReporter(testName: String, testGroups: Group*)(f: ($typeParams$, Reporter) => Unit) {
+    testWithFixtureAndReporter(testName, testGroups: _*)(f)
   }
 
   /**
