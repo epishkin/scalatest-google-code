@@ -19,6 +19,22 @@ import org.scalatest._
 
 class FunSuite1Suite extends Suite {
 
+  def testAllSpecifyNames() {
+    val a = new FunSuite1[Int] {
+      specify("test this") {}
+      specifyWithReporter("test that") { reporter => () }
+      specifyWithFixture("test with fixture") { fixture => () }
+      specifyWithFixtureAndReporter("test with fixture and reporter") { (fixture, reporter) => () }
+      def withFixture(f: Int => Unit) {
+        f(8)
+      }
+    }
+
+    expect(List("test this", "test that", "test with fixture", "test with fixture and reporter")) {
+      a.testNames.elements.toList
+    }
+  }
+
   def testAllTestNames() {
     val a = new FunSuite1[Int] {
       test("test this") {}
