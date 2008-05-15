@@ -3,7 +3,30 @@ package org.scalatest.junit
 import _root_.junit.framework.Assert
 
 /**
- * A set of assert methods.  Messages are only displayed when an assert fails.
+ * Trait that provides convenient access to the JUnit 3's assertion methods, which
+ * are declared as static methods in <code>junit.framework.Assert</code>. You must
+ * include JUnit 3's JAR file on the class or run path to execute suites mixing in this trait.
+ * For example, you could use JUnit 3 assertions in a <code>Suite</code> like this:
+ * <pre>
+ * import org.scalatest.Suite
+ * import org.scalatest.junit.JUnit3Asserts
+ *
+ * class MySuite extends Suite with JUnit3Asserts {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assertEquals(2, sum)
+ *     assertEquals(4, sum + 2)
+ *   }
+ *
+ *   def testSubtraction() {
+ *     val diff = 4 - 1
+ *     assertEquals(3, diff)
+ *     assertEquals(1, diff - 2)
+ *   }
+ * }
+ * </pre>
+ *
  */
 trait JUnit3Asserts {
 
