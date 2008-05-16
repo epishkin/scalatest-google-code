@@ -146,20 +146,23 @@ abstract class Group(val name: String)
  *
  * class StringSuite extends FunSuite {
  *
- *   specify("startsWith", (a: String, b: String) => (a+b).startsWith(a))
+ *   specify("startsWith", (a: String, b: String) => (a + b).startsWith(a))
  *
- *   specify("endsWith", (a: String, b: String) => (a+b).endsWith(b))
+ *   specify("endsWith", (a: String, b: String) => (a + b).endsWith(b))
  *
- *   specify("concat", (a: String, b: String) => 
- *     (a + b).length > a.length && (a+b).length > b.length
+ *   specify(
+ *     "i don't think this will pass. check these",
+ *     (a: String, b: String) => (a + b).length > a.length && (a + b).length > b.length
  *   )
  *
- *   specify("substring", (a: String, b: String) => 
- *     (a + b).substring(a.length) == b
+ *   specify(
+ *     "substring should start from passed index and go to end of string",
+ *     (a: String, b: String) => (a + b).substring(a.length) == b
  *   )
  *
- *   specify("substring", (a: String, b: String, c: String) =>
- *     (a + b + c).substring(a.length, a.length+b.length) == b
+ *   specify(
+ *     "substring should be commutative",
+ *       (a: String, b: String, c: String) => (a + b + c).substring(a.length, a.length + b.length) == b
  *   )
  * }
  * </pre>
