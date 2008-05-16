@@ -3,15 +3,14 @@ package org.scalatest.junit
 import _root_.junit.framework.Assert
 
 /**
- * Trait that provides convenient access to the JUnit 3's assertion methods, which
- * are declared as static methods in <code>junit.framework.Assert</code>. You must
- * include JUnit 3's JAR file on the class or run path to execute suites mixing in this trait.
- * For example, you could use JUnit 3 assertions in a <code>Suite</code> like this:
+ * Trait that provides convenient access to the JUnit's assertion methods. You need not
+ * include JUnit's JAR file on the class or run path to execute suites mixing in this trait.
+ * For example, you could use JUnit assertions in a <code>Suite</code> like this:
  * <pre>
  * import org.scalatest.Suite
- * import org.scalatest.junit.JUnit3Asserts
+ * import org.scalatest.junit.JUnitAsserts
  *
- * class MySuite extends Suite with JUnit3Asserts {
+ * class MySuite extends Suite with JUnitAsserts {
  *
  *   def testAddition() {
  *     val sum = 1 + 1
@@ -28,7 +27,7 @@ import _root_.junit.framework.Assert
  * </pre>
  *
  */
-trait JUnit3Asserts {
+trait JUnitAsserts {
 
   /**
    * Asserts that a condition is true. If it isn't it throws
