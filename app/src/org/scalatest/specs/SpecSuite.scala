@@ -24,6 +24,53 @@ abstract class SpecSuite(specName: String) extends Suite {
 
   def this() = this("")
 
+  class Example(name: String) {
+    def in(f: => Unit) {
+      println("it should " + name)
+    }
+  }
+
+  class CousinIt {
+    def should(exampleName: String) = new Example(exampleName)
+    def should(behaveWord: CousinBehave) = new CousinBehave
+  }
+
+  class CousinBehave {
+    def like(sharedBehaviorName: String) = println("it should behave like " + sharedBehaviorName)
+  }
+
+  protected def it = new CousinIt
+
+  protected def behave = new CousinBehave
+
+  protected def describe(name: String)(f: => Unit) { println("describing " + name); f }
+  protected def share(name: String)(f: => Unit) { println("sharing " + name); f }
+
+/*
+This is really neat. It enables this code:
+
+import org.scalatest.specs.SpecSuite
+
+class MySuite extends SpecSuite {
+
+  share("a non-empty stack") {
+    it should "return the top when sent #peek" in {
+      println("and how")
+    }
+  }
+
+  describe("Stack") {
+
+    it should "work right the first time" in {
+      println("and how")
+    }
+
+    it should behave like "a non-empty stack"
+  }
+}
+*/
+
+/*
   override def suiteName = specName
 
   protected def doBefore(f: => Unit) {
@@ -86,5 +133,6 @@ abstract class SpecSuite(specName: String) extends Suite {
   implicit def declare(sut: String): ShouldWrapper = new ShouldWrapper(this, sut)
   implicit def forExample(example: String): InWrapper = new InWrapper(this, example)
   implicit def declareCan(sut: String): CanWrapper = new CanWrapper(this, sut)
+*/
 }
 
