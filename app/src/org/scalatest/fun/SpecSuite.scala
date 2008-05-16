@@ -15,9 +15,33 @@
  */
 package org.scalatest.fun
 
-import org.scalatest.Suite
-
 /**
+ * Trait that facilitates writing specification-oriented tests in a literary-programming style.
+ *
+ * <pre>
+ * import org.scalatest.fun.SpecSuite
+ *
+ * class MySuite extends SpecSuite {
+ *
+ *   share("a non-empty stack") {
+ *     it should "return the top when sent #peek" in {
+ *       println("and how")
+ *     }
+ *   }
+ *
+ *   describe("Stack") {
+ *
+ *     before each {
+ *       println("do the setup thing")
+ *     }
+ *
+ *     it should "work right the first time" in {
+ *       println("and how")
+ *     }
+ *
+ *     it should behave like "a non-empty stack"
+ *   }
+ * }
  * @author Bill Venners
  */
 abstract class SpecSuite(specName: String) extends Suite {
@@ -39,36 +63,20 @@ abstract class SpecSuite(specName: String) extends Suite {
     def like(sharedBehaviorName: String) = println("it should behave like " + sharedBehaviorName)
   }
 
+  class CousinBefore {
+    def each(f: => Unit) {
+      println("do something before each example")
+    }
+  }
+
   protected def it = new CousinIt
 
   protected def behave = new CousinBehave
+  protected def before = new CousinBefore
 
   protected def describe(name: String)(f: => Unit) { println("describing " + name); f }
   protected def share(name: String)(f: => Unit) { println("sharing " + name); f }
 
-/*
-This is really neat. It enables this code:
-
-import org.scalatest.specs.SpecSuite
-
-class MySuite extends SpecSuite {
-
-  share("a non-empty stack") {
-    it should "return the top when sent #peek" in {
-      println("and how")
-    }
-  }
-
-  describe("Stack") {
-
-    it should "work right the first time" in {
-      println("and how")
-    }
-
-    it should behave like "a non-empty stack"
-  }
-}
-*/
 
 /*
   override def suiteName = specName

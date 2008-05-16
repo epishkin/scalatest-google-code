@@ -151,11 +151,6 @@ abstract class Group(val name: String)
  *   specify("endsWith", (a: String, b: String) => (a + b).endsWith(b))
  *
  *   specify(
- *     "i don't think this will pass. check these",
- *     (a: String, b: String) => (a + b).length > a.length && (a + b).length > b.length
- *   )
- *
- *   specify(
  *     "substring should start from passed index and go to end of string",
  *     (a: String, b: String) => (a + b).substring(a.length) == b
  *   )
