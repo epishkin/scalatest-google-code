@@ -19,7 +19,7 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 import org.scalacheck.Arbitrary
-import org.scalacheck.Arb
+import org.scalacheck.Shrink
 import org.scalacheck.Prop
 import org.scalacheck.Test.Params
 import org.scalacheck.Test
@@ -98,13 +98,13 @@ abstract class Group(val name: String)
  *
  * class MySuite extends FunSuite {
  *
- *   specify("addition") {
+ *   specify("integer addition should work like math so long as no overflow") {
  *     val sum = 1 + 1
  *     assert(sum === 2)
  *     assert(sum + 2 === 4)
  *   }
  *
- *   specify("subtraction") {
+ *   specify("integer subtraction should work like math so long as no overflow") {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *     assert(diff - 2 === 1)
@@ -139,16 +139,16 @@ abstract class Group(val name: String)
  *
  * <p>
  * You can also register properties as tests, using either "test" or "specify". Here's an
- * example that uses "specify":
+ * example that uses both:
  * </p>
  * <pre>
  * import org.scalatest.fun.FunSuite
  *
  * class StringSuite extends FunSuite {
  *
- *   specify("startsWith", (a: String, b: String) => (a + b).startsWith(a))
+ *   test("startsWith", (a: String, b: String) => (a + b).startsWith(a))
  *
- *   specify("endsWith", (a: String, b: String) => (a + b).endsWith(b))
+ *   test("endsWith", (a: String, b: String) => (a + b).endsWith(b))
  *
  *   specify(
  *     "substring should start from passed index and go to end of string",
@@ -156,8 +156,8 @@ abstract class Group(val name: String)
  *   )
  *
  *   specify(
- *     "substring should be commutative",
- *       (a: String, b: String, c: String) => (a + b + c).substring(a.length, a.length + b.length) == b
+ *     "substring should start at passed index and extract passed number of chars",
+ *     (a: String, b: String, c: String) => (a + b + c).substring(a.length, a.length + b.length) == b
  *   )
  * }
  * </pre>
@@ -614,9 +614,9 @@ trait FunSuite extends Suite with Checkers {
   def test[A1,P](testName: String, f: A1 => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1]
+      a1: Arbitrary[A1], s1: Shrink[A1]
     ) {
-    test(testName, Prop.property(f)(p, a1))
+    test(testName, Prop.property(f)(p, a1, s1))
   }
 
   /**
@@ -628,7 +628,7 @@ trait FunSuite extends Suite with Checkers {
   def specify[A1,P](testName: String, f: A1 => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1]
+      a1: Arbitrary[A1], s1: Shrink[A1]
     ) {
     test(testName, f, testGroups: _*)
   }
@@ -642,10 +642,10 @@ trait FunSuite extends Suite with Checkers {
   def test[A1,A2,P](testName: String, f: (A1,A2) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2]
     ) {
-    test(testName, Prop.property(f)(p, a1, a2))
+    test(testName, Prop.property(f)(p, a1, s1, a2, s2))
   }
 
   /**
@@ -657,8 +657,8 @@ trait FunSuite extends Suite with Checkers {
   def specify[A1,A2,P](testName: String, f: (A1,A2) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2]
     ) {
     test(testName, f, testGroups: _*)
   }
@@ -672,11 +672,11 @@ trait FunSuite extends Suite with Checkers {
   def test[A1,A2,A3,P](testName: String, f: (A1,A2,A3) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3]
     ) {
-    test(testName, Prop.property(f)(p, a1, a2, a3))
+    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3))
   }
 
   /**
@@ -688,9 +688,9 @@ trait FunSuite extends Suite with Checkers {
   def specify[A1,A2,A3,P](testName: String, f: (A1,A2,A3) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3]
     ) {
     test(testName, f, testGroups: _*)
   }
@@ -704,12 +704,12 @@ trait FunSuite extends Suite with Checkers {
   def test[A1,A2,A3,A4,P](testName: String, f: (A1,A2,A3,A4) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4]
     ) {
-    test(testName, Prop.property(f)(p, a1, a2, a3, a4))
+    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4))
   }
 
   /**
@@ -721,10 +721,10 @@ trait FunSuite extends Suite with Checkers {
   def specify[A1,A2,A3,A4,P](testName: String, f: (A1,A2,A3,A4) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4]
     ) {
     test(testName, f, testGroups: _*)
   }
@@ -738,13 +738,13 @@ trait FunSuite extends Suite with Checkers {
   def test[A1,A2,A3,A4,A5,P](testName: String, f: (A1,A2,A3,A4,A5) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4],
-      a5: Arb[A5] => Arbitrary[A5]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5]
     ) {
-    test(testName, Prop.property(f)(p, a1, a2, a3, a4, a5))
+    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5))
   }
 
   /**
@@ -756,11 +756,11 @@ trait FunSuite extends Suite with Checkers {
   def specify[A1,A2,A3,A4,A5,P](testName: String, f: (A1,A2,A3,A4,A5) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4],
-      a5: Arb[A5] => Arbitrary[A5]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5]
     ) {
     test(testName, f, testGroups: _*)
   }
@@ -774,14 +774,14 @@ trait FunSuite extends Suite with Checkers {
   def test[A1,A2,A3,A4,A5,A6,P](testName: String, f: (A1,A2,A3,A4,A5,A6) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4],
-      a5: Arb[A5] => Arbitrary[A5],
-      a6: Arb[A6] => Arbitrary[A6]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5],
+      a6: Arbitrary[A6], s6: Shrink[A6]
     ) {
-    test(testName, Prop.property(f)(p, a1, a2, a3, a4, a5, a6))
+    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5, a6, s6))
   }
 
   /**
@@ -793,12 +793,12 @@ trait FunSuite extends Suite with Checkers {
   def specify[A1,A2,A3,A4,A5,A6,P](testName: String, f: (A1,A2,A3,A4,A5,A6) => P, testGroups: Group*)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4],
-      a5: Arb[A5] => Arbitrary[A5],
-      a6: Arb[A6] => Arbitrary[A6]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5],
+      a6: Arbitrary[A6], s6: Shrink[A6]
     ) {
     test(testName, f, testGroups: _*)
   }
