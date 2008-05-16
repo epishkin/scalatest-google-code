@@ -17,11 +17,10 @@ package org.scalatest.fun
 
 import org.scalatest.Suite
 import org.scalacheck.Arbitrary
-import org.scalacheck.Arb
+import org.scalacheck.Shrink
+import org.scalacheck.Arg
 import org.scalacheck.Prop
-import org.scalacheck.Test.Params
 import org.scalacheck.Test
-import org.scalacheck.Test._
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that can be used to perform ScalaCheck property checks
@@ -88,9 +87,9 @@ trait Checkers {
   def check[A1,P](f: A1 => P)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1]
+      a1: Arbitrary[A1], s1: Shrink[A1]
     ) {
-    check(Prop.property(f)(p, a1))
+    check(Prop.property(f)(p, a1, s1))
   }
 
   /**
@@ -102,10 +101,10 @@ trait Checkers {
   def check[A1,A2,P](f: (A1,A2) => P)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2]
     ) {
-    check(Prop.property(f)(p, a1, a2))
+    check(Prop.property(f)(p, a1, s1, a2, s2))
   }
 
   /**
@@ -117,11 +116,11 @@ trait Checkers {
   def check[A1,A2,A3,P](f: (A1,A2,A3) => P)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3]
     ) {
-    check(Prop.property(f)(p, a1, a2, a3))
+    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3))
   }
 
   /**
@@ -133,12 +132,12 @@ trait Checkers {
   def check[A1,A2,A3,A4,P](f: (A1,A2,A3,A4) => P)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4]
     ) {
-    check(Prop.property(f)(p, a1, a2, a3, a4))
+    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4))
   }
 
   /**
@@ -150,13 +149,13 @@ trait Checkers {
   def check[A1,A2,A3,A4,A5,P](f: (A1,A2,A3,A4,A5) => P)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4],
-      a5: Arb[A5] => Arbitrary[A5]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5]
     ) {
-    check(Prop.property(f)(p, a1, a2, a3, a4, a5))
+    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5))
   }
 
   /**
@@ -168,14 +167,14 @@ trait Checkers {
   def check[A1,A2,A3,A4,A5,A6,P](f: (A1,A2,A3,A4,A5,A6) => P)
     (implicit
       p: P => Prop,
-      a1: Arb[A1] => Arbitrary[A1],
-      a2: Arb[A2] => Arbitrary[A2],
-      a3: Arb[A3] => Arbitrary[A3],
-      a4: Arb[A4] => Arbitrary[A4],
-      a5: Arb[A5] => Arbitrary[A5],
-      a6: Arb[A6] => Arbitrary[A6]
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5],
+      a6: Arbitrary[A6], s6: Shrink[A6]
     ) {
-    check(Prop.property(f)(p, a1, a2, a3, a4, a5, a6))
+    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5, a6, s6))
   }
 
   /**
@@ -185,15 +184,14 @@ trait Checkers {
    * @param prms the test parameters
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
    */
-  def check(p: Prop, prms: Params) {
-    val stats = Test.check(prms, p, (r,s,d) => ())
+  def check(p: Prop, prms: Test.Params) {
+    //val stats = Test.check(prms, p, (r,s,d) => ())
+    val stats = Test.check(prms, p)
     val result = stats.result
     result match {
-      case r: Passed => 
-      case r: Failed => fail()
-      case r: Exhausted => fail()
-      case r: PropException => fail()
-      case r: GenException => fail()
+      case Test.Proved(args) => 
+      case Test.Passed => 
+      case _ => fail(prettyTestStats(stats))
     }
   }
 
@@ -205,5 +203,32 @@ trait Checkers {
    */
   def check(p: Prop) {
     check(p, Test.defaultParams)
+  }
+
+  private def prettyTestStats(stats: Test.Stats) = stats.result match {
+    case Test.Proved(args) =>
+      "OK, proved property:                   \n" + prettyArgs(args)
+    case Test.Passed =>
+      "OK, passed " + stats.succeeded + " tests."
+    case Test.Failed(args) =>
+      "Falsified after "+stats.succeeded+" passed tests:\n"+prettyArgs(args)
+    case Test.Exhausted =>
+      "Gave up after only " + stats.succeeded + " passed tests. " +
+      stats.discarded + " tests were discarded."
+    case Test.PropException(args,e) =>
+      "Exception \"" + e + "\" raised on property evaluation:\n" +
+      prettyArgs(args)
+    case Test.GenException(e) =>
+      "Exception \"" + e + "\" raised on argument generation."
+  }
+
+  private def prettyArgs(args: List[Arg]) = {
+    val strs = for((a,i) <- args.zipWithIndex) yield (
+      "> " +
+      (if(a.label == "") "ARG_" + i else a.label) +
+      " = \"" + a.arg +
+      (if(a.shrinks > 0) "\" (" + a.shrinks + " shrinks)" else "\"")
+    )
+    strs.mkString("\n")
   }
 }
