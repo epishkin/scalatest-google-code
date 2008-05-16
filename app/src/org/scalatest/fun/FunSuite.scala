@@ -78,6 +78,7 @@ abstract class Group(val name: String)
  * }
  * </pre>
  *
+ * <p>
  * &#8220;<code>test</code>&#8221; is a method defined in <code>FunSuite</code>, which will be invoked
  * by the primary constructor of <code>MySuite</code>. You specify the name of the test as
  * a string between the parentheses, and the test code itself between curly braces.
@@ -86,7 +87,83 @@ abstract class Group(val name: String)
  * tests starting with &#8220;<code>test</code>.&#8221; In addition, you can more easily give long names to
  * your tests, because you need not encode them in camel case, as you must do
  * with test methods.
+ * </p>
+ * 
+ * <p>
+ * If you prefer, you can alternatively use the word "specify" to register tests:
+ * </p>
  *
+ * <pre>
+ * import org.scalatest.fun.FunSuite
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   specify("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   specify("subtraction") {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *     assert(diff - 2 === 1)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * <strong>Property-based tests</strong>
+ * </p>
+ * 
+ * <p>
+ * <code>FunSuite</code> makes it easy to combine assertion-based tests with property-based
+ * tests using ScalaCheck. <code>FunSuite</code> mixes in trait <code>Checkers</code>, so you
+ * can write property checks alongside assertion-based tests in your test functions:
+ * </p>
+ * <pre>
+ * import org.scalatest.fun.FunSuite
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   test("list concatenation") {
+ * 
+ *     val a = List(1, 2, 3)
+ *     val b = List(4, 5, 6)
+ *     assert(a ::: b === List(1, 2, 3, 4, 5, 6))
+
+ *     check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * You can also register properties as tests, using either "test" or "specify". Here's an
+ * example that uses "specify":
+ * </p>
+ * <pre>
+ * import org.scalatest.fun.FunSuite
+ *
+ * class StringSuite extends FunSuite {
+ *
+ *   specify("startsWith", (a: String, b: String) => (a+b).startsWith(a))
+ *
+ *   specify("endsWith", (a: String, b: String) => (a+b).endsWith(b))
+ *
+ *   specify("concat", (a: String, b: String) => 
+ *     (a + b).length > a.length && (a+b).length > b.length
+ *   )
+ *
+ *   specify("substring", (a: String, b: String) => 
+ *     (a + b).substring(a.length) == b
+ *   )
+ *
+ *   specify("substring", (a: String, b: String, c: String) =>
+ *     (a + b + c).substring(a.length, a.length+b.length) == b
+ *   )
+ * }
+ * </pre>
+ * 
  * <p>
  * <strong>Test fixtures</strong>
  * </p>
@@ -287,6 +364,11 @@ abstract class Group(val name: String)
  * <pre>
  * Info Provided: MySuite.addition: Addition seems to work.
  * </pre>
+ *
+ * <p>
+ * This trait depends on ScalaCheck, so you must include ScalaCheck's
+ * jar file on either the classpath or runpath.
+ * </p>
  *
  * @author Bill Venners
  */
