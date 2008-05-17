@@ -1,6 +1,7 @@
 package org.scalatest
 
 import org.scalatest.fun.FunSuite
+import scala.collection.mutable.ListBuffer
 
 class ImpSuiteSuite extends FunSuite {
 
@@ -215,4 +216,53 @@ class ImpSuiteSuite extends FunSuite {
     }
   }
 }
+
+class ImpSuiteExtendingSuite extends ImpSuite {
+
+  var sb: StringBuilder = _
+  val lb = new ListBuffer[String]
+
+  override def before() {
+    sb = new StringBuilder("ScalaTest is ")
+    lb.clear()
+  }
+
+  def testEasy() {
+    sb.append("easy!")
+    assert(sb.toString === "ScalaTest is easy!")
+    assert(lb.isEmpty)
+    lb += "sweet"
+  }
+
+  def testFun() {
+    sb.append("fun!")
+    assert(sb.toString === "ScalaTest is fun!")
+    assert(lb.isEmpty)
+  }
+}
+
+class ImpSuiteExtendingFunSuite extends FunSuite with ImpSuite {
+
+  var sb: StringBuilder = _
+  val lb = new ListBuffer[String]
+
+  override def before() {
+    sb = new StringBuilder("ScalaTest is ")
+    lb.clear()
+  }
+
+  test("easy") {
+    sb.append("easy!")
+    assert(sb.toString === "ScalaTest is easy!")
+    assert(lb.isEmpty)
+    lb += "sweet"
+  }
+
+  test("fun") {
+    sb.append("fun!")
+    assert(sb.toString === "ScalaTest is fun!")
+    assert(lb.isEmpty)
+  }
+}
+
 
