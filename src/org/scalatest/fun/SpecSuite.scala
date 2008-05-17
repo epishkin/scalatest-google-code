@@ -61,7 +61,7 @@ trait SpecSuite extends Suite {
 
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                         properties: Map[String, Any]) {
-    root.subNodes.foreach(
+    root.subNodes.reverse.foreach(
       _ match {
         case Example(exampleName, f) => f()  
       }
