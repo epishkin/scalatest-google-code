@@ -67,7 +67,17 @@ trait SpecSuite extends Suite {
       }
     )
   }
-
+  
+  override def testNames: Set[String] = {
+    val options =
+      for (node <- root.subNodes.reverse)
+        yield node match {
+        case ex: Example => Some(ex.exampleName)
+        case _ => None
+        }
+    Set[String]() ++ options.filter(_.isDefined).map(_.get)
+  }
+  
   class CousinIt {
     def should(exampleName: String) = new Inifier(exampleName)
     def should(behaveWord: CousinBehave) = new CousinBehave

@@ -1,6 +1,7 @@
 package org.scalatest.fun
 
 class SpecSuiteSuite extends FunSuite {
+
   specify("an example must get invoked by execute") {
     class MySuite extends SpecSuite {
       var exampleWasInvoked = false
@@ -118,6 +119,56 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.example1WasInvoked)
     assert(a.example2WasInvokedAfterExample1)
     assert(a.example3WasInvokedAfterExample2)
+  }
+
+  specify("an example should show up in testNames") {
+    class MySuite extends SpecSuite {
+      var exampleWasInvoked = false
+      it should "get invoked" in {
+        exampleWasInvoked = true
+      }
+    }
+    val a = new MySuite
+    assert(a.testNames.size === 1)
+    assert(a.testNames.contains("get invoked"))
+  }
+   
+  specify("two examples should show up in testNames") {
+    class MySuite extends SpecSuite {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      it should "get invoked" in {
+        example1WasInvoked = true
+      }
+      it should "also get invoked" in {
+        if (example1WasInvoked)
+          example2WasInvokedAfterExample1 = true
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.testNames.size === 2)
+    assert(a.testNames.contains("get invoked"))
+    assert(a.testNames.contains("also get invoked"))
+  }
+   
+  specify("two examples should show up in order of appearance in testNames") {
+    class MySuite extends SpecSuite {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      it should "get invoked" in {
+        example1WasInvoked = true
+      }
+      it should "also get invoked" in {
+        if (example1WasInvoked)
+          example2WasInvokedAfterExample1 = true
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.testNames.size === 2)
+    assert(a.testNames.elements.toList(0) === "get invoked")
+    assert(a.testNames.elements.toList(1) === "also get invoked")
   }
 }
 
