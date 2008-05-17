@@ -436,26 +436,21 @@ class SpecSuiteSuite extends FunSuite {
     }
     new MySuite
   }
-}
-
-class TryingASpecSuite extends SpecSuite {
-
-  share("a non-empty stack") {
-    it should "return the top when sent #peek" in {
-      println("and how")
+  
+  specify("a before each should run before an example") {
+    class MySuite extends SpecSuite {
+      var exampleRan = false
+      var beforeEachRanBeforeExample = false
+      before each {
+        if (!exampleRan)
+          beforeEachRanBeforeExample = true
+      }
+      it should "run after example" in {
+        exampleRan = true
+      }
     }
-  }
-
-  describe("Stack") {
-
-    before each {
-      println("do the setup thing")
-    }
-
-    it should "work right the first time" in {
-      println("and how")
-    }
-
-    it should behave like "a non-empty stack"
+    val a = new MySuite
+    a.execute()
+    assert(a.beforeEachRanBeforeExample)
   }
 }
