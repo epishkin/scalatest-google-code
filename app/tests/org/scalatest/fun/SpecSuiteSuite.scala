@@ -170,20 +170,19 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.testNames.elements.toList(0) === "it should get invoked")
     assert(a.testNames.elements.toList(1) === "it should also get invoked")
   }
- /* 
+ 
   specify("test names should include an enclosing describe string, separated by a space") {
     class MySuite extends SpecSuite {
       describe("A Stack") {
         it should "allow me to pop" in {}
         it should "allow me to push" in {}
       }
-      val a = new MySuite
+    }
+    val a = new MySuite
     assert(a.testNames.size === 2)
     assert(a.testNames.elements.toList(0) === "A Stack should allow me to pop")
     assert(a.testNames.elements.toList(1) === "A Stack should allow me to push")
-    }  
   }
-*/
 }
 
 class TryingASpecSuite extends SpecSuite {
