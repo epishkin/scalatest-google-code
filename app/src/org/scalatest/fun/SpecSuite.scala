@@ -49,6 +49,10 @@ trait SpecSuite extends Suite {
   private abstract class Node(parentOption: Option[Branch])
   private abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
+    var beforeEach: Option[() => Unit] = None
+    var afterEach: Option[() => Unit] = None
+    var beforeAll: Option[() => Unit] = None
+    var afterAll: Option[() => Unit] = None
     def sharedBehaviorIsInScope(behaviorName: String): Boolean = {
       val sharedBehaviorExistsInSubNodes: Boolean =
         subNodes.exists(
@@ -114,7 +118,13 @@ trait SpecSuite extends Suite {
   private def runTestsInBranch(branch: Branch) {
     branch.subNodes.reverse.foreach(
       _ match {
-        case Example(parent, exampleName, f) => f()
+        case Example(parent, exampleName, f) => {
+          parent.beforeEach match {
+            case Some(be) => be()
+            case None => 
+          }
+          f()
+        }
         case sb: SharedBehavior =>
         case SharedBehaviorInvocation(parent, behaviorName) => parent.invokeSharedBehavior(behaviorName)
         case branch: Branch => runTestsInBranch(branch)
@@ -195,7 +205,10 @@ trait SpecSuite extends Suite {
 
   class Beforifier {
     def each(f: => Unit) {
-      println("do something before each example")
+      currentBranch.beforeEach match {
+        case Some(x) => throw new RuntimeException("Multiple 'before each' clauses found in same describe or share clause.")
+        case None => currentBranch.beforeEach = Some(f _)
+      }
     }
     def all(f: => Unit) {
       println("do something before all examples")
