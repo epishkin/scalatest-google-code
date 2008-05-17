@@ -29,7 +29,7 @@ package org.scalatest
  * class MySuite extends ImpSuite {
  *
  *   // Fixtures as reassignable variables and mutable objects
- *   var sb = _
+ *   var sb: StringBuilder = _
  *   val lb = new ListBuffer[String]
  * 
  *   override def before() {

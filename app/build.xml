@@ -249,6 +249,12 @@
 
 			<arg value="-s" />
 			<arg value="org.scalatest.ImpSuiteSuite" />
+
+			<arg value="-s" />
+			<arg value="org.scalatest.ImpSuiteExtendingSuite" />
+
+			<arg value="-s" />
+			<arg value="org.scalatest.ImpSuiteExtendingFunSuite" />
 		</java>
 	</target>
 
