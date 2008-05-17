@@ -76,6 +76,7 @@ trait SpecSuite extends Suite {
   }
   
   override def testNames: Set[String] = {
+    // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
     def traverse(branch: Branch, prefixOption: Option[String]) {
       for (node <- branch.subNodes)

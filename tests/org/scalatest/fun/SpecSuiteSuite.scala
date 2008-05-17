@@ -183,6 +183,23 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.testNames.elements.toList(0) === "A Stack should allow me to pop")
     assert(a.testNames.elements.toList(1) === "A Stack should allow me to push")
   }
+
+  specify("test names should properly nest descriptions in test names") {
+    class MySuite extends SpecSuite {
+      describe("A Stack") {
+        describe("(when not empty)") {
+          it should "allow me to pop" in {}
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySuite
+    assert(a.testNames.size === 2)
+    assert(a.testNames.elements.toList(0) === "A Stack (when not empty) should allow me to pop")
+    assert(a.testNames.elements.toList(1) === "A Stack (when not full) should allow me to push")
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {
