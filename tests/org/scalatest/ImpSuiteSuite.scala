@@ -130,4 +130,19 @@ class ImpSuiteSuite extends FunSuite {
     }
     assert(a.afterCalled)
   }
+  
+  specify("If super.runTest returns normally, but after completes abruptly with an " +
+    "exception, runTset will complete abruptly with the same exception.") {
+       
+    class MySuite extends ImpSuite {
+      override def after() { throw new NumberFormatException }
+      def testJuly() = ()
+    }
+    intercept(classOf[NumberFormatException]) {
+      val a = new MySuite
+      a.runTest("testJuly", new Reporter {}, new Stopper {}, Map())
+    }
+
+  }
 }
+
