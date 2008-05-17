@@ -224,7 +224,6 @@ class SpecSuiteSuite extends FunSuite {
       var sharedExampleInvoked = false
       share("shared example") {
         it should "be invoked" in {
-          println("***got invoked here")
           sharedExampleInvoked = true
         }
       }
@@ -253,6 +252,58 @@ class SpecSuiteSuite extends FunSuite {
     intercept(classOf[NoSuchElementException]) {
       new MySuite
     }
+  }
+  
+  
+  specify("should throw an exception if they attempt to invoke a shared behavior with a typo") {
+    class MySuite extends SpecSuite {
+      share("will-mannered children") {}
+      it should behave like "well-mannered children"
+    }
+    intercept(classOf[NoSuchElementException]) {
+      new MySuite
+    }
+  }
+
+  specify("should throw an exception if they attempt to invoke a shared behavior that's defined later") {
+    class MySuite1 extends SpecSuite {
+      share("nice people") {}
+      it should behave like "nice people" // this should work
+    }
+    class MySuite2 extends SpecSuite {
+      it should behave like "well-mannered children" // this should throw an exception
+      share("well-mannered children") {}
+    }
+    new MySuite1
+    intercept(classOf[NoSuchElementException]) {
+      new MySuite2
+    }
+  }
+  
+  specify("Should find and invoke shared behavior that's inside a describe and invoked inside a nested describe") {
+    class MySuite extends SpecSuite with ImpSuite {
+      var sharedExampleInvoked = false
+      describe("A Stack") {
+        share("shared example") {
+          it should "be invoked" in {
+            sharedExampleInvoked = true
+          }
+        }
+        before each {
+          // set up fixture
+        }
+        describe("(when not empty)") {
+          it should "allow me to pop" in {}
+          it should behave like "shared example"
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.sharedExampleInvoked)
   }
 }
 

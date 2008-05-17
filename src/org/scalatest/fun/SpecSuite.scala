@@ -46,8 +46,8 @@ package org.scalatest.fun
  */
 trait SpecSuite extends Suite {
 
-  trait Node
-  abstract class Branch(parentOption: Option[Branch]) extends Node {
+  abstract class Node(parentOption: Option[Branch])
+  abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
     def sharedBehaviorIsInScope(behaviorName: String): Boolean = {
       val sharedBehaviorExistsInSubNodes: Boolean =
@@ -84,26 +84,26 @@ trait SpecSuite extends Suite {
       } 
     }
   }
-  case class Example(exampleName: String, f: () => Unit) extends Node
+  case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
   case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
   case class SharedBehavior(parent: Branch, behaviorName: String) extends Branch(Some(parent))
-  case class SharedBehaviorInvocation(behaviorName: String) extends Node
+  case class SharedBehaviorInvocation(parent: Branch, behaviorName: String) extends Node(Some(parent))
 
   private val trunk: Branch = new Branch(None) {}
   private var currentBranch: Branch = trunk
   
   class Inifier(name: String) {
     def in(f: => Unit) {
-      currentBranch.subNodes ::= Example(name, f _)
+      currentBranch.subNodes ::= Example(currentBranch, name, f _)
     }
   }
 
   private def runTestsInBranch(branch: Branch) {
     branch.subNodes.reverse.foreach(
       _ match {
-        case Example(exampleName, f) => f()
+        case Example(parent, exampleName, f) => f()
         case sb: SharedBehavior =>
-        case SharedBehaviorInvocation(behaviorName) => currentBranch.invokeSharedBehavior(behaviorName)
+        case SharedBehaviorInvocation(parent, behaviorName) => parent.invokeSharedBehavior(behaviorName)
         case branch: Branch => runTestsInBranch(branch)
       }
     )
@@ -151,7 +151,7 @@ trait SpecSuite extends Suite {
   class CousinBehave {
     def like(sharedBehaviorName: String) {
        if (currentBranch.sharedBehaviorIsInScope(sharedBehaviorName))
-         currentBranch.subNodes ::= SharedBehaviorInvocation(sharedBehaviorName)
+         currentBranch.subNodes ::= SharedBehaviorInvocation(currentBranch, sharedBehaviorName)
        else
          throw new NoSuchElementException("A requested shared behavior was not found: " + sharedBehaviorName)
      }
