@@ -55,13 +55,13 @@ package org.scalatest
  * <p>
  * Because this trait invokes <code>super.execute</code> to execute the suite and <code>super.runTest</code> to
  * run each test, you may mix this trait in last to get the desired behavior. For example, this won't
- * work:
+ * work, because <code>ImpSuite</code> is "super" to </code>FunSuite</code>:
  * </p>
  * <pre>
  * class MySuite extends ImpSuite with FunSuite 
  * </pre>
  * <p>
- * You'd need to say:
+ * You'd need to turn it around, so that <code>FunSuite</code> is "super" to <code>ImpSuite</code>, like this:
  * </p>
  * <pre>
  * class MySuite extends FunSuite with ImpSuite
