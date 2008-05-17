@@ -46,36 +46,73 @@ package org.scalatest.fun
  */
 trait SpecSuite extends Suite {
 
-  abstract class Node {
+  trait Node
+  abstract class Branch extends Node {
     var subNodes: List[Node] = Nil
   }
   case class Example(exampleName: String, f: () => Unit) extends Node
+  case class Description(descriptionName: String) extends Branch
 
-  val root: Node = new Node {}
+  private val trunk: Branch = new Branch {}
+  private var currentBranch: Branch = trunk
   
   class Inifier(name: String) {
     def in(f: => Unit) {
-      root.subNodes ::= new Example(name, f _)
+      currentBranch.subNodes ::= Example(name, f _)
     }
   }
 
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                         properties: Map[String, Any]) {
-    root.subNodes.reverse.foreach(
-      _ match {
-        case Example(exampleName, f) => f()  
-      }
-    )
+    def traverse(branch: Branch) {
+      branch.subNodes.reverse.foreach(
+        _ match {
+          case Example(exampleName, f) => f()
+          case branch: Branch => traverse(branch)
+        }
+      )
+    }
+    traverse(trunk)
   }
   
   override def testNames: Set[String] = {
+    var buf = List[String]()
+    def traverse(branch: Branch, prefixOption: Option[String]): List[String] = {
+      println("called for " + branch.subNodes)
+      for (node <- branch.subNodes)
+        yield node match {
+          case ex: Example => {
+            val exName =
+              prefixOption match {
+                case Some(prefix) => Resources("prefixShouldSuffix", prefix, ex.exampleName)
+                case None => Resources("itShould", ex.exampleName)
+              }
+            buf ::= exName 
+          }
+          case desc: Description => {
+            val descName =
+              prefixOption match {
+                case Some(prefix) => Resources("prefixSuffix", prefix, desc.descriptionName) 
+                case None => desc.descriptionName
+              }
+            traverse(desc, Some(descName))
+          }
+          case br: Branch => traverse(br, prefixOption)
+        }
+      println("buf at end was: " + buf.toList)
+      buf.toList
+    }
+
+    Set[String]() ++ traverse(trunk, None)
+    /*
     val options =
-      for (node <- root.subNodes.reverse)
+      for (node <- trunk.subNodes.reverse)
         yield node match {
         case ex: Example => Some(ex.exampleName)
         case _ => None
         }
-    Set[String]() ++ options.filter(_.isDefined).map("it should " + _.get)
+    Set[String]() ++ options.filter(_.isDefined).map(ele => Resources("itShould", ele.get))
+ */
   }
   
   class CousinIt {
@@ -98,7 +135,14 @@ trait SpecSuite extends Suite {
   protected def behave = new CousinBehave
   protected def before = new CousinBefore
 
-  protected def describe(name: String)(f: => Unit) { println("describing " + name); f }
+  protected def describe(name: String)(f: => Unit) {
+    val oldBranch = currentBranch
+    val newBranch = Description(name)
+    currentBranch.subNodes ::= newBranch
+    currentBranch = newBranch
+    f
+    currentBranch = oldBranch
+  }
   protected def share(name: String)(f: => Unit) { println("sharing " + name); f }
 
 
