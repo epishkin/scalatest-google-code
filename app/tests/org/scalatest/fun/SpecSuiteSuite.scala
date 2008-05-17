@@ -52,7 +52,6 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.example3WasInvoked)
   }
 
-    
   specify("two examples should be invoked in order") {
     class MySuite extends SpecSuite {
       var example1WasInvoked = false
@@ -71,7 +70,55 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.example2WasInvokedAfterExample1)
   }
 
+  specify("three examples should be invoked in order") {
+    class MySuite extends SpecSuite {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      it should "get invoked" in {
+        example1WasInvoked = true
+      }
+      it should "also get invoked" in {
+        if (example1WasInvoked)
+          example2WasInvokedAfterExample1 = true
+      }
+      it should "also also get invoked" in {
+        if (example2WasInvokedAfterExample1)
+          example3WasInvokedAfterExample2 = true
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+    assert(a.example3WasInvokedAfterExample2)
+  }
 
+  specify("three examples should be invoked in order even when two are surrounded by a describe") {
+    class MySuite extends SpecSuite {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      it should "get invoked" in {
+        example1WasInvoked = true
+      }
+      describe("Stack") {
+        it should "also get invoked" in {
+          if (example1WasInvoked)
+            example2WasInvokedAfterExample1 = true
+        }
+        it should "also also get invoked" in {
+          if (example2WasInvokedAfterExample1)
+            example3WasInvokedAfterExample2 = true
+        }
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+    assert(a.example3WasInvokedAfterExample2)
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {
