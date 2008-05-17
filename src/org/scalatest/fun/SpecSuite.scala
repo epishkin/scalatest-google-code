@@ -75,7 +75,7 @@ trait SpecSuite extends Suite {
         case ex: Example => Some(ex.exampleName)
         case _ => None
         }
-    Set[String]() ++ options.filter(_.isDefined).map(_.get)
+    Set[String]() ++ options.filter(_.isDefined).map("it should " + _.get)
   }
   
   class CousinIt {

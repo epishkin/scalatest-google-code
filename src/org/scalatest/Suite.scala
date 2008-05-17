@@ -689,16 +689,16 @@ import scala.collection.immutable.TreeSet
  *
  * <p>
  * Moreover, <em>test</em> in ScalaTest does not necessarily mean <em>test method</em>. A test can be anything that can be given a name,
- * that starts and either succeeds or fails, and can be ignored. In a Scala test framework called Rehersal, for example, tests are represented
+ * that starts and either succeeds or fails, and can be ignored. In <code>org.scalatest.fun.FunSuite</code>, for example, tests are represented
  * as function values. This
- * approach might look foreign to JUnit users, but may feel more natural to programmers with a functional programming background. If you
- * prefer this approach, you can override <code>testNames</code>, <code>runTest</code>, and <code>execute</code> such that you can 
+ * approach might look foreign to JUnit users, but may feel more natural to programmers with a functional programming background.
+ * To facilitate this style of writing tests, <code>FunSuite</code> overrides <code>testNames</code>, <code>runTest</code>, and <code>execute</code> such that you can 
  * define tests as function values.
  * </p>
  *
  * <p>
  * You can also model JUnit, JUnit 4, or TestNG tests as suites of tests, thereby incorporating existing Java tests into a ScalaTest suite.
- * If this turns out to be a common use case, we may later add wrapper suites to the API that will make this easy. The point here is that
+ * The classes and traits in packages <code>org.scalatest.junit</code> and <code>org.scalatest.testng</code> exist to make this easy. The point here, however, is that
  * no matter what legacy tests you may have, it is likely you can create our use an existing <code>Suite</code> subclass that allows you to model those tests
  * as ScalaTest suites and tests, to incorporate them into a ScalaTest suite. You can then write new tests in Scala and continue supporting
  * older tests in Java.
