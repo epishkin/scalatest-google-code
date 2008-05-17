@@ -21,6 +21,12 @@ class ImpSuiteSuite extends FunSuite {
   class MySuite extends TheSuper with ImpSuite {
     var beforeCalledBeforeRunTest = false
     var afterCalledAfterRunTest = false
+    var beforeSuiteCalledBeforeExecute = false
+    var afterSuiteCalledAfterExecute = false
+    override def beforeSuite() {
+      if (!executeWasCalled)
+        beforeSuiteCalledBeforeExecute = true
+    }
     override def before() {
       if (!runTestWasCalled)
         beforeCalledBeforeRunTest = true
@@ -29,6 +35,10 @@ class ImpSuiteSuite extends FunSuite {
     override def after() {
       if (runTestWasCalled)
         afterCalledAfterRunTest = true
+    }
+    override def afterSuite() {
+      if (executeWasCalled)
+        afterSuiteCalledAfterExecute = true
     }
   }
 
@@ -54,5 +64,29 @@ class ImpSuiteSuite extends FunSuite {
     val a = new MySuite
     a.execute()
     assert(a.afterCalledAfterRunTest)
+  }
+
+  specify("beforeSuite gets called before execute") {
+    val a = new MySuite
+    a.execute()
+    assert(a.beforeSuiteCalledBeforeExecute)
+  }
+  
+  specify("afterSuite gets called after execute") {
+    val a = new MySuite
+    a.execute()
+    assert(a.afterSuiteCalledAfterExecute)
+  }
+  
+  specify("If any invocation of before completes abruptly with an exception, runTest " +
+    "will complete abruptly with the same exception.") {
+    
+    class MySuite extends ImpSuite {
+      override def before() { throw new NumberFormatException } 
+    }
+    intercept(classOf[NumberFormatException]) {
+      val a = new MySuite
+      a.runTest("july", new Reporter {}, new Stopper {}, Map())
+    }
   }
 }
