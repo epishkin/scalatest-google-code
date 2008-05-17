@@ -376,6 +376,32 @@ class SpecSuiteSuite extends FunSuite {
     val a = new MySuite
     assert(a.expectedTestCount(Set(), Set()) === 9)
   }
+
+  specify("expectedTestCount should work when shares are nested") {
+    class MySuite extends SpecSuite {
+      share("this") {
+        it should "six" in {}
+        it should "seven" in {}
+        share("that") {
+          it should "eight" in {}
+          it should "nine" in {}
+          it should "ten" in {}
+        }
+        it should behave like "that"
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {} 
+        it should behave like "this"
+        it should "four" in {}
+      }
+      it should "five" in {}
+      it should behave like "this"
+    }
+    val a = new MySuite
+    assert(a.expectedTestCount(Set(), Set()) === 15)
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {
