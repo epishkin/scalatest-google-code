@@ -111,12 +111,6 @@ trait SpecSuite extends Suite {
   private val trunk: Branch = new Branch(None) {}
   private var currentBranch: Branch = trunk
   
-  class Inifier(name: String) {
-    def in(f: => Unit) {
-      currentBranch.subNodes ::= Example(currentBranch, name, f _)
-    }
-  }
-
   private def runTestsInBranch(branch: Branch) {
     branch.subNodes.reverse.foreach(
       _ match {
@@ -179,12 +173,18 @@ trait SpecSuite extends Suite {
     Set[String]() ++ buf.toList
   }
   
-  class Shouldifier {
-    def should(exampleName: String) = new Inifier(exampleName)
-    def should(behaveWord: Likizer) = new Likizer
+  class Inifier(name: String) {
+    def in(f: => Unit) {
+      currentBranch.subNodes ::= Example(currentBranch, name, f _)
+    }
   }
 
-  class Likizer {
+  class Itifier {
+    def should(exampleName: String) = new Inifier(exampleName)
+    def should(behaveWord: Behavifier) = new Behavifier
+  }
+
+  class Behavifier {
     def like(sharedBehaviorName: String) {
        if (currentBranch.sharedBehaviorIsInScope(sharedBehaviorName))
          currentBranch.subNodes ::= SharedBehaviorInvocation(currentBranch, sharedBehaviorName)
@@ -211,9 +211,9 @@ trait SpecSuite extends Suite {
     }
   }
 
-  protected def it = new Shouldifier
+  protected def it = new Itifier
 
-  protected def behave = new Likizer
+  protected def behave = new Behavifier
   protected def before = new Beforifier
   protected def after = new Afterizer
 
