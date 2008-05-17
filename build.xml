@@ -238,6 +238,20 @@
 		</java>
 	</target>
 
+	<target name="bvtest" depends="dist">
+		<java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
+
+			<arg value="-p" />
+			<arg value="${build.tests} ${classes}" />
+
+			<arg value="-g" />
+			<arg value="-o" />
+
+			<arg value="-s" />
+			<arg value="org.scalatest.ImpSuiteSuite" />
+		</java>
+	</target>
+
 
 	<path id="example.class.path">
 		<pathelement location="${dist}/lib/scalatest.jar" />
