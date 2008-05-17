@@ -200,6 +200,24 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.testNames.elements.toList(0) === "A Stack (when not empty) should allow me to pop")
     assert(a.testNames.elements.toList(1) === "A Stack (when not full) should allow me to push")
   }
+  
+  specify("should be able to mix in ImpSuite without any problems") {
+    class MySuite extends SpecSuite with ImpSuite {
+      describe("A Stack") {
+        before each {
+          // set up fixture
+        }
+        describe("(when not empty)") {
+          it should "allow me to pop" in {}
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySuite
+    a.execute()
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {
