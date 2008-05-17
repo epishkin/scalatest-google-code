@@ -337,6 +337,45 @@ class SpecSuiteSuite extends FunSuite {
     val a = new MySuite
     assert(a.expectedTestCount(Set(), Set()) === 5)
   }
+
+  specify("expectedTestCount should  include tests in a share that is called") {
+    class MySuite extends SpecSuite {
+      share("this") {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {} 
+        it should behave like "this"
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySuite
+    assert(a.expectedTestCount(Set(), Set()) === 7)
+  }
+
+  specify("expectedTestCount should include tests in a share that is called twice") {
+    class MySuite extends SpecSuite {
+      share("this") {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {} 
+        it should behave like "this"
+        it should "four" in {}
+      }
+      it should "five" in {}
+      it should behave like "this"
+    }
+    val a = new MySuite
+    assert(a.expectedTestCount(Set(), Set()) === 9)
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {
