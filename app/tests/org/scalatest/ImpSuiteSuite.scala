@@ -78,6 +78,7 @@ class ImpSuiteSuite extends FunSuite {
     assert(a.afterSuiteCalledAfterExecute)
   }
   
+  // test exceptions with runTest
   specify("If any invocation of before completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception.") {
     
@@ -132,7 +133,7 @@ class ImpSuiteSuite extends FunSuite {
   }
   
   specify("If super.runTest returns normally, but after completes abruptly with an " +
-    "exception, runTset will complete abruptly with the same exception.") {
+    "exception, runTest will complete abruptly with the same exception.") {
        
     class MySuite extends ImpSuite {
       override def after() { throw new NumberFormatException }
@@ -142,7 +143,76 @@ class ImpSuiteSuite extends FunSuite {
       val a = new MySuite
       a.runTest("testJuly", new Reporter {}, new Stopper {}, Map())
     }
-
+  }
+ 
+  // test exceptions with execute
+  specify("If any invocation of beforeSuite completes abruptly with an exception, execute " +
+    "will complete abruptly with the same exception.") {
+    
+    class MySuite extends ImpSuite {
+      override def beforeSuite() { throw new NumberFormatException }
+      def testJuly() = ()
+    }
+    intercept(classOf[NumberFormatException]) {
+      val a = new MySuite
+      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+    }
+  }
+ 
+  specify("If any call to super.execute completes abruptly with an exception, execute " +
+    "will complete abruptly with the same exception, however, before doing so, it will invoke afterSuite") {
+    trait FunkySuite extends Suite {
+      override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+                           properties: Map[String, Any], distributor: Option[Distributor]) {
+        throw new NumberFormatException
+      }
+    }
+    class MySuite extends FunkySuite with ImpSuite {
+      var afterSuiteCalled = false
+      override def afterSuite() {
+        afterSuiteCalled = true
+      }
+    }
+    val a = new MySuite
+    intercept(classOf[NumberFormatException]) {
+      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+    }
+    assert(a.afterSuiteCalled)
+  }
+   
+  specify("If both super.execute and afterSuite complete abruptly with an exception, execute " + 
+    "will complete abruptly with the exception thrown by super.execute.") {
+    trait FunkySuite extends Suite {
+      override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+                           properties: Map[String, Any], distributor: Option[Distributor]) {
+        throw new NumberFormatException
+      }
+    }
+    class MySuite extends FunkySuite with ImpSuite {
+      var afterSuiteCalled = false
+      override def afterSuite() {
+        afterSuiteCalled = true
+        throw new IllegalArgumentException
+      }
+    }
+    val a = new MySuite
+    intercept(classOf[NumberFormatException]) {
+      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+    }
+    assert(a.afterSuiteCalled)
+  }
+  
+  specify("If super.execute returns normally, but afterSuite completes abruptly with an " +
+    "exception, execute will complete abruptly with the same exception.") {
+       
+    class MySuite extends ImpSuite {
+      override def afterSuite() { throw new NumberFormatException }
+      def testJuly() = ()
+    }
+    intercept(classOf[NumberFormatException]) {
+      val a = new MySuite
+      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+    }
   }
 }
 
