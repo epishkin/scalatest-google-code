@@ -179,12 +179,12 @@ trait SpecSuite extends Suite {
     Set[String]() ++ buf.toList
   }
   
-  class CousinIt {
+  class Shouldifier {
     def should(exampleName: String) = new Inifier(exampleName)
-    def should(behaveWord: CousinBehave) = new CousinBehave
+    def should(behaveWord: Likizer) = new Likizer
   }
 
-  class CousinBehave {
+  class Likizer {
     def like(sharedBehaviorName: String) {
        if (currentBranch.sharedBehaviorIsInScope(sharedBehaviorName))
          currentBranch.subNodes ::= SharedBehaviorInvocation(currentBranch, sharedBehaviorName)
@@ -193,16 +193,29 @@ trait SpecSuite extends Suite {
      }
   }
 
-  class CousinBefore {
+  class Beforifier {
     def each(f: => Unit) {
       println("do something before each example")
     }
+    def all(f: => Unit) {
+      println("do something before all examples")
+    }
   }
 
-  protected def it = new CousinIt
+  class Afterizer {
+    def each(f: => Unit) {
+      println("do something after each example")
+    }
+    def all(f: => Unit) {
+      println("do something after all examples")
+    }
+  }
 
-  protected def behave = new CousinBehave
-  protected def before = new CousinBefore
+  protected def it = new Shouldifier
+
+  protected def behave = new Likizer
+  protected def before = new Beforifier
+  protected def after = new Afterizer
 
   protected def describe(name: String)(f: => Unit) {
     insertBranch(Description(currentBranch, name), f _)
