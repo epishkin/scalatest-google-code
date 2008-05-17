@@ -245,6 +245,15 @@ class SpecSuiteSuite extends FunSuite {
     a.execute()
     assert(a.sharedExampleInvoked)
   }
+  
+  specify("should throw an exception if they attempt to invoke a non-existent shared behavior") {
+    class MySuite extends SpecSuite {
+      it should behave like "well-mannered children"
+    }
+    intercept(classOf[NoSuchElementException]) {
+      new MySuite
+    }
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {

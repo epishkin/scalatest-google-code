@@ -49,6 +49,21 @@ trait SpecSuite extends Suite {
   trait Node
   abstract class Branch(parentOption: Option[Branch]) extends Node {
     var subNodes: List[Node] = Nil
+    def sharedBehaviorIsInScope(behaviorName: String): Boolean = {
+      val sharedBehaviorExistsInSubNodes: Boolean =
+        subNodes.exists(
+          _ match {
+            case SharedBehavior(parent, `behaviorName`) => true
+            case _ => false
+          }
+        )
+       sharedBehaviorExistsInSubNodes || (
+         parentOption match {
+           case Some(parent) => parent.sharedBehaviorIsInScope(behaviorName)
+           case None => false
+         }
+       )
+    }
     def invokeSharedBehavior(behaviorName: String) {
       val sharedBehaviorOption: Option[SharedBehavior] = {
         subNodes.find(
@@ -135,7 +150,10 @@ trait SpecSuite extends Suite {
 
   class CousinBehave {
     def like(sharedBehaviorName: String) {
-       currentBranch.subNodes ::= SharedBehaviorInvocation(sharedBehaviorName)
+       if (currentBranch.sharedBehaviorIsInScope(sharedBehaviorName))
+         currentBranch.subNodes ::= SharedBehaviorInvocation(sharedBehaviorName)
+       else
+         throw new NoSuchElementException("A requested shared behavior was not found: " + sharedBehaviorName)
      }
   }
 
