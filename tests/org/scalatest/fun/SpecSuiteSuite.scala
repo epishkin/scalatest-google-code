@@ -402,6 +402,40 @@ class SpecSuiteSuite extends FunSuite {
     val a = new MySuite
     assert(a.expectedTestCount(Set(), Set()) === 15)
   }
+  
+  specify("Make sure before each, after each, before all, and after all can be nested nicely") {
+    class MySuite extends SpecSuite {
+      before all {}
+      share("this") {
+        before each {}
+        it should "six" in {}
+        after each {}
+        it should "seven" in {}
+        share("that") {
+          it should "eight" in {}
+          it should "nine" in {}
+          it should "ten" in {}
+          after each {}
+          before each{}
+        }
+        it should behave like "that"
+      }
+      it should "one" in {}
+      before each{}
+      it should "two" in {}
+      describe("behavior") {
+        before each {}
+        it should "three" in {} 
+        it should behave like "this"
+        it should "four" in {}
+      }
+      it should "five" in {}
+      it should behave like "this"
+      after each {}
+      after all {}
+    }
+    new MySuite
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {
