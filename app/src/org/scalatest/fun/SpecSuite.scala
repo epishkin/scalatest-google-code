@@ -46,8 +46,8 @@ package org.scalatest.fun
  */
 trait SpecSuite extends Suite {
 
-  abstract class Node(parentOption: Option[Branch])
-  abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
+  private abstract class Node(parentOption: Option[Branch])
+  private abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
     def sharedBehaviorIsInScope(behaviorName: String): Boolean = {
       val sharedBehaviorExistsInSubNodes: Boolean =
@@ -103,10 +103,10 @@ trait SpecSuite extends Suite {
       } 
     }
   }
-  case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
-  case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
-  case class SharedBehavior(parent: Branch, behaviorName: String) extends Branch(Some(parent))
-  case class SharedBehaviorInvocation(parent: Branch, behaviorName: String) extends Node(Some(parent))
+  private case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
+  private case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
+  private case class SharedBehavior(parent: Branch, behaviorName: String) extends Branch(Some(parent))
+  private case class SharedBehaviorInvocation(parent: Branch, behaviorName: String) extends Node(Some(parent))
 
   private val trunk: Branch = new Branch(None) {}
   private var currentBranch: Branch = trunk
