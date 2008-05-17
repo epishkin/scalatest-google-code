@@ -77,8 +77,7 @@ trait SpecSuite extends Suite {
   
   override def testNames: Set[String] = {
     var buf = List[String]()
-    def traverse(branch: Branch, prefixOption: Option[String]): List[String] = {
-      println("called for " + branch.subNodes)
+    def traverse(branch: Branch, prefixOption: Option[String]) {
       for (node <- branch.subNodes)
         yield node match {
           case ex: Example => {
@@ -99,20 +98,9 @@ trait SpecSuite extends Suite {
           }
           case br: Branch => traverse(br, prefixOption)
         }
-      println("buf at end was: " + buf.toList)
-      buf.toList
     }
-
-    Set[String]() ++ traverse(trunk, None)
-    /*
-    val options =
-      for (node <- trunk.subNodes.reverse)
-        yield node match {
-        case ex: Example => Some(ex.exampleName)
-        case _ => None
-        }
-    Set[String]() ++ options.filter(_.isDefined).map(ele => Resources("itShould", ele.get))
- */
+    traverse(trunk, None)
+    Set[String]() ++ buf.toList
   }
   
   class CousinIt {
