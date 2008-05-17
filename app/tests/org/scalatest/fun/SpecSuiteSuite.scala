@@ -51,6 +51,27 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.example2WasInvoked)
     assert(a.example3WasInvoked)
   }
+
+    
+  specify("two examples should be invoked in order") {
+    class MySuite extends SpecSuite {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      it should "get invoked" in {
+        example1WasInvoked = true
+      }
+      it should "also get invoked" in {
+        if (example1WasInvoked)
+          example2WasInvokedAfterExample1 = true
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+  }
+
+
 }
 
 class TryingASpecSuite extends SpecSuite {
