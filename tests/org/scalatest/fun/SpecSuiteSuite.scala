@@ -305,6 +305,38 @@ class SpecSuiteSuite extends FunSuite {
     a.execute()
     assert(a.sharedExampleInvoked)
   }
+  
+  specify("expectedTestCount is the number of examples if no shares") {
+    class MySuite extends SpecSuite {
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {}  
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySuite
+    assert(a.expectedTestCount(Set(), Set()) === 5)
+  }
+  
+  specify("expectedTestCount should not include tests in shares if never called") {
+    class MySuite extends SpecSuite {
+      share("this") {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {}  
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySuite
+    assert(a.expectedTestCount(Set(), Set()) === 5)
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {

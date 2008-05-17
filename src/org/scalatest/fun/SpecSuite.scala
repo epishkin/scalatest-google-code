@@ -83,6 +83,25 @@ trait SpecSuite extends Suite {
         }
       } 
     }
+    def countTestsInSharedBehavior(behaviorName: String): Int = {
+      val sharedBehaviorOption: Option[SharedBehavior] = {
+        subNodes.find(
+          _ match {
+            case SharedBehavior(parent, `behaviorName`) => true
+            case _ => false
+          }
+        ).asInstanceOf[Option[SharedBehavior]]
+      }
+      sharedBehaviorOption match {
+        case Some(sharedBehavior) => countTestsInBranch(sharedBehavior)
+        case None => {
+          parentOption match {
+            case Some(parent) => parent.countTestsInSharedBehavior(behaviorName)
+            case None => throw new NoSuchElementException("A requested shared behavior was not found: " + behaviorName)
+          }
+        }
+      } 
+    }
   }
   case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
   case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
@@ -109,11 +128,28 @@ trait SpecSuite extends Suite {
     )
   }
 
+  private def countTestsInBranch(branch: Branch): Int = {
+    var count = 0
+    branch.subNodes.reverse.foreach(
+      _ match {
+        case Example(parent, exampleName, f) => count += 1
+        case sb: SharedBehavior =>
+        case SharedBehaviorInvocation(parent, behaviorName) => count += parent.countTestsInSharedBehavior(behaviorName)
+        case branch: Branch => count += countTestsInBranch(branch)
+      }
+    )
+    count
+  }
+
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                         properties: Map[String, Any]) {
     runTestsInBranch(trunk)
   }
-  
+ 
+  override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
+    countTestsInBranch(trunk)
+  }
+
   override def testNames: Set[String] = {
     // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
