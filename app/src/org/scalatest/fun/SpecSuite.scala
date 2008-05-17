@@ -44,18 +44,32 @@ package org.scalatest.fun
  * }
  * @author Bill Venners
  */
-abstract class SpecSuite(specName: String) extends Suite {
+trait SpecSuite extends Suite {
 
-  def this() = this("")
+  abstract class Node {
+    var subNodes: List[Node] = Nil
+  }
+  case class Example(exampleName: String, f: () => Unit) extends Node
 
-  class Example(name: String) {
+  val root: Node = new Node {}
+  
+  class Inifier(name: String) {
     def in(f: => Unit) {
-      println("it should " + name)
+      root.subNodes ::= new Example(name, f _)
     }
   }
 
+  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+                        properties: Map[String, Any]) {
+    root.subNodes.foreach(
+      _ match {
+        case Example(exampleName, f) => f()  
+      }
+    )
+  }
+
   class CousinIt {
-    def should(exampleName: String) = new Example(exampleName)
+    def should(exampleName: String) = new Inifier(exampleName)
     def should(behaveWord: CousinBehave) = new CousinBehave
   }
 
