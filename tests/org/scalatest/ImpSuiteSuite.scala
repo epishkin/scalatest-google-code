@@ -20,26 +20,26 @@ class ImpSuiteSuite extends FunSuite {
   }
   
   class MySuite extends TheSuper with ImpSuite {
-    var beforeCalledBeforeRunTest = false
-    var afterCalledAfterRunTest = false
-    var beforeSuiteCalledBeforeExecute = false
-    var afterSuiteCalledAfterExecute = false
-    override def beforeSuite() {
+    var beforeEachCalledBeforeRunTest = false
+    var afterEachCalledAfterRunTest = false
+    var beforeAllCalledBeforeExecute = false
+    var afterAllCalledAfterExecute = false
+    override def beforeAll() {
       if (!executeWasCalled)
-        beforeSuiteCalledBeforeExecute = true
+        beforeAllCalledBeforeExecute = true
     }
-    override def before() {
+    override def beforeEach() {
       if (!runTestWasCalled)
-        beforeCalledBeforeRunTest = true
+        beforeEachCalledBeforeRunTest = true
     }
     def testSomething() = ()
-    override def after() {
+    override def afterEach() {
       if (runTestWasCalled)
-        afterCalledAfterRunTest = true
+        afterEachCalledAfterRunTest = true
     }
-    override def afterSuite() {
+    override def afterAll() {
       if (executeWasCalled)
-        afterSuiteCalledAfterExecute = true
+        afterAllCalledAfterExecute = true
     }
   }
 
@@ -55,36 +55,36 @@ class ImpSuiteSuite extends FunSuite {
     assert(a.executeWasCalled)
   }
 
-  specify("before gets called before runTest") {
+  specify("beforeEach gets called before runTest") {
     val a = new MySuite
     a.execute()
-    assert(a.beforeCalledBeforeRunTest)
+    assert(a.beforeEachCalledBeforeRunTest)
   }
   
-  specify("after gets called after runTest") {
+  specify("afterEach gets called after runTest") {
     val a = new MySuite
     a.execute()
-    assert(a.afterCalledAfterRunTest)
+    assert(a.afterEachCalledAfterRunTest)
   }
 
-  specify("beforeSuite gets called before execute") {
+  specify("beforeAll gets called before execute") {
     val a = new MySuite
     a.execute()
-    assert(a.beforeSuiteCalledBeforeExecute)
+    assert(a.beforeAllCalledBeforeExecute)
   }
   
-  specify("afterSuite gets called after execute") {
+  specify("afterAll gets called after execute") {
     val a = new MySuite
     a.execute()
-    assert(a.afterSuiteCalledAfterExecute)
+    assert(a.afterAllCalledAfterExecute)
   }
   
   // test exceptions with runTest
-  specify("If any invocation of before completes abruptly with an exception, runTest " +
+  specify("If any invocation of beforeEach completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception.") {
     
     class MySuite extends ImpSuite {
-      override def before() { throw new NumberFormatException } 
+      override def beforeEach() { throw new NumberFormatException } 
     }
     intercept(classOf[NumberFormatException]) {
       val a = new MySuite
@@ -93,26 +93,26 @@ class ImpSuiteSuite extends FunSuite {
   }
   
   specify("If any call to super.runTest completes abruptly with an exception, runTest " +
-    "will complete abruptly with the same exception, however, before doing so, it will invoke after") {
+    "will complete abruptly with the same exception, however, before doing so, it will invoke afterEach") {
     trait FunkySuite extends Suite {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
         throw new NumberFormatException
       }
     }
     class MySuite extends FunkySuite with ImpSuite {
-      var afterCalled = false
-      override def after() {
-        afterCalled = true
+      var afterEachCalled = false
+      override def afterEach() {
+        afterEachCalled = true
       }
     }
     val a = new MySuite
     intercept(classOf[NumberFormatException]) {
       a.runTest("july", new Reporter {}, new Stopper {}, Map())
     }
-    assert(a.afterCalled)
+    assert(a.afterEachCalled)
   }
   
-  specify("If both super.runTest and after complete abruptly with an exception, runTest " + 
+  specify("If both super.runTest and afterEach complete abruptly with an exception, runTest " + 
     "will complete abruptly with the exception thrown by super.runTest.") {
     trait FunkySuite extends Suite {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
@@ -120,9 +120,9 @@ class ImpSuiteSuite extends FunSuite {
       }
     }
     class MySuite extends FunkySuite with ImpSuite {
-      var afterCalled = false
-      override def after() {
-        afterCalled = true
+      var afterEachCalled = false
+      override def afterEach() {
+        afterEachCalled = true
         throw new IllegalArgumentException
       }
     }
@@ -130,14 +130,14 @@ class ImpSuiteSuite extends FunSuite {
     intercept(classOf[NumberFormatException]) {
       a.runTest("july", new Reporter {}, new Stopper {}, Map())
     }
-    assert(a.afterCalled)
+    assert(a.afterEachCalled)
   }
   
-  specify("If super.runTest returns normally, but after completes abruptly with an " +
+  specify("If super.runTest returns normally, but afterEach completes abruptly with an " +
     "exception, runTest will complete abruptly with the same exception.") {
        
     class MySuite extends ImpSuite {
-      override def after() { throw new NumberFormatException }
+      override def afterEach() { throw new NumberFormatException }
       def testJuly() = ()
     }
     intercept(classOf[NumberFormatException]) {
@@ -147,11 +147,11 @@ class ImpSuiteSuite extends FunSuite {
   }
  
   // test exceptions with execute
-  specify("If any invocation of beforeSuite completes abruptly with an exception, execute " +
+  specify("If any invocation of beforeAll completes abruptly with an exception, execute " +
     "will complete abruptly with the same exception.") {
     
     class MySuite extends ImpSuite {
-      override def beforeSuite() { throw new NumberFormatException }
+      override def beforeAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
     intercept(classOf[NumberFormatException]) {
@@ -161,7 +161,7 @@ class ImpSuiteSuite extends FunSuite {
   }
  
   specify("If any call to super.execute completes abruptly with an exception, execute " +
-    "will complete abruptly with the same exception, however, before doing so, it will invoke afterSuite") {
+    "will complete abruptly with the same exception, however, before doing so, it will invoke afterAll") {
     trait FunkySuite extends Suite {
       override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                            properties: Map[String, Any], distributor: Option[Distributor]) {
@@ -169,19 +169,19 @@ class ImpSuiteSuite extends FunSuite {
       }
     }
     class MySuite extends FunkySuite with ImpSuite {
-      var afterSuiteCalled = false
-      override def afterSuite() {
-        afterSuiteCalled = true
+      var afterAllCalled = false
+      override def afterAll() {
+        afterAllCalled = true
       }
     }
     val a = new MySuite
     intercept(classOf[NumberFormatException]) {
       a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
     }
-    assert(a.afterSuiteCalled)
+    assert(a.afterAllCalled)
   }
    
-  specify("If both super.execute and afterSuite complete abruptly with an exception, execute " + 
+  specify("If both super.execute and afterAll complete abruptly with an exception, execute " + 
     "will complete abruptly with the exception thrown by super.execute.") {
     trait FunkySuite extends Suite {
       override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
@@ -190,9 +190,9 @@ class ImpSuiteSuite extends FunSuite {
       }
     }
     class MySuite extends FunkySuite with ImpSuite {
-      var afterSuiteCalled = false
-      override def afterSuite() {
-        afterSuiteCalled = true
+      var afterAllCalled = false
+      override def afterAll() {
+        afterAllCalled = true
         throw new IllegalArgumentException
       }
     }
@@ -200,14 +200,14 @@ class ImpSuiteSuite extends FunSuite {
     intercept(classOf[NumberFormatException]) {
       a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
     }
-    assert(a.afterSuiteCalled)
+    assert(a.afterAllCalled)
   }
   
-  specify("If super.execute returns normally, but afterSuite completes abruptly with an " +
+  specify("If super.execute returns normally, but afterAll completes abruptly with an " +
     "exception, execute will complete abruptly with the same exception.") {
        
     class MySuite extends ImpSuite {
-      override def afterSuite() { throw new NumberFormatException }
+      override def afterAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
     intercept(classOf[NumberFormatException]) {
@@ -222,7 +222,7 @@ class ImpSuiteExtendingSuite extends ImpSuite {
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
 
-  override def before() {
+  override def beforeEach() {
     sb = new StringBuilder("ScalaTest is ")
     lb.clear()
   }
@@ -246,7 +246,7 @@ class ImpSuiteExtendingFunSuite extends FunSuite with ImpSuite {
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
 
-  override def before() {
+  override def beforeEach() {
     sb = new StringBuilder("ScalaTest is ")
     lb.clear()
   }

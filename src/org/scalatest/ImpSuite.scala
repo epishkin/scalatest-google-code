@@ -32,7 +32,7 @@ package org.scalatest
  *   var sb: StringBuilder = _
  *   val lb = new ListBuffer[String]
  * 
- *   override def before() {
+ *   override def beforeEach() {
  *     sb = new StringBuilder("ScalaTest is ")
  *     lb.clear()
  *   }
@@ -75,7 +75,7 @@ trait ImpSuite extends Suite {
    * each test, thus this method can be used to set up a test fixture
    * needed by each test. This trait's implementation of this method does nothing.
    */
-  protected def before() = ()
+  protected def beforeEach() = ()
   
   /**
    * Defines a method to be run after each of this suite's tests. This trait's implementation
@@ -83,7 +83,7 @@ trait ImpSuite extends Suite {
    * each test, thus this method can be used to tear down a test fixture
    * needed by each test. This trait's implementation of this method does nothing.
    */
-  protected def after() = ()
+  protected def afterEach() = ()
   
   /**
    * Defines a method to be run before any of this suite's tests or nested suites are executed. This trait's implementation
@@ -91,7 +91,7 @@ trait ImpSuite extends Suite {
    * any tests or nested suites, thus this method can be used to set up a test fixture
    * needed by the entire suite. This trait's implementation of this method does nothing.
    */
-  protected def beforeSuite() = ()
+  protected def beforeAll() = ()
   
   /**
    * Defines a method to be run after all of this suite's tests and nested suites have
@@ -100,36 +100,36 @@ trait ImpSuite extends Suite {
    * all tests and nested suites, thus this method can be used to tear down a test fixture
    * needed by the entire suite. This trait's implementation of this method does nothing.
    */
-  protected def afterSuite() = ()
+  protected def afterAll() = ()
   
   /**
-   * Run a test surrounded by calls to <code>before</code> and <code>after</code>.
-   * This trait's implementation of this method ("this method") invokes <code>before</code>
-   * before running each test and <code>after</code>
+   * Run a test surrounded by calls to <code>beforeEach</code> and <code>afterEach</code>.
+   * This trait's implementation of this method ("this method") invokes <code>beforeEach</code>
+   * before running each test and <code>afterEach</code>
    * after running each test. It runs each test by invoking <code>super.runTest</code>, passing along
    * the four parameters passed to it.
    * 
    * <p>
-   * If any invocation of <code>before</code> completes abruptly with an exception, this
+   * If any invocation of <code>beforeEach</code> completes abruptly with an exception, this
    * method will complete abruptly with the same exception. If any call to
    * <code>super.runTest</code> completes abruptly with an exception, this method
    * will complete abruptly with the same exception, however, before doing so, it will
-   * invoke <code>after</code>. If <cod>after</code> <em>also</em> completes abruptly with an exception, this 
+   * invoke <code>afterEach</code>. If <cod>afterEach</code> <em>also</em> completes abruptly with an exception, this 
    * method will nevertheless complete abruptly with the exception previously thrown by <code>super.runTest</code>.
-   * If <code>super.runTest</code> returns normally, but <code>after</code> completes abruptly with an
+   * If <code>super.runTest</code> returns normally, but <code>afterEach</code> completes abruptly with an
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
   override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
-    before()
+    beforeEach()
     try {
       super.runTest(testName, reporter, stopper, properties)
-      after()
+      afterEach()
     }
     catch {
      case e: Exception =>
        try {
-         after() // Make sure that after is called even if the runTest completes abruptly.
+         afterEach() // Make sure that afterEach is called even if the runTest completes abruptly.
        }
        finally {
          throw e // If both runTest and after throw an exception, report the test exception
@@ -138,37 +138,37 @@ trait ImpSuite extends Suite {
   }
 
   /**
-   * Execute a suite surrounded by calls to <code>beforeSuite</code> and <code>afterSuite</code>.
-   * This trait's implementation of this method ("this method") invokes <code>beforeSuite</code>
-   * before executing any tests or nested suites and <code>afterSuite</code>
+   * Execute a suite surrounded by calls to <code>beforeAll</code> and <code>afterAll</code>.
+   * This trait's implementation of this method ("this method") invokes <code>beforeAll</code>
+   * before executing any tests or nested suites and <code>afterAll</code>
    * after executing all tests and nested suites. It executes the suite by invoking <code>super.execute</code>, passing along
    * the seven parameters passed to it.
    * 
    * <p>
-   * If any invocation of <code>beforeSuite</code> completes abruptly with an exception, this
+   * If any invocation of <code>beforeAll</code> completes abruptly with an exception, this
    * method will complete abruptly with the same exception. If any call to
    * <code>super.execute</code> completes abruptly with an exception, this method
    * will complete abruptly with the same exception, however, before doing so, it will
-   * invoke <code>afterSuite</code>. If <cod>afterSuite</code> <em>also</em> completes abruptly with an exception, this 
+   * invoke <code>afterAll</code>. If <cod>afterAll</code> <em>also</em> completes abruptly with an exception, this 
    * method will nevertheless complete abruptly with the exception previously thrown by <code>super.execute</code>.
-   * If <code>super.execute</code> returns normally, but <code>afterSuite</code> completes abruptly with an
+   * If <code>super.execute</code> returns normally, but <code>afterAll</code> completes abruptly with an
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
   override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                        properties: Map[String, Any], distributor: Option[Distributor]) {
-    beforeSuite()
+    beforeAll()
     try {
       super.execute(testName, reporter, stopper, includes, excludes, properties, distributor)
-      afterSuite()
+      afterAll()
     }
     catch {
      case e: Exception =>
        try {
-         afterSuite() // Make sure that afterSuite is called even if execute completes abruptly.
+         afterAll() // Make sure that afterAll is called even if execute completes abruptly.
        }
        finally {
-         throw e // If both execute and afterSuite throw an exception, report the test exception
+         throw e // If both execute and afterAll throw an exception, report the test exception
        }
     }
   }
