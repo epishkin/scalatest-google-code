@@ -110,8 +110,8 @@ class ImpSuiteSuite extends FunSuite {
     assert(a.afterCalled)
   }
   
-  specify("If any call to super.runTest completes abruptly with an exception, runTest " +
-    "will complete abruptly with the same exception, however, before doing so, it will invoke after") {
+  specify("If both super.runTest and after complete abruptly with an exception, runTest " + 
+    "will complete abruptly with the exception thrown by super.runTest.") {
     trait FunkySuite extends Suite {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
         throw new NumberFormatException
@@ -121,6 +121,7 @@ class ImpSuiteSuite extends FunSuite {
       var afterCalled = false
       override def after() {
         afterCalled = true
+        throw new IllegalArgumentException
       }
     }
     val a = new MySuite
