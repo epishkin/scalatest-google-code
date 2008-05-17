@@ -47,13 +47,34 @@ package org.scalatest.fun
 trait SpecSuite extends Suite {
 
   trait Node
-  abstract class Branch extends Node {
+  abstract class Branch(parentOption: Option[Branch]) extends Node {
     var subNodes: List[Node] = Nil
+    def invokeSharedBehavior(behaviorName: String) {
+      val sharedBehaviorOption: Option[SharedBehavior] = {
+        subNodes.find(
+          _ match {
+            case SharedBehavior(parent, `behaviorName`) => true
+            case _ => false
+          }
+        ).asInstanceOf[Option[SharedBehavior]]
+      }
+      sharedBehaviorOption match {
+        case Some(sharedBehavior) => runTestsInBranch(sharedBehavior)
+        case None => {
+          parentOption match {
+            case Some(parent) => parent.invokeSharedBehavior(behaviorName)
+            case None => throw new NoSuchElementException("A requested shared behavior was not found: " + behaviorName)
+          }
+        }
+      } 
+    }
   }
   case class Example(exampleName: String, f: () => Unit) extends Node
-  case class Description(descriptionName: String) extends Branch
+  case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
+  case class SharedBehavior(parent: Branch, behaviorName: String) extends Branch(Some(parent))
+  case class SharedBehaviorInvocation(behaviorName: String) extends Node
 
-  private val trunk: Branch = new Branch {}
+  private val trunk: Branch = new Branch(None) {}
   private var currentBranch: Branch = trunk
   
   class Inifier(name: String) {
@@ -62,17 +83,20 @@ trait SpecSuite extends Suite {
     }
   }
 
+  private def runTestsInBranch(branch: Branch) {
+    branch.subNodes.reverse.foreach(
+      _ match {
+        case Example(exampleName, f) => f()
+        case sb: SharedBehavior =>
+        case SharedBehaviorInvocation(behaviorName) => currentBranch.invokeSharedBehavior(behaviorName)
+        case branch: Branch => runTestsInBranch(branch)
+      }
+    )
+  }
+
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                         properties: Map[String, Any]) {
-    def traverse(branch: Branch) {
-      branch.subNodes.reverse.foreach(
-        _ match {
-          case Example(exampleName, f) => f()
-          case branch: Branch => traverse(branch)
-        }
-      )
-    }
-    traverse(trunk)
+    runTestsInBranch(trunk)
   }
   
   override def testNames: Set[String] = {
@@ -110,7 +134,9 @@ trait SpecSuite extends Suite {
   }
 
   class CousinBehave {
-    def like(sharedBehaviorName: String) = println("it should behave like " + sharedBehaviorName)
+    def like(sharedBehaviorName: String) {
+       currentBranch.subNodes ::= SharedBehaviorInvocation(sharedBehaviorName)
+     }
   }
 
   class CousinBefore {
@@ -125,15 +151,21 @@ trait SpecSuite extends Suite {
   protected def before = new CousinBefore
 
   protected def describe(name: String)(f: => Unit) {
+    insertBranch(Description(currentBranch, name), f _)
+  }
+  
+  protected def share(name: String)(f: => Unit) {
+    insertBranch(SharedBehavior(currentBranch, name), f _)
+  }
+
+  private def insertBranch(newBranch: Branch, f: () => Unit) {
     val oldBranch = currentBranch
-    val newBranch = Description(name)
     currentBranch.subNodes ::= newBranch
     currentBranch = newBranch
-    f
+    f()
     currentBranch = oldBranch
   }
-  protected def share(name: String)(f: => Unit) { println("sharing " + name); f }
-
+  
 
 /*
   override def suiteName = specName

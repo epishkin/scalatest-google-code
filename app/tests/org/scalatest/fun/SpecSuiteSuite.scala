@@ -218,6 +218,33 @@ class SpecSuiteSuite extends FunSuite {
     val a = new MySuite
     a.execute()
   }
+  
+  specify("a shared example invoked with 'it should behave like' should get invoked") {
+    class MySuite extends SpecSuite with ImpSuite {
+      var sharedExampleInvoked = false
+      share("shared example") {
+        it should "be invoked" in {
+          println("***got invoked here")
+          sharedExampleInvoked = true
+        }
+      }
+      describe("A Stack") {
+        before each {
+          // set up fixture
+        }
+        describe("(when not empty)") {
+          it should "allow me to pop" in {}
+          it should behave like "shared example"
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.sharedExampleInvoked)
+  }
 }
 
 class TryingASpecSuite extends SpecSuite {
