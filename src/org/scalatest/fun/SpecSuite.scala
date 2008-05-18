@@ -124,6 +124,10 @@ trait SpecSuite extends Suite {
             case None => 
           }
           f()
+          parent.afterEach match {
+            case Some(af) => af()
+            case None => 
+          }
         }
         case sb: SharedBehavior =>
         case SharedBehaviorInvocation(parent, behaviorName) => parent.invokeSharedBehavior(behaviorName)
@@ -217,7 +221,10 @@ trait SpecSuite extends Suite {
 
   class Afterizer {
     def each(f: => Unit) {
-      println("do something after each example")
+      currentBranch.afterEach match {
+        case Some(x) => throw new RuntimeException("Multiple 'arfter each' clauses found in same describe or share clause.")
+        case None => currentBranch.afterEach = Some(f _)
+      }
     }
     def all(f: => Unit) {
       println("do something after all examples")

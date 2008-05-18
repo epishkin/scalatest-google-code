@@ -453,4 +453,23 @@ class SpecSuiteSuite extends FunSuite {
     a.execute()
     assert(a.beforeEachRanBeforeExample)
   }
+  
+  specify("an 'after each' should run after an example") {
+    class MySuite extends SpecSuite {
+      var exampleRan = false
+      var afterEachRanAfterExample = false
+      after each {
+        if (exampleRan)
+          afterEachRanAfterExample = true
+      }
+      it should "run after example" in {
+        exampleRan = true
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.afterEachRanAfterExample)
+  }
+  
+  // need to do one where the test function throws an exception, and after still gets attempted
 }
