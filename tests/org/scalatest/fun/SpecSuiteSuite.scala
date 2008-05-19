@@ -470,7 +470,7 @@ class SpecSuiteSuite extends FunSuite {
     a.execute()
     assert(a.afterEachRanAfterExample)
   }
- /* 
+
   specify("If a test function throws an exception, after each should get invoked anyway") {
     class MySuite extends SpecSuite {
       var afterEachRanAfterExample = false
@@ -485,5 +485,5 @@ class SpecSuiteSuite extends FunSuite {
     a.execute()
     assert(a.afterEachRanAfterExample)
   }
-   */
+
 }
