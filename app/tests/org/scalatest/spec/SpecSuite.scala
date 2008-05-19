@@ -1,7 +1,7 @@
 package org.scalatest.spec
 
 import org.scalatest.fun.FunSuite
-import org.scalatest.imp.ImpSuite
+import org.scalatest.ImpSuite
 
 class SpecSuite extends FunSuite {
 
