@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.imp
 
 /**
  * Trait that can be mixed into suites that need methods invoked before and after executing the
