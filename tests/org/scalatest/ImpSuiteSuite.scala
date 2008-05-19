@@ -1,4 +1,4 @@
-package org.scalatest.imp
+package org.scalatest
 
 import org.scalatest.fun.FunSuite
 import scala.collection.mutable.ListBuffer

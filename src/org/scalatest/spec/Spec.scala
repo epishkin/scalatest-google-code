@@ -19,7 +19,7 @@ package org.scalatest.spec
  * Trait that facilitates writing specification-oriented tests in a literary-programming style.
  *
  * <pre>
- * import org.scalatest.fun.Spec
+ * import org.scalatest.spec.Spec
  *
  * class MySuite extends Spec {
  *
