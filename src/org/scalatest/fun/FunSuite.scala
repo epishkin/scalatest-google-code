@@ -553,7 +553,7 @@ trait FunSuite extends Suite with Checkers {
     if (testName == null || reporter == null || stopper == null || properties == null)
       throw new NullPointerException
 
-    val wrappedReporter = reporter
+    val wrappedReporter = wrapReporterIfNecessary(reporter)
 
     val report = new Report(getTestNameForReport(testName), "")
 
@@ -563,7 +563,7 @@ trait FunSuite extends Suite with Checkers {
 
       atomic.get.testsMap(testName) match {
         case PlainOldTest(testName, f) => f()
-        case ReporterTest(testName, f) => f(reporter)
+        case ReporterTest(testName, f) => f(wrappedReporter)
       }
 
       val report = new Report(getTestNameForReport(testName), "")
