@@ -248,7 +248,7 @@
 			<arg value="-o" />
 
 			<arg value="-s" />
-			<arg value="org.scalatest.fun.SpecSuiteSuite" />
+			<arg value="org.scalatest.spec.SpecSuite" />
 		</java>
 	</target>
 
