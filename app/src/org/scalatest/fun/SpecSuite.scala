@@ -68,7 +68,7 @@ trait SpecSuite extends Suite {
          }
        )
     }
-    def invokeSharedBehavior(behaviorName: String) {
+    def invokeSharedBehavior(behaviorName: String, reporter: Reporter, stopper: Stopper) {
       val sharedBehaviorOption: Option[SharedBehavior] = {
         subNodes.find(
           _ match {
@@ -78,10 +78,10 @@ trait SpecSuite extends Suite {
         ).asInstanceOf[Option[SharedBehavior]]
       }
       sharedBehaviorOption match {
-        case Some(sharedBehavior) => runTestsInBranch(sharedBehavior)
+        case Some(sharedBehavior) => runTestsInBranch(sharedBehavior, reporter, stopper)
         case None => {
           parentOption match {
-            case Some(parent) => parent.invokeSharedBehavior(behaviorName)
+            case Some(parent) => parent.invokeSharedBehavior(behaviorName, reporter, stopper)
             case None => throw new NoSuchElementException("A requested shared behavior was not found: " + behaviorName)
           }
         }
@@ -115,25 +115,68 @@ trait SpecSuite extends Suite {
   private val trunk: Branch = new Branch(None) {}
   private var currentBranch: Branch = trunk
   
-  private def runTestsInBranch(branch: Branch) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
     branch.subNodes.reverse.foreach(
       _ match {
-        case Example(parent, exampleName, f) => {
+        case ex @ Example(parent, exampleName, f) => {
           parent.beforeEach match {
             case Some(be) => be()
             case None => 
           }
-          f()
+          runExample(ex, reporter)
           parent.afterEach match {
             case Some(af) => af()
             case None => 
           }
         }
         case sb: SharedBehavior =>
-        case SharedBehaviorInvocation(parent, behaviorName) => parent.invokeSharedBehavior(behaviorName)
-        case branch: Branch => runTestsInBranch(branch)
+        case SharedBehaviorInvocation(parent, behaviorName) => parent.invokeSharedBehavior(behaviorName, reporter, stopper)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
     )
+  }
+
+  private  def runExample(example: Example, reporter: Reporter) {
+
+    if (example == null || reporter == null)
+      throw new NullPointerException
+
+    val wrappedReporter = wrapReporterIfNecessary(reporter)
+
+    val report = new Report(getTestNameForReport(example.exampleName), "")
+
+    wrappedReporter.testStarting(report)
+
+    try {
+
+      example.f()
+
+      val report = new Report(getTestNameForReport(example.exampleName), "")
+
+      wrappedReporter.testSucceeded(report)
+    }
+    catch { 
+      case e: Exception => {
+        handleFailedTest(e, false, example.exampleName, None, wrappedReporter)
+      }
+      case ae: AssertionError => {
+        handleFailedTest(ae, false, example.exampleName, None, wrappedReporter)
+      }
+    }
+  }
+
+  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+      rerunnable: Option[Rerunnable], reporter: Reporter) {
+
+    val msg =
+      if (t.getMessage != null) // [bv: this could be factored out into a helper method]
+        t.getMessage
+      else
+        t.toString
+
+    val report = new Report(getTestNameForReport(testName), msg, Some(t), None)
+
+    reporter.testFailed(report)
   }
 
   private def countTestsInBranch(branch: Branch): Int = {
@@ -151,7 +194,7 @@ trait SpecSuite extends Suite {
 
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                         properties: Map[String, Any]) {
-    runTestsInBranch(trunk)
+    runTestsInBranch(trunk, reporter, stopper)
   }
  
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
