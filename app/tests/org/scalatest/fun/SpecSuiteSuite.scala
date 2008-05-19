@@ -485,5 +485,4 @@ class SpecSuiteSuite extends FunSuite {
     a.execute()
     assert(a.afterEachRanAfterExample)
   }
-
 }
