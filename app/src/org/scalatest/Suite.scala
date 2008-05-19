@@ -1685,7 +1685,7 @@ trait Suite {
   // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
   // so that exceptions are caught and transformed
   // into error messages on the standard error stream.
-  private def wrapReporterIfNecessary(reporter: Reporter) = reporter match {
+  private[scalatest] def wrapReporterIfNecessary(reporter: Reporter) = reporter match {
     case dr: DispatchReporter => dr
     case cr: CatchReporter => cr
     case _ => new CatchReporter(reporter)

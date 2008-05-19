@@ -403,7 +403,7 @@ class SpecSuiteSuite extends FunSuite {
     assert(a.expectedTestCount(Set(), Set()) === 15)
   }
   
-  specify("Make sure before each, after each, before all, and after all can be nested nicely") {
+  specify("Before each, after each, before all, and after all should all nest nicely") {
     class MySuite extends SpecSuite {
       before all {}
       share("this") {
@@ -416,7 +416,7 @@ class SpecSuiteSuite extends FunSuite {
           it should "nine" in {}
           it should "ten" in {}
           after each {}
-          before each{}
+          before each {}
         }
         it should behave like "that"
       }
@@ -470,6 +470,20 @@ class SpecSuiteSuite extends FunSuite {
     a.execute()
     assert(a.afterEachRanAfterExample)
   }
-  
-  // need to do one where the test function throws an exception, and after still gets attempted
+ /* 
+  specify("If a test function throws an exception, after each should get invoked anyway") {
+    class MySuite extends SpecSuite {
+      var afterEachRanAfterExample = false
+      after each {
+          afterEachRanAfterExample = true
+      }
+      it should "run after example" in {
+        throw new RuntimeException
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.afterEachRanAfterExample)
+  }
+   */
 }
