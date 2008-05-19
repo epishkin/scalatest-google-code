@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.fun
+package org.scalatest.spec
 
 /**
  * Trait that facilitates writing specification-oriented tests in a literary-programming style.
  *
  * <pre>
- * import org.scalatest.fun.SpecSuite
+ * import org.scalatest.fun.Spec
  *
- * class MySuite extends SpecSuite {
+ * class MySuite extends Spec {
  *
  *   share("a non-empty stack") {
  *     it should "return the top when sent #peek" in {
@@ -44,7 +44,7 @@ package org.scalatest.fun
  * }
  * @author Bill Venners
  */
-trait SpecSuite extends Suite {
+trait Spec extends Suite {
 
   private abstract class Node(parentOption: Option[Branch])
   private abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
@@ -332,7 +332,7 @@ trait SpecSuite extends Suite {
     println("registered example: " + example)
   }
 
-  class InWrapper(spec: SpecSuite, example: String) {
+  class InWrapper(spec: Spec, example: String) {
     def >>(f: => Unit) {
       in(f)
     }
@@ -341,7 +341,7 @@ trait SpecSuite extends Suite {
     }
   }
 
-  class CanWrapper(spec: SpecSuite, sut: String) {
+  class CanWrapper(spec: Spec, sut: String) {
     def can(f: => Unit) {
       spec.registerCan(sut)
       f
@@ -349,7 +349,7 @@ trait SpecSuite extends Suite {
     }
   }
 
-  class ShouldWrapper(spec: SpecSuite, sut: String) {
+  class ShouldWrapper(spec: Spec, sut: String) {
     def should(f: => Unit) {
       spec.registerShould(sut)
       f
