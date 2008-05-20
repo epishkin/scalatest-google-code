@@ -391,6 +391,40 @@ class SpecSuite extends FunSuite {
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testStartingReportHadCorrectTestName)
   }
+  
+  test("In a testSucceeded report, the example name should start with 'it should' if top level") {
+    var testSucceededReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testSucceeded(report: Report) {
+        if (report.name.indexOf("it should start with proper words") != -1) {
+          testSucceededReportHadCorrectTestName = true
+        }  
+      }
+    }
+    class MySpec extends Spec {
+      it should "start with proper words" in {}
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testSucceededReportHadCorrectTestName)
+  }
+  
+  test("In a testFailed report, the example name should start with 'it should' if top level") {
+    var testFailedReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("it should start with proper words") != -1) {
+          testFailedReportHadCorrectTestName = true
+        }  
+      }
+    }
+    class MySpec extends Spec {
+      it should "start with proper words" in { fail() }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedReportHadCorrectTestName)
+  }
 }
 
 
