@@ -374,6 +374,23 @@ class SpecSuite extends FunSuite {
     assert(!a.example2WasInvokedAfterExample1)
     assert(!a.example3WasInvokedAfterExample2)
   }
+  
+  test("In a testStarting report, the example name should start with 'it should' if top level") {
+    var testStartingReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("it should start with proper words") != -1) {
+          testStartingReportHadCorrectTestName = true
+        }  
+      }
+    }
+    class MySpec extends Spec {
+      it should "start with proper words" in {}
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectTestName)
+  }
 }
 
 
