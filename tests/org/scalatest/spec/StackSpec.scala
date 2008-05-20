@@ -89,34 +89,44 @@ class StackSpec extends Spec {
   }
       
   describe("A Stack") {
+    
     describe("(when empty)") {
+      
       it should "be empty" in {
         assert(emptyStack.empty)
       }
+      
       it should "complain on peek" in {
         intercept(classOf[IllegalStateException]) {
           emptyStack.peek
         }
       }
+      
       it should "complain on pop" in {
         intercept(classOf[IllegalStateException]) {
           emptyStack.pop
         }
       }
     }
+    
     describe("(with one item)") {
       it should behave like { NonEmptyStack(stackWithOneItem, lastValuePushed) }
       it should behave like { NonFullStack(stackWithOneItem) }
     }
+    
     describe("(with one item less than capacity)") {
       it should behave like { NonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed) }
       it should behave like { NonFullStack(stackWithOneItemLessThanCapacity) }
     }
+    
     describe("(full)") {
+      
       it should "be full" in {
         assert(fullStack.full)
       }
+      
       it should behave like { NonEmptyStack(fullStack, lastValuePushed) }
+      
       it should "complain on a push" in {
         intercept(classOf[IllegalStateException]) {
           fullStack.push(10)

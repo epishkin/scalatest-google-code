@@ -205,5 +205,14 @@ trait Spec extends Suite {
     f()
     currentBranch = oldBranch
   }
+              
+  private[scalatest] override def getTestNameForReport(testName: String) = {
+
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+
+    suiteName + ": " + testName
+  }
+
 }
 
