@@ -218,7 +218,25 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute()
   }
- /* 
+
+  test("A given reporter clause should work") {
+    class MySpec extends Spec {
+      describe("A Stack") {
+        describe("(when not empty)") {
+          it should "allow me to pop" given reporter in {
+            reporter => ()
+          }
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute()
+  }
+}
+  /* 
   test("a shared example invoked with 'it should behave like' should get invoked") {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
@@ -486,4 +504,4 @@ class SpecSuite extends FunSuite {
     assert(a.afterEachRanAfterExample)
   }
   */
-}
+

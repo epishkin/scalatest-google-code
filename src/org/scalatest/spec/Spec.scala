@@ -51,6 +51,7 @@ trait Spec extends Suite {
     var subNodes: List[Node] = Nil
   }
   private case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
+  private case class ExampleGivenReporter(parent: Branch, exampleName: String, f: (Reporter) => Unit) extends Node(Some(parent))
   private case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
 
   private val trunk: Branch = new Branch(None) {}
@@ -61,6 +62,9 @@ trait Spec extends Suite {
       _ match {
         case ex @ Example(parent, exampleName, f) => {
           runExample(ex, reporter)
+        }
+        case ex @ ExampleGivenReporter(parent, exampleName, f) => {
+          runExample(Example(parent, exampleName, () => f(reporter)), reporter)
         }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
@@ -115,6 +119,7 @@ trait Spec extends Suite {
     branch.subNodes.reverse.foreach(
       _ match {
         case Example(parent, exampleName, f) => count += 1
+        case ExampleGivenReporter(parent, exampleName, f) => count += 1
         case branch: Branch => count += countTestsInBranch(branch)
       }
     )
@@ -130,6 +135,12 @@ trait Spec extends Suite {
     countTestsInBranch(trunk)
   }
 
+  private def getExampleFullName(prefixOption: Option[String], exampleName: String) =
+    prefixOption match {
+      case Some(prefix) => Resources("prefixShouldSuffix", prefix, exampleName)
+      case None => Resources("itShould", exampleName)
+    }
+
   override def testNames: Set[String] = {
     // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
@@ -137,12 +148,10 @@ trait Spec extends Suite {
       for (node <- branch.subNodes)
         yield node match {
           case ex: Example => {
-            val exName =
-              prefixOption match {
-                case Some(prefix) => Resources("prefixShouldSuffix", prefix, ex.exampleName)
-                case None => Resources("itShould", ex.exampleName)
-              }
-            buf ::= exName 
+            buf ::= getExampleFullName(prefixOption, ex.exampleName) 
+          }
+          case ex: ExampleGivenReporter => {
+            buf ::= getExampleFullName(prefixOption, ex.exampleName) 
           }
           case desc: Description => {
             val descName =
@@ -158,13 +167,23 @@ trait Spec extends Suite {
     traverse(trunk, None)
     Set[String]() ++ buf.toList
   }
-  
-  class Inifier(name: String) {
-    def in(f: => Unit) {
-      currentBranch.subNodes ::= Example(currentBranch, name, f _)
+
+  class ReporterInifier(exampleName: String) {
+    def in(f: (Reporter) => Unit) {
+      currentBranch.subNodes ::= ExampleGivenReporter(currentBranch, exampleName, f)
     }
   }
+    
+  class Inifier(exampleName: String) {
+    def in(f: => Unit) {
+      currentBranch.subNodes ::= Example(currentBranch, exampleName, f _)
+    }
+    def given(repo: Reportifier) = new ReporterInifier(exampleName)
+  }
 
+  class Reportifier {}
+  protected val reporter = new Reportifier
+  
   class Itifier {
     def should(exampleName: String) = new Inifier(exampleName)
   }
