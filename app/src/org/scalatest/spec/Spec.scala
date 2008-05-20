@@ -21,25 +21,13 @@ package org.scalatest.spec
  * <pre>
  * import org.scalatest.spec.Spec
  *
- * class MySuite extends Spec {
- *
- *   share("a non-empty stack") {
- *     it should "return the top when sent #peek" in {
- *       println("and how")
- *     }
- *   }
+ * class MySpec extends Spec {
  *
  *   describe("Stack") {
- *
- *     before each {
- *       println("do the setup thing")
- *     }
  *
  *     it should "work right the first time" in {
  *       println("and how")
  *     }
- *
- *     it should behave like "a non-empty stack"
  *   }
  * }
  * @author Bill Venners
