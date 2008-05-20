@@ -425,6 +425,46 @@ class SpecSuite extends FunSuite {
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testFailedReportHadCorrectTestName)
   }
+  
+  test("In a testStarting report, the example name should start with '<description> should' if nested one level inside a describe clause") {
+    var testStartingReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("A Stack should push and pop properly") != -1) {
+          testStartingReportHadCorrectTestName = true
+        }  
+      }
+    }
+    class MySpec extends Spec {
+      describe("A Stack") {
+        it should "push and pop properly" in {}
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectTestName)
+  }
+  
+  test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
+    var testStartingReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("A Stack (when working right) should push and pop properly") != -1) {
+          testStartingReportHadCorrectTestName = true
+        }  
+      }
+    }
+    class MySpec extends Spec {
+      describe("A Stack") {
+        describe("(when working right)") {
+          it should "push and pop properly" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectTestName)
+  }
 }
 
 
