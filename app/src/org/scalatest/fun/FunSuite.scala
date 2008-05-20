@@ -846,4 +846,13 @@ trait FunSuite extends Suite with Checkers {
   def specify(testName: String, p: Prop, testGroups: Group*) {
     test(testName, p, testGroups: _*)
   }
+  
+  private[scalatest] override def getTestNameForReport(testName: String) = {
+
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+
+    suiteName + ": " + testName
+  }
+
 }
