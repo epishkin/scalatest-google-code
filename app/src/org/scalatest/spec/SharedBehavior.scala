@@ -66,6 +66,4 @@ trait SharedBehavior {
 
     reporter.testFailed(report)
   }
-
-
 }
