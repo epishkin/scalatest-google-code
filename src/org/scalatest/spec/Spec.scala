@@ -63,7 +63,7 @@ trait Spec extends Suite {
     )
   }
 
-  /*private*/  def runExample(example: Example, reporter: Reporter) {
+  /*private*/ def runExample(example: Example, reporter: Reporter) {
 
     if (example == null || reporter == null)
       throw new NullPointerException
@@ -112,6 +112,9 @@ trait Spec extends Suite {
       _ match {
         case Example(parent, exampleName, f) => count += 1
         case ExampleGivenReporter(parent, exampleName, f) => count += 1
+        case SharedBehaviorNode(parent, sharedBehavior) => { 
+          count += sharedBehavior.expectedExampleCount
+        }
         case branch: Branch => count += countTestsInBranch(branch)
       }
     )

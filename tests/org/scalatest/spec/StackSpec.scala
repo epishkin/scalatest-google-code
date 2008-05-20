@@ -3,13 +3,13 @@ package org.scalatest.spec
 import scala.collection.mutable.ListBuffer
 
 class StackSpec extends Spec {
-/*
+
   class Stack[T] {
     val MAX = 10
     private var buf = new ListBuffer[T]
     def push(o: T) {
       if (!full)
-        buf += o
+        o +: buf
       else
         throw new IllegalStateException("can't push onto a full stack")
     }
@@ -30,7 +30,7 @@ class StackSpec extends Spec {
     def size = buf.size
   }
       
-  // Fixture generators
+  // Fixture creation methods
   def emptyStack = new Stack[Int]
   def fullStack = {
     val stack = new Stack[Int]
@@ -49,20 +49,24 @@ class StackSpec extends Spec {
       stack.push(i)
     stack
   }
-  def lastValuePushed = 9
+  val lastValuePushed = 9
       
   case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends SharedBehavior {
+    
     it should "be non-empty" in {
       assert(!stack.empty)
     }  
+
     it should "return the top item on peek" in {
       assert(stack.peek === lastItemAdded)
     }
+
     it should "not remove the top item on peek" in {
       val size = stack.size
       assert(stack.peek === lastItemAdded)
       assert(stack.size === size)
     }
+
     it should "remove the top item on pop" in {
       val size = stack.size
       assert(stack.pop === lastItemAdded)
@@ -71,9 +75,11 @@ class StackSpec extends Spec {
   }
       
   case class NonFullStack(stack: Stack[Int]) extends SharedBehavior {
+    
     it should "not be full" in {
       assert(!stack.full)
     }
+    
     it should "add to the top on push" in {
       val size = stack.size
       stack.push(7)
@@ -118,6 +124,5 @@ class StackSpec extends Spec {
       }
     }
   }
-  */
 }
  
