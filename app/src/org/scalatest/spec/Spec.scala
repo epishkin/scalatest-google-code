@@ -49,68 +49,9 @@ trait Spec extends Suite {
   private abstract class Node(parentOption: Option[Branch])
   private abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
-    var beforeEach: Option[() => Unit] = None
-    var afterEach: Option[() => Unit] = None
-    var beforeAll: Option[() => Unit] = None
-    var afterAll: Option[() => Unit] = None
-    def sharedBehaviorIsInScope(behaviorName: String): Boolean = {
-      val sharedBehaviorExistsInSubNodes: Boolean =
-        subNodes.exists(
-          _ match {
-            case SharedBehavior(parent, `behaviorName`) => true
-            case _ => false
-          }
-        )
-       sharedBehaviorExistsInSubNodes || (
-         parentOption match {
-           case Some(parent) => parent.sharedBehaviorIsInScope(behaviorName)
-           case None => false
-         }
-       )
-    }
-    def invokeSharedBehavior(behaviorName: String, reporter: Reporter, stopper: Stopper) {
-      val sharedBehaviorOption: Option[SharedBehavior] = {
-        subNodes.find(
-          _ match {
-            case SharedBehavior(parent, `behaviorName`) => true
-            case _ => false
-          }
-        ).asInstanceOf[Option[SharedBehavior]]
-      }
-      sharedBehaviorOption match {
-        case Some(sharedBehavior) => runTestsInBranch(sharedBehavior, reporter, stopper)
-        case None => {
-          parentOption match {
-            case Some(parent) => parent.invokeSharedBehavior(behaviorName, reporter, stopper)
-            case None => throw new NoSuchElementException("A requested shared behavior was not found: " + behaviorName)
-          }
-        }
-      } 
-    }
-    def countTestsInSharedBehavior(behaviorName: String): Int = {
-      val sharedBehaviorOption: Option[SharedBehavior] = {
-        subNodes.find(
-          _ match {
-            case SharedBehavior(parent, `behaviorName`) => true
-            case _ => false
-          }
-        ).asInstanceOf[Option[SharedBehavior]]
-      }
-      sharedBehaviorOption match {
-        case Some(sharedBehavior) => countTestsInBranch(sharedBehavior)
-        case None => {
-          parentOption match {
-            case Some(parent) => parent.countTestsInSharedBehavior(behaviorName)
-            case None => throw new NoSuchElementException("A requested shared behavior was not found: " + behaviorName)
-          }
-        }
-      } 
-    }
   }
   private case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
   private case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
-  private case class SharedBehavior(parent: Branch, behaviorName: String) extends Branch(Some(parent))
-  private case class SharedBehaviorInvocation(parent: Branch, behaviorName: String) extends Node(Some(parent))
 
   private val trunk: Branch = new Branch(None) {}
   private var currentBranch: Branch = trunk
@@ -119,18 +60,8 @@ trait Spec extends Suite {
     branch.subNodes.reverse.foreach(
       _ match {
         case ex @ Example(parent, exampleName, f) => {
-          parent.beforeEach match {
-            case Some(be) => be()
-            case None => 
-          }
           runExample(ex, reporter)
-          parent.afterEach match {
-            case Some(af) => af()
-            case None => 
-          }
         }
-        case sb: SharedBehavior =>
-        case SharedBehaviorInvocation(parent, behaviorName) => parent.invokeSharedBehavior(behaviorName, reporter, stopper)
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
     )
@@ -184,8 +115,6 @@ trait Spec extends Suite {
     branch.subNodes.reverse.foreach(
       _ match {
         case Example(parent, exampleName, f) => count += 1
-        case sb: SharedBehavior =>
-        case SharedBehaviorInvocation(parent, behaviorName) => count += parent.countTestsInSharedBehavior(behaviorName)
         case branch: Branch => count += countTestsInBranch(branch)
       }
     )
@@ -238,56 +167,14 @@ trait Spec extends Suite {
 
   class Itifier {
     def should(exampleName: String) = new Inifier(exampleName)
-    def should(behaveWord: Behavifier) = new Behavifier
-  }
-
-  class Behavifier {
-    def like(sharedBehaviorName: String) {
-       if (currentBranch.sharedBehaviorIsInScope(sharedBehaviorName))
-         currentBranch.subNodes ::= SharedBehaviorInvocation(currentBranch, sharedBehaviorName)
-       else
-         throw new NoSuchElementException("A requested shared behavior was not found: " + sharedBehaviorName)
-     }
-  }
-
-  class Beforifier {
-    def each(f: => Unit) {
-      currentBranch.beforeEach match {
-        case Some(x) => throw new RuntimeException("Multiple 'before each' clauses found in same describe or share clause.")
-        case None => currentBranch.beforeEach = Some(f _)
-      }
-    }
-    def all(f: => Unit) {
-      println("do something before all examples")
-    }
-  }
-
-  class Afterizer {
-    def each(f: => Unit) {
-      currentBranch.afterEach match {
-        case Some(x) => throw new RuntimeException("Multiple 'arfter each' clauses found in same describe or share clause.")
-        case None => currentBranch.afterEach = Some(f _)
-      }
-    }
-    def all(f: => Unit) {
-      println("do something after all examples")
-    }
   }
 
   protected def it = new Itifier
-
-  protected def behave = new Behavifier
-  protected def before = new Beforifier
-  protected def after = new Afterizer
 
   protected def describe(name: String)(f: => Unit) {
     insertBranch(Description(currentBranch, name), f _)
   }
   
-  protected def share(name: String)(f: => Unit) {
-    insertBranch(SharedBehavior(currentBranch, name), f _)
-  }
-
   private def insertBranch(newBranch: Branch, f: () => Unit) {
     val oldBranch = currentBranch
     currentBranch.subNodes ::= newBranch

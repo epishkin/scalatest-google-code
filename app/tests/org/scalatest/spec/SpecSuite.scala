@@ -207,9 +207,6 @@ class SpecSuite extends FunSuite {
   test("should be able to mix in ImpSuite without any problems") {
     class MySpec extends Spec with ImpSuite {
       describe("A Stack") {
-        before each {
-          // set up fixture
-        }
         describe("(when not empty)") {
           it should "allow me to pop" in {}
         }
@@ -221,7 +218,7 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute()
   }
-  
+ /* 
   test("a shared example invoked with 'it should behave like' should get invoked") {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
@@ -488,4 +485,5 @@ class SpecSuite extends FunSuite {
     a.execute()
     assert(a.afterEachRanAfterExample)
   }
+  */
 }
