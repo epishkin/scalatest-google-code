@@ -270,23 +270,19 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
   }
-}
-  /* 
+ 
   test("a shared example invoked with 'it should behave like' should get invoked") {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
-      share("shared example") {
+      case class InvocationVerifier extends SharedBehavior {
         it should "be invoked" in {
           sharedExampleInvoked = true
         }
       }
       describe("A Stack") {
-        before each {
-          // set up fixture
-        }
         describe("(when not empty)") {
           it should "allow me to pop" in {}
-          it should behave like "shared example"
+          it should behave like { InvocationVerifier() }
         }
         describe("(when not full)") {
           it should "allow me to push" in {}
@@ -297,6 +293,91 @@ class SpecSuite extends FunSuite {
     a.execute()
     assert(a.sharedExampleInvoked)
   }
+  
+  test("two examples in a SharedBehavior should get invoked") {
+    class MySpec extends Spec with ImpSuite {
+      var sharedExampleInvoked = false
+      var sharedExampleAlsoInvoked = false
+      case class InvocationVerifier extends SharedBehavior {
+        it should "be invoked" in {
+          sharedExampleInvoked = true
+        }
+        it should "also be invoked" in {
+          sharedExampleAlsoInvoked = true
+        }
+      }
+      describe("A Stack") {
+        describe("(when not empty)") {
+          it should "allow me to pop" in {}
+          it should behave like { InvocationVerifier() }
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.sharedExampleInvoked)
+  }
+
+  test("three examples in a shared behavior should be invoked in order") {
+    class MySpec extends Spec {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      case class InvocationVerifier extends SharedBehavior {
+        it should "get invoked" in {
+          example1WasInvoked = true
+        }
+        it should "also get invoked" in {
+          if (example1WasInvoked)
+            example2WasInvokedAfterExample1 = true
+        }
+        it should "also also get invoked" in {
+          if (example2WasInvokedAfterExample1)
+            example3WasInvokedAfterExample2 = true
+        }
+      }
+      it should behave like { InvocationVerifier() }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+    assert(a.example3WasInvokedAfterExample2)
+  }
+  
+  test("three examples in a shared behavior should not get invoked at all if the behavior isn't used in a like clause") {
+    class MySpec extends Spec {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      case class InvocationVerifier extends SharedBehavior {
+        it should "get invoked" in {
+          example1WasInvoked = true
+        }
+        it should "also get invoked" in {
+          if (example1WasInvoked)
+            example2WasInvokedAfterExample1 = true
+        }
+        it should "also also get invoked" in {
+          if (example2WasInvokedAfterExample1)
+            example3WasInvokedAfterExample2 = true
+        }
+      }
+      // don't use it: it should behave like { InvocationVerifier() }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(!a.example1WasInvoked)
+    assert(!a.example2WasInvokedAfterExample1)
+    assert(!a.example3WasInvokedAfterExample2)
+  }
+}
+
+
+  /* 
   
   test("should throw an exception if they attempt to invoke a non-existent shared behavior") {
     class MySpec extends Spec {
@@ -539,4 +620,44 @@ class SpecSuite extends FunSuite {
     assert(a.afterEachRanAfterExample)
   }
   */
+
+  /*
+  test("I think I finally figured it out") {
+    class MySpec extends Spec {
+
+      // Fixtures
+      def stackWithOneItem = {
+        // ...
+      }
+
+      // Shared behavior
+      case class NonEmptyStack(stack: Stack) extends SharedBehavior {
+        it should "not be empty" in {
+          assert(stack.size != 0)
+        }
+        it should "return the top item on a peek" in {
+          // ...
+        }
+      }
+      
+      case class NonFullStack(stack: Stack) extends SharedBehavior {
+        it should "not be full" in {
+          assert(stack.size != 0)
+        }
+        it should "should add to the top on a push" in {
+          // ...
+        }
+      }
+      
+      // The spec
+      describe("A Stack") {
+        describe("(with one item)") {}
+          it should behave like { NonEmptyStack(stackWithOneItem) }
+          it should behave like { NonFullStack(stackWithOneItem) }
+        }
+      }
+    }
+  }
+  */
+
 

@@ -249,6 +249,9 @@
 
 			<arg value="-s" />
 			<arg value="org.scalatest.spec.SpecSuite" />
+
+			<arg value="-s" />
+			<arg value="org.scalatest.spec.StackSpec" />
 		</java>
 	</target>
 

@@ -34,22 +34,26 @@ package org.scalatest.spec
  */
 trait Spec extends Suite {
 
-  private abstract class Node(parentOption: Option[Branch])
-  private abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
+  /*private*/ abstract class Node(parentOption: Option[Branch])
+  /*private*/ abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
   }
-  private case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
-  private case class ExampleGivenReporter(parent: Branch, exampleName: String, f: (Reporter) => Unit) extends Node(Some(parent))
-  private case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
+  /*private*/ case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
+  /*private*/ case class SharedBehaviorNode(parent: Branch, sharedBehavior: SharedBehavior) extends Node(Some(parent))
+  /*private*/ case class ExampleGivenReporter(parent: Branch, exampleName: String, f: (Reporter) => Unit) extends Node(Some(parent))
+  /*private*/ case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
 
-  private val trunk: Branch = new Branch(None) {}
-  private var currentBranch: Branch = trunk
+  /*private*/ val trunk: Branch = new Branch(None) {}
+  /*private*/ var currentBranch: Branch = trunk
   
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
+  /*private*/ def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
     branch.subNodes.reverse.foreach(
       _ match {
         case ex @ Example(parent, exampleName, f) => {
           runExample(ex, reporter)
+        }
+        case sb @ SharedBehaviorNode(parent, sharedBehavior) => {
+          sharedBehavior.execute(reporter, stopper)
         }
         case ex @ ExampleGivenReporter(parent, exampleName, f) => {
           runExample(Example(parent, exampleName, () => f(reporter)), reporter)
@@ -59,7 +63,7 @@ trait Spec extends Suite {
     )
   }
 
-  private  def runExample(example: Example, reporter: Reporter) {
+  /*private*/  def runExample(example: Example, reporter: Reporter) {
 
     if (example == null || reporter == null)
       throw new NullPointerException
@@ -88,7 +92,7 @@ trait Spec extends Suite {
     }
   }
 
-  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+  /*private*/ def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
@@ -102,7 +106,7 @@ trait Spec extends Suite {
     reporter.testFailed(report)
   }
 
-  private def countTestsInBranch(branch: Branch): Int = {
+  /*private*/ def countTestsInBranch(branch: Branch): Int = {
     var count = 0
     branch.subNodes.reverse.foreach(
       _ match {
@@ -123,7 +127,7 @@ trait Spec extends Suite {
     countTestsInBranch(trunk)
   }
 
-  private def getExampleFullName(prefixOption: Option[String], exampleName: String) =
+  /*private*/ def getExampleFullName(prefixOption: Option[String], exampleName: String) =
     prefixOption match {
       case Some(prefix) => Resources("prefixShouldSuffix", prefix, exampleName)
       case None => Resources("itShould", exampleName)
@@ -166,23 +170,32 @@ trait Spec extends Suite {
     def in(f: => Unit) {
       currentBranch.subNodes ::= Example(currentBranch, exampleName, f _)
     }
-    def given(repo: Reportifier) = new ReporterInifier(exampleName)
+    def given(reporterWord: ReporterWord) = new ReporterInifier(exampleName)
   }
 
-  class Reportifier {}
-  protected val reporter = new Reportifier
+  protected class ReporterWord {}
+  protected val reporter = new ReporterWord
   
   class Itifier {
     def should(exampleName: String) = new Inifier(exampleName)
+    def should(behaveWord: BehaveWord) = new Likifier()
   }
 
+  protected class BehaveWord {}
+  protected val behave = new BehaveWord
+  class Likifier {
+    def like(sharedBehavior: SharedBehavior) {
+      currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior)
+    }
+  }
+  
   protected def it = new Itifier
 
   protected def describe(name: String)(f: => Unit) {
     insertBranch(Description(currentBranch, name), f _)
   }
   
-  private def insertBranch(newBranch: Branch, f: () => Unit) {
+  /*private*/ def insertBranch(newBranch: Branch, f: () => Unit) {
     val oldBranch = currentBranch
     currentBranch.subNodes ::= newBranch
     currentBranch = newBranch
