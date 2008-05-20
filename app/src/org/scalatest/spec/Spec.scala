@@ -38,12 +38,13 @@ trait Spec extends Suite {
   /*private*/ abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
   }
+  /*private*/ case class Trunk extends Branch(None)
   /*private*/ case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
   /*private*/ case class SharedBehaviorNode(parent: Branch, sharedBehavior: SharedBehavior) extends Node(Some(parent))
   /*private*/ case class ExampleGivenReporter(parent: Branch, exampleName: String, f: (Reporter) => Unit) extends Node(Some(parent))
   /*private*/ case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
 
-  /*private*/ val trunk: Branch = new Branch(None) {}
+  /*private*/ val trunk: Trunk = new Trunk
   /*private*/ var currentBranch: Branch = trunk
   
   /*private*/ def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
@@ -63,6 +64,21 @@ trait Spec extends Suite {
     )
   }
 
+  private def getExampleFullName(example: Example): String = {
+    def getPrefix(branch: Branch): String = {
+      branch match {
+        case Trunk() => ""
+        // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
+        case Description(parent, descriptionName) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
+      }
+    }
+    val prefix = getPrefix(example.parent)
+    if (prefix.trim.isEmpty)
+      Resources("itShould", example.exampleName) 
+    else
+      Resources("prefixShouldSuffix", prefix, example.exampleName)  
+  }
+  
   /*private*/ def runExample(example: Example, reporter: Reporter) {
 
     if (example == null || reporter == null)
@@ -70,7 +86,7 @@ trait Spec extends Suite {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new Report(getTestNameForReport(example.exampleName), "")
+    val report = new Report(getTestNameForReport(getExampleFullName(example)), "")
 
     wrappedReporter.testStarting(report)
 
@@ -78,16 +94,16 @@ trait Spec extends Suite {
 
       example.f()
 
-      val report = new Report(getTestNameForReport(example.exampleName), "")
+      val report = new Report(getTestNameForReport(getExampleFullName(example)), "")
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, example.exampleName, None, wrappedReporter)
+        handleFailedTest(e, false, getExampleFullName(example), None, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, example.exampleName, None, wrappedReporter)
+        handleFailedTest(ae, false, getExampleFullName(example), None, wrappedReporter)
       }
     }
   }
