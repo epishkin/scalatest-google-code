@@ -15,6 +15,8 @@
  */
 package org.scalatest.spec
 
+import NodeFamily._
+
 /**
  * Trait that facilitates writing specification-oriented tests in a literary-programming style.
  *
@@ -34,16 +36,7 @@ package org.scalatest.spec
  */
 trait Spec extends Suite {
 
-  /*private*/ abstract class Node(parentOption: Option[Branch])
-  /*private*/ abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
-    var subNodes: List[Node] = Nil
-  }
-  /*private*/ case class Trunk extends Branch(None)
-  /*private*/ case class Example(parent: Branch, exampleName: String, f: () => Unit) extends Node(Some(parent))
-  /*private*/ case class SharedBehaviorNode(parent: Branch, sharedBehavior: SharedBehavior) extends Node(Some(parent))
-  /*private*/ case class ExampleGivenReporter(parent: Branch, exampleName: String, f: (Reporter) => Unit) extends Node(Some(parent))
-  /*private*/ case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
-
+ 
   /*private*/ val trunk: Trunk = new Trunk
   /*private*/ var currentBranch: Branch = trunk
   
@@ -54,7 +47,7 @@ trait Spec extends Suite {
           runExample(ex, reporter)
         }
         case sb @ SharedBehaviorNode(parent, sharedBehavior) => {
-          sharedBehavior.execute(reporter, stopper)
+          sharedBehavior.execute(reporter, stopper, getPrefix(parent), runExample _)
         }
         case ex @ ExampleGivenReporter(parent, exampleName, f) => {
           runExample(Example(parent, exampleName, () => f(reporter)), reporter)
@@ -64,14 +57,15 @@ trait Spec extends Suite {
     )
   }
 
-  private def getExampleFullName(example: Example): String = {
-    def getPrefix(branch: Branch): String = {
-      branch match {
-        case Trunk() => ""
-        // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
-        case Description(parent, descriptionName) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
-      }
+  private def getPrefix(branch: Branch): String = {
+    branch match {
+       case Trunk() => ""
+      // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
+      case Description(parent, descriptionName) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
+  }
+
+  private def getExampleFullName(example: Example): String = {
     val prefix = getPrefix(example.parent)
     if (prefix.trim.isEmpty)
       Resources("itShould", example.exampleName) 
