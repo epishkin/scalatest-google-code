@@ -15,8 +15,6 @@
  */
 package org.scalatest.jmock;
 
-import org.scalatest.fun.FunSuite
-
 class SMockFunSuite extends FunSuite with SMocker{
 
   def mockTest(msg: String)(f: => Unit): Unit = test(msg){ withMock{ f } }
