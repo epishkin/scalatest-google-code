@@ -1,4 +1,4 @@
-package org.scalatest.spec
+package org.scalatest
 
 class SpecSuite extends FunSuite {
 
