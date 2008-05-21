@@ -66,8 +66,8 @@ trait Spec extends Suite {
   }
 
   private def getExampleFullName(example: Example): String = {
-    val prefix = getPrefix(example.parent)
-    if (prefix.trim.isEmpty)
+    val prefix = getPrefix(example.parent).trim
+    if (prefix.isEmpty)
       Resources("itShould", example.exampleName) 
     else
       Resources("prefixShouldSuffix", prefix, example.exampleName)  
