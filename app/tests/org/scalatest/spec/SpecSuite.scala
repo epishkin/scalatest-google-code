@@ -515,6 +515,77 @@ class SpecSuite extends FunSuite {
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testStartingReportHadCorrectTestName)
   }
+
+  test("expectedTestCount is the number of examples if no shares") {
+    class MySpec extends Spec {
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {}  
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySpec
+    assert(a.expectedTestCount(Set(), Set()) === 5)
+  }
+  
+  test("expectedTestCount should not include tests in shares if never called") {
+    class MySpec extends Spec {
+      class Misbehavior extends SharedBehavior {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {}  
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySpec
+    assert(a.expectedTestCount(Set(), Set()) === 5)
+  }
+
+  test("expectedTestCount should  include tests in a share that is called") {
+    class MySpec extends Spec {
+      case class Misbehavior extends SharedBehavior {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {} 
+        it should behave like { Misbehavior() }
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySpec
+    assert(a.expectedTestCount(Set(), Set()) === 7)
+  }
+
+  test("expectedTestCount should include tests in a share that is called twice") {
+    class MySpec extends Spec {
+      case class Misbehavior extends SharedBehavior {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {} 
+        it should behave like { Misbehavior() }
+        it should "four" in {}
+      }
+      it should "five" in {}
+      it should behave like { Misbehavior() }
+    }
+    val a = new MySpec
+    assert(a.expectedTestCount(Set(), Set()) === 9)
+  }
 }
 
 
@@ -581,76 +652,6 @@ class SpecSuite extends FunSuite {
     assert(a.sharedExampleInvoked)
   }
   
-  test("expectedTestCount is the number of examples if no shares") {
-    class MySpec extends Spec {
-      it should "one" in {}
-      it should "two" in {}
-      describe("behavior") {
-        it should "three" in {}  
-        it should "four" in {}
-      }
-      it should "five" in {}
-    }
-    val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 5)
-  }
-  
-  test("expectedTestCount should not include tests in shares if never called") {
-    class MySpec extends Spec {
-      share("this") {
-        it should "six" in {}
-        it should "seven" in {}
-      }
-      it should "one" in {}
-      it should "two" in {}
-      describe("behavior") {
-        it should "three" in {}  
-        it should "four" in {}
-      }
-      it should "five" in {}
-    }
-    val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 5)
-  }
-
-  test("expectedTestCount should  include tests in a share that is called") {
-    class MySpec extends Spec {
-      share("this") {
-        it should "six" in {}
-        it should "seven" in {}
-      }
-      it should "one" in {}
-      it should "two" in {}
-      describe("behavior") {
-        it should "three" in {} 
-        it should behave like "this"
-        it should "four" in {}
-      }
-      it should "five" in {}
-    }
-    val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 7)
-  }
-
-  test("expectedTestCount should include tests in a share that is called twice") {
-    class MySpec extends Spec {
-      share("this") {
-        it should "six" in {}
-        it should "seven" in {}
-      }
-      it should "one" in {}
-      it should "two" in {}
-      describe("behavior") {
-        it should "three" in {} 
-        it should behave like "this"
-        it should "four" in {}
-      }
-      it should "five" in {}
-      it should behave like "this"
-    }
-    val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 9)
-  }
 
   test("expectedTestCount should work when shares are nested") {
     class MySpec extends Spec {
