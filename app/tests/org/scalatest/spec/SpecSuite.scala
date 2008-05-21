@@ -1,8 +1,5 @@
 package org.scalatest.spec
 
-import org.scalatest.fun.FunSuite
-import org.scalatest.ImpSuite
-
 class SpecSuite extends FunSuite {
 
   test("an example must get invoked by execute") {

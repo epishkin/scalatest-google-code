@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.fun
+package org.scalatest.prop
 
 import org.scalatest._
 import org.scalacheck._
