@@ -35,12 +35,11 @@ import NodeFamily._
  * @author Bill Venners
  */
 trait Spec extends Suite {
-
  
-  /*private*/ val trunk: Trunk = new Trunk
-  /*private*/ var currentBranch: Branch = trunk
+  private val trunk: Trunk = new Trunk
+  private var currentBranch: Branch = trunk
   
-  /*private*/ def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
     branch.subNodes.reverse.foreach(
       _ match {
         case ex @ Example(parent, exampleName, f) => {
@@ -73,7 +72,7 @@ trait Spec extends Suite {
       Resources("prefixShouldSuffix", prefix, example.exampleName)  
   }
   
-  /*private*/ def runExample(example: Example, reporter: Reporter) {
+  private def runExample(example: Example, reporter: Reporter) {
 
     if (example == null || reporter == null)
       throw new NullPointerException
@@ -102,7 +101,7 @@ trait Spec extends Suite {
     }
   }
 
-  /*private*/ def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
@@ -116,7 +115,7 @@ trait Spec extends Suite {
     reporter.testFailed(report)
   }
 
-  /*private*/ def countTestsInBranch(branch: Branch): Int = {
+  private def countTestsInBranch(branch: Branch): Int = {
     var count = 0
     branch.subNodes.reverse.foreach(
       _ match {
@@ -140,7 +139,7 @@ trait Spec extends Suite {
     countTestsInBranch(trunk)
   }
 
-  /*private*/ def getExampleFullName(prefixOption: Option[String], exampleName: String) =
+  private def getExampleFullName(prefixOption: Option[String], exampleName: String) =
     prefixOption match {
       case Some(prefix) => Resources("prefixShouldSuffix", prefix, exampleName)
       case None => Resources("itShould", exampleName)
@@ -202,13 +201,13 @@ trait Spec extends Suite {
     }
   }
   
-  protected def it = new Itifier
+  protected val it = new Itifier
 
   protected def describe(name: String)(f: => Unit) {
     insertBranch(Description(currentBranch, name), f _)
   }
   
-  /*private*/ def insertBranch(newBranch: Branch, f: () => Unit) {
+  private def insertBranch(newBranch: Branch, f: () => Unit) {
     val oldBranch = currentBranch
     currentBranch.subNodes ::= newBranch
     currentBranch = newBranch
