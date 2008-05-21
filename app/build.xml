@@ -220,22 +220,19 @@
 			<arg value="org.scalatest" />
 
 			<arg value="-m" />
-			<arg value="org.scalatest.fun" />
-
-			<arg value="-m" />
 			<arg value="org.scalatest.testng" />
 
 			<arg value="-m" />
 			<arg value="org.scalatest.junit" />
 
 			<arg value="-m" />
-			<arg value="org.scalatest.scalacheck" />
+			<arg value="org.scalatest.prop" />
 
 			<arg value="-s" />
-			<arg value="org.scalatest.spec.SpecSuite" />
+			<arg value="org.scalatest.SpecSuite" />
 
 			<arg value="-s" />
-			<arg value="org.scalatest.spec.StackSpec" />
+			<arg value="org.scalatest.StackSpec" />
 		</java>
 	</target>
 
@@ -249,10 +246,10 @@
 			<arg value="-o" />
 
 			<arg value="-s" />
-			<arg value="org.scalatest.spec.SpecSuite" />
+			<arg value="org.scalatest.SpecSuite" />
 
 			<arg value="-s" />
-			<arg value="org.scalatest.spec.StackSpec" />
+			<arg value="org.scalatest.StackSpec" />
 		</java>
 	</target>
 
