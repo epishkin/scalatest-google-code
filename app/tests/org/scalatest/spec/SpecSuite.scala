@@ -586,6 +586,41 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 9)
   }
+  
+  test("should be able to say it should \"bla\" given[Stack]") {
+    class MySpec extends Spec {
+      import java.util.Date
+      def runWithNowDate(testFunction: Date => Unit) = {
+        testFunction(new Date)
+      }
+      def createNow = new Date
+      it should "do something long-winded" in {
+        runWithNowDate {
+          date => ()
+        }
+      }
+      it should "do something long-winded again" given reporter in {
+        reporter => {
+          runWithNowDate {
+            date => ()
+          }
+        }
+      }
+      it should "do something long-winded again 2" in {
+        val now = createNow
+        // use it
+        ()
+      }
+      it should "do something long-winded again 3" given reporter in {
+        reporter => {
+          val now = createNow
+          // use it
+          ()
+        }
+      }
+    }
+    ()
+  }
 }
 
 

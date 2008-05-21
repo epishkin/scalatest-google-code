@@ -38,18 +38,6 @@ object WeakAsAKitten extends Group("org.scalatest.WeakAsAKitten")
 
 class FunSuiteSuite extends Suite {
 
-  def testSpecifyMethods() {
-
-    val a = new FunSuite {
-      specify("test this") {}
-      specifyWithReporter("test that") { reporter => () }
-    }
-
-    expect(List("test this", "test that")) {
-      a.testNames.elements.toList
-    }
-  }
-
   def testTestNames() {
 
     val a = new FunSuite {
@@ -566,9 +554,9 @@ class FunSuiteSuite extends Suite {
   }
 }
 
-class FunSuiteCheckSuite extends FunSuite {
+class PropSuiteSuite extends PropSuite {
 
-  specify("Checkers' check methods must be callable directly from FunSuite") {
+  test("Checkers' check methods must be callable directly from PropSuite") {
 
     // Ensure a success does not fail in an exception
     val propConcatLists = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
@@ -611,80 +599,80 @@ class FunSuiteCheckSuite extends FunSuite {
     }
   }
 
-  specify("tests that take properties get executed") {
+  test("tests that take properties get executed") {
 
-    val a = new FunSuite {
+    val a = new PropSuite {
       var prop1Used = false
       var prop2Used = false
       val fun1 = (a: Int) => { prop1Used = true; true }
       val fun2 = (a: Int) => { prop2Used = true; true }
       test("this test", fun1)
-      specify("that test", fun2)
+      test("that test", fun2)
     }
     a.execute("this test")
     a.execute("that test")
     assert(a.prop1Used)
     assert(a.prop2Used)
 
-    val b = new FunSuite {
+    val b = new PropSuite {
       var prop1Used = false
       var prop2Used = false
       val fun1 = (a: Int, b: Int) => { prop1Used = true; true }
       val fun2 = (a: Int, b: Int) => { prop2Used = true; true }
       test("this test", fun1)
-      specify("that test", fun2)
+      test("that test", fun2)
     }
     b.execute("this test")
     b.execute("that test")
     assert(b.prop1Used)
     assert(b.prop2Used)
 
-    val c = new FunSuite {
+    val c = new PropSuite {
       var prop1Used = false
       var prop2Used = false
       val fun1 = (a: Int, b: Int, c: Int) => { prop1Used = true; true }
       val fun2 = (a: Int, b: Int, c: Int) => { prop2Used = true; true }
       test("this test", fun1)
-      specify("that test", fun2)
+      test("that test", fun2)
     }
     c.execute("this test")
     c.execute("that test")
     assert(c.prop1Used)
     assert(c.prop2Used)
 
-    val d = new FunSuite {
+    val d = new PropSuite {
       var prop1Used = false
       var prop2Used = false
       val fun1 = (a: Int, b: Int, c: Int, d: Int) => { prop1Used = true; true }
       val fun2 = (a: Int, b: Int, c: Int, d: Int) => { prop2Used = true; true }
       test("this test", fun1)
-      specify("that test", fun2)
+      test("that test", fun2)
     }
     d.execute("this test")
     d.execute("that test")
     assert(d.prop1Used)
     assert(d.prop2Used)
 
-    val e = new FunSuite {
+    val e = new PropSuite {
       var prop1Used = false
       var prop2Used = false
       val fun1 = (a: Int, b: Int, c: Int, d: Int, e: Int) => { prop1Used = true; true }
       val fun2 = (a: Int, b: Int, c: Int, d: Int, e: Int) => { prop2Used = true; true }
       test("this test", fun1)
-      specify("that test", fun2)
+      test("that test", fun2)
     }
     e.execute("this test")
     e.execute("that test")
     assert(e.prop1Used)
     assert(e.prop2Used)
 
-    val f = new FunSuite {
+    val f = new PropSuite {
       var prop1Used = false
       var prop2Used = false
       val fun1 = (a: Int, b: Int, c: Int, d: Int, e: Int, f: Int) => { prop1Used = true; true }
       val fun2 = (a: Int, b: Int, c: Int, d: Int, e: Int, f: Int) => { prop2Used = true; true }
       test("this test", fun1)
-      specify("that test", fun2)
+      test("that test", fun2)
     }
     f.execute("this test")
     f.execute("that test")
