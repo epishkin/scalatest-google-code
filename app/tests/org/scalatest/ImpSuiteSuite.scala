@@ -43,44 +43,44 @@ class ImpSuiteSuite extends FunSuite {
     }
   }
 
-  specify("super's runTest must be called") {
+  test("super's runTest must be called") {
     val a = new MySuite
     a.execute()
     assert(a.runTestWasCalled)
   }
   
-  specify("super's execute must be called") {
+  test("super's execute must be called") {
     val a = new MySuite
     a.execute()
     assert(a.executeWasCalled)
   }
 
-  specify("beforeEach gets called before runTest") {
+  test("beforeEach gets called before runTest") {
     val a = new MySuite
     a.execute()
     assert(a.beforeEachCalledBeforeRunTest)
   }
   
-  specify("afterEach gets called after runTest") {
+  test("afterEach gets called after runTest") {
     val a = new MySuite
     a.execute()
     assert(a.afterEachCalledAfterRunTest)
   }
 
-  specify("beforeAll gets called before execute") {
+  test("beforeAll gets called before execute") {
     val a = new MySuite
     a.execute()
     assert(a.beforeAllCalledBeforeExecute)
   }
   
-  specify("afterAll gets called after execute") {
+  test("afterAll gets called after execute") {
     val a = new MySuite
     a.execute()
     assert(a.afterAllCalledAfterExecute)
   }
   
   // test exceptions with runTest
-  specify("If any invocation of beforeEach completes abruptly with an exception, runTest " +
+  test("If any invocation of beforeEach completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception.") {
     
     class MySuite extends ImpSuite {
@@ -92,7 +92,7 @@ class ImpSuiteSuite extends FunSuite {
     }
   }
   
-  specify("If any call to super.runTest completes abruptly with an exception, runTest " +
+  test("If any call to super.runTest completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception, however, before doing so, it will invoke afterEach") {
     trait FunkySuite extends Suite {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
@@ -112,7 +112,7 @@ class ImpSuiteSuite extends FunSuite {
     assert(a.afterEachCalled)
   }
   
-  specify("If both super.runTest and afterEach complete abruptly with an exception, runTest " + 
+  test("If both super.runTest and afterEach complete abruptly with an exception, runTest " + 
     "will complete abruptly with the exception thrown by super.runTest.") {
     trait FunkySuite extends Suite {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
@@ -133,7 +133,7 @@ class ImpSuiteSuite extends FunSuite {
     assert(a.afterEachCalled)
   }
   
-  specify("If super.runTest returns normally, but afterEach completes abruptly with an " +
+  test("If super.runTest returns normally, but afterEach completes abruptly with an " +
     "exception, runTest will complete abruptly with the same exception.") {
        
     class MySuite extends ImpSuite {
@@ -147,7 +147,7 @@ class ImpSuiteSuite extends FunSuite {
   }
  
   // test exceptions with execute
-  specify("If any invocation of beforeAll completes abruptly with an exception, execute " +
+  test("If any invocation of beforeAll completes abruptly with an exception, execute " +
     "will complete abruptly with the same exception.") {
     
     class MySuite extends ImpSuite {
@@ -160,7 +160,7 @@ class ImpSuiteSuite extends FunSuite {
     }
   }
  
-  specify("If any call to super.execute completes abruptly with an exception, execute " +
+  test("If any call to super.execute completes abruptly with an exception, execute " +
     "will complete abruptly with the same exception, however, before doing so, it will invoke afterAll") {
     trait FunkySuite extends Suite {
       override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
@@ -181,7 +181,7 @@ class ImpSuiteSuite extends FunSuite {
     assert(a.afterAllCalled)
   }
    
-  specify("If both super.execute and afterAll complete abruptly with an exception, execute " + 
+  test("If both super.execute and afterAll complete abruptly with an exception, execute " + 
     "will complete abruptly with the exception thrown by super.execute.") {
     trait FunkySuite extends Suite {
       override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
@@ -203,7 +203,7 @@ class ImpSuiteSuite extends FunSuite {
     assert(a.afterAllCalled)
   }
   
-  specify("If super.execute returns normally, but afterAll completes abruptly with an " +
+  test("If super.execute returns normally, but afterAll completes abruptly with an " +
     "exception, execute will complete abruptly with the same exception.") {
        
     class MySuite extends ImpSuite {
