@@ -465,6 +465,56 @@ class SpecSuite extends FunSuite {
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testStartingReportHadCorrectTestName)
   }
+   
+  test("The example name for a shared example invoked with 'it should behave like' should start with 'it should' if top level") {
+    var testStartingReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("it should be invoked") != -1) {
+          testStartingReportHadCorrectTestName = true
+        }  
+      }
+    }
+    class MySpec extends Spec with ImpSuite {
+      var sharedExampleInvoked = false
+      case class InvocationVerifier extends SharedBehavior {
+        it should "be invoked" in {
+          sharedExampleInvoked = true
+        }
+      }
+      it should behave like { InvocationVerifier() }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectTestName)
+  }
+
+   
+  test("The example name for a shared example invoked with 'it should behave like' should start with '<description> should' if nested one level in a describe clause") {
+    var testStartingReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("A Stack should pop properly") != -1) {
+          testStartingReportHadCorrectTestName = true
+        }  
+        println("*** name was: " + report.name)
+      }
+    }
+    class MySpec extends Spec {
+      var sharedExampleInvoked = false
+      case class InvocationVerifier extends SharedBehavior {
+        it should "pop properly" in {
+          sharedExampleInvoked = true
+        }
+      }
+      describe("A Stack") {
+        it should behave like { InvocationVerifier() }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectTestName)
+  }
 }
 
 

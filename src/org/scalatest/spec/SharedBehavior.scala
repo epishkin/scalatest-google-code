@@ -1,14 +1,17 @@
 package org.scalatest.spec
 
+import NodeFamily._
+
 trait SharedBehavior {
 
-  /*private*/ case class Example(exampleName: String, f: () => Unit)
+  private val trunk = new Trunk
+  /*private case class Example(exampleName: String, f: () => Unit) */
 
   /*private*/ var examples: List[Example] = Nil
 
   class Inifier(exampleName: String) {
     def in(f: => Unit) {
-      examples ::= Example(exampleName, f _)
+      examples ::= Example(trunk, exampleName, f _)
     }
   }
   
@@ -18,20 +21,27 @@ trait SharedBehavior {
 
   protected def it = new Itifier
   
-  def execute(reporter: Reporter, stopper: Stopper) {
-    examples.reverse.foreach { runExample(_, reporter) }
+  def execute(reporter: Reporter, stopper: Stopper, prefix: String, runExample: (Example, Reporter) => Unit) {
+    val examplesToExec: List[Example] =
+      if (prefix.trim.isEmpty)
+        examples
+      else {
+        val desc = Description(trunk, prefix)
+        examples.map(ex => Example(desc, ex.exampleName, ex.f))
+      }
+    examplesToExec.reverse.foreach(runExample(_, reporter))
   }
   
   def expectedExampleCount: Int = 0
   
-  /*private*/ def runExample(example: Example, reporter: Reporter) {
+  /*private def runExample(example: Example, reporter: Reporter, r: String => String) {
 
     if (example == null || reporter == null)
       throw new NullPointerException
 
     val wrappedReporter = reporter // wrapReporterIfNecessary(reporter)
 
-    val report = new Report(example.exampleName /*getTestNameForReport(example.exampleName)*/, "")
+    val report = new Report(getTestNameForReport(example.exampleName), "")
 
     wrappedReporter.testStarting(report)
 
@@ -39,22 +49,22 @@ trait SharedBehavior {
 
       example.f()
 
-      val report = new Report(example.exampleName/*getTestNameForReport(example.exampleName)*/, "")
+      val report = new Report(getTestNameForReport(example.exampleName), "")
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, example.exampleName, None, wrappedReporter)
+        handleFailedTest(e, false, example.exampleName, None, wrappedReporter, getTestNameForReport)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, example.exampleName, None, wrappedReporter)
+        handleFailedTest(ae, false, example.exampleName, None, wrappedReporter, getTestNameForReport)
       }
     }
   }
 
-  /*private*/ def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunnable], reporter: Reporter) {
+  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+      rerunnable: Option[Rerunnable], reporter: Reporter, getTestNameForReport: String => String) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -62,8 +72,9 @@ trait SharedBehavior {
       else
         t.toString
 
-    val report = new Report(testName/*getTestNameForReport(testName)*/, msg, Some(t), None)
+    val report = new Report(getTestNameForReport(testName), msg, Some(t), None)
 
     reporter.testFailed(report)
   }
+  */
 }
