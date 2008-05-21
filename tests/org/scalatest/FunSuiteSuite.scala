@@ -39,7 +39,7 @@ class FunSuiteSuite extends Suite {
 
     val a = new FunSuite {
       test("test this") {}
-      testWithReporter("test that") { reporter => () }
+      testGivenReporter("test that") { reporter => () }
     }
 
     expect(List("test this", "test that")) {
@@ -54,7 +54,7 @@ class FunSuiteSuite extends Suite {
 
     val c = new FunSuite {
       test("test this") {}
-      testWithReporter("test that") { reporter => () }
+      testGivenReporter("test that") { reporter => () }
     }
 
     expect(List("test this", "test that")) {
@@ -65,86 +65,86 @@ class FunSuiteSuite extends Suite {
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
         test("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
         ignore("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        ignoreWithReporter("test this") { reporter => () }
+        ignoreGivenReporter("test this") { reporter => () }
         ignore("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         ignore("test this") {}
-        ignoreWithReporter("test this") { reporter => () }
+        ignoreGivenReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        ignoreWithReporter("test this") { reporter => () }
+        ignoreGivenReporter("test this") { reporter => () }
       }
     }
 
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
         test("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
         ignore("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        ignoreWithReporter("test this") { reporter => () }
+        ignoreGivenReporter("test this") { reporter => () }
       }
     }
 
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
         test("test this") {}
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
       }
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
         test("test this") {}
       }
     }
@@ -154,7 +154,7 @@ class FunSuiteSuite extends Suite {
     
     val a = new FunSuite {
       ignore("test this") {}
-      testWithReporter("test that") { reporter => () }
+      testGivenReporter("test that") { reporter => () }
     }
     expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
       a.groups
@@ -162,7 +162,7 @@ class FunSuiteSuite extends Suite {
 
     val b = new FunSuite {
       test("test this") {}
-      ignoreWithReporter("test that") { reporter => () }
+      ignoreGivenReporter("test that") { reporter => () }
     }
     expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
       b.groups
@@ -170,7 +170,7 @@ class FunSuiteSuite extends Suite {
 
     val c = new FunSuite {
       ignore("test this") {}
-      ignoreWithReporter("test that") { reporter => () }
+      ignoreGivenReporter("test that") { reporter => () }
     }
     expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
       c.groups
@@ -178,7 +178,7 @@ class FunSuiteSuite extends Suite {
 
     val d = new FunSuite {
       test("test this", mygroups.SlowAsMolasses) {}
-      ignoreWithReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
+      ignoreGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
       d.groups
@@ -191,7 +191,7 @@ class FunSuiteSuite extends Suite {
 
     val f = new FunSuite {
       test("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
       f.groups
@@ -233,7 +233,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       test("test this") { theTestThisCalled = true }
-      testWithReporter("test that") { reporter => theTestThatCalled = true }
+      testGivenReporter("test that") { reporter => theTestThatCalled = true }
     }
 
     val repA = new MyReporter
@@ -246,7 +246,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       ignore("test this") { theTestThisCalled = true }
-      testWithReporter("test that") { reporter => theTestThatCalled = true }
+      testGivenReporter("test that") { reporter => theTestThatCalled = true }
     }
 
     val repB = new MyReporter
@@ -260,7 +260,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       test("test this") { theTestThisCalled = true }
-      ignoreWithReporter("test that") { reporter => theTestThatCalled = true }
+      ignoreGivenReporter("test that") { reporter => theTestThatCalled = true }
     }
 
     val repC = new MyReporter
@@ -276,7 +276,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       ignore("test this") { theTestThisCalled = true }
-      ignoreWithReporter("test that") { reporter => theTestThatCalled = true }
+      ignoreGivenReporter("test that") { reporter => theTestThatCalled = true }
     }
 
     val repD = new MyReporter
@@ -292,7 +292,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       ignore("test this") { theTestThisCalled = true }
-      testWithReporter("test that") { reporter => theTestThatCalled = true }
+      testGivenReporter("test that") { reporter => theTestThatCalled = true }
     }
 
     val repE = new MyReporter
@@ -307,7 +307,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       test("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
-      testWithReporter("test that") { reporter => theTestThatCalled = true }
+      testGivenReporter("test that") { reporter => theTestThatCalled = true }
     }
     val repA = new MyReporter
     a.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
@@ -319,7 +319,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       test("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
-      testWithReporter("test that") { reporter => theTestThatCalled = true }
+      testGivenReporter("test that") { reporter => theTestThatCalled = true }
     }
     val repB = new MyReporter
     b.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
@@ -331,7 +331,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       test("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
     }
     val repC = new MyReporter
     c.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
@@ -343,7 +343,7 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       ignore("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
     }
     val repD = new MyReporter
     d.execute(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None)
@@ -356,8 +356,8 @@ class FunSuiteSuite extends Suite {
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
       test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
-      testWithReporter("test the other") { reporter => theTestTheOtherCalled = true }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      testGivenReporter("test the other") { reporter => theTestTheOtherCalled = true }
     }
     val repE = new MyReporter
     e.execute(None, repE, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
@@ -372,8 +372,8 @@ class FunSuiteSuite extends Suite {
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
       ignore("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
-      testWithReporter("test the other") { reporter => theTestTheOtherCalled = true }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      testGivenReporter("test the other") { reporter => theTestTheOtherCalled = true }
     }
     val repF = new MyReporter
     f.execute(None, repF, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
@@ -388,8 +388,8 @@ class FunSuiteSuite extends Suite {
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
       test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
-      ignoreWithReporter("test the other") { reporter => theTestTheOtherCalled = true }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      ignoreGivenReporter("test the other") { reporter => theTestTheOtherCalled = true }
     }
     val repG = new MyReporter
     g.execute(None, repG, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
@@ -404,8 +404,8 @@ class FunSuiteSuite extends Suite {
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
       test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
-      testWithReporter("test the other") { reporter => theTestTheOtherCalled = true }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      testGivenReporter("test the other") { reporter => theTestTheOtherCalled = true }
     }
     val repH = new MyReporter
     h.execute(None, repH, new Stopper {}, Set(), Set("org.scalatest.FastAsLight"), Map(), None)
@@ -419,8 +419,8 @@ class FunSuiteSuite extends Suite {
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
       test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
-      testWithReporter("test the other") { reporter => theTestTheOtherCalled = true }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      testGivenReporter("test the other") { reporter => theTestTheOtherCalled = true }
     }
     val repI = new MyReporter
     i.execute(None, repI, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
@@ -434,8 +434,8 @@ class FunSuiteSuite extends Suite {
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
       ignore("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      ignoreWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
-      testWithReporter("test the other") { reporter => theTestTheOtherCalled = true }
+      ignoreGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      testGivenReporter("test the other") { reporter => theTestTheOtherCalled = true }
     }
     val repJ = new MyReporter
     j.execute(None, repJ, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
@@ -449,8 +449,8 @@ class FunSuiteSuite extends Suite {
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
       ignore("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      ignoreWithReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
-      ignoreWithReporter("test the other") { reporter => theTestTheOtherCalled = true }
+      ignoreGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => theTestThatCalled = true }
+      ignoreGivenReporter("test the other") { reporter => theTestTheOtherCalled = true }
     }
     val repK = new MyReporter
     k.execute(None, repK, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None)
@@ -464,27 +464,27 @@ class FunSuiteSuite extends Suite {
 
     val a = new FunSuite {
       test("test this") {}
-      testWithReporter("test that") { reporter => () }
+      testGivenReporter("test that") { reporter => () }
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
 
     val b = new FunSuite {
       ignore("test this") {}
-      testWithReporter("test that") { reporter => () }
+      testGivenReporter("test that") { reporter => () }
     }
     assert(b.expectedTestCount(Set(), Set()) === 1)
 
     val c = new FunSuite {
       test("test this", mygroups.FastAsLight) {}
-      testWithReporter("test that") { reporter => () }
+      testGivenReporter("test that") { reporter => () }
     }
     assert(c.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
     assert(c.expectedTestCount(Set(), Set("org.scalatest.FastAsLight")) === 1)
 
     val d = new FunSuite {
       test("test this", mygroups.FastAsLight, mygroups.SlowAsMolasses) {}
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
-      testWithReporter("test the other thing") { reporter => () }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
+      testGivenReporter("test the other thing") { reporter => () }
     }
     assert(d.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
     assert(d.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
@@ -493,8 +493,8 @@ class FunSuiteSuite extends Suite {
 
     val e = new FunSuite {
       test("test this", mygroups.FastAsLight, mygroups.SlowAsMolasses) {}
-      testWithReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
-      ignoreWithReporter("test the other thing") { reporter => () }
+      testGivenReporter("test that", mygroups.SlowAsMolasses) { reporter => () }
+      ignoreGivenReporter("test the other thing") { reporter => () }
     }
     assert(e.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
     assert(e.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
@@ -516,7 +516,7 @@ class FunSuiteSuite extends Suite {
   def testThatTestFunctionsThatResultInNonUnitAreRegistered() {
     val a = new FunSuite {
       test("test this") { 1 }
-      testWithReporter("test that") { reporter => "hi" }
+      testGivenReporter("test that") { reporter => "hi" }
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
     assert(a.testNames.size === 2)
@@ -545,7 +545,7 @@ class FunSuiteSuite extends Suite {
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
         test("test this") {}
-        testWithReporter("test this") { reporter => () }
+        testGivenReporter("test this") { reporter => () }
       }
     }
   }
