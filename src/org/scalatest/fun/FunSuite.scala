@@ -18,12 +18,6 @@ package org.scalatest.fun
 import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
-import org.scalacheck.Arbitrary
-import org.scalacheck.Shrink
-import org.scalacheck.Prop
-import org.scalacheck.Test.Params
-import org.scalacheck.Test
-import org.scalacheck.Test._
 
 /**
  * Abstract class whose subclasses can be as to <code>FunSuite</code> and <code>FunSuiteN</code>'s test
@@ -88,79 +82,6 @@ abstract class Group(val name: String)
  * your tests, because you need not encode them in camel case, as you must do
  * with test methods.
  * </p>
- * 
- * <p>
- * If you prefer, you can alternatively use the word "specify" to register tests:
- * </p>
- *
- * <pre>
- * import org.scalatest.fun.FunSuite
- *
- * class MySuite extends FunSuite {
- *
- *   specify("integer addition should work like math so long as no overflow") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
- *
- *   specify("integer subtraction should work like math so long as no overflow") {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *     assert(diff - 2 === 1)
- *   }
- * }
- * </pre>
- *
- * <p>
- * <strong>Property-based tests</strong>
- * </p>
- * 
- * <p>
- * <code>FunSuite</code> makes it easy to combine assertion-based tests with property-based
- * tests using ScalaCheck. <code>FunSuite</code> mixes in trait <code>Checkers</code>, so you
- * can write property checks alongside assertion-based tests in your test functions:
- * </p>
- * <pre>
- * import org.scalatest.fun.FunSuite
- *
- * class MySuite extends FunSuite {
- *
- *   test("list concatenation") {
- * 
- *     val a = List(1, 2, 3)
- *     val b = List(4, 5, 6)
- *     assert(a ::: b === List(1, 2, 3, 4, 5, 6))
-
- *     check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
- *   }
- * }
- * </pre>
- *
- * <p>
- * You can also register properties as tests, using either "test" or "specify". Here's an
- * example that uses both:
- * </p>
- * <pre>
- * import org.scalatest.fun.FunSuite
- *
- * class StringSuite extends FunSuite {
- *
- *   test("startsWith", (a: String, b: String) => (a + b).startsWith(a))
- *
- *   test("endsWith", (a: String, b: String) => (a + b).endsWith(b))
- *
- *   specify(
- *     "substring should start from passed index and go to end of string",
- *     (a: String, b: String) => (a + b).substring(a.length) == b
- *   )
- *
- *   specify(
- *     "substring should start at passed index and extract passed number of chars",
- *     (a: String, b: String, c: String) => (a + b + c).substring(a.length, a.length + b.length) == b
- *   )
- * }
- * </pre>
  * 
  * <p>
  * <strong>Test fixtures</strong>
@@ -370,7 +291,7 @@ abstract class Group(val name: String)
  *
  * @author Bill Venners
  */
-trait FunSuite extends Suite with Checkers {
+trait FunSuite extends Suite {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
@@ -427,19 +348,6 @@ trait FunSuite extends Suite with Checkers {
   }
 
   /**
-   * Register a test with the specified name, optional groups, and function value that takes no arguments (a convenience
-   * method for those who prefer "specify" to "test").
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
-   *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
-   */
-  protected def specify(testName: String, testGroups: Group*)(f: => Unit) {
-    test(testName, testGroups: _*)(f)
-  }
-
-  /**
    * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code>.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
    * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
@@ -462,20 +370,6 @@ trait FunSuite extends Suite with Checkers {
       groupsMap += (testName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
-  }
-
-  /**
-   * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code> (a
-   * convenience method for those who prefer "specify" to "test").
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
-   * The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
-   *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
-   */
-  protected def specifyWithReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
-    testWithReporter(testName, testGroups: _*)(f)
   }
 
   /**
@@ -605,248 +499,6 @@ trait FunSuite extends Suite with Checkers {
    */
   override def groups: Map[String, Set[String]] = atomic.get.groupsMap
 
-  /**
-   * Convert the passed 1-arg function into a property, and register it as a test.
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test[A1,P](testName: String, f: A1 => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1]
-    ) {
-    test(testName, Prop.property(f)(p, a1, s1))
-  }
-
-  /**
-   * Convert the passed 1-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify[A1,P](testName: String, f: A1 => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1]
-    ) {
-    test(testName, f, testGroups: _*)
-  }
-
-  /**
-   * Convert the passed 2-arg function into a property, and register it as a test.
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test[A1,A2,P](testName: String, f: (A1,A2) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2]
-    ) {
-    test(testName, Prop.property(f)(p, a1, s1, a2, s2))
-  }
-
-  /**
-   * Convert the passed 2-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify[A1,A2,P](testName: String, f: (A1,A2) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2]
-    ) {
-    test(testName, f, testGroups: _*)
-  }
-
-  /**
-   * Convert the passed 3-arg function into a property, and register it as a test.
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test[A1,A2,A3,P](testName: String, f: (A1,A2,A3) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3]
-    ) {
-    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3))
-  }
-
-  /**
-   * Convert the passed 3-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify[A1,A2,A3,P](testName: String, f: (A1,A2,A3) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3]
-    ) {
-    test(testName, f, testGroups: _*)
-  }
-
-  /**
-   * Convert the passed 4-arg function into a property, and register it as a test.
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test[A1,A2,A3,A4,P](testName: String, f: (A1,A2,A3,A4) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4]
-    ) {
-    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4))
-  }
-
-  /**
-   * Convert the passed 4-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify[A1,A2,A3,A4,P](testName: String, f: (A1,A2,A3,A4) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4]
-    ) {
-    test(testName, f, testGroups: _*)
-  }
-
-  /**
-   * Convert the passed 5-arg function into a property, and register it as a test.
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test[A1,A2,A3,A4,A5,P](testName: String, f: (A1,A2,A3,A4,A5) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4],
-      a5: Arbitrary[A5], s5: Shrink[A5]
-    ) {
-    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5))
-  }
-
-  /**
-   * Convert the passed 5-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify[A1,A2,A3,A4,A5,P](testName: String, f: (A1,A2,A3,A4,A5) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4],
-      a5: Arbitrary[A5], s5: Shrink[A5]
-    ) {
-    test(testName, f, testGroups: _*)
-  }
-
-  /**
-   * Convert the passed 6-arg function into a property, and register it as a test.
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test[A1,A2,A3,A4,A5,A6,P](testName: String, f: (A1,A2,A3,A4,A5,A6) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4],
-      a5: Arbitrary[A5], s5: Shrink[A5],
-      a6: Arbitrary[A6], s6: Shrink[A6]
-    ) {
-    test(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5, a6, s6))
-  }
-
-  /**
-   * Convert the passed 6-arg function into a property, and register it as a test (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify[A1,A2,A3,A4,A5,A6,P](testName: String, f: (A1,A2,A3,A4,A5,A6) => P, testGroups: Group*)
-    (implicit
-      p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4],
-      a5: Arbitrary[A5], s5: Shrink[A5],
-      a6: Arbitrary[A6], s6: Shrink[A6]
-    ) {
-    test(testName, f, testGroups: _*)
-  }
-
-  /**
-   * Register as a test a property with the given testing parameters.
-   *
-   * @param p the property to check
-   * @param prms the test parameters
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test(testName: String, p: Prop, prms: Params, testGroups: Group*) {
-    test(testName, testGroups: _*) {
-      check(p, prms)
-    }
-  }
-
-  /**
-   * Register as a test a property with the given testing parameters (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param p the property to check
-   * @param prms the test parameters
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify(testName: String, p: Prop, prms: Params, testGroups: Group*) {
-    test(testName, p, prms, testGroups: _*)
-  }
-
-  /**
-   * Register a property as a test.
-   *
-   * @param p the property to check
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def test(testName: String, p: Prop, testGroups: Group*) {
-    test(testName, p, Test.defaultParams)
-  }
-
-  /**
-   * Register a property as a test (a convenience method for those who prefer "specify" to "test").
-   *
-   * @param p the property to check
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
-   */
-  def specify(testName: String, p: Prop, testGroups: Group*) {
-    test(testName, p, testGroups: _*)
-  }
-  
   private[scalatest] override def getTestNameForReport(testName: String) = {
 
     if (testName == null)
@@ -854,5 +506,4 @@ trait FunSuite extends Suite with Checkers {
 
     suiteName + ": " + testName
   }
-
 }

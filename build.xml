@@ -8,7 +8,6 @@
 	<!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
 	<property name="classes" value="${jar.contents}" />
 	<property name="generators" value="generators" />
-	<property name="generated" value="${build}/generated" />
 	<property name="build.tests" value="${build}/tests" />
 	<property name="build.generators" value="${build}/generators" />
 	<property name="dist" value="${build}/dist" />
@@ -31,7 +30,6 @@
 		<tstamp />
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${jar.contents}" />
-		<mkdir dir="${generated}" />
 		<mkdir dir="${build.tests}" />
 		<mkdir dir="${build.generators}" />
 		<mkdir dir="${dist}" />
@@ -46,7 +44,6 @@
 		
 		<path id="build.class.path">
 			<pathelement location="${classes}" />
-			<pathelement location="${generated}" />
 			<path refid="lib.path"></path>
 		</path>
 
@@ -83,7 +80,6 @@
 
 		<path id="scaladoc.source.path">
 			<pathelement location="${src}" />
-			<pathelement location="${generated}" />
 		</path>
 
 	</target>
@@ -111,7 +107,6 @@
 
 		<!-- Then compile the Scala code from ${src} into ${classes} -->
 		<scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
-		<scalac srcdir="${generated}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
 		<!-- Compile the Ant task (Depends on org.scalatest.tools.Runner)-->
 		<javac srcdir="${src}" destdir="${classes}" classpath="${build.class.path}" debug="yes">
@@ -235,6 +230,12 @@
 
 			<arg value="-m" />
 			<arg value="org.scalatest.scalacheck" />
+
+			<arg value="-s" />
+			<arg value="org.scalatest.spec.SpecSuite" />
+
+			<arg value="-s" />
+			<arg value="org.scalatest.spec.StackSpec" />
 		</java>
 	</target>
 
