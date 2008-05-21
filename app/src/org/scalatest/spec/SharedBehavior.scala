@@ -1,4 +1,4 @@
-package org.scalatest.spec
+package org.scalatest
 
 import NodeFamily._
 
