@@ -32,7 +32,7 @@ trait SharedBehavior {
     examplesToExec.reverse.foreach(runExample(_, reporter))
   }
   
-  def expectedExampleCount: Int = 0
+  def expectedExampleCount: Int = examples.size
   
   /*private def runExample(example: Example, reporter: Reporter, r: String => String) {
 
