@@ -1,6 +1,6 @@
-package org.scalatest.spec
+package org.scalatest
 
-private[spec] object NodeFamily {
+private[scalatest] object NodeFamily {
   
   abstract class Node(parentOption: Option[Branch])
   abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
