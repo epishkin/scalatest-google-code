@@ -7,7 +7,7 @@ trait SharedBehavior {
   private val trunk = new Trunk
   /*private case class Example(exampleName: String, f: () => Unit) */
 
-  /*private*/ var examples: List[Example] = Nil
+  private var examples: List[Example] = Nil
 
   class Inifier(exampleName: String) {
     def in(f: => Unit) {
