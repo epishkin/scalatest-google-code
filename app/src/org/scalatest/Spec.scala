@@ -90,29 +90,29 @@ trait Spec extends Suite {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new Report(getTestNameForReport(example.exampleFullName), "")
+    val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleName, "")
 
     wrappedReporter.testStarting(report)
 
     try {
       example.f()
 
-      val report = new Report(getTestNameForReport(example.exampleFullName), "")
+      val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleName, "")
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, example.exampleFullName, None, wrappedReporter)
+        handleFailedTest(e, false, example.exampleFullName, example.exampleName, None, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, example.exampleFullName, None, wrappedReporter)
+        handleFailedTest(ae, false, example.exampleFullName, example.exampleName, None, wrappedReporter)
       }
     }
   }
 
-  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunnable], reporter: Reporter) {
+  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, exampleFullName: String,
+      exampleName: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -120,7 +120,7 @@ trait Spec extends Suite {
       else
         t.toString
 
-    val report = new Report(getTestNameForReport(testName), msg, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(exampleFullName), exampleName, msg, Some(t), None)
 
     reporter.testFailed(report)
   }
