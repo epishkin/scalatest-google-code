@@ -42,14 +42,17 @@ trait Spec extends Suite {
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, exampleName, f) => {
+        case ex @ Example(parent, exampleName, exampleFullName, f) => {
           runExample(ex, reporter)
         }
         case sb @ SharedBehaviorNode(parent, sharedBehavior) => {
-          sharedBehavior.execute(reporter, stopper, getPrefix(parent), runExample _)
+          sharedBehavior.execute(None, reporter, stopper, Set(), Set(), Map(), None)
+          
+          // (testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+          //    properties: Map[String, Any], distributor: Option[Distributor]
         }
-        case ex @ ExampleGivenReporter(parent, exampleName, f) => {
-          runExample(Example(parent, exampleName, () => f(reporter)), reporter)
+        case ex @ ExampleGivenReporter(parent, exampleName, exampleFullName, f) => {
+          runExample(Example(parent, exampleName, exampleFullName, () => f(reporter)), reporter)
         }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
@@ -63,15 +66,32 @@ trait Spec extends Suite {
       case Description(parent, descriptionName) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
   }
-
-  private def getExampleFullName(example: Example): String = {
+/*
+  private def getExampleXFullName(example: Example): String = {
     val prefix = getPrefix(example.parent).trim
     if (prefix.isEmpty)
       Resources("itShould", example.exampleName) 
     else
       Resources("prefixShouldSuffix", prefix, example.exampleName)  
   }
-  
+*/ 
+
+  private[scalatest] def getExampleFullName2(exampleName: String, needsShould: Boolean): String = {
+    val prefix = getPrefix(currentBranch).trim
+    if (prefix.isEmpty) {
+      if (needsShould)
+        Resources("itShould", exampleName) 
+      else
+        exampleName
+    }
+    else {
+      if (needsShould)
+        Resources("prefixShouldSuffix", prefix, exampleName)
+      else
+        Resources("prefixSuffix", prefix, exampleName)
+    }
+  }
+
   private def runExample(example: Example, reporter: Reporter) {
 
     if (example == null || reporter == null)
@@ -79,24 +99,23 @@ trait Spec extends Suite {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new Report(getTestNameForReport(getExampleFullName(example)), "")
+    val report = new Report(getTestNameForReport(example.exampleFullName), "")
 
     wrappedReporter.testStarting(report)
 
     try {
-
       example.f()
 
-      val report = new Report(getTestNameForReport(getExampleFullName(example)), "")
+      val report = new Report(getTestNameForReport(example.exampleFullName), "")
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, getExampleFullName(example), None, wrappedReporter)
+        handleFailedTest(e, false, example.exampleFullName, None, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, getExampleFullName(example), None, wrappedReporter)
+        handleFailedTest(ae, false, example.exampleFullName, None, wrappedReporter)
       }
     }
   }
@@ -119,10 +138,10 @@ trait Spec extends Suite {
     var count = 0
     branch.subNodes.reverse.foreach(
       _ match {
-        case Example(parent, exampleName, f) => count += 1
-        case ExampleGivenReporter(parent, exampleName, f) => count += 1
+        case Example(parent, exampleName, exampleFullName, f) => count += 1
+        case ExampleGivenReporter(parent, exampleName, exampleFullName, f) => count += 1
         case SharedBehaviorNode(parent, sharedBehavior) => { 
-          count += sharedBehavior.expectedExampleCount
+          count += sharedBehavior.expectedTestCount(Set(), Set()) // TODO: Should I call this? What about the includes and excludes?
         }
         case branch: Branch => count += countTestsInBranch(branch)
       }
@@ -138,13 +157,13 @@ trait Spec extends Suite {
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
     countTestsInBranch(trunk)
   }
-
-  private def getExampleFullName(prefixOption: Option[String], exampleName: String) =
+/*
+  private def getXExampleFullName(prefixOption: Option[String], exampleName: String) =
     prefixOption match {
       case Some(prefix) => Resources("prefixShouldSuffix", prefix, exampleName)
       case None => Resources("itShould", exampleName)
     }
-
+*/
   override def testNames: Set[String] = {
     // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
@@ -152,10 +171,10 @@ trait Spec extends Suite {
       for (node <- branch.subNodes)
         yield node match {
           case ex: Example => {
-            buf ::= getExampleFullName(prefixOption, ex.exampleName) 
+            buf ::= ex.exampleFullName 
           }
           case ex: ExampleGivenReporter => {
-            buf ::= getExampleFullName(prefixOption, ex.exampleName) 
+            buf ::= ex.exampleFullName 
           }
           case desc: Description => {
             val descName =
@@ -174,14 +193,24 @@ trait Spec extends Suite {
 
   class ReporterInifier(exampleName: String) {
     def in(f: (Reporter) => Unit) {
-      currentBranch.subNodes ::= ExampleGivenReporter(currentBranch, exampleName, f)
+      currentBranch.subNodes ::= ExampleGivenReporter(currentBranch, exampleName, getExampleFullName2(exampleName, true), f)
     }
+  }
+  private def registerExample(exampleName: String, needsShould: Boolean, f: => Unit) {
+    currentBranch.subNodes ::= Example(currentBranch, exampleName, getExampleFullName2(exampleName, needsShould), f _)
+  }
+  def specify(exampleName: String)(f: => Unit) {
+    registerExample(exampleName, false, f)
   }
     
   class Inifier(exampleName: String) {
     def in(f: => Unit) {
-      currentBranch.subNodes ::= Example(currentBranch, exampleName, f _)
+      registerExample(exampleName, true, f)
     }
+    /*
+    def in(f: Reporter => Unit) {
+      // Does this compile? No. Ask Martin.
+    }*/
     def given(reporterWord: ReporterWord) = new ReporterInifier(exampleName)
   }
 
@@ -196,7 +225,7 @@ trait Spec extends Suite {
   protected class BehaveWord {}
   protected val behave = new BehaveWord
   class Likifier {
-    def like(sharedBehavior: SharedBehavior) {
+    def like(sharedBehavior: Spec) {
       currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior)
     }
   }
@@ -222,6 +251,5 @@ trait Spec extends Suite {
 
     suiteName + ": " + testName
   }
-
 }
 
