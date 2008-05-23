@@ -66,15 +66,6 @@ trait Spec extends Suite {
       case Description(parent, descriptionName) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
   }
-/*
-  private def getExampleXFullName(example: Example): String = {
-    val prefix = getPrefix(example.parent).trim
-    if (prefix.isEmpty)
-      Resources("itShould", example.exampleName) 
-    else
-      Resources("prefixShouldSuffix", prefix, example.exampleName)  
-  }
-*/ 
 
   private[scalatest] def getExampleFullName2(exampleName: String, needsShould: Boolean): String = {
     val prefix = getPrefix(currentBranch).trim
@@ -157,13 +148,7 @@ trait Spec extends Suite {
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
     countTestsInBranch(trunk)
   }
-/*
-  private def getXExampleFullName(prefixOption: Option[String], exampleName: String) =
-    prefixOption match {
-      case Some(prefix) => Resources("prefixShouldSuffix", prefix, exampleName)
-      case None => Resources("itShould", exampleName)
-    }
-*/
+
   override def testNames: Set[String] = {
     // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
