@@ -681,7 +681,7 @@ class SpecSuite extends FunSuite {
     assert(testFailedReportHadCorrectTestName)
   }
   
-    test("In a testStarting report, the example name should start with '<description> should' if nested one level " +
+  test("In a testStarting report, the example name should start with '<description> should' if nested one level " +
         "inside a describe clause and registered with specify") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
@@ -700,6 +700,69 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testStartingReportHadCorrectTestName)
+  }
+    
+  test("Specs should send SpecReports") {
+    class MyReporter extends Reporter {
+      var gotANonSpecReport = false
+      var lastNonSpecReport: Option[Report] = None
+  	  override def testStarting(report: Report) {
+        ensureSpecReport(report)
+  	  }
+
+      private def ensureSpecReport(report: Report) {
+	    report match {
+          case sr: SpecReport => 
+          case r: Report => {
+            gotANonSpecReport = true
+            lastNonSpecReport = Some(report)
+          }
+        }
+      }
+	  override def testSucceeded(report: Report) {
+        ensureSpecReport(report)
+	  }
+	    
+	  override def testIgnored(report: Report) {
+        ensureSpecReport(report)
+	  }
+	
+	  override def testFailed(report: Report) {
+        ensureSpecReport(report)
+	  }
+	
+	  override def infoProvided(report: Report) {
+        ensureSpecReport(report)
+	  }
+	
+	  override def suiteStarting(report: Report) {
+        ensureSpecReport(report)
+	  }
+	
+	  override def suiteCompleted(report: Report) {
+        ensureSpecReport(report)
+	  }
+	
+	  override def suiteAborted(report: Report) {
+        ensureSpecReport(report)
+	  }
+	
+	  override def runAborted(report: Report) {
+        ensureSpecReport(report)
+	  }
+    }
+    class MySpec extends Spec {
+      it should "send SpecReports" in {
+        assert(true)
+      }
+      it should "send SpecReports" in {
+        assert(false)
+      }
+    }
+    val a = new MySpec
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(!myRep.gotANonSpecReport)
   }
   /*
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {

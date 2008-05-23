@@ -61,8 +61,8 @@ import java.util.Date
  * @author Bill Venners
  */
 @serializable
-class Report(val name: String, val message: String, val throwable: Option[Throwable], val rerunnable: Option[Rerunnable],
-    val threadName: String, val date: Date) {
+case class Report(name: String, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable],
+    threadName: String, date: Date) {
 
   if (name == null)
     throw new NullPointerException("name was null")
@@ -134,7 +134,7 @@ for say:
 4. String, String, Rerunable
 
 Decided to make people say None at the end, so no 1. Decided it was confusing to have throwable be
-both an Option[Throwable] and a Throwable. So didn't do theothers. Maybe convenient, but confusing
+both an Option[Throwable] and a Throwable. So didn't do the others. Maybe convenient, but confusing
 and i realized sometimes I had an Option[Rerunnable] variable already, so I really did want to pass
 that in without checking it with a match. (for a while I thought I would only have 2, 3, and 4.)
 */
