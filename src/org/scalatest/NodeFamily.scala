@@ -4,13 +4,13 @@ package org.scalatest
 // showing it to the user
 private[scalatest] object NodeFamily {
   
-  abstract class Node(parentOption: Option[Branch])
-  abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
+  abstract class Node(parentOption: Option[Branch], val level: Int)
+  abstract class Branch(parentOption: Option[Branch], override val level: Int) extends Node(parentOption, level) {
     var subNodes: List[Node] = Nil
   }
-  case class Trunk extends Branch(None)
-  case class Example(parent: Branch, exampleFullName: String, exampleShortName: String, f: () => Unit) extends Node(Some(parent))
-  case class ExampleGivenReporter(parent: Branch, exampleFullName: String, exampleShortName: String, f: (Reporter) => Unit) extends Node(Some(parent))
-  case class SharedBehaviorNode(parent: Branch, sharedBehavior: Spec) extends Node(Some(parent))
-  case class Description(parent: Branch, descriptionName: String) extends Branch(Some(parent))
+  case class Trunk extends Branch(None, -1)
+  case class Example(parent: Branch, exampleFullName: String, exampleShortName: String, override val level: Int, f: () => Unit) extends Node(Some(parent), level)
+  case class ExampleGivenReporter(parent: Branch, exampleFullName: String, exampleShortName: String, override val level: Int, f: (Reporter) => Unit) extends Node(Some(parent), level)
+  case class SharedBehaviorNode(parent: Branch, sharedBehavior: Spec, override val level: Int) extends Node(Some(parent), level)
+  case class Description(parent: Branch, descriptionName: String, override val level: Int) extends Branch(Some(parent), level)
 }
