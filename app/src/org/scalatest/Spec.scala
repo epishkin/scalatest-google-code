@@ -41,26 +41,26 @@ trait Spec extends Suite {
   
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
     branch match {
-      case Description(_, descriptionName) => {
+      case Description(_, descriptionName, level) => {
         val wrappedReporter = wrapReporterIfNecessary(reporter)
-        val report = new SpecReport("what do I put here?", descriptionName, 0, "")
+        val report = new SpecReport("what do I put here?", descriptionName, level, "")
         wrappedReporter.infoProvided(report)
       }
       case _ =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, exampleFullName, exampleShortName, f) => {
+        case ex @ Example(parent, exampleFullName, exampleShortName, level, f) => {
           runExample(ex, reporter)
         }
-        case SharedBehaviorNode(parent, sharedBehavior) => {
+        case SharedBehaviorNode(parent, sharedBehavior, level) => {
           sharedBehavior.execute(None, reporter, stopper, Set(), Set(), Map(), None)
           
           // (testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
           //    properties: Map[String, Any], distributor: Option[Distributor]
         }
-        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, f) => {
-          runExample(Example(parent, exampleFullName, exampleShortName, () => f(reporter)), reporter)
+        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, level, f) => {
+          runExample(Example(parent, exampleFullName, exampleShortName, level, () => f(reporter)), reporter)
         }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
@@ -71,7 +71,7 @@ trait Spec extends Suite {
     branch match {
        case Trunk() => ""
       // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
-      case Description(parent, descriptionName) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
+      case Description(parent, descriptionName, level) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
   }
 /*
@@ -171,29 +171,29 @@ trait Spec extends Suite {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, 0, "")
+    val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, example.level, "")
 
     wrappedReporter.testStarting(report)
 
     try {
       example.f()
 
-      val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, 0, "")
+      val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, example.level, "")
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, example.exampleFullName, example.exampleShortName, None, wrappedReporter)
+        handleFailedTest(e, false, example.exampleFullName, example.exampleShortName, example.level, None, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, example.exampleFullName, example.exampleShortName, None, wrappedReporter)
+        handleFailedTest(ae, false, example.exampleFullName, example.exampleShortName, example.level, None, wrappedReporter)
       }
     }
   }
 
   private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, exampleFullName: String,
-      exampleShortName: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
+      exampleShortName: String, exampleLevel: Int, rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -201,7 +201,7 @@ trait Spec extends Suite {
       else
         t.toString
 
-    val report = new SpecReport(getTestNameForReport(exampleFullName), exampleShortName, 0, msg, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(exampleFullName), exampleShortName, exampleLevel, msg, Some(t), None)
 
     reporter.testFailed(report)
   }
@@ -210,9 +210,9 @@ trait Spec extends Suite {
     var count = 0
     branch.subNodes.reverse.foreach(
       _ match {
-        case Example(parent, exampleFullName, exampleShortName, f) => count += 1
-        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, f) => count += 1
-        case SharedBehaviorNode(parent, sharedBehavior) => { 
+        case Example(parent, exampleFullName, exampleShortName, level, f) => count += 1
+        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, level, f) => count += 1
+        case SharedBehaviorNode(parent, sharedBehavior, level) => { 
           count += sharedBehavior.expectedTestCount(Set(), Set()) // TODO: Should I call this? What about the includes and excludes?
         }
         case branch: Branch => count += countTestsInBranch(branch)
@@ -259,12 +259,12 @@ trait Spec extends Suite {
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
     currentBranch.subNodes ::=
-      Example(currentBranch, getExampleFullName(exampleRawName, needsShould), getExampleShortName(exampleRawName, needsShould), f _)
+      Example(currentBranch, getExampleFullName(exampleRawName, needsShould), getExampleShortName(exampleRawName, needsShould), currentBranch.level + 1, f _)
   }
   
   private def registerExampleGivenReporter(exampleRawName: String, needsShould: Boolean, f: (Reporter) => Unit) {
     currentBranch.subNodes ::=
-      ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, needsShould), f)
+      ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, needsShould), currentBranch.level + 1, f)
   }
 
   def specify(exampleRawName: String)(f: => Unit) {
@@ -306,14 +306,14 @@ trait Spec extends Suite {
   protected val behave = new BehaveWord
   class Likifier {
     def like(sharedBehavior: Spec) {
-      currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior)
+      currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior, currentBranch.level + 1)
     }
   }
   
   protected val it = new Itifier
 
   protected def describe(name: String)(f: => Unit) {
-    insertBranch(Description(currentBranch, name), f _)
+    insertBranch(Description(currentBranch, name, currentBranch.level + 1), f _)
   }
   
   private def insertBranch(newBranch: Branch, f: () => Unit) {
