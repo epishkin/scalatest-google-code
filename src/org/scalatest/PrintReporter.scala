@@ -24,6 +24,7 @@ import java.io.OutputStreamWriter
 import java.io.PrintWriter
 import java.util.Iterator
 import java.util.Set
+import java.io.StringWriter
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -260,7 +261,12 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
       report match {
         case specReport: SpecReport =>
           resourceName match {
-            case "testStarting" => None
+            case "testStarting" => {
+              report.throwable match {
+                case Some(t) => Some(Resources(resourceName, report.name, report.message)) // Ugly, but at least they'll get info in the unlikely event of an exception in a testStarting report
+                case None => None // In the general case, we won't show anything in a spec output for testStarting.
+              }
+            }
             case "testSucceeded" => {
               val icon = Resources("exampleSucceededIconChar")
               Some(indent(Resources("exampleIconPlusShortName", icon, specReport.shortName), specReport.level - 1))
@@ -281,12 +287,23 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
       case Some(stringToPrint) => {
         pw.println(stringToPrint)
         report.throwable match {
-          case Some(t) => t.printStackTrace(pw)
-          case None => // do nothing
+          case Some(t) => {
+            report match {
+              case specReport: SpecReport => {
+                val sw = new StringWriter
+                t.printStackTrace(new PrintWriter(sw))
+                val stackTrace = sw.toString
+                val indentedStackTrace = PrintReporter.indentStackTrace(stackTrace, specReport.level)
+                pw.print(indentedStackTrace) // Do I need a println here? Eyeball it.
+              }  
+              case _ => t.printStackTrace(pw)
+            }
+          }
+          case None => // do nothing}
         }
         pw.flush()
       }
-      case None => // Don't print anything for testStarting if a SpecReport 
+      case None => // Don't print anything for testStarting if a SpecReport (so long as there was no exception in the testStarting report)
     }
   }
 }
