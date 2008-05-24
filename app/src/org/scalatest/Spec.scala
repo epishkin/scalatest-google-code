@@ -35,14 +35,14 @@ import NodeFamily._
  * @author Bill Venners
  */
 trait Spec extends Suite {
- 
+  
   private val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
   
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, exampleName, exampleFullName, f) => {
+        case ex @ Example(parent, exampleFullName, exampleShortName, f) => {
           runExample(ex, reporter)
         }
         case sb @ SharedBehaviorNode(parent, sharedBehavior) => {
@@ -51,8 +51,8 @@ trait Spec extends Suite {
           // (testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
           //    properties: Map[String, Any], distributor: Option[Distributor]
         }
-        case ex @ ExampleGivenReporter(parent, exampleName, exampleFullName, f) => {
-          runExample(Example(parent, exampleName, exampleFullName, () => f(reporter)), reporter)
+        case ex @ ExampleGivenReporter(parent, exampleFullName, exampleShortName, f) => {
+          runExample(Example(parent, exampleFullName, exampleShortName, () => f(reporter)), reporter)
         }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
@@ -66,20 +66,93 @@ trait Spec extends Suite {
       case Description(parent, descriptionName) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
   }
-
-  private[scalatest] def getExampleFullName2(exampleName: String, needsShould: Boolean): String = {
+/*
+  private def needsIt(branch: Branch): Boolean = {
+    branch match {
+      case Trunk() => true
+      case Description(parent, descriptionName) => false
+      // Later, will need to add cases for ignore and group, which call needsIt(parent)
+    }
+  }
+*/
+  private[scalatest] def getExampleFullName(exampleRawName: String, needsShould: Boolean): String = {
     val prefix = getPrefix(currentBranch).trim
     if (prefix.isEmpty) {
-      if (needsShould)
-        Resources("itShould", exampleName) 
-      else
-        exampleName
+      if (needsShould) {
+        // class MySpec extends Spec {
+        //   it should "pop when asked" in {}
+        // }
+        // Should yield: "it should pop when asked"
+        Resources("itShould", exampleRawName)
+      }
+      else {
+        // class MySpec extends Spec {
+        //   specify("It sure ought to pop when asked") {}
+        // }
+        // Should yield: "It sure ought to pop when asked"
+        exampleRawName
+      }
     }
     else {
-      if (needsShould)
-        Resources("prefixShouldSuffix", prefix, exampleName)
-      else
-        Resources("prefixSuffix", prefix, exampleName)
+      if (needsShould) {
+        // class MySpec extends Spec {
+        //   describe("A Stack") {
+        //     it should "pop when asked" in {}
+        //   }
+        // }
+        // Should yield: "A Stack should pop when asked"
+        Resources("prefixShouldSuffix", prefix, exampleRawName)
+      }
+      else {
+        // class MySpec extends Spec {
+        //   describe("A Stack") {
+        //     specify("must pop when asked") {}
+        //   }
+        // }
+        // Should yield: "A Stack must pop when asked"
+        Resources("prefixSuffix", prefix, exampleRawName)
+      }
+    }
+  }
+
+
+  private[scalatest] def getExampleShortName(exampleRawName: String, needsShould: Boolean): String = {
+    val prefix = getPrefix(currentBranch).trim
+    if (prefix.isEmpty) {
+      if (needsShould) {
+        // class MySpec extends Spec {
+        //   it should "pop when asked" in {}
+        // }
+        // Should yield: "it should pop when asked"
+        Resources("itShould", exampleRawName)
+      }
+      else {
+        // class MySpec extends Spec {
+        //   specify("It sure ought to pop when asked") {}
+        // }
+        // Should yield: "It sure ought to pop when asked"
+        exampleRawName
+      }
+    }
+    else {
+      if (needsShould) {
+        // class MySpec extends Spec {
+        //   describe("A Stack") {
+        //     it should "pop when asked" in {}
+        //   }
+        // }
+        // Should yield: "should pop when asked"
+        Resources("should", exampleRawName)
+      }
+      else {
+        // class MySpec extends Spec {
+        //   describe("A Stack") {
+        //     specify("must pop when asked") {}
+        //   }
+        // }
+        // Should yield: "A Stack must pop when asked"
+        exampleRawName
+      }
     }
   }
 
@@ -90,29 +163,29 @@ trait Spec extends Suite {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleName, "")
+    val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, "")
 
     wrappedReporter.testStarting(report)
 
     try {
       example.f()
 
-      val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleName, "")
+      val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, "")
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, example.exampleFullName, example.exampleName, None, wrappedReporter)
+        handleFailedTest(e, false, example.exampleFullName, example.exampleShortName, None, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, example.exampleFullName, example.exampleName, None, wrappedReporter)
+        handleFailedTest(ae, false, example.exampleFullName, example.exampleShortName, None, wrappedReporter)
       }
     }
   }
 
   private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, exampleFullName: String,
-      exampleName: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
+      exampleShortName: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -120,7 +193,7 @@ trait Spec extends Suite {
       else
         t.toString
 
-    val report = new SpecReport(getTestNameForReport(exampleFullName), exampleName, msg, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(exampleFullName), exampleShortName, msg, Some(t), None)
 
     reporter.testFailed(report)
   }
@@ -129,8 +202,8 @@ trait Spec extends Suite {
     var count = 0
     branch.subNodes.reverse.foreach(
       _ match {
-        case Example(parent, exampleName, exampleFullName, f) => count += 1
-        case ExampleGivenReporter(parent, exampleName, exampleFullName, f) => count += 1
+        case Example(parent, exampleFullName, exampleShortName, f) => count += 1
+        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, f) => count += 1
         case SharedBehaviorNode(parent, sharedBehavior) => { 
           count += sharedBehavior.expectedTestCount(Set(), Set()) // TODO: Should I call this? What about the includes and excludes?
         }
@@ -176,27 +249,31 @@ trait Spec extends Suite {
     Set[String]() ++ buf.toList
   }
 
-  class ReporterInifier(exampleName: String) {
+  class ReporterInifier(exampleRawName: String) {
     def in(f: (Reporter) => Unit) {
-      currentBranch.subNodes ::= ExampleGivenReporter(currentBranch, exampleName, getExampleFullName2(exampleName, true), f)
+      currentBranch.subNodes ::=
+        ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, true), f)
     }
   }
-  private def registerExample(exampleName: String, needsShould: Boolean, f: => Unit) {
-    currentBranch.subNodes ::= Example(currentBranch, exampleName, getExampleFullName2(exampleName, needsShould), f _)
+  
+  private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
+    currentBranch.subNodes ::=
+      Example(currentBranch, getExampleFullName(exampleRawName, needsShould), getExampleShortName(exampleRawName, needsShould), f _)
   }
-  def specify(exampleName: String)(f: => Unit) {
-    registerExample(exampleName, false, f)
+  
+  def specify(exampleRawName: String)(f: => Unit) {
+    registerExample(exampleRawName, false, f)
   }
     
-  class Inifier(exampleName: String) {
+  class Inifier(exampleRawName: String) {
     def in(f: => Unit) {
-      registerExample(exampleName, true, f)
+      registerExample(exampleRawName, true, f)
     }
     /*
     def in(f: Reporter => Unit) {
       // Does this compile? No. Ask Martin.
     }*/
-    def given(reporterWord: ReporterWord) = new ReporterInifier(exampleName)
+    def given(reporterWord: ReporterWord) = new ReporterInifier(exampleRawName)
   }
 
   protected class ReporterWord {}
