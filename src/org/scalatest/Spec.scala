@@ -43,9 +43,7 @@ trait Spec extends Suite {
     branch match {
       case Description(_, descriptionName) => {
         val wrappedReporter = wrapReporterIfNecessary(reporter)
-
         val report = new SpecReport("what do I put here?", descriptionName, "")
-
         wrappedReporter.infoProvided(report)
       }
       case _ =>
