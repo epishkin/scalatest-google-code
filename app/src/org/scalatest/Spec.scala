@@ -249,20 +249,22 @@ trait Spec extends Suite {
     Set[String]() ++ buf.toList
   }
 
-  class ReporterInifier(exampleRawName: String) {
-    def in(f: (Reporter) => Unit) {
-      currentBranch.subNodes ::=
-        ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, true), f)
-    }
-  }
-  
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
     currentBranch.subNodes ::=
       Example(currentBranch, getExampleFullName(exampleRawName, needsShould), getExampleShortName(exampleRawName, needsShould), f _)
   }
   
+  private def registerExampleGivenReporter(exampleRawName: String, needsShould: Boolean, f: (Reporter) => Unit) {
+    currentBranch.subNodes ::=
+      ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, needsShould), f)
+  }
+
   def specify(exampleRawName: String)(f: => Unit) {
     registerExample(exampleRawName, false, f)
+  }
+    
+  def specifyGivenReporter(exampleRawName: String)(f: (Reporter) => Unit) {
+    registerExampleGivenReporter(exampleRawName, false, f)
   }
     
   class Inifier(exampleRawName: String) {
@@ -276,6 +278,14 @@ trait Spec extends Suite {
     def given(reporterWord: ReporterWord) = new ReporterInifier(exampleRawName)
   }
 
+  class ReporterInifier(exampleRawName: String) {
+    def in(f: (Reporter) => Unit) {
+//      currentBranch.subNodes ::=
+//        ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, true), f)
+      registerExampleGivenReporter(exampleRawName, true, f)
+    }
+  }
+  
   protected class ReporterWord {}
   protected val reporter = new ReporterWord
   

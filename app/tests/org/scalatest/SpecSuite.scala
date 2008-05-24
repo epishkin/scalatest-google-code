@@ -915,6 +915,43 @@ class SpecSuite extends FunSuite {
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
   }
+
+  test("A specifyGivenReporter clause should be able to send info to the reporter") {
+
+    val expectedMessage = "this is the expected message"
+
+    class MyReporter extends Reporter {
+      var infoProvidedCalled = false
+      var expectedMessageReceived = false
+      var lastReport: Report = null
+      override def infoProvided(report: Report) {
+        infoProvidedCalled = true
+        if (!expectedMessageReceived) {
+          expectedMessageReceived = report.message.indexOf(expectedMessage) != -1
+        }
+      }
+    }
+
+    class MySpec extends Spec {
+      describe("A Stack") {
+        describe("(when not empty)") {
+          specifyGivenReporter("might allow me to pop") {
+            reporter => {
+              val report = new Report("myName", expectedMessage)
+              reporter.infoProvided(report)
+            }
+          }
+        }
+        describe("(when not full)") {
+          specify("allow me to push") {}
+        }
+      }
+    }
+    
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+  }
+
   /*
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false
