@@ -293,5 +293,11 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
  
 private object PrintReporter {
   val BufferSize = 4096
+  private[scalatest] def indentStackTrace(stackTrace: String, level: Int): String = {
+    val indentation = if (level > 0) "  " * level else ""
+    val withTabsZapped = stackTrace.replaceAll("\t", "  ")
+    val withInitialIndent = indentation + withTabsZapped
+    withInitialIndent.replaceAll("\n", "\n" + indentation) // I wonder if I need to worry about alternate line endings. Probably.
+  }
 }
 
