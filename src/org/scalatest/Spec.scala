@@ -40,18 +40,28 @@ trait Spec extends Suite {
   private var currentBranch: Branch = trunk
   
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
+    branch match {
+      case Description(_, descriptionName) => {
+        val wrappedReporter = wrapReporterIfNecessary(reporter)
+
+        val report = new SpecReport("what do I put here?", descriptionName, "")
+
+        wrappedReporter.infoProvided(report)
+      }
+      case _ =>
+    }
     branch.subNodes.reverse.foreach(
       _ match {
         case ex @ Example(parent, exampleFullName, exampleShortName, f) => {
           runExample(ex, reporter)
         }
-        case sb @ SharedBehaviorNode(parent, sharedBehavior) => {
+        case SharedBehaviorNode(parent, sharedBehavior) => {
           sharedBehavior.execute(None, reporter, stopper, Set(), Set(), Map(), None)
           
           // (testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
           //    properties: Map[String, Any], distributor: Option[Distributor]
         }
-        case ex @ ExampleGivenReporter(parent, exampleFullName, exampleShortName, f) => {
+        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, f) => {
           runExample(Example(parent, exampleFullName, exampleShortName, () => f(reporter)), reporter)
         }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)

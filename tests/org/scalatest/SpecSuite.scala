@@ -266,7 +266,10 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(myRep.infoProvidedCalled)
+    assert(myRep.expectedMessageReceived)
   }
  
   test("a shared example invoked with 'it should behave like' should get invoked") {
@@ -952,6 +955,39 @@ class SpecSuite extends FunSuite {
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
   }
 
+  test("Should get infoProvided with description if one and only one describe clause") {
+
+    val expectedShortName = "A Stack"
+
+    class MyReporter extends Reporter {
+      var infoProvidedCalled = false
+      var expectedMessageReceived = false
+      var lastReport: Report = null
+      override def infoProvided(report: Report) {
+        report match {
+          case specReport: SpecReport => {
+            infoProvidedCalled = true
+            if (!expectedMessageReceived) {
+              expectedMessageReceived = (specReport.shortName == expectedShortName)
+            }
+          }
+          case _ =>
+        }
+      }
+    }
+
+    class MySpec extends Spec {
+      describe("A Stack") {
+        specify("should allow me to push") {}
+      }
+    }
+    
+    val a = new MySpec
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(myRep.infoProvidedCalled)
+    assert(myRep.expectedMessageReceived)
+  }
   /*
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false
