@@ -6,6 +6,7 @@ import java.util.Date
 case class SpecReport(
   override val name: String,
   shortName: String,
+  level: Int,
   override val message: String,
   override val throwable: Option[Throwable],
   override val rerunnable: Option[Rerunnable],
@@ -23,7 +24,7 @@ case class SpecReport(
    * @throws NullPointerException if either of the specified <code>name</code>
    *     or <code>message</code> parameters are <code>null</code>.
    */
-  def this(name: String, shortName: String, message: String) = this(name, shortName, message,
+  def this(name: String, shortName: String, level: Int, message: String) = this(name, shortName, level, message,
       None, None, Thread.currentThread.getName, new Date)
 
     /**
@@ -42,6 +43,6 @@ case class SpecReport(
    *     <code>name</code>, <code>message</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
-  def this(name: String, shortName: String, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
-      shortName, message, throwable, rerunnable, Thread.currentThread.getName, new Date)
+  def this(name: String, shortName: String, level: Int, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
+      shortName, level, message, throwable, rerunnable, Thread.currentThread.getName, new Date)
 }

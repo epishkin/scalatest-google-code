@@ -43,7 +43,7 @@ trait Spec extends Suite {
     branch match {
       case Description(_, descriptionName) => {
         val wrappedReporter = wrapReporterIfNecessary(reporter)
-        val report = new SpecReport("what do I put here?", descriptionName, "")
+        val report = new SpecReport("what do I put here?", descriptionName, 0, "")
         wrappedReporter.infoProvided(report)
       }
       case _ =>
@@ -171,14 +171,14 @@ trait Spec extends Suite {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, "")
+    val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, 0, "")
 
     wrappedReporter.testStarting(report)
 
     try {
       example.f()
 
-      val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, "")
+      val report = new SpecReport(getTestNameForReport(example.exampleFullName), example.exampleShortName, 0, "")
 
       wrappedReporter.testSucceeded(report)
     }
@@ -201,7 +201,7 @@ trait Spec extends Suite {
       else
         t.toString
 
-    val report = new SpecReport(getTestNameForReport(exampleFullName), exampleShortName, msg, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(exampleFullName), exampleShortName, 0, msg, Some(t), None)
 
     reporter.testFailed(report)
   }
