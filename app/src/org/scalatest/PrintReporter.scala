@@ -242,6 +242,15 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     pw.flush()
   }
 
+
+  // We subtract one from test reports because we add "- " in front, so if one is actually zero, it will come here as -1
+  private def indent(s: String, times: Int) = if (times <= 0) s else ("  " * times) + s
+
+  // Stupid properties file won't let me put spaces at the beginning of a property
+  // "  {0}" comes out as "{0}", so I can't do indenting in a localizable way. For now
+  // just indent two space to the left.  //  if (times <= 0) s 
+  //  else Resources("indentOnce", indent(s, times - 1))
+  
   private def makeReport(report: Report, resourceName: String) {
 
     if (report == null)
@@ -254,13 +263,13 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
             case "testStarting" => None
             case "testSucceeded" => {
               val icon = Resources("exampleSucceededIconChar")
-              Some(Resources("exampleIconPlusShortName", icon, specReport.shortName))
+              Some(indent(Resources("exampleIconPlusShortName", icon, specReport.shortName), specReport.level - 1))
             }
             case "testFailed" => {
               val icon = Resources("exampleFailedIconChar")
-              Some(Resources("exampleIconPlusShortNameAndNote", icon, specReport.shortName, Resources("failedNote")))
+              Some(indent(Resources("exampleIconPlusShortNameAndNote", icon, specReport.shortName, Resources("failedNote")), specReport.level - 1))
             }
-            case _ => Some(specReport.shortName)
+            case _ => Some(indent(specReport.shortName, specReport.level))
           }
         case _ => {
           val resName = if (report.message.trim.isEmpty) resourceName + "NoMessage" else resourceName
