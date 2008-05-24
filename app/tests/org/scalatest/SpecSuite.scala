@@ -765,7 +765,8 @@ class SpecSuite extends FunSuite {
     a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
     assert(!myRep.gotANonSpecReport)
   }
-  test("Shortname should come through in a SpecReport") {
+  
+  test("Shortname should come through correctly in a SpecReport when registering with it should") {
     var testStartingReportHadCorrectShortName = false
     var lastShortName: Option[String] = None
     class MyReporter extends Reporter {
@@ -778,7 +779,6 @@ class SpecSuite extends FunSuite {
               lastShortName = Some(specReport.shortName)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
-        
       }
     }
     class MySpec extends Spec {
@@ -789,7 +789,132 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
   }
 
-  
+  test("Shortname should come through correctly in a SpecReport when registering with specify") {
+    var testStartingReportHadCorrectShortName = false
+    var lastShortName: Option[String] = None
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.shortName == "My short name must have the proper words")
+              testStartingReportHadCorrectShortName = true
+            else
+              lastShortName = Some(specReport.shortName)
+          case _ => throw new RuntimeException("Got a non-SpecReport")
+        }
+      }
+    }
+    class MySpec extends Spec {
+      specify("My short name must have the proper words") {}
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+  }
+   
+  test("Shortname should come through correctly in a SpecReport when registering with it should when nested in one describe") {
+    var testStartingReportHadCorrectShortName = false
+    var lastShortName: Option[String] = None
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.shortName == "should start with proper words")
+              testStartingReportHadCorrectShortName = true
+            else
+              lastShortName = Some(specReport.shortName)
+          case _ => throw new RuntimeException("Got a non-SpecReport")
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("A Stack") {
+        it should "start with proper words" in {}
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+  }
+
+  test("Shortname should come through correctly in a SpecReport when registering with specify when nested in one describe") {
+    var testStartingReportHadCorrectShortName = false
+    var lastShortName: Option[String] = None
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.shortName == "My short name must have the proper words")
+              testStartingReportHadCorrectShortName = true
+            else
+              lastShortName = Some(specReport.shortName)
+          case _ => throw new RuntimeException("Got a non-SpecReport")
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("A Stack") {
+        specify("My short name must have the proper words") {}
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+  }
+   
+  test("Shortname should come through correctly in a SpecReport when registering with it should when nested in two describes") {
+    var testStartingReportHadCorrectShortName = false
+    var lastShortName: Option[String] = None
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.shortName == "should start with proper words")
+              testStartingReportHadCorrectShortName = true
+            else
+              lastShortName = Some(specReport.shortName)
+          case _ => throw new RuntimeException("Got a non-SpecReport")
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("A Stack") {
+        describe("(when empty)") {
+          it should "start with proper words" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+  }
+
+  test("Shortname should come through correctly in a SpecReport when registering with specify when nested in two describes") {
+    var testStartingReportHadCorrectShortName = false
+    var lastShortName: Option[String] = None
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.shortName == "My short name must have the proper words")
+              testStartingReportHadCorrectShortName = true
+            else
+              lastShortName = Some(specReport.shortName)
+          case _ => throw new RuntimeException("Got a non-SpecReport")
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("A Stack") {
+        describe("(when empty)") {
+          specify("My short name must have the proper words") {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+  }
   /*
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false
