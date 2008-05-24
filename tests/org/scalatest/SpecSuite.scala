@@ -130,6 +130,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     assert(a.testNames.size === 1)
+    println("@@@******" + a.testNames)
     assert(a.testNames.contains("it should get invoked"))
   }
    
@@ -291,7 +292,7 @@ class SpecSuite extends FunSuite {
     assert(a.sharedExampleInvoked)
   }
   
-  test("two examples in a SharedBehavior should get invoked") {
+  test("two examples in a shared behavior should get invoked") {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
@@ -764,6 +765,31 @@ class SpecSuite extends FunSuite {
     a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
     assert(!myRep.gotANonSpecReport)
   }
+  test("Shortname should come through in a SpecReport") {
+    var testStartingReportHadCorrectShortName = false
+    var lastShortName: Option[String] = None
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.shortName == "it should start with proper words")
+              testStartingReportHadCorrectShortName = true
+            else
+              lastShortName = Some(specReport.shortName)
+          case _ => throw new RuntimeException("Got a non-SpecReport")
+        }
+        
+      }
+    }
+    class MySpec extends Spec {
+      it should "start with proper words" in {}
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+  }
+
+  
   /*
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false
