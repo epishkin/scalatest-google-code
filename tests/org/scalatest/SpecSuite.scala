@@ -988,6 +988,55 @@ class SpecSuite extends FunSuite {
     assert(myRep.infoProvidedCalled)
     assert(myRep.expectedMessageReceived)
   }
+  
+  test("That level gets sent correctly if no describe clauses.") {
+
+    class MyReporter extends Reporter {
+
+      val ExpectedLevel = 0
+      var testSucceededCalled = false
+      var testFailedCalled = false
+      var expectedLevelReceivedByTestSucceeded = false
+      var expectedLevelReceivedByTestFailed = false
+ 
+      override def testSucceeded(report: Report) {
+        report match {
+          case specReport: SpecReport => {
+            testSucceededCalled = true
+            if (!expectedLevelReceivedByTestSucceeded) {
+              expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevel)
+            }
+          }
+          case _ =>
+        }
+      }
+ 
+      override def testFailed(report: Report) {
+        report match {
+          case specReport: SpecReport => {
+            testFailedCalled = true
+            if (!expectedLevelReceivedByTestFailed) {
+              expectedLevelReceivedByTestFailed = (specReport.level == ExpectedLevel)
+            }
+          }
+          case _ =>
+        }
+      }
+    }
+
+    class MySpec extends Spec {
+      it should "be at level 0" in {}
+      it should "also be at level 0" in { fail() }
+    }
+    val a = new MySpec
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(myRep.testSucceededCalled)
+    assert(myRep.testFailedCalled)
+    assert(myRep.expectedLevelReceivedByTestSucceeded)
+    assert(myRep.expectedLevelReceivedByTestFailed)
+  }
+  
   /*
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false

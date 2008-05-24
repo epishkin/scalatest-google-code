@@ -249,7 +249,19 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
     val stringToPrintOption: Option[String] = 
       report match {
-        case specReport: SpecReport => if (resourceName != "testStarting") Some(specReport.shortName) else None 
+        case specReport: SpecReport =>
+          resourceName match {
+            case "testStarting" => None
+            case "testSucceeded" => {
+              val icon = Resources("exampleSucceededIconChar")
+              Some(Resources("exampleIconPlusShortName", icon, specReport.shortName))
+            }
+            case "testFailed" => {
+              val icon = Resources("exampleFailedIconChar")
+              Some(Resources("exampleIconPlusShortNameAndNote", icon, specReport.shortName, Resources("failedNote")))
+            }
+            case _ => Some(specReport.shortName)
+          }
         case _ => {
           val resName = if (report.message.trim.isEmpty) resourceName + "NoMessage" else resourceName
           Some(Resources(resName, report.name, report.message))
