@@ -247,21 +247,26 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     if (report == null)
       throw new NullPointerException("report is null")
 
-    val name = report.name
-    val message = report.message
-    val throwable = report.throwable
+    val stringToPrintOption: Option[String] = 
+      report match {
+        case specReport: SpecReport => if (resourceName != "testStarting") Some(specReport.shortName) else None 
+        case _ => {
+          val resName = if (report.message.trim.isEmpty) resourceName + "NoMessage" else resourceName
+          Some(Resources(resName, report.name, report.message))
+        }
+      }
 
-    val resName = if (message.trim.isEmpty) resourceName + "NoMessage" else resourceName
-
-    val stringToPrint = Resources(resName, name, message)
-
-    pw.println(stringToPrint)
-    throwable match {
-      case Some(t) => t.printStackTrace(pw)
-      case None => // do nothing
+    stringToPrintOption match {
+      case Some(stringToPrint) => {
+        pw.println(stringToPrint)
+        report.throwable match {
+          case Some(t) => t.printStackTrace(pw)
+          case None => // do nothing
+        }
+        pw.flush()
+      }
+      case None => // Don't print anything for testStarting if a SpecReport 
     }
-
-    pw.flush()
   }
 }
  
