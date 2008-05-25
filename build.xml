@@ -239,16 +239,11 @@
 			<arg value="-g" />
 			<arg value="-o" />
 
-<!--
 			<arg value="-s" />
 			<arg value="org.scalatest.SpecSuite" />
 
 			<arg value="-s" />
 			<arg value="org.scalatest.StackSpec" />
--->
-
-			<arg value="-s" />
-			<arg value="org.scalatest.PrintReporterSpec" />
 		</java>
 	</target>
 

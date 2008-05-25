@@ -305,7 +305,7 @@ trait Spec extends Suite {
   protected class BehaveWord {}
   protected val behave = new BehaveWord
   class Likifier {
-    def like(sharedBehavior: Spec) {
+    def like(sharedBehavior: Behavior) {
       currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior, currentBranch.level + 1)
     }
   }
