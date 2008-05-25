@@ -51,7 +51,7 @@ class StackSpec extends Spec {
   }
   val lastValuePushed = 9
       
-  case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior("a non-empty stack") {
+  case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior {
     
     it should "be non-empty" in {
       assert(!stack.empty)
@@ -74,7 +74,7 @@ class StackSpec extends Spec {
     }
   }
       
-  case class NonFullStack(stack: Stack[Int]) extends Behavior("a non-full stack") {
+  case class NonFullStack(stack: Stack[Int]) extends Behavior {
     
     it should "not be full" in {
       assert(!stack.full)
