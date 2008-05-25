@@ -275,7 +275,7 @@ class SpecSuite extends FunSuite {
   test("a shared example invoked with 'it should behave like' should get invoked") {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
-      case class InvocationVerifier extends Spec {
+      case class InvocationVerifier extends Behavior("invocation verifier") {
         it should "be invoked" in {
           sharedExampleInvoked = true
         }
@@ -299,7 +299,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
-      case class InvocationVerifier extends Spec {
+      case class InvocationVerifier extends Behavior("invocation verifier behavior") {
         it should "be invoked" in {
           sharedExampleInvoked = true
         }
@@ -327,7 +327,7 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      case class InvocationVerifier extends Spec {
+      case class InvocationVerifier extends Behavior("invocation verifier behavior") {
         it should "get invoked" in {
           example1WasInvoked = true
         }
@@ -354,7 +354,7 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      case class InvocationVerifier extends Spec {
+      case class InvocationVerifier extends Behavior("invocation verifier behavior") {
         it should "get invoked" in {
           example1WasInvoked = true
         }
@@ -478,7 +478,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
-      case class InvocationVerifier extends Spec {
+      case class InvocationVerifier extends Behavior("invocation verifier behavior") {
         it should "be invoked" in {
           sharedExampleInvoked = true
         }
@@ -502,7 +502,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec {
       var sharedExampleInvoked = false
-      case class InvocationVerifier extends Spec {
+      case class InvocationVerifier extends Behavior("invocation verifier behavior") {
         it should "pop properly" in {
           sharedExampleInvoked = true
         }
@@ -550,7 +550,7 @@ class SpecSuite extends FunSuite {
 
   test("expectedTestCount should include tests in a share that is called") {
     class MySpec extends Spec {
-      case class Misbehavior extends Spec {
+      case class Misbehavior extends Behavior("misbehavior") {
         it should "six" in {}
         it should "seven" in {}
       }
@@ -569,7 +569,7 @@ class SpecSuite extends FunSuite {
 
   test("expectedTestCount should include tests in a share that is called twice") {
     class MySpec extends Spec {
-      case class Misbehavior extends Spec {
+      case class Misbehavior extends Behavior("misbehavior") {
         it should "six" in {}
         it should "seven" in {}
       }
