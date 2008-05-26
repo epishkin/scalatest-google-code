@@ -1750,7 +1750,6 @@ private[scalatest] object Suite {
       i
     }
     def findCommonSuffixLength(s: String, t: String): Int = {
-      println("fcsl s: " + s + ", t: " + t)
       val max = s.length.min(t.length) // the maximum potential size of the suffix
       var i = 0
       var found = false
@@ -1763,14 +1762,17 @@ private[scalatest] object Suite {
     }
     val commonPrefixLength = findCommonPrefixLength(s, t)
     val commonSuffixLength = findCommonSuffixLength(s.substring(commonPrefixLength), t.substring(commonPrefixLength))
-    println("&*&*&*&*&CPL: " + commonPrefixLength + ", CSL: " + commonSuffixLength)
+    println("!@!@!@! CPL: " + commonPrefixLength + ", CSL: " + commonSuffixLength)
     val prefix = s.substring(0, commonPrefixLength)
     val suffix = if (s.length - commonSuffixLength < 0) "" else s.substring(s.length - commonSuffixLength)
     val sMiddleEnd = s.length - commonSuffixLength
     val tMiddleEnd = t.length - commonSuffixLength
     val sMiddle = s.substring(commonPrefixLength, sMiddleEnd)
     val tMiddle = t.substring(commonPrefixLength, tMiddleEnd)
-    (prefix + "[" + sMiddle + "]" + suffix, prefix + "[" + tMiddle + "]" + suffix)
+    val MaxContext = 20
+    val shortPrefix = if (commonPrefixLength > MaxContext) "..." + prefix.substring(prefix.length - MaxContext) else prefix
+    val shortSuffix = if (commonSuffixLength > MaxContext) suffix.substring(0, MaxContext) + "..." else suffix
+    (shortPrefix + "[" + sMiddle + "]" + shortSuffix, shortPrefix + "[" + tMiddle + "]" + shortSuffix)
   }
 }
 
