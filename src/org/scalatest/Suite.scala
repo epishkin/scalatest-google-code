@@ -1736,5 +1736,41 @@ private[scalatest] object Suite {
       }
     }
   }
+  
+  private [scalatest] def diffStrings(s: String, t: String): Tuple2[String, String] = {
+    def findCommonPrefixLength(s: String, t: String): Int = {
+      val max = s.length.min(t.length) // the maximum potential size of the prefix
+      var i = 0
+      var found = false
+      while (i < max & !found) {
+        found = (s.charAt(i) != t.charAt(i))
+        if (!found)
+          i = i + 1
+      }
+      i
+    }
+    def findCommonSuffixLength(s: String, t: String): Int = {
+      println("fcsl s: " + s + ", t: " + t)
+      val max = s.length.min(t.length) // the maximum potential size of the suffix
+      var i = 0
+      var found = false
+      while (i < max & !found) {
+        found = (s.charAt(s.length - 1 - i) != t.charAt(t.length - 1 - i))
+        if (!found)
+          i = i + 1
+      }
+      i
+    }
+    val commonPrefixLength = findCommonPrefixLength(s, t)
+    val commonSuffixLength = findCommonSuffixLength(s.substring(commonPrefixLength), t.substring(commonPrefixLength))
+    println("&*&*&*&*&CPL: " + commonPrefixLength + ", CSL: " + commonSuffixLength)
+    val prefix = s.substring(0, commonPrefixLength)
+    val suffix = if (s.length - commonSuffixLength < 0) "" else s.substring(s.length - commonSuffixLength)
+    val sMiddleEnd = s.length - commonSuffixLength
+    val tMiddleEnd = t.length - commonSuffixLength
+    val sMiddle = s.substring(commonPrefixLength, sMiddleEnd)
+    val tMiddle = t.substring(commonPrefixLength, tMiddleEnd)
+    (prefix + "[" + sMiddle + "]" + suffix, prefix + "[" + tMiddle + "]" + suffix)
+  }
 }
 
