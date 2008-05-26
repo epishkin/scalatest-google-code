@@ -532,5 +532,18 @@ class SuiteSuite extends Suite {
      Suite.stripDollars("MySuite$1")
     }
   }
+  
+  def testDiffStrings() {
+    expect(("[]", "[a]")) { Suite.diffStrings("", "a") }
+    expect(("[a]", "[]")) { Suite.diffStrings("a", "") }
+    expect(("a[]", "a[b]")) { Suite.diffStrings("a", "ab") }
+    expect(("a[b]", "a[]")) { Suite.diffStrings("ab", "a") }
+    expect(("[a]", "[b]")) { Suite.diffStrings("a", "b") }
+    expect(("[a]big", "[]big")) { Suite.diffStrings("abig", "big") }
+    expect(("[]big", "[a]big")) { Suite.diffStrings("big", "abig") }
+    expect(("big[a]", "big[]")) { Suite.diffStrings("biga", "big") }
+    expect(("big[]", "big[a]")) { Suite.diffStrings("big", "biga") }
+    expect(("small[a]big", "small[]big")) { Suite.diffStrings("smallabig", "smallbig") }
+  }
 }
 
