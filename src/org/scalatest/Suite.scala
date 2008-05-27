@@ -1762,7 +1762,6 @@ private[scalatest] object Suite {
     }
     val commonPrefixLength = findCommonPrefixLength(s, t)
     val commonSuffixLength = findCommonSuffixLength(s.substring(commonPrefixLength), t.substring(commonPrefixLength))
-    println("!@!@!@! CPL: " + commonPrefixLength + ", CSL: " + commonSuffixLength)
     val prefix = s.substring(0, commonPrefixLength)
     val suffix = if (s.length - commonSuffixLength < 0) "" else s.substring(s.length - commonSuffixLength)
     val sMiddleEnd = s.length - commonSuffixLength

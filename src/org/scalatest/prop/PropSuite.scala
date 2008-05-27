@@ -441,4 +441,127 @@ trait PropSuite extends FunSuite with Checkers {
   def test(testName: String, p: Prop, testGroups: Group*) {
     test(testName, p, Test.defaultParams)
   }
+
+  /**
+   * Convert the passed 1-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore[A1,P](testName: String, f: A1 => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arbitrary[A1], s1: Shrink[A1]
+    ) {
+    ignore(testName, Prop.property(f)(p, a1, s1))
+  }
+
+  /**
+   * Convert the passed 2-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore[A1,A2,P](testName: String, f: (A1,A2) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2]
+    ) {
+    ignore(testName, Prop.property(f)(p, a1, s1, a2, s2))
+  }
+
+  /**
+   * Convert the passed 3-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore[A1,A2,A3,P](testName: String, f: (A1,A2,A3) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3]
+    ) {
+    ignore(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3))
+  }
+
+  /**
+   * Convert the passed 4-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore[A1,A2,A3,A4,P](testName: String, f: (A1,A2,A3,A4) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4]
+    ) {
+    ignore(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4))
+  }
+
+  /**
+   * Convert the passed 5-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore[A1,A2,A3,A4,A5,P](testName: String, f: (A1,A2,A3,A4,A5) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5]
+    ) {
+    ignore(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5))
+  }
+
+  /**
+   * Convert the passed 6-arg function into a property, and register it as a test.
+   *
+   * @param f the function to be converted into a property and checked
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore[A1,A2,A3,A4,A5,A6,P](testName: String, f: (A1,A2,A3,A4,A5,A6) => P, testGroups: Group*)
+    (implicit
+      p: P => Prop,
+      a1: Arbitrary[A1], s1: Shrink[A1],
+      a2: Arbitrary[A2], s2: Shrink[A2],
+      a3: Arbitrary[A3], s3: Shrink[A3],
+      a4: Arbitrary[A4], s4: Shrink[A4],
+      a5: Arbitrary[A5], s5: Shrink[A5],
+      a6: Arbitrary[A6], s6: Shrink[A6]
+    ) {
+    ignore(testName, Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5, a6, s6))
+  }
+
+
+  /**
+   * Register as a test a property with the given testing parameters.
+   *
+   * @param p the property to check
+   * @param prms the test parameters
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore(testName: String, p: Prop, prms: Params, testGroups: Group*) {
+    ignore(testName, testGroups: _*) {
+      check(p, prms)
+    }
+  }
+
+  /**
+   * Register a property as a test.
+   *
+   * @param p the property to check
+   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   */
+  def ignore(testName: String, p: Prop, testGroups: Group*) {
+    ignore(testName, p, Test.defaultParams)
+  }
 }
