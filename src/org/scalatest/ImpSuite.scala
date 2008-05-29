@@ -66,6 +66,47 @@ package org.scalatest
  * <pre>
  * class MySuite extends FunSuite with ImpSuite
  * </pre>
+ * <p>
+ * <strong>Deleted From Suite: Suite set up and clean up</strong>
+ * </p>
+ * 
+ * <p>
+ * The previous example gives a hint at how you can accomplish the kind of intialization and cleanup in ScalaTest that
+ * you would do with <code>@BeforeClass</code> and <code>@AfterClass</code> annotations in JUnit 4. If you want to
+ * do something before and/or after <em>all</em> tests in a <code>Suite</code>, you
+ * can override <code>runTests</code>. Inside <code>runTests</code>, you first do what you need to do before all tests, then
+ * call <code>super.runTests</code>, then do what you need to after all tests. For example, if you must open a file
+ * before the tests are run, and close it after all the tests have completed, you could override the method like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest._
+ * import java.io.FileReader
+ * 
+ * class MySuite extends Suite {
+ * 
+ *   var reader: FileReader = _
+ * 
+ *   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper,
+ *       includes: Set[String], excludes: Set[String], goodies: Map[String, Any]) {
+ * 
+ *     reader = new FileReader("filename.txt")
+ *     try {
+ *       super.runTests(testName, reporter, stopper, includes, excludes, goodies)
+ *     }
+ *     finally {
+ *       reader.close()
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you want to do something before and after both the tests and the nested <code>Suite</code>s,
+ * then you can override <code>execute</code> itself, or use the <code>beforeAll</code>
+ * and <code>afterAll</code> methods of <code>ImpSuite</code>.
+ * </p>
+ *
  */
 trait ImpSuite extends Suite {
   

@@ -112,7 +112,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   * @throws NullPointerException if <code>report</code> reference is <code>null</code>
   */
   override def testIgnored(report: Report) {
-    makeReport(report, "testSucceeded")
+    makeReport(report, "testIgnored")
   }
 
   /**
