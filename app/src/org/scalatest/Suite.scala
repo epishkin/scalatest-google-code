@@ -773,7 +773,6 @@ import scala.collection.immutable.TreeSet
  *
  * <pre>
  * scala> (new MySuite).execute()
- * Info Provided: MySuite.testAddition: Addition seems to work.
  * Test Starting - MySuite.testAddition(Reporter)
  * Info Provided - MySuite.testAddition(Reporter): Addition seems to work
  * Test Succeeded - MySuite.testAddition(Reporter)
