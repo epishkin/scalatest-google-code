@@ -54,7 +54,7 @@ abstract class Group(val name: String)
  * Here's an example <code>FunSuite</code>:
  *
  * <pre>
- * import org.scalatest.fun.FunSuite
+ * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
  *
@@ -86,53 +86,264 @@ abstract class Group(val name: String)
  * <p>
  * <strong>Test fixtures</strong>
  * </p>
- * 
+ *
  * <p>
- * If you want to write tests that need the same mutable fixture objects, you can
- * extend one of the traits <code>FunSuite1</code> through <code>FunSuite9</code>. If you need three
- * fixture objects, for example, you would extend <code>FunSuite3</code>. Here's an example
- * that extends <code>FunSuite1</code>, to initialize a <code>StringBuilder</code> fixture object for each test:
+ * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
+ * connections, etc.) used by tests to do their work. You can use fixtures in
+ * <code>FunSuite</code>s with the same approaches suggested for <code>Suite</code> in
+ * its documentation. The same text that appears in the test fixture
+ * section of <code>Suite</code>'s documentation is repeated here, with examples changed from
+ * <code>Suite</code> to <code>FunSuite</code>.
  * </p>
- * 
+ *
+ * <p>
+ * If a fixture is used by only one test method, then the definitions of the fixture objects should
+ * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
+ * previous <code>MySuite</code> examples. If multiple methods need to share a fixture, the best approach
+ * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
+ * to <code>shared</code> is used by multiple test methods:
+ * </p>
+ *
  * <pre>
- * import org.scalatest.fun.FunSuite1
+ * import org.scalatest.FunSuite
  *
- * class EasySuite extends FunSuite1[StringBuilder] {
+ * class MySuite extends FunSuite {
  *
- *   testWithFixture("easy test") {
- *     sb => {
- *       sb.append("easy!")
- *       assert(sb.toString === "Testing is easy!")
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
+ *
+ *   test("Addition") {
+ *     val sum = 2 + 3
+ *     assert(sum === shared)
+ *   }
+ *
+ *   test("Subtraction") {
+ *     val diff = 7 - 2
+ *     assert(diff === shared)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
+ * it needs to be recreated or reinitialized before each test. Shared resources such
+ * as files or database connections may also need to 
+ * be cleaned up after each test. JUnit offers methods <code>setup</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use <code>ImpSuite</code>,
+ * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
+ * between tests. Before going that route, you should consider two approaches that
+ * avoid <code>var</code>s. One approach is to write one or more "create" methods
+ * that return a new instance of a needed object (or a tuple of new instances of
+ * multiple objects) each time it is called. You can then call a create method at the beginning of each
+ * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FunSuite
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   // create objects needed by tests and return as a tuple
+ *   def createFixture = (
+ *     new StringBuilder("ScalaTest is "),
+ *     new ListBuffer[String]
+ *   )
+ *
+ *   test("Easy") {
+ *     val (builder, lbuf) = createFixture
+ *     builder.append("easy!")
+ *     assert(builder.toString === "ScalaTest is easy!")
+ *     assert(lbuf.isEmpty)
+ *     lbuf += "sweet"
+ *   }
+ *
+ *   test("Fun") {
+ *     val (builder, lbuf) = createFixture
+ *     builder.append("fun!")
+ *     assert(builder.toString === "ScalaTest is fun!")
+ *     assert(lbuf.isEmpty)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
+ * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
+ * </p>
+ * <pre>
+ * import org.scalatest.FunSuite
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
+ *
+ *     // Create needed mutable objects
+ *     val sb = new StringBuilder("ScalaTest is ")
+ *     val lb = new ListBuffer[String]
+ *
+ *     // Invoke the test function, passing in the mutable objects
+ *     testFunction(sb, lb)
+ *   }
+ *
+ *   def test("Easy") {
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(lbuf.isEmpty)
+ *         lbuf += "sweet"
+ *       }
  *     }
  *   }
  *
- *   testWithFixture("fun test") {
- *     sb => {
- *       sb.append("fun!")
- *       assert(sb.toString === "Testing is fun!")
+ *   def test("Fun") {
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(lbuf.isEmpty)
+ *       }
  *     }
- *   }
- *
- *   def withFixture(f: StringBuilder => Unit) {
- *     val sb = new StringBuilder("Testing is ")
- *     f(sb)
  *   }
  * }
  * </pre>
  * 
+ * One advantage of this approach compared to the create method approach shown previously is that
+ * you can more easily perform cleanup after each test executes. For example, you
+ * could create a temporary file before each test, and delete it afterwords, by
+ * doing so before and after invoking the test function in a <code>withTempFile</code>
+ * method. Here's an example:
+ *
+ * <pre>
+ * import org.scalatest.FunSuite
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends FunSuite {
+ * 
+ *   def withTempFile(testFunction: FileReader => Unit) {
+ * 
+ *     val FileName = "TempFile.txt"
+ *  
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *  
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   def test("Reading from the temp file") {
+ *     withTempFile {
+ *       (reader) => {
+ *         var builder = new StringBuilder
+ *         var c = reader.read()
+ *         while (c != -1) {
+ *           builder.append(c.toChar)
+ *           c = reader.read()
+ *         }
+ *         assert(builder.toString === "Hello, test!")
+ *       }
+ *     }
+ *   }
+ * 
+ *   def test("First char of the temp file") {
+ *     withTempFile {
+ *       (reader) => {
+ *         assert(reader.read() === 'H')
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
  * <p>
- * In the class declaration of this example, <code>FunSuite1</code> is parameterized with the type of the
- * lone fixture object, <code>StringBuilder</code>. Two tests are defined with
- * <code>testWithFixture</code>. The function values provided here take the fixture object,
- * a <code>StringBuilder</code>, as a parameter and use it in the test code. Note that
- * the fixture object, referenced by <code>sb</code>, is mutated by both tests with the call to <code>append</code>. Lastly, a <code>withFixture</code>
- * method is provided that takes a test function. This method creates a new <code>StringBuilder</code>,
- * initializes it to <code>"Testing is "</code>, and passes it to the test function.
- * When ScalaTest runs this suite, it will pass each test function to <code>withFixture</code>.
- * The <code>withFixture</code> method will create and initialize a new <code>StringBuilder</code> object and
- * pass that to the test function. In this way, each test function will get a fresh copy
- * of the fixture. For more information on using <code>FunSuite</code>s with fixtures, see the documentation
- * for <code>FunSuite1</code> through <code>FunSuite9</code>.
+ * If you are more comfortable with reassigning instance variables, however, you can
+ * instead use <code>ImpSuite</code>, a subtrait of <code>Suite</code> that provides
+ * methods that will be run before and after each test. <code>ImpSuite</code>'s
+ * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
+ * methods, respectively). For example, here's how you'd write the previous
+ * test that uses a temp file with an <code>ImpSuite</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FunSuite
+ * import org.scalatest.ImpSuite
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ *
+ * class MySuite extends FunSuite with ImpSuite {
+ *
+ *   private val FileName = "TempFile.txt"
+ *   private var reader: FileReader = _
+ *
+ *   // Set up the temp file needed by the test
+ *   override def beforeEach() {
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     reader = new FileReader(FileName)
+ *   }
+ *
+ *   // Close and delete the temp file
+ *   override def afterEach() {
+ *     reader.close()
+ *     val file = new File(FileName)
+ *     file.delete()
+ *   }
+ *
+ *   def test("Reading from the temp file") {
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ *
+ *   def test("First char of the temp file") {
+ *     assert(reader.read() === 'H')
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
+ * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
+ * want to execute code before and after all tests (and nested suites) in a suite, such
+ * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
+ * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
+ * methods of <code>ImpSuite</code>. See the documentation for <code>ImpSuite</code> for
+ * an example.
  * </p>
  *
  * <p>
@@ -143,7 +354,7 @@ abstract class Group(val name: String)
  * A <code>FunSuite</code>'s tests may be classified into named <em>groups</em>.
  * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
  * optionally be included and/or excluded. To place <code>FunSuite</code> tests into
- * groups, you pass objects that extend abstract class <code>org.scalatest.fun.Group</code> to methods
+ * groups, you pass objects that extend abstract class <code>org.scalatest.Group</code> to methods
  * that register tests. Class <code>Group</code> takes one type parameter, a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
@@ -152,6 +363,8 @@ abstract class Group(val name: String)
  * create matching groups for <code>FunSuite</code>s like this:
  * </p>
  * <pre>
+ * import org.scalatest.Group
+ *
  * object SlowTest extends Group("com.mycompany.groups.SlowTest")
  * object DBTest extends Group("com.mycompany.groups.DBTest")
  * </pre>
@@ -159,7 +372,7 @@ abstract class Group(val name: String)
  * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
  * </p>
  * <pre>
- * import org.scalatest.fun.FunSuite
+ * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
  *
@@ -178,8 +391,8 @@ abstract class Group(val name: String)
  * </pre>
  *
  * <p>
- * This code places both tests, <code>addition</code> and <code>subtraction</code>, into the <code>com.mycompany.groups.SlowTest</code> group, 
- * and test <code>subtraction</code> into the <code>com.mycompany.groups.DBTest</code> group.
+ * This code places both tests, "addition" and "subtraction," into the <code>com.mycompany.groups.SlowTest</code> group, 
+ * and test "subtraction" into the <code>com.mycompany.groups.DBTest</code> group.
  * </p>
  *
  * <p>
@@ -203,7 +416,7 @@ abstract class Group(val name: String)
  * </p>
  *
  * <pre>
- * import org.scalatest.fun.FunSuite
+ * import org.scalatest.FunSuite
  *
  * class MySuite extends FunSuite {
  *
@@ -230,8 +443,14 @@ abstract class Group(val name: String)
  * </pre>
  *
  * <p>
- * It will run only <code>subtraction</code> and report that <code>addition</code> was ignored.
+ * It will run only <code>subtraction</code> and report that <code>addition</code> was ignored:
  * </p>
+ *
+ * <pre>
+ * Test Ignored - MySuite: addition
+ * Test Starting - MySuite: subtraction
+ * Test Succeeded - MySuite: subtraction
+ * </pre>
  *
  * <p>
  * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The <code>execute</code> method that takes no parameters
@@ -260,7 +479,7 @@ abstract class Group(val name: String)
  * </p>
  *
  * <pre>
- * import org.scalatest.fun.FunSuite
+ * import org.scalatest.FunSuite
  * import org.scalatest.Report
  *
  * class MySuite extends FunSuite {
@@ -270,7 +489,7 @@ abstract class Group(val name: String)
  *       val sum = 1 + 1
  *       assert(sum === 2)
  *       assert(sum + 2 === 4)
- *       val report = new Report("MySuite.addition", "Addition seems to work.")
+ *       val report = new Report("MySuite.addition", "Addition seems to work")
  *       reporter.infoProvided(report)
  *     }
  *   }
@@ -281,13 +500,10 @@ abstract class Group(val name: String)
  * included in the printed report:
  *
  * <pre>
- * Info Provided: MySuite.addition: Addition seems to work.
+ * Test Starting - MySuite: addition
+ * Info Provided - MySuite.addition: Addition seems to work
+ * Test Succeeded - MySuite: addition
  * </pre>
- *
- * <p>
- * This trait depends on ScalaCheck, so you must include ScalaCheck's
- * jar file on either the classpath or runpath.
- * </p>
  *
  * @author Bill Venners
  */
