@@ -585,25 +585,8 @@ import scala.collection.immutable.TreeSet
  * import org.scalatest._
  * import java.io.FileWriter
  *
- * class MainSuite extends SuperSuite(List(new NestedSuite)) {
- *
- *   override def runNestedSuites(
- *     reporter: Reporter,
- *     stopper: Stopper,
- *     includes: Set[String],
- *     excludes: Set[String],
- *     goodies: Map[String, Any],
- *     distributor: Option[Distributor]
- *   ) {
- *     val w = new FileWriter("fixture.txt")
- *     try {
- *       val myGoodies = goodies + ("fixture.FileWriter" -> w)
- *       super.runNestedSuites(reporter, stopper, includes, excludes, myGoodies, distributor)  
- *     }
- *     finally {
- *       w.close()
- *     }
- *   }
+ * object Constants {
+ *   val GoodieKey = "fixture.FileWriter"
  * }
  *
  * class NestedSuite extends Suite {
@@ -617,9 +600,35 @@ import scala.collection.immutable.TreeSet
  *     goodies: Map[String, Any],
  *     distributor: Option[Distributor]
  *   ) {
- *     goodies("fixture.FileWriter") match {
- *       case w: FileWriter => w.write("hi there\n")
- *       case _ => fail("Hey, where's my goodie?")
+ *     def complain() = fail("Hey, where's my goodie?")
+ *
+ *     if (goodies.contains(Constants.GoodieKey)) {
+ *       goodies(Constants.GoodieKey) match {
+ *         case fw: FileWriter => fw.write("hi there\n") // Use the goodie
+ *         case _ => complain()
+ *       }
+ *     }
+ *     else complain()
+ *   }
+ * }
+ *
+ * class MainSuite extends SuperSuite(List(new NestedSuite)) {
+ *
+ *   override def runNestedSuites(
+ *     reporter: Reporter,
+ *     stopper: Stopper,
+ *     includes: Set[String],
+ *     excludes: Set[String],
+ *     goodies: Map[String, Any],
+ *     distributor: Option[Distributor]
+ *   ) {
+ *     val writer = new FileWriter("fixture.txt")
+ *     try {
+ *       val myGoodies = goodies + (Constants.GoodieKey -> writer)
+ *       super.runNestedSuites(reporter, stopper, includes, excludes, myGoodies, distributor)  
+ *     }
+ *     finally {
+ *       writer.close()
  *     }
  *   }
  * }
