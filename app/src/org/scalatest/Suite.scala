@@ -107,7 +107,7 @@ import scala.collection.immutable.TreeSet
  * <p>
  * The third overloaded <code>execute</code> method takes seven parameters, so it is a bit unwieldy to invoke from
  * within the Scala interpreter. Instead, this <code>execute</code> method is intended to be invoked indirectly by a test runner, such
- * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="Runner$object.html">documentation for <code>Runner</code></a> for more detail.
+ * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="tools/Runner$object.html">documentation for <code>Runner</code></a> for more detail.
  * </p>
  *
  * <p>
@@ -299,7 +299,7 @@ import scala.collection.immutable.TreeSet
  *
  * <p>
  * Note that <code>Runner</code> can discover <code>Suite</code>s automatically, so you need not
- * necessarily specify <code>SuperSuite</code>s explicitly. See the <a href="Runner$object.html">documentation
+ * necessarily specify <code>SuperSuite</code>s explicitly. See the <a href="tools/Runner$object.html">documentation
  * for <code>Runner</code></a> for more information.
  * </p>
  *
