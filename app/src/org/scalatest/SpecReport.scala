@@ -3,7 +3,7 @@ package org.scalatest
 import java.util.Date
 
 @serializable
-case class SpecReport(
+private[scalatest] case class SpecReport(
   override val name: String,
   shortName: String,
   level: Int,

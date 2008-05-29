@@ -73,7 +73,7 @@ abstract class Group(val name: String)
  * </pre>
  *
  * <p>
- * &#8220;<code>test</code>&#8221; is a method defined in <code>FunSuite</code>, which will be invoked
+ * &#8220;<code>test</code>&#8221; is a method, defined in <code>FunSuite</code>, that will be invoked
  * by the primary constructor of <code>MySuite</code>. You specify the name of the test as
  * a string between the parentheses, and the test code itself between curly braces.
  * The test code is a function passed as a by-name parameter to <code>test</code>, which registers

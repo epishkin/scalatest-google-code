@@ -34,7 +34,7 @@ import NodeFamily._
  * }
  * @author Bill Venners
  */
-trait Spec extends Suite {
+private[scalatest] trait Spec extends Suite {
   
   private val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk

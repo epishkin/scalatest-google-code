@@ -66,7 +66,8 @@ import scala.collection.immutable.TreeSet
  *
  * <p>
  * You run a <code>Suite</code> by invoking on it one of three overloaded <code>execute</code>
- * methods. Two of these <code>execute</code> methods are intended to serve as a
+ * methods. Two of these <code>execute</code> methods, which print test results to the
+ * standard output, are intended to serve as a
  * convenient way to run tests from within the Scala interpreter. For example,
  * to run <code>MySuite</code> from within the Scala interpreter, you could write:
  * </p>
@@ -76,23 +77,37 @@ import scala.collection.immutable.TreeSet
  * </pre>
  *
  * <p>
+ * And you would see:
+ * </p>
+ *
+ * <pre>
+ * Test Starting - MySuite.testAddition
+ * Test Succeeded - MySuite.testAddition
+ * Test Starting - MySuite.testSubtraction
+ * Test Succeeded - MySuite.testSubtraction
+ * </pre>
+ *
+ * <p>
  * Or, to run just the <code>testAddition</code> method, you could write:
  * </p>
  *
  * <pre>
  * scala> (new MySuite).execute("testAddition")
  * </pre>
- * </p>
  *
  * <p>
- * These two <code>execute</code> methods print test results to the standard output. If you try these two examples
- * from within the Scala interpeter, you should see reports that indicate the tests were started and successfully completed.
+ * And you would see:
  * </p>
+ *
+ * <pre>
+ * Test Starting - MySuite.testAddition
+ * Test Succeeded - MySuite.testAddition
+ * </pre>
  *
  * <p>
  * The third overloaded <code>execute</code> method takes seven parameters, so it is a bit unwieldy to invoke from
  * within the Scala interpreter. Instead, this <code>execute</code> method is intended to be invoked indirectly by a test runner, such
- * as <code>Runner</code> or an IDE. See the <a href="Runner$object.html">documentation for <code>Runner</code></a> for more detail.
+ * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="Runner$object.html">documentation for <code>Runner</code></a> for more detail.
  * </p>
  *
  * <p>
@@ -293,11 +308,11 @@ import scala.collection.immutable.TreeSet
  * </p>
  *
  * <p>
- * A test <code>fixture</code> is objects or other artifacts (such as files, sockets, database
+ * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
  * connections, etc.) used by tests to do their work.
  * If a fixture is used by only one test method, then the definitions of the fixture objects should
- * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> of the
- * earlier <code>MySuite</code> examples. If multiple methods need to share a fixture, the best approach
+ * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
+ * previous <code>MySuite</code> examples. If multiple methods need to share a fixture, the best approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
  * to <code>shared</code> is used by multiple test methods:
  * </p>
@@ -323,100 +338,235 @@ import scala.collection.immutable.TreeSet
  * </pre>
  *
  * <p>
- * In some cases, however, a shared fixture may be changed by a test method such that
- * it needs to be recreated or reinitialized before each test. It may also need to 
+ * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
+ * it needs to be recreated or reinitialized before each test. Shared resources such
+ * as files or database connections may also need to 
  * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can avoid 
- * <code>var</code>s by writing a <code>createFixture</code> method
- * that returns a new instance of the fixture object (or returns a tuple of new instances of
- * fixture objects) each time it is called. You can then call <code>createFixture</code> at the beginning of each
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use <code>ImpSuite</code>,
+ * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
+ * between tests. Before going that route, you should consider two approaches that
+ * avoid <code>var</code>s. One approach is to write one or more "create" methods
+ * that return a new instance of a needed object (or a tuple of new instances of
+ * multiple objects) each time it is called. You can then call a create method at the beginning of each
  * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
  * <pre>
- * import org.scalatest._
+ * import org.scalatest.Suite
  * import scala.collection.mutable.ListBuffer
  *
  * class MySuite extends Suite {
  *
- *   def createFixture = (new StringBuilder("ScalaTest is "), new ListBuffer[String])
+ *   // create objects needed by tests and return as a tuple
+ *   def createFixture = (
+ *     new StringBuilder("ScalaTest is "),
+ *     new ListBuffer[String]
+ *   )
  *
  *   def testEasy() {
- *     val (sb, lb) = createFixture
- *     sb.append("easy!")
- *     assert(sb.toString === "ScalaTest is easy!")
- *     assert(lb.isEmpty)
- *     lb += "sweet"
+ *     val (builder, lbuf) = createFixture
+ *     builder.append("easy!")
+ *     assert(builder.toString === "ScalaTest is easy!")
+ *     assert(lbuf.isEmpty)
+ *     lbuf += "sweet"
  *   }
  *
  *   def testFun() {
- *     val (sb, lb) = createFixture
- *     sb.append("fun!")
- *     assert(sb.toString === "ScalaTest is fun!")
- *     assert(lb.isEmpty)
+ *     val (builder, lbuf) = createFixture
+ *     builder.append("fun!")
+ *     assert(builder.toString === "ScalaTest is fun!")
+ *     assert(lbuf.isEmpty)
  *   }
  * }
  * </pre>
  *
  * <p>
- * Another approach to fixtures that avoids <code>var</code>s is to use traits <code>FunSuite1</code> through <code>FunSuite9</code>.
- * If you prefer instead to reassign variables to reinitialize a fixture, however, one approach is to override <code>runTest</code>.
- * Here's an example:
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
+ * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
  * </p>
- *
  * <pre>
- * import org.scalatest._
+ * import org.scalatest.Suite
+ * import scala.collection.mutable.ListBuffer
  *
  * class MySuite extends Suite {
  *
- *   var sb: StringBuilder = _
+ *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
- *   override protected def runTest(testName: String, reporter: Reporter,
- *       stopper: Stopper, properties: Map[String, Any]) {
+ *     // Create needed mutable objects
+ *     val sb = new StringBuilder("ScalaTest is ")
+ *     val lb = new ListBuffer[String]
  *
- *     // First, initialize the fixture. This
- *     // would be in JUnit's setup() method.
- *     sb = new StringBuilder("ScalaTest is ")
- *
- *     // Then call super.runTest to run the test 
- *     super.runTest(testName, reporter, stopper, properties)
- *
- *     // Then perform cleanup. This would be in
- *     // JUnit's teardown() method. If needed, you could 
- *     // also do cleanup in a finally clause.
- *     sb.setLength(0)
+ *     // Invoke the test function, passing in the mutable objects
+ *     testFunction(sb, lb)
  *   }
  *
  *   def testEasy() {
- *     sb.append("easy!")
- *     assert(sb.toString === "ScalaTest is easy!")
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(lbuf.isEmpty)
+ *         lbuf += "sweet"
+ *       }
+ *     }
  *   }
  *
  *   def testFun() {
- *     sb.append("fun!")
- *     assert(sb.toString === "ScalaTest is fun!")
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(lbuf.isEmpty)
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * One advantage of this approach compared to the create method approach shown previously is that
+ * you can more easily perform cleanup after each test executes. For example, you
+ * could create a temporary file before each test, and delete it afterwords, by
+ * doing so before and after invoking the test function in a <code>withTempFile</code>
+ * method. Here's an example:
+ *
+ * <pre>
+ * import org.scalatest.Suite
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends Suite {
+ * 
+ *   def withTempFile(testFunction: FileReader => Unit) {
+ * 
+ *     val FileName = "TempFile.txt"
+ *  
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *  
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   def testReadingFromTheTempFile() {
+ *     withTempFile {
+ *       (reader) => {
+ *         var builder = new StringBuilder
+ *         var c = reader.read()
+ *         while (c != -1) {
+ *           builder.append(c.toChar)
+ *           c = reader.read()
+ *         }
+ *         assert(builder.toString === "Hello, test!")
+ *       }
+ *     }
+ *   }
+ * 
+ *   def testFirstCharOfTheTempFile() {
+ *     withTempFile {
+ *       (reader) => {
+ *         assert(reader.read() === 'H')
+ *       }
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * In this example, the instance variable <code>sb</code> is a <code>var</code>, so it can
- * be reinitialized between tests. The <code>runTest</code> method, which is invoked
- * by <code>execute</code> for each test method to run, is overriden here such that 
- * <code>sb</code> is first initialized. Then <code>super.runTest</code> is invoked, which
- * causes the test method to be run. Lastly, the fixture is &#8220;cleaned up&#8221; by clearing
- * the buffer.
+ * If you are more comfortable with reassigning instance variables, however, you can
+ * instead use <code>ImpSuite</code>, a subtrait of <code>Suite</code> that provides
+ * methods that will be run before and after each test. <code>ImpSuite</code>'s
+ * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
+ * methods, respectively). For example, here's how you'd write the previous
+ * test that uses a temp file with an <code>ImpSuite</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.ImpSuite
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ *
+ * class MySuite extends ImpSuite {
+ *
+ *   private val FileName = "TempFile.txt"
+ *   private var reader: FileReader = _
+ *
+ *   // Set up the temp file needed by the test
+ *   override def beforeEach() {
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     reader = new FileReader(FileName)
+ *   }
+ *
+ *   // Close and delete the temp file
+ *   override def afterEach() {
+ *     reader.close()
+ *     val file = new File(FileName)
+ *     file.delete()
+ *   }
+ *
+ *   def testReadingFromTheTempFile() {
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ *
+ *   def testFirstCharOfTheTempFile() {
+ *     assert(reader.read() === 'H')
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
+ * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
+ * want to execute code before and after all tests (and nested suites) in a suite, such
+ * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
+ * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
+ * methods of <code>ImpSuite</code>. See the documentation for <code>ImpSuite</code> for
+ * an example.
  * </p>
  *
  * <p>
- * <strong>Properties</strong>
+ * <strong>Goodies</strong>
  * </p>
  *
  * <p>
  * In some cases you may need to pass information from a suite to its nested suites.
  * For example, perhaps a main suite needs to open a database connection that is then
  * used by all of its nested suites. You can accomplish this in ScalaTest by using
- * properties, which are passed to <code>execute</code> as a <code>Map[String, Any]</code>.
+ * goodies, which are passed to <code>execute</code> as a <code>Map[String, Any]</code>.
  * This trait's <code>execute</code> method calls two other methods, both of which you
  * can override:
  * </p>
@@ -427,35 +577,49 @@ import scala.collection.immutable.TreeSet
  * </ul>
  *
  * <p>
- * To pass custom properties to nested <code>Suite</code>s, simply override <code>runNestedSuites</code>.
+ * To pass goodies to nested <code>Suite</code>s, simply override <code>runNestedSuites</code>.
  * Here's an example:
  * </p>
  * 
  * <pre>
  * import org.scalatest._
  * import java.io.FileWriter
- * 
- * class NestedSuite extends Suite {
- *   override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper,
- *       includes: Set[String], excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
- * 
- *     val w = properties("fixture.FileWriter").asInstanceOf[FileWriter]
- *     w.write("hi there\n")
- *   }
- * }
- * 
- * class MainSuite extends SuperSuite(new NestedSuite :: Nil) {
- * 
- *   override def runNestedSuites(reporter: Reporter, stopper: Stopper, includes: Set[String],
- *       excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
- * 
+ *
+ * class MainSuite extends SuperSuite(List(new NestedSuite)) {
+ *
+ *   override def runNestedSuites(
+ *     reporter: Reporter,
+ *     stopper: Stopper,
+ *     includes: Set[String],
+ *     excludes: Set[String],
+ *     goodies: Map[String, Any],
+ *     distributor: Option[Distributor]
+ *   ) {
  *     val w = new FileWriter("fixture.txt")
  *     try {
- *       val myProps = properties + ("fixture.FileWriter" -> w)
- *       super.runNestedSuites(reporter, stopper, includes, excludes, myProps, distributor)
+ *       val myGoodies = goodies + ("fixture.FileWriter" -> w)
+ *       super.runNestedSuites(reporter, stopper, includes, excludes, myGoodies, distributor)  
  *     }
  *     finally {
  *       w.close()
+ *     }
+ *   }
+ * }
+ *
+ * class NestedSuite extends Suite {
+ *
+ *   override def execute(
+ *     testName: Option[String],
+ *     reporter: Reporter,
+ *     stopper: Stopper,
+ *     includes: Set[String],
+ *     excludes: Set[String],
+ *     goodies: Map[String, Any],
+ *     distributor: Option[Distributor]
+ *   ) {
+ *     goodies("fixture.FileWriter") match {
+ *       case w: FileWriter => w.write("hi there\n")
+ *       case _ => fail("Hey, where's my goodie?")
  *     }
  *   }
  * }
@@ -463,50 +627,10 @@ import scala.collection.immutable.TreeSet
  * 
  * <p>
  * In this example, <code>MainSuite</code>'s runNestedSuites method opens a file for writing, then passes
- * the <code>FileWriter</code> to its <code>NestedSuite</code> via the properties <code>Map</code>. The <code>NestedSuite</code>
- * grabs the <code>FileWriter</code> from the properties <code>Map</code> and writes a friendly message to the file.
+ * the <code>FileWriter</code> to its <code>NestedSuite</code> via the goodies <code>Map</code>. The <code>NestedSuite</code>
+ * grabs the <code>FileWriter</code> from the goodies <code>Map</code> and writes a friendly message to the file.
  * </p>
  * 
- * <p>
- * <strong>Suite set up and clean up</strong>
- * </p>
- * 
- * <p>
- * The previous example gives a hint at how you would accomplish the kind of intialization and cleanup in ScalaTest that
- * you would do with <code>@BeforeClass</code> and <code>@AfterClass</code> annotations in JUnit 4. If you want to
- * do something before and/or after <em>all</em> tests in a <code>Suite</code>, you
- * override <code>runTests</code>. Inside <code>runTests</code>, you first do what you need to do before all tests, then
- * call <code>super.runTests</code>, then do what you need to after all tests. For example, if you must open a file
- * before the tests are run, and close it after all the tests have completed, you could override the method like this:
- * </p>
- *
- * <pre>
- * import org.scalatest._
- * import java.io.FileReader
- * 
- * class MySuite extends Suite {
- * 
- *   var reader: FileReader = _
- * 
- *   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper,
- *       includes: Set[String], excludes: Set[String], properties: Map[String, Any]) {
- * 
- *     reader = new FileReader("filename.txt")
- *     try {
- *       super.runTests(testName, reporter, stopper, includes, excludes, properties)
- *     }
- *     finally {
- *       reader.close()
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you want to do something before and after both the tests and the nested <code>Suite</code>s,
- * then override <code>execute</code> itself.
- * </p>
- *
  * <p>
  * <strong>Test groups</strong>
  * </p>
@@ -588,9 +712,15 @@ import scala.collection.immutable.TreeSet
  * </pre>
  *
  * <p>
- * It will run only <code>testAddition</code> and report that <code>testSubtraction</code> was ignored.
+ * It will run only <code>testAddition</code> and report that <code>testSubtraction</code> was ignored. You'll see:
  * </p>
  *
+ * <pre>
+ * Test Starting - MySuite.testAddition
+ * Test Succeeded - MySuite.testAddition
+ * Test Ignored - MySuite.testSubtraction
+ * </pre>
+ * 
  * <p>
  * <code>Ignore</code> is implemented as a group. The <code>execute</code> method that takes no parameters
  * adds <code>org.scalatest.Ignore</code> to the <code>excludes</code> <code>Set</code> it passes to
@@ -623,17 +753,21 @@ import scala.collection.immutable.TreeSet
  *   def testAddition(reporter: Reporter) {
  *     assert(1 + 1 === 2)
  *     val report =
- *       new Report("MySuite.testAddition(Reporter)", "Addition seems to work.")
+ *       new Report("MySuite.testAddition(Reporter)", "Addition seems to work")
  *     reporter.infoProvided(report)
  *   }
  * }
  * </pre>
  *
- * If you run this <code>Suite</code> from the interpreter, you will see the following message
+ * If you run this <code>Suite</code> from the interpreter, you will see the message
  * included in the printed report:
  *
  * <pre>
+ * scala> (new MySuite).execute()
  * Info Provided: MySuite.testAddition: Addition seems to work.
+ * Test Starting - MySuite.testAddition(Reporter)
+ * Info Provided - MySuite.testAddition(Reporter): Addition seems to work
+ * Test Succeeded - MySuite.testAddition(Reporter)
  * </pre>
  *
  * <p>
@@ -656,16 +790,14 @@ import scala.collection.immutable.TreeSet
  * <p>
  * Trait <code>Suite</code> provides default implementations of its methods that should
  * be sufficient for most applications, but many methods can be overridden when desired. Here's
- * a summary of the methods that are intended to be overridden, and why you might want to do so:
+ * a summary of the methods that are intended to be overridden:
  * </p>
  *
  * <ul>
  * <li><code>execute</code> - override this method to define custom ways to executes suites of
- *   tests. A common use case is to set up a fixture before running a suite of tests, and if needed, clean it up afterwords.</li>
- * <li><code>runTest</code> - override this method to define custom ways to execute a single named test. A common
- *   use case is to set up a fixture before running each test in a suite, and if needed, clean it up afterwords. </li>
- * <li><code>testNames</code> - override this method to specify the <code>Suite</code>'s test names in a custom way, such
- *  as in a different order.</li>
+ *   tests.</li>
+ * <li><code>runTest</code> - override this method to define custom ways to execute a single named test.</li>
+ * <li><code>testNames</code> - override this method to specify the <code>Suite</code>'s test names in a custom way.</li>
  * <li><code>groups</code> - override this method to specify the <code>Suite</code>'s test groups in a custom way.</li>
  * <li><code>nestedSuites</code> - override this method to specify the <code>Suite</code>'s nested <code>Suite</code>s in a custom way.</li>
  * <li><code>suiteName</code> - override this method to specify the <code>Suite</code>'s name in a custom way.</li>
@@ -684,12 +816,13 @@ import scala.collection.immutable.TreeSet
  * <p>
  * Alternatively, you may not like starting your test methods with <code>test</code>, and prefer using <code>@Test</code> annotations in
  * the style of Java's JUnit 4 or TestNG. If so, you can override <code>testNames</code> to discover tests using either of these two APIs
- * <code>@Test</code> annotations, or one of your own invention.
+ * <code>@Test</code> annotations, or one of your own invention. (This is in fact
+ * how <code>org.scalatest.junit.JUnit4Suite</code> and <code>org.scalatest.testng.TestNGSuite</code> work.)
  * </p>
  *
  * <p>
  * Moreover, <em>test</em> in ScalaTest does not necessarily mean <em>test method</em>. A test can be anything that can be given a name,
- * that starts and either succeeds or fails, and can be ignored. In <code>org.scalatest.fun.FunSuite</code>, for example, tests are represented
+ * that starts and either succeeds or fails, and can be ignored. In <code>org.scalatest.FunSuite</code>, for example, tests are represented
  * as function values. This
  * approach might look foreign to JUnit users, but may feel more natural to programmers with a functional programming background.
  * To facilitate this style of writing tests, <code>FunSuite</code> overrides <code>testNames</code>, <code>runTest</code>, and <code>execute</code> such that you can 
@@ -697,10 +830,10 @@ import scala.collection.immutable.TreeSet
  * </p>
  *
  * <p>
- * You can also model JUnit, JUnit 4, or TestNG tests as suites of tests, thereby incorporating existing Java tests into a ScalaTest suite.
- * The classes and traits in packages <code>org.scalatest.junit</code> and <code>org.scalatest.testng</code> exist to make this easy. The point here, however, is that
- * no matter what legacy tests you may have, it is likely you can create our use an existing <code>Suite</code> subclass that allows you to model those tests
- * as ScalaTest suites and tests, to incorporate them into a ScalaTest suite. You can then write new tests in Scala and continue supporting
+ * You can also model existing JUnit 3, JUnit 4, or TestNG tests as suites of tests, thereby incorporating Java tests into a ScalaTest suite.
+ * The "wrapper" classes in packages <code>org.scalatest.junit</code> and <code>org.scalatest.testng</code> exist to make this easy. The point here, however, is that
+ * no matter what legacy tests you may have, it is likely you can create or use an existing <code>Suite</code> subclass that allows you to model those tests
+ * as ScalaTest suites and tests and incorporate them into a ScalaTest suite. You can then write new tests in Scala and continue supporting
  * older tests in Java.
  * </p>
  *
@@ -741,7 +874,7 @@ trait Suite {
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>stopRequested</code> method always returns <code>false</code></li>
    * <li><code>includes</code> - an empty <code>Set[String]</code></li>
    * <li><code>excludes</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
-   * <li><code>properties</code> - an empty <code>Map[String, Any]</code></li>
+   * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
    * <li><code>distributor</code> - <code>None</code></li>
    * </ul>
    *
@@ -764,7 +897,7 @@ trait Suite {
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>stopRequested</code> method always returns <code>false</code></li>
    * <li><code>includes</code> - an empty <code>Set[String]</code></li>
    * <li><code>excludes</code> - an empty <code>Set[String]</code></li>
-   * <li><code>properties</code> - an empty <code>Map[String, Any]</code></li>
+   * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
    * <li><code>distributor</code> - <code>None</code></li>
    * </ul>
    *
@@ -895,13 +1028,13 @@ trait Suite {
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
+  protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
 
-    if (testName == null || reporter == null || stopper == null || properties == null)
+    if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
@@ -967,7 +1100,7 @@ trait Suite {
    *   to this method</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>properties</code> - the <code>properties</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * <p>
@@ -998,7 +1131,7 @@ trait Suite {
    * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>properties</code> - the <code>properties</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
@@ -1007,9 +1140,9 @@ trait Suite {
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param includes a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Suite</code>
    * @param excludes a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Suite</code>
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>includes</code>,
-   *     <code>excludes</code>, or <code>properties</code> is <code>null</code>.
+   *     <code>excludes</code>, or <code>goodies</code> is <code>null</code>.
    *
    * This trait's implementation of this method executes tests
    * in the manner described in detail in the following paragraphs, but subclasses may override the method to provide different
@@ -1017,7 +1150,7 @@ trait Suite {
    * used by all the methods of this <code>Suite</code>.
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-                             properties: Map[String, Any]) {
+                             goodies: Map[String, Any]) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1029,8 +1162,8 @@ trait Suite {
       throw new NullPointerException("includes was null")
     if (excludes == null)
       throw new NullPointerException("excludes was null")
-    if (properties == null)
-      throw new NullPointerException("properties was null")
+    if (goodies == null)
+      throw new NullPointerException("goodies was null")
 
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
     // so that exceptions are caught and transformed
@@ -1040,7 +1173,7 @@ trait Suite {
     // If a testName to execute is passed, just execute that, else execute the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopper, properties)
+      case Some(tn) => runTest(tn, wrappedReporter, stopper, goodies)
       case None => {
         for (tn <- testNames) {
           if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
@@ -1048,7 +1181,7 @@ trait Suite {
               wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
             }
             else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopper, properties)
+              runTest(tn, wrappedReporter, stopper, goodies)
             }
           }
         }
@@ -1063,8 +1196,8 @@ trait Suite {
    * calls these two methods on this object in this order:</p>
    *
    * <ol>
-   * <li><code>runNestedSuites(wrappedReporter, stopper, includes, excludes, properties, distributor)</code></li>
-   * <li><code>runTests(testName, wrappedReporter, stopper, includes, excludes, properties)</code></li>
+   * <li><code>runNestedSuites(wrappedReporter, stopper, includes, excludes, goodies, distributor)</code></li>
+   * <li><code>runTests(testName, wrappedReporter, stopper, includes, excludes, goodies)</code></li>
    * </ol>
    *
    * <p>
@@ -1078,7 +1211,7 @@ trait Suite {
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param includes a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Suite</code>
    * @param excludes a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Suite</code>
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
    *         
@@ -1086,7 +1219,7 @@ trait Suite {
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
   def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-              properties: Map[String, Any], distributor: Option[Distributor]) {
+              goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1098,18 +1231,18 @@ trait Suite {
       throw new NullPointerException("includes was null")
     if (excludes == null)
       throw new NullPointerException("excludes was null")
-    if (properties == null)
-      throw new NullPointerException("properties was null")
+    if (goodies == null)
+      throw new NullPointerException("goodies was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
     testName match {
-      case None => runNestedSuites(wrappedReporter, stopper, includes, excludes, properties, distributor)
+      case None => runNestedSuites(wrappedReporter, stopper, includes, excludes, goodies, distributor)
       case Some(_) =>
     }
-    runTests(testName, wrappedReporter, stopper, includes, excludes, properties)
+    runTests(testName, wrappedReporter, stopper, includes, excludes, goodies)
 
     if (stopper.stopRequested) {
       val rawString = Resources("executeStopping")
@@ -1174,7 +1307,7 @@ trait Suite {
    * @throws NullPointerException if <CODE>reporter</CODE> is <CODE>null</CODE>.
    */
   protected def runNestedSuites(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-                                    properties: Map[String, Any], distributor: Option[Distributor]) {
+                                    goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     if (reporter == null)
       throw new NullPointerException("reporter was null")
@@ -1184,8 +1317,8 @@ trait Suite {
       throw new NullPointerException("includes was null")
     if (excludes == null)
       throw new NullPointerException("excludes was null")
-    if (properties == null)
-      throw new NullPointerException("properties was null")
+    if (goodies == null)
+      throw new NullPointerException("goodies was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
 
@@ -1215,7 +1348,7 @@ trait Suite {
         wrappedReporter.suiteStarting(report)
 
         try {
-          nestedSuite.execute(None, wrappedReporter, stopper, includes, excludes, properties, distributor)
+          nestedSuite.execute(None, wrappedReporter, stopper, includes, excludes, goodies, distributor)
 
           val rawString = Resources("suiteCompletedNormally")
 

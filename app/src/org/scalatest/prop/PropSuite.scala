@@ -26,72 +26,79 @@ import org.scalacheck.Test
 import org.scalacheck.Test._
 
 /**
- * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code> &#8221;in <code>FunSuite</code> stands for functional.
- * Here's an example <code>FunSuite</code>:
- *
- * <pre>
- * import org.scalatest.fun.FunSuite
- *
- * class MySuite extends FunSuite {
- *
- *   test("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
- *
- *   test("subtraction") {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *     assert(diff - 2 === 1)
- *   }
- * }
- * </pre>
- *
- * <p>
- * &#8220;<code>test</code>&#8221; is a method defined in <code>FunSuite</code>, which will be invoked
- * by the primary constructor of <code>MySuite</code>. You specify the name of the test as
- * a string between the parentheses, and the test code itself between curly braces.
- * The test code is a function passed as a by-name parameter to <code>test</code>, which registers
- * it for later execution. One benefit of <code>FunSuite</code> compared to <code>Suite</code> is you need not name all your
- * tests starting with &#8220;<code>test</code>.&#8221; In addition, you can more easily give long names to
- * your tests, because you need not encode them in camel case, as you must do
- * with test methods.
- * </p>
+ * A <code>FunSuite</code> subtrait that provides methods that perform
+ * ScalaCheck property checks.
+ * If ScalaCheck finds a test case for which a property doesn't hold, the problem will be reported as a ScalaTest test failure.
  * 
  * <p>
- * <strong>Property-based tests</strong>
+ * To use ScalaCheck, you specify properties and, in some cases, generators that generate test data. You need not always
+ * create generators, because ScalaCheck provides many default generators for you that can be used in many situations.
+ * ScalaCheck will use the generators to generate test data and with that data run tests that check that the property holds.
+ * Property-based tests can, therefore, give you a lot more testing for a lot less code than assertion-based tests.
+ * Here's an example of using ScalaCheck from a <code>PropSuite</code>:
  * </p>
- * 
- * <p>
- * <code>FunSuite</code> makes it easy to combine assertion-based tests with property-based
- * tests using ScalaCheck. <code>FunSuite</code> mixes in trait <code>Checkers</code>, so you
- * can write property checks alongside assertion-based tests in your test functions:
- * </p>
- * <pre>
- * import org.scalatest.fun.FunSuite
  *
- * class MySuite extends FunSuite {
+ * <pre>
+ * import org.scalatest.prop.PropSuite
+ * import org.scalacheck.Arbitrary._
+ * import org.scalacheck.Prop._
+ *
+ * class MySuite extends PropSuite {
  *
  *   test("list concatenation") {
  * 
- *     val a = List(1, 2, 3)
- *     val b = List(4, 5, 6)
- *     assert(a ::: b === List(1, 2, 3, 4, 5, 6))
-
+ *     val x = List(1, 2, 3)
+ *     val y = List(4, 5, 6)
+ *     assert(x ::: y === List(1, 2, 3, 4, 5, 6))
+ *
  *     check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
  *   }
+ *
+ *   test(
+ *    "list concatenation using a test method",
+ *     (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
+ *   )
  * }
  * </pre>
  *
  * <p>
- * You can also register properties as tests, using "test". Here's an
- * example:
+ * <code>PropSuite</code> mixes in trait <code>Checkers</code>, so you can call any of its
+ * <code>check</code> methods inside a test function. This is shown in the first test:
  * </p>
  * <pre>
- * import org.scalatest.fun.FunSuite
+ * test("list concatenation") {
+ * 
+ *     val x = List(1, 2, 3)
+ *     val y = List(4, 5, 6)
+ *     assert(x ::: y === List(1, 2, 3, 4, 5, 6))
  *
- * class StringSuite extends FunSuite {
+ *   check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+ * }
+ * </pre>
+ *
+ * <p>
+ * The <code>check</code> methods provided by <code>Checkers</code> allow you to combine assertion- and property-based
+ * testing in the same test function. If you want to define a test that is composed only
+ * of a single property check, you can use one of several <code>test</code> methods
+ * <code>PropSuite</code> defines. These <code>test</code> methods allow you to
+ * register just a property as a test function. This is shown in the previous example
+ * in the second test:
+ *
+ * <pre>
+ * test(
+ *  "list concatenation using a test method",
+ *   (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
+ * )
+ * </pre>
+ *
+ * <p>
+ * Here are a few other examples:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.prop.PropSuite
+ *
+ * class StringSuite extends PropSuite {
  *
  *   test("startsWith", (a: String, b: String) => (a + b).startsWith(a))
  *
@@ -108,58 +115,6 @@ import org.scalacheck.Test._
  *   )
  * }
  * </pre>
- * 
- * <p>
- * <strong>Test fixtures</strong>
- * </p>
- * 
- * <p>
- * If you want to write tests that need the same mutable fixture objects, you can
- * extend one of the traits <code>FunSuite1</code> through <code>FunSuite9</code>. If you need three
- * fixture objects, for example, you would extend <code>FunSuite3</code>. Here's an example
- * that extends <code>FunSuite1</code>, to initialize a <code>StringBuilder</code> fixture object for each test:
- * </p>
- * 
- * <pre>
- * import org.scalatest.fun.FunSuite1
- *
- * class EasySuite extends FunSuite1[StringBuilder] {
- *
- *   testWithFixture("easy test") {
- *     sb => {
- *       sb.append("easy!")
- *       assert(sb.toString === "Testing is easy!")
- *     }
- *   }
- *
- *   testWithFixture("fun test") {
- *     sb => {
- *       sb.append("fun!")
- *       assert(sb.toString === "Testing is fun!")
- *     }
- *   }
- *
- *   def withFixture(f: StringBuilder => Unit) {
- *     val sb = new StringBuilder("Testing is ")
- *     f(sb)
- *   }
- * }
- * </pre>
- * 
- * <p>
- * In the class declaration of this example, <code>FunSuite1</code> is parameterized with the type of the
- * lone fixture object, <code>StringBuilder</code>. Two tests are defined with
- * <code>testWithFixture</code>. The function values provided here take the fixture object,
- * a <code>StringBuilder</code>, as a parameter and use it in the test code. Note that
- * the fixture object, referenced by <code>sb</code>, is mutated by both tests with the call to <code>append</code>. Lastly, a <code>withFixture</code>
- * method is provided that takes a test function. This method creates a new <code>StringBuilder</code>,
- * initializes it to <code>"Testing is "</code>, and passes it to the test function.
- * When ScalaTest runs this suite, it will pass each test function to <code>withFixture</code>.
- * The <code>withFixture</code> method will create and initialize a new <code>StringBuilder</code> object and
- * pass that to the test function. In this way, each test function will get a fresh copy
- * of the fixture. For more information on using <code>FunSuite</code>s with fixtures, see the documentation
- * for <code>FunSuite1</code> through <code>FunSuite9</code>.
- * </p>
  *
  * <p>
  * <strong>Test groups</strong>
