@@ -70,3 +70,61 @@ class TransferStory extends Story("transfer from savings to checking account") {
     and("my checking account balance should be $10")
   }
 }
+
+// What I could do is have a tool in org.scalatest.tools that
+// translates a bare text story, like they have on the rSpec site
+// into a class that has pendingScenarios. Then all that's needed
+// is for someone to fill in the missing code and change
+// "pendingScenario" to "scenario".
+// The other thing we can show is that properties may make for a nice
+// way to write these scenarios and execute them
+
+Story: transfer from savings to checking account
+  As a savings account holder
+  I want to transfer money from my savings account to my checking account
+  So that I can get cash easily from an ATM
+
+  Scenario: savings account has sufficient funds
+    Given my savings account balance is s, where s >= 0
+    And my checking account balance is c, where c >= 0
+    When I transfer t, where t >= 0 and t <= s, from savings to checking
+    Then my savings account balance should be s - t
+    And my checking account balance should be c + t
+
+  Scenario: savings account has insufficient funds
+    Given my savings account balance is s, where s >= 0
+    And my checking account balance is c, where c >= 0
+    When I transfer t, where t >= 0 and t > s, from savings to checking
+    Then my savings account balance should be s
+    And my checking account balance should be c
+
+Then from that we can write properties
+
+So a Story and a PropStory.
+
+Could just require people to do with methods or create methods.
+
+  scenario("savings account has insufficient funds") {
+    withSavingsAndChecking {
+      (savings, checking) => {
+        given("my savings account balance is $50")
+        and("my checking account balance is $10")
+        when("I transfer $60 from savings to checking")
+        then("my savings account balance should be $50")
+        and("my checking account balance should be $10")
+      }
+    }
+  }
+
+or
+
+  scenario("savings account has insufficient funds") {
+    val (savings, checking) = createSavingsAndChecking
+    given("my savings account balance is $50")
+    and("my checking account balance is $10")
+    when("I transfer $60 from savings to checking")
+    then("my savings account balance should be $50")
+    and("my checking account balance should be $10")
+  }
+
+Then not give them an ImpStory and ImpSpec unless they scream.
