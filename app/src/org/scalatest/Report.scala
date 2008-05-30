@@ -61,8 +61,8 @@ import java.util.Date
  * @author Bill Venners
  */
 @serializable
-case class Report(name: String, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable],
-    threadName: String, date: Date) {
+class Report(val name: String, val message: String, val throwable: Option[Throwable], val rerunnable: Option[Rerunnable],
+    val threadName: String, val date: Date) {
 
   if (name == null)
     throw new NullPointerException("name was null")
