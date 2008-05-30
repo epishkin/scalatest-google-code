@@ -375,7 +375,9 @@ trait PropSuite extends FunSuite with Checkers {
   }
 
   /**
-   * Register to ignore a test that converts the passed 1-arg function into a property.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that converts the passed 1-arg function into a property and checks
+   * it.
    *
    * @param f the function to be converted into a property and checked
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
@@ -389,7 +391,9 @@ trait PropSuite extends FunSuite with Checkers {
   }
 
   /**
-   * Convert the passed 2-arg function into a property, and register it as a test.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that converts the passed 2-arg function into a property and checks
+   * it.
    *
    * @param f the function to be converted into a property and checked
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
@@ -404,7 +408,9 @@ trait PropSuite extends FunSuite with Checkers {
   }
 
   /**
-   * Convert the passed 3-arg function into a property, and register it as a test.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that converts the passed 3-arg function into a property and checks
+   * it.
    *
    * @param f the function to be converted into a property and checked
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
@@ -420,7 +426,9 @@ trait PropSuite extends FunSuite with Checkers {
   }
 
   /**
-   * Convert the passed 4-arg function into a property, and register it as a test.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that converts the passed 4-arg function into a property and checks
+   * it.
    *
    * @param f the function to be converted into a property and checked
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
@@ -437,7 +445,9 @@ trait PropSuite extends FunSuite with Checkers {
   }
 
   /**
-   * Convert the passed 5-arg function into a property, and register it as a test.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that converts the passed 5-arg function into a property and checks
+   * it.
    *
    * @param f the function to be converted into a property and checked
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
@@ -455,7 +465,9 @@ trait PropSuite extends FunSuite with Checkers {
   }
 
   /**
-   * Convert the passed 6-arg function into a property, and register it as a test.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that converts the passed 6-arg function into a property and checks
+   * it.
    *
    * @param f the function to be converted into a property and checked
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
@@ -475,7 +487,8 @@ trait PropSuite extends FunSuite with Checkers {
 
 
   /**
-   * Register as a test a property with the given testing parameters.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that tests the specified property with the specified testing parameters.
    *
    * @param p the property to check
    * @param prms the test parameters
@@ -488,7 +501,8 @@ trait PropSuite extends FunSuite with Checkers {
   }
 
   /**
-   * Register a property as a test.
+   * Register a test to ignore, which has the specified name, optional groups, and
+   * function value that tests the specified property.
    *
    * @param p the property to check
    * @throws AssertionError if a test case is discovered for which the property doesn't hold.
