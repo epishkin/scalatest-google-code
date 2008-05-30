@@ -1,0 +1,72 @@
+import org.scalatest._
+
+class Story extends Suite {
+  private var theScenario: () => Unit = _
+  // This could be thread local just in case
+  private var currentReporter: Reporter = new Reporter {}
+  protected def given(s: String) = {
+    val report = new Report("given", s)
+    currentReporter.infoProvided(report)
+  }
+  protected def when(s: String) = {
+    val report = new Report("when", s)
+    currentReporter.infoProvided(report)
+  }
+  protected def then(s: String) = {
+    val report = new Report("then", s)
+    currentReporter.infoProvided(report)
+  }
+  protected def and(s: String) = {
+    val report = new Report("and", s)
+    currentReporter.infoProvided(report)
+  }
+  protected def scenario(s: String)(f: => Unit) {
+    println("Executing scenario: " + s)
+    theScenario = f _
+  }
+  def runScenario() = {
+    currentReporter = new Reporter {
+      override def infoProvided(report: Report) {
+        println(report.name + ": " + report.message)
+      }
+    }
+    theScenario()
+  }
+}
+
+class MyStory extends Story {
+
+  scenario("The first scenario") {
+    given("something that's given")
+    // do some code
+    when("something else happens")
+    // some more code
+    and("something still more happens")
+    // more code
+    then("something must be true")
+    // the actual assertion
+  }
+}
+
+class TransferStory extends Story("transfer from savings to checking account") {
+
+  info("As a savings account holder")
+  info("I want to transfer money from my savings account to my checking account")
+  info("So that I can get cash easily from an ATM")
+
+  pendingScenario("savings account has sufficient funds") {
+    given("my savings account balance is $100")
+    and("my checking account balance is $10")
+    when("I transfer $20 from savings to checking")
+    then("my savings account balance should be $80")
+    and("my checking account balance should be $30")
+  }
+
+  pendingScenario("savings account has insufficient funds") {
+    given("my savings account balance is $50")
+    and("my checking account balance is $10")
+    when("I transfer $60 from savings to checking")
+    then("my savings account balance should be $50")
+    and("my checking account balance should be $10")
+  }
+}
