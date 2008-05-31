@@ -524,15 +524,26 @@ trait FunSuite extends Suite {
   // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
   // If two threads ever called test at the same time, they could get a ConcurrentModificationException.
   // Test names are in reverse order of test registration method invocations
-  private class Bundle private(val testNamesList: List[String], val testsMap: Map[String, Test], val groupsMap: Map[String, Set[String]]) {
-    def unpack = (testNamesList, testsMap, groupsMap)
+  private class Bundle private(
+    val testNamesList: List[String],
+    val testsMap: Map[String, Test],
+    val groupsMap: Map[String, Set[String]],
+    val executeHasBeenInvoked: Boolean
+  ) {
+    def unpack = (testNamesList, testsMap, groupsMap, executeHasBeenInvoked)
   }
+  
   private object Bundle {
-    def apply(testNamesList: List[String], testsMap: Map[String, Test], groupsMap: Map[String, Set[String]]): Bundle =
-      new Bundle(testNamesList, testsMap, groupsMap)
+    def apply(
+      testNamesList: List[String],
+      testsMap: Map[String, Test],
+      groupsMap: Map[String, Set[String]],
+      executeHasBeenInvoked: Boolean
+    ): Bundle =
+      new Bundle(testNamesList, testsMap, groupsMap, executeHasBeenInvoked)
   }
 
-  private val atomic = new AtomicReference[Bundle](Bundle(Nil, Map(), Map()))
+  private val atomic = new AtomicReference[Bundle](Bundle(Nil, Map(), Map(), false))
 
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
     if (!atomic.compareAndSet(oldBundle, newBundle))
@@ -550,8 +561,11 @@ trait FunSuite extends Suite {
   protected def test(testName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
-    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
-
+    var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+ 
+    if (executeHasBeenInvoked)
+      throw new IllegalStateException("You cannot register a test  on a FunSuite after execute has been invoked.")
+    
     require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
 
     testsMap += (testName -> PlainOldTest(testName, f _))
@@ -560,7 +574,7 @@ trait FunSuite extends Suite {
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
-    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, executeHasBeenInvoked))
   }
 
   /**
@@ -575,8 +589,11 @@ trait FunSuite extends Suite {
   protected def testGivenReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
 
     val oldBundle = atomic.get
-    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+    var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
 
+    if (executeHasBeenInvoked)
+      throw new IllegalStateException("You cannot register a test  on a FunSuite after execute has been invoked.")
+    
     require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
 
     testsMap += (testName -> ReporterTest(testName, f))
@@ -585,7 +602,7 @@ trait FunSuite extends Suite {
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
-    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, executeHasBeenInvoked))
   }
 
   /**
@@ -603,12 +620,12 @@ trait FunSuite extends Suite {
     test(testName)(f) // Call test without passing the groups
 
     val oldBundle = atomic.get
-    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+    var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
 
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
-    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, executeHasBeenInvoked))
   }
 
   /**
@@ -626,12 +643,12 @@ trait FunSuite extends Suite {
     testGivenReporter(testName)(f) // Call testGivenReporter without passing the groups
 
     val oldBundle = atomic.get
-    var (testNamesList, testsMap, groupsMap) = oldBundle.unpack
+    var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
 
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
-    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap))
+    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, executeHasBeenInvoked))
   }
 
   /**
@@ -721,5 +738,18 @@ trait FunSuite extends Suite {
       throw new NullPointerException("testName was null")
 
     suiteName + ": " + testName
+  }
+  
+  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+      goodies: Map[String, Any], distributor: Option[Distributor]) {
+
+    // Set the flag that indicates execute has been invoked, which will disallow any further
+    // invocations of "test" with an IllegalStateException.
+    val oldBundle = atomic.get
+    val (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+    if (!executeHasBeenInvoked)
+      updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, true))
+    
+    super.execute(testName, reporter, stopper, includes, excludes, goodies, distributor)
   }
 }
