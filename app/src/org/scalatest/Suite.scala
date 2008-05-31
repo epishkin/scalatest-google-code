@@ -246,6 +246,104 @@ import scala.collection.immutable.TreeSet
  * </p>
  *
  * <p>
+ * <strong>Using other assertions</strong>
+ * </p>
+ *
+ * <p>
+ * If you are comfortable with assertion mechanisms from other test frameworks, chances
+ * are you can use them with ScalaTest. Any assertion mechanism that indicates a failure with an exception
+ * can be used as is with ScalaTest. For example, to use the <code>assertEquals</code>
+ * methods provided by JUnit or TestNG, simply import them and use them. (You will of course need
+ * to include the relevant JAR file for the framework whose assertions you want to use on either the
+ * classpath or runpath when you run your tests.) Here's an example in which JUnit's assertions are
+ * imported, then used within a ScalaTest suite:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Suite
+ * import org.junit.Assert._
+ *
+ * class MySuite extends Suite {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assertEquals(2, sum)
+ *     assertEquals(4, sum + 2)
+ *   }
+ *
+ *   def testSubtraction() {
+ *     val diff = 4 - 1
+ *     assertEquals(3, diff)
+ *     assertEquals(1, diff - 2)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Alternatively, you might prefer the more English-like look and more detailed error messages 
+ * provided by <a href="http://code.google.com/p/hamcrest/"><em>Hamcrest matchers</em></a>. As with
+ * JUnit or TestNG assertions, you can use these in ScalaTest suites simply by importing them and
+ * using them. Here's an example:
+ * </p>
+ * 
+ * <pre>
+ * import org.scalatest.Suite
+ * import org.hamcrest.Matchers._
+ * import org.hamcrest.MatcherAssert.assertThat
+ *
+ * class MySuite extends Suite {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assertThat(sum, is(2))
+ *     assertThat(sum + 2, is(4))
+ *   }
+ *
+ *   def testSubtraction() {
+ *     val diff = 4 - 1
+ *     assertThat(diff, is(3))
+ *     assertThat(diff - 2, is(1))
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * You will, of course, need to include the Hamcrest jar file
+ * in your class or run path when you run your ScalaTest suites that use Hamcrest matchers.
+ * </p>
+ * 
+ * <p>
+ * You may instead prefer to use the matchers provided by the <a href="http://code.google.com/p/specs/">specs framework</a>, which take greater
+ * advantage of Scala than Hamcrest matchers, since specs is written in Scala. (The Hamcrest library is written in Java.)
+ * To use specs matchers, simply mix in trait <code>org.specs.SpecsMatchers</code> into your ScalaTest suite. Here's an example:
+ * </p>
+ * 
+ * <pre>
+ * import org.scalatest.Suite
+ * import org.specs.SpecsMatchers
+ *
+ * class MySuite extends Suite with SpecsMatchers {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     sum mustBe 2
+ *     sum + 2 mustBe 4
+ *   }
+ *
+ *   def testSubtraction() {
+ *     val diff = 4 - 1
+ *     diff mustBe 3
+ *     diff - 2 mustBe 1
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * The <code>SpecsMatchers</code> trait was added to specs version 1.2.8. You will, of course, need to include the specs jar file
+ * in your class or run path when you run your ScalaTest suites that use specs matchers.
+ * </p>
+ * 
+ * <p>
  * <strong>Nested suites</strong>
  * </p>
  *
