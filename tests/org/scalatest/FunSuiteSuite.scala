@@ -549,5 +549,29 @@ class FunSuiteSuite extends Suite {
       }
     }
   }
+  
+  def testThatIfYouCallTestAfterExecuteYouGetAnIllegalStateExceptionAndTheTestDoesntRun() {
+    class MySuite extends FunSuite {
+      var fromMethodTestExecuted = false
+      var fromConstructorTestExecuted = false
+      test("from constructor") {
+        fromConstructorTestExecuted = true
+      }
+      def registerOne() {
+        test("from method") {
+          fromMethodTestExecuted = true
+        }
+      }
+    }
+    val a = new MySuite
+    a.execute()
+    assert(a.fromConstructorTestExecuted)
+    assert(!a.fromMethodTestExecuted)
+    intercept(classOf[IllegalStateException]) {
+      a.registerOne()
+    }
+    a.execute()
+    assert(!a.fromMethodTestExecuted)
+  }
 }
 
