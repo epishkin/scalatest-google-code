@@ -544,66 +544,11 @@ trait FunSuite extends Suite {
   }
 
   private val atomic = new AtomicReference[Bundle](Bundle(Nil, Map(), Map(), false))
-/*
-  private val complainReporter =
-    new Reporter {
-      private val complaint = "You can only use reporter during the execution of a FunSuite."
-      override def runStarting(testCount: Int) {
-        throw new IllegalStateException(complaint)
-      }
-      override def testStarting(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def testSucceeded(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def testFailed(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def testIgnored(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def suiteStarting(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def infoProvided(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def suiteCompleted(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def suiteAborted(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def runStopped() {
-        throw new IllegalStateException(complaint)
-      }
-      override def runAborted(report: Report) {
-        throw new IllegalStateException(complaint)
-      }
-      override def runCompleted() {
-        throw new IllegalStateException(complaint)
-      }
-      override def dispose() {
-        throw new IllegalStateException(complaint)
-      }
-    }
-  
-  private val atomicReporter = new AtomicReference[Reporter](complainReporter)
-*/
+
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
     if (!atomic.compareAndSet(oldBundle, newBundle))
       throw new ConcurrentModificationException
   }
-
-  /*
-   * I'm going to continue with the testWithReporter approach for a while. Otherwise it
-   * gets even harder to say the Fun in FunSuite stands for functional. It's quite rare I
-   * expect that people doing this style of testing will want to write to the reporter.
-   * Get the reporter passed to execute. This method can only be used during the execution
-   * of a <code>FunSuite</code>.
-  protected def reporter: Reporter = artimaReporter.get
-   */
   
   /**
    * Register a test with the specified name, optional groups, and function value that takes no arguments.
