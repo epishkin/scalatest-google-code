@@ -740,7 +740,7 @@ import scala.collection.immutable.TreeSet
  * </p>
  *
  * <p>
- * <strong>Reporters</strong>
+ * <strong>Informers</strong>
  * </p>
  *
  * <p>
@@ -750,8 +750,9 @@ import scala.collection.immutable.TreeSet
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
  * Most often the reporting done by default by <code>Suite</code>'s methods will be sufficient, but
  * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test method.
- * For this purpose, you can optionally include a <code>Reporter</code> parameter in a test method, and then
- * pass the extra information to the <code>Reporter</code>'s <code>infoProvided</code> method.
+ * For this purpose, you can optionally include an <code>Informer</code> parameter in a test method, and then
+ * pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods. The <code>Informer</code>
+ * will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
  * Here's an example:
  * </p>
  *
@@ -759,11 +760,9 @@ import scala.collection.immutable.TreeSet
  * import org.scalatest._
  * 
  * class MySuite extends Suite {
- *   def testAddition(reporter: Reporter) {
+ *   def testAddition(info: Informer) {
  *     assert(1 + 1 === 2)
- *     val report =
- *       new Report("MySuite.testAddition(Reporter)", "Addition seems to work")
- *     reporter.infoProvided(report)
+ *     info("Addition seems to work")
  *   }
  * }
  * </pre>
@@ -851,7 +850,7 @@ import scala.collection.immutable.TreeSet
 trait Suite {
 
   private val TestMethodPrefix = "test"
-  private val ReporterInParens = "(Reporter)"
+  private val InformerInParens = "(Informer)"
   private val IgnoreAnnotation = "org.scalatest.Ignore"
 
     /*
@@ -952,18 +951,18 @@ trait Suite {
   *
   * <p>
   * This trait's implementation of this method uses Java reflection to discover all public methods whose name starts with <code>"test"</code>,
-  * which take either nothing or a single <code>Reporter</code> as parameters. For each discovered test method, it assigns a test name
-  * comprised of just the method name if the method takes no parameters, or the method name plus <code>(Reporter)</code> if the
-  * method takes a <code>Reporter</code>. Here are a few method signatures and the names that this trait's implementation assigns them:
+  * which take either nothing or a single <code>Informer</code> as parameters. For each discovered test method, it assigns a test name
+  * comprised of just the method name if the method takes no parameters, or the method name plus <code>(Informer)</code> if the
+  * method takes a <code>Informer</code>. Here are a few method signatures and the names that this trait's implementation assigns them:
   * </p>
   *
   * <pre>
   * def testCat() {}         // test name: "testCat"
-  * def testCat(Reporter) {} // test name: "testCat(Reporter)"
+  * def testCat(Informer) {} // test name: "testCat(Informer)"
   * def testDog() {}         // test name: "testDog"
-  * def testDog(Reporter) {} // test name: "testDog(Reporter)"
+  * def testDog(Informer) {} // test name: "testDog(Informer)"
   * def test() {}            // test name: "test"
-  * def test(Reporter) {}    // test name: "test(Reporter)"
+  * def test(Informer) {}    // test name: "test(Informer)"
   * </pre>
   *
   * <p>
@@ -991,9 +990,9 @@ trait Suite {
   */
   def testNames: Set[String] = {
 
-    def takesReporter(m: Method) = {
+    def takesInformer(m: Method) = {
       val paramTypes = m.getParameterTypes
-      paramTypes.length == 1 && classOf[Reporter].isAssignableFrom(paramTypes(0))
+      paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
     }
 
     def isTestMethod(m: Method) = {
@@ -1009,26 +1008,26 @@ trait Suite {
 
       val isTestNames = simpleName == "testNames"
 
-      isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesReporter(m))
+      isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesInformer(m))
     }
 
     val testNameArray =
       for (m <- getClass.getMethods; if isTestMethod(m)) 
-        yield if (takesReporter(m)) m.getName + ReporterInParens else m.getName
+        yield if (takesInformer(m)) m.getName + InformerInParens else m.getName
 
     TreeSet[String]() ++ testNameArray
   }
 
   private def simpleNameForTest(testName: String) = 
-    if (testName.endsWith(ReporterInParens))
-      testName.substring(0, testName.length - ReporterInParens.length)
+    if (testName.endsWith(InformerInParens))
+      testName.substring(0, testName.length - InformerInParens.length)
     else
       testName
 
-  private def testMethodTakesReporter(testName: String) = testName.endsWith(ReporterInParens)
+  private def testMethodTakesInformer(testName: String) = testName.endsWith(InformerInParens)
 
   private def getMethodForTestName(testName: String) = getClass.getMethod(simpleNameForTest(testName),
-                                                         if (testMethodTakesReporter(testName)) Array(classOf[Reporter]) else Array())
+                                                         if (testMethodTakesInformer(testName)) Array(classOf[Informer]) else Array())
 
   /**
    * Run a test. This trait's implementation uses Java reflection to invoke on this object the test method identified by the passed <code>testName</code>.
@@ -1065,7 +1064,22 @@ trait Suite {
 
     wrappedReporter.testStarting(report)
 
-    val args: Array[Object] = if (testMethodTakesReporter(testName)) Array(reporter) else Array()
+    val args: Array[Object] =
+      if (testMethodTakesInformer(testName)) {
+        val informer =
+          new Informer {
+            val nameForReport: String = getTestNameForReport(testName)
+            def apply(report: Report) {
+              wrappedReporter.infoProvided(report)
+            }
+            def apply(message: String) {
+              val report = new Report(nameForReport, message)
+              wrappedReporter.infoProvided(report)
+            }
+          }
+        Array(informer)  
+      }
+      else Array()
 
     try {
       method.invoke(this, args)

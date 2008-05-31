@@ -462,7 +462,7 @@ abstract class Group(val name: String)
  * </p>
  *
  * <p>
- * <strong>Reporters</strong>
+ * <strong>Informers</strong>
  * </p>
  *
  * <p>
@@ -472,25 +472,25 @@ abstract class Group(val name: String)
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
  * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
  * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
- * For this purpose, you can optionally register a test with a function value that takes a <code>Reporter</code> parameter via the &#8220;<code>...GivenReporter</code>
+ * For this purpose, you can optionally register a test with a function value that takes an <code>Informer</code> parameter via
+ * the &#8220;<code>...WithInformer</code>
  * variants of the test registration methods. You can then
- * pass extra information to the <code>Reporter</code>'s <code>infoProvided</code> method in the body of the test functions.
+ * pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods. The <code>Informer</code>
+ * will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
  * Here's an example:
  * </p>
  *
  * <pre>
  * import org.scalatest.FunSuite
- * import org.scalatest.Report
  *
  * class MySuite extends FunSuite {
  *
- *   testGivenReporter("addition") {
- *     reporter => {
+ *   testWithInformer("addition") {
+ *     info => {
  *       val sum = 1 + 1
  *       assert(sum === 2)
  *       assert(sum + 2 === 4)
- *       val report = new Report("MySuite.addition", "Addition seems to work")
- *       reporter.infoProvided(report)
+ *       info("Addition seems to work")
  *     }
  *   }
  * }
@@ -513,14 +513,14 @@ trait FunSuite extends Suite {
 
   private trait Test
   private case class PlainOldTest(testName: String, f: () => Unit) extends Test
-  private case class ReporterTest(testName: String, f: (Reporter) => Unit) extends Test
+  private case class InformerTest(testName: String, f: (Informer) => Unit) extends Test
 
   // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
   // by execute. When running tests concurrently with ScalaTest Runner, different threads can
   // instantiate and execute the Suite. Instead of synchronizing, I put them in an immutable Bundle object (and
   // all three collections--testNamesList, testsMap, and groupsMap--are immuable collections), then I put the Bundle
-  // in an AtomicReference. Since the expected use case is the test, testGivenReporter, etc., methods will be called
+  // in an AtomicReference. Since the expected use case is the test, testWithInformer, etc., methods will be called
   // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
   // If two threads ever called test at the same time, they could get a ConcurrentModificationException.
   // Test names are in reverse order of test registration method invocations
@@ -544,12 +544,67 @@ trait FunSuite extends Suite {
   }
 
   private val atomic = new AtomicReference[Bundle](Bundle(Nil, Map(), Map(), false))
-
+/*
+  private val complainReporter =
+    new Reporter {
+      private val complaint = "You can only use reporter during the execution of a FunSuite."
+      override def runStarting(testCount: Int) {
+        throw new IllegalStateException(complaint)
+      }
+      override def testStarting(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def testSucceeded(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def testFailed(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def testIgnored(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def suiteStarting(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def infoProvided(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def suiteCompleted(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def suiteAborted(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def runStopped() {
+        throw new IllegalStateException(complaint)
+      }
+      override def runAborted(report: Report) {
+        throw new IllegalStateException(complaint)
+      }
+      override def runCompleted() {
+        throw new IllegalStateException(complaint)
+      }
+      override def dispose() {
+        throw new IllegalStateException(complaint)
+      }
+    }
+  
+  private val atomicReporter = new AtomicReference[Reporter](complainReporter)
+*/
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
     if (!atomic.compareAndSet(oldBundle, newBundle))
       throw new ConcurrentModificationException
   }
 
+  /*
+   * I'm going to continue with the testWithReporter approach for a while. Otherwise it
+   * gets even harder to say the Fun in FunSuite stands for functional. It's quite rare I
+   * expect that people doing this style of testing will want to write to the reporter.
+   * Get the reporter passed to execute. This method can only be used during the execution
+   * of a <code>FunSuite</code>.
+  protected def reporter: Reporter = artimaReporter.get
+   */
+  
   /**
    * Register a test with the specified name, optional groups, and function value that takes no arguments.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
@@ -578,15 +633,16 @@ trait FunSuite extends Suite {
   }
 
   /**
-   * Register a test with the specified name, optional groups, and function value that takes a <code>Reporter</code>.
+   * Register a test with the specified name, optional groups, and function value that takes an <code>Informer</code>.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The <code>Reporter</code> passed to <code>execute</code>, or a <code>Reporter</code> that wraps it, will be passed to the function value.
+   * methods. The <code>Informer</code> passed to the function value will be able to forward messages and reports provided via its <code>code</code>
+   * methods to the <code>Reporter</code> passed to <code>execute</code>. 
    * The passed test name must not have been registered previously on
    * this <code>FunSuite</code> instance.
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def testGivenReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
+  protected def testWithInformer(testName: String, testGroups: Group*)(f: (Informer) => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
@@ -596,7 +652,7 @@ trait FunSuite extends Suite {
     
     require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
 
-    testsMap += (testName -> ReporterTest(testName, f))
+    testsMap += (testName -> InformerTest(testName, f))
     testNamesList ::= testName
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
@@ -629,18 +685,18 @@ trait FunSuite extends Suite {
   }
 
   /**
-   * Register a test to ignore, which has the specified name, optional groups, and function value that takes a <code>Reporter</code>.
+   * Register a test to ignore, which has the specified name, optional groups, and function value that takes a <code>Informer</code>.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>testGivenReporter</code>
-   * to <code>ignoreGivenReporter</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>testWithInformer</code>
+   * to <code>ignoreWithInformer</code> without deleting or commenting out the actual test code. The test will not be executed, but a
    * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
    * this <code>FunSuite</code> instance.
    *
    * @throws IllegalArgumentException if <code>testName</code> had been registered previously
    */
-  protected def ignoreGivenReporter(testName: String, testGroups: Group*)(f: (Reporter) => Unit) {
+  protected def ignoreWithInformer(testName: String, testGroups: Group*)(f: (Informer) => Unit) {
 
-    testGivenReporter(testName)(f) // Call testGivenReporter without passing the groups
+    testWithInformer(testName)(f) // Call testWithInformer without passing the groups
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
@@ -690,7 +746,20 @@ trait FunSuite extends Suite {
 
       atomic.get.testsMap(testName) match {
         case PlainOldTest(testName, f) => f()
-        case ReporterTest(testName, f) => f(wrappedReporter)
+        case InformerTest(testName, f) => {
+          val informer =
+            new Informer {
+              val nameForReport: String = getTestNameForReport(testName)
+              def apply(report: Report) {
+                wrappedReporter.infoProvided(report)
+              }
+              def apply(message: String) {
+                val report = new Report(nameForReport, message)
+                wrappedReporter.infoProvided(report)
+              }
+            }
+          f(informer)
+        }
       }
 
       val report = new Report(getTestNameForReport(testName), "")
@@ -727,7 +796,7 @@ trait FunSuite extends Suite {
    *
    * <p>
    * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
-   * methods <code>test</code>, <code>testGivenReporter</code>, <code>ignore</code>, and <code>ignoreGivenReporter</code>. 
+   * methods <code>test</code>, <code>testWithInformer</code>, <code>ignore</code>, and <code>ignoreWithInformer</code>. 
    * </p>
    */
   override def groups: Map[String, Set[String]] = atomic.get.groupsMap

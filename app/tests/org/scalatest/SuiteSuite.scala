@@ -31,8 +31,8 @@ class SuiteSuite extends Suite {
   def testSimpleNameForTest() {
     val s = new SuiteFriend(new Suite {})
     assert(s.simpleNameForTest("testThis") === "testThis")
-    assert(s.simpleNameForTest("testThis(Reporter)") === "testThis")
-    assert(s.simpleNameForTest("test(Reporter)") === "test")
+    assert(s.simpleNameForTest("testThis(Informer)") === "testThis")
+    assert(s.simpleNameForTest("test(Informer)") === "test")
     assert(s.simpleNameForTest("test") === "test")
   }
 
@@ -40,9 +40,9 @@ class SuiteSuite extends Suite {
 
     val a = new Suite {
       def testThis() = ()
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
-    assert(a.testNames === TreeSet("testThat(Reporter)", "testThis"))
+    assert(a.testNames === TreeSet("testThat(Informer)", "testThis"))
 
     val b = new Suite {}
     assert(b.testNames === TreeSet[String]())
@@ -53,7 +53,7 @@ class SuiteSuite extends Suite {
     val a = new Suite {
       @Ignore
       def testThis() = ()
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
 
     assert(a.groups === Map("testThis" -> Set("org.scalatest.Ignore")))
@@ -61,29 +61,29 @@ class SuiteSuite extends Suite {
     val b = new Suite {
       def testThis() = ()
       @Ignore
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
 
-    assert(b.groups === Map("testThat(Reporter)" -> Set("org.scalatest.Ignore")))
+    assert(b.groups === Map("testThat(Informer)" -> Set("org.scalatest.Ignore")))
 
     val c = new Suite {
       @Ignore
       def testThis() = ()
       @Ignore
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
 
-    assert(c.groups === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat(Reporter)" -> Set("org.scalatest.Ignore")))
+    assert(c.groups === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat(Informer)" -> Set("org.scalatest.Ignore")))
 
     val d = new Suite {
       @SlowAsMolasses
       def testThis() = ()
       @SlowAsMolasses
       @Ignore
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
 
-    assert(d.groups === Map("testThis" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Reporter)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
+    assert(d.groups === Map("testThis" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
 
     val e = new Suite {}
     assert(e.groups === Map())
@@ -124,7 +124,7 @@ class SuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       def testThis() { theTestThisCalled = true }
-      def testThat(reporter: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
 
     val repA = new MyReporter
@@ -138,7 +138,7 @@ class SuiteSuite extends Suite {
       var theTestThatCalled = false
       @Ignore
       def testThis() { theTestThisCalled = true }
-      def testThat(reporter: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
 
     val repB = new MyReporter
@@ -153,13 +153,13 @@ class SuiteSuite extends Suite {
       var theTestThatCalled = false
       def testThis() { theTestThisCalled = true }
       @Ignore
-      def testThat(reporter: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
 
     val repC = new MyReporter
     c.execute(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repC.testIgnoredCalled)
-    assert(repC.lastReport.name endsWith "testThat(Reporter)", repC.lastReport.name)
+    assert(repC.lastReport.name endsWith "testThat(Informer)", repC.lastReport.name)
     assert(c.theTestThisCalled)
     assert(!c.theTestThatCalled)
 
@@ -169,7 +169,7 @@ class SuiteSuite extends Suite {
       @Ignore
       def testThis() { theTestThisCalled = true }
       @Ignore
-      def testThat(reporter: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
 
     val repD = new MyReporter
@@ -187,7 +187,7 @@ class SuiteSuite extends Suite {
       var theTestThatCalled = false
       @Ignore
       def testThis() { theTestThisCalled = true }
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
 
     val repE = new MyReporter
@@ -203,7 +203,7 @@ class SuiteSuite extends Suite {
       var theTestThatCalled = false
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repA = new MyReporter
     a.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
@@ -216,7 +216,7 @@ class SuiteSuite extends Suite {
       var theTestThatCalled = false
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repB = new MyReporter
     b.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
@@ -230,7 +230,7 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repC = new MyReporter
     c.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
@@ -245,7 +245,7 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repD = new MyReporter
     d.execute(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None)
@@ -261,8 +261,8 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
-      def testTheOther(report: Reporter) { theTestTheOtherCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
+      def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repE = new MyReporter
     e.execute(None, repE, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
@@ -281,8 +281,8 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
-      def testTheOther(report: Reporter) { theTestTheOtherCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
+      def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repF = new MyReporter
     f.execute(None, repF, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
@@ -300,9 +300,9 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
       @Ignore
-      def testTheOther(report: Reporter) { theTestTheOtherCalled = true }
+      def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repG = new MyReporter
     g.execute(None, repG, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
@@ -320,8 +320,8 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
-      def testTheOther(report: Reporter) { theTestTheOtherCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
+      def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repH = new MyReporter
     h.execute(None, repH, new Stopper {}, Set(), Set("org.scalatest.FastAsLight"), Map(), None)
@@ -338,8 +338,8 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() { theTestThisCalled = true }
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
-      def testTheOther(report: Reporter) { theTestTheOtherCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
+      def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repI = new MyReporter
     i.execute(None, repI, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
@@ -358,8 +358,8 @@ class SuiteSuite extends Suite {
       def testThis() { theTestThisCalled = true }
       @Ignore
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
-      def testTheOther(report: Reporter) { theTestTheOtherCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
+      def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repJ = new MyReporter
     j.execute(None, repJ, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
@@ -378,9 +378,9 @@ class SuiteSuite extends Suite {
       def testThis() { theTestThisCalled = true }
       @Ignore
       @SlowAsMolasses
-      def testThat(report: Reporter) { theTestThatCalled = true }
+      def testThat(info: Informer) { theTestThatCalled = true }
       @Ignore
-      def testTheOther(report: Reporter) { theTestTheOtherCalled = true }
+      def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repK = new MyReporter
     k.execute(None, repK, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None)
@@ -394,21 +394,21 @@ class SuiteSuite extends Suite {
 
     val a = new Suite {
       def testThis() = ()
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
 
     val b = new Suite {
       @Ignore
       def testThis() = ()
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
     assert(b.expectedTestCount(Set(), Set()) === 1)
 
     val c = new Suite {
       @FastAsLight
       def testThis() = ()
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
     }
     assert(c.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
     assert(c.expectedTestCount(Set(), Set("org.scalatest.FastAsLight")) === 1)
@@ -418,8 +418,8 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() = ()
       @SlowAsMolasses
-      def testThat(reporter: Reporter) = ()
-      def testTheOtherThing(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
+      def testTheOtherThing(info: Informer) = ()
     }
     assert(d.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
     assert(d.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
@@ -431,9 +431,9 @@ class SuiteSuite extends Suite {
       @SlowAsMolasses
       def testThis() = ()
       @SlowAsMolasses
-      def testThat(reporter: Reporter) = ()
+      def testThat(info: Informer) = ()
       @Ignore
-      def testTheOtherThing(reporter: Reporter) = ()
+      def testTheOtherThing(info: Informer) = ()
     }
     assert(e.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
     assert(e.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
@@ -447,7 +447,7 @@ class SuiteSuite extends Suite {
   def testNamesAndGroupsMethodsDiscovered() {
 
     val a = new Suite {
-      def testNames(reporter: Reporter): Unit = ()
+      def testNames(info: Informer): Unit = ()
     }
     assert(a.expectedTestCount(Set(), Set()) === 1)
     val tnResult: Set[String] = a.testNames
@@ -467,7 +467,7 @@ class SuiteSuite extends Suite {
   def testThatTestMethodsThatReturnNonUnitAreDiscovered() {
     val a = new Suite {
       def testThis(): Int = 1
-      def testThat(reporter: Reporter): String = "hi"
+      def testThat(info: Informer): String = "hi"
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
     assert(a.testNames.size === 2)
@@ -477,7 +477,7 @@ class SuiteSuite extends Suite {
   def testThatOverloadedTestMethodsAreDiscovered() {
     val a = new Suite {
       def testThis() = ()
-      def testThis(reporter: Reporter) = ()
+      def testThis(info: Informer) = ()
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
     assert(a.testNames.size === 2)
