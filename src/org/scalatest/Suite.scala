@@ -1070,9 +1070,13 @@ trait Suite {
           new Informer {
             val nameForReport: String = getTestNameForReport(testName)
             def apply(report: Report) {
+              if (report == null)
+                throw new NullPointerException
               wrappedReporter.infoProvided(report)
             }
             def apply(message: String) {
+              if (message == null)
+                throw new NullPointerException
               val report = new Report(nameForReport, message)
               wrappedReporter.infoProvided(report)
             }
