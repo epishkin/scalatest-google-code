@@ -560,5 +560,20 @@ class SuiteSuite extends Suite {
         Suite.diffStrings("X0123456789012345678901234567890123456789X", "X01234567890123456789a01234567890123456789X")
     }
   }
+  
+  def testDecorateToStringValue() {
+    expect("1") { Suite.decoratedToStringValue(1.toByte) }
+    expect("1") { Suite.decoratedToStringValue(1.toShort) }
+    expect("1") { Suite.decoratedToStringValue(1) }
+    expect("10") { Suite.decoratedToStringValue(10L) }
+    expect("1.0") { Suite.decoratedToStringValue(1.0f) }
+    expect("1.0") { Suite.decoratedToStringValue(1.0) }
+    expect("false") { Suite.decoratedToStringValue(false) }
+    expect("true") { Suite.decoratedToStringValue(true) }
+    expect("<(), the Unit value>") { Suite.decoratedToStringValue(()) }
+    expect("\"Howdy!\"") { Suite.decoratedToStringValue("Howdy!") }
+    expect("'c'") { Suite.decoratedToStringValue('c') }
+    expect("<Hey!>") { Suite.decoratedToStringValue(new Object { override def toString = "Hey!"}) }
+  }
 }
 

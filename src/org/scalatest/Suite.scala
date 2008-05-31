@@ -1605,8 +1605,10 @@ trait Suite {
     def ===(right: Any) =
       if (left == right)
         None
-      else
-        Some(Resources("didNotEqual", left, right))
+      else {
+        val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
+        Some(Resources("didNotEqual", Suite.decoratedToStringValue(leftee), Suite.decoratedToStringValue(rightee)))
+      }
   }
 
   /**
@@ -1801,7 +1803,8 @@ trait Suite {
   def expect(expected: Any, message: Any)(f: => Any): Unit = {
     val actual = f
     if (actual != expected) {
-      val s = Resources("expectedButGot", expected, actual)
+        val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
+          val s = Resources("expectedButGot", Suite.decoratedToStringValue(exp), Suite.decoratedToStringValue(act))
       throw new AssertionError(message + "\n" + s)
     }
   }
@@ -1878,7 +1881,7 @@ private[scalatest] object Suite {
     }
   }
   
-  private [scalatest] def diffStrings(s: String, t: String): Tuple2[String, String] = {
+  private[scalatest] def diffStrings(s: String, t: String): Tuple2[String, String] = {
     def findCommonPrefixLength(s: String, t: String): Int = {
       val max = s.length.min(t.length) // the maximum potential size of the prefix
       var i = 0
@@ -1914,5 +1917,35 @@ private[scalatest] object Suite {
     val shortSuffix = if (commonSuffixLength > MaxContext) suffix.substring(0, MaxContext) + "..." else suffix
     (shortPrefix + "[" + sMiddle + "]" + shortSuffix, shortPrefix + "[" + tMiddle + "]" + shortSuffix)
   }
+  
+  // If the objects are two strings, replace them with whatever is returned by diffStrings.
+  // Otherwise, use the same objects.
+  private def getObjectsForFailureMessage(a: Any, b: Any) = 
+    a match {
+      case aStr: String => {
+        b match {
+          case bStr: String => {
+            Suite.diffStrings(aStr, bStr)    
+          }
+          case _ => (a, b)
+        }
+      } 
+      case _ => (a, b)
+    }
+  
+  private[scalatest] def decoratedToStringValue(o: Any): String =
+    o match {
+      case aByte: Byte => aByte.toString
+      case aShort: Short => aShort.toString
+      case anInt: Int => anInt.toString
+      case aLong: Long => aLong.toString // Can't we all get aLong?
+      case aFloat: Float => aFloat.toString
+      case aDouble: Double => aDouble.toString
+      case aBoolean: Boolean => aBoolean.toString
+      case aUnit: Unit => "<(), the Unit value>"
+      case aString: String => "\"" + aString + "\""
+      case aChar: Char =>  "\'" + aChar + "\'"
+      case o: Any => "<" + o.toString + ">"
+    }
 }
 
