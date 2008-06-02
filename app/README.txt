@@ -5,8 +5,10 @@ programmers.
 
 GETTING STARTED
 
-This release is a sneak preview of ScalaTest. To learn how to
-use it, please open in your browser the scaladoc documentation in the
+Although this is a pre-1.0 release, ScalaTest is very robust and well
+documented, and can already be used to write tests in Scala
+for production Scala or Java code.
+To learn how to use ScalaTest, please open in your browser the scaladoc documentation in the
 /scalatest-0.9.3/doc directory. Look first at the documentation for trait
 org.scalatest.Suite, which gives a decent intro. All the other types are documented as
 well, so you can hop around to learn more. org.scalatest.tools.Runner explains how to use the
