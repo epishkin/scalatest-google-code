@@ -188,7 +188,7 @@ abstract class Group(val name: String)
  *     testFunction(sb, lb)
  *   }
  *
- *   def test("Easy") {
+ *   test("Easy") {
  *     withFixture {
  *       (builder, lbuf) => {
  *         builder.append("easy!")
@@ -199,7 +199,7 @@ abstract class Group(val name: String)
  *     }
  *   }
  *
- *   def test("Fun") {
+ *   test("Fun") {
  *     withFixture {
  *       (builder, lbuf) => {
  *         builder.append("fun!")
@@ -253,7 +253,7 @@ abstract class Group(val name: String)
  *     }
  *   }
  * 
- *   def test("Reading from the temp file") {
+ *   test("Reading from the temp file") {
  *     withTempFile {
  *       (reader) => {
  *         var builder = new StringBuilder
@@ -267,7 +267,7 @@ abstract class Group(val name: String)
  *     }
  *   }
  * 
- *   def test("First char of the temp file") {
+ *   test("First char of the temp file") {
  *     withTempFile {
  *       (reader) => {
  *         assert(reader.read() === 'H')
@@ -320,7 +320,7 @@ abstract class Group(val name: String)
  *     file.delete()
  *   }
  *
- *   def test("Reading from the temp file") {
+ *   test("Reading from the temp file") {
  *     var builder = new StringBuilder
  *     var c = reader.read()
  *     while (c != -1) {
@@ -330,7 +330,7 @@ abstract class Group(val name: String)
  *     assert(builder.toString === "Hello, test!")
  *   }
  *
- *   def test("First char of the temp file") {
+ *   test("First char of the temp file") {
  *     assert(reader.read() === 'H')
  *   }
  * }
