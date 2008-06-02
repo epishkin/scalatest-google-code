@@ -7,7 +7,7 @@ GETTING STARTED
 
 Although this is a pre-1.0 release, ScalaTest is very robust and well
 documented, and can already be used to write tests in Scala
-for production Scala or Java code.
+against production Scala or Java code.
 To learn how to use ScalaTest, please open in your browser the scaladoc documentation in the
 /scalatest-0.9.3/doc directory. Look first at the documentation for trait
 org.scalatest.Suite, which gives a decent intro. All the other types are documented as
@@ -15,7 +15,7 @@ well, so you can hop around to learn more. org.scalatest.tools.Runner explains h
 application. The Ignore class is written in Java, and isn't currently shown
 in the Scaladoc.
 
-The try it out, you can use ScalaTest to run its own tests, i.e., the tests used to
+To try it out, you can use ScalaTest to run its own tests, i.e., the tests used to
 test ScalaTest itself. This command will run the GUI:
 
 scala -classpath scalatest-0.9.3.jar org.scalatest.tools.Runner -p "scalatest-0.9.3-tests.jar" -g -s org.scalatest.SuiteSuite
