@@ -20,16 +20,16 @@ import java.util.Date
 @serializable
 private[scalatest] class SpecReport(
   override val name: String,
-  val shortName: String,
-  val level: Int,
   override val message: String,
+  val specText: String,
+  val formattedSpecText: String,
   override val throwable: Option[Throwable],
   override val rerunnable: Option[Rerunnable],
   override val threadName: String,
   override val date: Date
 ) extends Report(name, message, throwable, rerunnable, threadName, date) {
 
-    /**
+   /**
    * Constructs a new <code>Report</code> with specified name
    * and message.
    *
@@ -39,7 +39,7 @@ private[scalatest] class SpecReport(
    * @throws NullPointerException if either of the specified <code>name</code>
    *     or <code>message</code> parameters are <code>null</code>.
    */
-  def this(name: String, shortName: String, level: Int, message: String) = this(name, shortName, level, message,
+  def this(name: String, message: String, specText: String, formattedSpecText: String) = this(name, message, specText, formattedSpecText,
       None, None, Thread.currentThread.getName, new Date)
 
     /**
@@ -58,6 +58,6 @@ private[scalatest] class SpecReport(
    *     <code>name</code>, <code>message</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
-  def this(name: String, shortName: String, level: Int, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
-      shortName, level, message, throwable, rerunnable, Thread.currentThread.getName, new Date)
+  def this(name: String, message: String, specText: String, formattedSpecText: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
+      message, specText, formattedSpecText, throwable, rerunnable, Thread.currentThread.getName, new Date)
 }
