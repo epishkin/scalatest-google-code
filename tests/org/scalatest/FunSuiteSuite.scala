@@ -573,5 +573,49 @@ class FunSuiteSuite extends Suite {
     a.execute()
     assert(!a.fromMethodTestExecuted)
   }
+  
+  def testThatInfoInsideATestMethodGetsOutTheDoor() {
+    class MyReporter extends Reporter {
+      var infoProvidedCalled = false
+      var lastReport: Report = null
+      override def infoProvided(report: Report) {
+        infoProvidedCalled = true
+        lastReport = report
+      }
+    }
+    val msg = "hi there, dude"
+    class MySuite extends FunSuite {
+      test("test this") {
+        info(msg)
+      }
+    }
+    val a = new MySuite
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(myRep.infoProvidedCalled)
+    assert(myRep.lastReport.message === msg)
+  }
+  
+  def testThatInfoInTheConstructorGetsOutTheDoor() {
+    class MyReporter extends Reporter {
+      var infoProvidedCalled = false
+      var lastReport: Report = null
+      override def infoProvided(report: Report) {
+        infoProvidedCalled = true
+        lastReport = report
+      }
+    }
+    val msg = "hi there, dude"
+    class MySuite extends FunSuite {
+      info(msg)
+      test("test this") {
+      }
+    }
+    val a = new MySuite
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(myRep.infoProvidedCalled)
+    assert(myRep.lastReport.message === msg)
+  }
 }
 
