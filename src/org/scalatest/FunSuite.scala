@@ -511,9 +511,7 @@ trait FunSuite extends Suite {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
-  private trait Test
-  private case class PlainOldTest(testName: String, f: () => Unit) extends Test
-  private case class InformerTest(testName: String, f: (Informer) => Unit) extends Test
+  private case class Test(testName: String, testFunction: () => Unit)
 
   // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
@@ -550,6 +548,26 @@ trait FunSuite extends Suite {
       throw new ConcurrentModificationException
   }
   
+  // later will initialize with an informer that registers things between tests for later passing to the informer
+  private var currentInformer = zombieInformer
+  implicit def info: Informer = currentInformer
+  
+  private val zombieInformer =
+    new Informer {
+      private val complaint = "Sorry, you can only use FunSuite's info when executing the suite."
+      def nameForReport: String = { throw new IllegalStateException(complaint) }
+      def apply(report: Report) {
+        if (report == null)
+          throw new NullPointerException
+        throw new IllegalStateException(complaint)
+      }
+      def apply(message: String) {
+        if (message == null)
+          throw new NullPointerException
+        throw new IllegalStateException(complaint)
+      }
+    }
+
   /**
    * Register a test with the specified name, optional groups, and function value that takes no arguments.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
@@ -568,36 +586,7 @@ trait FunSuite extends Suite {
     
     require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
 
-    testsMap += (testName -> PlainOldTest(testName, f _))
-    testNamesList ::= testName
-    val groupNames = Set[String]() ++ testGroups.map(_.name)
-    if (!groupNames.isEmpty)
-      groupsMap += (testName -> groupNames)
-
-    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, executeHasBeenInvoked))
-  }
-
-  /**
-   * Register a test with the specified name, optional groups, and function value that takes an <code>Informer</code>.
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The <code>Informer</code> passed to the function value will be able to forward messages and reports provided via its <code>code</code>
-   * methods to the <code>Reporter</code> passed to <code>execute</code>. 
-   * The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
-   *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
-   */
-  protected def testWithInformer(testName: String, testGroups: Group*)(f: (Informer) => Unit) {
-
-    val oldBundle = atomic.get
-    var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
-
-    if (executeHasBeenInvoked)
-      throw new IllegalStateException("You cannot register a test  on a FunSuite after execute has been invoked.")
-    
-    require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
-
-    testsMap += (testName -> InformerTest(testName, f))
+    testsMap += (testName -> Test(testName, f _))
     testNamesList ::= testName
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
@@ -619,29 +608,6 @@ trait FunSuite extends Suite {
   protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
 
     test(testName)(f) // Call test without passing the groups
-
-    val oldBundle = atomic.get
-    var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
-
-    val groupNames = Set[String]() ++ testGroups.map(_.name)
-    groupsMap += (testName -> (groupNames + IgnoreGroupName))
-
-    updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, executeHasBeenInvoked))
-  }
-
-  /**
-   * Register a test to ignore, which has the specified name, optional groups, and function value that takes a <code>Informer</code>.
-   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>testWithInformer</code>
-   * to <code>ignoreWithInformer</code> without deleting or commenting out the actual test code. The test will not be executed, but a
-   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
-   *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
-   */
-  protected def ignoreWithInformer(testName: String, testGroups: Group*)(f: (Informer) => Unit) {
-
-    testWithInformer(testName)(f) // Call testWithInformer without passing the groups
 
     val oldBundle = atomic.get
     var (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
@@ -689,26 +655,29 @@ trait FunSuite extends Suite {
 
     try {
 
-      atomic.get.testsMap(testName) match {
-        case PlainOldTest(testName, f) => f()
-        case InformerTest(testName, f) => {
-          val informer =
-            new Informer {
-              val nameForReport: String = getTestNameForReport(testName)
-              def apply(report: Report) {
-                if (report == null)
-                  throw new NullPointerException
-                wrappedReporter.infoProvided(report)
-              }
-              def apply(message: String) {
-                if (message == null)
-                  throw new NullPointerException
-                val report = new Report(nameForReport, message)
-                wrappedReporter.infoProvided(report)
-              }
+      val theTest = atomic.get.testsMap(testName)
+
+      val oldInformer = info
+      try {
+        currentInformer =
+          new Informer {
+            val nameForReport: String = getTestNameForReport(testName)
+            def apply(report: Report) {
+              if (report == null)
+                throw new NullPointerException
+              wrappedReporter.infoProvided(report)
             }
-          f(informer)
-        }
+            def apply(message: String) {
+              if (message == null)
+                throw new NullPointerException
+              val report = new Report(nameForReport, message)
+              wrappedReporter.infoProvided(report)
+            }
+          }
+        theTest.testFunction()
+      }
+      finally {
+        currentInformer = oldInformer
       }
 
       val report = new Report(getTestNameForReport(testName), "")
@@ -767,7 +736,30 @@ trait FunSuite extends Suite {
     val (testNamesList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
     if (!executeHasBeenInvoked)
       updateAtomic(oldBundle, Bundle(testNamesList, testsMap, groupsMap, true))
-    
-    super.execute(testName, reporter, stopper, includes, excludes, goodies, distributor)
+
+    val wrappedReporter = wrapReporterIfNecessary(reporter)
+
+    currentInformer =
+      new Informer {
+        val nameForReport: String = suiteName
+        def apply(report: Report) {
+          if (report == null)
+            throw new NullPointerException
+          wrappedReporter.infoProvided(report)
+        }
+        def apply(message: String) {
+          if (message == null)
+            throw new NullPointerException
+          val report = new Report(nameForReport, message)
+          wrappedReporter.infoProvided(report)
+        }
+      }
+
+    try {
+      super.execute(testName, wrappedReporter, stopper, includes, excludes, goodies, distributor)
+    }
+    finally {
+      currentInformer = zombieInformer
+    }
   }
 }
