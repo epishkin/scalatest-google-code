@@ -93,7 +93,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
-        apply(new Report(nameForReport, message))
+        apply(new SpecReport(nameForReport, message, message, "  " + message))
       }
     }
     
@@ -196,7 +196,8 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new Report(getTestNameForReport(testName), "")
+    val specText = "Scenario: " + testName
+    val report = new SpecReport(getTestNameForReport(testName), specText, specText, "\n  " + specText)
 
     wrappedReporter.testStarting(report)
 
@@ -217,7 +218,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              val report = new Report(nameForReport, message)
+              val report = new SpecReport(nameForReport, message, message, "    " + message)
               wrappedReporter.infoProvided(report)
             }
           }
@@ -227,9 +228,11 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
         currentInformer = oldInformer
       }
 
-      val report = new Report(getTestNameForReport(testName), "")
+      // Don't send a test succeeded report. It looks funny. Hmm. That's really wierd though. Probably need
+      // to add a suppress flag to the report.
+      // val report = new SpecReport(getTestNameForReport(testName), specText, specText, "  " + specText)
 
-      wrappedReporter.testSucceeded(report)
+      // wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
@@ -250,7 +253,8 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
       else
         t.toString
 
-    val report = new Report(getTestNameForReport(testName), msg, Some(t), None)
+    val specText = "Scenario: " + testName
+    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "  " + specText, Some(t), None)
 
     reporter.testFailed(report)
   }

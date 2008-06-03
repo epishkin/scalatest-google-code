@@ -245,7 +245,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
 
   // We subtract one from test reports because we add "- " in front, so if one is actually zero, it will come here as -1
-  private def indent(s: String, times: Int) = if (times <= 0) s else ("  " * times) + s
+  // private def indent(s: String, times: Int) = if (times <= 0) s else ("  " * times) + s
 
   // Stupid properties file won't let me put spaces at the beginning of a property
   // "  {0}" comes out as "{0}", so I can't do indenting in a localizable way. For now
@@ -262,20 +262,21 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
         case specReport: SpecReport =>
           resourceName match {
             case "testStarting" => {
+/*
               report.throwable match {
                 case Some(t) => Some(Resources(resourceName, report.name, report.message)) // Ugly, but at least they'll get info in the unlikely event of an exception in a testStarting report
                 case None => None // In the general case, we won't show anything in a spec output for testStarting.
               }
+                                    */
+              Some(specReport.formattedSpecText)
             }
             case "testSucceeded" => {
-              val icon = Resources("exampleSucceededIconChar")
-              Some(indent(Resources("exampleIconPlusShortName", icon, specReport.shortName), specReport.level - 1))
+              Some(specReport.formattedSpecText)
             }
             case "testFailed" => {
-              val icon = Resources("exampleFailedIconChar")
-              Some(indent(Resources("exampleIconPlusShortNameAndNote", icon, specReport.shortName, Resources("failedNote")), specReport.level - 1))
+              Some(Resources("spectTextAndNote", specReport.formattedSpecText, Resources("failedNote")))
             }
-            case _ => Some(indent(specReport.shortName, specReport.level))
+            case _ => Some(specReport.formattedSpecText)
           }
         case _ => {
           val resName = if (report.message.trim.isEmpty) resourceName + "NoMessage" else resourceName
@@ -293,7 +294,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
                 val sw = new StringWriter
                 t.printStackTrace(new PrintWriter(sw))
                 val stackTrace = sw.toString
-                val indentedStackTrace = PrintReporter.indentStackTrace(stackTrace, specReport.level)
+                val indentedStackTrace = PrintReporter.indentStackTrace(stackTrace, 1) // Darn forgot about indenting stack traces
                 pw.print(indentedStackTrace) // Do I need a println here? Eyeball it.
               }  
               case _ => t.printStackTrace(pw)
