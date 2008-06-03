@@ -617,5 +617,50 @@ class FunSuiteSuite extends Suite {
     assert(myRep.infoProvidedCalled)
     assert(myRep.lastReport.message === msg)
   }
+  
+  def testThatInfoInTheConstructorBeforeATestHappensFirst() {
+    var infoProvidedCalled = false
+    var infoProvidedCalledBeforeTest = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        infoProvidedCalled = true
+      }
+    }
+    val msg = "hi there, dude"
+    class MySuite extends FunSuite {
+      info(msg)
+      test("test this") {
+        if (infoProvidedCalled)
+          infoProvidedCalledBeforeTest = true
+      }
+    }
+    val a = new MySuite
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(infoProvidedCalledBeforeTest)
+  }
+  
+  def testThatInfoInTheConstructorAfterATestHappensSecond() {
+    var infoProvidedCalled = false
+    var infoProvidedCalledAfterTest = true
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        infoProvidedCalled = true
+      }
+    }
+    val msg = "hi there, dude"
+    class MySuite extends FunSuite {
+      test("test this") {
+        if (infoProvidedCalled)
+          infoProvidedCalledAfterTest = false
+      }
+      info(msg)
+    }
+    val a = new MySuite
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(infoProvidedCalledAfterTest)
+    assert(infoProvidedCalled)
+  }
 }
 
