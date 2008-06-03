@@ -20,36 +20,6 @@ import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * Abstract class whose subclasses can be as to <code>FunSuite</code> and <code>FunSuiteN</code>'s test
- * registration methods to place tests into groups. For example, if you define:
- * <pre>
- * object SlowTest extends Group("SlowTest")
- * </pre>
- *
- * then you can place a test into the <code>SlowTest</code> group like this:
- * <pre>
- * class MySuite extends FunSuite {
- *
- *   test("my test", SlowTest) {
- *     Thread.sleep(1000)
- *   }
- * }
- * </pre>
- *
- * If you have created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
- * defined a Java annotation interface with fully qualified name, <code>com.mycompany.groups.SlowTest</code>, then you could
- * create a matching group for <code>FunSuite</code>s like this:
- * <pre>
- * object SlowTest extends Group("com.mycompany.groups.SlowTest")
- * </pre>
- *
- * @author Bill Venners
- */
-abstract class Group(val name: String)
-
-/**
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code> &#8221;in <code>FunSuite</code> stands for functional.
  * Here's an example <code>FunSuite</code>:
  *
