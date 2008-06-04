@@ -196,7 +196,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val specText = "Scenario: " + testName
+    val specText = Resources("scenario", testName)
     val report = new SpecReport(getTestNameForReport(testName), specText, specText, "\n  " + specText, true)
 
     wrappedReporter.testStarting(report)
@@ -252,7 +252,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
       else
         t.toString
 
-    val specText = "Scenario: " + testName
+    val specText = Resources("scenario", testName)
     val report = new SpecReport(getTestNameForReport(testName), msg, specText, "  " + specText, true, Some(t), None)
 
     reporter.testFailed(report)
