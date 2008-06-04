@@ -261,22 +261,16 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
       report match {
         case specReport: SpecReport =>
           resourceName match {
-            case "testStarting" => {
-/*
-              report.throwable match {
-                case Some(t) => Some(Resources(resourceName, report.name, report.message)) // Ugly, but at least they'll get info in the unlikely event of an exception in a testStarting report
-                case None => None // In the general case, we won't show anything in a spec output for testStarting.
-              }
-                                    */
-              Some(specReport.formattedSpecText)
-            }
-            case "testSucceeded" => {
-              Some(specReport.formattedSpecText)
-            }
-            case "testFailed" => {
-              Some(Resources("spectTextAndNote", specReport.formattedSpecText, Resources("failedNote")))
-            }
-            case _ => Some(specReport.formattedSpecText)
+            case "testFailed" =>
+              if (specReport.includeInSpecOutput)
+                Some(Resources("specTextAndNote", specReport.formattedSpecText, Resources("failedNote")))
+              else
+                None
+            case _ => 
+              if (specReport.includeInSpecOutput)
+                Some(specReport.formattedSpecText)
+              else
+                None
           }
         case _ => {
           val resName = if (report.message.trim.isEmpty) resourceName + "NoMessage" else resourceName

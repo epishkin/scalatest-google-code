@@ -18,11 +18,12 @@ package org.scalatest
 import java.util.Date
 
 @serializable
-private[scalatest] class SpecReport(
+class SpecReport(
   override val name: String,
   override val message: String,
   val specText: String,
   val formattedSpecText: String,
+  val includeInSpecOutput: Boolean,
   override val throwable: Option[Throwable],
   override val rerunnable: Option[Rerunnable],
   override val threadName: String,
@@ -39,8 +40,8 @@ private[scalatest] class SpecReport(
    * @throws NullPointerException if either of the specified <code>name</code>
    *     or <code>message</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, specText: String, formattedSpecText: String) = this(name, message, specText, formattedSpecText,
-      None, None, Thread.currentThread.getName, new Date)
+  def this(name: String, message: String, specText: String, formattedSpecText: String, includeInSpecOutput: Boolean) =
+    this(name, message, specText, formattedSpecText, includeInSpecOutput, None, None, Thread.currentThread.getName, new Date)
 
     /**
    * Constructs a new <code>Report</code> with specified name,
@@ -58,6 +59,6 @@ private[scalatest] class SpecReport(
    *     <code>name</code>, <code>message</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, specText: String, formattedSpecText: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
-      message, specText, formattedSpecText, throwable, rerunnable, Thread.currentThread.getName, new Date)
+  def this(name: String, message: String, specText: String, formattedSpecText: String, includeInSpecOutput: Boolean, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
+      message, specText, formattedSpecText, includeInSpecOutput, throwable, rerunnable, Thread.currentThread.getName, new Date)
 }
