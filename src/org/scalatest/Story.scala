@@ -93,7 +93,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
-        apply(new SpecReport(nameForReport, message, message, "  " + message))
+        apply(new SpecReport(nameForReport, message, message, "  " + message, true))
       }
     }
     
@@ -197,7 +197,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
     val specText = "Scenario: " + testName
-    val report = new SpecReport(getTestNameForReport(testName), specText, specText, "\n  " + specText)
+    val report = new SpecReport(getTestNameForReport(testName), specText, specText, "\n  " + specText, true)
 
     wrappedReporter.testStarting(report)
 
@@ -218,7 +218,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              val report = new SpecReport(nameForReport, message, message, "    " + message)
+              val report = new SpecReport(nameForReport, message, message, "    " + message, true)
               wrappedReporter.infoProvided(report)
             }
           }
@@ -228,11 +228,10 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
         currentInformer = oldInformer
       }
 
-      // Don't send a test succeeded report. It looks funny. Hmm. That's really wierd though. Probably need
-      // to add a suppress flag to the report.
-      // val report = new SpecReport(getTestNameForReport(testName), specText, specText, "  " + specText)
+      // Supress this report in the spec output. (Will show it if there was a failure, though.)
+      val report = new SpecReport(getTestNameForReport(testName), specText, specText, "  " + specText, false)
 
-      // wrappedReporter.testSucceeded(report)
+      wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
@@ -254,7 +253,7 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
         t.toString
 
     val specText = "Scenario: " + testName
-    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "  " + specText, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "  " + specText, true, Some(t), None)
 
     reporter.testFailed(report)
   }
