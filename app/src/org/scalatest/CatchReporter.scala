@@ -15,7 +15,6 @@
  */
 package org.scalatest
 
-import org.scalatest.CatchReporter.handleReporterException
 import java.io.PrintStream
 
 /**
@@ -50,7 +49,7 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
       methodCall(reporter)
     }
     catch {
-      case e: Exception => handleReporterException(e, methodName, out)
+      case e: Exception => CatchReporter.handleReporterException(e, methodName, out)
     }
   }
 }
