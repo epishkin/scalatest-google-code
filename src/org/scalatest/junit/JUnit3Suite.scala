@@ -117,18 +117,22 @@ trait JUnit3Suite extends TestCase with Suite {
     }
   }   
    
-  private def buildReport( testName: String, t: Option[Throwable] ): Report = {
-    new Report(testName, this.getClass.getName, t, None )
+  private def buildReport(testName: String, t: Option[Throwable]): Report = {
+    new Report(testName, this.getClass.getName, t, None)
+  }
+  
+  private def buildReport(test: Test, t: Option[Throwable]): Report = {
+    buildReport(JUnitVersionHelper.getTestCaseName(test), t)
   }
   
   private[junit] def runJUnit(reporter: Reporter) = {
-    reporter.suiteStarting( buildReport( this.getClass.getName, None ) ) 
+    reporter.suiteStarting(buildReport(this.getClass.getName, None)) 
     testNames.foreach(runSingleTest( _, reporter))
     //new TestSuite(this.getClass).run(new MyTestResult(reporter))
-    reporter.suiteCompleted( buildReport( this.getClass.getName, None ) )
+    reporter.suiteCompleted(buildReport( this.getClass.getName, None))
   }
   
-  private def runSingleTest( testName: String, reporter: Reporter ) = {
+  private def runSingleTest(testName: String, reporter: Reporter) = {
     this.setName(testName)
     this.run(new MyTestResult(reporter))
   }
@@ -137,26 +141,22 @@ trait JUnit3Suite extends TestCase with Suite {
 
     override def addFailure(test: Test, t: AssertionFailedError) = {
       super.addFailure(test, t)
-      reporter.testFailed( buildReport( test, Some(t) ) ) 
+      reporter.testFailed(buildReport(test, Some(t))) 
     }
 
     override def addError(test: Test, t: Throwable) = {
       super.addError(test, t)
-      reporter.testFailed( buildReport( test, Some(t) ) )
+      reporter.testFailed(buildReport(test, Some(t)))
     }
     
     override def startTest(test: Test) = {
       super.startTest(test)
-      reporter.testStarting( buildReport( test, None ) )
+      reporter.testStarting(buildReport(test, None))
     }
     
     override def endTest(test: Test) = {
       super.endTest(test)
-      if( this.wasSuccessful ) reporter.testSucceeded( buildReport( test, None ) ) 
+      if (this.wasSuccessful) reporter.testSucceeded(buildReport(test, None)) 
     }
-    
-    implicit def testToString(t: Test) = JUnitVersionHelper.getTestCaseName(t)
   }
-  
-
 }
