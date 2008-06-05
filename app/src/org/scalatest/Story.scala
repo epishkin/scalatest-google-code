@@ -114,14 +114,14 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
     }
 
   /**
-   * Register a test with the specified name, optional groups, and function value that takes no arguments.
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
+   * Register a scenario with the specified name, optional groups, and function value that takes no arguments.
+   * This method will register the scenario for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed scenario name must not have been registered previously on
+   * this <code>Story</code> instance.
    *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   * @throws IllegalArgumentException if <code>scenarioName</code> had been registered previously
    */
-  protected def scenario(testName: String, testGroups: Group*)(f: => Unit) {
+  protected def scenario(scenarioName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
@@ -129,48 +129,48 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
     if (executeHasBeenInvoked)
       throw new IllegalStateException("You cannot register a test  on a FunSuite after execute has been invoked.")
     
-    require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
+    require(!testsMap.keySet.contains(scenarioName), "Duplicate test name: " + scenarioName)
 
-    val testNode = Test(testName, f _)
-    testsMap += (testName -> testNode)
-    testNamesList ::= testName
+    val testNode = Test(scenarioName, f _)
+    testsMap += (scenarioName -> testNode)
+    testNamesList ::= scenarioName
     doList ::= testNode
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
-      groupsMap += (testName -> groupNames)
+      groupsMap += (scenarioName -> groupNames)
 
     updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
   }
 
   /**
-   * Register a test to ignore, which has the specified name, optional groups, and function value that takes no arguments.
-   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>test</code>
-   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
-   * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
+   * Register a scenario to ignore, which has the specified name, optional groups, and function value that takes no arguments.
+   * This method will register the scenario for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing scenario method by changing the call to <code>scenario</code>
+   * to <code>ignore</code> without deleting or commenting out the actual scenario code. The scenario will not be executed, but a
+   * report will be sent that indicates the scenario was ignored. The passed scenario name must not have been registered previously on
+   * this <code>Story</code> instance.
    *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   * @throws IllegalArgumentException if <code>scenarioName</code> had been registered previously
    */
-  protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
+  protected def ignore(scenarioName: String, testGroups: Group*)(f: => Unit) {
 
-    scenario(testName)(f) // Call test without passing the groups
+    scenario(scenarioName)(f) // Call test without passing the groups
 
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
 
     val groupNames = Set[String]() ++ testGroups.map(_.name)
-    groupsMap += (testName -> (groupNames + IgnoreGroupName))
+    groupsMap += (scenarioName -> (groupNames + IgnoreGroupName))
 
     updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
   }
 
   /**
-  * An immutable <code>Set</code> of test names. If this <code>FunSuite</code> contains no tests, this method returns an empty <code>Set</code>.
+  * An immutable <code>Set</code> of scenario names. If this <code>Story</code> contains no scenarios, this method returns an empty <code>Set</code>.
   *
   * <p>
-  * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's iterator will
-  * return those names in the order in which the tests were registered.
+  * This trait's implementation of this method will return a set that contains the names of all registered scenarios. The set's iterator will
+  * return those names in the order in which the scenarios were registered.
   * </p>
   */
   override def testNames: Set[String] = {
@@ -180,36 +180,36 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
 
   // runTest should throw IAE if a test name is passed that doesn't exist. Looks like right now it just reports a test failure.
   /**
-   * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
+   * Run a scenario. This trait's implementation runs the scenario registered with the name specified by <code>scenarioName</code>.
    *
-   * @param testName the name of one test to execute.
+   * @param scenarioName the name of one scenario to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Story</code>.
+   * @throws NullPointerException if any of <code>scenarioName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
+  protected override def runTest(scenarioName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
 
-    if (testName == null || reporter == null || stopper == null || properties == null)
+    if (scenarioName == null || reporter == null || stopper == null || properties == null)
       throw new NullPointerException
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val specText = Resources("scenario", testName)
-    val report = new SpecReport(getTestNameForReport(testName), specText, specText, "\n  " + specText, true)
+    val specText = Resources("scenario", scenarioName)
+    val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true)
 
     wrappedReporter.testStarting(report)
 
     try {
 
-      val theTest = atomic.get.testsMap(testName)
+      val theTest = atomic.get.testsMap(scenarioName)
 
       val oldInformer = info
       try {
         currentInformer =
           new Informer {
-            val nameForReport: String = getTestNameForReport(testName)
+            val nameForReport: String = getTestNameForReport(scenarioName)
             def apply(report: Report) {
               if (report == null)
                 throw new NullPointerException
@@ -229,21 +229,21 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
       }
 
       // Supress this report in the spec output. (Will show it if there was a failure, though.)
-      val report = new SpecReport(getTestNameForReport(testName), specText, specText, "  " + specText, false)
+      val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false)
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, testName, None, wrappedReporter)
+        handleFailedTest(e, false, scenarioName, None, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, testName, None, wrappedReporter)
+        handleFailedTest(ae, false, scenarioName, None, wrappedReporter)
       }
     }
   }
 
-  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, scenarioName: String,
       rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
@@ -252,19 +252,19 @@ class Story(override val suiteName: String) extends Suite with GivenWhenThen {
       else
         t.toString
 
-    val specText = Resources("scenario", testName)
-    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "  " + specText, true, Some(t), None)
+    val specText = Resources("scenario", scenarioName)
+    val report = new SpecReport(getTestNameForReport(scenarioName), msg, specText, "  " + specText, true, Some(t), None)
 
     reporter.testFailed(report)
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>FunSuite</code> belong, and values
-   * the <code>Set</code> of test names that belong to each group. If this <code>FunSuite</code> contains no groups, this method returns an empty <code>Map</code>.
+   * A <code>Map</code> whose keys are <code>String</code> group names to which scenarios in this <code>Story</code> belong, and values
+   * the <code>Set</code> of scenario names that belong to each group. If this <code>Story</code> contains no groups, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
-   * methods <code>test</code>, <code>testWithInformer</code>, <code>ignore</code>, and <code>ignoreWithInformer</code>. 
+   * methods <code>scenario</code> and <code>ignore</code>. 
    * </p>
    */
   override def groups: Map[String, Set[String]] = atomic.get.groupsMap

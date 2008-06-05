@@ -716,7 +716,7 @@ trait FunSuite extends Suite {
    *
    * <p>
    * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
-   * methods <code>test</code>, <code>testWithInformer</code>, <code>ignore</code>, and <code>ignoreWithInformer</code>. 
+   * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
   override def groups: Map[String, Set[String]] = atomic.get.groupsMap
