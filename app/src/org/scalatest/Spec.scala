@@ -59,9 +59,6 @@ private[scalatest] trait Spec extends Suite {
           // (testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
           //    properties: Map[String, Any], distributor: Option[Distributor]
         }
-        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, level, f) => {
-          runExample(Example(parent, exampleFullName, exampleShortName, level, () => f(reporter)), reporter)
-        }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
     )
@@ -211,7 +208,6 @@ private[scalatest] trait Spec extends Suite {
     branch.subNodes.reverse.foreach(
       _ match {
         case Example(parent, exampleFullName, exampleShortName, level, f) => count += 1
-        case ExampleGivenReporter(parent, exampleFullName, exampleShortName, level, f) => count += 1
         case SharedBehaviorNode(parent, sharedBehavior, level) => { 
           count += sharedBehavior.expectedTestCount(Set(), Set()) // TODO: Should I call this? What about the includes and excludes?
         }
@@ -239,9 +235,6 @@ private[scalatest] trait Spec extends Suite {
           case ex: Example => {
             buf ::= ex.exampleFullName 
           }
-          case ex: ExampleGivenReporter => {
-            buf ::= ex.exampleFullName 
-          }
           case desc: Description => {
             val descName =
               prefixOption match {
@@ -262,38 +255,16 @@ private[scalatest] trait Spec extends Suite {
       Example(currentBranch, getExampleFullName(exampleRawName, needsShould), getExampleShortName(exampleRawName, needsShould), currentBranch.level + 1, f _)
   }
   
-  private def registerExampleGivenReporter(exampleRawName: String, needsShould: Boolean, f: (Reporter) => Unit) {
-    currentBranch.subNodes ::=
-      ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, needsShould), currentBranch.level + 1, f)
-  }
-
   def specify(exampleRawName: String)(f: => Unit) {
     registerExample(exampleRawName, false, f)
-  }
-    
-  def specifyGivenReporter(exampleRawName: String)(f: (Reporter) => Unit) {
-    registerExampleGivenReporter(exampleRawName, false, f)
   }
     
   class Inifier(exampleRawName: String) {
     def in(f: => Unit) {
       registerExample(exampleRawName, true, f)
     }
-    /*
-    def in(f: Reporter => Unit) {
-      // Does this compile? No. Ask Martin.
-    }*/
-    def given(reporterWord: ReporterWord) = new ReporterInifier(exampleRawName)
   }
 
-  class ReporterInifier(exampleRawName: String) {
-    def in(f: (Reporter) => Unit) {
-//      currentBranch.subNodes ::=
-//        ExampleGivenReporter(currentBranch, getExampleFullName(exampleRawName, true), getExampleShortName(exampleRawName, true), f)
-      registerExampleGivenReporter(exampleRawName, true, f)
-    }
-  }
-  
   protected class ReporterWord {}
   protected val reporter = new ReporterWord
   
