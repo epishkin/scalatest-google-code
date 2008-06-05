@@ -2,7 +2,7 @@ package org.scalatest
 
 import NodeFamily._
 
-private[scalatest] trait Behavior {
+trait Behavior {
 
   private[scalatest] val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
@@ -133,9 +133,6 @@ private[scalatest] trait Behavior {
     }
   }
 
-  protected class ReporterWord {}
-  protected val reporter = new ReporterWord
-  
   class Itifier {
     def should(exampleName: String) = new Inifier(exampleName)
     def should(behaveWord: BehaveWord) = new Likifier()
