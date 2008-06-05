@@ -63,7 +63,6 @@ trait Behavior {
     }
   }
 
-
   private[scalatest] def getExampleShortName(exampleRawName: String, needsShould: Boolean): String = {
     val prefix = getPrefix(currentBranch).trim
     if (prefix.isEmpty) {
@@ -133,7 +132,7 @@ trait Behavior {
     }
   }
 
-  class Itifier {
+  class ItWord {
     def should(exampleName: String) = new Inifier(exampleName)
     def should(behaveWord: BehaveWord) = new Likifier()
   }
@@ -146,7 +145,7 @@ trait Behavior {
     }
   }
   
-  protected val it = new Itifier
+  protected val it = new ItWord
 
   protected def describe(name: String)(f: => Unit) {
     insertBranch(Description(currentBranch, name, currentBranch.level + 1), f _)
