@@ -34,7 +34,7 @@ import NodeFamily._
  * }
  * @author Bill Venners
  */
-private[scalatest] trait Spec extends Suite with Behavior {
+trait Spec extends Suite with Behavior {
 
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
     branch match {
