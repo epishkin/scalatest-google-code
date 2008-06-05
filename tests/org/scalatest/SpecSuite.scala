@@ -217,24 +217,7 @@ class SpecSuite extends FunSuite {
     a.execute()
   }
 
-  test("A given reporter clause should work") {
-    class MySpec extends Spec {
-      describe("A Stack") {
-        describe("(when not empty)") {
-          it should "allow me to pop" given reporter in {
-            reporter => ()
-          }
-        }
-        describe("(when not full)") {
-          it should "allow me to push" in {}
-        }
-      }
-    }
-    val a = new MySpec
-    a.execute()
-  }
-
-  test("A given reporter clause should be able to send info to the reporter") {
+  ignore("A given reporter clause should be able to send info to the reporter") {
 
     val expectedMessage = "this is the expected message"
 
@@ -253,11 +236,10 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec {
       describe("A Stack") {
         describe("(when not empty)") {
-          it should "allow me to pop" given reporter in {
-            reporter => {
-              val report = new Report("myName", expectedMessage)
-              reporter.infoProvided(report)
-            }
+          it should "allow me to pop" in {
+            val report = new Report("myName", expectedMessage)
+            // info(report)
+            ()
           }
         }
         describe("(when not full)") {
@@ -599,24 +581,10 @@ class SpecSuite extends FunSuite {
           date => ()
         }
       }
-      it should "do something long-winded again" given reporter in {
-        reporter => {
-          runWithNowDate {
-            date => ()
-          }
-        }
-      }
       it should "do something long-winded again 2" in {
         val now = createNow
         // use it
         ()
-      }
-      it should "do something long-winded again 3" given reporter in {
-        reporter => {
-          val now = createNow
-          // use it
-          ()
-        }
       }
     }
     ()
@@ -919,7 +887,7 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
   }
 
-  test("A specifyGivenReporter clause should be able to send info to the reporter") {
+  ignore("A specifyGivenReporter clause should be able to send info to the reporter") {
 
     val expectedMessage = "this is the expected message"
 
@@ -938,11 +906,10 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec {
       describe("A Stack") {
         describe("(when not empty)") {
-          specifyGivenReporter("might allow me to pop") {
-            reporter => {
-              val report = new Report("myName", expectedMessage)
-              reporter.infoProvided(report)
-            }
+          specify("might allow me to pop") {
+            val report = new Report("myName", expectedMessage)
+            // info(report)
+            ()
           }
         }
         describe("(when not full)") {
