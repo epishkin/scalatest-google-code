@@ -47,7 +47,7 @@ trait Spec extends Suite with Behavior {
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, exampleFullName, exampleShortName, level, f) => {
+        case ex @ Example(parent, exampleFullName, specText, level, f) => {
           runExample(ex, reporter)
         }
         case SharedBehaviorNode(parent, sharedBehavior, level) => {
@@ -69,23 +69,27 @@ trait Spec extends Suite with Behavior {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.exampleShortName, example.exampleShortName, false)
+    // A testStarting report won't normally show up in a specification-style output, but
+    // will show up in a test-style output.
+    val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, example.specText, false)
 
     wrappedReporter.testStarting(report)
 
     try {
       example.f()
 
-      val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.exampleShortName, example.exampleShortName, true)
+      val exampleSucceededIcon = Resources("exampleSucceededIconChar")
+      val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
+      val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, true)
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, example.exampleFullName, example.exampleShortName, None, wrappedReporter)
+        handleFailedTest(e, false, example.exampleFullName, example.specText, None, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, example.exampleFullName, example.exampleShortName, None, wrappedReporter)
+        handleFailedTest(ae, false, example.exampleFullName, example.specText, None, wrappedReporter)
       }
     }
   }
@@ -99,7 +103,7 @@ trait Spec extends Suite with Behavior {
   }
 
   private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, exampleFullName: String,
-      exampleShortName: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
+      specText: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -107,7 +111,7 @@ trait Spec extends Suite with Behavior {
       else
         t.toString
 
-    val report = new SpecReport(getTestNameForReport(exampleFullName), msg, exampleShortName, exampleShortName, true, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(exampleFullName), msg, specText, "- " + specText, true, Some(t), None)
 
     reporter.testFailed(report)
   }

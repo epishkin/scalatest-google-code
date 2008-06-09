@@ -130,7 +130,6 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     assert(a.testNames.size === 1)
-    println("@@@******" + a.testNames)
     assert(a.testNames.contains("it should get invoked"))
   }
    
@@ -302,6 +301,7 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute()
     assert(a.sharedExampleInvoked)
+    assert(a.sharedExampleAlsoInvoked)
   }
 
   test("three examples in a shared behavior should be invoked in order") {
@@ -569,7 +569,8 @@ class SpecSuite extends FunSuite {
     assert(a.expectedTestCount(Set(), Set()) === 9)
   }
   
-  test("should be able to say it should \"bla\" given[Stack]") {
+  // Probably will want to just delete this one. 
+  ignore("should be able to say it should \"bla\" given[Stack]") {
     class MySpec extends Spec {
       import java.util.Date
       def runWithNowDate(testFunction: Date => Unit) = {
@@ -589,6 +590,7 @@ class SpecSuite extends FunSuite {
     }
     ()
   }
+  
   test("should be able to say 'specify' to register an example") {
     class MySpec extends Spec {
       var exampleWasExecuted = false
@@ -653,7 +655,7 @@ class SpecSuite extends FunSuite {
     assert(testFailedReportHadCorrectTestName)
   }
   
-  test("In a testStarting report, the example name should start with '<description> should' if nested one level " +
+  test("In a testStarting report, the example name should start with '<description> ' if nested one level " +
         "inside a describe clause and registered with specify") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
@@ -737,7 +739,7 @@ class SpecSuite extends FunSuite {
     assert(!myRep.gotANonSpecReport)
   }
   
-  test("Shortname should come through correctly in a SpecReport when registering with it should") {
+  test("SpecText should come through correctly in a SpecReport when registering with it should") {
     var testStartingReportHadCorrectShortName = false
     var lastShortName: Option[String] = None
     class MyReporter extends Reporter {
@@ -760,40 +762,40 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
   }
 
-  test("Shortname should come through correctly in a SpecReport when registering with specify") {
-    var testStartingReportHadCorrectShortName = false
-    var lastShortName: Option[String] = None
+  test("SpecText should come through correctly in a SpecReport when registering with specify") {
+    var testStartingReportHadCorrectSpecText = false
+    var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My short name must have the proper words")
-              testStartingReportHadCorrectShortName = true
+            if (specReport.specText == "My spec text must have the proper words")
+              testStartingReportHadCorrectSpecText = true
             else
-              lastShortName = Some(specReport.specText)
+              lastSpecText = Some(specReport.specText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
     }
     class MySpec extends Spec {
-      specify("My short name must have the proper words") {}
+      specify("My spec text must have the proper words") {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
    
-  test("Shortname should come through correctly in a SpecReport when registering with it should when nested in one describe") {
-    var testStartingReportHadCorrectShortName = false
-    var lastShortName: Option[String] = None
+  test("Spec text should come through correctly in a SpecReport when registering with it should when nested in one describe") {
+    var testStartingReportHadCorrectSpecText = false
+    var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
             if (specReport.specText == "should start with proper words")
-              testStartingReportHadCorrectShortName = true
+              testStartingReportHadCorrectSpecText = true
             else
-              lastShortName = Some(specReport.specText)
+              lastSpecText = Some(specReport.specText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -805,20 +807,20 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
-  test("Shortname should come through correctly in a SpecReport when registering with specify when nested in one describe") {
-    var testStartingReportHadCorrectShortName = false
-    var lastShortName: Option[String] = None
+  test("Spec text should come through correctly in a SpecReport when registering with specify when nested in one describe") {
+    var testStartingReportHadCorrectSpecText = false
+    var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
             if (specReport.specText == "My short name must have the proper words")
-              testStartingReportHadCorrectShortName = true
+              testStartingReportHadCorrectSpecText = true
             else
-              lastShortName = Some(specReport.specText)
+              lastSpecText = Some(specReport.specText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -830,20 +832,20 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
    
-  test("Shortname should come through correctly in a SpecReport when registering with it should when nested in two describes") {
-    var testStartingReportHadCorrectShortName = false
-    var lastShortName: Option[String] = None
+  test("Spec text should come through correctly in a SpecReport when registering with it should when nested in two describes") {
+    var testStartingReportHadCorrectSpecText = false
+    var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
             if (specReport.specText == "should start with proper words")
-              testStartingReportHadCorrectShortName = true
+              testStartingReportHadCorrectSpecText = true
             else
-              lastShortName = Some(specReport.specText)
+              lastSpecText = Some(specReport.specText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -857,20 +859,20 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
-  test("Shortname should come through correctly in a SpecReport when registering with specify when nested in two describes") {
-    var testStartingReportHadCorrectShortName = false
-    var lastShortName: Option[String] = None
+  test("Spec text should come through correctly in a SpecReport when registering with specify when nested in two describes") {
+    var testStartingReportHadCorrectSpecText = false
+    var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
             if (specReport.specText == "My short name must have the proper words")
-              testStartingReportHadCorrectShortName = true
+              testStartingReportHadCorrectSpecText = true
             else
-              lastShortName = Some(specReport.specText)
+              lastSpecText = Some(specReport.specText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -884,7 +886,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
+    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
   ignore("A specifyGivenReporter clause should be able to send info to the reporter") {
@@ -924,7 +926,7 @@ class SpecSuite extends FunSuite {
 
   test("Should get infoProvided with description if one and only one describe clause") {
 
-    val expectedShortName = "A Stack"
+    val expectedSpecText = "A Stack"
 
     class MyReporter extends Reporter {
       var infoProvidedCalled = false
@@ -935,7 +937,7 @@ class SpecSuite extends FunSuite {
           case specReport: SpecReport => {
             infoProvidedCalled = true
             if (!expectedMessageReceived) {
-              expectedMessageReceived = (specReport.specText == expectedShortName)
+              expectedMessageReceived = (specReport.specText == expectedSpecText)
             }
           }
           case _ =>
