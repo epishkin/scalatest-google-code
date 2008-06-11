@@ -2,76 +2,7 @@ package org.scalatest
 
 class SpecSuite extends FunSuite {
 
-  test("an example must get invoked by execute") {
-    class MySpec extends Spec {
-      var exampleWasInvoked = false
-      it should "get invoked" in {
-        exampleWasInvoked = true
-      }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(a.exampleWasInvoked)
-  }
-  
-  test("two examples must get invoked by execute") {
-    class MySpec extends Spec {
-      var exampleWasInvoked = false
-      var example2WasInvoked = false
-      it should "get invoked" in {
-        exampleWasInvoked = true
-      }
-      it should "also get invoked" in {
-        example2WasInvoked = true
-      }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(a.exampleWasInvoked)
-    assert(a.example2WasInvoked)
-  }
-
-  test("three examples must get invoked by execute") {
-    class MySpec extends Spec {
-      var exampleWasInvoked = false
-      var example2WasInvoked = false
-      var example3WasInvoked = false
-      it should "get invoked" in {
-        exampleWasInvoked = true
-      }
-      it should "also get invoked" in {
-        example2WasInvoked = true
-      }
-      it should "also also get invoked" in {
-        example3WasInvoked = true
-      }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(a.exampleWasInvoked)
-    assert(a.example2WasInvoked)
-    assert(a.example3WasInvoked)
-  }
-
-  test("two examples should be invoked in order") {
-    class MySpec extends Spec {
-      var example1WasInvoked = false
-      var example2WasInvokedAfterExample1 = false
-      it should "get invoked" in {
-        example1WasInvoked = true
-      }
-      it should "also get invoked" in {
-        if (example1WasInvoked)
-          example2WasInvokedAfterExample1 = true
-      }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(a.example1WasInvoked)
-    assert(a.example2WasInvokedAfterExample1)
-  }
-
-  test("three examples should be invoked in order") {
+  test("three 'it should' examples should be invoked in order") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
@@ -95,7 +26,31 @@ class SpecSuite extends FunSuite {
     assert(a.example3WasInvokedAfterExample2)
   }
 
-  test("three examples should be invoked in order even when two are surrounded by a describe") {
+  test("three 'specify' examples should be invoked in order") {
+    class MySpec extends Spec {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      specify("it should get invoked") {
+        example1WasInvoked = true
+      }
+      specify("it should also get invoked") {
+        if (example1WasInvoked)
+          example2WasInvokedAfterExample1 = true
+      }
+      specify("it should also also get invoked") {
+        if (example2WasInvokedAfterExample1)
+          example3WasInvokedAfterExample2 = true
+      }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+    assert(a.example3WasInvokedAfterExample2)
+  }
+
+  test("three 'it should' examples should be invoked in order when two are surrounded by a describe") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
@@ -121,38 +76,33 @@ class SpecSuite extends FunSuite {
     assert(a.example3WasInvokedAfterExample2)
   }
 
-  test("an example should show up in testNames") {
-    class MySpec extends Spec {
-      var exampleWasInvoked = false
-      it should "get invoked" in {
-        exampleWasInvoked = true
-      }
-    }
-    val a = new MySpec
-    assert(a.testNames.size === 1)
-    assert(a.testNames.contains("it should get invoked"))
-  }
-   
-  test("two examples should show up in testNames") {
+  test("three 'specify' examples should be invoked in order when two are surrounded by a describe") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
-      it should "get invoked" in {
+      var example3WasInvokedAfterExample2 = false
+      specify("it should get invoked") {
         example1WasInvoked = true
       }
-      it should "also get invoked" in {
-        if (example1WasInvoked)
-          example2WasInvokedAfterExample1 = true
+      describe("Stack") {
+        specify("should also get invoked") {
+          if (example1WasInvoked)
+            example2WasInvokedAfterExample1 = true
+        }
+        specify("should also also get invoked") {
+          if (example2WasInvokedAfterExample1)
+            example3WasInvokedAfterExample2 = true
+        }
       }
     }
     val a = new MySpec
     a.execute()
-    assert(a.testNames.size === 2)
-    assert(a.testNames.contains("it should get invoked"))
-    assert(a.testNames.contains("it should also get invoked"))
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+    assert(a.example3WasInvokedAfterExample2)
   }
    
-  test("two examples should show up in order of appearance in testNames") {
+  test("two 'it should' examples should show up in order of appearance in testNames") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
@@ -171,7 +121,26 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "it should also get invoked")
   }
  
-  test("test names should include an enclosing describe string, separated by a space") {
+  test("two 'specify' examples should show up in order of appearance in testNames") {
+    class MySpec extends Spec {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      specify("it should get invoked") {
+        example1WasInvoked = true
+      }
+      specify("it should also get invoked") {
+        if (example1WasInvoked)
+          example2WasInvokedAfterExample1 = true
+      }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.testNames.size === 2)
+    assert(a.testNames.elements.toList(0) === "it should get invoked")
+    assert(a.testNames.elements.toList(1) === "it should also get invoked")
+  }
+ 
+  test("'it should' test names should include an enclosing describe string, separated by a space") {
     class MySpec extends Spec {
       describe("A Stack") {
         it should "allow me to pop" in {}
@@ -184,7 +153,20 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "A Stack should allow me to push")
   }
 
-  test("test names should properly nest descriptions in test names") {
+  test("'specify' test names should include an enclosing describe string, separated by a space") {
+    class MySpec extends Spec {
+      describe("A Stack") {
+        specify("must allow me to pop") {}
+        specify("must allow me to push") {}
+      }
+    }
+    val a = new MySpec
+    assert(a.testNames.size === 2)
+    assert(a.testNames.elements.toList(0) === "A Stack must allow me to pop")
+    assert(a.testNames.elements.toList(1) === "A Stack must allow me to push")
+  }
+
+  test("'it should' test names should properly nest descriptions in test names") {
     class MySpec extends Spec {
       describe("A Stack") {
         describe("(when not empty)") {
@@ -201,6 +183,23 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "A Stack (when not full) should allow me to push")
   }
   
+  test("'specify' test names should properly nest descriptions in test names") {
+    class MySpec extends Spec {
+      describe("A Stack") {
+        describe("(when not empty)") {
+          specify("must allow me to pop") {}
+        }
+        describe("(when not full)") {
+          specify("must allow me to push") {}
+        }
+      }
+    }
+    val a = new MySpec
+    assert(a.testNames.size === 2)
+    assert(a.testNames.elements.toList(0) === "A Stack (when not empty) must allow me to pop")
+    assert(a.testNames.elements.toList(1) === "A Stack (when not full) must allow me to push")
+  }
+  
   test("should be able to mix in ImpSuite without any problems") {
     class MySpec extends Spec with ImpSuite {
       describe("A Stack") {
@@ -215,156 +214,24 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute()
   }
-
-  ignore("A given reporter clause should be able to send info to the reporter") {
-
-    val expectedMessage = "this is the expected message"
-
-    class MyReporter extends Reporter {
-      var infoProvidedCalled = false
-      var expectedMessageReceived = false
-      var lastReport: Report = null
-      override def infoProvided(report: Report) {
-        infoProvidedCalled = true
-        if (!expectedMessageReceived) {
-          expectedMessageReceived = report.message.indexOf(expectedMessage) != -1
-        }
-      }
-    }
-
-    class MySpec extends Spec {
-      describe("A Stack") {
-        describe("(when not empty)") {
-          it should "allow me to pop" in {
-            val report = new Report("myName", expectedMessage)
-            // info(report)
-            ()
-          }
-        }
-        describe("(when not full)") {
-          it should "allow me to push" in {}
-        }
-      }
-    }
-    val a = new MySpec
-    val myRep = new MyReporter
-    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
-    assert(myRep.infoProvidedCalled)
-    assert(myRep.expectedMessageReceived)
-  }
- 
-  test("a shared example invoked with 'it should behave like' should get invoked") {
-    class MySpec extends Spec with ImpSuite {
-      var sharedExampleInvoked = false
-      case class InvocationVerifier extends Behavior {
-        it should "be invoked" in {
-          sharedExampleInvoked = true
-        }
-      }
-      describe("A Stack") {
-        describe("(when not empty)") {
-          it should "allow me to pop" in {}
-          it should behave like { InvocationVerifier() }
-        }
-        describe("(when not full)") {
-          it should "allow me to push" in {}
-        }
-      }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(a.sharedExampleInvoked)
-  }
   
-  test("two examples in a shared behavior should get invoked") {
-    class MySpec extends Spec with ImpSuite {
-      var sharedExampleInvoked = false
-      var sharedExampleAlsoInvoked = false
-      case class InvocationVerifier extends Behavior {
-        it should "be invoked" in {
-          sharedExampleInvoked = true
-        }
-        it should "also be invoked" in {
-          sharedExampleAlsoInvoked = true
-        }
-      }
-      describe("A Stack") {
-        describe("(when not empty)") {
-          it should "allow me to pop" in {}
-          it should behave like { InvocationVerifier() }
-        }
-        describe("(when not full)") {
-          it should "allow me to push" in {}
-        }
-      }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(a.sharedExampleInvoked)
-    assert(a.sharedExampleAlsoInvoked)
-  }
-
-  test("three examples in a shared behavior should be invoked in order") {
-    class MySpec extends Spec {
-      var example1WasInvoked = false
-      var example2WasInvokedAfterExample1 = false
-      var example3WasInvokedAfterExample2 = false
-      case class InvocationVerifier extends Behavior {
-        it should "get invoked" in {
-          example1WasInvoked = true
-        }
-        it should "also get invoked" in {
-          if (example1WasInvoked)
-            example2WasInvokedAfterExample1 = true
-        }
-        it should "also also get invoked" in {
-          if (example2WasInvokedAfterExample1)
-            example3WasInvokedAfterExample2 = true
-        }
-      }
-      it should behave like { InvocationVerifier() }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(a.example1WasInvoked)
-    assert(a.example2WasInvokedAfterExample1)
-    assert(a.example3WasInvokedAfterExample2)
-  }
-  
-  test("three examples in a shared behavior should not get invoked at all if the behavior isn't used in a like clause") {
-    class MySpec extends Spec {
-      var example1WasInvoked = false
-      var example2WasInvokedAfterExample1 = false
-      var example3WasInvokedAfterExample2 = false
-      case class InvocationVerifier extends Behavior {
-        it should "get invoked" in {
-          example1WasInvoked = true
-        }
-        it should "also get invoked" in {
-          if (example1WasInvoked)
-            example2WasInvokedAfterExample1 = true
-        }
-        it should "also also get invoked" in {
-          if (example2WasInvokedAfterExample1)
-            example3WasInvokedAfterExample2 = true
-        }
-      }
-      // don't use it: it should behave like { InvocationVerifier() }
-    }
-    val a = new MySpec
-    a.execute()
-    assert(!a.example1WasInvoked)
-    assert(!a.example2WasInvokedAfterExample1)
-    assert(!a.example3WasInvokedAfterExample2)
-  }
-  
-  test("In a testStarting report, the example name should start with 'it should' if top level") {
-    var testStartingReportHadCorrectTestName = false
+  test("Top-level 'it should' examples should yield good strings in a testStarting report") {
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
-        if (report.name.indexOf("it should start with proper words") != -1) {
-          testStartingReportHadCorrectTestName = true
-        }  
+        if (report.name.indexOf("it should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            println("<" + specReport.specText + "> ^^^^^ <" + specReport.formattedSpecText + ">")
+            if (specReport.specText == "it should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- it should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ => println(">>>>>>>>>>>>" + report.getClass.getName)
+        }
       }
     }
     class MySpec extends Spec {
@@ -372,9 +239,39 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectTestName)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
   }
   
+  test("Top-level 'specify' examples should yield good strings in a testStarting report") {
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("it must start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "it must start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- it must start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      specify("it must start with proper words") {}
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+  }
+
   test("In a testSucceeded report, the example name should start with 'it should' if top level") {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
@@ -448,57 +345,8 @@ class SpecSuite extends FunSuite {
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testStartingReportHadCorrectTestName)
   }
-   
-  test("The example name for a shared example invoked with 'it should behave like' should start with 'it should' if top level") {
-    var testStartingReportHadCorrectTestName = false
-    class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
-        if (report.name.indexOf("it should be invoked") != -1) {
-          testStartingReportHadCorrectTestName = true
-        }  
-      }
-    }
-    class MySpec extends Spec with ImpSuite {
-      var sharedExampleInvoked = false
-      case class InvocationVerifier extends Behavior {
-        it should "be invoked" in {
-          sharedExampleInvoked = true
-        }
-      }
-      it should behave like { InvocationVerifier() }
-    }
-    val a = new MySpec
-    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectTestName)
-  }
   
-  ignore("The example name for a shared example invoked with 'it should behave like' should start with '<description> should' if nested one level in a describe clause") {
-    var testStartingReportHadCorrectTestName = false
-    class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
-        if (report.name.indexOf("A Stack should pop properly") != -1) {
-          testStartingReportHadCorrectTestName = true
-        }  
-        println("*** name was: " + report.name)
-      }
-    }
-    class MySpec extends Spec {
-      var sharedExampleInvoked = false
-      case class InvocationVerifier extends Behavior {
-        it should "pop properly" in {
-          sharedExampleInvoked = true
-        }
-      }
-      describe("A Stack") {
-        it should behave like { InvocationVerifier() }
-      }
-    }
-    val a = new MySpec
-    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
-    assert(testStartingReportHadCorrectTestName)
-  }
-  
-  test("expectedTestCount is the number of examples if no shares") {
+  test("expectedTestCount is the number of 'it should' examples if no shares") {
     class MySpec extends Spec {
       it should "one" in {}
       it should "two" in {}
@@ -511,99 +359,22 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 5)
   }
-  
-  test("expectedTestCount should not include tests in shares if never called") {
+
+  test("expectedTestCount is the number of 'specify' examples if no shares") {
     class MySpec extends Spec {
-      class Misbehavior extends Spec {
-        it should "six" in {}
-        it should "seven" in {}
-      }
-      it should "one" in {}
-      it should "two" in {}
+      specify("must one") {}
+      specify("must two") {}
       describe("behavior") {
-        it should "three" in {}  
-        it should "four" in {}
+        specify("must three") {}  
+        specify("must four") {}
       }
-      it should "five" in {}
+      specify("must five") {}
     }
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 5)
   }
 
-  test("expectedTestCount should include tests in a share that is called") {
-    class MySpec extends Spec {
-      case class Misbehavior extends Behavior {
-        it should "six" in {}
-        it should "seven" in {}
-      }
-      it should "one" in {}
-      it should "two" in {}
-      describe("behavior") {
-        it should "three" in {} 
-        it should behave like { Misbehavior() }
-        it should "four" in {}
-      }
-      it should "five" in {}
-    }
-    val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 7)
-  }
-
-  test("expectedTestCount should include tests in a share that is called twice") {
-    class MySpec extends Spec {
-      case class Misbehavior extends Behavior {
-        it should "six" in {}
-        it should "seven" in {}
-      }
-      it should "one" in {}
-      it should "two" in {}
-      describe("behavior") {
-        it should "three" in {} 
-        it should behave like { Misbehavior() }
-        it should "four" in {}
-      }
-      it should "five" in {}
-      it should behave like { Misbehavior() }
-    }
-    val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 9)
-  }
-  
-  // Probably will want to just delete this one. 
-  ignore("should be able to say it should \"bla\" given[Stack]") {
-    class MySpec extends Spec {
-      import java.util.Date
-      def runWithNowDate(testFunction: Date => Unit) = {
-        testFunction(new Date)
-      }
-      def createNow = new Date
-      it should "do something long-winded" in {
-        runWithNowDate {
-          date => ()
-        }
-      }
-      it should "do something long-winded again 2" in {
-        val now = createNow
-        // use it
-        ()
-      }
-    }
-    ()
-  }
-  
-  test("should be able to say 'specify' to register an example") {
-    class MySpec extends Spec {
-      var exampleWasExecuted = false
-      specify("this is a spec") {
-        exampleWasExecuted = true
-      }
-    }
-    var a = new MySpec
-    assert(!a.exampleWasExecuted)
-    a.execute()
-    assert(a.exampleWasExecuted)
-  }
-  
+  // Testing strings sent in reports
   test("In a testStarting report, the example name should be verbatim if top level if example registered with specify") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
@@ -1072,6 +843,258 @@ class SpecSuite extends FunSuite {
     assert(myRep.expectedLevelReceivedByTestFailed)
     assert(myRep.expectedLevelReceivedByInfoProvided)
   }
+  
+ 
+  // Testing Shared examples
+  test("a shared example invoked with 'it should behave like' should get invoked") {
+    class MySpec extends Spec with ImpSuite {
+      var sharedExampleInvoked = false
+      case class InvocationVerifier extends Behavior {
+        it should "be invoked" in {
+          sharedExampleInvoked = true
+        }
+      }
+      describe("A Stack") {
+        describe("(when not empty)") {
+          it should "allow me to pop" in {}
+          it should behave like { InvocationVerifier() }
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.sharedExampleInvoked)
+  }
+  
+  test("two examples in a shared behavior should get invoked") {
+    class MySpec extends Spec with ImpSuite {
+      var sharedExampleInvoked = false
+      var sharedExampleAlsoInvoked = false
+      case class InvocationVerifier extends Behavior {
+        it should "be invoked" in {
+          sharedExampleInvoked = true
+        }
+        it should "also be invoked" in {
+          sharedExampleAlsoInvoked = true
+        }
+      }
+      describe("A Stack") {
+        describe("(when not empty)") {
+          it should "allow me to pop" in {}
+          it should behave like { InvocationVerifier() }
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.sharedExampleInvoked)
+    assert(a.sharedExampleAlsoInvoked)
+  }
+
+  test("three examples in a shared behavior should be invoked in order") {
+    class MySpec extends Spec {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      case class InvocationVerifier extends Behavior {
+        it should "get invoked" in {
+          example1WasInvoked = true
+        }
+        it should "also get invoked" in {
+          if (example1WasInvoked)
+            example2WasInvokedAfterExample1 = true
+        }
+        it should "also also get invoked" in {
+          if (example2WasInvokedAfterExample1)
+            example3WasInvokedAfterExample2 = true
+        }
+      }
+      it should behave like { InvocationVerifier() }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+    assert(a.example3WasInvokedAfterExample2)
+  }
+  
+  test("three examples in a shared behavior should not get invoked at all if the behavior isn't used in a like clause") {
+    class MySpec extends Spec {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      case class InvocationVerifier extends Behavior {
+        it should "get invoked" in {
+          example1WasInvoked = true
+        }
+        it should "also get invoked" in {
+          if (example1WasInvoked)
+            example2WasInvokedAfterExample1 = true
+        }
+        it should "also also get invoked" in {
+          if (example2WasInvokedAfterExample1)
+            example3WasInvokedAfterExample2 = true
+        }
+      }
+      // don't use it: it should behave like { InvocationVerifier() }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(!a.example1WasInvoked)
+    assert(!a.example2WasInvokedAfterExample1)
+    assert(!a.example3WasInvokedAfterExample2)
+  }
+  
+  test("The example name for a shared example invoked with 'it should behave like' should start with 'it should' if top level") {
+    var testStartingReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("it should be invoked") != -1) {
+          testStartingReportHadCorrectTestName = true
+        }  
+      }
+    }
+    class MySpec extends Spec with ImpSuite {
+      var sharedExampleInvoked = false
+      case class InvocationVerifier extends Behavior {
+        it should "be invoked" in {
+          sharedExampleInvoked = true
+        }
+      }
+      it should behave like { InvocationVerifier() }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectTestName)
+  }
+  
+  ignore("The example name for a shared example invoked with 'it should behave like' should start with '<description> should' if nested one level in a describe clause") {
+    var testStartingReportHadCorrectTestName = false
+    class MyReporter extends Reporter {
+      override def testStarting(report: Report) {
+        if (report.name.indexOf("A Stack should pop properly") != -1) {
+          testStartingReportHadCorrectTestName = true
+        }  
+        println("*** name was: " + report.name)
+      }
+    }
+    class MySpec extends Spec {
+      var sharedExampleInvoked = false
+      case class InvocationVerifier extends Behavior {
+        it should "pop properly" in {
+          sharedExampleInvoked = true
+        }
+      }
+      describe("A Stack") {
+        it should behave like { InvocationVerifier() }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testStartingReportHadCorrectTestName)
+  }
+ 
+  test("expectedTestCount should not include tests in shares if never called") {
+    class MySpec extends Spec {
+      class Misbehavior extends Spec {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {}  
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySpec
+    assert(a.expectedTestCount(Set(), Set()) === 5)
+  }
+
+  test("expectedTestCount should include tests in a share that is called") {
+    class MySpec extends Spec {
+      case class Misbehavior extends Behavior {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {} 
+        it should behave like { Misbehavior() }
+        it should "four" in {}
+      }
+      it should "five" in {}
+    }
+    val a = new MySpec
+    assert(a.expectedTestCount(Set(), Set()) === 7)
+  }
+
+  test("expectedTestCount should include tests in a share that is called twice") {
+    class MySpec extends Spec {
+      case class Misbehavior extends Behavior {
+        it should "six" in {}
+        it should "seven" in {}
+      }
+      it should "one" in {}
+      it should "two" in {}
+      describe("behavior") {
+        it should "three" in {} 
+        it should behave like { Misbehavior() }
+        it should "four" in {}
+      }
+      it should "five" in {}
+      it should behave like { Misbehavior() }
+    }
+    val a = new MySpec
+    assert(a.expectedTestCount(Set(), Set()) === 9)
+  }
+
+  // End of Share stuff
+  ignore("A given reporter clause should be able to send info to the reporter") {
+
+    val expectedMessage = "this is the expected message"
+
+    class MyReporter extends Reporter {
+      var infoProvidedCalled = false
+      var expectedMessageReceived = false
+      var lastReport: Report = null
+      override def infoProvided(report: Report) {
+        infoProvidedCalled = true
+        if (!expectedMessageReceived) {
+          expectedMessageReceived = report.message.indexOf(expectedMessage) != -1
+        }
+      }
+    }
+
+    class MySpec extends Spec {
+      describe("A Stack") {
+        describe("(when not empty)") {
+          it should "allow me to pop" in {
+            val report = new Report("myName", expectedMessage)
+            // info(report)
+            ()
+          }
+        }
+        describe("(when not full)") {
+          it should "allow me to push" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    val myRep = new MyReporter
+    a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
+    assert(myRep.infoProvidedCalled)
+    assert(myRep.expectedMessageReceived)
+  }
+
   /*
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false

@@ -69,17 +69,18 @@ trait Spec extends Suite with Behavior {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    // A testStarting report won't normally show up in a specification-style output, but
+    val exampleSucceededIcon = Resources("exampleSucceededIconChar")
+    val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
+
+      // A testStarting report won't normally show up in a specification-style output, but
     // will show up in a test-style output.
-    val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, example.specText, false)
+    val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, false)
 
     wrappedReporter.testStarting(report)
 
     try {
       example.f()
 
-      val exampleSucceededIcon = Resources("exampleSucceededIconChar")
-      val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
       val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, true)
 
       wrappedReporter.testSucceeded(report)
