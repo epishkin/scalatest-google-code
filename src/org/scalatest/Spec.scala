@@ -72,7 +72,7 @@ trait Spec extends Suite with Behavior {
     val exampleSucceededIcon = Resources("exampleSucceededIconChar")
     val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
 
-      // A testStarting report won't normally show up in a specification-style output, but
+    // A testStarting report won't normally show up in a specification-style output, but
     // will show up in a test-style output.
     val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, false)
 

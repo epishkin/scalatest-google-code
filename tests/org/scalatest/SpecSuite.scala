@@ -225,12 +225,11 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            println("<" + specReport.specText + "> ^^^^^ <" + specReport.formattedSpecText + ">")
             if (specReport.specText == "it should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- it should start with proper words")
               reportHadCorrectFormattedSpecText = true
-          case _ => println(">>>>>>>>>>>>" + report.getClass.getName)
+          case _ =>
         }
       }
     }
@@ -271,7 +270,120 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
   }
+  
+  test("Top-level 'it should' examples should yield good strings in a testSucceeded report") {
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    class MyReporter extends Reporter {
+      override def testSucceeded(report: Report) {
+        if (report.name.indexOf("it should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "it should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- it should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      it should "start with proper words" in {}
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+  }
+  
+  test("Top-level 'specify' examples should yield good strings in a testSucceeded report") {
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    class MyReporter extends Reporter {
+      override def testSucceeded(report: Report) {
+        if (report.name.indexOf("it must start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "it must start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- it must start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      specify("it must start with proper words") {}
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+  }
 
+  test("Top-level 'it should' examples should yield good strings in a testFailed report") {
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("it should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "it should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- it should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      it should "start with proper words" in { fail() }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+  }
+  
+  test("Top-level 'specify' examples should yield good strings in a testFailed report") {
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("it must start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "it must start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- it must start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      specify("it must start with proper words") { fail() }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+  }
+
+  // The old ones
   test("In a testSucceeded report, the example name should start with 'it should' if top level") {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
