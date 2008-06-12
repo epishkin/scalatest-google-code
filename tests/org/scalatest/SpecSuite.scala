@@ -1258,7 +1258,67 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
 
-  
+  // Tests for good strings in report for shared-behavior, nested-one-level examples
+  test("Nested-one-level 'shared behavior - it should' examples should yield good strings in a testStarting report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testStarting(report: Report) {
+        // infoProvided should be invoked before the this method
+        println("############################### " + report.name)
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    case class MyBehavior extends Behavior {
+      it should "start with proper words" in {}
+    }
+    class MySpec extends Spec {
+      describe("My Spec") {
+        it should behave like MyBehavior()
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+
   // The old ones XXXXXX
   test("In a testSucceeded report, the example name should start with 'it should' if top level") {
     var testSucceededReportHadCorrectTestName = false

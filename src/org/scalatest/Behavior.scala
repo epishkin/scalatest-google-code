@@ -141,7 +141,8 @@ trait Behavior {
   protected val behave = new BehaveWord
   class Likifier {
     def like(sharedBehavior: Behavior) {
-      currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior, currentBranch.level + 1)
+      // currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior, currentBranch.level + 1)
+      currentBranch.subNodes :::= sharedBehavior.trunk.subNodes
     }
   }
   
