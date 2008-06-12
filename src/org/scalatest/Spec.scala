@@ -40,7 +40,9 @@ trait Spec extends Suite with Behavior {
     branch match {
       case Description(_, descriptionName, level) => {
         val wrappedReporter = wrapReporterIfNecessary(reporter)
-        val report = new SpecReport("what do I put here?", descriptionName, descriptionName, descriptionName, true)
+        // Call getTestNameForReport with the description, because that puts the Suite name
+        // in front of the description, which looks good in the regular report.
+        val report = new SpecReport(getTestNameForReport(descriptionName), descriptionName, descriptionName, descriptionName, true)
         wrappedReporter.infoProvided(report)
       }
       case _ =>
