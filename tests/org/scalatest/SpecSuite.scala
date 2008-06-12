@@ -392,9 +392,13 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       override def infoProvided(report: Report) {
-        println("%$%$%$%$ " + report.name)
+        // infoProvided should be invoked before the other method
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
         if (report.name.indexOf("My Spec") != -1)
           infoReportHadCorrectTestName = true
         report match {
@@ -407,7 +411,9 @@ class SpecSuite extends FunSuite {
         }
       }
       override def testStarting(report: Report) {
-        println("%$%$%$%$ Startin: " + report.name)
+        // infoProvided should be invoked before the this method
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
         if (report.name.indexOf("My Spec should start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
