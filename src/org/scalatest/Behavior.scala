@@ -107,7 +107,7 @@ trait Behavior {
     var count = 0
     branch.subNodes.reverse.foreach(
       _ match {
-        case Example(parent, exampleFullName, exampleShortName, level, f) => count += 1
+        case Example(parent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => count += 1
         case SharedBehaviorNode(parent, sharedBehavior, level) => { 
           count += countTestsInBranch(sharedBehavior.trunk) // TODO: Will need to handle includes and excludes?
         }
@@ -119,7 +119,7 @@ trait Behavior {
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
     currentBranch.subNodes ::=
-      Example(currentBranch, getExampleFullName(exampleRawName, needsShould), getExampleShortName(exampleRawName, needsShould), currentBranch.level + 1, f _)
+      Example(currentBranch, getExampleFullName(exampleRawName, needsShould), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould), currentBranch.level + 1, f _)
   }
   
   def specify(exampleRawName: String)(f: => Unit) {
@@ -137,12 +137,21 @@ trait Behavior {
     def should(behaveWord: BehaveWord) = new Likifier()
   }
 
+  def transformSharedExamplesFullName(node: Node): Node = {
+  
+    node match {
+      case Example(parent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
+        Example(parent, getExampleFullName(exampleRawName, needsShould), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould), level, f)
+      case _ => node
+    }
+  }
+  
   protected class BehaveWord {}
   protected val behave = new BehaveWord
   class Likifier {
     def like(sharedBehavior: Behavior) {
       // currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior, currentBranch.level + 1)
-      currentBranch.subNodes :::= sharedBehavior.trunk.subNodes
+      currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_))
     }
   }
   

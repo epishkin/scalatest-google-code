@@ -62,7 +62,7 @@ trait Spec extends Suite with Behavior {
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, exampleFullName, specText, level, f) => {
+        case ex @ Example(parent, exampleFullName, exampleRawName, needsShould, specText, level, f) => {
           runExample(ex, reporter)
         }
         case SharedBehaviorNode(parent, sharedBehavior, level) => {
