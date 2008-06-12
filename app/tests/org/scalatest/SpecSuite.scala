@@ -384,7 +384,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
 
-  // Test for good strings in report for nested-one-level examples
+  // Tests for good strings in report for nested-one-level examples
   test("Nested-one-level 'it should' examples should yield good strings in a testStarting report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
@@ -397,12 +397,15 @@ class SpecSuite extends FunSuite {
     class MyReporter extends Reporter {
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
+        println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% name: <" + report.name + ">")
         assert(!theOtherMethodHasBeenInvoked)
         infoProvidedHasBeenInvoked = true
         if (report.name.indexOf("My Spec") != -1)
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
+        println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% specText: <" + specReport.specText + ">")
+        println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% formattedSpecText: <" + specReport.formattedSpecText + ">")
             if (specReport.specText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
@@ -608,7 +611,6 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectSpecText)
     assert(infoReportHadCorrectFormattedSpecText)
   }
-
     
   test("Nested-one-level 'it should' examples should yield good strings in a testFailed report") {
     var infoReportHadCorrectTestName = false
@@ -722,6 +724,359 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
+  
+  // Tests for good strings in report for nested-two-levels examples
+  test("Nested-two-levels 'it should' examples should yield good strings in a testStarting report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        println("&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&* infoProvided: " + report.name)
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testStarting(report: Report) {
+        println("&*&*&*&*&*&*&*&*&*&*&*&*&*&*&*&* testStarting: " + report.name)
+        // infoProvided should be invoked before the this method
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("My") {
+        describe("Spec") {
+          it should "start with proper words" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+
+  test("Nested-two-levels 'specify' examples should yield good strings in a testStarting report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testStarting(report: Report) {
+        // infoProvided should be invoked before the this method
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec must start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "must start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- must start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("My") {
+        describe("Spec") {
+          specify("must start with proper words") {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+  
+  test("Nested-two-levels 'it should' examples should yield good strings in a testSucceeded report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testSucceeded(report: Report) {
+        // infoProvided should be invoked before the this method
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("My") {
+        describe("Spec") {
+          it should "start with proper words" in {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+
+  test("Nested-two-levels 'specify' examples should yield good strings in a testSucceeded report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testSucceeded(report: Report) {
+        // infoProvided should be invoked before the this method
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec must start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "must start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- must start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("My") {
+        describe("Spec") {
+          specify("must start with proper words") {}
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+    
+  test("Nested-two-levels 'it should' examples should yield good strings in a testFailed report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testFailed(report: Report) {
+        // infoProvided should be invoked before the this method
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("My") {
+        describe("Spec") {
+          it should "start with proper words" in { fail() }
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+
+  test("Nested-two-levels 'specify' examples should yield good strings in a testFailed report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testFailed(report: Report) {
+        // infoProvided should be invoked before the this method
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec must start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "must start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- must start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    class MySpec extends Spec {
+      describe("My") {
+        describe("Spec") {
+          specify("must start with proper words") { fail() }
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+
+  
   // The old ones
   test("In a testSucceeded report, the example name should start with 'it should' if top level") {
     var testSucceededReportHadCorrectTestName = false

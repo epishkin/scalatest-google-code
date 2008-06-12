@@ -7,7 +7,7 @@ trait Behavior {
   private[scalatest] val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
   
-  private def getPrefix(branch: Branch): String = {
+  protected def getPrefix(branch: Branch): String = {
     branch match {
        case Trunk() => ""
       // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
