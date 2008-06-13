@@ -7,7 +7,7 @@ trait Behavior {
   private[scalatest] val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
   
-  protected def getPrefix(branch: Branch): String = {
+  protected[scalatest] def getPrefix(branch: Branch): String = {
     branch match {
        case Trunk() => ""
       // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
@@ -137,11 +137,13 @@ trait Behavior {
     def should(behaveWord: BehaveWord) = new Likifier()
   }
 
-  def transformSharedExamplesFullName(node: Node): Node = {
+  private def transformSharedExamplesFullName(node: Node, newParent: Branch): Node = {
   
     node match {
-      case Example(parent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-        Example(parent, getExampleFullName(exampleRawName, needsShould), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould), level, f)
+      case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
+        Example(newParent, getExampleFullName(exampleRawName, needsShould), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould), level, f)
+      case Description(oldParent, descriptionName, level) => 
+        Description(newParent, descriptionName, level)
       case _ => node
     }
   }
@@ -151,7 +153,7 @@ trait Behavior {
   class Likifier {
     def like(sharedBehavior: Behavior) {
       // currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior, currentBranch.level + 1)
-      currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_))
+      currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_, currentBranch))
     }
   }
   

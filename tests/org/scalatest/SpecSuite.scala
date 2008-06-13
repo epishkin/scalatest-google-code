@@ -1286,7 +1286,6 @@ class SpecSuite extends FunSuite {
       }
       override def testStarting(report: Report) {
         // infoProvided should be invoked before the this method
-        println("############################### " + report.name)
         assert(infoProvidedHasBeenInvoked)
         theOtherMethodHasBeenInvoked = true
         if (report.name.indexOf("My Spec should start with proper words") != -1)
@@ -1303,6 +1302,79 @@ class SpecSuite extends FunSuite {
     }
     case class MyBehavior extends Behavior {
       it should "start with proper words" in {}
+    }
+    class MySpec extends Spec {
+      describe("My Spec") {
+        it should behave like MyBehavior()
+      }
+    }
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(reportHadCorrectTestName)
+    assert(reportHadCorrectSpecText)
+    assert(reportHadCorrectFormattedSpecText)
+    assert(infoReportHadCorrectTestName)
+    assert(infoReportHadCorrectSpecText)
+    assert(infoReportHadCorrectFormattedSpecText)
+  }
+
+  test("An empty describe shouldn't throw an exception") {
+    class MySpec extends Spec {
+      describe ("this will be empty") {}
+    }
+    val a = new MySpec
+    a.execute()
+  }  
+  
+  // Tests for good strings in report for shared-behavior, nested-one-level examples, in which
+  // there's a describe in the shared behavior.
+  ignore("Nested-one-level 'shared behavior - describe - it should' examples should yield good strings in a testStarting report") {
+    var infoReportHadCorrectTestName = false
+    var infoReportHadCorrectSpecText = false
+    var infoReportHadCorrectFormattedSpecText = false
+    var reportHadCorrectTestName = false
+    var reportHadCorrectSpecText = false
+    var reportHadCorrectFormattedSpecText = false
+    var infoProvidedHasBeenInvoked = false
+    var theOtherMethodHasBeenInvoked = false
+    class MyReporter extends Reporter {
+      override def infoProvided(report: Report) {
+        // infoProvided should be invoked before the other method
+        println("############################### infoProvided: " + report.name)
+        assert(!theOtherMethodHasBeenInvoked)
+        infoProvidedHasBeenInvoked = true
+        if (report.name.indexOf("My Spec (when nested)") != -1)
+          infoReportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "My Spec (when nested)")
+              infoReportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "My Spec (when nested)")
+              infoReportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+      override def testStarting(report: Report) {
+        // infoProvided should be invoked before the this method
+        println("############################### testStarting: " + report.name)
+        assert(infoProvidedHasBeenInvoked)
+        theOtherMethodHasBeenInvoked = true
+        if (report.name.indexOf("My Spec (when nested) should start with proper words") != -1)
+          reportHadCorrectTestName = true
+        report match {
+          case specReport: SpecReport =>
+            if (specReport.specText == "should start with proper words")
+              reportHadCorrectSpecText = true
+            if (specReport.formattedSpecText == "- should start with proper words")
+              reportHadCorrectFormattedSpecText = true
+          case _ =>
+        }
+      }
+    }
+    case class MyBehavior extends Behavior {
+      describe("(when nested)") {
+        it should "start with proper words" in {}
+      }
     }
     class MySpec extends Spec {
       describe("My Spec") {
