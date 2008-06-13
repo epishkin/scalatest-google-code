@@ -13,3 +13,10 @@ private[scalatest] object NodeFamily {
   case class SharedBehaviorNode(parent: Branch, sharedBehavior: Behavior, override val level: Int) extends Node(Some(parent), level)
   case class Description(parent: Branch, descriptionName: String, override val level: Int) extends Branch(Some(parent), level)
 }
+/*
+ * The exampleRawName and needsShould is now stored in Example because when I import a
+ * shared example, I recalculate the exampleFullName and specText. This is needed because
+ * when a shared behavior is instantiated, it doesn't know what describe clauses it might
+ * be nested in yet. When it is passed to like, though, at the point it is known, so the
+ * Example is transformed into one that has recalculated these strings.
+ */
