@@ -1328,7 +1328,7 @@ class SpecSuite extends FunSuite {
   
   // Tests for good strings in report for shared-behavior, nested-one-level examples, in which
   // there's a describe in the shared behavior.
-  ignore("Nested-one-level 'shared behavior - describe - it should' examples should yield good strings in a testStarting report") {
+  test("Nested-one-level 'shared behavior - describe - it should' examples should yield good strings in a testStarting report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
