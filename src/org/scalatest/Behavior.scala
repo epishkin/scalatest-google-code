@@ -23,8 +23,8 @@ trait Behavior {
     }
   }
 */
-  private[scalatest] def getExampleFullName(exampleRawName: String, needsShould: Boolean): String = {
-    val prefix = getPrefix(currentBranch).trim
+  private[scalatest] def getExampleFullName(exampleRawName: String, needsShould: Boolean, parent: Branch): String = {
+    val prefix = getPrefix(parent).trim
     if (prefix.isEmpty) {
       if (needsShould) {
         // class MySpec extends Spec {
@@ -63,8 +63,8 @@ trait Behavior {
     }
   }
 
-  private[scalatest] def getExampleShortName(exampleRawName: String, needsShould: Boolean): String = {
-    val prefix = getPrefix(currentBranch).trim
+  private[scalatest] def getExampleShortName(exampleRawName: String, needsShould: Boolean, parent: Branch): String = {
+    val prefix = getPrefix(parent).trim
     if (prefix.isEmpty) {
       if (needsShould) {
         // class MySpec extends Spec {
@@ -119,7 +119,7 @@ trait Behavior {
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
     currentBranch.subNodes ::=
-      Example(currentBranch, getExampleFullName(exampleRawName, needsShould), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould), currentBranch.level + 1, f _)
+      Example(currentBranch, getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, currentBranch), currentBranch.level + 1, f _)
   }
   
   def specify(exampleRawName: String)(f: => Unit) {
@@ -137,13 +137,28 @@ trait Behavior {
     def should(behaveWord: BehaveWord) = new Likifier()
   }
 
+  private def transformTheParent(node: Node, newParent: Branch) = {
+    node match {
+      case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
+        Example(newParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
+      case oldDesc @ Description(oldParent, descriptionName, level) =>
+        val newDesc = Description(newParent, descriptionName, level)
+        newDesc.subNodes = oldDesc.subNodes
+        newDesc
+      case _ => node
+    }
+  }
+  
   private def transformSharedExamplesFullName(node: Node, newParent: Branch): Node = {
   
     node match {
       case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-        Example(newParent, getExampleFullName(exampleRawName, needsShould), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould), level, f)
-      case Description(oldParent, descriptionName, level) => 
-        Description(newParent, descriptionName, level)
+        Example(oldParent, getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, currentBranch), level, f)
+      case oldDesc @ Description(oldParent, descriptionName, level) =>
+        val newDesc = Description(newParent, descriptionName, level)
+        newDesc.subNodes = oldDesc.subNodes.map(transformTheParent(_, newDesc))
+        println("**&*&*&*&*&*&*&*&*& oldDesc.subNodes: " + oldDesc.subNodes)
+        newDesc
       case _ => node
     }
   }
@@ -154,6 +169,7 @@ trait Behavior {
     def like(sharedBehavior: Behavior) {
       // currentBranch.subNodes ::= SharedBehaviorNode(currentBranch, sharedBehavior, currentBranch.level + 1)
       currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_, currentBranch))
+      println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
     }
   }
   
