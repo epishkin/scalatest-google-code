@@ -43,7 +43,7 @@ trait Spec extends Suite with Behavior {
         def sendInfoProvidedMessage() {
           // Need to use the full name of the description, which includes all the descriptions it is nested inside
           // Call getPrefix and pass in this Desc, to get the full name
-          val descriptionFullName = getPrefix(desc).trim
+          val descriptionFullName = Behavior.getPrefix(desc).trim
             
           val wrappedReporter = wrapReporterIfNecessary(reporter)
             

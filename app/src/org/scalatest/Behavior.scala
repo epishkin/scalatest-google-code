@@ -7,24 +7,8 @@ trait Behavior {
   private[scalatest] val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
   
-  protected[scalatest] def getPrefix(branch: Branch): String = {
-    branch match {
-       case Trunk() => ""
-      // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
-      case Description(parent, descriptionName, level) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
-    }
-  }
-/*
-  private def needsIt(branch: Branch): Boolean = {
-    branch match {
-      case Trunk() => true
-      case Description(parent, descriptionName) => false
-      // Later, will need to add cases for ignore and group, which call needsIt(parent)
-    }
-  }
-*/
   private[scalatest] def getExampleFullName(exampleRawName: String, needsShould: Boolean, parent: Branch): String = {
-    val prefix = getPrefix(parent).trim
+    val prefix = Behavior.getPrefix(parent).trim
     if (prefix.isEmpty) {
       if (needsShould) {
         // class MySpec extends Spec {
@@ -64,7 +48,7 @@ trait Behavior {
   }
 
   private[scalatest] def getExampleShortName(exampleRawName: String, needsShould: Boolean, parent: Branch): String = {
-    val prefix = getPrefix(parent).trim
+    val prefix = Behavior.getPrefix(parent).trim
     if (prefix.isEmpty) {
       if (needsShould) {
         // class MySpec extends Spec {
@@ -185,5 +169,15 @@ trait Behavior {
     currentBranch = newBranch
     f()
     currentBranch = oldBranch
+  }
+}
+
+private[scalatest] object Behavior {
+  protected[scalatest] def getPrefix(branch: Branch): String = {
+    branch match {
+       case Trunk() => ""
+      // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
+      case Description(parent, descriptionName, level) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
+    }
   }
 }
