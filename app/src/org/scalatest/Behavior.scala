@@ -26,21 +26,21 @@ trait Behavior {
     def should(exampleName: String) = new Inifier(exampleName)
     def should(behaveWord: BehaveWord) = new Likifier()
   }
-
-  private def transformTheParent(node: Node, newParent: Branch) = {
-    node match {
-      case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-        Example(newParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
-      case oldDesc @ Description(oldParent, descriptionName, level) =>
-        val newDesc = Description(newParent, descriptionName, level)
-        newDesc.subNodes = oldDesc.subNodes
-        newDesc
-      case _ => node
-    }
-  }
   
   private def transformSharedExamplesFullName(node: Node, newParent: Branch): Node = {
-  
+
+    def transformTheParent(node: Node, newParent: Branch) = {
+      node match {
+        case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
+          Example(newParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
+        case oldDesc @ Description(oldParent, descriptionName, level) =>
+          val newDesc = Description(newParent, descriptionName, level)
+          newDesc.subNodes = oldDesc.subNodes
+          newDesc
+        case _ => node
+      }
+    }
+    
     node match {
       case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
         Example(oldParent, getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, currentBranch), level, f)
