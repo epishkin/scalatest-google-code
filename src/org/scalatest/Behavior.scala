@@ -9,7 +9,7 @@ trait Behavior {
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
     currentBranch.subNodes ::=
-      Example(currentBranch, NodeFamily.getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, NodeFamily.getExampleShortName(exampleRawName, needsShould, currentBranch), currentBranch.level + 1, f _)
+      Example(currentBranch, getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, currentBranch), currentBranch.level + 1, f _)
   }
   
   def specify(exampleRawName: String)(f: => Unit) {
@@ -30,7 +30,7 @@ trait Behavior {
   private def transformTheParent(node: Node, newParent: Branch) = {
     node match {
       case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-        Example(newParent, NodeFamily.getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, NodeFamily.getExampleShortName(exampleRawName, needsShould, newParent), level, f)
+        Example(newParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
       case oldDesc @ Description(oldParent, descriptionName, level) =>
         val newDesc = Description(newParent, descriptionName, level)
         newDesc.subNodes = oldDesc.subNodes
@@ -43,7 +43,7 @@ trait Behavior {
   
     node match {
       case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-        Example(oldParent, NodeFamily.getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, NodeFamily.getExampleShortName(exampleRawName, needsShould, currentBranch), level, f)
+        Example(oldParent, getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, currentBranch), level, f)
       case oldDesc @ Description(oldParent, descriptionName, level) =>
         val newDesc = Description(newParent, descriptionName, level)
         newDesc.subNodes = oldDesc.subNodes.map(transformTheParent(_, newDesc))
