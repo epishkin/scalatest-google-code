@@ -43,7 +43,7 @@ trait Spec extends Suite with Behavior {
         def sendInfoProvidedMessage() {
           // Need to use the full name of the description, which includes all the descriptions it is nested inside
           // Call getPrefix and pass in this Desc, to get the full name
-          val descriptionFullName = Behavior.getPrefix(desc).trim
+          val descriptionFullName = NodeFamily.getPrefix(desc).trim
             
           val wrappedReporter = wrapReporterIfNecessary(reporter)
             
@@ -145,7 +145,7 @@ trait Spec extends Suite with Behavior {
   }
  
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
-    countTestsInBranch(trunk)
+    NodeFamily.countTestsInBranch(trunk)
   }
 
   override def testNames: Set[String] = {
