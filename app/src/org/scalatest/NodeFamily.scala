@@ -131,7 +131,7 @@ private[scalatest] object NodeFamily {
     
       node match {
         case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-          Example(oldParent, getExampleFullName(exampleRawName, needsShould, /*currentBranch?*/newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, /*currentBranch?*/newParent), level, f)
+          Example(oldParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
         case oldDesc @ Description(oldParent, descriptionName, level) =>
           val newDesc = Description(newParent, descriptionName, level)
           newDesc.subNodes = oldDesc.subNodes.map(transformTheParent(_, newDesc))
