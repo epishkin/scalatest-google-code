@@ -114,7 +114,34 @@ private[scalatest] object NodeFamily {
     )
     count
   }
+  
+  private[scalatest] def transformSharedExamplesFullName(node: Node, newParent: Branch): Node = {
+
+      def transformTheParent(node: Node, newParent: Branch) = {
+        node match {
+          case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
+            Example(newParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
+          case oldDesc @ Description(oldParent, descriptionName, level) =>
+            val newDesc = Description(newParent, descriptionName, level)
+            newDesc.subNodes = oldDesc.subNodes
+            newDesc
+          case _ => node
+        }
+      }
+    
+      node match {
+        case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
+          Example(oldParent, getExampleFullName(exampleRawName, needsShould, /*currentBranch?*/newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, /*currentBranch?*/newParent), level, f)
+        case oldDesc @ Description(oldParent, descriptionName, level) =>
+          val newDesc = Description(newParent, descriptionName, level)
+          newDesc.subNodes = oldDesc.subNodes.map(transformTheParent(_, newDesc))
+          println("**&*&*&*&*&*&*&*&*& oldDesc.subNodes: " + oldDesc.subNodes)
+          newDesc
+        case _ => node
+      }
+    }
 }
+
 /*
  * The exampleRawName and needsShould is now stored in Example because when I import a
  * shared example, I recalculate the exampleFullName and specText. This is needed because
