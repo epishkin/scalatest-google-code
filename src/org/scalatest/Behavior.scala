@@ -38,18 +38,5 @@ trait Behavior {
   }
   
   protected val it = new ItWord
-
-  protected def describe(name: String)(f: => Unit) {
-    
-    def insertBranch(newBranch: Branch, f: () => Unit) {
-      val oldBranch = currentBranch
-      currentBranch.subNodes ::= newBranch
-      currentBranch = newBranch
-      f()
-      currentBranch = oldBranch
-    }
-
-    insertBranch(Description(currentBranch, name, currentBranch.level + 1), f _)
-  }
 }
 
