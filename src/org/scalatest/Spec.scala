@@ -65,7 +65,7 @@ trait Spec extends Suite {
   class Likifier {
     def like(sharedBehavior: Behavior) {
       currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_, currentBranch))
-      println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
+      // println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
     }
   }
   
@@ -192,6 +192,17 @@ trait Spec extends Suite {
     runTestsInBranch(trunk, reporter, stopper)
   }
  
+/*  private def findExample(exampleName: String): Option[Example] = {
+    trunk.subNodes.foreach {
+      
+    }  
+  }
+  
+  override def runTest(testName: Option[String], reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+   
+    runTestsInBranch(trunk, reporter, stopper)
+  }*/
+
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
     countTestsInBranch(trunk)
   }
@@ -200,6 +211,9 @@ trait Spec extends Suite {
     // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
     def traverse(branch: Branch, prefixOption: Option[String]) {
+      if (prefixOption.isDefined) {
+        println("^^^^^^^&&&&&&&^^^^^^^^&&&&&&&^^^^^^^&&&&&&" + prefixOption.get)
+      }
       for (node <- branch.subNodes)
         yield node match {
           case ex: Example => {
