@@ -102,7 +102,7 @@ private[scalatest] object NodeFamily {
 
   private[scalatest] def countTestsInBranch(branch: Branch): Int = {
     var count = 0
-    branch.subNodes.reverse.foreach(
+    branch.subNodes.foreach(
       _ match {
         case ex: Example => count += 1
         case branch: Branch => count += countTestsInBranch(branch)
