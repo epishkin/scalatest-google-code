@@ -33,7 +33,7 @@ trait Behavior {
   class Likifier {
     def like(sharedBehavior: Behavior) {
       currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_, currentBranch))
-      println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
+      // println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
     }
   }
   

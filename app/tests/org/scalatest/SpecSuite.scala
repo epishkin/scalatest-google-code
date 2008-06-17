@@ -1325,6 +1325,23 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute()
   }  
+  // YYYYYY
+  ignore("Only a passed test name should be invoked.") {
+    var correctTestWasInvoked = false
+    var wrongTestWasInvoked = false
+    class MySpec extends Spec {
+      it should "be invoked" in {
+        correctTestWasInvoked = true
+      }
+      it should "not be invoked" in {
+        wrongTestWasInvoked = true
+      }
+    }
+    val a = new MySpec
+    a.execute(Some("it should be invoked"), new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+    assert(correctTestWasInvoked)
+    assert(!wrongTestWasInvoked)
+  }
   
   // The old ones XXXXXX
   test("In a testSucceeded report, the example name should start with 'it should' if top level") {
