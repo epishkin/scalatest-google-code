@@ -16,6 +16,7 @@
 package org.scalatest
 
 import NodeFamily._
+import scala.collection.immutable.ListSet
 
 /**
  * Trait that facilitates writing specification-oriented tests in a literary-programming style.
@@ -70,8 +71,9 @@ trait Spec extends Suite {
   protected val behave = new BehaveWord
   class Likifier {
     def like(sharedBehavior: Behavior) {
-      currentBranch.subNodes :::= sharedBehavior.examples(currentBranch)
-      // println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
+      val sharedExamples = sharedBehavior.examples(currentBranch)
+      currentBranch.subNodes :::= sharedExamples
+      examplesList :::= sharedExamples
     }
   }
   
@@ -191,34 +193,16 @@ trait Spec extends Suite {
     runTestsInBranch(trunk, reporter, stopper)
   }
  
-/*  private def findExample(exampleName: String): Option[Example] = {
-    trunk.subNodes.foreach {
-      
-    }  
-  }
-  
-  override def runTest(testName: Option[String], reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
    
+    examplesList.find(testName)
     runTestsInBranch(trunk, reporter, stopper)
-  }*/
+  }
 
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
     countTestsInBranch(trunk)
   }
 
-  override def testNames: Set[String] = {
-    // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
-    var buf = List[String]()
-    def traverse(branch: Branch) {
-      branch.subNodes.foreach(
-        _ match {
-          case ex: Example => buf ::= ex.exampleFullName 
-          case br: Branch => traverse(br)
-        }
-      )
-    }
-    traverse(trunk)
-    Set[String]() ++ buf.toList
-  }
+  override def testNames: Set[String] = ListSet(examplesList.map(_.exampleFullName): _*)
 }
 
