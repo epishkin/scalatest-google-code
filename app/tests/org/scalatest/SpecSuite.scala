@@ -1325,8 +1325,8 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute()
   }  
-  // YYYYYY
-  ignore("Only a passed test name should be invoked.") {
+  
+  test("Only a passed test name should be invoked.") {
     var correctTestWasInvoked = false
     var wrongTestWasInvoked = false
     class MySpec extends Spec {
