@@ -4,8 +4,18 @@ import NodeFamily._
 
 trait Behavior {
 
-  private[scalatest] val trunk: Trunk = new Trunk
-  private var currentBranch: Branch = trunk
+  // All shared examples, in reverse order of registration
+  private var sharedExamplesList = List[SharedExample]()
+    
+  private[scalatest] def examples(newParent: Branch): List[Example] = {
+    
+    def transform(sharedExample: SharedExample): Example = {
+      val exampleFullName = getExampleFullName(sharedExample.exampleRawName, sharedExample.needsShould, newParent)
+      val exampleShortName = getExampleShortName(sharedExample.exampleRawName, sharedExample.needsShould, newParent)
+      Example(newParent, exampleFullName, sharedExample.exampleRawName, sharedExample.needsShould, exampleShortName, -1, sharedExample.f)
+    }
+    sharedExamplesList.map(transform)
+  }
 
   class ItWord {
     def should(exampleName: String) = new Inifier(exampleName)
@@ -15,8 +25,7 @@ trait Behavior {
   class BehaveWord {}
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
-    currentBranch.subNodes ::=
-      Example(currentBranch, getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, currentBranch), currentBranch.level + 1, f _)
+    sharedExamplesList ::= SharedExample(exampleRawName, needsShould, f _)
   }
   
   def specify(exampleRawName: String)(f: => Unit) {
@@ -32,8 +41,7 @@ trait Behavior {
   protected val behave = new BehaveWord
   class Likifier {
     def like(sharedBehavior: Behavior) {
-      currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_, currentBranch))
-      // println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
+      sharedExamplesList :::= sharedBehavior.sharedExamplesList
     }
   }
   
