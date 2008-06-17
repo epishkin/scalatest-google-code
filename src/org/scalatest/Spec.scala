@@ -126,46 +126,46 @@ trait Spec extends Suite {
     branch.subNodes.reverse.foreach(
       _ match {
         case ex @ Example(parent, exampleFullName, exampleRawName, needsShould, specText, level, f) => {
-          runExample(ex, reporter)
+          runTest(ex.exampleFullName, reporter, stopper, Map())
         }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
     )
   }
-  
-  private def runExample(example: Example, reporter: Reporter) {
 
-    if (example == null || reporter == null)
-      throw new NullPointerException
+  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+   
+    examplesList.find(_.exampleFullName == testName) match {
+      case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
+      case Some(example) => {
+        val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+        val exampleSucceededIcon = Resources("exampleSucceededIconChar")
+        val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
 
-    val exampleSucceededIcon = Resources("exampleSucceededIconChar")
-    val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
+        // A testStarting report won't normally show up in a specification-style output, but
+        // will show up in a test-style output.
+        val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, false)
 
-    // A testStarting report won't normally show up in a specification-style output, but
-    // will show up in a test-style output.
-    val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, false)
+        wrappedReporter.testStarting(report)
 
-    wrappedReporter.testStarting(report)
+        try {
+          example.f()
 
-    try {
-      example.f()
+          val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, true)
 
-      val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, true)
-
-      wrappedReporter.testSucceeded(report)
-    }
-    catch { 
-      case e: Exception => {
-        handleFailedTest(e, false, example.exampleFullName, example.specText, None, wrappedReporter)
-      }
-      case ae: AssertionError => {
-        handleFailedTest(ae, false, example.exampleFullName, example.specText, None, wrappedReporter)
+          wrappedReporter.testSucceeded(report)
+        }
+        catch { 
+          case e: Exception => 
+            handleFailedTest(e, false, example.exampleFullName, example.specText, None, wrappedReporter)          
+          case ae: AssertionError =>
+            handleFailedTest(ae, false, example.exampleFullName, example.specText, None, wrappedReporter)
+        }
       }
     }
   }
-    
+  
   private[scalatest] override def getTestNameForReport(testName: String) = {
 
     if (testName == null)
@@ -189,16 +189,15 @@ trait Spec extends Suite {
   }
 
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-                        properties: Map[String, Any]) {
-    runTestsInBranch(trunk, reporter, stopper)
+      properties: Map[String, Any]) {
+    
+    testName match {
+      case None => runTestsInBranch(trunk, reporter, stopper)
+      case Some(exampleName) => runTest(exampleName, reporter, stopper, properties)
+    }
+    
   }
  
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
-   
-    examplesList.find(testName)
-    runTestsInBranch(trunk, reporter, stopper)
-  }
-
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
     countTestsInBranch(trunk)
   }
