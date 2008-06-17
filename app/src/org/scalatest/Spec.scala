@@ -204,11 +204,12 @@ trait Spec extends Suite {
     // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
     def traverse(branch: Branch) {
-      for (node <- branch.subNodes)
-        yield node match {
+      branch.subNodes.foreach(
+        _ match {
           case ex: Example => buf ::= ex.exampleFullName 
           case br: Branch => traverse(br)
         }
+      )
     }
     traverse(trunk)
     Set[String]() ++ buf.toList
