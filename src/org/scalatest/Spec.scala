@@ -210,27 +210,19 @@ trait Spec extends Suite {
   override def testNames: Set[String] = {
     // I use a buf here to make it easier for my imperative brain to flatten the tree to a list
     var buf = List[String]()
-    def traverse(branch: Branch, prefixOption: Option[String]) {
-      if (prefixOption.isDefined) {
-        println("^^^^^^^&&&&&&&^^^^^^^^&&&&&&&^^^^^^^&&&&&&" + prefixOption.get)
-      }
+    def traverse(branch: Branch) {
       for (node <- branch.subNodes)
         yield node match {
           case ex: Example => {
             buf ::= ex.exampleFullName 
           }
           case desc: Description => {
-            val descName =
-              prefixOption match {
-                case Some(prefix) => Resources("prefixSuffix", prefix, desc.descriptionName) 
-                case None => desc.descriptionName
-              }
-            traverse(desc, Some(descName))
+            traverse(desc)
           }
-          case br: Branch => traverse(br, prefixOption)
+          case br: Branch => traverse(br)
         }
     }
-    traverse(trunk, None)
+    traverse(trunk)
     Set[String]() ++ buf.toList
   }
 }
