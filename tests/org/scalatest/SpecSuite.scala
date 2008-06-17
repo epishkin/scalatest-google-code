@@ -1343,6 +1343,20 @@ class SpecSuite extends FunSuite {
     assert(!wrongTestWasInvoked)
   }
   
+  test("Goodies should make it through to runTest") {
+    var foundMyGoodie = false
+    class MySpec extends Spec {
+      override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+        foundMyGoodie = goodies.contains("my goodie")
+        super.runTest(testName, reporter, stopper, goodies)
+      }
+      it should "find my goodie" in {}
+    }
+    val a = new MySpec
+    a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map("my goodie" -> "hi"), None)
+    assert(foundMyGoodie)  
+  }
+  
   // The old ones XXXXXX
   test("In a testSucceeded report, the example name should start with 'it should' if top level") {
     var testSucceededReportHadCorrectTestName = false

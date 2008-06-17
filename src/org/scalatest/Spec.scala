@@ -92,7 +92,7 @@ trait Spec extends Suite {
     insertBranch(Description(currentBranch, name, currentBranch.level + 1), f _)
   }
   
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
     branch match {
       case desc @ Description(_, descriptionName, level) => {
 
@@ -126,9 +126,9 @@ trait Spec extends Suite {
     branch.subNodes.reverse.foreach(
       _ match {
         case ex @ Example(parent, exampleFullName, exampleRawName, needsShould, specText, level, f) => {
-          runTest(ex.exampleFullName, reporter, stopper, Map())
+          runTest(ex.exampleFullName, reporter, stopper, goodies)
         }
-        case branch: Branch => runTestsInBranch(branch, reporter, stopper)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopper, goodies)
       }
     )
   }
@@ -189,11 +189,11 @@ trait Spec extends Suite {
   }
 
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-      properties: Map[String, Any]) {
+      goodies: Map[String, Any]) {
     
     testName match {
-      case None => runTestsInBranch(trunk, reporter, stopper)
-      case Some(exampleName) => runTest(exampleName, reporter, stopper, properties)
+      case None => runTestsInBranch(trunk, reporter, stopper, goodies)
+      case Some(exampleName) => runTest(exampleName, reporter, stopper, goodies)
     }
     
   }
