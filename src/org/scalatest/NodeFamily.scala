@@ -4,6 +4,8 @@ package org.scalatest
 // showing it to the user
 private[scalatest] object NodeFamily {
   
+  case class SharedExample(exampleRawName: String, needsShould: Boolean, f: () => Unit)
+  
   abstract class Node(parentOption: Option[Branch], val level: Int)
   abstract class Branch(parentOption: Option[Branch], override val level: Int) extends Node(parentOption, level) {
     var subNodes: List[Node] = Nil
@@ -110,32 +112,6 @@ private[scalatest] object NodeFamily {
     )
     count
   }
-  
-  private[scalatest] def transformSharedExamplesFullName(node: Node, newParent: Branch): Node = {
-
-      def transformTheParent(node: Node, newParent: Branch) = {
-        node match {
-          case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-            Example(newParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
-          case oldDesc @ Description(oldParent, descriptionName, level) =>
-            val newDesc = Description(newParent, descriptionName, level)
-            newDesc.subNodes = oldDesc.subNodes
-            newDesc
-          case _ => node
-        }
-      }
-    
-      node match {
-        case Example(oldParent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => 
-          Example(oldParent, getExampleFullName(exampleRawName, needsShould, newParent), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, newParent), level, f)
-        case oldDesc @ Description(oldParent, descriptionName, level) =>
-          val newDesc = Description(newParent, descriptionName, level)
-          newDesc.subNodes = oldDesc.subNodes.map(transformTheParent(_, newDesc))
-          println("**&*&*&*&*&*&*&*&*& oldDesc.subNodes: " + oldDesc.subNodes)
-          newDesc
-        case _ => node
-      }
-    }
 }
 
 /*

@@ -36,8 +36,11 @@ import NodeFamily._
  */
 trait Spec extends Suite {
 
-  private[scalatest] val trunk: Trunk = new Trunk
+  private val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
+  
+  // All examples, in reverse order of registration
+  private var examplesList = List[Example]()
 
   class ItWord {
     def should(exampleName: String) = new Inifier(exampleName)
@@ -47,8 +50,11 @@ trait Spec extends Suite {
   class BehaveWord {}
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
-    currentBranch.subNodes ::=
-      Example(currentBranch, getExampleFullName(exampleRawName, needsShould, currentBranch), exampleRawName, needsShould, getExampleShortName(exampleRawName, needsShould, currentBranch), currentBranch.level + 1, f _)
+    val exampleFullName = getExampleFullName(exampleRawName, needsShould, currentBranch)
+    val exampleShortName = getExampleShortName(exampleRawName, needsShould, currentBranch)
+    val example = Example(currentBranch, exampleFullName, exampleRawName, needsShould, exampleShortName, currentBranch.level + 1, f _)
+    currentBranch.subNodes ::= example
+    examplesList ::= example
   }
   
   def specify(exampleRawName: String)(f: => Unit) {
@@ -64,7 +70,7 @@ trait Spec extends Suite {
   protected val behave = new BehaveWord
   class Likifier {
     def like(sharedBehavior: Behavior) {
-      currentBranch.subNodes :::= sharedBehavior.trunk.subNodes.map(transformSharedExamplesFullName(_, currentBranch))
+      currentBranch.subNodes :::= sharedBehavior.examples(currentBranch)
       // println("%$%$%$%$%$%$% sharedBehavior.trunk.subNodes: " + sharedBehavior.trunk.subNodes)
     }
   }
