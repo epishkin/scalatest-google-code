@@ -206,12 +206,7 @@ trait Spec extends Suite {
     def traverse(branch: Branch) {
       for (node <- branch.subNodes)
         yield node match {
-          case ex: Example => {
-            buf ::= ex.exampleFullName 
-          }
-          case desc: Description => {
-            traverse(desc)
-          }
+          case ex: Example => buf ::= ex.exampleFullName 
           case br: Branch => traverse(br)
         }
     }
