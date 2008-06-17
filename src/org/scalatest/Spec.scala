@@ -120,13 +120,6 @@ trait Spec extends Suite {
         case ex @ Example(parent, exampleFullName, exampleRawName, needsShould, specText, level, f) => {
           runExample(ex, reporter)
         }
-        case SharedBehaviorNode(parent, sharedBehavior, level) => {
-          // sharedBehavior.execute(None, reporter, stopper, Set(), Set(), Map(), None)
-          runTestsInBranch(sharedBehavior.trunk, reporter, stopper)
-          
-          // (testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-          //    properties: Map[String, Any], distributor: Option[Distributor]
-        }
         case branch: Branch => runTestsInBranch(branch, reporter, stopper)
       }
     )

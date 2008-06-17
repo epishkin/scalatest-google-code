@@ -10,7 +10,6 @@ private[scalatest] object NodeFamily {
   }
   case class Trunk extends Branch(None, -1)
   case class Example(parent: Branch, exampleFullName: String, exampleRawName: String, needsShould: Boolean, specText: String, override val level: Int, f: () => Unit) extends Node(Some(parent), level)
-  case class SharedBehaviorNode(parent: Branch, sharedBehavior: Behavior, override val level: Int) extends Node(Some(parent), level)
   case class Description(parent: Branch, descriptionName: String, override val level: Int) extends Branch(Some(parent), level)
 
   protected[scalatest] def getPrefix(branch: Branch): String = {
@@ -106,9 +105,6 @@ private[scalatest] object NodeFamily {
     branch.subNodes.reverse.foreach(
       _ match {
         case Example(parent, exampleFullName, exampleRawName, needsShould, exampleShortName, level, f) => count += 1
-        case SharedBehaviorNode(parent, sharedBehavior, level) => { 
-          count += countTestsInBranch(sharedBehavior.trunk) // TODO: Will need to handle includes and excludes?
-        }
         case branch: Branch => count += countTestsInBranch(branch)
       }
     )
