@@ -89,7 +89,7 @@ class StackSpec extends Spec {
   }
       
   describe("A Stack") {
-    
+    // A Stack should do something
     describe("(when empty)") {
       
       it should "be empty" in {
@@ -110,22 +110,22 @@ class StackSpec extends Spec {
     }
     
     describe("(with one item)") {
-      it should behave like { NonEmptyStack(stackWithOneItem, lastValuePushed) }
-      it should behave like { NonFullStack(stackWithOneItem) }
+      it should behave like NonEmptyStack(stackWithOneItem, lastValuePushed)
+      it should behave like NonFullStack(stackWithOneItem)
     }
     
     describe("(with one item less than capacity)") {
-      it should behave like { NonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed) }
-      it should behave like { NonFullStack(stackWithOneItemLessThanCapacity) }
+      it should behave like NonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+      it should behave like NonFullStack(stackWithOneItemLessThanCapacity)
     }
-    
+    // A Stack should do something else 
     describe("(full)") {
       
       it should "be full" in {
         assert(fullStack.full)
       }
       
-      it should behave like { NonEmptyStack(fullStack, lastValuePushed) }
+      it should behave like NonEmptyStack(fullStack, lastValuePushed)
       
       it should "complain on a push" in {
         intercept(classOf[IllegalStateException]) {
