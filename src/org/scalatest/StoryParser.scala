@@ -1,3 +1,5 @@
+package org.scalatest
+
 abstract class StoryParser {
 
   type F
