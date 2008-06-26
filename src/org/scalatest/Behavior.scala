@@ -46,5 +46,14 @@ trait Behavior {
   }
   
   protected val it = new ItWord
+
+  class Dasher(s: String) {
+    def - (f: => Unit) {
+      specify(s)(f)
+    }
+  }
+  
+  implicit def stringToDasher(s: String) = new Dasher(s)
+
 }
 
