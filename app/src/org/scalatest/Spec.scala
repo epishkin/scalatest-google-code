@@ -203,5 +203,16 @@ trait Spec extends Suite {
   }
 
   override def testNames: Set[String] = ListSet(examplesList.map(_.exampleFullName): _*)
+
+  class Dasher(s: String) {
+    def -- (f: => Unit) {
+      describe(s)(f)
+    }
+    def - (f: => Unit) {
+      specify(s)(f)
+    }
+  }
+  
+  implicit def stringToDasher(s: String) = new Dasher(s)
 }
 
