@@ -1039,7 +1039,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-two-levels 'specify' examples should yield good strings in a testFailed report") {
+  test("Nested-two-levels plain-old specifiers should yield good strings in a testFailed report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -1098,7 +1098,7 @@ class SpecSuite extends FunSuite {
   }
 
     // Test for good strings in report for top-level shared behavior examples
-  test("Top-level 'shared behavior - it should' examples should yield good strings in a testStarting report") {
+  test("Top-level 'shared behavior - fancy specifiers' should yield good strings in a testStarting report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -1117,7 +1117,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MyBehavior extends Behavior {
-      it should "start with proper words" in {}
+      "it should start with proper words" - {}
     }
     class MySpec extends Spec {
       it should behave like { new MyBehavior }
@@ -1129,7 +1129,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'shared behavior - specify' examples should yield good strings in a testStarting report") {
+  test("Top-level 'shared behavior - plain-old specifiers' should yield good strings in a testStarting report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -1160,7 +1160,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'shared behavior - it should' examples should yield good strings in a testSucceeded report") {
+  test("Top-level 'shared behavior - fancy specifiers' should yield good strings in a testSucceeded report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -1179,7 +1179,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MyBehavior extends Behavior {
-      it should "start with proper words" in {}
+      "it should start with proper words" - {}
     }
     class MySpec extends Spec {
       it should behave like { new MyBehavior }
@@ -1191,7 +1191,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'shared behavior - specify' examples should yield good strings in a testSucceeded report") {
+  test("Top-level 'shared behavior - plain-old specifiers' should yield good strings in a testSucceeded report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -1222,7 +1222,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
 
-  test("Top-level 'shared behavior - it should' examples should yield good strings in a testFailed report") {
+  test("Top-level 'shared behavior - fancy specifiers' should yield good strings in a testFailed report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -1241,7 +1241,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MyBehavior extends Behavior {
-      it should "start with proper words" in { fail() }
+      "it should start with proper words" - { fail() }
     }
     class MySpec extends Spec {
       it should behave like { new MyBehavior }
@@ -1253,7 +1253,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'shared behavior - specify' examples should yield good strings in a testFailed report") {
+  test("Top-level 'shared behavior - plain-old specifiers' should yield good strings in a testFailed report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -1284,8 +1284,8 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
 
-  // Tests for good strings in report for shared-behavior, nested-one-level examples
-  test("Nested-one-level 'shared behavior - it should' examples should yield good strings in a testStarting report") {
+  // Tests for good strings in report for shared-behavior, nested-one-level specifiers
+  test("Nested-one-level 'shared behavior - fancy specifiers' should yield good strings in a testStarting report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -1327,7 +1327,7 @@ class SpecSuite extends FunSuite {
       }
     }
     case class MyBehavior extends Behavior {
-      it should "start with proper words" in {}
+      "should start with proper words" - {}
     }
     class MySpec extends Spec {
       describe("My Spec") {
@@ -1344,9 +1344,10 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
+  // Huh? what was I testing here?
   test("An empty describe shouldn't throw an exception") {
     class MySpec extends Spec {
-      describe ("this will be empty") {}
+      describe("this will be empty") {}
     }
     val a = new MySpec
     a.execute()
@@ -1356,10 +1357,10 @@ class SpecSuite extends FunSuite {
     var correctTestWasInvoked = false
     var wrongTestWasInvoked = false
     class MySpec extends Spec {
-      it should "be invoked" in {
+      "it should be invoked" - {
         correctTestWasInvoked = true
       }
-      it should "not be invoked" in {
+      "it should not be invoked" - {
         wrongTestWasInvoked = true
       }
     }
@@ -1376,7 +1377,7 @@ class SpecSuite extends FunSuite {
         foundMyGoodie = goodies.contains("my goodie")
         super.runTest(testName, reporter, stopper, goodies)
       }
-      it should "find my goodie" in {}
+      "it should find my goodie" - {}
     }
     val a = new MySpec
     a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map("my goodie" -> "hi"), None)
@@ -1384,7 +1385,7 @@ class SpecSuite extends FunSuite {
   }
   
   // The old ones XXXXXX
-  test("In a testSucceeded report, the example name should start with 'it should' if top level") {
+  test("In a testSucceeded report, the specifier name should start with 'it should' if top level") { // To delete
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
       override def testSucceeded(report: Report) {
@@ -1394,14 +1395,14 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      it should "start with proper words" in {}
+      "it should start with proper words" - {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testSucceededReportHadCorrectTestName)
   }
   
-  test("In a testFailed report, the example name should start with 'it should' if top level") {
+  test("In a testFailed report, the specifier name should start with 'it should' if top level") { // To delete
     var testFailedReportHadCorrectTestName = false
     class MyReporter extends Reporter {
       override def testFailed(report: Report) {
@@ -1411,14 +1412,15 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      it should "start with proper words" in { fail() }
+      "it should start with proper words" - { fail() }
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testFailedReportHadCorrectTestName)
   }
   
-  test("In a testStarting report, the example name should start with '<description> should' if nested one level inside a describe clause") {
+  // To delete. I think this is a repeat.
+  test("In a testStarting report, the specifier name should start with '<description> should' if nested one level inside a describe clause") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
@@ -1428,8 +1430,8 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("A Stack") {
-        it should "push and pop properly" in {}
+      "A Stack" -- {
+        "should push and pop properly" - {}
       }
     }
     val a = new MySpec
@@ -1437,6 +1439,7 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectTestName)
   }
   
+  // I think delete this one. Repeat.
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
@@ -1449,7 +1452,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec {
       describe("A Stack") {
         describe("(when working right)") {
-          it should "push and pop properly" in {}
+          "should push and pop properly" - {}
         }
       }
     }
@@ -1458,21 +1461,21 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectTestName)
   }
   
-  test("expectedTestCount is the number of 'it should' examples if no shares") {
+  test("expectedTestCount is the number of fancy specifiers if no shares") {
     class MySpec extends Spec {
-      it should "one" in {}
-      it should "two" in {}
+      "it should one" - {}
+      "it should two" - {}
       describe("behavior") {
-        it should "three" in {}  
-        it should "four" in {}
+        "should three" - {}  
+        "should four" - {}
       }
-      it should "five" in {}
+      "should five" - {}
     }
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 5)
   }
 
-  test("expectedTestCount is the number of 'specify' examples if no shares") {
+  test("expectedTestCount is the number of plain-old specifiers if no shares") {
     class MySpec extends Spec {
       specify("must one") {}
       specify("must two") {}
@@ -1608,10 +1611,10 @@ class SpecSuite extends FunSuite {
 	  }
     }
     class MySpec extends Spec {
-      it should "send SpecReports" in {
+      "it should send SpecReports" - {
         assert(true)
       }
-      it should "send SpecReports" in {
+      "it should send SpecReports" - {
         assert(false)
       }
     }
@@ -1621,7 +1624,7 @@ class SpecSuite extends FunSuite {
     assert(!myRep.gotANonSpecReport)
   }
   
-  test("SpecText should come through correctly in a SpecReport when registering with it should") {
+  test("SpecText should come through correctly in a SpecReport when registering with fancy specifier") {
     var testStartingReportHadCorrectShortName = false
     var lastShortName: Option[String] = None
     class MyReporter extends Reporter {
@@ -1637,7 +1640,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      it should "start with proper words" in {}
+      "it should start with proper words" - {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1667,7 +1670,7 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
    
-  test("Spec text should come through correctly in a SpecReport when registering with it should when nested in one describe") {
+  test("Spec text should come through correctly in a SpecReport when registering with fancy specifier when nested in one describer") {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
@@ -1683,8 +1686,8 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("A Stack") {
-        it should "start with proper words" in {}
+      "A Stack" -- {
+        "should start with proper words" - {}
       }
     }
     val a = new MySpec
@@ -1717,7 +1720,7 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
    
-  test("Spec text should come through correctly in a SpecReport when registering with it should when nested in two describes") {
+  test("Spec text should come through correctly in a SpecReport when registering with fancy specifiers when nested in two describers") {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
@@ -1733,9 +1736,9 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("A Stack") {
-        describe("(when empty)") {
-          it should "start with proper words" in {}
+      "A Stack" -- {
+        "(when empty)" -- {
+          "should start with proper words" - {}
         }
       }
     }
@@ -1876,8 +1879,8 @@ class SpecSuite extends FunSuite {
     }
 
     class MySpec extends Spec {
-      it should "be at level 0" in {}
-      it should "also be at level 0" in { fail() }
+      "it should be at level 0" - {}
+      "it should also be at level 0" - { fail() }
     }
     val a = new MySpec
     val myRep = new MyReporter
@@ -1940,8 +1943,8 @@ class SpecSuite extends FunSuite {
 
     class MySpec extends Spec {
       describe("my describe clause") {
-        it should "be at level 1" in {}
-        it should "also be at level 1" in { fail() }
+        "should be at level 1" - {}
+        "should also be at level 1" - { fail() }
       }
     }
     val a = new MySpec
@@ -1961,17 +1964,17 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
       case class InvocationVerifier extends Behavior {
-        it should "be invoked" in {
+        "should be invoked" - {
           sharedExampleInvoked = true
         }
       }
       describe("A Stack") {
         describe("(when not empty)") {
-          it should "allow me to pop" in {}
+          "should allow me to pop" - {}
           it should behave like { InvocationVerifier() }
         }
         describe("(when not full)") {
-          it should "allow me to push" in {}
+          "should allow me to push" - {}
         }
       }
     }
@@ -1985,20 +1988,20 @@ class SpecSuite extends FunSuite {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
       case class InvocationVerifier extends Behavior {
-        it should "be invoked" in {
+        "should be invoked" - {
           sharedExampleInvoked = true
         }
-        it should "also be invoked" in {
+        "should also be invoked" - {
           sharedExampleAlsoInvoked = true
         }
       }
-      describe("A Stack") {
-        describe("(when not empty)") {
-          it should "allow me to pop" in {}
+      "A Stack" -- {
+        "(when not empty)" -- {
+          "should allow me to pop" - {}
           it should behave like { InvocationVerifier() }
         }
-        describe("(when not full)") {
-          it should "allow me to push" in {}
+        "(when not full)" -- {
+          "should allow me to push" - {}
         }
       }
     }
@@ -2014,14 +2017,14 @@ class SpecSuite extends FunSuite {
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
       case class InvocationVerifier extends Behavior {
-        it should "get invoked" in {
+        "should get invoked" - {
           example1WasInvoked = true
         }
-        it should "also get invoked" in {
+        "should also get invoked" - {
           if (example1WasInvoked)
             example2WasInvokedAfterExample1 = true
         }
-        it should "also also get invoked" in {
+        "should also also get invoked" - {
           if (example2WasInvokedAfterExample1)
             example3WasInvokedAfterExample2 = true
         }
@@ -2041,14 +2044,14 @@ class SpecSuite extends FunSuite {
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
       case class InvocationVerifier extends Behavior {
-        it should "get invoked" in {
+        "should get invoked" - {
           example1WasInvoked = true
         }
-        it should "also get invoked" in {
+        "should also get invoked" - {
           if (example1WasInvoked)
             example2WasInvokedAfterExample1 = true
         }
-        it should "also also get invoked" in {
+        "should also also get invoked" - {
           if (example2WasInvokedAfterExample1)
             example3WasInvokedAfterExample2 = true
         }
@@ -2062,6 +2065,7 @@ class SpecSuite extends FunSuite {
     assert(!a.example3WasInvokedAfterExample2)
   }
   
+  // Probably delete
   test("The example name for a shared example invoked with 'it should behave like' should start with 'it should' if top level") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
@@ -2074,7 +2078,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ImpSuite {
       var sharedExampleInvoked = false
       case class InvocationVerifier extends Behavior {
-        it should "be invoked" in {
+        "it should be invoked" - {
           sharedExampleInvoked = true
         }
       }
@@ -2097,11 +2101,11 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec {
       var sharedExampleInvoked = false
       case class InvocationVerifier extends Behavior {
-        it should "pop properly" in {
+        "should pop properly" - {
           sharedExampleInvoked = true
         }
       }
-      describe("A Stack") {
+      "A Stack" -- {
         it should behave like { InvocationVerifier() }
       }
     }
@@ -2113,16 +2117,16 @@ class SpecSuite extends FunSuite {
   test("expectedTestCount should not include tests in shares if never called") {
     class MySpec extends Spec {
       class Misbehavior extends Spec {
-        it should "six" in {}
-        it should "seven" in {}
+        "should six" - {}
+        "should seven" - {}
       }
-      it should "one" in {}
-      it should "two" in {}
-      describe("behavior") {
-        it should "three" in {}  
-        it should "four" in {}
+      "should one" - {}
+      "should two" - {}
+      "behavior" -- {
+        "should three" - {}  
+        "should four" - {}
       }
-      it should "five" in {}
+      "should five" - {}
     }
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 5)
@@ -2131,17 +2135,17 @@ class SpecSuite extends FunSuite {
   test("expectedTestCount should include tests in a share that is called") {
     class MySpec extends Spec {
       case class Misbehavior extends Behavior {
-        it should "six" in {}
-        it should "seven" in {}
+        "should six" - {}
+        "should seven" - {}
       }
-      it should "one" in {}
-      it should "two" in {}
+      "should one" - {}
+      "should two" - {}
       describe("behavior") {
-        it should "three" in {} 
+        "should three" - {} 
         it should behave like { Misbehavior() }
-        it should "four" in {}
+        "should four" - {}
       }
-      it should "five" in {}
+      "should five" - {}
     }
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 7)
@@ -2150,17 +2154,17 @@ class SpecSuite extends FunSuite {
   test("expectedTestCount should include tests in a share that is called twice") {
     class MySpec extends Spec {
       case class Misbehavior extends Behavior {
-        it should "six" in {}
-        it should "seven" in {}
+        "should six" - {}
+        "should seven" - {}
       }
-      it should "one" in {}
-      it should "two" in {}
+      "should one" - {}
+      "should two" - {}
       describe("behavior") {
-        it should "three" in {} 
+        "should three" - {} 
         it should behave like { Misbehavior() }
-        it should "four" in {}
+        "should four" - {}
       }
-      it should "five" in {}
+      "should five" - {}
       it should behave like { Misbehavior() }
     }
     val a = new MySpec
@@ -2187,14 +2191,14 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec {
       describe("A Stack") {
         describe("(when not empty)") {
-          it should "allow me to pop" in {
+          "should allow me to pop" - {
             val report = new Report("myName", expectedMessage)
             // info(report)
             ()
           }
         }
         describe("(when not full)") {
-          it should "allow me to push" in {}
+          "should allow me to push" - {}
         }
       }
     }
