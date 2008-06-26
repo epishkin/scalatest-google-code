@@ -242,10 +242,10 @@
 			<arg value="-s" />
 			<arg value="org.scalatest.StackSpec" />
 
-<!--
 			<arg value="-s" />
 			<arg value="org.scalatest.SpecSuite" />
 
+<!--
 			<arg value="-s" />
 			<arg value="org.scalatest.SpecSuite" />
 

@@ -6,7 +6,7 @@ private[scalatest] object NodeFamily {
   
   case class SharedExample(exampleRawName: String, needsShould: Boolean, f: () => Unit)
   
-  abstract class Node(parentOption: Option[Branch], val level: Int)
+  sealed abstract class Node(parentOption: Option[Branch], val level: Int)
   abstract class Branch(parentOption: Option[Branch], override val level: Int) extends Node(parentOption, level) {
     var subNodes: List[Node] = Nil
   }

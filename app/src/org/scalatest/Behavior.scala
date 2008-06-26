@@ -17,12 +17,11 @@ trait Behavior {
     sharedExamplesList.map(transform)
   }
 
-  class ItWord {
-    def should(exampleName: String) = new Inifier(exampleName)
-    def should(behaveWord: BehaveWord) = new Likifier()
+  class ShouldWord {
+    def behave(likeWord: LikeWord) = new Likifier()
   }
   
-  class BehaveWord {}
+  class LikeWord {}
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
     sharedExamplesList ::= SharedExample(exampleRawName, needsShould, f _)
@@ -32,20 +31,14 @@ trait Behavior {
     registerExample(exampleRawName, false, f)
   }
     
-  class Inifier(exampleRawName: String) {
-    def in(f: => Unit) {
-      registerExample(exampleRawName, true, f)
-    }
-  }
-
-  protected val behave = new BehaveWord
+  protected val like = new LikeWord
   class Likifier {
-    def like(sharedBehavior: Behavior) {
+    def a(sharedBehavior: Behavior) {
       sharedExamplesList :::= sharedBehavior.sharedExamplesList
     }
   }
   
-  protected val it = new ItWord
+  protected val should = new ShouldWord
 
   class Dasher(s: String) {
     def - (f: => Unit) {

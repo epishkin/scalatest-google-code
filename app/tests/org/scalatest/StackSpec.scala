@@ -110,13 +110,13 @@ class StackSpec extends Spec {
     }
     
     "(with one item)" -- {
-      it should behave like NonEmptyStack(stackWithOneItem, lastValuePushed)
-      it should behave like NonFullStack(stackWithOneItem)
+      should behave like a NonEmptyStack(stackWithOneItem, lastValuePushed)
+      should behave like a NonFullStack(stackWithOneItem)
     }
     
     "(with one item less than capacity)"-- {
-      it should behave like NonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
-      it should behave like NonFullStack(stackWithOneItemLessThanCapacity)
+      should behave like a NonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+      should behave like a NonFullStack(stackWithOneItemLessThanCapacity)
     }
 
     "(full)" -- {
@@ -125,7 +125,7 @@ class StackSpec extends Spec {
         assert(fullStack.full)
       }
       
-      it should behave like NonEmptyStack(fullStack, lastValuePushed)
+      should behave like a NonEmptyStack(fullStack, lastValuePushed)
       
       "should complain on a push" - {
         intercept(classOf[IllegalStateException]) {
