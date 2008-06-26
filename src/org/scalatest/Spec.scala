@@ -43,12 +43,11 @@ trait Spec extends Suite {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
-  class ItWord {
-    def should(exampleName: String) = new Inifier(exampleName)
-    def should(behaveWord: BehaveWord) = new Likifier()
+  class ShouldWord {
+    def behave(likeWord: LikeWord) = new Likifier()
   }
   
-  class BehaveWord {}
+  class LikeWord {}
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
     val exampleFullName = getExampleFullName(exampleRawName, needsShould, currentBranch)
@@ -62,22 +61,18 @@ trait Spec extends Suite {
     registerExample(exampleRawName, false, f)
   }
     
-  class Inifier(exampleRawName: String) {
-    def in(f: => Unit) {
-      registerExample(exampleRawName, true, f)
-    }
-  }
-
-  protected val behave = new BehaveWord
+  protected val like = new LikeWord
   class Likifier {
-    def like(sharedBehavior: Behavior) {
+    def a(sharedBehavior: Behavior) {
       val sharedExamples = sharedBehavior.examples(currentBranch)
       currentBranch.subNodes :::= sharedExamples
       examplesList :::= sharedExamples
     }
+    def an(sharedBehavior: Behavior) { a(sharedBehavior) }
+    def the(sharedBehavior: Behavior) { a(sharedBehavior) }
   }
   
-  protected val it = new ItWord
+  protected val should = new ShouldWord
 
   protected def describe(name: String)(f: => Unit) {
     
