@@ -2,7 +2,7 @@ package org.scalatest
 
 import scala.collection.mutable.ListBuffer
 
-class ImpSuiteSuite extends FunSuite {
+class BeforeAndAfterSuite extends FunSuite {
 
   class TheSuper extends Suite {
     var runTestWasCalled = false
@@ -18,7 +18,7 @@ class ImpSuiteSuite extends FunSuite {
     }
   }
   
-  class MySuite extends TheSuper with ImpSuite {
+  class MySuite extends TheSuper with BeforeAndAfter {
     var beforeEachCalledBeforeRunTest = false
     var afterEachCalledAfterRunTest = false
     var beforeAllCalledBeforeExecute = false
@@ -82,7 +82,7 @@ class ImpSuiteSuite extends FunSuite {
   test("If any invocation of beforeEach completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception.") {
     
-    class MySuite extends ImpSuite {
+    class MySuite extends BeforeAndAfter {
       override def beforeEach() { throw new NumberFormatException } 
     }
     intercept(classOf[NumberFormatException]) {
@@ -98,7 +98,7 @@ class ImpSuiteSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with ImpSuite {
+    class MySuite extends FunkySuite with BeforeAndAfter {
       var afterEachCalled = false
       override def afterEach() {
         afterEachCalled = true
@@ -118,7 +118,7 @@ class ImpSuiteSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with ImpSuite {
+    class MySuite extends FunkySuite with BeforeAndAfter {
       var afterEachCalled = false
       override def afterEach() {
         afterEachCalled = true
@@ -135,7 +135,7 @@ class ImpSuiteSuite extends FunSuite {
   test("If super.runTest returns normally, but afterEach completes abruptly with an " +
     "exception, runTest will complete abruptly with the same exception.") {
        
-    class MySuite extends ImpSuite {
+    class MySuite extends BeforeAndAfter {
       override def afterEach() { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -149,7 +149,7 @@ class ImpSuiteSuite extends FunSuite {
   test("If any invocation of beforeAll completes abruptly with an exception, execute " +
     "will complete abruptly with the same exception.") {
     
-    class MySuite extends ImpSuite {
+    class MySuite extends BeforeAndAfter {
       override def beforeAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -167,7 +167,7 @@ class ImpSuiteSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with ImpSuite {
+    class MySuite extends FunkySuite with BeforeAndAfter {
       var afterAllCalled = false
       override def afterAll() {
         afterAllCalled = true
@@ -188,7 +188,7 @@ class ImpSuiteSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with ImpSuite {
+    class MySuite extends FunkySuite with BeforeAndAfter {
       var afterAllCalled = false
       override def afterAll() {
         afterAllCalled = true
@@ -205,7 +205,7 @@ class ImpSuiteSuite extends FunSuite {
   test("If super.execute returns normally, but afterAll completes abruptly with an " +
     "exception, execute will complete abruptly with the same exception.") {
        
-    class MySuite extends ImpSuite {
+    class MySuite extends BeforeAndAfter {
       override def afterAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -216,7 +216,7 @@ class ImpSuiteSuite extends FunSuite {
   }
 }
 
-class ImpSuiteExtendingSuite extends ImpSuite {
+class BeforeAndAfterExtendingSuite extends BeforeAndAfter {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
@@ -240,7 +240,7 @@ class ImpSuiteExtendingSuite extends ImpSuite {
   }
 }
 
-class ImpSuiteExtendingFunSuite extends FunSuite with ImpSuite {
+class BeforeAndAfterExtendingFunSuite extends FunSuite with BeforeAndAfter {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]

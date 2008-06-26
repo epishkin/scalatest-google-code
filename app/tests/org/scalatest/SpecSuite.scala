@@ -226,8 +226,8 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "A Stack (when not full) must allow me to push")
   }
   
-  test("should be able to mix in ImpSuite without any problems") {
-    class MySpec extends Spec with ImpSuite {
+  test("should be able to mix in BeforeAndAfter without any problems") {
+    class MySpec extends Spec with BeforeAndAfter {
       describe("A Stack") {
         describe("(when not empty)") {
           "should allow me to pop" - {}
@@ -1961,7 +1961,7 @@ class SpecSuite extends FunSuite {
  
   // Testing Shared behaviors
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
-    class MySpec extends Spec with ImpSuite {
+    class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
       case class InvocationVerifier extends Behavior {
         "should be invoked" - {
@@ -1984,7 +1984,7 @@ class SpecSuite extends FunSuite {
   }
   
   test("two examples in a shared behavior should get invoked") {
-    class MySpec extends Spec with ImpSuite {
+    class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
       case class InvocationVerifier extends Behavior {
@@ -2075,7 +2075,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with ImpSuite {
+    class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
       case class InvocationVerifier extends Behavior {
         "it should be invoked" - {
