@@ -2,7 +2,7 @@ package org.scalatest
 
 import NodeFamily._
 
-trait Behavior {
+trait Behavior extends Assertions {
 
   // All shared examples, in reverse order of registration
   private var sharedExamplesList = List[SharedExample]()
