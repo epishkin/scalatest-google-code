@@ -28,44 +28,43 @@ class Stack[T] {
   def size = buf.size
 }
       
-  case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior {
+case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior {
     
-    "should be non-empty" - {
-      assert(!stack.empty)
-    }  
+  "should be non-empty" - {
+    assert(!stack.empty)
+  }  
 
-    "should return the top item on peek" - {
-      assert(stack.peek === lastItemAdded)
-    }
-
-    "should not remove the top item on peek" - {
-      val size = stack.size
-      assert(stack.peek === lastItemAdded)
-      assert(stack.size === size)
-    }
-
-    "should remove the top item on pop" - {
-      val size = stack.size
-      assert(stack.pop === lastItemAdded)
-      assert(stack.size === size - 1)
-    }
+  "should return the top item on peek" - {
+    assert(stack.peek === lastItemAdded)
   }
-      
-  case class NonFullStack(stack: Stack[Int]) extends Behavior {
-    
-    "should not be full" - {
-      assert(!stack.full)
-    }
-    
-    "should add to the top on push" - {
-      val size = stack.size
-      stack.push(7)
-      assert(stack.size === size + 1)
-      assert(stack.peek === 7)
-    }
-  }
-      
 
+  "should not remove the top item on peek" - {
+    val size = stack.size
+    assert(stack.peek === lastItemAdded)
+    assert(stack.size === size)
+  }
+
+  "should remove the top item on pop" - {
+    val size = stack.size
+    assert(stack.pop === lastItemAdded)
+    assert(stack.size === size - 1)
+  }
+}
+      
+case class NonFullStack(stack: Stack[Int]) extends Behavior {
+    
+  "should not be full" - {
+    assert(!stack.full)
+  }
+    
+  "should add to the top on push" - {
+    val size = stack.size
+    stack.push(7)
+    assert(stack.size === size + 1)
+    assert(stack.peek === 7)
+  }
+}
+      
 class StackSpec extends Spec {
 
   // Fixture creation methods

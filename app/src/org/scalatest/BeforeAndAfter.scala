@@ -74,7 +74,9 @@ package org.scalatest
  * </p>
  *
  */
-trait BeforeAndAfter extends Suite {
+trait BeforeAndAfter extends ExecuteAndRun {
+  
+  this: Suite =>
   
   /**
    * Defines a method to be run before each of this suite's tests. This trait's implementation
@@ -127,7 +129,7 @@ trait BeforeAndAfter extends Suite {
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
+  abstract override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
     beforeEach()
     try {
       super.runTest(testName, reporter, stopper, properties)
@@ -162,7 +164,7 @@ trait BeforeAndAfter extends Suite {
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
-  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  abstract override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                        properties: Map[String, Any], distributor: Option[Distributor]) {
     beforeAll()
     try {
