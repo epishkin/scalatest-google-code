@@ -53,21 +53,21 @@ class StackSpec extends Spec {
       
   case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior {
     
-    it should "be non-empty" in {
+    "should be non-empty" - {
       assert(!stack.empty)
     }  
 
-    it should "return the top item on peek" in {
+    "should return the top item on peek" - {
       assert(stack.peek === lastItemAdded)
     }
 
-    it should "not remove the top item on peek" in {
+    "should not remove the top item on peek" - {
       val size = stack.size
       assert(stack.peek === lastItemAdded)
       assert(stack.size === size)
     }
 
-    it should "remove the top item on pop" in {
+    "should remove the top item on pop" - {
       val size = stack.size
       assert(stack.pop === lastItemAdded)
       assert(stack.size === size - 1)
@@ -76,11 +76,11 @@ class StackSpec extends Spec {
       
   case class NonFullStack(stack: Stack[Int]) extends Behavior {
     
-    it should "not be full" in {
+    "should not be full" - {
       assert(!stack.full)
     }
     
-    it should "add to the top on push" in {
+    "should add to the top on push" - {
       val size = stack.size
       stack.push(7)
       assert(stack.size === size + 1)
@@ -88,46 +88,46 @@ class StackSpec extends Spec {
     }
   }
       
-  describe("A Stack") {
-    // A Stack should do something
-    describe("(when empty)") {
+  "A Stack" -- {
+
+    "(when empty)" -- {
       
-      it should "be empty" in {
+      "should be empty" - {
         assert(emptyStack.empty)
       }
       
-      it should "complain on peek" in {
+      "should complain on peek" - {
         intercept(classOf[IllegalStateException]) {
           emptyStack.peek
         }
       }
       
-      it should "complain on pop" in {
+      "should complain on pop" - {
         intercept(classOf[IllegalStateException]) {
           emptyStack.pop
         }
       }
     }
     
-    describe("(with one item)") {
+    "(with one item)" -- {
       it should behave like NonEmptyStack(stackWithOneItem, lastValuePushed)
       it should behave like NonFullStack(stackWithOneItem)
     }
     
-    describe("(with one item less than capacity)") {
+    "(with one item less than capacity)"-- {
       it should behave like NonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
       it should behave like NonFullStack(stackWithOneItemLessThanCapacity)
     }
-    // A Stack should do something else 
-    describe("(full)") {
+
+    "(full)" -- {
       
-      it should "be full" in {
+      "should be full" - {
         assert(fullStack.full)
       }
       
       it should behave like NonEmptyStack(fullStack, lastValuePushed)
       
-      it should "complain on a push" in {
+      "should complain on a push" - {
         intercept(classOf[IllegalStateException]) {
           fullStack.push(10)
         }
