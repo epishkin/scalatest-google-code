@@ -28,22 +28,22 @@ import org.scalacheck.Test._
 /**
  * A <code>FunSuite</code> subtrait that provides methods that perform
  * ScalaCheck property checks.
- * If ScalaCheck, when invoked via one of the methods provided by <cod>PropSuite</code>, finds a test case for which a property doesn't hold, the problem will be reported as a ScalaTest test failure.
+ * If ScalaCheck, when invoked via one of the methods provided by <cod>FunSuite</code>, finds a test case for which a property doesn't hold, the problem will be reported as a ScalaTest test failure.
  * 
  * <p>
  * To use ScalaCheck, you specify properties and, in some cases, generators that generate test data. Often you need not 
  * provide generators, because ScalaCheck provides many default generators that you can use in many situations.
  * ScalaCheck will use the generators to generate test data and with that data run tests that check that the property holds.
  * Property-based tests can, therefore, can give you a lot more testing for a lot less code than assertion-based tests.
- * Here's an example of using ScalaCheck from a <code>PropSuite</code>:
+ * Here's an example of using ScalaCheck from a <code>FunSuite</code>:
  * </p>
  *
  * <pre>
- * import org.scalatest.prop.PropSuite
+ * import org.scalatest.prop.FunSuite
  * import org.scalacheck.Arbitrary._
  * import org.scalacheck.Prop._
  *
- * class MySuite extends PropSuite {
+ * class MySuite extends FunSuite {
  *
  *   test("list concatenation") {
  * 
@@ -62,7 +62,7 @@ import org.scalacheck.Test._
  * </pre>
  *
  * <p>
- * <code>PropSuite</code> mixes in trait <code>Checkers</code>, so you can call any of its
+ * <code>FunSuite</code> mixes in trait <code>Checkers</code>, so you can call any of its
  * <code>check</code> methods inside a test function. This is shown in the first test:
  * </p>
  * <pre>
@@ -80,7 +80,7 @@ import org.scalacheck.Test._
  * The <code>check</code> methods provided by <code>Checkers</code> allow you to combine assertion- and property-based
  * testing in the same test function. If you want to define a test that is composed only
  * of a single property check, you can use one of several <code>test</code> methods
- * <code>PropSuite</code> defines. These <code>test</code> methods allow you to
+ * <code>FunSuite</code> defines. These <code>test</code> methods allow you to
  * register just a property as a test function. This is shown in the previous example
  * in the second test:
  *
@@ -96,9 +96,9 @@ import org.scalacheck.Test._
  * </p>
  *
  * <pre>
- * import org.scalatest.prop.PropSuite
+ * import org.scalatest.prop.FunSuite
  *
- * class StringSuite extends PropSuite {
+ * class StringSuite extends FunSuite {
  *
  *   test("startsWith", (a: String, b: String) => (a + b).startsWith(a))
  *
@@ -121,10 +121,10 @@ import org.scalacheck.Test._
  * </p>
  *
  * <p>
- * A <code>PropSuite</code>'s tests may be classified into named <em>groups</em> in
- * the same manner as its supertrait <code>FunSuite</code>.
- * As with any suite, when executing a <code>PropSuite</code>, groups of tests can
- * optionally be included and/or excluded. To place <code>PropSuite</code> tests into
+ * A <code>FunSuite</code>'s tests may be classified into named <em>groups</em> in
+ * the same manner as its supertrait <code>org.scalatest.FunSuite</code>.
+ * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
+ * optionally be included and/or excluded. To place <code>FunSuite</code> tests into
  * groups, you pass objects that extend abstract class <code>org.scalatest.Group</code> to methods
  * that register tests. Class <code>Group</code> takes one type parameter, a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
@@ -140,14 +140,14 @@ import org.scalacheck.Test._
  * object DBTest extends Group("com.mycompany.groups.DBTest")
  * </pre>
  * <p>
- * Given these definitions, you could place <code>PropSuite</code> tests into groups like this:
+ * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
  * </p>
  * <pre>
- * import org.scalatest.prop.PropSuite
+ * import org.scalatest.prop.FunSuite
  * import org.scalacheck.Arbitrary._
  * import org.scalacheck.Prop._
  *
- * class MySuite extends PropSuite {
+ * class MySuite extends FunSuite {
  *
  *   test("list concatenation", SlowTest) {
  *
@@ -188,17 +188,17 @@ import org.scalacheck.Test._
  *
  * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling tests, with the
- * good intention of resurrecting the test at a later time, <code>PropSuite</code> provides registration
+ * good intention of resurrecting the test at a later time, <code>FunSuite</code> provides registration
  * methods that start with <code>ignore</code> instead of <code>test</code>. For example, to temporarily
  * disable the tests defined in the <code>MySuite</code> example shown previously, just change &#8220;<code>test</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
  * <pre>
- * import org.scalatest.prop.PropSuite
+ * import org.scalatest.prop.FunSuite
  * import org.scalacheck.Arbitrary._
  * import org.scalacheck.Prop._
  *
- * class MySuite extends PropSuite {
+ * class MySuite extends FunSuite {
  *
  *   ignore("list concatenation") {
  *
@@ -249,7 +249,7 @@ import org.scalacheck.Test._
  *
  * @author Bill Venners
  */
-trait PropSuite extends FunSuite with Checkers {
+trait FunSuite extends scalatest.FunSuite with Checkers {
 
   /**
    * Convert the passed 1-arg function into a property, and register it as a test.
