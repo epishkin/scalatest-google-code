@@ -240,7 +240,7 @@
 			<arg value="-o" />
 
 			<arg value="-s" />
-			<arg value="org.scalatest.StackSpec" />
+			<arg value="org.scalatest.SpecSuite" />
 
 <!--
 			<arg value="-s" />

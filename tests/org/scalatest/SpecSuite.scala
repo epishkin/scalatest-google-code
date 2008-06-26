@@ -2,19 +2,19 @@ package org.scalatest
 
 class SpecSuite extends FunSuite {
 
-  test("three 'it should' examples should be invoked in order") {
+  test("three fancy specifiers should be invoked in order") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      it should "get invoked" in {
+      "it should get invoked" - {
         example1WasInvoked = true
       }
-      it should "also get invoked" in {
+      "it should also get invoked" - {
         if (example1WasInvoked)
           example2WasInvokedAfterExample1 = true
       }
-      it should "also also get invoked" in {
+      "it should also also get invoked" - {
         if (example2WasInvokedAfterExample1)
           example3WasInvokedAfterExample2 = true
       }
@@ -26,7 +26,7 @@ class SpecSuite extends FunSuite {
     assert(a.example3WasInvokedAfterExample2)
   }
 
-  test("three 'specify' examples should be invoked in order") {
+  test("three plain-old specifiers should be invoked in order") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
@@ -50,20 +50,20 @@ class SpecSuite extends FunSuite {
     assert(a.example3WasInvokedAfterExample2)
   }
 
-  test("three 'it should' examples should be invoked in order when two are surrounded by a describe") {
+  test("three fancy specifiers should be invoked in order when two are surrounded by a plain-old describer") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      it should "get invoked" in {
+      "it should get invoked" - {
         example1WasInvoked = true
       }
       describe("Stack") {
-        it should "also get invoked" in {
+        "should also get invoked" - {
           if (example1WasInvoked)
             example2WasInvokedAfterExample1 = true
         }
-        it should "also also get invoked" in {
+        "should also also get invoked" - {
           if (example2WasInvokedAfterExample1)
             example3WasInvokedAfterExample2 = true
         }
@@ -76,7 +76,33 @@ class SpecSuite extends FunSuite {
     assert(a.example3WasInvokedAfterExample2)
   }
 
-  test("three 'specify' examples should be invoked in order when two are surrounded by a describe") {
+  test("three fancy specifiers should be invoked in order when two are surrounded by an fancy describer") {
+    class MySpec extends Spec {
+      var example1WasInvoked = false
+      var example2WasInvokedAfterExample1 = false
+      var example3WasInvokedAfterExample2 = false
+      "it should get invoked" - {
+        example1WasInvoked = true
+      }
+      "A Stack" -- {
+        "should also get invoked" - {
+          if (example1WasInvoked)
+            example2WasInvokedAfterExample1 = true
+        }
+        "should also also get invoked" - {
+          if (example2WasInvokedAfterExample1)
+            example3WasInvokedAfterExample2 = true
+        }
+      }
+    }
+    val a = new MySpec
+    a.execute()
+    assert(a.example1WasInvoked)
+    assert(a.example2WasInvokedAfterExample1)
+    assert(a.example3WasInvokedAfterExample2)
+  }
+
+  test("three plain-old specifiers should be invoked in order when two are surrounded by a plain-old describe") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
@@ -102,14 +128,14 @@ class SpecSuite extends FunSuite {
     assert(a.example3WasInvokedAfterExample2)
   }
    
-  test("two 'it should' examples should show up in order of appearance in testNames") {
+  test("two fancy specifiers should show up in order of appearance in testNames") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
-      it should "get invoked" in {
+      "it should get invoked" - {
         example1WasInvoked = true
       }
-      it should "also get invoked" in {
+      "it should also get invoked" - {
         if (example1WasInvoked)
           example2WasInvokedAfterExample1 = true
       }
@@ -121,7 +147,7 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "it should also get invoked")
   }
  
-  test("two 'specify' examples should show up in order of appearance in testNames") {
+  test("two plain-old specifiers should show up in order of appearance in testNames") {
     class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
@@ -140,11 +166,11 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "it should also get invoked")
   }
  
-  test("'it should' test names should include an enclosing describe string, separated by a space") {
+  test("fancy specifier test names should include an enclosing describe string, separated by a space") {
     class MySpec extends Spec {
       describe("A Stack") {
-        it should "allow me to pop" in {}
-        it should "allow me to push" in {}
+        "should allow me to pop" - {}
+        "should allow me to push" - {}
       }
     }
     val a = new MySpec
@@ -153,7 +179,7 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "A Stack should allow me to push")
   }
 
-  test("'specify' test names should include an enclosing describe string, separated by a space") {
+  test("plain-old specifier test names should include an enclosing describe string, separated by a space") {
     class MySpec extends Spec {
       describe("A Stack") {
         specify("must allow me to pop") {}
@@ -166,14 +192,14 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "A Stack must allow me to push")
   }
 
-  test("'it should' test names should properly nest descriptions in test names") {
+  test("fancy specifier test names should properly nest descriptions in test names") {
     class MySpec extends Spec {
       describe("A Stack") {
         describe("(when not empty)") {
-          it should "allow me to pop" in {}
+          "should allow me to pop" - {}
         }
         describe("(when not full)") {
-          it should "allow me to push" in {}
+          "should allow me to push" - {}
         }
       }
     }
@@ -183,7 +209,7 @@ class SpecSuite extends FunSuite {
     assert(a.testNames.elements.toList(1) === "A Stack (when not full) should allow me to push")
   }
   
-  test("'specify' test names should properly nest descriptions in test names") {
+  test("plain-old test names should properly nest plain-old descriptions in test names") {
     class MySpec extends Spec {
       describe("A Stack") {
         describe("(when not empty)") {
@@ -204,10 +230,10 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ImpSuite {
       describe("A Stack") {
         describe("(when not empty)") {
-          it should "allow me to pop" in {}
+          "should allow me to pop" - {}
         }
         describe("(when not full)") {
-          it should "allow me to push" in {}
+          "should allow me to push" - {}
         }
       }
     }
@@ -216,7 +242,7 @@ class SpecSuite extends FunSuite {
   }
   
   // Test for good strings in report for top-level examples
-  test("Top-level 'it should' examples should yield good strings in a testStarting report") {
+  test("Top-level fancy specifiers should yield good strings in a testStarting report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -235,7 +261,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      it should "start with proper words" in {}
+      "it should start with proper words" - {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -244,7 +270,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'specify' examples should yield good strings in a testStarting report") {
+  test("Top-level plain-old specifiers should yield good strings in a testStarting report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -272,7 +298,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'it should' examples should yield good strings in a testSucceeded report") {
+  test("Top-level fancy specifiers should yield good strings in a testSucceeded report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -291,7 +317,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      it should "start with proper words" in {}
+      "it should start with proper words" - {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -300,7 +326,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'specify' examples should yield good strings in a testSucceeded report") {
+  test("Top-level plain-old specifiers should yield good strings in a testSucceeded report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -328,7 +354,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
 
-  test("Top-level 'it should' examples should yield good strings in a testFailed report") {
+  test("Top-level fancy specifiers should yield good strings in a testFailed report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -347,7 +373,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      it should "start with proper words" in { fail() }
+      "it should start with proper words" - { fail() }
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -356,7 +382,7 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'specify' examples should yield good strings in a testFailed report") {
+  test("Top-level plain-old specifiers should yield good strings in a testFailed report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
@@ -385,7 +411,7 @@ class SpecSuite extends FunSuite {
   }
 
   // Tests for good strings in report for nested-one-level examples
-  test("Nested-one-level 'it should' examples should yield good strings in a testStarting report") {
+  test("Nested-one-level fancy specifiers should yield good strings in a testStarting report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -427,8 +453,8 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("My Spec") {
-        it should "start with proper words" in {}
+      "My Spec" -- {
+        "should start with proper words" - {}
       }
     }
     val a = new MySpec
@@ -441,7 +467,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-one-level 'specify' examples should yield good strings in a testStarting report") {
+  test("Nested-one-level plain-old specifiers should yield good strings in a testStarting report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -497,7 +523,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
   
-  test("Nested-one-level 'it should' examples should yield good strings in a testSucceeded report") {
+  test("Nested-one-level fancy specifiers should yield good strings in a testSucceeded report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -539,8 +565,8 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("My Spec") {
-        it should "start with proper words" in {}
+      "My Spec" -- {
+        "should start with proper words" - {}
       }
     }
     val a = new MySpec
@@ -553,7 +579,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-one-level 'specify' examples should yield good strings in a testSucceeded report") {
+  test("Nested-one-level plain-old specifiers should yield good strings in a testSucceeded report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -609,7 +635,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
     
-  test("Nested-one-level 'it should' examples should yield good strings in a testFailed report") {
+  test("Nested-one-level fancy specifiers should yield good strings in a testFailed report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -651,8 +677,8 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("My Spec") {
-        it should "start with proper words" in { fail() }
+      "My Spec" -- {
+        "should start with proper words" - { fail() }
       }
     }
     val a = new MySpec
@@ -665,7 +691,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-one-level 'specify' examples should yield good strings in a testFailed report") {
+  test("Nested-one-level plain-old specifiers should yield good strings in a testFailed report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -723,7 +749,7 @@ class SpecSuite extends FunSuite {
 
   
   // Tests for good strings in report for nested-two-levels examples
-  test("Nested-two-levels 'it should' examples should yield good strings in a testStarting report") {
+  test("Nested-two-levels fancy specifiers should yield good strings in a testStarting report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -765,9 +791,9 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("My") {
-        describe("Spec") {
-          it should "start with proper words" in {}
+      "My" -- {
+        "Spec" -- {
+          "should start with proper words" - {}
         }
       }
     }
@@ -781,7 +807,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-two-levels 'specify' examples should yield good strings in a testStarting report") {
+  test("Nested-two-levels plain-old specifiers should yield good strings in a testStarting report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -839,7 +865,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
   
-  test("Nested-two-levels 'it should' examples should yield good strings in a testSucceeded report") {
+  test("Nested-two-levels fancy specifiers should yield good strings in a testSucceeded report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -881,9 +907,9 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("My") {
-        describe("Spec") {
-          it should "start with proper words" in {}
+      "My" -- {
+        "Spec" -- {
+          "should start with proper words" - {}
         }
       }
     }
@@ -897,7 +923,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-two-levels 'specify' examples should yield good strings in a testSucceeded report") {
+  test("Nested-two-levels plain-old specifiers should yield good strings in a testSucceeded report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -955,7 +981,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
     
-  test("Nested-two-levels 'it should' examples should yield good strings in a testFailed report") {
+  test("Nested-two-levels fancy specifiers should yield good strings in a testFailed report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -997,9 +1023,9 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec {
-      describe("My") {
-        describe("Spec") {
-          it should "start with proper words" in { fail() }
+      "My" -- {
+        "Spec" -- {
+          "should start with proper words" - { fail() }
         }
       }
     }
