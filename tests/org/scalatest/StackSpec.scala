@@ -28,30 +28,6 @@ class Stack[T] {
   def size = buf.size
 }
       
-
-class StackSpec extends Spec {
-
-  // Fixture creation methods
-  def emptyStack = new Stack[Int]
-  def fullStack = {
-    val stack = new Stack[Int]
-    for (i <- 0 until stack.MAX)
-      stack.push(i)
-    stack
-  }
-  def stackWithOneItem = {
-    val stack = new Stack[Int]
-    stack.push(9)
-    stack
-  }
-  def stackWithOneItemLessThanCapacity = {
-    val stack = new Stack[Int]
-    for (i <- 1 to 9)
-      stack.push(i)
-    stack
-  }
-  val lastValuePushed = 9
-      
   case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior {
     
     "should be non-empty" - {
@@ -88,6 +64,30 @@ class StackSpec extends Spec {
       assert(stack.peek === 7)
     }
   }
+      
+
+class StackSpec extends Spec {
+
+  // Fixture creation methods
+  def emptyStack = new Stack[Int]
+  def fullStack = {
+    val stack = new Stack[Int]
+    for (i <- 0 until stack.MAX)
+      stack.push(i)
+    stack
+  }
+  def stackWithOneItem = {
+    val stack = new Stack[Int]
+    stack.push(9)
+    stack
+  }
+  def stackWithOneItemLessThanCapacity = {
+    val stack = new Stack[Int]
+    for (i <- 1 to 9)
+      stack.push(i)
+    stack
+  }
+  val lastValuePushed = 9
       
   "A Stack" -- {
 
