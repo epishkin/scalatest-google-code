@@ -39,7 +39,6 @@ class Shouldilizer[T](left: => T) {
       case _ => ()
     }
   }
-
 }
 
 object Matchers {
@@ -50,7 +49,7 @@ object Matchers {
         MatcherResult(param == o, param +" did not equal "+ o, param +" equaled "+ o)
     }
 
-  def be[S <: Any](o: S) = equal(o)
+  def be[S <: Boolean](o: S) = equal(o)
 
   def not[S <: Any](matcher: Matcher[S]) =
     new Matcher[S] {
