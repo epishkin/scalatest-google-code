@@ -25,11 +25,11 @@ class MatcherSpec extends Spec {
   }
   "The not matcher" -- {
     "should do nothing when not true" - {
-      1 should not { be (2) }
+      1 should not { equal (2) }
     }
     "should throw an assertion error when true" - {
       intercept(classOf[AssertionError]) {
-        1 should not { be (1) }
+        1 should not { equal (1) }
       }
     }
   }
