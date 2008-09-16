@@ -220,6 +220,9 @@
 			<arg value="org.scalatest" />
 
 			<arg value="-m" />
+			<arg value="org.scalatest.matchers" />
+
+			<arg value="-m" />
 			<arg value="org.scalatest.testng" />
 
 			<arg value="-m" />
