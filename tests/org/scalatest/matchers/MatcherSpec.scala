@@ -109,14 +109,27 @@ class MatcherSpec extends Spec {
      object should be { anInstanceOf[Something] }
      object should be { theSameInstanceAs(anotherObjectReference) }
      string should equalIgnoringCase ("happy")
+     string should equalTrimmed (" happy  ")
      string should startWith ("something")
-     string should includeSubstring ("substring for which indexOf > -1")
+     string should include ("substring for which indexOf > -1")
      string should matchRegEx ("""[a-zA-Z_]\w*""")
-     number should beGreaterThan (7)
-     number should beGreaterThanOrEqualTo (7)
-     number should beLessThan (7)
-     number should beLessThanOrEqualTo (7)
-     floatingPointNumber should beCloseTo { 7.0 withinTolerance 0.01 }
+
+     // This could work. greaterThan has an apply method, and it has
+     // an "or" method that takes whatever equalTo(7) returns
+     // Maybe these could be structural.
+     number should be { greaterThan (7) }
+     number should be { greaterThan or equalTo (7) }
+     number should be { lessThan (7) }
+     number should be { lessThan or equalTo (7) }
+
+     // number should beGreaterThan (7)
+     // number should beGreaterThanOrEqualTo (7)
+     // number should beLessThan (7)
+     // number should beLessThanOrEqualTo (7)
+
+     floatingPointNumber should be { 7.0 plusOrMinus 0.01 }
+     floatingPointNumber should be { 7.0 exactly }
+     // floatingPointNumber should beCloseTo { 7.0 withinTolerance 0.01 }
      option should be (None)
      option should equal (Some(1))
      option should not { be (None) } // for any Some
@@ -125,6 +138,9 @@ class MatcherSpec extends Spec {
      object should satisfy (_ > 12)
      object should matchPattern { case 1 :: _ :: 3 :: Nil => true } // or..
      object should satisfy { case 1 :: _ :: 3 :: Nil => true } 
+
+     { "Howdy".charAt(-1) } shouldThrow (classOf[StringIndexOutOfBoundsException])
+
      theFollowing shouldThrow (classOf[StringIndexOutOfBoundsException]) {
        "Howdy".charAt(-1)
      }
