@@ -14,12 +14,35 @@ class MatcherSpec extends Spec {
     }
   }
   "The be matcher" -- {
-    "should do nothing when equal" - {
+    "should do nothing when false is compared to false" - {
       false should be (false)
+    }
+    "should do nothing when true is compared to true" - {
+      true should be (true)
     }
     "should throw an assertion error when not equal" - {
       intercept(classOf[AssertionError]) {
         false should be (true)
+      }
+    }
+    "should do nothing when null is compared to null" - {
+      val o: String = null
+      o should be (null)
+    }
+    "should throw an assertion error when non-null compared to null" - {
+      intercept(classOf[AssertionError]) {
+        val o = "Helloooooo"
+        o should be (null)
+      }
+    }
+    "should do nothing when non-null is compared to not null" - {
+      val o = "Helloooooo"
+      o should not { be (null) }
+    }
+    "should throw an assertion error when null compared to not null" - {
+      intercept(classOf[AssertionError]) {
+        val o: String = null
+        o should not { be (null) }
       }
     }
   }
@@ -58,5 +81,50 @@ class MatcherSpec extends Spec {
         1 should (equal (1) and equal (2))
       }
     }
+    "should not execute the right matcher creation function when the left operand is false" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      intercept(classOf[AssertionError]) {
+        // This should fail, but without applying the matcher returned by mockMatcher
+        1 should { equal (2) and mockMatcher }
+      }
+      called should be (false)
+    }
+    "should execute the right matcher creation function when the left operand is true" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      1 should { equal (1) and mockMatcher }
+      called should be (true)
+      // mySet should not { be (empty) }
+    }
+    /*
+     map should haveKey (8)
+     map should haveValue ("eleven")
+     iterable should contain (42)
+     iterable should haveSize (3)
+     string should haveLength (8)
+     array should haveLength (9)
+     iterable should be (empty)
+     list should be (Nil)
+     object should be { anInstanceOf[Something] }
+     object should be { theSameInstanceAs(anotherObjectReference) }
+     string should equalIgnoringCase ("happy")
+     string should startWith ("something")
+     string should includeSubstring ("substring for which indexOf > -1")
+     string should matchRegEx ("""[a-zA-Z_]\w*""")
+     number should beGreaterThan (7)
+     number should beGreaterThanOrEqualTo (7)
+     number should beLessThan (7)
+     number should beLessThanOrEqualTo (7)
+     floatingPointNumber should beCloseTo { 7.0 withinTolerance 0.01 }
+     option should be (None)
+     option should equal (Some(1))
+     option should not { be (None) } // for any Some
+     option should be (aSome[String]) // or this
+     option should be (aSome[String], which should startWith ("prefix")) // or this
+     object should satisfy (_ > 12)
+     object should matchPattern { case 1 :: _ :: 3 :: Nil => true } // or..
+     object should satisfy { case 1 :: _ :: 3 :: Nil => true } 
+    */
   }
 }
