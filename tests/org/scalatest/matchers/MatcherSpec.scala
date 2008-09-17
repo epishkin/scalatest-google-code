@@ -125,6 +125,9 @@ class MatcherSpec extends Spec {
      object should satisfy (_ > 12)
      object should matchPattern { case 1 :: _ :: 3 :: Nil => true } // or..
      object should satisfy { case 1 :: _ :: 3 :: Nil => true } 
+     theFollowing shouldThrow (classOf[StringIndexOutOfBoundsException]) {
+       "Howdy".charAt(-1)
+     }
     */
   }
 }
