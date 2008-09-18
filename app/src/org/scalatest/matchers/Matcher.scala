@@ -1,5 +1,8 @@
 package org.scalatest.matchers
 
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
+
 case class MatcherResult(
   matches: Boolean,
   failureMessage: String,
@@ -73,6 +76,59 @@ object Matchers {
           MatcherResult(false, theParam +" was not null", theParam +"was null")
       }
     }
+
+  def beA[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
+  def beAn[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
+
+  def be[S <: AnyRef](right: Symbol): Matcher[S] = {
+
+    new Matcher[S] {
+      def apply(left: S) = {
+
+        // If 'empty passed, rightNoTick would be "empty"
+        val rightNoTick = right.toString.substring(1)
+
+        // methodNameToInvoke would also be "empty"
+        val methodNameToInvoke = rightNoTick
+
+        // methodNameToInvokeWithIs would be "isEmpty"
+        val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+
+        def isMethodToInvoke(m: Method) = {
+
+          val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+          val simpleName = m.getName
+          val paramTypes = m.getParameterTypes
+          val hasNoParams = paramTypes.length == 0
+          val resultType = m.getReturnType
+
+          isInstanceMethod && hasNoParams &&
+          (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
+          resultType == classOf[Boolean]
+        }
+
+        // Store in an array, because may have both isEmpty and empty, in which case I
+        // will throw an exception.
+        val methodArray =
+          for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
+            yield m
+
+        methodArray.length match {
+          case 0 =>
+            throw new IllegalArgumentException(
+              left +" has neither a "+ methodNameToInvoke +" or a "+ methodNameToInvokeWithIs +" method."
+            )
+          case 1 =>
+            val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
+            MatcherResult(result, left +" was not "+ rightNoTick, left +" was "+ rightNoTick)
+          case _ => // Should only ever be 2, but just in case
+            throw new IllegalArgumentException(
+              left +" has both a "+ methodNameToInvoke +" and a "+ methodNameToInvokeWithIs +" method."
+            )
+        }
+      }
+    }
+  }
 
   def not[S <: Any](matcher: Matcher[S]) =
     new Matcher[S] {
