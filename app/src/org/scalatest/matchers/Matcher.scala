@@ -48,6 +48,12 @@ class Shouldalizer[T](left: T) {
       case _ => ()
     }
   }
+  def shouldNot(rightMatcher: Matcher[T]) {
+    rightMatcher(left) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
 }
 
 object Matchers {
