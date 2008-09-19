@@ -33,8 +33,8 @@ trait Matcher[T] { leftMatcher =>
           val rightMatcherResult = rightMatcher(left)
           MatcherResult(
             rightMatcherResult.matches,
-            leftMatcherResult.negativeFailureMessage +", but "+ rightMatcherResult.failureMessage,
-            leftMatcherResult.negativeFailureMessage +", but "+ rightMatcherResult.negativeFailureMessage
+            Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.failureMessage),
+            Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.negativeFailureMessage)
           )
         }
       }
@@ -57,23 +57,31 @@ object Matchers {
   def equal[S <: Any](right: S) =
     new Matcher[S] {
       def apply(left: S) =
-        MatcherResult(left == right, left +" did not equal "+ right, left +" equaled "+ right)
+        MatcherResult(
+          left == right,
+          Resources("didNotEqual", left, right),
+          Resources("equaled", left, right)
+        )
     }
 
   def be(right: Boolean) = 
     new Matcher[Boolean] {
       def apply(left: Boolean) =
-        MatcherResult(left == right, left +" was not "+ right, left +" was "+ right)
+        MatcherResult(
+          left == right,
+          Resources("wasNot", left, right),
+          Resources("was", left, right)
+        )
     }
 
   def be[S <: AnyRef](o: Null) = 
     new Matcher[S] {
       def apply(left: S) = {
-        val theParam = left
-        if (theParam == null)
-          MatcherResult(true, "null was not null", "null was null")
-        else
-          MatcherResult(false, theParam +" was not null", theParam +"was null")
+        MatcherResult(
+          left == null,
+          Resources("wasNotNull", left),
+          Resources("wasNull", left)
+        )
       }
     }
 
