@@ -59,8 +59,8 @@ object Matchers {
       def apply(left: S) =
         MatcherResult(
           left == right,
-          Resources("didNotEqual", left, right),
-          Resources("equaled", left, right)
+          Resources("didNotEqual", left.toString, right.toString),
+          Resources("equaled", left.toString, right.toString)
         )
     }
 
@@ -69,8 +69,8 @@ object Matchers {
       def apply(left: Boolean) =
         MatcherResult(
           left == right,
-          Resources("wasNot", left, right),
-          Resources("was", left, right)
+          Resources("wasNot", left.toString, right.toString),
+          Resources("was", left.toString, right.toString)
         )
     }
 
@@ -102,6 +102,10 @@ object Matchers {
         // methodNameToInvokeWithIs would be "isEmpty"
         val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
 
+        val firstChar = rightNoTick(0).toLowerCase
+        val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+          firstChar == 'o' || firstChar == 'u'
+
         def isMethodToInvoke(m: Method) = {
 
           val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
@@ -121,17 +125,32 @@ object Matchers {
           for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
             yield m
 
+        
         methodArray.length match {
           case 0 =>
             throw new IllegalArgumentException(
-              left +" has neither a "+ methodNameToInvoke +" or a "+ methodNameToInvokeWithIs +" method."
+              Resources(
+                if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
+                left,
+                methodNameToInvoke,
+                methodNameToInvokeWithIs
+              )
             )
           case 1 =>
             val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
-            MatcherResult(result, left +" was not "+ rightNoTick, left +" was "+ rightNoTick)
+            MatcherResult(
+              result,
+              Resources("wasNot", left.toString, rightNoTick.toString),
+              Resources("was", left.toString, rightNoTick.toString)
+            )
           case _ => // Should only ever be 2, but just in case
             throw new IllegalArgumentException(
-              left +" has both a "+ methodNameToInvoke +" and a "+ methodNameToInvokeWithIs +" method."
+              Resources(
+                if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
+                left,
+                methodNameToInvoke,
+                methodNameToInvokeWithIs
+              )
             )
         }
       }
@@ -151,8 +170,8 @@ object Matchers {
       def apply(left: T) =
         MatcherResult(
           left endsWith right,
-          "\""+ left +"\" did not end with \""+ right +"\"",
-          "\""+ left +"\" ended with \""+ right +"\""
+          Resources("didNotEndWith", left, right),
+          Resources("endedWith", left, right)
         )
     }
 }

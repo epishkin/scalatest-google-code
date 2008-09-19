@@ -92,11 +92,11 @@ class MatcherSpec extends Spec {
       val ex1 = intercept(classOf[IllegalArgumentException]) {
         (new EmptyMock) should be ('empty)
       }
-      ex1.getMessage should equal ("EmptyMock has neither a empty or a isEmpty method.")
+      ex1.getMessage should equal ("EmptyMock has neither an empty or an isEmpty method.")
       val ex2 = intercept(classOf[IllegalArgumentException]) {
         (new NonEmptyMock) should not { be ('empty) }
       }
-      ex2.getMessage should equal ("NonEmptyMock has neither a empty or a isEmpty method.")
+      ex2.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
     }
 
     "should throw IllegalArgumentException if both an empty and an isEmpty method exist" - {
@@ -113,11 +113,11 @@ class MatcherSpec extends Spec {
       val ex1 = intercept(classOf[IllegalArgumentException]) {
         (new EmptyMock) should be ('empty)
       }
-      ex1.getMessage should equal ("EmptyMock has both a empty and a isEmpty method.")
+      ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method.")
       val ex2 = intercept(classOf[IllegalArgumentException]) {
         (new NonEmptyMock) should not { be ('empty) }
       }
-      ex2.getMessage should equal ("NonEmptyMock has both a empty and a isEmpty method.")
+      ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
     }
     "should access an 'empty' val when passed 'empty" - {
       class EmptyMock {
