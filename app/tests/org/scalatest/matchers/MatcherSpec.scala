@@ -180,48 +180,91 @@ class MatcherSpec extends Spec {
       // mySet should not { be (empty) }
     }
     /*
-     map should haveKey (8)
-     map should haveValue ("eleven")
+     // After should, if an even number of tokens, you need parens on the last thing.
+     // If an odd number of tokens, you don't need parens on the last thing.
+
+     map should have key 8
+     map shouldNot have key 8
+
+     map should have value "eleven"
+     map shouldNot have value "eleven"
+
      iterable should contain (42)
-     iterable should haveSize (3)
-     string should haveLength (8)
-     array should haveLength (9)
+     iterable shouldNot contain (42)
+
+     iterable should have size 3
+     iterable shouldNot have size 3
+
+     iterable should beEmpty
+     iterable shouldNot beEmpty
+
+     string should have length 0
+     string shouldNot have length 0
+     string should when trimmed have length 0
+     string shouldNot when trimmed have length 0
+
+     array should have length 9
+     array shouldNot have length 9
+
+     // Using boolean properties dynamically
      object should be ('empty)
-     object should beA ('file)
-     object should beAn ('openBook)
+     object shouldNot be ('empty)
+     object should be a 'file
+     object shouldNot be a 'file
+     object should be an 'openBook
+     object shouldNot be an 'openBook
+     object should be the 'beesKnees
+     object shouldNot be the 'beesKnees
+
      list should be (Nil)
-     object should be { anInstanceOf[Something] }
-     object should be { theSameInstanceAs(anotherObjectReference) }
+     list shouldNot be (Nil)
+
+     // of takes a type param but no value params, used in postfix notation
+     object should be anInstanceOf[Something] 
+     object shouldNot be anInstanceOf[Something] 
+
+     object should be theSameInstanceAs anotherObjectReference
+     object shouldNot be theSameInstanceAs anotherObjectReference
+
      string should equalIgnoringCase ("happy")
-     string should equalTrimmed (" happy  ")
+     string shouldNot equalIgnoringCase ("happy")
+     string should equalWhenTrimmed (" happy  ")
+     string shouldNot equalWhenTrimmed (" happy  ")
+
      string should startWith ("something")
-     string should include ("substring for which indexOf > -1")
+     string shouldNot startWith ("something")
+     string should endWith ("something")
+     string shouldNot endWith ("something")
+
+     // Check if a string includes a substring
+     string should include ("bob")
+     string shouldNot include ("bob")
+
      string should matchRegEx ("""[a-zA-Z_]\w*""")
+     string shouldNot matchRegEx ("""[a-zA-Z_]\w*""")
 
-     // This could work. greaterThan has an apply method, and it has
-     // an "or" method that takes whatever equalTo(7) returns
-     // Maybe these could be structural.
-     number should be greaterThan (7)
-     number should be greaterThan or equalTo (7)
-     number should be lessThan (7)
-     number should be lessThan or equalTo (7)
+     // Maybe these could be structural. Actually, I think these could
+     // take a view bounds, something implicitly convertable to Ordered
+     ordered should be > 7
+     ordered should be >= 7
+     ordered should be < 7
+     ordered should be <= 7
 
-     // number should beGreaterThan (7)
-     // number should beGreaterThanOrEqualTo (7)
-     // number should beLessThan (7)
-     // number should beLessThanOrEqualTo (7)
+     // ordered should be greater than (7)
+     // ordered should be greater than or equal to 7
+     // ordered should be less than (7)
+     // ordered should be less than or equal to 7
 
-     floatingPointNumber should be { 7.0 plusOrMinus 0.01 }
-     floatingPointNumber should be { 7.0 exactly }
-     // floatingPointNumber should beCloseTo { 7.0 withinTolerance 0.01 }
-     option should be (None)
+     floatingPointNumber should be ( 7.0 plusOrMinus 0.01 )
+     floatingPointNumber should be ( 7.0 exactly )
+     option should beNone
+     option should beDefined
      option should equal (Some(1))
-     option should not { be (None) } // for any Some
-     option should be (aSome[String]) // or this
-     option should be (aSome[String], which should startWith ("prefix")) // or this
+     option should be (some[String])
+     option should be (some[String], which should start with "prefix") // or this
      object should satisfy (_ > 12)
-     object should matchPattern { case 1 :: _ :: 3 :: Nil => true } // or..
      object should satisfy { case 1 :: _ :: 3 :: Nil => true } 
+     // object should matchPattern { case 1 :: _ :: 3 :: Nil => true } // or..
 
      { "Howdy".charAt(-1) } shouldThrow (classOf[StringIndexOutOfBoundsException])
 
