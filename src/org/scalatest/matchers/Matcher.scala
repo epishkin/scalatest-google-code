@@ -65,15 +65,15 @@ class Shouldalizer[T](left: T) {
 }
 
 class HaveWord {
-/*
-  def key(keyVal: T): Matcher[S] =
-    new Matcher[S] {
-      def apply(left: S) =
+  def key[K, V](keyVal: K): Matcher[Map[K, V]] =
+    new Matcher[Map[K, V]] {
+      def apply(left: Map[K, V]) =
         MatcherResult(
-          leftMap.containsKey(keyVal), 
+          left.contains(keyVal), 
+          Resources("didNotHaveKey", left.toString, keyVal.toString),
+          Resources("hadKey", left.toString, keyVal.toString)
         )
     }
-*/
 }
 
 class ShouldalizerForMap[K, V](left: Map[K, V]) extends Shouldalizer(left) {

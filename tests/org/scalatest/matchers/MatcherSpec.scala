@@ -213,13 +213,19 @@ class MatcherSpec extends Spec {
 
   "The have word" -- {
 
-     "should work with map and key" - {
+     "should work with map and key, right after a 'should'" - {
        val map = Map(1 -> "Howdy")
        map should have key 1
        map should equal { Map(1 -> "Howdy") }
        val otherMap = Map("Howdy" -> 1)
        otherMap should have key "Howdy"
        otherMap should equal { Map("Howdy" -> 1) }
+     }
+     "should work with map and key, in a logical expression" - {
+       val map = Map(1 -> "Howdy")
+       map should { have key 1 and equal (Map(1 -> "Howdy")) }
+       val otherMap = Map("Howdy" -> 1)
+       otherMap should { have key "Howdy" and equal (Map("Howdy" -> 1)) }
      }
    }
     /*
