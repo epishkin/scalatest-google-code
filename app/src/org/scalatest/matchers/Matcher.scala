@@ -41,6 +41,14 @@ trait Matcher[T] { leftMatcher =>
     }
 }
 
+class ResultOfHaveWordPassedToShould[K, V](left: Map[K, V]) {
+  def key(keyValue: K) =
+    if (!left.contains(keyValue))
+      throw new AssertionError(
+        Resources("didNotHaveKey", left.toString, keyValue.toString)
+      )
+}
+
 class Shouldalizer[T](left: T) {
   def should(rightMatcher: Matcher[T]) {
     rightMatcher(left) match {
@@ -56,9 +64,28 @@ class Shouldalizer[T](left: T) {
   }
 }
 
+class HaveWord {
+/*
+  def key(keyVal: T): Matcher[S] =
+    new Matcher[S] {
+      def apply(left: S) =
+        MatcherResult(
+          leftMap.containsKey(keyVal), 
+        )
+    }
+*/
+}
+
+class ShouldalizerForMap[K, V](left: Map[K, V]) extends Shouldalizer(left) {
+  def should(haveWord: HaveWord): ResultOfHaveWordPassedToShould[K, V] = {
+    new ResultOfHaveWordPassedToShould(left)
+  }
+}
+
 object Matchers {
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
+  implicit def shouldify[K, V](left: Map[K, V]): ShouldalizerForMap[K, V] = new ShouldalizerForMap[K, V](left)
 
   def equal[S <: Any](right: S) =
     new Matcher[S] {
@@ -180,5 +207,27 @@ object Matchers {
           Resources("endedWith", left, right)
         )
     }
+/*
+    HaveWord's type parameter can be existential. T forSome type T, because I don't know what it is
+    yet. Then in the methods key, value, length, and size, I can say what T is. Hopefully
+    The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which
+    stores the key value in a val and whose apply method checks the passed map for the remembered key. This
+    one would be used in things like:
+
+    map should { have key 9 and have value "bob" }
+
+    There's an overloaded should method on Shouldifier that takes a HaveWord. This method results in
+    a different type that also has a key method that takes an S. So when you say:
+
+    map should have key 9
+
+    what happens is that this alternate should method gets invoked. The result is this other class that
+    has a key method, and its constructor takes the map and stores it in a val. So this time when key is
+    invoked, it checks to make sure the passed key is in the remembered map, and does the assertion.
+
+    length and size can probably use structural types, because I want to use length on string and array for
+    starters, and other people may create classes that have length methods. Would be nice to be able to use them.
+  */
+  def have = new HaveWord
 }
 

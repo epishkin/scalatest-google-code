@@ -4,17 +4,19 @@ import Matchers._
 
 class MatcherSpec extends Spec {
 
-
   "The equal matcher" -- {
+
     "should do nothing when equal" - {
       1 should equal (1)
     }
+
     "should throw an assertion error when not equal" - {
       intercept(classOf[AssertionError]) {
         1 should equal (2)
       }
     }
   }
+
   "The be matcher" -- {
 
     "(for booleans)" -- {
@@ -62,6 +64,7 @@ class MatcherSpec extends Spec {
     }
 
     "(for symbols)" -- {
+
       "should call isEmpty when passed 'empty" - {
         val emptySet = Set()
         emptySet should be ('empty)
@@ -172,19 +175,23 @@ class MatcherSpec extends Spec {
   }
 
   "The and matcher" -- {
+  
     "should do nothing when both operands are true" - {
       1 should { equal (1) and equal (2 - 1) }
     }
+
     "should throw AssertionError when first operands is false" - {
       intercept(classOf[AssertionError]) {
         1 should (equal (2) and equal (1))
       }
     }
+
     "should throw AssertionError when second operands is false" - {
       intercept(classOf[AssertionError]) {
         1 should (equal (1) and equal (2))
       }
     }
+
     "should not execute the right matcher creation function when the left operand is false" - {
       var called = false
       def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
@@ -194,6 +201,7 @@ class MatcherSpec extends Spec {
       }
       called should be (false)
     }
+
     "should execute the right matcher creation function when the left operand is true" - {
       var called = false
       def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
@@ -201,6 +209,19 @@ class MatcherSpec extends Spec {
       called should be (true)
       // mySet should not { be (empty) }
     }
+  }
+
+  "The have word" -- {
+
+     "should work with map and key" - {
+       val map = Map(1 -> "Howdy")
+       map should have key 1
+       map should equal { Map(1 -> "Howdy") }
+       val otherMap = Map("Howdy" -> 1)
+       otherMap should have key "Howdy"
+       otherMap should equal { Map("Howdy" -> 1) }
+     }
+   }
     /*
      // After should/shouldNot, if an even number of tokens, you need parens on the last thing.
      // If an odd number of tokens, you can't put parens on the last thing.
@@ -311,5 +332,4 @@ class MatcherSpec extends Spec {
        "Howdy".charAt(-1)
      }
     */
-  }
 }
