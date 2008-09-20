@@ -213,42 +213,42 @@ class MatcherSpec extends Spec {
 
   "The have word" -- {
 
-     "should work with map and key, right after a 'should'" - {
-       val map = Map(1 -> "Howdy")
-       map should have key 1
-       map should equal { Map(1 -> "Howdy") }
-       val otherMap = Map("Howdy" -> 1)
-       otherMap should have key "Howdy"
-       otherMap should equal { Map("Howdy" -> 1) }
-     }
-     "should work with map and key, in a logical expression" - {
-       val map = Map(1 -> "Howdy")
-       map should { have key 1 and equal (Map(1 -> "Howdy")) }
-       val otherMap = Map("Howdy" -> 1)
-       otherMap should { have key "Howdy" and equal (Map("Howdy" -> 1)) }
-     }
-   }
+    "should work with map and key, right after a 'should'" - {
+      val map = Map(1 -> "Howdy")
+      map should have key 1
+      map should have key (1)
+      map should equal { Map(1 -> "Howdy") }
+      val otherMap = Map("Howdy" -> 1)
+      otherMap should have key "Howdy"
+      otherMap should equal { Map("Howdy" -> 1) }
+    }
+
+    "should work with map and key, in a logical expression" - {
+      val map = Map(1 -> "Howdy")
+      map should { have key 1 and equal (Map(1 -> "Howdy")) }
+      val otherMap = Map("Howdy" -> 1)
+      otherMap should { have key "Howdy" and equal (Map("Howdy" -> 1)) }
+    }
+
+    "should work with map and key, right after a 'shouldNot'" - {
+      val map = Map(1 -> "Howdy")
+      map shouldNot have key 2
+    }
+  }
     /*
      // After should/shouldNot, if an even number of tokens, you need parens on the last thing.
      // If an odd number of tokens, you can't put parens on the last thing.
 
-     map should have key 8
-     map shouldNot have key 8
-
-     // I think I can get rid of the ugly not { ... } problem by not having a "not", and just have shouldNot, andNot, and orNot.
-     map should haveKey (8) // I need this version so they can be combined with and, or, not, etc.
-     map should { haveKey (8) and haveValue ("Fred") }
-     map should { haveKey (8) andNot haveValue ("Fred") }
-     // No, I think if have is a val of a special type that has a key method that takes a T (that matches the Map[T, U]), then
-     // the should method that takes that special type could just return the passed instance, and key would get invoked on that. Then
-     // I could say "have key 8" anywhere I think it would work, assuming I can get the types square.
-     map should { have key 8 andNot have value "Fred" }
+     DONE map should have key 8
+     DONE map shouldNot have key 8
+     DONE map should { have key 8 and equal (Map(8 -> "eight")) }
+     map should { have key 8 andNot equal (Map(8 -> "eight")) }
 
      map should have value "eleven"
      map shouldNot have value "eleven"
 
-     iterable should contain (42)
-     iterable shouldNot contain (42)
+     iterable should contain element 42
+     iterable shouldNot contain element 42
 
      iterable should have size 3
      iterable shouldNot have size 3
@@ -296,8 +296,10 @@ class MatcherSpec extends Spec {
      object shouldNot be (null)
 
      string should equalIgnoringCase ("happy")
+     string should equal ignoringCase "happy"
      string shouldNot equalIgnoringCase ("happy")
      string should equalWhenTrimmed ("happy")
+     string should equal whenTrimmed "happy"
      string shouldNot equalWhenTrimmed ("happy")
 
      string should startWith ("something")

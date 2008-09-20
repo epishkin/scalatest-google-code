@@ -41,13 +41,37 @@ trait Matcher[T] { leftMatcher =>
     }
 }
 
-class ResultOfHaveWordPassedToShould[K, V](left: Map[K, V]) {
+//
+// This class is used as the return type of the overloaded should method (in ShouldalizerForMap)
+// that takes a HaveWord. It's key method will be called in situations like this:
+//
+// map should have key 1
+//
+// This gets changed to :
+//
+// shouldifyForMap(map).should(have).key(1)
+//
+// Thus, the map is wrapped in a shouldifyForMap call via an implicit conversion, which results in 
+// a ShouldilizerForMap. This has a should method that takes a HaveWord. That method returns a
+// ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
+// ha a key method that takes a K type, they key type of the map. It does the assertion thing.
+// 
+class ResultOfHaveWord[K, V](left: Map[K, V], shouldBeTrue: Boolean) {
   def key(keyValue: K) =
-    if (!left.contains(keyValue))
+    if (left.contains(keyValue) != shouldBeTrue)
       throw new AssertionError(
-        Resources("didNotHaveKey", left.toString, keyValue.toString)
+        Resources(
+          if (shouldBeTrue) "didNotHaveKey" else "hadKey",
+          left.toString,
+          keyValue.toString)
       )
 }
+
+class ResultOfHaveWordPassedToShould[K, V](left: Map[K, V])
+    extends ResultOfHaveWord(left, true)
+
+class ResultOfHaveWordPassedToShouldNot[K, V](left: Map[K, V])
+    extends ResultOfHaveWord(left, false)
 
 class Shouldalizer[T](left: T) {
   def should(rightMatcher: Matcher[T]) {
@@ -65,6 +89,11 @@ class Shouldalizer[T](left: T) {
 }
 
 class HaveWord {
+  //
+  // This key method is called when "have" is used in a logical expression, such as:
+  // map should { have key 1 and equal (Map(1 -> "Howdy")) }. It results in a matcher
+  // that remembers the key value.
+  // 
   def key[K, V](keyVal: K): Matcher[Map[K, V]] =
     new Matcher[Map[K, V]] {
       def apply(left: Map[K, V]) =
@@ -80,12 +109,15 @@ class ShouldalizerForMap[K, V](left: Map[K, V]) extends Shouldalizer(left) {
   def should(haveWord: HaveWord): ResultOfHaveWordPassedToShould[K, V] = {
     new ResultOfHaveWordPassedToShould(left)
   }
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordPassedToShouldNot[K, V] = {
+    new ResultOfHaveWordPassedToShouldNot(left)
+  }
 }
 
 object Matchers {
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
-  implicit def shouldify[K, V](left: Map[K, V]): ShouldalizerForMap[K, V] = new ShouldalizerForMap[K, V](left)
+  implicit def shouldifyForMap[K, V](left: Map[K, V]): ShouldalizerForMap[K, V] = new ShouldalizerForMap[K, V](left)
 
   def equal[S <: Any](right: S) =
     new Matcher[S] {
@@ -208,8 +240,7 @@ object Matchers {
         )
     }
 /*
-    HaveWord's type parameter can be existential. T forSome type T, because I don't know what it is
-    yet. Then in the methods key, value, length, and size, I can say what T is. Hopefully
+    In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which
     stores the key value in a val and whose apply method checks the passed map for the remembered key. This
     one would be used in things like:
