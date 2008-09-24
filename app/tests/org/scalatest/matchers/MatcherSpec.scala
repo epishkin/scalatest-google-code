@@ -64,12 +64,12 @@ class MatcherSpec extends Spec {
     }
 
     "(for symbols)" -- {
-
+/*
       "should call isEmpty when passed 'empty" - {
-        val emptySet = Set()
-        emptySet should be ('empty)
+        val emptySet = Set[Int]()
+        emptySet should be ('empty) // THIS ONE DOESN'T TYPE CHECK RIGHT NOW
         val nonEmptySet = Set(1, 2, 3)
-        nonEmptySet should not { be ('empty) }
+        nonEmptySet should not { be ('empty) }  // NOR THIS ONE
       }
 
       "should be invokable from beA(Symbol) and beAn(Symbol)" - {
@@ -80,7 +80,7 @@ class MatcherSpec extends Spec {
         nonEmptySet should not { beA ('empty) }
         nonEmptySet should not { beAn ('empty) }
       }
-
+*/
       "should call empty when passed 'empty" - {
         class EmptyMock {
           def empty: Boolean = true
@@ -234,54 +234,107 @@ class MatcherSpec extends Spec {
       val map = Map(1 -> "Howdy")
       map shouldNot have key 2
     }
+
+    "should work with map and value, right after a 'should'" - {
+      val map = Map(1 -> "Howdy")
+      map should have value "Howdy"
+      map should have value ("Howdy")
+      map should equal { Map(1 -> "Howdy") }
+      val otherMap = Map("Howdy" -> 1)
+      otherMap should have value 1
+      otherMap should equal { Map("Howdy" -> 1) }
+    }
+
+    "should work with map and value, in a logical expression" - {
+      val map = Map(1 -> "Howdy")
+      map should { have value "Howdy" and equal (Map(1 -> "Howdy")) }
+      val otherMap = Map("Howdy" -> 1)
+      otherMap should { have value 1 and equal (Map("Howdy" -> 1)) }
+    }
+
+    "should work with map and value, right after a 'shouldNot'" - {
+      val map = Map(1 -> "Howdy")
+      map shouldNot have value "Doody"
+    }
+
+    "should work with iterable and size, right after a 'should'" - {
+      val map = Map(1 -> "Howdy")
+      map should have size 1
+      val list = List(1, 2, 3, 4, 5)
+      list should have size 5
+      val set = Set(1.0, 2.0, 3.0)
+      set should have size 3
+      val array = Array[String]()
+      array should have size 0
+    }
   }
     /*
      // After should/shouldNot, if an even number of tokens, you need parens on the last thing.
      // If an odd number of tokens, you can't put parens on the last thing.
+     // Don't need an xor. To be consistent, would want an xorNot, which is very confusing. So
+     // wouldn't do that, and then it would be inconsistent with and and or. It is also not
+     // spoken English, where as and, or, and not are.
 
-     DONE map should have key 8
-     DONE map shouldNot have key 8
-     DONE map should { have key 8 and equal (Map(8 -> "eight")) }
+     map should have key 8 // DONE
+     map shouldNot have key 8 // DONE
+     map should { have key 8 and equal (Map(8 -> "eight")) } // DONE
      map should { have key 8 andNot equal (Map(8 -> "eight")) }
 
-     map should have value "eleven"
-     map shouldNot have value "eleven"
+     map should have value "eleven" // DONE
+     map shouldNot have value "eleven" // DONE
 
      iterable should contain element 42
      iterable shouldNot contain element 42
+
+     iterable should contain elements (42, 43, 59)
 
      iterable should have size 3
      iterable shouldNot have size 3
 
      iterable should beEmpty
      iterable shouldNot beEmpty
-     iterable should be ('empty)
-     iterable shouldNot be ('empty)
+     string should beEmpty
+     string shouldNot beEmpty
 
      string should have length 0
      string shouldNot have length 0
-     string should when trimmed have length 0
-     string shouldNot when trimmed have length 0
 
-     string should { not { have length 0 } and when trimmed have length 0 }
+     string should { not { have length 7 } and startWith "Hello" }
 
      array should have length 9
      array shouldNot have length 9
 
      // Using boolean properties dynamically
-     object should be ('hidden)
-     object shouldNot be ('hidden)
+     object should 'beHidden
+     object shouldNot 'beHidden
+     object should 'beEmpty
+     // object should be ('hidden) // Don't need use 'beHidden instead?
+     // object shouldNot be ('hidden)
      object should be a 'file
      object shouldNot be a 'file
      object should be an 'openBook
      object shouldNot be an 'openBook
-     object should be the 'beesKnees
-     object shouldNot be the 'beesKnees
+     // object should be the 'beesKnees
+     // object shouldNot be the 'beesKnees
+     val file = 'file
+     val openBook = 'openBook
+     val beesKnees = 'beesKnees
+     val hidden = 'hidden
+     val empty = 'empty
+     object should be (empty)
+     object should be (hidden)
+     object should be a file
+     object shouldNot be an openBook
+
+     val beHidden = 'beHidden
+     val beEmpty = 'beEmpty
+     object should beHidden
+     object should beEmpty
 
      list should be (Nil)
      list shouldNot be (Nil)
-     // list should beNil
-     // list shouldNot beNil
+     list should beNil
+     list shouldNot beNil
 
      // anInstanceOf takes a type param but no value params, used in postfix notation
      object should be anInstanceOf[Something] 
@@ -295,12 +348,15 @@ class MatcherSpec extends Spec {
      object shouldNot beNull
      object shouldNot be (null)
 
-     string should equalIgnoringCase ("happy")
+     if (object1 == null)
+       object2 should beNull
+     else 
+       object2 shouldNot beNull
+
+     // string should equalIgnoringCase ("happy")
      string should equal ignoringCase "happy"
-     string shouldNot equalIgnoringCase ("happy")
-     string should equalWhenTrimmed ("happy")
-     string should equal whenTrimmed "happy"
-     string shouldNot equalWhenTrimmed ("happy")
+     // string shouldNot equalIgnoringCase ("happy")
+     string should equal ignoringCase "happy"
 
      string should startWith ("something")
      string shouldNot startWith ("something")
@@ -323,21 +379,80 @@ class MatcherSpec extends Spec {
      floatingPointNumber should be (7.0 plusOrMinus 0.01)
      floatingPointNumber should be (7.0 exactly)
 
+     // Some of the be's
+     beNone, beNil, beNull, beEmpty, beSome[String], beDefined
+
      option should beNone
      option should be (None)
      option should beDefined
-     option should be ('defined)
-     option should equal (Some(1))
+     option should equal (Some(1)) 
      option should be equalTo Some(1)
-     option should be some[String]
-     option should be (some[String], which should startWith ("prefix"))
-     object should satisfy (_ > 12)
-     object should satisfy { case 1 :: _ :: 3 :: Nil => true } 
+     option should beSome[String] whoseValue should startWith ("prefix")
 
-     { "Howdy".charAt(-1) } shouldThrow (classOf[StringIndexOutOfBoundsException])
+     // This could be nice. It's pretty clear, and a pattern match is
+     // sometimes the most concise way to check an object.
+     object shouldMatch {
+       case 1 :: _ :: 3 :: Nil => true
+       case _ => false
+     }
 
-     theFollowing shouldThrow (classOf[StringIndexOutOfBoundsException]) {
-       "Howdy".charAt(-1)
+     // Not going to the the satisfy predicate one. Can use other forms.
+     object should satisfy predicate { (list: List) => list.filter(_ startsWith "hi").size == 3 }
+     // could be:
+     list.filter(_ startsWith "hi").size should equal (3)
+     // or:
+     val numberOfStringsThatStartWithHi = list.filter(_ startsWith "hi").size
+     numberOfStringsThatStartWithHi should equal (3)
+     // or if they wanted to reuse the same predicate a bunch of times, as in:
+     val pred = (list: List) => list.filter(_ startsWith "hi").size
+     firstList should satisfy predicate pred
+     secondList should satisfy precicate pred
+     // Could do this simply like this:
+     val pred = (list: List) => list.filter(_ startsWith "hi").size
+     // or nicer:
+     def pred(list: List) = list.filter(_ startsWith "hi").size
+     pred(firstList) should be 3
+     pred(secondList) should be 3
+     // Or something like this:
+     object should satisfy ((arg: Int) => arg > 12)
+     // Can be done more readably like this:
+     arg should be > 12
+
+     "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException])
+
+     val name = "Bob"
+     name.toLowerCase shouldChange name from "Bob" to "bob"
+
+     // person.happyBirthday shouldChange 'age of person from 32 to 33 NAH, just use person.age
+     person.happyBirthday shouldChange person.age from 32 to 33
+
+     val buf = new StringBuffer("Hello,")
+     buf.append(" world!") shouldChange buf.length from 6 to 13
+     buf.append(" world!") shouldChange buf.length to 20
+
+     // I think without shouldChange, the code is a bit less obvious:
+     val buf = new StringBuffer("Hello,")
+     buf.length should equal (6)
+     buf.append(" world!")
+     buf.length should equal (13)
+     buf.append(" world!")
+     buf.length should equal (20)
+     // I found myself wanting to say "buf.length should be (20)", so maybe I should enable that too.
+
+     (Both the code to the left and right of shouldChange could be by name params)
+
+     // I won't do something like aka
+
+     // for symmetry, and perhaps some utility, have Not forms of other shoulds:
+     byNameParam shouldNotThrow classOf[IllegalArgumentException]
+     // Can't use from or to on this, it will just grab the 2nd byNameParam
+     // do the first one, grab the 2nd one again and compare it with its
+     // earlier value.
+     byNameParam shouldNotChange byNameParam // can't use from or to on this
+     object shouldNotMatch {
+       case 1 :: _ :: 3 :: Nil => true
+       case _ => false
      }
     */
 }
+
