@@ -63,7 +63,7 @@ trait Matcher[T] { leftMatcher =>
 }
 
 //
-// This class is used as the return type of the overloaded should method (in ShouldalizerForMap)
+// This class is used as the return type of the overloaded should method (in MapShouldalizer)
 // that takes a HaveWord. It's key method will be called in situations like this:
 //
 // map should have key 1
@@ -73,7 +73,7 @@ trait Matcher[T] { leftMatcher =>
 // shouldifyForMap(map).should(have).key(1)
 //
 // Thus, the map is wrapped in a shouldifyForMap call via an implicit conversion, which results in 
-// a ShouldalizerForMap. This has a should method that takes a HaveWord. That method returns a
+// a MapShouldalizer. This has a should method that takes a HaveWord. That method returns a
 // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
 // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
 // 
@@ -153,7 +153,7 @@ class HaveWord {
     }
 }
 
-class ShouldalizerForMap[K, V](left: Map[K, V]) extends Shouldalizer(left) {
+class MapShouldalizer[K, V](left: Map[K, V]) extends Shouldalizer(left) {
   def should(haveWord: HaveWord): ResultOfHaveWordForMapPassedToShould[K, V] = {
     new ResultOfHaveWordForMapPassedToShould(left)
   }
@@ -163,7 +163,7 @@ class ShouldalizerForMap[K, V](left: Map[K, V]) extends Shouldalizer(left) {
 }
 
 //
-// This class is used as the return type of the overloaded should method (in ShouldalizerForCollection)
+// This class is used as the return type of the overloaded should method (in CollectionShouldalizer)
 // that takes a HaveWord. It's size method will be called in situations like this:
 //
 // list should have size 1
@@ -173,7 +173,7 @@ class ShouldalizerForMap[K, V](left: Map[K, V]) extends Shouldalizer(left) {
 // shouldifyForCollection(list).should(have).size(1)
 //
 // Thus, the list is wrapped in a shouldifyForCollection call via an implicit conversion, which results in 
-// a ShouldalizerForCollection. This has a should method that takes a HaveWord. That method returns a
+// a CollectionShouldalizer. This has a should method that takes a HaveWord. That method returns a
 // ResultOfHaveWordForCollectionPassedToShould that remembers the map to the left of should. Then this class
 // has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
 // 
@@ -194,7 +194,7 @@ class ResultOfHaveWordPassedToShouldForCollection[T](left: Collection[T])
 class ResultOfHaveWordPassedToShouldNotForCollection[T](left: Collection[T])
     extends ResultOfHaveWordForCollection(left, false)
 
-class ShouldalizerForCollection[T](left: Collection[T]) extends Shouldalizer(left) {
+class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) {
   def should(haveWord: HaveWord): ResultOfHaveWordPassedToShouldForCollection[T] = {
     new ResultOfHaveWordPassedToShouldForCollection(left)
   }
@@ -206,8 +206,8 @@ class ShouldalizerForCollection[T](left: Collection[T]) extends Shouldalizer(lef
 object Matchers {
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
-  implicit def shouldifyForMap[K, V](left: Map[K, V]): ShouldalizerForMap[K, V] = new ShouldalizerForMap[K, V](left)
-  implicit def shouldifyForCollection[T](left: Collection[T]): ShouldalizerForCollection[T] = new ShouldalizerForCollection[T](left)
+  implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
+  implicit def shouldifyForCollection[T](left: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](left)
 
   def equal[S <: Any](right: S) =
     new Matcher[S] {
