@@ -9,6 +9,27 @@ case class MatcherResult(
   negativeFailureMessage: String
 )
 
+/*
+There are a set of implicit conversions that take different static types to Shouldalizers.
+The one that gets applied will be the one that matches the static type of left. The result
+of the implicit conversion will be a Shouldalizer. There's a hierarchy of these, so that
+more specific types inherit the should methods of more general types. For example:
+
+        Shouldalizer
+             ^
+             |
+    CollectionShouldalizer
+             ^
+             |
+       MapShouldalizer
+
+The should methods take different static types, so they are overloaded. These types don't all
+inherit from the same supertype. There's a plain-old Matcher for example, but there's also maybe
+a BeMatcher, and BeMatcher doesn't extend Matcher. This reduces the number of incorrect static
+matches, which can happen if a more specific type is held from a more general variable type.
+And reduces the chances for ambiguity, I suspect.
+*/
+
 trait Matcher[T] { leftMatcher =>
 
   // left is generally the object on which should is invoked.
@@ -52,26 +73,44 @@ trait Matcher[T] { leftMatcher =>
 // shouldifyForMap(map).should(have).key(1)
 //
 // Thus, the map is wrapped in a shouldifyForMap call via an implicit conversion, which results in 
-// a ShouldilizerForMap. This has a should method that takes a HaveWord. That method returns a
+// a ShouldalizerForMap. This has a should method that takes a HaveWord. That method returns a
 // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
 // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
 // 
-class ResultOfHaveWord[K, V](left: Map[K, V], shouldBeTrue: Boolean) {
-  def key(keyValue: K) =
-    if (left.contains(keyValue) != shouldBeTrue)
+class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[(K, V)](left, shouldBeTrue) {
+  def key(expectedKey: K) =
+    if (left.contains(expectedKey) != shouldBeTrue)
       throw new AssertionError(
         Resources(
           if (shouldBeTrue) "didNotHaveKey" else "hadKey",
           left.toString,
-          keyValue.toString)
+          expectedKey.toString)
       )
+  def value(expectedValue: V) =
+    if (left.values.contains(expectedValue) != shouldBeTrue)
+      throw new AssertionError(
+        Resources(
+          if (shouldBeTrue) "didNotHaveValue" else "hadValue",
+          left.toString,
+          expectedValue.toString)
+      )
+/*
+  def size(expectedSize: Int) =
+    if ((left.size == expectedSize) != shouldBeTrue)
+      throw new AssertionError(
+        Resources(
+          if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+          left.toString,
+          expectedSize.toString)
+      )
+*/
 }
 
-class ResultOfHaveWordPassedToShould[K, V](left: Map[K, V])
-    extends ResultOfHaveWord(left, true)
+class ResultOfHaveWordForMapPassedToShould[K, V](left: Map[K, V])
+    extends ResultOfHaveWordForMap(left, true)
 
-class ResultOfHaveWordPassedToShouldNot[K, V](left: Map[K, V])
-    extends ResultOfHaveWord(left, false)
+class ResultOfHaveWordForMapPassedToShouldNot[K, V](left: Map[K, V])
+    extends ResultOfHaveWordForMap(left, false)
 
 class Shouldalizer[T](left: T) {
   def should(rightMatcher: Matcher[T]) {
@@ -94,23 +133,73 @@ class HaveWord {
   // map should { have key 1 and equal (Map(1 -> "Howdy")) }. It results in a matcher
   // that remembers the key value.
   // 
-  def key[K, V](keyVal: K): Matcher[Map[K, V]] =
+  def key[K, V](expectedKey: K): Matcher[Map[K, V]] =
     new Matcher[Map[K, V]] {
       def apply(left: Map[K, V]) =
         MatcherResult(
-          left.contains(keyVal), 
-          Resources("didNotHaveKey", left.toString, keyVal.toString),
-          Resources("hadKey", left.toString, keyVal.toString)
+          left.contains(expectedKey), 
+          Resources("didNotHaveKey", left.toString, expectedKey.toString),
+          Resources("hadKey", left.toString, expectedKey.toString)
+        )
+    }
+  def value[K, V](expectedValue: V): Matcher[Map[K, V]] =
+    new Matcher[Map[K, V]] {
+      def apply(left: Map[K, V]) =
+        MatcherResult(
+          left.values.contains(expectedValue), 
+          Resources("didNotHaveValue", left.toString, expectedValue.toString),
+          Resources("hadValue", left.toString, expectedValue.toString)
         )
     }
 }
 
 class ShouldalizerForMap[K, V](left: Map[K, V]) extends Shouldalizer(left) {
-  def should(haveWord: HaveWord): ResultOfHaveWordPassedToShould[K, V] = {
-    new ResultOfHaveWordPassedToShould(left)
+  def should(haveWord: HaveWord): ResultOfHaveWordForMapPassedToShould[K, V] = {
+    new ResultOfHaveWordForMapPassedToShould(left)
   }
-  def shouldNot(haveWord: HaveWord): ResultOfHaveWordPassedToShouldNot[K, V] = {
-    new ResultOfHaveWordPassedToShouldNot(left)
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForMapPassedToShouldNot[K, V] = {
+    new ResultOfHaveWordForMapPassedToShouldNot(left)
+  }
+}
+
+//
+// This class is used as the return type of the overloaded should method (in ShouldalizerForCollection)
+// that takes a HaveWord. It's size method will be called in situations like this:
+//
+// list should have size 1
+//
+// This gets changed to :
+//
+// shouldifyForCollection(list).should(have).size(1)
+//
+// Thus, the list is wrapped in a shouldifyForCollection call via an implicit conversion, which results in 
+// a ShouldalizerForCollection. This has a should method that takes a HaveWord. That method returns a
+// ResultOfHaveWordForCollectionPassedToShould that remembers the map to the left of should. Then this class
+// has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
+// 
+class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
+  def size(expectedSize: Int) =
+    if ((left.size == expectedSize) != shouldBeTrue)
+      throw new AssertionError(
+        Resources(
+          if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+          left.toString,
+          expectedSize.toString)
+      )
+}
+
+class ResultOfHaveWordPassedToShouldForCollection[T](left: Collection[T])
+    extends ResultOfHaveWordForCollection(left, true)
+
+class ResultOfHaveWordPassedToShouldNotForCollection[T](left: Collection[T])
+    extends ResultOfHaveWordForCollection(left, false)
+
+class ShouldalizerForCollection[T](left: Collection[T]) extends Shouldalizer(left) {
+  def should(haveWord: HaveWord): ResultOfHaveWordPassedToShouldForCollection[T] = {
+    new ResultOfHaveWordPassedToShouldForCollection(left)
+  }
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordPassedToShouldNotForCollection[T] = {
+    new ResultOfHaveWordPassedToShouldNotForCollection(left)
   }
 }
 
@@ -118,6 +207,7 @@ object Matchers {
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
   implicit def shouldifyForMap[K, V](left: Map[K, V]): ShouldalizerForMap[K, V] = new ShouldalizerForMap[K, V](left)
+  implicit def shouldifyForCollection[T](left: Collection[T]): ShouldalizerForCollection[T] = new ShouldalizerForCollection[T](left)
 
   def equal[S <: Any](right: S) =
     new Matcher[S] {
@@ -260,5 +350,5 @@ object Matchers {
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
   def have = new HaveWord
-}
 
+}
