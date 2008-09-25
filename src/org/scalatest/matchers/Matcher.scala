@@ -28,6 +28,9 @@ inherit from the same supertype. There's a plain-old Matcher for example, but th
 a BeMatcher, and BeMatcher doesn't extend Matcher. This reduces the number of incorrect static
 matches, which can happen if a more specific type is held from a more general variable type.
 And reduces the chances for ambiguity, I suspect.
+
+The type parameter to Matcher can be used to set an upper limit on the types passed to the apply
+method. So for example, if a matcher can only be used 
 */
 
 trait Matcher[T] { leftMatcher =>
@@ -94,16 +97,6 @@ class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) exten
           left.toString,
           expectedValue.toString)
       )
-/*
-  def size(expectedSize: Int) =
-    if ((left.size == expectedSize) != shouldBeTrue)
-      throw new AssertionError(
-        Resources(
-          if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
-          left.toString,
-          expectedSize.toString)
-      )
-*/
 }
 
 class ResultOfHaveWordForMapPassedToShould[K, V](left: Map[K, V])
@@ -203,11 +196,81 @@ class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) 
   }
 }
 
+class DynamicPredicateMatcher[S <: AnyRef](right: Symbol) extends Matcher[S] {
+
+  require(right.toString startsWith "'be", "Symbol was "+ right.toString +", but must start with \"'be\"") 
+
+  def apply(left: S) = {
+  
+    // If 'beEmpty passed, rightNoTick would be "empty"
+    val rightNoTick = right.toString.substring(3)
+    
+    // methodNameToInvoke would also be "empty"
+    val methodNameToInvoke = rightNoTick
+    
+    // methodNameToInvokeWithIs would be "isEmpty"
+    val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+    
+    val firstChar = rightNoTick(0).toLowerCase
+    val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+      firstChar == 'o' || firstChar == 'u'
+    
+    def isMethodToInvoke(m: Method) = {
+    
+      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+      val simpleName = m.getName
+      val paramTypes = m.getParameterTypes
+      val hasNoParams = paramTypes.length == 0
+      val resultType = m.getReturnType
+  
+      isInstanceMethod && hasNoParams &&
+      (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
+      resultType == classOf[Boolean]
+    }
+    
+    // Store in an array, because may have both isEmpty and empty, in which case I
+    // will throw an exception.
+    val methodArray =
+      for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
+        yield m
+    
+    methodArray.length match {
+      case 0 =>
+        throw new IllegalArgumentException(
+          Resources(
+            if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
+            left,
+            methodNameToInvoke,
+            methodNameToInvokeWithIs
+          )
+        )
+      case 1 =>
+        val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
+        MatcherResult(
+          result,
+          Resources("wasNot", left.toString, rightNoTick.toString),
+          Resources("was", left.toString, rightNoTick.toString)
+        )
+      case _ => // Should only ever be 2, but just in case
+        throw new IllegalArgumentException(
+          Resources(
+            if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
+            left,
+            methodNameToInvoke,
+            methodNameToInvokeWithIs
+          )
+        )
+    }
+  }
+}
+
 object Matchers {
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
   implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
   implicit def shouldifyForCollection[T](left: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](left)
+
+  implicit def symbolToDynamicPredicateMatcher(symbol: Symbol) = new DynamicPredicateMatcher(symbol)
 
   def equal[S <: Any](right: S) =
     new Matcher[S] {
@@ -219,98 +282,119 @@ object Matchers {
         )
     }
 
-  def be(right: Boolean) = 
-    new Matcher[Boolean] {
-      def apply(left: Boolean) =
+  def be[S <: Any](right: Any): Matcher[S] = {
+    new Matcher[S] {
+      def apply(left: S) =
         MatcherResult(
           left == right,
-          Resources("wasNot", left.toString, right.toString),
-          Resources("was", left.toString, right.toString)
+          Resources("wasNot", if (left == null) "null" else left.toString, if (right == null) "null" else right.toString),
+          Resources("was", if (left == null) "null" else left.toString, if (right == null) "null" else right.toString)
         )
-    }
-
-  def be[S <: AnyRef](o: Null) = 
-    new Matcher[S] {
-      def apply(left: S) = {
-        MatcherResult(
-          left == null,
-          Resources("wasNotNull", left),
-          Resources("wasNull", left)
-        )
-      }
-    }
-
-  def beA[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-  def beAn[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-
-  def be[S <: AnyRef](right: Symbol): Matcher[S] = {
-
-    new Matcher[S] {
-      def apply(left: S) = {
-
-        // If 'empty passed, rightNoTick would be "empty"
-        val rightNoTick = right.toString.substring(1)
-
-        // methodNameToInvoke would also be "empty"
-        val methodNameToInvoke = rightNoTick
-
-        // methodNameToInvokeWithIs would be "isEmpty"
-        val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
-
-        val firstChar = rightNoTick(0).toLowerCase
-        val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
-          firstChar == 'o' || firstChar == 'u'
-
-        def isMethodToInvoke(m: Method) = {
-
-          val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
-          val simpleName = m.getName
-          val paramTypes = m.getParameterTypes
-          val hasNoParams = paramTypes.length == 0
-          val resultType = m.getReturnType
-
-          isInstanceMethod && hasNoParams &&
-          (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
-          resultType == classOf[Boolean]
-        }
-
-        // Store in an array, because may have both isEmpty and empty, in which case I
-        // will throw an exception.
-        val methodArray =
-          for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
-            yield m
-
-        
-        methodArray.length match {
-          case 0 =>
-            throw new IllegalArgumentException(
-              Resources(
-                if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
-                left,
-                methodNameToInvoke,
-                methodNameToInvokeWithIs
-              )
-            )
-          case 1 =>
-            val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
-            MatcherResult(
-              result,
-              Resources("wasNot", left.toString, rightNoTick.toString),
-              Resources("was", left.toString, rightNoTick.toString)
-            )
-          case _ => // Should only ever be 2, but just in case
-            throw new IllegalArgumentException(
-              Resources(
-                if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
-                left,
-                methodNameToInvoke,
-                methodNameToInvokeWithIs
-              )
-            )
-        }
-      }
     }
   }
+
+/*
+  def be[S <: Any](right: Any): Matcher[S] = {
+
+    def handleRightIsSymbolCase(right: Symbol): Matcher[S] = {
+      new Matcher[S] {
+        def apply(left: S) = {
+  
+          def handleLeftIsAnyRefCase[T <: AnyRef](left: T): MatcherResult = {
+  
+            // If 'empty passed, rightNoTick would be "empty"
+            val rightNoTick = right.toString.substring(1)
+    
+            // methodNameToInvoke would also be "empty"
+            val methodNameToInvoke = rightNoTick
+    
+            // methodNameToInvokeWithIs would be "isEmpty"
+            val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+    
+            val firstChar = rightNoTick(0).toLowerCase
+            val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+              firstChar == 'o' || firstChar == 'u'
+    
+            def isMethodToInvoke(m: Method) = {
+    
+              val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+              val simpleName = m.getName
+              val paramTypes = m.getParameterTypes
+              val hasNoParams = paramTypes.length == 0
+              val resultType = m.getReturnType
+    
+              isInstanceMethod && hasNoParams &&
+              (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
+              resultType == classOf[Boolean]
+            }
+    
+            // Store in an array, because may have both isEmpty and empty, in which case I
+            // will throw an exception.
+            val methodArray =
+              for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
+                yield m
+    
+            
+            methodArray.length match {
+              case 0 =>
+                throw new IllegalArgumentException(
+                  Resources(
+                    if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
+                    left,
+                    methodNameToInvoke,
+                    methodNameToInvokeWithIs
+                  )
+                )
+              case 1 =>
+                val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
+                MatcherResult(
+                  result,
+                  Resources("wasNot", left.toString, rightNoTick.toString),
+                  Resources("was", left.toString, rightNoTick.toString)
+                )
+              case _ => // Should only ever be 2, but just in case
+                throw new IllegalArgumentException(
+                  Resources(
+                    if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
+                    left,
+                    methodNameToInvoke,
+                    methodNameToInvokeWithIs
+                  )
+                )
+            }
+          }
+
+          left match {
+            case anyRef: AnyRef => handleLeftIsAnyRefCase(anyRef)
+            // This is left is an AnyVal, and right is a Symbol, so I know this is false
+            case _ =>
+              MatcherResult(
+                false, 
+                Resources("wasNot", left.toString, right.toString),
+                Resources("was", left.toString, right.toString)
+              )
+          }
+        }
+      }
+    }
+
+    right match {
+      case symbol: Symbol => handleRightIsSymbolCase(symbol)
+      case _ =>
+        new Matcher[S] {
+          def apply(left: S) =
+            MatcherResult(
+              left == right,
+              Resources("wasNot", if (left == null) "null" else left.toString, if (left == null) "null" else right.toString),
+              Resources("was", if (left == null) "null" else left.toString, if (right == null) "null" else right.toString)
+            )
+        }
+    }
+  }
+*/
+
+  def beA[S <: Any](right: Any): Matcher[S] = be(right)
+  def beAn[S <: Any](right: Any): Matcher[S] = be(right)
 
   def not[S <: Any](matcher: Matcher[S]) =
     new Matcher[S] {

@@ -64,9 +64,10 @@ class MatcherSpec extends Spec {
     }
 
     "(for symbols)" -- {
+
 /*
       "should call isEmpty when passed 'empty" - {
-        val emptySet = Set[Int]()
+        val emptySet = Set[String]()
         emptySet should be ('empty) // THIS ONE DOESN'T TYPE CHECK RIGHT NOW
         val nonEmptySet = Set(1, 2, 3)
         nonEmptySet should not { be ('empty) }  // NOR THIS ONE
@@ -80,16 +81,16 @@ class MatcherSpec extends Spec {
         nonEmptySet should not { beA ('empty) }
         nonEmptySet should not { beAn ('empty) }
       }
-*/
-      "should call empty when passed 'empty" - {
+
+      "should call empty when passed 'beEmpty" - {
         class EmptyMock {
           def empty: Boolean = true
         }
         class NonEmptyMock {
           def empty: Boolean = false
         }
-        (new EmptyMock) should be ('empty)
-        (new NonEmptyMock) should not { be ('empty) }
+        (new EmptyMock) should 'beEmpty
+        (new NonEmptyMock) should not { 'beEmpty }
       }
 
       "should throw IllegalArgumentException if no empty or isEmpty method" - {
@@ -100,11 +101,11 @@ class MatcherSpec extends Spec {
           override def toString = "NonEmptyMock"
         }
         val ex1 = intercept(classOf[IllegalArgumentException]) {
-          (new EmptyMock) should be ('empty)
+          (new EmptyMock) should 'beEmpty
         }
         ex1.getMessage should equal ("EmptyMock has neither an empty or an isEmpty method.")
         val ex2 = intercept(classOf[IllegalArgumentException]) {
-          (new NonEmptyMock) should not { be ('empty) }
+          (new NonEmptyMock) should not { 'beEmpty }
         }
         ex2.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
       }
@@ -121,11 +122,11 @@ class MatcherSpec extends Spec {
           override def toString = "NonEmptyMock"
         }
         val ex1 = intercept(classOf[IllegalArgumentException]) {
-          (new EmptyMock) should be ('empty)
+          (new EmptyMock) should 'beEmpty
         }
         ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method.")
         val ex2 = intercept(classOf[IllegalArgumentException]) {
-          (new NonEmptyMock) should not { be ('empty) }
+          (new NonEmptyMock) should not { 'beEmpty }
         }
         ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
       }
@@ -137,9 +138,10 @@ class MatcherSpec extends Spec {
         class NonEmptyMock {
           val empty: Boolean = false
         }
-        (new EmptyMock) should be ('empty)
-        (new NonEmptyMock) should not { be ('empty) }
+        (new EmptyMock) should 'beEmpty
+        (new NonEmptyMock) should not { 'beEmpty }
       }
+ */
     }
   }
 
