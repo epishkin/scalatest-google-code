@@ -30,13 +30,15 @@ matches, which can happen if a more specific type is held from a more general va
 And reduces the chances for ambiguity, I suspect.
 
 The type parameter to Matcher can be used to set an upper limit on the types passed to the apply
-method. So for example, if a matcher can only be used 
+method. So for example, if a matcher can only be used with Lists, then we say it is a Matcher[List].
+If it can be used on any type of Collection, it is a Matcher[Collection].
 */
 
 trait Matcher[T] { leftMatcher =>
 
   // left is generally the object on which should is invoked.
-  def apply(left: T): MatcherResult
+  // It must be a subtype of T
+  def apply[S <: T](left: S): MatcherResult
 
   // left is generally the object on which should is invoked. leftMatcher
   // is the left operand to and. For example, in:
@@ -45,7 +47,7 @@ trait Matcher[T] { leftMatcher =>
   // rightMatcher, by the way, is the matcher produced by 'landOn (feet)'
   def and(rightMatcher: => Matcher[T]): Matcher[T] =
     new Matcher[T] {
-      def apply(left: T) = {
+      def apply[S <: T](left: S) = {
         val leftMatcherResult = leftMatcher(left)
         if (!leftMatcherResult.matches)
           MatcherResult(
@@ -107,6 +109,7 @@ class ResultOfHaveWordForMapPassedToShouldNot[K, V](left: Map[K, V])
 
 class Shouldalizer[T](left: T) {
   def should(rightMatcher: Matcher[T]) {
+    // println("*@*@*@*@*@*@*@*@*@*@**@*@ left passed to should"+ left.toString)
     rightMatcher(left) match {
       case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
       case _ => ()
@@ -128,7 +131,7 @@ class HaveWord {
   // 
   def key[K, V](expectedKey: K): Matcher[Map[K, V]] =
     new Matcher[Map[K, V]] {
-      def apply(left: Map[K, V]) =
+      def apply[S <: Map[K, V]](left: S) =
         MatcherResult(
           left.contains(expectedKey), 
           Resources("didNotHaveKey", left.toString, expectedKey.toString),
@@ -137,7 +140,7 @@ class HaveWord {
     }
   def value[K, V](expectedValue: V): Matcher[Map[K, V]] =
     new Matcher[Map[K, V]] {
-      def apply(left: Map[K, V]) =
+      def apply[S <: Map[K, V]](left: S) =
         MatcherResult(
           left.values.contains(expectedValue), 
           Resources("didNotHaveValue", left.toString, expectedValue.toString),
@@ -187,7 +190,24 @@ class ResultOfHaveWordPassedToShouldForCollection[T](left: Collection[T])
 class ResultOfHaveWordPassedToShouldNotForCollection[T](left: Collection[T])
     extends ResultOfHaveWordForCollection(left, false)
 
-class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) {
+class AnyRefShouldalizer[T <: AnyRef](left: T) extends Shouldalizer(left) {
+  def should(rightSymbol: Symbol) {
+    val dynaMatcher = new DynamicPredicateMatcher(rightSymbol)
+    dynaMatcher(left) match {
+      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  def shouldNot(rightSymbol: Symbol) {
+    val dynaMatcher = new DynamicPredicateMatcher(rightSymbol)
+    dynaMatcher(left) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+}
+
+class CollectionShouldalizer[T](left: Collection[T]) extends AnyRefShouldalizer(left) {
   def should(haveWord: HaveWord): ResultOfHaveWordPassedToShouldForCollection[T] = {
     new ResultOfHaveWordPassedToShouldForCollection(left)
   }
@@ -196,12 +216,13 @@ class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) 
   }
 }
 
-class DynamicPredicateMatcher[S <: AnyRef](right: Symbol) extends Matcher[S] {
+class DynamicPredicateMatcher(right: Symbol) extends Matcher[AnyRef] {
 
   require(right.toString startsWith "'be", "Symbol was "+ right.toString +", but must start with \"'be\"") 
 
-  def apply(left: S) = {
+  def apply[S <: AnyRef](left: S) = {
   
+    // println("*@*@*@*@*@*@*@*@*@*@**@*@ "+ left.getClass.getName)
     // If 'beEmpty passed, rightNoTick would be "empty"
     val rightNoTick = right.toString.substring(3)
     
@@ -272,9 +293,9 @@ object Matchers {
 
   implicit def symbolToDynamicPredicateMatcher(symbol: Symbol) = new DynamicPredicateMatcher(symbol)
 
-  def equal[S <: Any](right: S) =
-    new Matcher[S] {
-      def apply(left: S) =
+  def equal[T <: Any](right: T) =
+    new Matcher[T] {
+      def apply[S <: Any](left: S) =
         MatcherResult(
           left == right,
           Resources("didNotEqual", left.toString, right.toString),
@@ -282,9 +303,9 @@ object Matchers {
         )
     }
 
-  def be[S <: Any](right: Any): Matcher[S] = {
-    new Matcher[S] {
-      def apply(left: S) =
+  def be[T <: Any](right: T): Matcher[T] = {
+    new Matcher[T] {
+      def apply[S <: Any](left: S) =
         MatcherResult(
           left == right,
           Resources("wasNot", if (left == null) "null" else left.toString, if (right == null) "null" else right.toString),
@@ -393,20 +414,32 @@ object Matchers {
   }
 */
 
-  def beA[S <: Any](right: Any): Matcher[S] = be(right)
-  def beAn[S <: Any](right: Any): Matcher[S] = be(right)
+  def beA(right: Any): Matcher[Any] = be(right)
+  def beAn(right: Any): Matcher[Any] = be(right)
 
-  def not[S <: Any](matcher: Matcher[S]) =
-    new Matcher[S] {
-      def apply(left: S) =
+  def not[T <: Any](matcher: Matcher[T]) =
+    new Matcher[T] {
+      def apply[S <: T](left: S) =
         matcher(left) match {
           case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
         }
     }
 
-  def endWith[T <: String](right: T) =
-    new Matcher[T] {
-      def apply(left: T) =
+  def not(symbol: Symbol) = {
+    val dynaMatcher = new DynamicPredicateMatcher(symbol)
+    new Matcher[AnyRef] {
+      def apply[S <: AnyRef](left: S) = {
+        // println("*@*@*@*@*@*@*@*@*@*@**@*@ Passed to not matcher's apply"+ left.getClass.getName)
+        dynaMatcher(left) match {
+          case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
+        }
+      }
+    }
+  }
+
+  def endWith(right: String) =
+    new Matcher[String] {
+      def apply[S <: String](left: S) =
         MatcherResult(
           left endsWith right,
           Resources("didNotEndWith", left, right),
