@@ -28,6 +28,21 @@ inherit from the same supertype. There's a plain-old Matcher for example, but th
 a BeMatcher, and BeMatcher doesn't extend Matcher. This reduces the number of incorrect static
 matches, which can happen if a more specific type is held from a more general variable type.
 And reduces the chances for ambiguity, I suspect.
+
+On my jog I thought perhaps that Matcher should be contravariant in T, because
+if I have hierarchy Fruit <-- Orange <-- ValenciaOrange, and I have:
+
+val orange = Orange
+
+"orange should" will give me a Shouldalizer[Orange], which has an apply method that takes a Matcher[Orange].
+If I have a Matcher[ValenciaOrange], that shouldn't compile, but if I have a Matcher[Fruit], it should compile.
+Thus I should be able to pass a Matcher[Fruit] to a should method that expects a Matcher[Orange], which is
+contravariance. Then the type of the "left" parameter of the apply method can just be T, because in the case
+of Matcher[Fruit], for example, T is Fruit, and you can pass an Orange to an apply method that expects a Fruit.
+
+So it should be:
+
+trait Matcher[-T] { leftMatcher => ...
 */
 
 trait Matcher[T] { leftMatcher =>
