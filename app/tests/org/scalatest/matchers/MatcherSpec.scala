@@ -65,14 +65,16 @@ class MatcherSpec extends Spec {
 
     "(for symbols)" -- {
 
-/*
       "should call isEmpty when passed 'empty" - {
-        val emptySet = Set[String]()
-        emptySet should be ('empty) // THIS ONE DOESN'T TYPE CHECK RIGHT NOW
+        val emptySet = Set()
+        emptySet should 'beEmpty
         val nonEmptySet = Set(1, 2, 3)
-        nonEmptySet should not { be ('empty) }  // NOR THIS ONE
+        nonEmptySet shouldNot 'beEmpty
+        // nonEmptySet should not { 'beEmpty }
+        // shouldifyForCollection(nonEmptySet).should(not('beEmpty)) THIS DOESN'T WORK RIGHT NOW
       }
 
+/*
       "should be invokable from beA(Symbol) and beAn(Symbol)" - {
         val emptySet = Set()
         emptySet should beA ('empty)
@@ -196,7 +198,7 @@ class MatcherSpec extends Spec {
 
     "should not execute the right matcher creation function when the left operand is false" - {
       var called = false
-      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      def mockMatcher = new Matcher[Int] { def apply[S <: Int](i: S) = { called = true; MatcherResult(true, "", "") } }
       intercept(classOf[AssertionError]) {
         // This should fail, but without applying the matcher returned by mockMatcher
         1 should { equal (2) and mockMatcher }
@@ -206,7 +208,7 @@ class MatcherSpec extends Spec {
 
     "should execute the right matcher creation function when the left operand is true" - {
       var called = false
-      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      def mockMatcher = new Matcher[Int] { def apply[S <: Int](i: S) = { called = true; MatcherResult(true, "", "") } }
       1 should { equal (1) and mockMatcher }
       called should be (true)
       // mySet should not { be (empty) }
