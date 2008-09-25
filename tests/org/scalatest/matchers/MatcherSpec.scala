@@ -64,17 +64,14 @@ class MatcherSpec extends Spec {
     }
 
     "(for symbols)" -- {
-
+/*
       "should call isEmpty when passed 'empty" - {
-        val emptySet = Set()
-        emptySet should 'beEmpty
+        val emptySet = Set[Int]()
+        emptySet should be ('empty) // THIS ONE DOESN'T TYPE CHECK RIGHT NOW
         val nonEmptySet = Set(1, 2, 3)
-        nonEmptySet shouldNot 'beEmpty
-        // nonEmptySet should not { 'beEmpty }
-        // shouldifyForCollection(nonEmptySet).should(not('beEmpty)) THIS DOESN'T WORK RIGHT NOW
+        nonEmptySet should not { be ('empty) }  // NOR THIS ONE
       }
 
-/*
       "should be invokable from beA(Symbol) and beAn(Symbol)" - {
         val emptySet = Set()
         emptySet should beA ('empty)
@@ -83,16 +80,16 @@ class MatcherSpec extends Spec {
         nonEmptySet should not { beA ('empty) }
         nonEmptySet should not { beAn ('empty) }
       }
-
-      "should call empty when passed 'beEmpty" - {
+*/
+      "should call empty when passed 'empty" - {
         class EmptyMock {
           def empty: Boolean = true
         }
         class NonEmptyMock {
           def empty: Boolean = false
         }
-        (new EmptyMock) should 'beEmpty
-        (new NonEmptyMock) should not { 'beEmpty }
+        (new EmptyMock) should be ('empty)
+        (new NonEmptyMock) should not { be ('empty) }
       }
 
       "should throw IllegalArgumentException if no empty or isEmpty method" - {
@@ -103,11 +100,11 @@ class MatcherSpec extends Spec {
           override def toString = "NonEmptyMock"
         }
         val ex1 = intercept(classOf[IllegalArgumentException]) {
-          (new EmptyMock) should 'beEmpty
+          (new EmptyMock) should be ('empty)
         }
         ex1.getMessage should equal ("EmptyMock has neither an empty or an isEmpty method.")
         val ex2 = intercept(classOf[IllegalArgumentException]) {
-          (new NonEmptyMock) should not { 'beEmpty }
+          (new NonEmptyMock) should not { be ('empty) }
         }
         ex2.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
       }
@@ -124,11 +121,11 @@ class MatcherSpec extends Spec {
           override def toString = "NonEmptyMock"
         }
         val ex1 = intercept(classOf[IllegalArgumentException]) {
-          (new EmptyMock) should 'beEmpty
+          (new EmptyMock) should be ('empty)
         }
         ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method.")
         val ex2 = intercept(classOf[IllegalArgumentException]) {
-          (new NonEmptyMock) should not { 'beEmpty }
+          (new NonEmptyMock) should not { be ('empty) }
         }
         ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
       }
@@ -140,10 +137,9 @@ class MatcherSpec extends Spec {
         class NonEmptyMock {
           val empty: Boolean = false
         }
-        (new EmptyMock) should 'beEmpty
-        (new NonEmptyMock) should not { 'beEmpty }
+        (new EmptyMock) should be ('empty)
+        (new NonEmptyMock) should not { be ('empty) }
       }
- */
     }
   }
 
@@ -198,7 +194,7 @@ class MatcherSpec extends Spec {
 
     "should not execute the right matcher creation function when the left operand is false" - {
       var called = false
-      def mockMatcher = new Matcher[Int] { def apply[S <: Int](i: S) = { called = true; MatcherResult(true, "", "") } }
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
       intercept(classOf[AssertionError]) {
         // This should fail, but without applying the matcher returned by mockMatcher
         1 should { equal (2) and mockMatcher }
@@ -208,7 +204,7 @@ class MatcherSpec extends Spec {
 
     "should execute the right matcher creation function when the left operand is true" - {
       var called = false
-      def mockMatcher = new Matcher[Int] { def apply[S <: Int](i: S) = { called = true; MatcherResult(true, "", "") } }
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
       1 should { equal (1) and mockMatcher }
       called should be (true)
       // mySet should not { be (empty) }
