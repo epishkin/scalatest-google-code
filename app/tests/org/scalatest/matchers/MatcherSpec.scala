@@ -64,12 +64,12 @@ class MatcherSpec extends Spec {
     }
 
     "(for symbols)" -- {
-/*
+
       "should call isEmpty when passed 'empty" - {
         val emptySet = Set[Int]()
-        emptySet should be ('empty) // THIS ONE DOESN'T TYPE CHECK RIGHT NOW
+        emptySet should be ('empty)
         val nonEmptySet = Set(1, 2, 3)
-        nonEmptySet should not { be ('empty) }  // NOR THIS ONE
+        nonEmptySet should not { be ('empty) }
       }
 
       "should be invokable from beA(Symbol) and beAn(Symbol)" - {
@@ -80,7 +80,7 @@ class MatcherSpec extends Spec {
         nonEmptySet should not { beA ('empty) }
         nonEmptySet should not { beAn ('empty) }
       }
-*/
+
       "should call empty when passed 'empty" - {
         class EmptyMock {
           def empty: Boolean = true
@@ -225,9 +225,10 @@ class MatcherSpec extends Spec {
 
     "should work with map and key, in a logical expression" - {
       val map = Map(1 -> "Howdy")
-      map should { have key 1 and equal (Map(1 -> "Howdy")) }
+      // The compiler infer the type of the value to be Nothing if I say: map should { have key 1 and equal (Map(1 -> "Howdy")) }
+      map should { have.key[Int, String](1) and equal (Map(1 -> "Howdy")) }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should { have key "Howdy" and equal (Map("Howdy" -> 1)) }
+      otherMap should { have.key[String, Int]("Howdy") and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and key, right after a 'shouldNot'" - {
@@ -247,9 +248,9 @@ class MatcherSpec extends Spec {
 
     "should work with map and value, in a logical expression" - {
       val map = Map(1 -> "Howdy")
-      map should { have value "Howdy" and equal (Map(1 -> "Howdy")) }
+      map should { have.value[Int, String]("Howdy") and equal (Map(1 -> "Howdy")) }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should { have value 1 and equal (Map("Howdy" -> 1)) }
+      otherMap should { have.value[String, Int](1) and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and value, right after a 'shouldNot'" - {

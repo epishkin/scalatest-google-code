@@ -43,9 +43,16 @@ of Matcher[Fruit], for example, T is Fruit, and you can pass an Orange to an app
 So it should be:
 
 trait Matcher[-T] { leftMatcher => ...
+
+Yay, that worked, so long as I do the upper bound thing in add. All makes sense. If I do
+matcherOfOrange and matcherOfValencia, then the type of the resulting matcher needs to be
+matcherOfValencia. But if I do "matcherOfOrange and matcherOfFruit", the type stays at
+matcherOfOrange. And the right operand is considered a matcher of orange, because of contravariance.
+
+Made it extend Function1 for the heck of it. Can pass it as a Function1 now.
 */
 
-trait Matcher[T] { leftMatcher =>
+trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 
   // left is generally the object on which should is invoked.
   def apply(left: T): MatcherResult
@@ -55,9 +62,9 @@ trait Matcher[T] { leftMatcher =>
   // cat should { haveLives (9) and landOn (feet) }
   // left is 'cat' and leftMatcher is the matcher produced by 'haveLives (9)'.
   // rightMatcher, by the way, is the matcher produced by 'landOn (feet)'
-  def and(rightMatcher: => Matcher[T]): Matcher[T] =
-    new Matcher[T] {
-      def apply(left: T) = {
+  def and[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+    new Matcher[U] {
+      def apply(left: U) = {
         val leftMatcherResult = leftMatcher(left)
         if (!leftMatcherResult.matches)
           MatcherResult(
