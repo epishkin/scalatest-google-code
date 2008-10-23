@@ -47,6 +47,5 @@ trait Behavior extends Assertions {
   }
   
   implicit def stringToDasher(s: String) = new Dasher(s)
-
 }
 
