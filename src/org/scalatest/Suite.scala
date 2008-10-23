@@ -842,7 +842,7 @@ import scala.collection.immutable.TreeSet
  * </p>
  *
  * <p>
- * One of the parameters to the primary <code>execute</code> method is a <code>Reporter</code>, which
+ * One of the parameters to the primary <code>execute</code> method is an <code>Informer</code>, which
  * will collect and report information about the running suite of tests.
  * Information about suites and tests that were run, whether tests succeeded or failed, 
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
@@ -945,7 +945,7 @@ import scala.collection.immutable.TreeSet
  * @author Bill Venners
  */
 @serializable
-trait Suite extends ExecuteAndRun with Assertions {
+trait Suite extends Assertions {
 
   private val TestMethodPrefix = "test"
   private val InformerInParens = "(Informer)"
