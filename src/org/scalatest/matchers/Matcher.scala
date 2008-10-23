@@ -3,7 +3,7 @@ package org.scalatest.matchers
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
-case class MatcherResult(
+private[matchers] case class MatcherResult(
   matches: Boolean,
   failureMessage: String,
   negativeFailureMessage: String
@@ -52,7 +52,7 @@ matcherOfOrange. And the right operand is considered a matcher of orange, becaus
 Made it extend Function1 for the heck of it. Can pass it as a Function1 now.
 */
 
-trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
+private[matchers] trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 
   // left is generally the object on which should is invoked.
   def apply(left: T): MatcherResult
@@ -99,7 +99,7 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
 // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
 // 
-class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[(K, V)](left, shouldBeTrue) {
+private[matchers] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[(K, V)](left, shouldBeTrue) {
   def key(expectedKey: K) =
     if (left.contains(expectedKey) != shouldBeTrue)
       throw new AssertionError(
@@ -128,13 +128,13 @@ class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) exten
 */
 }
 
-class ResultOfHaveWordForMapPassedToShould[K, V](left: Map[K, V])
+private[matchers] class ResultOfHaveWordForMapPassedToShould[K, V](left: Map[K, V])
     extends ResultOfHaveWordForMap(left, true)
 
-class ResultOfHaveWordForMapPassedToShouldNot[K, V](left: Map[K, V])
+private[matchers] class ResultOfHaveWordForMapPassedToShouldNot[K, V](left: Map[K, V])
     extends ResultOfHaveWordForMap(left, false)
 
-class Shouldalizer[T](left: T) {
+private[matchers] class Shouldalizer[T](left: T) {
   def should(rightMatcher: Matcher[T]) {
     rightMatcher(left) match {
       case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
@@ -149,7 +149,7 @@ class Shouldalizer[T](left: T) {
   }
 }
 
-class HaveWord {
+private[matchers] class HaveWord {
   //
   // This key method is called when "have" is used in a logical expression, such as:
   // map should { have key 1 and equal (Map(1 -> "Howdy")) }. It results in a matcher
@@ -175,7 +175,7 @@ class HaveWord {
     }
 }
 
-class MapShouldalizer[K, V](left: Map[K, V]) extends Shouldalizer(left) {
+private[matchers] class MapShouldalizer[K, V](left: Map[K, V]) extends Shouldalizer(left) {
   def should(haveWord: HaveWord): ResultOfHaveWordForMapPassedToShould[K, V] = {
     new ResultOfHaveWordForMapPassedToShould(left)
   }
@@ -199,7 +199,7 @@ class MapShouldalizer[K, V](left: Map[K, V]) extends Shouldalizer(left) {
 // ResultOfHaveWordForCollectionPassedToShould that remembers the map to the left of should. Then this class
 // has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
 // 
-class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
+private[matchers] class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
   def size(expectedSize: Int) =
     if ((left.size == expectedSize) != shouldBeTrue)
       throw new AssertionError(
@@ -210,13 +210,13 @@ class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolea
       )
 }
 
-class ResultOfHaveWordPassedToShouldForCollection[T](left: Collection[T])
+private[matchers] class ResultOfHaveWordPassedToShouldForCollection[T](left: Collection[T])
     extends ResultOfHaveWordForCollection(left, true)
 
-class ResultOfHaveWordPassedToShouldNotForCollection[T](left: Collection[T])
+private[matchers] class ResultOfHaveWordPassedToShouldNotForCollection[T](left: Collection[T])
     extends ResultOfHaveWordForCollection(left, false)
 
-class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) {
+private[matchers] class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) {
   def should(haveWord: HaveWord): ResultOfHaveWordPassedToShouldForCollection[T] = {
     new ResultOfHaveWordPassedToShouldForCollection(left)
   }
@@ -225,7 +225,7 @@ class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) 
   }
 }
 
-object Matchers {
+private[matchers] object Matchers {
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
   implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
@@ -372,5 +372,4 @@ object Matchers {
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
   def have = new HaveWord
-
 }
