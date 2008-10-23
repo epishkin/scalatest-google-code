@@ -1,6 +1,6 @@
 package org.scalatest
 
-abstract class StoryParser {
+private[scalatest] abstract class StoryParser {
 
   type F
   def createFixture: F
