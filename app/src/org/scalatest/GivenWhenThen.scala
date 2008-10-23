@@ -16,9 +16,11 @@
 package org.scalatest
 
 /**
+ * I'll probably delete this one.
+ *
  * @author Bill Venners
  */
-trait GivenWhenThen {
+private [scalatest] trait GivenWhenThen {
 
   def given(message: String)(implicit info: Informer) {
     info(Resources("givenMessage", message))
