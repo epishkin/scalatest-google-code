@@ -20,9 +20,11 @@ import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
 /**
+ * I'll probably drop this one.
+ *
  * @author Bill Venners
  */
-class Story(override val suiteName: String) extends Suite with GivenWhenThen {
+private[scalatest] class Story(override val suiteName: String) extends Suite with GivenWhenThen {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
