@@ -1,5 +1,8 @@
 package org.scalatest
 
+/**
+ * Trait that contains ScalaTest's basic assertion methods.
+ */
 trait Assertions {
 
   /**
