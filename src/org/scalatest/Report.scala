@@ -28,6 +28,20 @@ import java.util.Date
  * to a reporter.
  * </p>
  *
+ * <p>
+ * <strong>Extensibility</strong>
+ * </p>
+ *
+ * <p>
+ * <code>Report</code> can be subclassed so that custom information can be passed to the subclass's constructor.
+ * This information can be passed in when the <code>Report</code> subclass is instantiated, from within
+ * test methods, overridden <code>Suite</code> methods, or other code. Instances of <code>Report</code> subclasses
+ * can be passed to any <code>Reporter</code>, but any custom information they contain will not be presented to the
+ * user except by <code>Reporter</code>s written with knowledge of the <code>Report</code> subclass and its custom
+ * information. Thus, when you define a <code>Report</code> subclass that embeds custom information, you would typically
+ * also define one or more <code>Reporter</code> classes that present the custom information to the user.
+ * </p>
+ *
  * @param name the name of the entity about which this report was generated.
  * @param message a <code>String</code> message.
  * @param throwable the <code>Throwable</code> that indicated the problem, or a <code>Throwable</code> created
@@ -43,20 +57,6 @@ import java.util.Date
  * @throws NullPointerException if any of the specified
  *     <code>name</code>, <code>message</code>, <code>throwable</code>, or <code>rerunnable</code>, <code>threadName</code>, or
  *     <code>date</code> references are <code>null</code>.
- *
- * <p>
- * <strong>Extensibility</strong>
- * </p>
- *
- * <p>
- * <code>Report</code> can be subclassed so that custom information can be passed to the subclass's constructor.
- * This information can be passed in when the <code>Report</code> subclass is instantiated, from within
- * test methods, overridden <code>Suite</code> methods, or other code. Instances of <code>Report</code> subclasses
- * can be passed to any <code>Reporter</code>, but any custom information they contain will not be presented to the
- * user except by <code>Reporter</code>s written with knowledge of the <code>Report</code> subclass and its custom
- * information. Thus, when you define a <code>Report</code> subclass that embeds custom information, you would typically
- * also define one or more <code>Reporter</code> classes that present the custom information to the user.
- * </p>
  *
  * @author Bill Venners
  */
