@@ -27,9 +27,9 @@ class Stack[T] {
   def empty: Boolean = buf.size == 0
   def size = buf.size
 }
-      
+
 case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior {
-    
+
   "should be non-empty" - {
     assert(!stack.empty)
   }  
@@ -50,7 +50,7 @@ case class NonEmptyStack(stack: Stack[Int], lastItemAdded: Int) extends Behavior
     assert(stack.size === size - 1)
   }
 }
-      
+
 case class NonFullStack(stack: Stack[Int]) extends Behavior {
     
   "should not be full" - {
@@ -64,7 +64,7 @@ case class NonFullStack(stack: Stack[Int]) extends Behavior {
     assert(stack.peek === 7)
   }
 }
-      
+
 class StackSpec extends Spec {
 
   // Fixture creation methods
@@ -95,28 +95,43 @@ class StackSpec extends Spec {
       "should be empty" - {
         assert(emptyStack.empty)
       }
-      
+
       "should complain on peek" - {
         intercept(classOf[IllegalStateException]) {
           emptyStack.peek
         }
       }
-      
+
       "should complain on pop" - {
         intercept(classOf[IllegalStateException]) {
           emptyStack.pop
         }
       }
     }
-    
+
     "(with one item)" -- {
       should behave like a NonEmptyStack(stackWithOneItem, lastValuePushed)
       should behave like a NonFullStack(stackWithOneItem)
+
+      // Ah, the top one is a partially applied function. What you want is
+      // a function whose last param is the "it". So in this case, it would be:
+      // def nonEmptyStack(lastValPushed: Int)(stack: Stack): Behavior = new NonEmptyStackBehavior(stack, lastValuePushed)
+      //
+      // stackWithOneItem should behave like nonEmptyStack(lastValuePushed)
+      //
+      // In this case it might be:
+      // def stackWithOneItem(stack: Stack): Behavior = new NonFullStackBehavior(stack)
+      //
+      // stackWithOneItem should behave like nonFullStack
     }
     
     "(with one item less than capacity)"-- {
       should behave like a NonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
       should behave like a NonFullStack(stackWithOneItemLessThanCapacity)
+
+      // Same here:
+      // stackWithOneItemLessThanCapacity should behave like nonEmptyStack(lastValuePushed)
+      // stackWithOneItemLessThanCapacity should behave like nonFullStack // This might not work, because I might need the underscore
     }
 
     "(full)" -- {
