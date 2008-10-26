@@ -74,7 +74,9 @@ package org.scalatest
  * </p>
  *
  */
-trait BeforeAndAfter extends Suite {
+trait BeforeAndAfter extends ExecuteAndRun {
+
+  this: Suite =>
   
   /**
    * Defines a method to be run before each of this suite's tests. This trait's implementation
