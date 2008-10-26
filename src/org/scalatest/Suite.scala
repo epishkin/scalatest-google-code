@@ -945,7 +945,7 @@ import scala.collection.immutable.TreeSet
  * @author Bill Venners
  */
 @serializable
-trait Suite extends Assertions {
+trait Suite extends Assertions with ExecuteAndRun {
 
   private val TestMethodPrefix = "test"
   private val InformerInParens = "(Informer)"
