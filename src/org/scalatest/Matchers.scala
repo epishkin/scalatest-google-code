@@ -130,44 +130,27 @@ private[scalatest] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeT
 */
 }
 
-private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T] {
-  // This one supports it should behave like
-  def should(behaveWord: BehaveWord) = new Likifier[T](left)
-}
-/*
-private[scalatest] class Shouldalizer[T](left: T) {
+private[scalatest] trait ShouldMethods[T] {
+  protected val leftOperand: T
   def should(rightMatcher: Matcher[T]) {
-    rightMatcher(left) match {
+    rightMatcher(leftOperand) match {
       case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
       case _ => ()
     }
   }
   def shouldNot(rightMatcher: Matcher[T]) {
-    rightMatcher(left) match {
+    rightMatcher(leftOperand) match {
       case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
       case _ => ()
     }
   }
   // This one supports it should behave like
-  def should(behaveWord: BehaveWord) = new Likifier[T](left)
+  def should(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
 }
-*/
 
-private[scalatest] class StringShouldalizer(left: String) {
-  def should(rightMatcher: Matcher[String]) {
-    rightMatcher(left) match {
-      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  def shouldNot(rightMatcher: Matcher[String]) {
-    rightMatcher(left) match {
-      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  // This one supports it should behave like
-  def should(behaveWord: BehaveWord) = new Likifier[String](left)
+private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
+
+private[scalatest] class StringShouldalizer(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
   def should(haveWord: HaveWord): ResultOfHaveWordForString = {
     new ResultOfHaveWordForString(left, true)
   }
@@ -259,21 +242,7 @@ private[scalatest] class HaveWord {
     }
 }
 
-private[scalatest] class MapShouldalizer[K, V](left: Map[K, V]) {
-  def should(rightMatcher: Matcher[Map[K, V]]) {
-    rightMatcher(left) match {
-      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  def shouldNot(rightMatcher: Matcher[Map[K, V]]) {
-    rightMatcher(left) match {
-      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  // This one supports it should behave like
-  def should(behaveWord: BehaveWord) = new Likifier[Map[K, V]](left)
+private[scalatest] class MapShouldalizer[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]] {
   def should(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
     new ResultOfContainWordForIterable(left, true)
   }
@@ -336,21 +305,7 @@ private[scalatest] class ResultOfContainWordForIterable[T](left: Iterable[T], sh
       )
 }
 
-private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) {
-  def should(rightMatcher: Matcher[Iterable[T]]) {
-    rightMatcher(left) match {
-      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  def shouldNot(rightMatcher: Matcher[Iterable[T]]) {
-    rightMatcher(left) match {
-      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  // This one supports it should behave like
-  def should(behaveWord: BehaveWord) = new Likifier[Iterable[T]](left)
+private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]] {
   def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
     new ResultOfContainWordForIterable(left, true)
   }
@@ -359,21 +314,7 @@ private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) {
   }
 }
 
-private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) {
-  def should(rightMatcher: Matcher[Collection[T]]) {
-    rightMatcher(left) match {
-      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  def shouldNot(rightMatcher: Matcher[Collection[T]]) {
-    rightMatcher(left) match {
-      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  // This one supports it should behave like
-  def should(behaveWord: BehaveWord) = new Likifier[Collection[T]](left)
+private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]] {
   def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
     new ResultOfContainWordForIterable(left, true)
   }
@@ -388,37 +329,7 @@ private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) {
   }
 }
 
-private[scalatest] trait ShouldMethods[T] {
-  protected val leftOperand: T
-  def should(rightMatcher: Matcher[T]) {
-    rightMatcher(leftOperand) match {
-      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  def shouldNot(rightMatcher: Matcher[T]) {
-    rightMatcher(leftOperand) match {
-      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-}
-
-private[scalatest] class ListShouldalizer[T](left: List[T]) {
-  def should(rightMatcher: Matcher[List[T]]) {
-    rightMatcher(left) match {
-      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  def shouldNot(rightMatcher: Matcher[List[T]]) {
-    rightMatcher(left) match {
-      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
-      case _ => ()
-    }
-  }
-  // This one supports it should behave like
-  def should(behaveWord: BehaveWord) = new Likifier[List[T]](left)
+private[scalatest] class ListShouldalizer[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]] {
   def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
     new ResultOfContainWordForIterable(left, true)
   }
