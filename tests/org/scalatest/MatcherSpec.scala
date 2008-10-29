@@ -258,11 +258,9 @@ class MatcherSpec extends Spec {
       map shouldNot have value "Doody"
     }
 
-    // TODO: See if I can get rid of the Collection[Int] type hint here. This will
-    // be hard for people to figure out when it happens.
     "should work with collection and size, in an and expression." - {
       val list = List(1, 2, 3)
-      list should { have size 3 and equal (List(1, 2, 3): Collection[Int]) }
+      list should { have size 3 and equal (List(1, 2, 3)) }
     }
 
     "should work with collection and size, right after a 'should'" - {
