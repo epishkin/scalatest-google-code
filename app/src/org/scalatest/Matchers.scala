@@ -130,6 +130,11 @@ private[scalatest] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeT
 */
 }
 
+private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T] {
+  // This one supports it should behave like
+  def should(behaveWord: BehaveWord) = new Likifier[T](left)
+}
+/*
 private[scalatest] class Shouldalizer[T](left: T) {
   def should(rightMatcher: Matcher[T]) {
     rightMatcher(left) match {
@@ -146,6 +151,7 @@ private[scalatest] class Shouldalizer[T](left: T) {
   // This one supports it should behave like
   def should(behaveWord: BehaveWord) = new Likifier[T](left)
 }
+*/
 
 private[scalatest] class StringShouldalizer(left: String) {
   def should(rightMatcher: Matcher[String]) {
@@ -171,9 +177,7 @@ private[scalatest] class StringShouldalizer(left: String) {
 }
 
 private[scalatest] class BehaveWord
-
-private[scalatest] class ContainWord {
-}
+private[scalatest] class ContainWord
 
 private[scalatest] class HaveWord {
   //
@@ -214,9 +218,6 @@ private[scalatest] class HaveWord {
           Resources("hadValue", left.toString, expectedValue.toString)
         )
     }
-
-
-
 
   def size(expectedSize: Int) =
     new Matcher[Collection[Any]] {
@@ -335,17 +336,6 @@ private[scalatest] class ResultOfContainWordForIterable[T](left: Iterable[T], sh
       )
 }
 
-/*
-private[scalatest] class ResultOfHaveWordPassedToShouldForCollection[T](left: Collection[T])
-    extends ResultOfHaveWordForCollection(left, true)
-
-private[scalatest] class ResultOfHaveWordPassedToShouldNotForCollection[T](left: Collection[T])
-    extends ResultOfHaveWordForCollection(left, false)
-
-private[scalatest] class ResultOfContainWordPassedToShouldForIterable[T](left: Iterable[T])
-    extends ResultOfContainWordForIterable(left, true)
-*/
-
 private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) {
   def should(rightMatcher: Matcher[Iterable[T]]) {
     rightMatcher(left) match {
@@ -395,6 +385,22 @@ private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) {
   }
   def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
     new ResultOfHaveWordForCollection(left, false)
+  }
+}
+
+private[scalatest] trait ShouldMethods[T] {
+  protected val leftOperand: T
+  def should(rightMatcher: Matcher[T]) {
+    rightMatcher(leftOperand) match {
+      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  def shouldNot(rightMatcher: Matcher[T]) {
+    rightMatcher(leftOperand) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
   }
 }
 
