@@ -398,9 +398,39 @@ private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) {
   }
 }
 
+private[scalatest] class ListShouldalizer[T](left: List[T]) {
+  def should(rightMatcher: Matcher[List[T]]) {
+    rightMatcher(left) match {
+      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  def shouldNot(rightMatcher: Matcher[List[T]]) {
+    rightMatcher(left) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  // This one supports it should behave like
+  def should(behaveWord: BehaveWord) = new Likifier[List[T]](left)
+  def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+    new ResultOfContainWordForIterable(left, true)
+  }
+  def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+    new ResultOfContainWordForIterable(left, false)
+  }
+  def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
+    new ResultOfHaveWordForCollection(left, true)
+  }
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
+    new ResultOfHaveWordForCollection(left, false)
+  }
+}
+
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
   implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
   implicit def shouldifyForCollection[T](left: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](left)
+  implicit def shouldifyForList[T](left: List[T]): ListShouldalizer[T] = new ListShouldalizer[T](left)
   implicit def shouldifyForString[K, V](left: String): StringShouldalizer = new StringShouldalizer(left)
 
   def equal[S <: Any](right: S): Matcher[S] =
