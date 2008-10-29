@@ -215,7 +215,9 @@ private[scalatest] class HaveWord {
         )
     }
 
-/*
+
+
+
   def size(expectedSize: Int) =
     new Matcher[Collection[Any]] {
       def apply(left: Collection[Any]) =
@@ -225,7 +227,7 @@ private[scalatest] class HaveWord {
           Resources("hadValue", left.toString, expectedSize.toString)
         )
     }
-*/
+/*
   // Go ahead and use a structural type here too, to make it more general. Can then
   // use this on any type that has a size method. I guess it doesn't matter in structural
   // types if you put the empty parens on there or not.
@@ -238,6 +240,7 @@ private[scalatest] class HaveWord {
           Resources("hadExpectedSize", left.toString, expectedSize.toString)
         )
     }
+*/
 
   // This should give me { def length(): Int } I don't
   // know the type, but it has a length method. This would work on strings and ints, but
@@ -399,17 +402,6 @@ private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) {
   implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
   implicit def shouldifyForCollection[T](left: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](left)
   implicit def shouldifyForString[K, V](left: String): StringShouldalizer = new StringShouldalizer(left)
-/*
-  implicit def stringMatcherToSeqMatcher(stringMatcher: Matcher[String]): Matcher[Seq[Char]] =
-    new Matcher[Seq[Char]] {
-      def apply(left: Seq[Char]) = stringMatcher.apply(left.toString)
-    }
-  implicit def seqMatcherToStringMatcher(seqMatcher: Matcher[Seq[Char]]): Matcher[String] =
-    new Matcher[String] {
-      def apply(left: String) = seqMatcher.apply(stringWrapper(left))
-    }
-*/
-
 
   def equal[S <: Any](right: S): Matcher[S] =
     new Matcher[S] {
