@@ -224,9 +224,11 @@ class MatcherSpec extends Spec {
     "should work with map and key, in a logical expression" - {
       val map = Map(1 -> "Howdy")
       // The compiler infer the type of the value to be Nothing if I say: map should { have key 1 and equal (Map(1 -> "Howdy")) }
-      map should { have.key[Int, String](1) and equal (Map(1 -> "Howdy")) }
+      // map should { have.key[Int, String](1) and equal (Map(1 -> "Howdy")) }
+      map should { have key 1 and equal (Map(1 -> "Howdy")) }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should { have.key[String, Int]("Howdy") and equal (Map("Howdy" -> 1)) }
+      // otherMap should { have.key[String, Int]("Howdy") and equal (Map("Howdy" -> 1)) }
+      otherMap should { have key "Howdy" and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and key, right after a 'shouldNot'" - {
@@ -246,9 +248,9 @@ class MatcherSpec extends Spec {
 
     "should work with map and value, in a logical expression" - {
       val map = Map(1 -> "Howdy")
-      map should { have.value[Int, String]("Howdy") and equal (Map(1 -> "Howdy")) }
+      map should { equal (Map(1 -> "Howdy")) and (have value "Howdy") }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should { have.value[String, Int](1) and equal (Map("Howdy" -> 1)) }
+      otherMap should { have value 1 and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and value, right after a 'shouldNot'" - {
@@ -256,17 +258,171 @@ class MatcherSpec extends Spec {
       map shouldNot have value "Doody"
     }
 
-    "should work with iterable and size, right after a 'should'" - {
+    // TODO: See if I can get rid of the Collection[Int] type hint here. This will
+    // be hard for people to figure out when it happens.
+    "should work with collection and size, in an and expression." - {
+      val list = List(1, 2, 3)
+      list should { have size 3 and equal (List(1, 2, 3): Collection[Int]) }
+    }
+
+    "should work with collection and size, right after a 'should'" - {
+
       val map = Map(1 -> "Howdy")
       map should have size 1
+      val caught1 = intercept(classOf[AssertionError]) {
+        map should have size 5
+      }
+      assert(caught1.getMessage.indexOf("did not have size") != -1)
+
       val list = List(1, 2, 3, 4, 5)
       list should have size 5
+      val caught2 = intercept(classOf[AssertionError]) {
+        list should have size 6
+      }
+      assert(caught2.getMessage.indexOf("did not have size") != -1)
+
       val set = Set(1.0, 2.0, 3.0)
       set should have size 3
+      val caught3 = intercept(classOf[AssertionError]) {
+        set should have size 0
+      }
+      assert(caught3.getMessage.indexOf("did not have size") != -1)
+
       val array = Array[String]()
       array should have size 0
+      val caught4 = intercept(classOf[AssertionError]) {
+        array should have size 2
+      }
+      assert(caught4.getMessage.indexOf("did not have size") != -1)
+    }
+
+    "should work with collection and size, right after a 'shouldNot'" - {
+
+      val map = Map(1 -> "Howdy")
+      map shouldNot have size 2
+      val caught1 = intercept(classOf[AssertionError]) {
+        map shouldNot have size 1
+      }
+      assert(caught1.getMessage.indexOf("had size") != -1)
+
+      val list = List(1, 2, 3, 4, 5)
+      list shouldNot have size 6
+      val caught2 = intercept(classOf[AssertionError]) {
+        list shouldNot have size 5
+      }
+      assert(caught2.getMessage.indexOf("had size") != -1)
+
+      val set = Set(1.0, 2.0, 3.0)
+      set shouldNot have size 0
+      val caught3 = intercept(classOf[AssertionError]) {
+        set shouldNot have size 3
+      }
+      assert(caught3.getMessage.indexOf("had size") != -1)
+
+      val array = Array[String]()
+      array shouldNot have size 2
+      val caught4 = intercept(classOf[AssertionError]) {
+        array shouldNot have size 0
+      }
+      assert(caught4.getMessage.indexOf("had size") != -1)
     }
   }
+
+  "The contain word" -- {
+ 
+    "should work with a set, list, array, and map right after a 'should'" - {
+
+      val set = Set(1, 2, 3)
+      set should contain element 2
+      val caught1 = intercept(classOf[AssertionError]) {
+        set should contain element 5
+      }
+      assert(caught1.getMessage.indexOf("did not contain element") != -1)
+
+      val list = List("one", "two", "three")
+      list should contain element "two"
+      val caught2 = intercept(classOf[AssertionError]) {
+        list should contain element "five"
+      }
+      assert(caught2.getMessage.indexOf("did not contain element") != -1)
+
+      val array = Array("one", "two", "three")
+      array should contain element "one"
+      val caught3 = intercept(classOf[AssertionError]) {
+        array should contain element "five"
+      }
+      assert(caught3.getMessage.indexOf("did not contain element") != -1)
+
+      val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
+      val tuple2: Tuple2[Int, String] = 1 -> "one"
+      map should contain element tuple2
+      val caught4 = intercept(classOf[AssertionError]) {
+        map should contain element 1 -> "won"
+      }
+      assert(caught4.getMessage.indexOf("did not contain element") != -1)
+    }
+
+    "should work with a set, list, array, and map right after a 'shouldNot'" - {
+
+      val set = Set(1, 2, 3)
+      set shouldNot contain element 5
+      val caught1 = intercept(classOf[AssertionError]) {
+        set shouldNot contain element 2
+      }
+      assert(caught1.getMessage.indexOf("contained element") != -1)
+
+      val list = List("one", "two", "three")
+      list shouldNot contain element "five"
+      val caught2 = intercept(classOf[AssertionError]) {
+        list shouldNot contain element "two"
+      }
+      assert(caught2.getMessage.indexOf("contained element") != -1)
+
+      val array = Array("one", "two", "three")
+      array shouldNot contain element "five"
+      val caught3 = intercept(classOf[AssertionError]) {
+        array shouldNot contain element "one"
+      }
+      assert(caught3.getMessage.indexOf("contained element") != -1)
+
+      val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
+      val tuple2: Tuple2[Int, String] = 1 -> "won"
+      map shouldNot contain element tuple2
+      val caught4 = intercept(classOf[AssertionError]) {
+        map shouldNot contain element 1 -> "one"
+      }
+      assert(caught4.getMessage.indexOf("contained element") != -1)
+    }
+
+    "should work with string and have length right after a 'should'" - {
+      val string = "hi"
+      string should have length 2
+      val caught = intercept(classOf[AssertionError]) {
+        string should have length 3
+      }
+      assert(caught.getMessage.indexOf("did not have length") != -1)
+    }
+
+    "should work with string and have length right after a 'shouldNot'" - {
+      val string = "hi"
+      string shouldNot have length 3
+      val caught = intercept(classOf[AssertionError]) {
+        string shouldNot have length 2
+      }
+      assert(caught.getMessage.indexOf("had length") != -1)
+    }
+
+    "should work with string and have length in an and expression" - {
+      val string = "hi"
+      string should { have length 2 and equal ("hi") }
+      val caught = intercept(classOf[AssertionError]) {
+        string should { have length 3 and equal ("hi") }
+      }
+      assert(caught.getMessage.indexOf("did not have length") != -1)
+    }
+  }
+}
+
     /*
      // After should/shouldNot, if an even number of tokens, you need parens on the last thing.
      // If an odd number of tokens, you can't put parens on the last thing.
@@ -277,19 +433,26 @@ class MatcherSpec extends Spec {
      map should have key 8 // DONE
      map shouldNot have key 8 // DONE
      map should { have key 8 and equal (Map(8 -> "eight")) } // DONE
-     map should { have key 8 andNot equal (Map(8 -> "eight")) }
 
      map should have value "eleven" // DONE
      map shouldNot have value "eleven" // DONE
 
-     iterable should contain element 42
-     iterable shouldNot contain element 42
-     assert(iterable contains 42)
+     iterable should contain element 42 // DONE
+     iterable shouldNot contain element 42 // DONE
+     assert(iterable contains 42) // DONE
+
+     collection should have size 3 // DONE
+     collection shouldNot have size 3 // DONE
+
+     string should have length 0
+     string shouldNot have length 0
+
+     array should have length 9
+     array shouldNot have length 9
 
      iterable should contain elements (42, 43, 59)
 
-     iterable should have size 3
-     iterable shouldNot have size 3
+     map should { have key 8 andNot equal (Map(8 -> "eight")) }
 
      // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
      // is a String, then it checks for length is zero. Otherwise it does the already-written reflection
@@ -299,13 +462,7 @@ class MatcherSpec extends Spec {
      string should beEmpty
      string shouldNot beEmpty
 
-     string should have length 0
-     string shouldNot have length 0
-
      string should { not { have length 7 } and startWith "Hello" }
-
-     array should have length 9
-     array shouldNot have length 9
 
      // Using boolean properties dynamically
      object should 'beHidden
@@ -530,5 +687,4 @@ class MatcherSpec extends Spec {
 
     Nah, this doesn't look nice, and it is less explicit.
     */
-}
 

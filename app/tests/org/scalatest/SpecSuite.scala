@@ -1116,11 +1116,11 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MyBehavior extends Behavior {
+    def myBehavior(i: Int) = new Behavior {
       "it should start with proper words" - {}
     }
     class MySpec extends Spec {
-      should behave like a { new MyBehavior }
+      1 should behave like myBehavior
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1147,11 +1147,11 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MyBehavior extends Behavior {
+    def myBehavior(i: Int) = new Behavior {
       specify("it must start with proper words") {}
     }
     class MySpec extends Spec {
-      should behave like a { new MyBehavior }
+      1 should behave like myBehavior
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1178,11 +1178,11 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MyBehavior extends Behavior {
+    def myBehavior(i: Int) = new Behavior {
       "it should start with proper words" - {}
     }
     class MySpec extends Spec {
-      should behave like a { new MyBehavior }
+      1 should behave like myBehavior
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1209,11 +1209,11 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MyBehavior extends Behavior {
+    def myBehavior(i: Int) = new Behavior {
       specify("it must start with proper words") {}
     }
     class MySpec extends Spec {
-      should behave like a { new MyBehavior }
+      1 should behave like myBehavior
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1240,11 +1240,11 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MyBehavior extends Behavior {
+    def myBehavior(i: Int) = new Behavior {
       "it should start with proper words" - { fail() }
     }
     class MySpec extends Spec {
-      should behave like a { new MyBehavior }
+      1 should behave like myBehavior
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1271,11 +1271,11 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MyBehavior extends Behavior {
+    def myBehavior(i: Int) = new Behavior {
       specify("it must start with proper words") { fail() }
     }
     class MySpec extends Spec {
-      should behave like a { new MyBehavior }
+      1 should behave like myBehavior
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1326,12 +1326,12 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    case class MyBehavior extends Behavior {
+    def myBehavior(i: Int) = new Behavior {
       "should start with proper words" - {}
     }
     class MySpec extends Spec {
       describe("My Spec") {
-        should behave like a MyBehavior()
+        1 should behave like myBehavior
       }
     }
     val a = new MySpec
@@ -1963,7 +1963,7 @@ class SpecSuite extends FunSuite {
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
     class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
-      case class InvocationVerifier extends Behavior {
+      def invocationVerifier(i: Int) = new Behavior {
         "should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -1971,7 +1971,7 @@ class SpecSuite extends FunSuite {
       describe("A Stack") {
         describe("(when not empty)") {
           "should allow me to pop" - {}
-          should behave like an InvocationVerifier()
+          1 should behave like invocationVerifier
         }
         describe("(when not full)") {
           "should allow me to push" - {}
@@ -1987,7 +1987,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
-      case class InvocationVerifier extends Behavior {
+      def invocationVerifier(i: Int) = new Behavior {
         "should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -1998,7 +1998,7 @@ class SpecSuite extends FunSuite {
       "A Stack" -- {
         "(when not empty)" -- {
           "should allow me to pop" - {}
-          should behave like the InvocationVerifier()
+          1 should behave like invocationVerifier
         }
         "(when not full)" -- {
           "should allow me to push" - {}
@@ -2016,7 +2016,7 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      case class InvocationVerifier extends Behavior {
+      def invocationVerifier(i: Int) = new Behavior {
         "should get invoked" - {
           example1WasInvoked = true
         }
@@ -2029,7 +2029,7 @@ class SpecSuite extends FunSuite {
             example3WasInvokedAfterExample2 = true
         }
       }
-      should behave like an InvocationVerifier()
+      1 should behave like invocationVerifier
     }
     val a = new MySpec
     a.execute()
@@ -2043,7 +2043,7 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      case class InvocationVerifier extends Behavior {
+      def invocationVerifier(i: Int) = new Behavior {
         "should get invoked" - {
           example1WasInvoked = true
         }
@@ -2077,12 +2077,12 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
-      case class InvocationVerifier extends Behavior {
+      def invocationVerifier(i: Int) = new Behavior {
         "it should be invoked" - {
           sharedExampleInvoked = true
         }
       }
-      should behave like the InvocationVerifier()
+      1 should behave like invocationVerifier
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -2100,13 +2100,13 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec {
       var sharedExampleInvoked = false
-      case class InvocationVerifier extends Behavior {
+      def invocationVerifier(i: Int) = new Behavior {
         "should pop properly" - {
           sharedExampleInvoked = true
         }
       }
       "A Stack" -- {
-        should behave like an InvocationVerifier()
+        1 should behave like invocationVerifier
       }
     }
     val a = new MySpec
@@ -2134,7 +2134,7 @@ class SpecSuite extends FunSuite {
 
   test("expectedTestCount should include tests in a share that is called") {
     class MySpec extends Spec {
-      case class Misbehavior extends Behavior {
+      def misbehavior(i: Int) = new Behavior {
         "should six" - {}
         "should seven" - {}
       }
@@ -2142,7 +2142,7 @@ class SpecSuite extends FunSuite {
       "should two" - {}
       describe("behavior") {
         "should three" - {} 
-        should behave like a Misbehavior()
+        1 should behave like misbehavior
         "should four" - {}
       }
       "should five" - {}
@@ -2153,7 +2153,7 @@ class SpecSuite extends FunSuite {
 
   test("expectedTestCount should include tests in a share that is called twice") {
     class MySpec extends Spec {
-      case class Misbehavior extends Behavior {
+      def misbehavior(i: Int) = new Behavior {
         "should six" - {}
         "should seven" - {}
       }
@@ -2161,11 +2161,11 @@ class SpecSuite extends FunSuite {
       "should two" - {}
       describe("behavior") {
         "should three" - {} 
-        should behave like a Misbehavior()
+        1 should behave like misbehavior
         "should four" - {}
       }
       "should five" - {}
-      should behave like a Misbehavior()
+      1 should behave like misbehavior
     }
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 9)

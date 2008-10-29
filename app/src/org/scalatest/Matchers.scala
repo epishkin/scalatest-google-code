@@ -84,6 +84,8 @@ private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftM
     }
 }
 
+private[scalatest] trait Matchers extends Assertions {
+
 //
 // This class is used as the return type of the overloaded should method (in MapShouldalizer)
 // that takes a HaveWord. It's key method will be called in situations like this:
@@ -99,7 +101,7 @@ private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftM
 // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
 // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
 // 
-private[scalatest] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[(K, V)](left, shouldBeTrue) {
+private[scalatest] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[Tuple2[K, V]](left, shouldBeTrue) {
   def key(expectedKey: K) =
     if (left.contains(expectedKey) != shouldBeTrue)
       throw new AssertionError(
@@ -128,12 +130,6 @@ private[scalatest] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeT
 */
 }
 
-private[scalatest] class ResultOfHaveWordForMapPassedToShould[K, V](left: Map[K, V])
-    extends ResultOfHaveWordForMap(left, true)
-
-private[scalatest] class ResultOfHaveWordForMapPassedToShouldNot[K, V](left: Map[K, V])
-    extends ResultOfHaveWordForMap(left, false)
-
 private[scalatest] class Shouldalizer[T](left: T) {
   def should(rightMatcher: Matcher[T]) {
     rightMatcher(left) match {
@@ -147,40 +143,144 @@ private[scalatest] class Shouldalizer[T](left: T) {
       case _ => ()
     }
   }
+  // This one supports it should behave like
+  def should(behaveWord: BehaveWord) = new Likifier[T](left)
+}
+
+private[scalatest] class StringShouldalizer(left: String) {
+  def should(rightMatcher: Matcher[String]) {
+    rightMatcher(left) match {
+      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  def shouldNot(rightMatcher: Matcher[String]) {
+    rightMatcher(left) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  // This one supports it should behave like
+  def should(behaveWord: BehaveWord) = new Likifier[String](left)
+  def should(haveWord: HaveWord): ResultOfHaveWordForString = {
+    new ResultOfHaveWordForString(left, true)
+  }
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForString = {
+    new ResultOfHaveWordForString(left, false)
+  }
+}
+
+private[scalatest] class BehaveWord
+
+private[scalatest] class ContainWord {
 }
 
 private[scalatest] class HaveWord {
   //
   // This key method is called when "have" is used in a logical expression, such as:
   // map should { have key 1 and equal (Map(1 -> "Howdy")) }. It results in a matcher
-  // that remembers the key value.
+  // that remembers the key value. By making the value type Any, it causes overloaded shoulds
+  // to work, because for example a Matcher[Map[Int, Any]] is a subtype of Matcher[Map[Int, String]],
+  // given Map is covariant in its V (the value type stored in the map) parameter and Matcher is
+  // contravariant in its lone type parameter. Thus, the type of the Matcher resulting from have key 1
+  // is a subtype of the map type that has a known value type parameter because its that of the map
+  // to the left of should. This means the should method that takes a map will be selected by Scala's
+  // method overloading rules.
   // 
-  def key[K, V](expectedKey: K): Matcher[Map[K, V]] =
-    new Matcher[Map[K, V]] {
-      def apply(left: Map[K, V]) =
+  def key[K](expectedKey: K): Matcher[Map[K, Any]] =
+    new Matcher[Map[K, Any]] {
+      def apply(left: Map[K, Any]) =
         MatcherResult(
           left.contains(expectedKey), 
           Resources("didNotHaveKey", left.toString, expectedKey.toString),
           Resources("hadKey", left.toString, expectedKey.toString)
         )
     }
-  def value[K, V](expectedValue: V): Matcher[Map[K, V]] =
-    new Matcher[Map[K, V]] {
-      def apply(left: Map[K, V]) =
+
+  // Holy smokes I'm starting to scare myself. I fixed the problem of the compiler not being
+  // able to infer the value type in  have value 1 and ... like expressions, because the
+  // value type is there, with an existential type. Since I don't know what K is, I decided to
+  // try just saying that with an existential type, and it compiled and ran. Pretty darned
+  // amazing compiler. The problem could not be fixed like I fixed the key method above, because
+  // Maps are nonvariant in their key type parameter, whereas they are covariant in their value
+  // type parameter, so the same trick wouldn't work. But this existential type trick seems to
+  // work like a charm.
+  def value[V](expectedValue: V): Matcher[Map[K, V] forSome { type K }] =
+    new Matcher[Map[K, V] forSome { type K }] {
+      def apply(left: Map[K, V] forSome { type K }) =
         MatcherResult(
           left.values.contains(expectedValue), 
           Resources("didNotHaveValue", left.toString, expectedValue.toString),
           Resources("hadValue", left.toString, expectedValue.toString)
         )
     }
+
+/*
+  def size(expectedSize: Int) =
+    new Matcher[Collection[Any]] {
+      def apply(left: Collection[Any]) =
+        MatcherResult(
+          left.size == expectedSize, 
+          Resources("didNotHaveValue", left.toString, expectedSize.toString),
+          Resources("hadValue", left.toString, expectedSize.toString)
+        )
+    }
+*/
+  // Go ahead and use a structural type here too, to make it more general. Can then
+  // use this on any type that has a size method. I guess it doesn't matter in structural
+  // types if you put the empty parens on there or not.
+  def size(expectedSize: Int) =
+    new Matcher[{ def size(): Int }] {
+      def apply(left: { def size(): Int }) =
+        MatcherResult(
+          left.size == expectedSize, 
+          Resources("didNotHaveExpectedSize", left.toString, expectedSize.toString),
+          Resources("hadExpectedSize", left.toString, expectedSize.toString)
+        )
+    }
+
+  // This should give me { def length(): Int } I don't
+  // know the type, but it has a length method. This would work on strings and ints, but
+  // I"m not sure what the story is on the parameterless or not. Probably should put parens in there.
+  // String is a structural subtype of { def length(): Int }. Thus Matcher[{ def length(): Int }] should
+  // be a subtype of Matcher[String], because of contravariance. Yeah, this worked!
+  def length(expectedLength: Int) =
+    new Matcher[{ def length(): Int }] {
+      def apply(left: { def length(): Int }) =
+        MatcherResult(
+          left.length == expectedLength, 
+          Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
+          Resources("hadExpectedLength", left.toString, expectedLength.toString)
+        )
+    }
 }
 
-private[scalatest] class MapShouldalizer[K, V](left: Map[K, V]) extends Shouldalizer(left) {
-  def should(haveWord: HaveWord): ResultOfHaveWordForMapPassedToShould[K, V] = {
-    new ResultOfHaveWordForMapPassedToShould(left)
+private[scalatest] class MapShouldalizer[K, V](left: Map[K, V]) {
+  def should(rightMatcher: Matcher[Map[K, V]]) {
+    rightMatcher(left) match {
+      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
   }
-  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForMapPassedToShouldNot[K, V] = {
-    new ResultOfHaveWordForMapPassedToShouldNot(left)
+  def shouldNot(rightMatcher: Matcher[Map[K, V]]) {
+    rightMatcher(left) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  // This one supports it should behave like
+  def should(behaveWord: BehaveWord) = new Likifier[Map[K, V]](left)
+  def should(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
+    new ResultOfContainWordForIterable(left, true)
+  }
+  def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
+    new ResultOfContainWordForIterable(left, false)
+  }
+  def should(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
+    new ResultOfHaveWordForMap(left, true)
+  }
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
+    new ResultOfHaveWordForMap(left, false)
   }
 }
 
@@ -210,28 +310,108 @@ private[scalatest] class ResultOfHaveWordForCollection[T](left: Collection[T], s
       )
 }
 
+private[scalatest] class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
+  def length(expectedLength: Int) =
+    if ((left.length == expectedLength) != shouldBeTrue)
+      throw new AssertionError(
+        Resources(
+          if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+          left.toString,
+          expectedLength.toString)
+      )
+}
+
+private[scalatest] class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
+  def element(expectedElement: T) =
+    if ((left.elements.contains(expectedElement)) != shouldBeTrue)
+      throw new AssertionError(
+        Resources(
+          if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
+          left.toString,
+          expectedElement.toString)
+      )
+}
+
+/*
 private[scalatest] class ResultOfHaveWordPassedToShouldForCollection[T](left: Collection[T])
     extends ResultOfHaveWordForCollection(left, true)
 
 private[scalatest] class ResultOfHaveWordPassedToShouldNotForCollection[T](left: Collection[T])
     extends ResultOfHaveWordForCollection(left, false)
 
-private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) extends Shouldalizer(left) {
-  def should(haveWord: HaveWord): ResultOfHaveWordPassedToShouldForCollection[T] = {
-    new ResultOfHaveWordPassedToShouldForCollection(left)
+private[scalatest] class ResultOfContainWordPassedToShouldForIterable[T](left: Iterable[T])
+    extends ResultOfContainWordForIterable(left, true)
+*/
+
+private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) {
+  def should(rightMatcher: Matcher[Iterable[T]]) {
+    rightMatcher(left) match {
+      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
   }
-  def shouldNot(haveWord: HaveWord): ResultOfHaveWordPassedToShouldNotForCollection[T] = {
-    new ResultOfHaveWordPassedToShouldNotForCollection(left)
+  def shouldNot(rightMatcher: Matcher[Iterable[T]]) {
+    rightMatcher(left) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  // This one supports it should behave like
+  def should(behaveWord: BehaveWord) = new Likifier[Iterable[T]](left)
+  def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+    new ResultOfContainWordForIterable(left, true)
+  }
+  def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+    new ResultOfContainWordForIterable(left, false)
   }
 }
 
-private[scalatest] trait Matchers extends Assertions {
+private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) {
+  def should(rightMatcher: Matcher[Collection[T]]) {
+    rightMatcher(left) match {
+      case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  def shouldNot(rightMatcher: Matcher[Collection[T]]) {
+    rightMatcher(left) match {
+      case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
+      case _ => ()
+    }
+  }
+  // This one supports it should behave like
+  def should(behaveWord: BehaveWord) = new Likifier[Collection[T]](left)
+  def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+    new ResultOfContainWordForIterable(left, true)
+  }
+  def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+    new ResultOfContainWordForIterable(left, false)
+  }
+  def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
+    new ResultOfHaveWordForCollection(left, true)
+  }
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
+    new ResultOfHaveWordForCollection(left, false)
+  }
+}
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
   implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
   implicit def shouldifyForCollection[T](left: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](left)
+  implicit def shouldifyForString[K, V](left: String): StringShouldalizer = new StringShouldalizer(left)
+/*
+  implicit def stringMatcherToSeqMatcher(stringMatcher: Matcher[String]): Matcher[Seq[Char]] =
+    new Matcher[Seq[Char]] {
+      def apply(left: Seq[Char]) = stringMatcher.apply(left.toString)
+    }
+  implicit def seqMatcherToStringMatcher(seqMatcher: Matcher[Seq[Char]]): Matcher[String] =
+    new Matcher[String] {
+      def apply(left: String) = seqMatcher.apply(stringWrapper(left))
+    }
+*/
 
-  def equal[S <: Any](right: S) =
+
+  def equal[S <: Any](right: S): Matcher[S] =
     new Matcher[S] {
       def apply(left: S) =
         MatcherResult(
@@ -351,6 +531,17 @@ private[scalatest] trait Matchers extends Assertions {
           Resources("endedWith", left, right)
         )
     }
+
+  val behave = new BehaveWord
+
+  def importSharedBehavior(behavior: Behavior)
+
+  class Likifier[T](left: T) {
+    def like(fun: (T) => Behavior) {
+      importSharedBehavior(fun(left))
+    }
+  }
+
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which
@@ -372,4 +563,5 @@ private[scalatest] trait Matchers extends Assertions {
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
   def have = new HaveWord
+  def contain = new ContainWord
 }
