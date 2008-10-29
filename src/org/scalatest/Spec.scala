@@ -43,10 +43,32 @@ trait Spec extends Suite with Matchers {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
+/*
   class ShouldWord {
     def behave(likeWord: LikeWord) = new Likifier()
   }
-  
+*/
+
+// BEGIN NEW
+  def importSharedBehavior(sharedBehavior: Behavior) {
+    val sharedExamples = sharedBehavior.examples(currentBranch)
+    currentBranch.subNodes :::= sharedExamples
+    examplesList :::= sharedExamples
+  }
+/*
+  class Likifier[T](left: T) {
+    def like(fun: (T) => Behavior) {
+      val sharedBehavior = fun(left)
+      val sharedExamples = sharedBehavior.examples(currentBranch)
+      currentBranch.subNodes :::= sharedExamples
+      examplesList :::= sharedExamples
+    }
+  }
+*/
+
+  // implicit def shouldifyForBehavior[T](left: T): ShouldalizerForBehavior[T] = new ShouldalizerForBehavior[T](left)
+
+// END NEW
   class LikeWord {}
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
@@ -61,6 +83,7 @@ trait Spec extends Suite with Matchers {
     registerExample(exampleRawName, false, f)
   }
     
+/*
   protected val like = new LikeWord
   class Likifier {
     def a(sharedBehavior: Behavior) {
@@ -71,8 +94,11 @@ trait Spec extends Suite with Matchers {
     def an(sharedBehavior: Behavior) { a(sharedBehavior) }
     def the(sharedBehavior: Behavior) { a(sharedBehavior) }
   }
+*/
   
+/*
   protected val should = new ShouldWord
+*/
 
   protected def describe(name: String)(f: => Unit) {
     
