@@ -12,16 +12,7 @@ private[scalatest] case class MatcherResult(
 /*
 There are a set of implicit conversions that take different static types to Shouldalizers.
 The one that gets applied will be the one that matches the static type of left. The result
-of the implicit conversion will be a Shouldalizer. There's a hierarchy of these, so that
-more specific types inherit the should methods of more general types. For example:
-
-        Shouldalizer
-             ^
-             |
-    CollectionShouldalizer
-             ^
-             |
-       MapShouldalizer
+of the implicit conversion will be a Shouldalizer.
 
 The should methods take different static types, so they are overloaded. These types don't all
 inherit from the same supertype. There's a plain-old Matcher for example, but there's also maybe
@@ -226,19 +217,74 @@ private[scalatest] class HaveWord {
     }
 */
 
+/*
   // This should give me { def length(): Int } I don't
   // know the type, but it has a length method. This would work on strings and ints, but
   // I"m not sure what the story is on the parameterless or not. Probably should put parens in there.
   // String is a structural subtype of { def length(): Int }. Thus Matcher[{ def length(): Int }] should
-  // be a subtype of Matcher[String], because of contravariance. Yeah, this worked!
+  // be a subtype of Matcher[String], because of contravariance. Yeah, this worked! XXX
+  // Darn structural type won't work for both arrays and strings, because one requres a length and the other a length()
+  // So they aren't the same structural type. Really want the syntax, so moving to reflection and a runtime error.
   def length(expectedLength: Int) =
-    new Matcher[{ def length(): Int }] {
-      def apply(left: { def length(): Int }) =
+    new Matcher[{ def length: Int }] {
+      def apply(left: { def length: Int }) =
         MatcherResult(
           left.length == expectedLength, 
           Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
           Resources("hadExpectedLength", left.toString, expectedLength.toString)
         )
+    }
+*/
+  def length(expectedLength: Int) =
+    new Matcher[AnyRef] {
+      def apply(left: AnyRef) =
+        left match {
+          case leftSeq: Seq[_] =>
+            MatcherResult(
+              leftSeq.length == expectedLength, 
+              Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
+              Resources("hadExpectedLength", left.toString, expectedLength.toString)
+            )
+          case leftString: String =>
+            MatcherResult(
+              leftString.length == expectedLength, 
+              Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
+              Resources("hadExpectedLength", left.toString, expectedLength.toString)
+            )
+          case _ =>
+            val methods = left.getClass.getMethods
+            val methodOption = methods.find(_.getName == "length")
+            val hasLengthMethod =
+              methodOption match {
+                case Some(method) =>
+                  method.getParameterTypes.length == 0
+                case None => false
+              }
+            val fields = left.getClass.getFields
+            val fieldOption = fields.find(_.getName == "length")
+            val hasLengthField =
+              fieldOption match {
+                case Some(_) => true
+                case None => false
+              }
+            if (hasLengthMethod) {
+              MatcherResult(
+                methodOption.get.invoke(left, Array[Object]()) == expectedLength, 
+                Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
+                Resources("hadExpectedLength", left.toString, expectedLength.toString)
+              )
+            }
+            else if (hasLengthField) {
+              MatcherResult(
+                fieldOption.get.get(left) == expectedLength, 
+                Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
+                Resources("hadExpectedLength", left.toString, expectedLength.toString)
+              )
+            }
+            else {
+              throw new AssertionError("'have length "+ expectedLength +"' used with an object that had neither a public field or method named 'length'.")
+            }
+      }
     }
 }
 
@@ -280,6 +326,17 @@ private[scalatest] class ResultOfHaveWordForCollection[T](left: Collection[T], s
           if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
           left.toString,
           expectedSize.toString)
+      )
+}
+
+private[scalatest] class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
+  def length(expectedLength: Int) =
+    if ((left.length == expectedLength) != shouldBeTrue)
+      throw new AssertionError(
+        Resources(
+          if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+          left.toString,
+          expectedLength.toString)
       )
 }
 
@@ -328,26 +385,54 @@ private[scalatest] trait ShouldHaveWordForCollectionMethods[T] {
   }
 }
 
+private[scalatest] trait ShouldHaveWordForSeqMethods[T] {
+  protected val leftOperand: Seq[T]
+  def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
+    new ResultOfHaveWordForSeq(leftOperand, true)
+  }
+  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
+    new ResultOfHaveWordForSeq(leftOperand, false)
+  }
+}
+
 private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
     with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
 
+private[scalatest] class SeqShouldalizer[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
+    with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
+
+private[scalatest] class ArrayShouldalizer[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
+    with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
+
 private[scalatest] class ListShouldalizer[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
-    with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
+    with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
-  implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
-  implicit def shouldifyForCollection[T](left: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](left)
-  implicit def shouldifyForList[T](left: List[T]): ListShouldalizer[T] = new ListShouldalizer[T](left)
-  implicit def shouldifyForString[K, V](left: String): StringShouldalizer = new StringShouldalizer(left)
+  implicit def shouldifyForMap[K, V](o: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](o)
+  implicit def shouldifyForCollection[T](o: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](o)
+  implicit def shouldifyForSeq[T](o: Seq[T]): SeqShouldalizer[T] = new SeqShouldalizer[T](o)
+  implicit def shouldifyForArray[T](o: Array[T]): ArrayShouldalizer[T] = new ArrayShouldalizer[T](o)
+  implicit def shouldifyForList[T](o: List[T]): ListShouldalizer[T] = new ListShouldalizer[T](o)
+  implicit def shouldifyForString[K, V](o: String): StringShouldalizer = new StringShouldalizer(o)
+  implicit def stringToHasLength(s: AnyRef with String): { def length: Int } = new { def length: Int = s.length() }
 
   def equal[S <: Any](right: S): Matcher[S] =
     new Matcher[S] {
       def apply(left: S) =
-        MatcherResult(
-          left == right,
-          Resources("didNotEqual", left.toString, right.toString),
-          Resources("equaled", left.toString, right.toString)
-        )
+        left match {
+          case leftArray: Array[_] => 
+            MatcherResult(
+              leftArray.deepEquals(right),
+              Resources("didNotEqual", left.toString, right.toString),
+              Resources("equaled", left.toString, right.toString)
+            )
+          case _ => 
+            MatcherResult(
+              left == right,
+              Resources("didNotEqual", left.toString, right.toString),
+              Resources("equaled", left.toString, right.toString)
+            )
+      }
     }
 
   def be(right: Boolean) = 
@@ -410,7 +495,6 @@ private[scalatest] class ListShouldalizer[T](left: List[T]) extends { val leftOp
         val methodArray =
           for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
             yield m
-
         
         methodArray.length match {
           case 0 =>
