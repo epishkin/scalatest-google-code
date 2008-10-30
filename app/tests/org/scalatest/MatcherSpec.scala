@@ -410,13 +410,110 @@ class MatcherSpec extends Spec {
       assert(caught.getMessage.indexOf("had length") != -1)
     }
 
-    "should work with string and have length in an and expression" - {
+    "should work with string, should, and have length in an and expression" - {
       val string = "hi"
       string should { have length 2 and equal ("hi") }
       val caught = intercept(classOf[AssertionError]) {
         string should { have length 3 and equal ("hi") }
       }
       assert(caught.getMessage.indexOf("did not have length") != -1)
+    }
+
+    "should work with string, shouldNot, and have length in an and expression" - {
+      val string = "hi"
+      string shouldNot { have length 3 and equal ("hi") }
+      val caught = intercept(classOf[AssertionError]) {
+        string shouldNot { have length 2 and equal ("hi") }
+      }
+      assert(caught.getMessage.indexOf("had length") != -1)
+    }
+
+    "should work with array and have length right after a 'should'" - {
+      val array = Array('h', 'i')
+      array should have length 2
+      val caught = intercept(classOf[AssertionError]) {
+        array should have length 3
+      }
+      assert(caught.getMessage.indexOf("did not have length") != -1)
+    }
+
+    "should work with array and have length right after a 'shouldNot'" - {
+      val array = Array('h', 'i')
+      array shouldNot have length 3
+      val caught = intercept(classOf[AssertionError]) {
+        array shouldNot have length 2
+      }
+      assert(caught.getMessage.indexOf("had length") != -1)
+    }
+
+    "should work with array, should, and have length in an and expression" - {
+      val array = Array('h', 'i')
+      array should { have length 2 and equal (Array('h', 'i')) }
+      val caught = intercept(classOf[AssertionError]) {
+        array should { have length 3 and equal (Array('h', 'i')) }
+      }
+      assert(caught.getMessage.indexOf("did not have length") != -1)
+    }
+
+    "should work with array, shouldNot, and have length in an and expression" - {
+      val array = Array('h', 'i')
+      array shouldNot { have length 3 and equal (Array('h', 'i')) }
+      val caught = intercept(classOf[AssertionError]) {
+        array shouldNot { have length 2 and equal (Array('h', 'i')) }
+      }
+      assert(caught.getMessage.indexOf("had length") != -1)
+    }
+
+    "should work with any arbitrary object that has a length method in an and expression" - {
+      class HasLengthMethod {
+        def length(): Int = 2
+      }
+      val hasLengthMethod = new HasLengthMethod
+      hasLengthMethod should { have length 2 and equal (hasLengthMethod) }
+      val caught = intercept(classOf[AssertionError]) {
+        hasLengthMethod shouldNot { have length 2 and equal (hasLengthMethod) }
+      }
+      assert(caught.getMessage.indexOf("had length") != -1)
+    }
+
+    "should work with any arbitrary object that has a parameterless length method in an and expression" - {
+      class HasLengthMethod {
+        def length: Int = 2
+      }
+      val hasLengthMethod = new HasLengthMethod
+      hasLengthMethod should { have length 2 and equal (hasLengthMethod) }
+      val caught = intercept(classOf[AssertionError]) {
+        hasLengthMethod shouldNot { have length 2 and equal (hasLengthMethod) }
+      }
+      assert(caught.getMessage.indexOf("had length") != -1)
+    }
+
+    "should work with any arbitrary object that has a length field in an and expression" - {
+      class HasLengthField {
+        val length: Int = 2
+      }
+      val hasLengthField = new HasLengthField
+      hasLengthField should { have length 2 and equal (hasLengthField) }
+      val caught = intercept(classOf[AssertionError]) {
+        hasLengthField shouldNot { have length 2 and equal (hasLengthField) }
+      }
+      assert(caught.getMessage.indexOf("had length") != -1)
+    }
+
+    "should give an AssertionError with an arbitrary object that has no length member in an and expression" - {
+      class HasNoLength {
+        val lengthiness: Int = 2
+      }
+      val hasNoLength = new HasNoLength
+      val caught1 = intercept(classOf[AssertionError]) {
+        hasNoLength should { have length 2 and equal (hasNoLength) }
+      }
+      val expectedSubstring = "used with an object that had neither a public field or method named 'length'"
+      assert(caught1.getMessage.indexOf(expectedSubstring) != -1)
+      val caught2 = intercept(classOf[AssertionError]) {
+        hasNoLength shouldNot { have length 2 and equal (hasNoLength) }
+      }
+      assert(caught2.getMessage.indexOf(expectedSubstring) != -1)
     }
   }
 }
@@ -442,8 +539,8 @@ class MatcherSpec extends Spec {
      collection should have size 3 // DONE
      collection shouldNot have size 3 // DONE
 
-     string should have length 0
-     string shouldNot have length 0
+     // string should have length 0
+     // string shouldNot have length 0
 
      array should have length 9
      array shouldNot have length 9
