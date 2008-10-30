@@ -305,44 +305,34 @@ private[scalatest] class ResultOfContainWordForIterable[T](left: Iterable[T], sh
       )
 }
 
-private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]] {
+private[scalatest] trait ShouldContainWordForIterableMethods[T] {
+  protected val leftOperand: Iterable[T]
   def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-    new ResultOfContainWordForIterable(left, true)
+    new ResultOfContainWordForIterable(leftOperand, true)
   }
   def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-    new ResultOfContainWordForIterable(left, false)
+    new ResultOfContainWordForIterable(leftOperand, false)
   }
 }
 
-private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]] {
-  def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-    new ResultOfContainWordForIterable(left, true)
-  }
-  def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-    new ResultOfContainWordForIterable(left, false)
-  }
+private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]]
+    with ShouldContainWordForIterableMethods[T]
+
+private[scalatest] trait ShouldHaveWordForCollectionMethods[T] {
+  protected val leftOperand: Collection[T]
   def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
-    new ResultOfHaveWordForCollection(left, true)
+    new ResultOfHaveWordForCollection(leftOperand, true)
   }
   def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
-    new ResultOfHaveWordForCollection(left, false)
+    new ResultOfHaveWordForCollection(leftOperand, false)
   }
 }
 
-private[scalatest] class ListShouldalizer[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]] {
-  def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-    new ResultOfContainWordForIterable(left, true)
-  }
-  def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-    new ResultOfContainWordForIterable(left, false)
-  }
-  def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
-    new ResultOfHaveWordForCollection(left, true)
-  }
-  def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
-    new ResultOfHaveWordForCollection(left, false)
-  }
-}
+private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
+    with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
+
+private[scalatest] class ListShouldalizer[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
+    with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
 
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
   implicit def shouldifyForMap[K, V](left: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](left)
