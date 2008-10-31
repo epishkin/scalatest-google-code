@@ -106,6 +106,8 @@ private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftM
         }
       }
     }
+
+  def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
 }
 
 private[scalatest] trait Matchers extends Assertions {

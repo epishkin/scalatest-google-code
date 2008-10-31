@@ -274,7 +274,7 @@ class MatcherSpec extends Spec {
       caught.getMessage should equal ("1 did not equal 2") // because and short circuits
     }
 
-    "should throw AssertionError when second operands is false" - {
+    "should throw AssertionError when second operand is false" - {
       val caught = intercept(classOf[AssertionError]) {
         1 should (equal (1) and equal (2))
       }
@@ -378,7 +378,7 @@ class MatcherSpec extends Spec {
       caught.getMessage should equal ("1 did not equal 2") // because and short circuits
     }
 
-    "should throw AssertionError when second operands is true" - {
+    "should throw AssertionError when second operand is true" - {
       val caught = intercept(classOf[AssertionError]) {
         1 should (equal (1) andNot equal (1))
       }
@@ -411,6 +411,54 @@ class MatcherSpec extends Spec {
         1 should (equal (1) andNot { equal (1) })
       }
       caught2.getMessage should equal ("1 equaled 1, but 1 equaled 1")
+    }
+  }
+
+  "The orNot matcher" -- {
+
+    "should do nothing when left operand is true and right false" - {
+      1 should { equal (1) orNot equal (2) }
+    }
+
+    "should do nothing when when both operands are false" - {
+      1 should (equal (2) orNot equal (2))
+    }
+
+    "should do nothing when left operand is true and right true" - {
+      1 should { equal (1) orNot equal (1) }
+    }
+
+    "should throw AssertionError when first operand is false and second operand is true" - {
+      val caught = intercept(classOf[AssertionError]) {
+        1 should (equal (2) orNot equal (1))
+      }
+      caught.getMessage should equal ("1 did not equal 2, and 1 equaled 1")
+    }
+
+    "should not execute the right matcher creation function when the left operand is true" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      // This should succeed, but without applying the matcher returned by mockMatcher
+      1 should { equal (1) orNot mockMatcher }
+      called should be (false)
+    }
+
+    "should execute the right matcher creation function when the left operand is false" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(false, "", "") } }
+      1 should { equal (2) orNot mockMatcher }
+      called should be (true)
+    }
+
+    "should give good failure messages when used with not" - {
+      val caught1 = intercept(classOf[AssertionError]) {
+        1 should (not { equal (1) } orNot equal (1))
+      }
+      caught1.getMessage should equal ("1 equaled 1, and 1 equaled 1")
+      val caught2 = intercept(classOf[AssertionError]) {
+        1 should (equal (2) orNot not { equal (2) }) // Don't do this at home
+      }
+      caught2.getMessage should equal ("1 did not equal 2, and 1 did not equal 2")
     }
   }
 
