@@ -43,6 +43,16 @@ matcherOfOrange. And the right operand is considered a matcher of orange, becaus
 Made it extend Function1 for the heck of it. Can pass it as a Function1 now.
 */
 
+private[scalatest] object Helper {
+  def not[S <: Any](matcher: Matcher[S]) =
+    new Matcher[S] {
+      def apply(left: S) =
+        matcher(left) match {
+          case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
+        }
+    }
+}
+
 private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 
   // left is generally the object on which should is invoked.
@@ -73,6 +83,8 @@ private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftM
         }
       }
     }
+
+  def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
 }
 
 private[scalatest] trait Matchers extends Assertions {
@@ -538,8 +550,12 @@ private[scalatest] trait Matchers extends Assertions {
         }
       }
     }
+
+    def apply[S <: Any](right: S): Matcher[S] = equal(right)
   }
 
+  def not[S <: Any](matcher: Matcher[S]) = Helper.not { matcher }
+/*
   def not[S <: Any](matcher: Matcher[S]) =
     new Matcher[S] {
       def apply(left: S) =
@@ -547,6 +563,7 @@ private[scalatest] trait Matchers extends Assertions {
           case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
         }
     }
+*/
 
   def endWith[T <: String](right: T) =
     new Matcher[T] {
