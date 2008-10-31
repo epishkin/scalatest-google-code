@@ -6,6 +6,8 @@ class MatcherSpec extends Spec {
 
     "should do nothing when equal" - {
       1 should equal (1)
+      val option = Some(1)
+      option should equal (Some(1)) 
     }
 
     "should throw an assertion error when not equal" - {
@@ -79,11 +81,9 @@ class MatcherSpec extends Spec {
         val emptySet = Set() // XXX
         emptySet should be a 'empty
         emptySet should be an 'empty
-        emptySet should be the 'empty
         val nonEmptySet = Set(1, 2, 3)
         nonEmptySet should not { be a 'empty }
         nonEmptySet should not { be an 'empty }
-        nonEmptySet should not { be the 'empty }
       }
 
       "should call empty when passed 'empty" - {
@@ -592,6 +592,32 @@ class MatcherSpec extends Spec {
      array should have length 9 // DONE
      array shouldNot have length 9 // DONE
 
+     option should equal (Some(1)) // DONE
+
+     object should be a 'file // DONE
+     object shouldNot be a 'file // DONE
+     object should be an 'openBook // DONE
+     object shouldNot be an 'openBook // DONE
+     object should be ('hidden) // DONE
+     object shouldNot be ('hidden) // DONE
+     val file = 'file // DONE
+     val openBook = 'openBook// DONE
+     val beesKnees = 'beesKnees // DONE
+     val hidden = 'hidden // DONE
+     val empty = 'empty // DONE
+     object should be (empty) // DONE
+     object should be (hidden) // DONE
+     object should be a file // DONE
+     object shouldNot be an openBook // DONE
+     object shouldNot be an openBook // DONE
+
+     string should startWith ("something") // DONE
+     string shouldNot startWith ("something") // DONE
+     string should endWith ("something") // DONE
+     string shouldNot endWith ("something") // DONE
+
+     buf.length should be (20)
+
      iterable should contain elements (42, 43, 59)
 
      map should { have key 8 andNot equal (Map(8 -> "eight")) }
@@ -599,10 +625,14 @@ class MatcherSpec extends Spec {
      // Some of the be's
      beNone, beNil, beNull, beEmpty, beSome[String], beDefined
 
-     option should be_None
+     object should beEmpty // MAYBE
+     list should beNil // MAYBE
+     list shouldNot beNil // MAYBE
+     list should beNil // MAYBE
+
+     something should beEmpty // NO
      option should be (None)
      option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
-     option should equal (Some(1)) 
      option should be equalTo Some(1)
      option should beSome[String] whoseValue should startWith ("prefix")
 
@@ -616,38 +646,8 @@ class MatcherSpec extends Spec {
 
      string should { not { have length 7 } and startWith "Hello" }
 
-     // Using boolean properties dynamically
-     object should 'beHidden
-     object shouldNot 'beHidden
-     object should 'beEmpty
-     // object should be ('hidden) // Don't need use 'beHidden instead?
-     // object shouldNot be ('hidden)
-     object should be a 'file
-     object shouldNot be a 'file
-     object should be an 'openBook
-     object shouldNot be an 'openBook
-     // object should be the 'beesKnees
-     // object shouldNot be the 'beesKnees
-     val file = 'file
-     val openBook = 'openBook
-     val beesKnees = 'beesKnees
-     val hidden = 'hidden
-     val empty = 'empty
-     object should be (empty)
-     object should be (hidden)
-     object should be a file
-     object shouldNot be an openBook
-     object should_not be an openBook
-
-     val beHidden = 'beHidden
-     val beEmpty = 'beEmpty
-     object should beHidden
-     object should beEmpty
-
      list should be (Nil)
      list shouldNot be (Nil)
-     list should beNil
-     list shouldNot beNil
 
      // anInstanceOf takes a type param but no value params, used in postfix notation
      object should be anInstanceOf[Something] 
@@ -666,37 +666,10 @@ class MatcherSpec extends Spec {
      else 
        object2 shouldNot beNull
 
-     // string should equalIgnoringCase ("happy")
      string should equal ignoringCase "happy"
-     // string shouldNot equalIgnoringCase ("happy")
      string should equal ignoringCase "happy"
 
-     string should startWith ("something")
-     string shouldNot startWith ("something")
-     string should endWith ("something")
-     string shouldNot endWith ("something")
-
-     // string should startWith prefix "something"
-     // string shouldNot startWith prefix "something"
-     // string should endWith suffix "something"
-     // string shouldNot endWith suffix "something"
-
-     // string should have prefix "something"
-     // string shouldNot have prefix "something"
-     // string should have suffix "something"
-     // string shouldNot have suffix "something"
-
-     // string should start With "something"
-     // string shouldNot start With "something"
-     // string should end With "something"
-     // string shouldNot end With "something"
-
-     // string should start `with` "something"
-     // string shouldNot start `with` "something"
-     // string should end `with` "something"
-     // string shouldNot end `with` "something"
-
-     string should contain substring "bob"
+     string should contain substring "bob" // or if this is hard, could use "include" instead of "contain"
      string shouldNot contain substring "bob"
 
      string should matchRegEx ("""[a-zA-Z_]\w*""")
@@ -718,6 +691,77 @@ class MatcherSpec extends Spec {
        case 1 :: _ :: 3 :: Nil => true
        case _ => false
      }
+
+     // for symmetry, and perhaps some utility, have Not forms of other shoulds:
+     byNameParam shouldNotThrow classOf[IllegalArgumentException]
+     // Can't use from or to on this, it will just grab the 2nd byNameParam
+     // do the first one, grab the 2nd one again and compare it with its
+     // earlier value.
+     byNameParam shouldNotChange byNameParam // can't use from or to on this
+     object shouldNotMatch {
+       case 1 :: _ :: 3 :: Nil => true
+       case _ => false
+     }
+
+     THINGS I WON'T DO
+
+     // I'm not going to do the shouldChange one in this go round, maybe never
+     val name = "Bob"
+     name.toLowerCase shouldChange name from "Bob" to "bob"
+
+     "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException])
+
+     person.happyBirthday shouldChange person.age from 32 to 33
+
+     val buf = new StringBuffer("Hello,")
+     buf.append(" world!") shouldChange buf.length from 6 to 13
+     buf.append(" world!") shouldChange buf.length to 20
+
+     // I think without shouldChange, the code is a bit less obvious:
+     val buf = new StringBuffer("Hello,")
+     buf.length should equal (6)
+     buf.append(" world!")
+     buf.length should equal (13)
+     buf.append(" world!")
+     buf.length should equal (20)
+
+     (Both the code to the left and right of shouldChange could be by name params)
+
+     // End of shouldChange examples
+
+     // I won't do something like aka
+
+     object should be the 'beesKnees // NO
+     object shouldNot be the 'beesKnees // NO
+     object should 'beHidden // NO
+     object shouldNot 'beHidden // NO
+     object should 'beEmpty // NO
+     val beHidden = 'beHidden // NO
+     val beEmpty = 'beEmpty // NO
+     object should beHidden // NO
+
+     string should startWith prefix "something" // NO
+     string shouldNot startWith prefix "something" // NO
+     string should endWith suffix "something" // NO
+     string shouldNot endWith suffix "something" // NO
+
+     string should have prefix "something" // NO
+     string shouldNot have prefix "something" // NO
+     string should have suffix "something" // NO
+     string shouldNot have suffix "something" // NO
+
+     string should start With "something" // NO
+     string shouldNot start With "something" // NO
+     string should end With "something" // NO
+     string shouldNot end With "something" // NO
+
+     string should start `with` "something" // NO
+     string shouldNot start `with` "something" // NO
+     string should end `with` "something" // NO
+     string shouldNot end `with` "something" // NO
+
+     string should equalIgnoringCase ("happy") // NO
+     string shouldNot equalIgnoringCase ("happy") // NO
 
      // Not going to the the satisfy predicate one. Can use other forms.
      object should satisfy predicate { (list: List) => list.filter(_ startsWith "hi").size == 3 }
@@ -741,41 +785,8 @@ class MatcherSpec extends Spec {
      // Can be done more readably like this:
      arg should be > 12
 
-     "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException])
-
-     val name = "Bob"
-     name.toLowerCase shouldChange name from "Bob" to "bob"
-
-     // person.happyBirthday shouldChange 'age of person from 32 to 33 NAH, just use person.age
-     person.happyBirthday shouldChange person.age from 32 to 33
-
-     val buf = new StringBuffer("Hello,")
-     buf.append(" world!") shouldChange buf.length from 6 to 13
-     buf.append(" world!") shouldChange buf.length to 20
-
-     // I think without shouldChange, the code is a bit less obvious:
-     val buf = new StringBuffer("Hello,")
-     buf.length should equal (6)
-     buf.append(" world!")
-     buf.length should equal (13)
-     buf.append(" world!")
-     buf.length should equal (20)
-     // I found myself wanting to say "buf.length should be (20)", so maybe I should enable that too.
-
-     (Both the code to the left and right of shouldChange could be by name params)
-
-     // I won't do something like aka
-
-     // for symmetry, and perhaps some utility, have Not forms of other shoulds:
-     byNameParam shouldNotThrow classOf[IllegalArgumentException]
-     // Can't use from or to on this, it will just grab the 2nd byNameParam
-     // do the first one, grab the 2nd one again and compare it with its
-     // earlier value.
-     byNameParam shouldNotChange byNameParam // can't use from or to on this
-     object shouldNotMatch {
-       case 1 :: _ :: 3 :: Nil => true
-       case _ => false
-     }
+     I CAN'T QUITE FOLLOW WHAT I WAS AFTER, EXCEPT I WANTED IT TO BE EASIER TO MAKE A MATCHER, BUT 
+     I DON'T THINK ANY OF THIS IS WORTH THE WEIGHT
 
      It might be nice to let people say this:
 
