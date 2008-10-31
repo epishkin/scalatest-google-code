@@ -631,6 +631,8 @@ class MatcherSpec extends Spec {
      // Ah, to support this, the should method needs to return T, the left value, not Unit. Then
      // I could chain these. But would that cause problems elsewhere that this isn't Unit? Oh, the one should method
      // that would do this is the one that takes whatever the beSome type is.
+     // It needn't return T. It should return a very special type that already has a whoseValue method, and that method
+     // returns the payload of the option.
      option should beSome[String] whoseValue should startWith ("prefix")
 
      // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
@@ -691,9 +693,6 @@ class MatcherSpec extends Spec {
 
      // for symmetry, and perhaps some utility, have Not forms of other shoulds:
      byNameParam shouldNotThrow classOf[IllegalArgumentException]
-     // Can't use from or to on this, it will just grab the 2nd byNameParam
-     // do the first one, grab the 2nd one again and compare it with its
-     // earlier value.
      object shouldNotMatch {
        case 1 :: _ :: 3 :: Nil => true
        case _ => false
@@ -728,6 +727,9 @@ class MatcherSpec extends Spec {
      (Both the code to the left and right of shouldChange could be by name params)
 
      byNameParam shouldNotChange byNameParam // can't use from or to on this
+     // Can't use from or to on this, it will just grab the 2nd byNameParam
+     // do the first one, grab the 2nd one again and compare it with its
+     // earlier value.
 
      // End of shouldChange examples
 
