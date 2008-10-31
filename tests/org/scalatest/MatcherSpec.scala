@@ -313,6 +313,58 @@ class MatcherSpec extends Spec {
     }
   }
 
+  "The or matcher" -- {
+
+    "should do nothing when both operands are true" - {
+      1 should { equal (1) or equal (2 - 1) }
+    }
+
+    "should throw AssertionError when both operands are false" - {
+      val caught = intercept(classOf[AssertionError]) {
+        1 should (equal (2) or equal (3))
+      }
+      caught.getMessage should equal ("1 did not equal 2, and 1 did not equal 3") // because and short circuits
+    }
+
+    "should do nothing when first operand is true and second operand is false" - {
+      1 should (equal (1) or equal (2))
+    }
+
+    "should do nothing when first operand is false and second operand is true" - {
+      1 should (equal (2) or equal (1))
+    }
+
+    "should not execute the right matcher creation function when the left operand is true" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      // This should succeed, but without applying the matcher returned by mockMatcher
+      1 should { equal (1) or mockMatcher }
+      called should be (false)
+    }
+
+    "should execute the right matcher creation function when the left operand is false" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      1 should { equal (2) or mockMatcher }
+      called should be (true)
+    }
+
+    "should give good failure messages when used with not" - {
+      val caught1 = intercept(classOf[AssertionError]) {
+        1 should (not { equal (1) } or equal (2))
+      }
+      caught1.getMessage should equal ("1 equaled 1, and 1 did not equal 2")
+      val caught2 = intercept(classOf[AssertionError]) {
+        1 should (equal (2) or not { equal (1) })
+      }
+      caught2.getMessage should equal ("1 did not equal 2, and 1 equaled 1")
+      val caught3 = intercept(classOf[AssertionError]) {
+        1 should (not { equal (1) } or not { equal (1) })
+      }
+      caught3.getMessage should equal ("1 equaled 1, and 1 equaled 1")
+    }
+  }
+
   "The andNot matcher" -- {
 
     "should do nothing when left operands is true and right false" - {
@@ -722,7 +774,7 @@ class MatcherSpec extends Spec {
 
      string should { not { have length 7 } and startWith "Hello" } // DONE
 
-     map should { have key 8 andNot equal (Map(8 -> "eight")) }
+     map should { have key 8 andNot equal (Map(8 -> "eight")) } // DONE
 
      // Some of the be's
      beNone, beNil, beNull, beEmpty, beSome[String], beDefined

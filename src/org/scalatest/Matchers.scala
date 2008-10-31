@@ -85,6 +85,27 @@ private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftM
     }
 
   def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
+
+  def or[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+    new Matcher[U] {
+      def apply(left: U) = {
+        val leftMatcherResult = leftMatcher(left)
+        if (leftMatcherResult.matches)
+          MatcherResult(
+            true,
+            leftMatcherResult.negativeFailureMessage,
+            leftMatcherResult.failureMessage
+          )
+        else {
+          val rightMatcherResult = rightMatcher(left)
+          MatcherResult(
+            rightMatcherResult.matches,
+            Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.failureMessage),
+            Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.negativeFailureMessage)
+          )
+        }
+      }
+    }
 }
 
 private[scalatest] trait Matchers extends Assertions {
