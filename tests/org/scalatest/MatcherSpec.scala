@@ -15,6 +15,18 @@ class MatcherSpec extends Spec {
         1 should equal (2)
       }
     }
+
+    "should do nothing when not equal and used with shouldNot" - {
+      1 shouldNot equal (2)
+      val option = Some(1)
+      option shouldNot equal (Some(2)) 
+    }
+
+    "should throw an assertion error when equal but used with shouldNot" - {
+      intercept(classOf[AssertionError]) {
+        1 shouldNot equal (1)
+      }
+    }
   }
 
   "The be matcher" -- {
@@ -156,6 +168,31 @@ class MatcherSpec extends Spec {
         (new NonEmptyMock) shouldNot be ('empty)
       }
     }
+    "for any" -- {
+      "should do nothing when equal" - {
+        1 should be (1)
+        val option = Some(1)
+        option should be (Some(1)) 
+      }
+
+      "should throw an assertion error when not equal" - {
+        intercept(classOf[AssertionError]) {
+          1 should be (2)
+        }
+      }
+
+      "should do nothing when not equal and used with shouldNot" - {
+        1 shouldNot be (2)
+        val option = Some(1)
+        option shouldNot be (Some(2)) 
+      }
+
+      "should throw an assertion error when equal but used with shouldNot" - {
+        intercept(classOf[AssertionError]) {
+          1 shouldNot be (1)
+        }
+      }
+    }
   }
 
   "The not matcher" -- {
@@ -167,7 +204,12 @@ class MatcherSpec extends Spec {
         1 should not { equal (1) }
       }
     }
+    "should work at the beginning of an and expression" - {
+      val string = "Hello, world!"
+      string should { not { have length 7 } and startWith ("Hello") }
+    }
   }
+
   "The shouldNot method" -- {
     "should do nothing when not true" - {
       1 shouldNot equal (2)
@@ -220,21 +262,23 @@ class MatcherSpec extends Spec {
   }
 
   "The and matcher" -- {
-  
+
     "should do nothing when both operands are true" - {
       1 should { equal (1) and equal (2 - 1) }
     }
 
     "should throw AssertionError when first operands is false" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 should (equal (2) and equal (1))
       }
+      caught.getMessage should equal ("1 did not equal 2") // because and short circuits
     }
 
     "should throw AssertionError when second operands is false" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 should (equal (1) and equal (2))
       }
+      caught.getMessage should equal ("1 equaled 1, but 1 did not equal 2")
     }
 
     "should not execute the right matcher creation function when the left operand is false" - {
@@ -252,7 +296,69 @@ class MatcherSpec extends Spec {
       def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
       1 should { equal (1) and mockMatcher }
       called should be (true)
-      // mySet should not { be (empty) }
+    }
+    "should give good failure messages when used with not" - {
+      val caught1 = intercept(classOf[AssertionError]) {
+        1 should (not { equal (1) } and equal (1))
+      }
+      caught1.getMessage should equal ("1 equaled 1") // because and short circuits
+      val caught2 = intercept(classOf[AssertionError]) {
+        1 should (equal (1) and not { equal (1) })
+      }
+      caught2.getMessage should equal ("1 equaled 1, but 1 equaled 1")
+      val caught3 = intercept(classOf[AssertionError]) {
+        1 should (not { equal (2) } and not { equal (1) })
+      }
+      caught3.getMessage should equal ("1 did not equal 2, but 1 equaled 1")
+    }
+  }
+
+  "The andNot matcher" -- {
+
+    "should do nothing when left operands is true and right false" - {
+      1 should { equal (1) andNot equal (2) }
+    }
+
+    "should throw AssertionError when first operands is false" - {
+      val caught = intercept(classOf[AssertionError]) {
+        1 should (equal (2) andNot equal (2))
+      }
+      caught.getMessage should equal ("1 did not equal 2") // because and short circuits
+    }
+
+    "should throw AssertionError when second operands is true" - {
+      val caught = intercept(classOf[AssertionError]) {
+        1 should (equal (1) andNot equal (1))
+      }
+      caught.getMessage should equal ("1 equaled 1, but 1 equaled 1")
+    }
+
+    "should not execute the right matcher creation function when the left operand is false" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      intercept(classOf[AssertionError]) {
+        // This should fail, but without applying the matcher returned by mockMatcher
+        1 should { equal (2) andNot mockMatcher }
+      }
+      called should be (false)
+    }
+
+    "should execute the right matcher creation function when the left operand is true" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(false, "", "") } }
+      1 should { equal (1) andNot mockMatcher }
+      called should be (true)
+    }
+
+    "should give good failure messages when used with not" - {
+      val caught1 = intercept(classOf[AssertionError]) {
+        1 should (not { equal (1) } andNot equal (2))
+      }
+      caught1.getMessage should equal ("1 equaled 1") // because andNot short circuits
+      val caught2 = intercept(classOf[AssertionError]) {
+        1 should (equal (1) andNot { equal (1) })
+      }
+      caught2.getMessage should equal ("1 equaled 1, but 1 equaled 1")
     }
   }
 
@@ -612,7 +718,9 @@ class MatcherSpec extends Spec {
      string should endWith ("something") // DONE
      string shouldNot endWith ("something") // DONE
 
-     buf.length should be (20)
+     buf.length should be (20) // DONE
+
+     string should { not { have length 7 } and startWith "Hello" } // DONE
 
      map should { have key 8 andNot equal (Map(8 -> "eight")) }
 
@@ -624,7 +732,7 @@ class MatcherSpec extends Spec {
      list shouldNot beNil // MAYBE
      list should beNil // MAYBE
 
-     something should beEmpty // NO
+     something should beEmpty // MAYBE
      option should be (None)
      option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
      option should be equalTo Some(1)
@@ -643,7 +751,6 @@ class MatcherSpec extends Spec {
      string should beEmpty
      string shouldNot beEmpty
 
-     string should { not { have length 7 } and startWith "Hello" }
 
      list should be (Nil)
      list shouldNot be (Nil)
