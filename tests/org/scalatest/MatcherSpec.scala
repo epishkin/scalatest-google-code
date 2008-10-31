@@ -567,10 +567,7 @@ class MatcherSpec extends Spec {
 
     /*
      // After should/shouldNot, if an even number of tokens, you need parens on the last thing.
-     // If an odd number of tokens, you can't put parens on the last thing.
-     // Don't need an xor. To be consistent, would want an xorNot, which is very confusing. So
-     // wouldn't do that, and then it would be inconsistent with and and or. It is also not
-     // spoken English, where as and, or, and not are.
+     // If an odd number of tokens, you need not put parens on the last thing, but usually could if you wanted to.
 
      map should have key 8 // DONE
      map shouldNot have key 8 // DONE
@@ -602,7 +599,6 @@ class MatcherSpec extends Spec {
      object shouldNot be ('hidden) // DONE
      val file = 'file // DONE
      val openBook = 'openBook// DONE
-     val beesKnees = 'beesKnees // DONE
      val hidden = 'hidden // DONE
      val empty = 'empty // DONE
      object should be (empty) // DONE
@@ -618,8 +614,6 @@ class MatcherSpec extends Spec {
 
      buf.length should be (20)
 
-     iterable should contain elements (42, 43, 59)
-
      map should { have key 8 andNot equal (Map(8 -> "eight")) }
 
      // Some of the be's
@@ -634,6 +628,9 @@ class MatcherSpec extends Spec {
      option should be (None)
      option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
      option should be equalTo Some(1)
+     // Ah, to support this, the should method needs to return T, the left value, not Unit. Then
+     // I could chain these. But would that cause problems elsewhere that this isn't Unit? Oh, the one should method
+     // that would do this is the one that takes whatever the beSome type is.
      option should beSome[String] whoseValue should startWith ("prefix")
 
      // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
@@ -697,13 +694,16 @@ class MatcherSpec extends Spec {
      // Can't use from or to on this, it will just grab the 2nd byNameParam
      // do the first one, grab the 2nd one again and compare it with its
      // earlier value.
-     byNameParam shouldNotChange byNameParam // can't use from or to on this
      object shouldNotMatch {
        case 1 :: _ :: 3 :: Nil => true
        case _ => false
      }
 
      THINGS I WON'T DO
+
+     // I could add this one later, but don't need it for this release. Not
+     // sure how often this would get used.
+     iterable should contain elements (42, 43, 59)
 
      // I'm not going to do the shouldChange one in this go round, maybe never
      val name = "Bob"
@@ -727,10 +727,17 @@ class MatcherSpec extends Spec {
 
      (Both the code to the left and right of shouldChange could be by name params)
 
+     byNameParam shouldNotChange byNameParam // can't use from or to on this
+
      // End of shouldChange examples
 
      // I won't do something like aka
 
+     // Don't need an xor. To be consistent, would want an xorNot, which is very confusing. So
+     // wouldn't do that, and then it would be inconsistent with and and or. It is also not
+     // spoken English, where as and, or, and not are.
+
+     val beesKnees = 'beesKnees // DONE
      object should be the 'beesKnees // NO
      object shouldNot be the 'beesKnees // NO
      object should 'beHidden // NO
