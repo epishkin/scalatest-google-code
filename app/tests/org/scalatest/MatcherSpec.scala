@@ -51,12 +51,17 @@ class MatcherSpec extends Spec {
       "should do nothing when non-null is compared to not null" - {
         val o = "Helloooooo"
         o should not { be (null) }
+        o shouldNot be (null)
       }
 
       "should throw an assertion error when null compared to not null" - {
         intercept(classOf[AssertionError]) {
           val o: String = null
           o should not { be (null) }
+        }
+        intercept(classOf[AssertionError]) {
+          val o: String = null
+          o shouldNot be (null)
         }
       }
     }
@@ -70,13 +75,15 @@ class MatcherSpec extends Spec {
         nonEmptySet should not { be ('empty) }
       }
 
-      "should be invokable from beA(Symbol) and beAn(Symbol)" - {
-        val emptySet = Set()
-        emptySet should beA ('empty)
-        emptySet should beAn ('empty)
+      "should be invokable from be a Symbol, be an Symbol, and be the Symbol" - {
+        val emptySet = Set() // XXX
+        emptySet should be a 'empty
+        emptySet should be an 'empty
+        emptySet should be the 'empty
         val nonEmptySet = Set(1, 2, 3)
-        nonEmptySet should not { beA ('empty) }
-        nonEmptySet should not { beAn ('empty) }
+        nonEmptySet should not { be a 'empty }
+        nonEmptySet should not { be an 'empty }
+        nonEmptySet should not { be the 'empty }
       }
 
       "should call empty when passed 'empty" - {
@@ -88,6 +95,7 @@ class MatcherSpec extends Spec {
         }
         (new EmptyMock) should be ('empty)
         (new NonEmptyMock) should not { be ('empty) }
+        (new NonEmptyMock) shouldNot be ('empty)
       }
 
       "should throw IllegalArgumentException if no empty or isEmpty method" - {
@@ -105,6 +113,10 @@ class MatcherSpec extends Spec {
           (new NonEmptyMock) should not { be ('empty) }
         }
         ex2.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
+        val ex3 = intercept(classOf[IllegalArgumentException]) {
+          (new NonEmptyMock) shouldNot be ('empty)
+        }
+        ex3.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
       }
 
       "should throw IllegalArgumentException if both an empty and an isEmpty method exist" - {
@@ -126,6 +138,10 @@ class MatcherSpec extends Spec {
           (new NonEmptyMock) should not { be ('empty) }
         }
         ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
+        val ex3 = intercept(classOf[IllegalArgumentException]) {
+          (new NonEmptyMock) shouldNot be ('empty)
+        }
+        ex3.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
       }
 
       "should access an 'empty' val when passed 'empty" - {
@@ -137,6 +153,7 @@ class MatcherSpec extends Spec {
         }
         (new EmptyMock) should be ('empty)
         (new NonEmptyMock) should not { be ('empty) }
+        (new NonEmptyMock) shouldNot be ('empty)
       }
     }
   }
@@ -161,14 +178,44 @@ class MatcherSpec extends Spec {
       }
     }
   }
-  "The endsWith matcher" -- {
+
+  "The endWith matcher" -- {
     "should do nothing when true" - {
       "Hello, world" should endWith ("world")
     }
     "should throw an assertion error when not true" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         "Hello, world" should endWith ("planet")
       }
+      assert(caught.getMessage.indexOf("did not end with") != -1)
+      val caught1 = intercept(classOf[AssertionError]) {
+        "Hello, world" shouldNot endWith ("world")
+      }
+      assert(caught1.getMessage.indexOf("ended with") != -1)
+    }
+    "should work inside an and clause" - {
+      "Hello, world" should { endWith ("world") and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and endWith ("world") }
+    }
+  }
+
+  "The startWith matcher" -- {
+    "should do nothing when true" - {
+      "Hello, world" should startWith ("Hello")
+    }
+    "should throw an assertion error when not true" - {
+      val caught = intercept(classOf[AssertionError]) {
+        "Hello, world" should startWith ("Greetings")
+      }
+      assert(caught.getMessage.indexOf("did not start with") != -1)
+      val caught1 = intercept(classOf[AssertionError]) {
+        "Hello, world" shouldNot startWith ("Hello")
+      }
+      assert(caught1.getMessage.indexOf("started with") != -1)
+    }
+    "should work inside an and clause" - {
+      "Hello, world" should { startWith ("Hello") and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and startWith ("Hello") }
     }
   }
 
@@ -539,15 +586,25 @@ class MatcherSpec extends Spec {
      collection should have size 3 // DONE
      collection shouldNot have size 3 // DONE
 
-     // string should have length 0
-     // string shouldNot have length 0
+     string should have length 0 // DONE
+     string shouldNot have length 0 // DONE
 
-     array should have length 9
-     array shouldNot have length 9
+     array should have length 9 // DONE
+     array shouldNot have length 9 // DONE
 
      iterable should contain elements (42, 43, 59)
 
      map should { have key 8 andNot equal (Map(8 -> "eight")) }
+
+     // Some of the be's
+     beNone, beNil, beNull, beEmpty, beSome[String], beDefined
+
+     option should be_None
+     option should be (None)
+     option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
+     option should equal (Some(1)) 
+     option should be equalTo Some(1)
+     option should beSome[String] whoseValue should startWith ("prefix")
 
      // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
      // is a String, then it checks for length is zero. Otherwise it does the already-written reflection
@@ -580,6 +637,7 @@ class MatcherSpec extends Spec {
      object should be (hidden)
      object should be a file
      object shouldNot be an openBook
+     object should_not be an openBook
 
      val beHidden = 'beHidden
      val beEmpty = 'beEmpty
@@ -653,16 +711,6 @@ class MatcherSpec extends Spec {
 
      floatingPointNumber should be (7.0 plusOrMinus 0.01)
      floatingPointNumber should be (7.0 exactly)
-
-     // Some of the be's
-     beNone, beNil, beNull, beEmpty, beSome[String], beDefined
-
-     option should beNone
-     option should be (None)
-     option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
-     option should equal (Some(1)) 
-     option should be equalTo Some(1)
-     option should beSome[String] whoseValue should startWith ("prefix")
 
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
