@@ -344,7 +344,6 @@ private[scalatest] trait Matchers extends Assertions {
   private[scalatest] class ResultOfBeWord(left: Any, shouldBeTrue: Boolean) {
     def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-    def the[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
 
   private[scalatest] class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
@@ -447,10 +446,9 @@ private[scalatest] trait Matchers extends Assertions {
 
   private[scalatest] class BeWord {
 
-    // These three are used if this shows up in a "x should { be a 'file and ..." type clause
+    // These two are used if this shows up in a "x should { be a 'file and ..." type clause
     def a[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
-    def the[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
 
     def apply(right: Boolean) = 
       new Matcher[Boolean] {
