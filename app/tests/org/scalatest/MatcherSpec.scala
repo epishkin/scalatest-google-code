@@ -323,7 +323,6 @@ class MatcherSpec extends Spec {
     }
   }
 
-/*
   "the beNil matcher" -- {
 
     "should do nothing when an empty list is compared to Nil" - {
@@ -336,7 +335,7 @@ class MatcherSpec extends Spec {
       val caught1 = intercept(classOf[AssertionError]) {
         nonEmptyList should beNil
       }
-      assert(caught1.getMessage === "List(Helloooooo) was not Nil")
+      assert(caught1.getMessage === "List(Helloooooo) was not List()")
     }
 
     "should do nothing when non-null is compared to not null" - {
@@ -361,7 +360,6 @@ class MatcherSpec extends Spec {
       emptyList should { equal (Nil) and beNil } // Nada, and nada is nada
     }
   }
-*/
 
   "The not matcher" -- {
     "should do nothing when not true" - {
@@ -1002,13 +1000,14 @@ class MatcherSpec extends Spec {
 
      option should be (None) // DONE
 
+     list should beNil // DONE
+     list shouldNot beNil // DONE
+     list should beNil // DONE
+
      // Some of the be's
      beNone, beNil, beNull, beEmpty, beSome[String], beDefined
 
      object should beEmpty // MAYBE
-     list should beNil // MAYBE
-     list shouldNot beNil // MAYBE
-     list should beNil // MAYBE
 
      something should beEmpty // MAYBE
      something should beSome(1) // MAYBE I wonder if I can do this
