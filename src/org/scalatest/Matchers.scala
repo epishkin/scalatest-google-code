@@ -655,6 +655,8 @@ private[scalatest] trait Matchers extends Assertions {
 
   def beNull: Matcher[Any] = Helper.equalAndBeAnyMatcher(null, "was", "wasNot")
 
+  def beEmpty: Matcher[AnyRef] = be.apply('empty)
+
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which

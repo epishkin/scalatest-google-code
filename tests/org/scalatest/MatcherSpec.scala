@@ -215,7 +215,7 @@ class MatcherSpec extends Spec {
       }
 
       "should be invokable from be a Symbol, be an Symbol, and be the Symbol" - {
-        val emptySet = Set() // XXX
+        val emptySet = Set()
         emptySet should be a 'empty
         emptySet should be an 'empty
         val nonEmptySet = Set(1, 2, 3)
@@ -320,6 +320,85 @@ class MatcherSpec extends Spec {
         }
         assert(caught.getMessage === "1 was 1")
       }
+    }
+  }
+
+  "the beEmpty matcher" -- {
+    "should call isEmpty" - {
+      val emptySet = Set[Int]()
+      emptySet should beEmpty
+      val nonEmptySet = Set(1, 2, 3)
+      nonEmptySet should not { beEmpty }
+    }
+
+    "should call empty when passed 'empty" - {
+      class EmptyMock {
+        def empty: Boolean = true
+      }
+      class NonEmptyMock {
+        def empty: Boolean = false
+      }
+      (new EmptyMock) should beEmpty
+      (new NonEmptyMock) should not { beEmpty }
+      (new NonEmptyMock) shouldNot beEmpty
+    }
+
+    "should throw IllegalArgumentException if no empty or isEmpty method" - {
+      class EmptyMock {
+        override def toString = "EmptyMock"
+      }
+      class NonEmptyMock {
+        override def toString = "NonEmptyMock"
+      }
+      val ex1 = intercept(classOf[IllegalArgumentException]) {
+        (new EmptyMock) should beEmpty
+      }
+      ex1.getMessage should equal ("EmptyMock has neither an empty or an isEmpty method.")
+      val ex2 = intercept(classOf[IllegalArgumentException]) {
+        (new NonEmptyMock) should not { beEmpty }
+      }
+      ex2.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
+      val ex3 = intercept(classOf[IllegalArgumentException]) {
+        (new NonEmptyMock) shouldNot beEmpty
+      }
+      ex3.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
+    }
+
+    "should throw IllegalArgumentException if both an empty and an isEmpty method exist" - {
+      class EmptyMock {
+        def empty: Boolean = true
+        def isEmpty: Boolean = true
+        override def toString = "EmptyMock"
+      }
+      class NonEmptyMock {
+        def empty: Boolean = true
+        def isEmpty: Boolean = true
+        override def toString = "NonEmptyMock"
+      }
+      val ex1 = intercept(classOf[IllegalArgumentException]) {
+        (new EmptyMock) should beEmpty
+      }
+      ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method.")
+      val ex2 = intercept(classOf[IllegalArgumentException]) {
+        (new NonEmptyMock) should not { beEmpty }
+      }
+      ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
+      val ex3 = intercept(classOf[IllegalArgumentException]) {
+        (new NonEmptyMock) shouldNot beEmpty
+      }
+      ex3.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
+    }
+
+    "should access an 'empty' val when passed 'empty" - {
+      class EmptyMock {
+        val empty: Boolean = true
+      }
+      class NonEmptyMock {
+        val empty: Boolean = false
+      }
+      (new EmptyMock) should beEmpty
+      (new NonEmptyMock) should not { beEmpty }
+      (new NonEmptyMock) shouldNot beEmpty
     }
   }
 
@@ -1039,7 +1118,9 @@ class MatcherSpec extends Spec {
 
      list should beNil // DONE
      list shouldNot beNil // DONE
-     list should beNil // DONE
+
+     object should beNull // DONE
+     object shouldNot beNull // DONE
 
      // Some of the be's
      beNone, beNil, beNull, beEmpty, beSome[String], beDefined
@@ -1070,14 +1151,6 @@ class MatcherSpec extends Spec {
 
      object should be theSameInstanceAs anotherObjectReference
      object shouldNot be theSameInstanceAs anotherObjectReference
-
-     object should beNull
-     object shouldNot beNull
-
-     if (object1 == null)
-       object2 should beNull
-     else 
-       object2 shouldNot beNull
 
      string should equal ignoringCase "happy"
      string should equal ignoringCase "happy"
@@ -1122,6 +1195,12 @@ class MatcherSpec extends Spec {
      // I could add this one later, but don't need it for this release. Not
      // sure how often this would get used.
      iterable should contain elements (42, 43, 59)
+
+     // I won't do something like asNullAs, at least for now. Can just do this:
+     if (object1 == null)
+       object2 should beNull
+     else 
+       object2 shouldNot beNull
 
      // I'm not going to do the shouldChange one in this go round, maybe never
      val name = "Bob"
