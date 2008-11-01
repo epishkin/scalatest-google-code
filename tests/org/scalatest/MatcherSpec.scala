@@ -323,6 +323,43 @@ class MatcherSpec extends Spec {
     }
   }
 
+  "the beNull matcher" -- {
+    "should do nothing when null is compared to null" - {
+      val o: String = null
+      o should beNull
+    }
+
+    "should throw an assertion error when non-null compared to null" - {
+      intercept(classOf[AssertionError]) {
+        val o = "Helloooooo"
+        o should beNull
+      }
+    }
+
+    "should do nothing when non-null is compared to not null" - {
+      val o = "Helloooooo"
+      o should not { beNull }
+      o shouldNot beNull
+    }
+
+    "should throw an assertion error when null compared to not null" - {
+      intercept(classOf[AssertionError]) {
+        val o: String = null
+        o should not { beNull }
+      }
+      intercept(classOf[AssertionError]) {
+        val o: String = null
+        o shouldNot beNull
+      }
+    }
+
+    "should work when used in a logical expression" - {
+      val o: String = null
+      o should { beNull and equal (null) }
+      o should { equal (null) and beNull }
+    }
+  }
+
   "the beNil matcher" -- {
 
     "should do nothing when an empty list is compared to Nil" - {
