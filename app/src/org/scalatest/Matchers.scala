@@ -51,6 +51,33 @@ private[scalatest] object Helper {
           case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
         }
     }
+
+  def equalAndBeAnyMatcher(right: Any, equaledResourceName: String, didNotEqualResourceName: String) = {
+
+      def toStringElseNull(o: Any) = if (o != null) o.toString else "null"
+
+      new Matcher[Any] {
+        def apply(left: Any) =
+          left match {
+            case leftArray: Array[_] => 
+              MatcherResult(
+                leftArray.deepEquals(right),
+                Resources(didNotEqualResourceName, left.toString, right.toString),
+                Resources(equaledResourceName, left.toString, right.toString)
+              )
+            case _ => 
+              MatcherResult(
+                left == right,
+                Resources(didNotEqualResourceName, toStringElseNull(left), toStringElseNull(right)),
+                Resources(equaledResourceName, toStringElseNull(left), toStringElseNull(right))
+/*
+                Resources(didNotEqualResourceName, toStringOrElse(left) if (left != null) left.toString else "null", if (right != null) right.toString else "null"),
+                Resources(equaledResourceName, if (left != null) left.toString else "null", if (right != null) right.toString else "null")
+*/
+              )
+        }
+      }
+  }
 }
 
 private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
@@ -457,9 +484,11 @@ private[scalatest] trait Matchers extends Assertions {
   implicit def shouldifyForString[K, V](o: String): StringShouldalizer = new StringShouldalizer(o)
   implicit def stringToHasLength(s: AnyRef with String): { def length: Int } = new { def length: Int = s.length() }
 
-  def equal[S <: Any](right: S): Matcher[S] =
-    new Matcher[S] {
-      def apply(left: S) =
+  def equal(right: Any): Matcher[Any] =
+    Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
+/*
+    new Matcher[Any] {
+      def apply(left: Any) =
         left match {
           case leftArray: Array[_] => 
             MatcherResult(
@@ -470,14 +499,12 @@ private[scalatest] trait Matchers extends Assertions {
           case _ => 
             MatcherResult(
               left == right,
-              Resources("didNotEqual", left.toString, right.toString),
-              Resources("equaled", left.toString, right.toString)
+              Resources("didNotEqual", if (left != null) left.toString else "null", if (right != null) right.toString else "null"),
+              Resources("equaled", if (left != null) left.toString else "null", if (right != null) right.toString else "null")
             )
       }
     }
-
-  def beA[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-  def beAn[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
+*/
 
   private[scalatest] class BeWord {
 
@@ -495,13 +522,24 @@ private[scalatest] trait Matchers extends Assertions {
           )
       }
 
-    def apply[S <: AnyRef](o: Null) = 
-      new Matcher[S] {
-        def apply(left: S) = {
+    def apply(o: Null) = 
+      new Matcher[AnyRef] {
+        def apply(left: AnyRef) = {
           MatcherResult(
             left == null,
             Resources("wasNotNull", left),
             Resources("wasNull", left)
+          )
+        }
+      }
+
+    def apply(o: None.type) = 
+      new Matcher[Option[_]] {
+        def apply(left: Option[_]) = {
+          MatcherResult(
+            left == None,
+            Resources("wasNotNone", left),
+            Resources("wasNone", left)
           )
         }
       }
@@ -574,19 +612,13 @@ private[scalatest] trait Matchers extends Assertions {
       }
     }
 
-    def apply[S <: Any](right: S): Matcher[S] = equal(right)
+    def apply(right: Nil.type): Matcher[List[_]] = equal(right)
+
+    def apply(right: Any): Matcher[Any] =
+      Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
   }
 
   def not[S <: Any](matcher: Matcher[S]) = Helper.not { matcher }
-/*
-  def not[S <: Any](matcher: Matcher[S]) =
-    new Matcher[S] {
-      def apply(left: S) =
-        matcher(left) match {
-          case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
-        }
-    }
-*/
 
   def endWith[T <: String](right: T) =
     new Matcher[T] {
@@ -619,6 +651,10 @@ private[scalatest] trait Matchers extends Assertions {
     }
   }
 
+/*
+  val beNil: Matcher[List[_]] = be (Nil)
+      // Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
+*/
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which

@@ -48,11 +48,12 @@ class MatcherSpec extends Spec {
       }
     }
 
-    "(for booleans)" -- {
+    "(for null)" -- {
 
       "should do nothing when null is compared to null" - {
         val o: String = null
         o should be (null)
+        o should equal (null)
       }
 
       "should throw an assertion error when non-null compared to null" - {
@@ -77,6 +78,130 @@ class MatcherSpec extends Spec {
           val o: String = null
           o shouldNot be (null)
         }
+      }
+
+      "should work when used in a logical expression" - {
+        val o: String = null
+        o should { be (null) and equal (null) }
+        o should { equal (null) and be (null) }
+      }
+    }
+
+    "(for Nil)" -- {
+
+      "should do nothing when an empty list is compared to Nil" - {
+        val emptyList = List[String]()
+        emptyList should be (Nil)
+        emptyList should equal (Nil)
+      }
+
+      "should throw an assertion error when a non-empty list is compared to Nil" - {
+        val nonEmptyList = List("Helloooooo")
+        val caught1 = intercept(classOf[AssertionError]) {
+          nonEmptyList should be (Nil)
+        }
+        assert(caught1.getMessage === "List(Helloooooo) did not equal List()")
+        val caught2 = intercept(classOf[AssertionError]) {
+          nonEmptyList should equal (Nil)
+        }
+        assert(caught2.getMessage === "List(Helloooooo) did not equal List()")
+      }
+
+      "should do nothing when non-null is compared to not null" - {
+        val nonEmptyList = List("Helloooooo")
+        nonEmptyList should not { be (Nil) }
+        nonEmptyList shouldNot be (Nil)
+        nonEmptyList should not { equal (Nil) }
+        nonEmptyList shouldNot equal (Nil)
+      }
+
+      "should throw an assertion error when null compared to not null" - {
+        val emptyList = List[String]()
+        intercept(classOf[AssertionError]) {
+          emptyList should not { be (Nil) }
+        }
+        intercept(classOf[AssertionError]) {
+          emptyList shouldNot be (Nil)
+        }
+        intercept(classOf[AssertionError]) {
+          emptyList should not { equal (Nil) }
+        }
+        intercept(classOf[AssertionError]) {
+          emptyList shouldNot equal (Nil)
+        }
+      }
+
+      "should work when used in a logical expression" - {
+        val emptyList = List[Int]()
+        emptyList should { be (Nil) and equal (Nil) }
+        emptyList should { equal (Nil) and be (Nil) } // Nada, and nada is nada
+      }
+    }
+
+    "(for None)" -- {
+
+      "should do nothing when a None option is compared to None" - {
+        val option: Option[String] = None
+        option should be (None)
+        option should equal (None)
+      }
+
+      "should throw an assertion error when a Some is compared to None" - {
+        val someString = Some("Helloooooo")
+        val caught1 = intercept(classOf[AssertionError]) {
+          someString should be (None)
+        }
+        assert(caught1.getMessage === "Some(Helloooooo) was not None")
+        val caught2 = intercept(classOf[AssertionError]) {
+          someString should equal (None)
+        }
+        assert(caught2.getMessage === "Some(Helloooooo) did not equal None")
+      }
+
+      "should do nothing when Some is compared to not None" - {
+        val someString = Some("Helloooooo")
+        someString should not { be (None) }
+        someString shouldNot be (None)
+        someString should not { equal (None) }
+        someString shouldNot equal (None)
+      }
+
+      "should throw an assertion error when None compared to not None" - {
+        val none = None
+        intercept(classOf[AssertionError]) {
+          none should not { be (None) }
+        }
+        intercept(classOf[AssertionError]) {
+          none shouldNot be (None)
+        }
+        intercept(classOf[AssertionError]) {
+          none should not { equal (None) }
+        }
+        intercept(classOf[AssertionError]) {
+          none shouldNot equal (None)
+        }
+        val noString: Option[String] = None
+        intercept(classOf[AssertionError]) {
+          noString should not { be (None) }
+        }
+        intercept(classOf[AssertionError]) {
+          noString shouldNot be (None)
+        }
+        intercept(classOf[AssertionError]) {
+          noString should not { equal (None) }
+        }
+        intercept(classOf[AssertionError]) {
+          noString shouldNot equal (None)
+        }
+      }
+
+      "should work when used in a logical expression" - {
+        val none = None
+        none should { be (None) and equal (None) }
+        none should { equal (None) and be (None) }
+        val noString: Option[String] = None
+        noString should { be (None) and equal (None) }
+        noString should { equal (None) and be (None) }
       }
     }
 
@@ -168,7 +293,8 @@ class MatcherSpec extends Spec {
         (new NonEmptyMock) shouldNot be ('empty)
       }
     }
-    "for any" -- {
+
+    "(for Any)" -- {
       "should do nothing when equal" - {
         1 should be (1)
         val option = Some(1)
@@ -176,9 +302,10 @@ class MatcherSpec extends Spec {
       }
 
       "should throw an assertion error when not equal" - {
-        intercept(classOf[AssertionError]) {
+        val caught = intercept(classOf[AssertionError]) {
           1 should be (2)
         }
+        assert(caught.getMessage === "1 was not 2")
       }
 
       "should do nothing when not equal and used with shouldNot" - {
@@ -188,12 +315,53 @@ class MatcherSpec extends Spec {
       }
 
       "should throw an assertion error when equal but used with shouldNot" - {
-        intercept(classOf[AssertionError]) {
+        val caught = intercept(classOf[AssertionError]) {
           1 shouldNot be (1)
         }
+        assert(caught.getMessage === "1 was 1")
       }
     }
   }
+
+/*
+  "the beNil matcher" -- {
+
+    "should do nothing when an empty list is compared to Nil" - {
+      val emptyList = List[String]()
+      emptyList should beNil
+    }
+
+    "should throw an assertion error when a non-empty list is compared to Nil" - {
+      val nonEmptyList = List("Helloooooo")
+      val caught1 = intercept(classOf[AssertionError]) {
+        nonEmptyList should beNil
+      }
+      assert(caught1.getMessage === "List(Helloooooo) was not Nil")
+    }
+
+    "should do nothing when non-null is compared to not null" - {
+      val nonEmptyList = List("Helloooooo")
+      nonEmptyList should not { beNil }
+      nonEmptyList shouldNot beNil
+    }
+
+    "should throw an assertion error when null compared to not null" - {
+      val emptyList = List[String]()
+      intercept(classOf[AssertionError]) {
+        emptyList should not { beNil }
+      }
+      intercept(classOf[AssertionError]) {
+        emptyList shouldNot beNil
+      }
+    }
+
+    "should work when used in a logical expression" - {
+      val emptyList = List[Int]()
+      emptyList should { beNil and equal (Nil) }
+      emptyList should { equal (Nil) and beNil } // Nada, and nada is nada
+    }
+  }
+*/
 
   "The not matcher" -- {
     "should do nothing when not true" - {
@@ -824,6 +992,16 @@ class MatcherSpec extends Spec {
 
      map should { have key 8 andNot equal (Map(8 -> "eight")) } // DONE
 
+     list should be (Nil) // DONE
+     list shouldNot be (Nil) // DONE
+     list should equal (Nil) // DONE
+     list shouldNot equal (Nil) // DONE
+
+     object should be (null) // DONE
+     object shouldNot be (null) // DONE
+
+     option should be (None) // DONE
+
      // Some of the be's
      beNone, beNil, beNull, beEmpty, beSome[String], beDefined
 
@@ -833,9 +1011,8 @@ class MatcherSpec extends Spec {
      list should beNil // MAYBE
 
      something should beEmpty // MAYBE
-     option should be (None)
+     something should beSome(1) // MAYBE I wonder if I can do this
      option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
-     option should be equalTo Some(1)
      // Ah, to support this, the should method needs to return T, the left value, not Unit. Then
      // I could chain these. But would that cause problems elsewhere that this isn't Unit? Oh, the one should method
      // that would do this is the one that takes whatever the beSome type is.
@@ -851,10 +1028,6 @@ class MatcherSpec extends Spec {
      string should beEmpty
      string shouldNot beEmpty
 
-
-     list should be (Nil)
-     list shouldNot be (Nil)
-
      // anInstanceOf takes a type param but no value params, used in postfix notation
      object should be anInstanceOf[Something] 
      object shouldNot be anInstanceOf[Something] 
@@ -862,10 +1035,8 @@ class MatcherSpec extends Spec {
      object should be theSameInstanceAs anotherObjectReference
      object shouldNot be theSameInstanceAs anotherObjectReference
 
-     object should be (null)
      object should beNull
      object shouldNot beNull
-     object shouldNot be (null)
 
      if (object1 == null)
        object2 should beNull
@@ -891,6 +1062,8 @@ class MatcherSpec extends Spec {
      floatingPointNumber should be (7.0 plusOrMinus 0.01)
      floatingPointNumber should be (7.0 exactly)
 
+     "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException])
+
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
      object shouldMatch {
@@ -907,6 +1080,9 @@ class MatcherSpec extends Spec {
 
      THINGS I WON'T DO
 
+     // I could add this later, but for now, it's a bit wordy. I'd just let them say equal "(Some(1))" or "be (Some(1))"
+     option should be equalTo Some(1)
+
      // I could add this one later, but don't need it for this release. Not
      // sure how often this would get used.
      iterable should contain elements (42, 43, 59)
@@ -914,8 +1090,6 @@ class MatcherSpec extends Spec {
      // I'm not going to do the shouldChange one in this go round, maybe never
      val name = "Bob"
      name.toLowerCase shouldChange name from "Bob" to "bob"
-
-     "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException])
 
      person.happyBirthday shouldChange person.age from 32 to 33
 
@@ -946,7 +1120,7 @@ class MatcherSpec extends Spec {
      // wouldn't do that, and then it would be inconsistent with and and or. It is also not
      // spoken English, where as and, or, and not are.
 
-     val beesKnees = 'beesKnees // DONE
+     val beesKnees = 'beesKnees // NO
      object should be the 'beesKnees // NO
      object shouldNot be the 'beesKnees // NO
      object should 'beHidden // NO
