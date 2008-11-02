@@ -561,28 +561,6 @@ class MatcherSpec extends Spec {
       }
   }
 
-/*
-  "The beSome matcher" -- {
-
-    "should do nothing when used with a Some" - {
-      val someString: Some[String] = Some("hi")
-      someString should beSome[String]
-      val optionString: Option[String] = Some("hi")
-      optionString should beSome[String]
-    }
-
-    "should throw AssertionError when used with a None" - {
-      val none: None.type = None
-      intercept(classOf[AssertionError]) {
-        none should beSome[String]
-      }
-      val option: Option[Int] = None
-      intercept(classOf[AssertionError]) {
-        option should beSome[Int]
-      }
-    }
-  }
-*/
   "The beDefined matcher" -- {
 
     "should do nothing when used with a Some" - {
@@ -671,6 +649,28 @@ class MatcherSpec extends Spec {
       (new DefinedMock) should beDefined
       (new NonDefinedMock) should not { beDefined }
       (new NonDefinedMock) shouldNot beDefined
+    }
+  }
+
+  "The beSome matcher" -- {
+    "should do nothing if defined and equal" - {
+      val option: Option[Int] = Some(1)
+      option should beSome(1)
+      val someString: Some[String] = Some("hi")
+      someString should beSome("hi")
+      val optionString: Option[String] = Some("hi")
+      optionString should beSome("hi")
+    }
+
+    "should throw AssertionError when used with a None" - {
+      val none: None.type = None
+      intercept(classOf[AssertionError]) {
+        none should beSome("hi")
+      }
+      val option: Option[Int] = None
+      intercept(classOf[AssertionError]) {
+        option should beSome(3)
+      }
     }
   }
 
@@ -1322,7 +1322,7 @@ class MatcherSpec extends Spec {
      object shouldNot beNull // DONE
 
      option should beNone // DONE
-     option should beASome // DONE
+     option should beDefined // DONE
 
      // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
      // is a String, then it checks for length is zero. Otherwise it does the already-written reflection
@@ -1338,13 +1338,6 @@ class MatcherSpec extends Spec {
      beSome[String]
 
      something should beSome(1) // MAYBE I wonder if I can do this
-     option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
-     // Ah, to support this, the should method needs to return T, the left value, not Unit. Then
-     // I could chain these. But would that cause problems elsewhere that this isn't Unit? Oh, the one should method
-     // that would do this is the one that takes whatever the beSome type is.
-     // It needn't return T. It should return a very special type that already has a whoseValue method, and that method
-     // returns the payload of the option.
-     option should beSome[String] whoseValue should startWith ("prefix")
 
      // anInstanceOf takes a type param but no value params, used in postfix notation
      object should be anInstanceOf[Something] 
@@ -1389,6 +1382,22 @@ class MatcherSpec extends Spec {
      }
 
      THINGS I WON'T DO
+
+     // For not I won't do this:
+
+     // Ah, to support this, the should method needs to return T, the left value, not Unit. Then
+     // I could chain these. But would that cause problems elsewhere that this isn't Unit? Oh, the one should method
+     // that would do this is the one that takes whatever the beSome type is.
+     // It needn't return T. It should return a very special type that already has a whoseValue method, and that method
+     // returns the payload of the option.
+     option should beSome[String] whoseValue should startWith ("prefix")
+
+     // Because this is about as good:
+     option should beDefined
+     option.get should startWith ("prefix")
+
+     // And since this is a test, which should fail if the thing isn't defined, they can just do this:
+     option.get should startWith ("prefix")
 
      // I could add this later, but for now, it's a bit wordy. I'd just let them say equal "(Some(1))" or "be (Some(1))"
      option should be equalTo Some(1)
