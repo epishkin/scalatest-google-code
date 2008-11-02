@@ -200,6 +200,8 @@ private[scalatest] trait Matchers extends Assertions {
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord = new ResultOfBeWord(leftOperand, true)
+    def shouldEqual(rightOperand: Any) { assert(leftOperand === rightOperand) }
+    def shouldNotEqual(rightOperand: Any) { assert(leftOperand !== rightOperand) }
   }
   
   private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
@@ -546,67 +548,80 @@ private[scalatest] trait Matchers extends Assertions {
   
     def apply[S <: AnyRef](right: Symbol): Matcher[S] = {
   
+      def matcherUsingReflection(left: S): MatcherResult = {
+
+        // If 'empty passed, rightNoTick would be "empty"
+        val rightNoTick = right.toString.substring(1)
+
+        // methodNameToInvoke would also be "empty"
+        val methodNameToInvoke = rightNoTick
+
+        // methodNameToInvokeWithIs would be "isEmpty"
+        val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+
+        val firstChar = rightNoTick(0).toLowerCase
+        val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+          firstChar == 'o' || firstChar == 'u'
+
+        def isMethodToInvoke(m: Method) = {
+
+          val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+          val simpleName = m.getName
+          val paramTypes = m.getParameterTypes
+          val hasNoParams = paramTypes.length == 0
+          val resultType = m.getReturnType
+
+          isInstanceMethod && hasNoParams &&
+          (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
+          resultType == classOf[Boolean]
+        }
+
+        // Store in an array, because may have both isEmpty and empty, in which case I
+        // will throw an exception.
+        val methodArray =
+          for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
+            yield m
+        
+        methodArray.length match {
+          case 0 =>
+            throw new IllegalArgumentException(
+              Resources(
+                if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
+                left,
+                methodNameToInvoke,
+                methodNameToInvokeWithIs
+              )
+            )
+          case 1 =>
+            val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
+            MatcherResult(
+              result,
+              Resources("wasNot", left.toString, rightNoTick.toString),
+              Resources("was", left.toString, rightNoTick.toString)
+            )
+          case _ => // Should only ever be 2, but just in case
+            throw new IllegalArgumentException(
+              Resources(
+                if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
+                left,
+                methodNameToInvoke,
+                methodNameToInvokeWithIs
+              )
+            )
+        }
+      }
+
       new Matcher[S] {
         def apply(left: S) = {
   
-          // If 'empty passed, rightNoTick would be "empty"
-          val rightNoTick = right.toString.substring(1)
-  
-          // methodNameToInvoke would also be "empty"
-          val methodNameToInvoke = rightNoTick
-  
-          // methodNameToInvokeWithIs would be "isEmpty"
-          val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
-  
-          val firstChar = rightNoTick(0).toLowerCase
-          val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
-            firstChar == 'o' || firstChar == 'u'
-  
-          def isMethodToInvoke(m: Method) = {
-  
-            val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
-            val simpleName = m.getName
-            val paramTypes = m.getParameterTypes
-            val hasNoParams = paramTypes.length == 0
-            val resultType = m.getReturnType
-  
-            isInstanceMethod && hasNoParams &&
-            (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
-            resultType == classOf[Boolean]
-          }
-  
-          // Store in an array, because may have both isEmpty and empty, in which case I
-          // will throw an exception.
-          val methodArray =
-            for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
-              yield m
-          
-          methodArray.length match {
-            case 0 =>
-              throw new IllegalArgumentException(
-                Resources(
-                  if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
-                  left,
-                  methodNameToInvoke,
-                  methodNameToInvokeWithIs
-                )
-              )
-            case 1 =>
-              val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
+          left match {
+            case leftString: String => 
               MatcherResult(
-                result,
-                Resources("wasNot", left.toString, rightNoTick.toString),
-                Resources("was", left.toString, rightNoTick.toString)
+                leftString.length == 0,
+                Resources("wasNotEmpty", left.toString),
+                Resources("wasEmpty", left.toString)
               )
-            case _ => // Should only ever be 2, but just in case
-              throw new IllegalArgumentException(
-                Resources(
-                  if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
-                  left,
-                  methodNameToInvoke,
-                  methodNameToInvokeWithIs
-                )
-              )
+            case _ => matcherUsingReflection(left)
           }
         }
       }
@@ -656,6 +671,19 @@ private[scalatest] trait Matchers extends Assertions {
   def beNull: Matcher[Any] = Helper.equalAndBeAnyMatcher(null, "was", "wasNot")
 
   def beEmpty: Matcher[AnyRef] = be.apply('empty)
+
+  def beNone: Matcher[Option[_]] = be.apply(None)
+
+  def beSome[T]: Matcher[Option[T]] =
+      new Matcher[Option[T]] {
+        def apply(left: Option[T]) = {
+          MatcherResult(
+            left.isDefined,
+            Resources("wasNotSome", left),
+            Resources("wasSome", left)
+          )
+        }
+      }
 
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
