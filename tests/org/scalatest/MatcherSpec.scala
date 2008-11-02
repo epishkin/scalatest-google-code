@@ -561,6 +561,7 @@ class MatcherSpec extends Spec {
       }
   }
 
+/*
   "The beSome matcher" -- {
 
     "should do nothing when used with a Some" - {
@@ -578,6 +579,27 @@ class MatcherSpec extends Spec {
       val option: Option[Int] = None
       intercept(classOf[AssertionError]) {
         option should beSome[Int]
+      }
+    }
+  }
+*/
+  "The beASome matcher" -- {
+
+    "should do nothing when used with a Some" - {
+      val someString: Some[String] = Some("hi")
+      someString should beASome
+      val optionString: Option[String] = Some("hi")
+      optionString should beASome
+    }
+
+    "should throw AssertionError when used with a None" - {
+      val none: None.type = None
+      intercept(classOf[AssertionError]) {
+        none should beASome
+      }
+      val option: Option[Int] = None
+      intercept(classOf[AssertionError]) {
+        option should beASome
       }
     }
   }
