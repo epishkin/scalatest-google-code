@@ -674,16 +674,8 @@ private[scalatest] trait Matchers extends Assertions {
 
   def beNone: Matcher[Option[_]] = be.apply(None)
 
-  def beASome: Matcher[Option[Any]] =
-      new Matcher[Option[Any]] {
-        def apply(left: Option[Any]) = {
-          MatcherResult(
-            left.isDefined,
-            Resources("wasNotSome", left),
-            Resources("wasSome", left)
-          )
-        }
-      }
+  def beDefined: Matcher[AnyRef] = be.apply('defined)
+
 /*
   def beSome[S]: Matcher[Option[S]] forSome { type S } =
       new Matcher[Option[S]] {
