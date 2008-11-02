@@ -583,24 +583,94 @@ class MatcherSpec extends Spec {
     }
   }
 */
-  "The beASome matcher" -- {
+  "The beDefined matcher" -- {
 
     "should do nothing when used with a Some" - {
       val someString: Some[String] = Some("hi")
-      someString should beASome
+      someString should beDefined
       val optionString: Option[String] = Some("hi")
-      optionString should beASome
+      optionString should beDefined
     }
 
     "should throw AssertionError when used with a None" - {
       val none: None.type = None
       intercept(classOf[AssertionError]) {
-        none should beASome
+        none should beDefined
       }
       val option: Option[Int] = None
       intercept(classOf[AssertionError]) {
-        option should beASome
+        option should beDefined
       }
+    }
+
+    "should call defined" - {
+      class DefinedMock {
+        def defined: Boolean = true
+      }
+      class NonDefinedMock {
+        def defined: Boolean = false
+      }
+      (new DefinedMock) should beDefined
+      (new NonDefinedMock) should not { beDefined }
+      (new NonDefinedMock) shouldNot beDefined
+    }
+
+    "should throw IllegalArgumentException if no defined or isDefined method" - {
+      class DefinedMock {
+        override def toString = "DefinedMock"
+      }
+      class NonDefinedMock {
+        override def toString = "NonDefinedMock"
+      }
+      val ex1 = intercept(classOf[IllegalArgumentException]) {
+        (new DefinedMock) should beDefined
+      }
+      ex1.getMessage should equal ("DefinedMock has neither a defined or an isDefined method.")
+      val ex2 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) should not { beDefined }
+      }
+      ex2.getMessage should equal ("NonDefinedMock has neither a defined or an isDefined method.")
+      val ex3 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) shouldNot beDefined
+      }
+      ex3.getMessage should equal ("NonDefinedMock has neither a defined or an isDefined method.")
+    }
+
+    "should throw IllegalArgumentException if both a defined and an isDefined method exist" - {
+      class DefinedMock {
+        def defined: Boolean = true
+        def isDefined: Boolean = true
+        override def toString = "DefinedMock"
+      }
+      class NonDefinedMock {
+        def defined: Boolean = true
+        def isDefined: Boolean = true
+        override def toString = "NonDefinedMock"
+      }
+      val ex1 = intercept(classOf[IllegalArgumentException]) {
+        (new DefinedMock) should beDefined
+      }
+      ex1.getMessage should equal ("DefinedMock has both a defined and an isDefined method.")
+      val ex2 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) should not { beDefined }
+      }
+      ex2.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method.")
+      val ex3 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) shouldNot beDefined
+      }
+      ex3.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method.")
+    }
+
+    "should access an 'defined' val" - {
+      class DefinedMock {
+        val defined: Boolean = true
+      }
+      class NonDefinedMock {
+        val defined: Boolean = false
+      }
+      (new DefinedMock) should beDefined
+      (new NonDefinedMock) should not { beDefined }
+      (new NonDefinedMock) shouldNot beDefined
     }
   }
 
@@ -1252,6 +1322,7 @@ class MatcherSpec extends Spec {
      object shouldNot beNull // DONE
 
      option should beNone // DONE
+     option should beASome // DONE
 
      // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
      // is a String, then it checks for length is zero. Otherwise it does the already-written reflection
@@ -1264,7 +1335,7 @@ class MatcherSpec extends Spec {
      something should beEmpty // DONE
 
      // Some of the be's
-     beSome[String], beDefined
+     beSome[String]
 
      something should beSome(1) // MAYBE I wonder if I can do this
      option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
