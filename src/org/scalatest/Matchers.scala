@@ -676,18 +676,23 @@ private[scalatest] trait Matchers extends Assertions {
 
   def beDefined: Matcher[AnyRef] = be.apply('defined)
 
-/*
-  def beSome[S]: Matcher[Option[S]] forSome { type S } =
+  def beSome[S](payload: S): Matcher[Option[S]] =
       new Matcher[Option[S]] {
         def apply(left: Option[S]) = {
-          MatcherResult(
-            left.isDefined,
-            Resources("wasNotSome", left),
-            Resources("wasSome", left)
-          )
+          if (left.isEmpty) 
+            MatcherResult(
+              false,
+              Resources("wasNone", left),
+              Resources("wasSome", left)
+            )
+          else
+            MatcherResult(
+              left.get == payload,
+              Resources("wasSomeWrongValue", left, left.get.toString),
+              Resources("wasSomeRightValue", left, left.get.toString)
+            )
         }
       }
-*/
 
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
