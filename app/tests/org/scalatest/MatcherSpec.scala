@@ -1,6 +1,6 @@
 package org.scalatest
 
-class MatcherSpec extends Spec {
+class MatcherSpec extends Spec with Matchers {
 
   "The equal matcher" -- {
 
@@ -674,6 +674,44 @@ class MatcherSpec extends Spec {
     }
   }
 
+  "The beTrue matcher" -- {
+    val trueBoolean: Boolean = true
+    val falseBoolean: Boolean = false
+    "should do nothing if true" - {
+      trueBoolean should beTrue
+      falseBoolean shouldNot beTrue
+    }
+    "should throw AssertionError if false" - {
+      val caught1 = intercept(classOf[AssertionError]) {
+        falseBoolean should beTrue
+      }
+      caught1.getMessage shouldEqual "the boolean expression was not true"
+      val caught2 = intercept(classOf[AssertionError]) {
+        trueBoolean shouldNot beTrue
+      }
+      caught2.getMessage shouldEqual "the boolean expression was true"
+    }
+  }
+
+  "The beFalse matcher" -- {
+    val trueBoolean: Boolean = true
+    val falseBoolean: Boolean = false
+    "should do nothing if false" - {
+      falseBoolean should beFalse
+      trueBoolean shouldNot beFalse
+    }
+    "should throw AssertionError if true" - {
+      val caught1 = intercept(classOf[AssertionError]) {
+        trueBoolean should beFalse
+      }
+      caught1.getMessage shouldEqual "the boolean expression was not false"
+      val caught2 = intercept(classOf[AssertionError]) {
+        falseBoolean shouldNot beFalse
+      }
+      caught2.getMessage shouldEqual "the boolean expression was false"
+    }
+  }
+
   "The not matcher" -- {
     "should do nothing when not true" - {
       1 should not { equal (2) }
@@ -1248,6 +1286,53 @@ class MatcherSpec extends Spec {
       assert(caught2.getMessage.indexOf(expectedSubstring) != -1)
     }
   }
+
+  "the be anInstanceOf syntax" -- {
+    "should do nothing if object is an instance of the specified type" - {
+      val stringObject = "howdy"
+      stringObject should be anInstanceOf classOf[String]
+      val anyObject1: Any = 1
+      anyObject1 should be anInstanceOf classOf[Integer]
+      anyObject1 shouldNot be anInstanceOf classOf[Map[_, _]]
+      anyObject1 shouldNot be anInstanceOf classOf[String]
+      anyObject1 shouldNot be anInstanceOf classOf[Array[_]]
+      val anyObject2: Any = "Howdy"
+      anyObject2 should be anInstanceOf classOf[String]
+      anyObject2 shouldNot be anInstanceOf classOf[Set[_]]
+      anyObject2 shouldNot be anInstanceOf classOf[Array[_]]
+/*
+      val array: Any = Array("Howdy")
+      array should be anInstanceOf classOf[Array[_]]
+      array should be anInstanceOf classOf[Array[String]]
+*/
+    }
+    "should throw AssertionError if object is not an instance of the specified type" - {
+      val anyObject1: Any = "howdy"
+      val caught1 = intercept(classOf[AssertionError]) {
+        anyObject1 shouldNot be anInstanceOf classOf[String]
+      }
+      val caught2 = intercept(classOf[AssertionError]) {
+        anyObject1 should be anInstanceOf classOf[Map[_, _]]
+      }
+      val caught3 = intercept(classOf[AssertionError]) {
+        anyObject1 should be anInstanceOf classOf[java.util.Date]
+      }
+      val caught4 = intercept(classOf[AssertionError]) {
+        anyObject1 should be anInstanceOf classOf[Array[_]]
+      }
+
+/*
+      val array: Any = Array("Howdy")
+      val caught5 = intercept(classOf[AssertionError]) {
+        array shouldNot be anInstanceOf classOf[Array[String]]
+      }
+      val caught6 = intercept(classOf[AssertionError]) {
+        array shouldNot be anInstanceOf classOf[Array[_]]
+      }
+*/
+      assert(true)
+    }
+  }
 }
 
     /*
@@ -1336,8 +1421,8 @@ class MatcherSpec extends Spec {
 
      option should beSome("hi") // DONE
 
-     boolean should beFalse
-     boolean should beTrue
+     boolean should beTrue // DONE
+     boolean should beFalse // DONE
 
      // anInstanceOf takes a type param but no value params, used in postfix notation
      object should be anInstanceOf[Something] 

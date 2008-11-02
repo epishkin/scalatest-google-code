@@ -200,12 +200,13 @@ private[scalatest] trait Matchers extends Assertions {
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord = new ResultOfBeWord(leftOperand, true)
+    def shouldNot(beWord: BeWord): ResultOfBeWord = new ResultOfBeWord(leftOperand, false)
     def shouldEqual(rightOperand: Any) { assert(leftOperand === rightOperand) }
     def shouldNotEqual(rightOperand: Any) { assert(leftOperand !== rightOperand) }
   }
-  
+
   private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
-  
+
   private[scalatest] class StringShouldalizer(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
@@ -405,9 +406,25 @@ private[scalatest] trait Matchers extends Assertions {
         )
   }
   
+  // New Malaysia 48 bowery
   private[scalatest] class ResultOfBeWord(left: Any, shouldBeTrue: Boolean) {
     def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
+    def anInstanceOf[T <: AnyRef](clazz: Class[T]) { 
+      left match {
+      case leftRef: AnyRef =>
+        if (clazz.isAssignableFrom(leftRef.getClass) != shouldBeTrue) {
+          throw new AssertionError(
+            Resources(
+              if (shouldBeTrue) "wasNotAnInstanceOf" else "wasAnInstanceOf",
+              leftRef.toString,
+              "the specified type"
+            )
+          )
+        }
+      case _: AnyVal => throw new AssertionError("NOT SUPPORTED YET")
+      }
+    }
   }
 
   private[scalatest] class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
@@ -513,6 +530,16 @@ private[scalatest] trait Matchers extends Assertions {
     // These two are used if this shows up in a "x should { be a 'file and ..." type clause
     def a[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
+
+    def anInstanceOf[T <: AnyRef](clazz: Class[T]): Matcher[AnyRef] = 
+      new Matcher[AnyRef] {
+        def apply(left: AnyRef) =
+          MatcherResult(
+            clazz.isAssignableFrom(left.getClass),
+            Resources("wasNotAnInstanceOf", left.toString, "the specified type"),
+            Resources("wasAnInstanceOf", left.toString, "the specified type")
+          )
+      }
 
     def apply(right: Boolean) = 
       new Matcher[Boolean] {
@@ -675,6 +702,26 @@ private[scalatest] trait Matchers extends Assertions {
   def beNone: Matcher[Option[_]] = be.apply(None)
 
   def beDefined: Matcher[AnyRef] = be.apply('defined)
+
+  def beTrue: Matcher[Boolean] =
+    new Matcher[Boolean] {
+      def apply(left: Boolean) =
+        MatcherResult(
+          left,
+          Resources("booleanExpressionWasNot", "true"),
+          Resources("booleanExpressionWas", "true")
+        )
+    }
+
+  def beFalse: Matcher[Boolean] =
+    new Matcher[Boolean] {
+      def apply(left: Boolean) =
+        MatcherResult(
+          !left,
+          Resources("booleanExpressionWasNot", "false"),
+          Resources("booleanExpressionWas", "false")
+        )
+    }
 
   def beSome[S](payload: S): Matcher[Option[S]] =
       new Matcher[Option[S]] {
