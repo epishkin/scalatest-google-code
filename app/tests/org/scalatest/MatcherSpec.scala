@@ -29,6 +29,33 @@ class MatcherSpec extends Spec {
     }
   }
 
+  "The shouldEqual method" -- {
+
+    "should do nothing when equal" - {
+      1 shouldEqual 1
+      val option = Some(1)
+      option shouldEqual Some(1)
+    }
+
+    "should throw an assertion error when not equal" - {
+      intercept(classOf[AssertionError]) {
+        1 shouldEqual 2
+      }
+    }
+
+    "should do nothing when not equal and used with shouldNot" - {
+      1 shouldNotEqual 2
+      val option = Some(1)
+      option shouldNotEqual Some(2)
+    }
+
+    "should throw an assertion error when equal but used with shouldNot" - {
+      intercept(classOf[AssertionError]) {
+        1 shouldNotEqual 1
+      }
+    }
+  }
+
   "The be matcher" -- {
 
     "(for booleans)" -- {
@@ -324,6 +351,7 @@ class MatcherSpec extends Spec {
   }
 
   "the beEmpty matcher" -- {
+
     "should call isEmpty" - {
       val emptySet = Set[Int]()
       emptySet should beEmpty
@@ -400,6 +428,14 @@ class MatcherSpec extends Spec {
       (new NonEmptyMock) should not { beEmpty }
       (new NonEmptyMock) shouldNot beEmpty
     }
+
+    "should look for a length of 0 when called on a string" - {
+      "" should beEmpty
+      val caught = intercept(classOf[AssertionError]) {
+        "hi" should beEmpty
+      }
+      caught.getMessage shouldEqual "hi was not empty"
+    }
   }
 
   "the beNull matcher" -- {
@@ -474,6 +510,75 @@ class MatcherSpec extends Spec {
       val emptyList = List[Int]()
       emptyList should { beNil and equal (Nil) }
       emptyList should { equal (Nil) and beNil } // Nada, and nada is nada
+    }
+  }
+
+  "The beNone matcher" -- {
+
+      "should do nothing when a None option is compared to None" - {
+        val option: Option[String] = None
+        option should beNone
+      }
+
+      "should throw an assertion error when a Some is compared to None" - {
+        val someString = Some("Helloooooo")
+        val caught1 = intercept(classOf[AssertionError]) {
+          someString should beNone
+        }
+        assert(caught1.getMessage === "Some(Helloooooo) was not None")
+      }
+
+      "should do nothing when Some is compared to not None" - {
+        val someString = Some("Helloooooo")
+        someString should not { beNone }
+        someString shouldNot beNone
+      }
+
+      "should throw an assertion error when None compared to not None" - {
+        val none = None
+        intercept(classOf[AssertionError]) {
+          none should not { beNone }
+        }
+        intercept(classOf[AssertionError]) {
+          none shouldNot beNone
+        }
+        val noString: Option[String] = None
+        intercept(classOf[AssertionError]) {
+          noString should not { beNone }
+        }
+        intercept(classOf[AssertionError]) {
+          noString shouldNot beNone
+        }
+      }
+
+      "should work when used in a logical expression" - {
+        val none = None
+        none should { beNone and equal (None) }
+        none should { equal (None) and beNone }
+        val noString: Option[String] = None
+        noString should { beNone and equal (None) }
+        noString should { equal (None) and beNone }
+      }
+  }
+
+  "The beSome matcher" -- {
+
+    "should do nothing when used with a Some" - {
+      val someString: Some[String] = Some("hi")
+      someString should beSome[String]
+      val optionString: Option[String] = Some("hi")
+      optionString should beSome[String]
+    }
+
+    "should throw AssertionError when used with a None" - {
+      val none: None.type = None
+      intercept(classOf[AssertionError]) {
+        none should beSome[String]
+      }
+      val option: Option[Int] = None
+      intercept(classOf[AssertionError]) {
+        option should beSome[Int]
+      }
     }
   }
 
@@ -1078,6 +1183,8 @@ class MatcherSpec extends Spec {
      array shouldNot have length 9 // DONE
 
      option should equal (Some(1)) // DONE
+     option shouldEqual Some(1) // DONE
+     option shouldNotEqual Some(1) // DONE
 
      object should be a 'file // DONE
      object shouldNot be a 'file // DONE
@@ -1122,12 +1229,21 @@ class MatcherSpec extends Spec {
      object should beNull // DONE
      object shouldNot beNull // DONE
 
+     option should beNone // DONE
+
+     // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
+     // is a String, then it checks for length is zero. Otherwise it does the already-written reflection
+     // stuff to look for empty and isEmpty.
+     iterable should beEmpty // DONE
+     iterable shouldNot beEmpty // DONE
+     string should beEmpty // DONE
+     string shouldNot beEmpty // DONE
+     object should beEmpty // DONE
+     something should beEmpty // DONE
+
      // Some of the be's
-     beNone, beNil, beNull, beEmpty, beSome[String], beDefined
+     beSome[String], beDefined
 
-     object should beEmpty // MAYBE
-
-     something should beEmpty // MAYBE
      something should beSome(1) // MAYBE I wonder if I can do this
      option should beDefined // I may not do this one, because they can say beSome[X], which I think is clearer. Though, in the beDefined case, you need not say the type.
      // Ah, to support this, the should method needs to return T, the left value, not Unit. Then
@@ -1136,14 +1252,6 @@ class MatcherSpec extends Spec {
      // It needn't return T. It should return a very special type that already has a whoseValue method, and that method
      // returns the payload of the option.
      option should beSome[String] whoseValue should startWith ("prefix")
-
-     // beEmpty is actually probably a Matcher[AnyRef], and it first does a pattern match. If it
-     // is a String, then it checks for length is zero. Otherwise it does the already-written reflection
-     // stuff to look for empty and isEmpty.
-     iterable should beEmpty
-     iterable shouldNot beEmpty
-     string should beEmpty
-     string shouldNot beEmpty
 
      // anInstanceOf takes a type param but no value params, used in postfix notation
      object should be anInstanceOf[Something] 
