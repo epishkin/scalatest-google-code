@@ -1334,10 +1334,10 @@ class MatcherSpec extends Spec {
      object should beEmpty // DONE
      something should beEmpty // DONE
 
-     // Some of the be's
-     beSome[String]
+     option should beSome("hi") // DONE
 
-     something should beSome(1) // MAYBE I wonder if I can do this
+     boolean should beFalse
+     boolean should beTrue
 
      // anInstanceOf takes a type param but no value params, used in postfix notation
      object should be anInstanceOf[Something] 
@@ -1345,9 +1345,6 @@ class MatcherSpec extends Spec {
 
      object should be theSameInstanceAs anotherObjectReference
      object shouldNot be theSameInstanceAs anotherObjectReference
-
-     string should equal ignoringCase "happy"
-     string should equal ignoringCase "happy"
 
      string should contain substring "bob" // or if this is hard, could use "include" instead of "contain"
      string shouldNot contain substring "bob"
@@ -1383,7 +1380,14 @@ class MatcherSpec extends Spec {
 
      THINGS I WON'T DO
 
-     // For not I won't do this:
+     // Another one I won't do for now:
+     string should equalIgnoringCase ("happy")
+     string should equalIgnoringCase ("happy")
+     string shouldEqual ignoring case "happy"
+     string.toLowerCase shouldEqual "happy" // Seems like this should suffice
+     string1.toLowerCase shouldEqual string2.toLowerCase
+
+     // For now I won't do this:
 
      // Ah, to support this, the should method needs to return T, the left value, not Unit. Then
      // I could chain these. But would that cause problems elsewhere that this isn't Unit? Oh, the one should method
