@@ -35,7 +35,7 @@ import scala.collection.immutable.ListSet
  * }
  * @author Bill Venners
  */
-trait Spec extends Suite with Matchers {
+trait Spec extends Suite {
 
   private val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
