@@ -1560,23 +1560,30 @@ class MatcherSpec extends Spec with Matchers {
         "Howdy".charAt(-1)
       } shouldThrow classOf[StringIndexOutOfBoundsException]
       theBlock { "Howdy".charAt(-1); println("hi") } shouldThrow classOf[StringIndexOutOfBoundsException]
+      theBlock { "Howdy".charAt(-1); println("hi") } shouldThrow anException
+      "Howdy".charAt(1) shouldNotThrow anException
     }
 
     "should do nothing if an instance of a subclass of the specified expected exception class is thrown" - {
       class MyException extends RuntimeException
       class MyExceptionSubClass extends MyException
       theBlock { throw new MyException } shouldThrow classOf[MyException]
+      theBlock { throw new MyException } shouldThrow anException
       theBlock { throw new MyExceptionSubClass } shouldThrow classOf[MyException]
+      theBlock { throw new MyExceptionSubClass } shouldThrow anException
       // Try with a trait
       trait MyTrait
       class AnotherException extends RuntimeException with MyTrait
       theBlock { throw new AnotherException } shouldThrow classOf[MyTrait]
+      theBlock { throw new AnotherException } shouldThrow anException
     }
 
     "should return the caught exception" - {
       val e = new RuntimeException
-      val result = theBlock { throw e } shouldThrow classOf[RuntimeException]
-      result should be theSameInstanceAs e
+      val result1 = theBlock { throw e } shouldThrow classOf[RuntimeException]
+      result1 should be theSameInstanceAs e
+      val result2 = theBlock { throw e } shouldThrow anException
+      result2 should be theSameInstanceAs e
     }
 
     "should throw AssertionError if the expected exception is not thrown" - {
