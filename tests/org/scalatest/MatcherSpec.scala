@@ -761,16 +761,25 @@ class MatcherSpec extends Spec with Matchers {
   "The startWith matcher" -- {
     "should do nothing when true" - {
       "Hello, world" should startWith substring "Hello"
+      "Hello, world" should startWith regex "Hel*o"
     }
     "should throw an assertion error when not true" - {
-      val caught = intercept(classOf[AssertionError]) {
+      val caught1 = intercept(classOf[AssertionError]) {
         "Hello, world" should startWith substring "Greetings"
       }
-      assert(caught.getMessage.indexOf("did not start with") != -1)
-      val caught1 = intercept(classOf[AssertionError]) {
+      assert(caught1.getMessage.indexOf("did not start with") != -1)
+      val caught2 = intercept(classOf[AssertionError]) {
         "Hello, world" shouldNot startWith substring "Hello"
       }
-      assert(caught1.getMessage.indexOf("started with") != -1)
+      assert(caught2.getMessage.indexOf("started with") != -1)
+      val caught3 = intercept(classOf[AssertionError]) {
+        "Hello, world" should startWith regex "Gre*tings"
+      }
+      assert(caught3.getMessage.indexOf("did not start with a match for the regular expression") != -1)
+      val caught4 = intercept(classOf[AssertionError]) {
+        "Hello, world" shouldNot startWith regex "Hel*o"
+      }
+      assert(caught4.getMessage.indexOf("started with a match for the regular expression") != -1)
     }
     "should work inside an and clause" - {
       "Hello, world" should { startWith substring "Hello" and equal ("Hello, world") }
@@ -1332,6 +1341,7 @@ class MatcherSpec extends Spec with Matchers {
       "Four score and 7 years ago" should include regex decimal
       "4.0 score and seven years ago" should include regex decimal
       "Four score and 7.0 years ago" should include regex decimal
+      "Four score and 7.0" should include regex decimal
       string shouldNot include regex decimal
     }
 

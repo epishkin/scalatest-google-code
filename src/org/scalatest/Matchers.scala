@@ -588,7 +588,7 @@ private[scalatest] trait Matchers extends Assertions {
       if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
         throw new AssertionError(
           Resources(
-            if (shouldBeTrue) "didNotIncludeRegex" else "includedRegex",
+            if (shouldBeTrue) "didNotStartWithRegex" else "startedWithRegex",
             left,
             rightRegex.toString
           )
@@ -610,16 +610,7 @@ private[scalatest] trait Matchers extends Assertions {
   }
 
   private[scalatest] class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
-    def regex(rightRegexString: String) {
-      if ((java.util.regex.Pattern.matches(rightRegexString, left)) != shouldBeTrue)
-        throw new AssertionError(
-          Resources(
-            if (shouldBeTrue) "didNotFullyMatchRegex" else "fullyMatchedRegex",
-            left,
-            rightRegexString
-          )
-        )
-    }
+    def regex(rightRegexString: String) { regex(rightRegexString.r) }
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
         throw new AssertionError(
