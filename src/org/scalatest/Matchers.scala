@@ -206,7 +206,7 @@ private[scalatest] trait Matchers extends Assertions {
   }
 
   private[scalatest] class ShouldalizerForBlocks(left: => Any) {
-    def shouldThrow(clazz: java.lang.Class[_ <: AnyRef]) { intercept(clazz)(left) }
+    def shouldThrow(clazz: java.lang.Class[_ <: AnyRef]): Throwable = { intercept(clazz)(left) }
   }
 
   private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
