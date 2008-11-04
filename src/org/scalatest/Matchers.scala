@@ -210,6 +210,18 @@ private[scalatest] trait Matchers extends Assertions {
 
   private[scalatest] class ShouldalizerForBlocks(left: => Any) {
     def shouldThrow(clazz: java.lang.Class[_ <: AnyRef]): Throwable = { intercept(clazz)(left) }
+    def shouldNotThrow(clazz: java.lang.Class[Throwable]) {
+      try {
+        left
+      }
+      catch {
+        case u: Throwable =>
+          val message = Resources("anException", u.getClass.getName)
+          val ae = new AssertionError(message)
+          ae.initCause(u)
+          throw ae
+      }
+    }
   }
 
   private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
@@ -1054,4 +1066,6 @@ private[scalatest] trait Matchers extends Assertions {
   }
 
   implicit def floatToHasExactly(floatValue: Float) = new HasExactlyForFloat(floatValue)
+
+  lazy val anException: Class[Throwable] = classOf[Throwable]
 }
