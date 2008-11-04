@@ -271,6 +271,16 @@ private[scalatest] trait Matchers extends Assertions {
             Resources("startedWith", left, right)
           )
       }
+    def regex[T <: String](right: T): Matcher[T] = regex(right.r)
+    def regex(rightRegex: Regex): Matcher[String] =
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            rightRegex.pattern.matcher(left).lookingAt,
+            Resources("didNotStartWithRegex", left, rightRegex.toString),
+            Resources("startedWithRegex", left, rightRegex.toString)
+          )
+      }
   }
 
   private[scalatest] class EndWithWord {
@@ -282,6 +292,18 @@ private[scalatest] trait Matchers extends Assertions {
             Resources("didNotEndWith", left, right),
             Resources("endedWith", left, right)
           )
+      }
+    def regex[T <: String](right: T): Matcher[T] = regex(right.r)
+    def regex(rightRegex: Regex): Matcher[String] =
+      new Matcher[String] {
+        def apply(left: String) = {
+          val allMatches = rightRegex.findAllIn(left)
+          MatcherResult(
+            allMatches.hasNext && (allMatches.end == left.length),
+            Resources("didNotEndWithRegex", left, rightRegex.toString),
+            Resources("endedWithRegex", left, rightRegex.toString)
+          )
+        }
       }
   }
 
@@ -595,7 +617,7 @@ private[scalatest] trait Matchers extends Assertions {
         )
     }
   }
-  
+
   private[scalatest] class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
@@ -604,6 +626,18 @@ private[scalatest] trait Matchers extends Assertions {
             if (shouldBeTrue) "didNotEndWith" else "endedWith",
             left,
             right
+          )
+        )
+    }
+    def regex(rightRegexString: String) { regex(rightRegexString.r) }
+    def regex(rightRegex: Regex) {
+      val allMatches = rightRegex.findAllIn(left)
+      if ((allMatches.hasNext && (allMatches.end == left.length)) != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotEndWithRegex" else "endedWithRegex",
+            left,
+            rightRegex.toString
           )
         )
     }
