@@ -224,6 +224,12 @@ private[scalatest] trait Matchers extends Assertions {
     def shouldNot(includeWord: IncludeWord): ResultOfIncludeWordForString = {
       new ResultOfIncludeWordForString(left, false)
     }
+    def should(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
+      new ResultOfStartWithWordForString(left, true)
+    }
+    def shouldNot(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
+      new ResultOfStartWithWordForString(left, false)
+    }
     def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, true)
     }
@@ -242,6 +248,29 @@ private[scalatest] trait Matchers extends Assertions {
             left.indexOf(expectedSubstring) >= 0, 
             Resources("didNotIncludeSubstring", left.toString, expectedSubstring.toString),
             Resources("includedSubstring", left.toString, expectedSubstring.toString)
+          )
+      }
+  }
+
+/*
+  def startWith[T <: String](right: T) =
+    new Matcher[T] {
+      def apply(left: T) =
+        MatcherResult(
+          left startsWith right,
+          Resources("didNotStartWith", left, right),
+          Resources("startedWith", left, right)
+        )
+    }
+*/
+  private[scalatest] class StartWithWord {
+    def substring[T <: String](right: T) =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            left startsWith right,
+            Resources("didNotStartWith", left, right),
+            Resources("startedWith", left, right)
           )
       }
   }
@@ -543,6 +572,18 @@ private[scalatest] trait Matchers extends Assertions {
             if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
             left,
             expectedSubstring
+          )
+        )
+  }
+  
+  private[scalatest] class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
+    def substring(right: String) =
+      if ((left startsWith right) != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotStartWith" else "startedWith",
+            left,
+            right
           )
         )
   }
@@ -857,16 +898,6 @@ private[scalatest] trait Matchers extends Assertions {
         )
     }
 
-  def startWith[T <: String](right: T) =
-    new Matcher[T] {
-      def apply(left: T) =
-        MatcherResult(
-          left startsWith right,
-          Resources("didNotStartWith", left, right),
-          Resources("startedWith", left, right)
-        )
-    }
-
   val behave = new BehaveWord
   val be = new BeWord
 
@@ -950,6 +981,7 @@ private[scalatest] trait Matchers extends Assertions {
   def contain = new ContainWord // TODO: I think I forgot to do contain element x for the logical expressions
   def include = new IncludeWord
   def fullyMatch = new FullyMatchWord
+  def startWith = new StartWithWord
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 
