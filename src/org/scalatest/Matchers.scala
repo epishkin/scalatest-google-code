@@ -199,10 +199,14 @@ private[scalatest] trait Matchers extends Assertions {
     }
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
-    def should(beWord: BeWord): ResultOfBeWord = new ResultOfBeWord(leftOperand, true)
-    def shouldNot(beWord: BeWord): ResultOfBeWord = new ResultOfBeWord(leftOperand, false)
+    def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
+    def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
     def shouldEqual(rightOperand: Any) { assert(leftOperand === rightOperand) }
     def shouldNotEqual(rightOperand: Any) { assert(leftOperand !== rightOperand) }
+  }
+
+  private[scalatest] class ShouldalizerForBlocks(left: => Any) {
+    def shouldThrow(clazz: java.lang.Class[_ <: AnyRef]) { intercept(clazz)(left) }
   }
 
   private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
@@ -214,11 +218,28 @@ private[scalatest] trait Matchers extends Assertions {
     def shouldNot(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, false)
     }
+    def should(includeWord: IncludeWord): ResultOfIncludeWordForString = {
+      new ResultOfIncludeWordForString(left, true)
+    }
+    def shouldNot(includeWord: IncludeWord): ResultOfIncludeWordForString = {
+      new ResultOfIncludeWordForString(left, false)
+    }
   }
-  
+
   private[scalatest] class BehaveWord
   private[scalatest] class ContainWord
-  
+  private[scalatest] class IncludeWord {
+    def substring(expectedSubstring: String): Matcher[String] =
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            left.indexOf(expectedSubstring) >= 0, 
+            Resources("didNotIncludeSubstring", left.toString, expectedSubstring.toString),
+            Resources("includedSubstring", left.toString, expectedSubstring.toString)
+          )
+      }
+  }
+
   private[scalatest] class HaveWord {
     //
     // This key method is called when "have" is used in a logical expression, such as:
@@ -406,25 +427,74 @@ private[scalatest] trait Matchers extends Assertions {
         )
   }
   
-  // New Malaysia 48 bowery
-  private[scalatest] class ResultOfBeWord(left: Any, shouldBeTrue: Boolean) {
-    def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
+  private[scalatest] class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
+    def theSameInstanceAs(right: AnyRef) {
+      if ((left eq right) != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
+            left.toString,
+            right.toString
+          )
+        )
+    }
+  }
+
+/*
+  // This worked, but the < because it's an operator gets run first: be < 7. So I need to do the
+  // matcher for that one and that should suffice.
+  private[scalatest] class ResultOfBeWordForOrdered[T <% Ordered[T]](left: T, shouldBeTrue: Boolean) {
+    def lessThan(right: T) {
+      if ((left < right) != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "wasNotLessThan" else "wasLessThan",
+            left.toString,
+            right.toString
+          )
+        )
+    }
+  }
+
+  private[scalatest] implicit def resultOfBeWordToForOrdered[T <% Ordered[T]](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForOrdered[T] =
+    new ResultOfBeWordForOrdered(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
+*/
+
+  private[scalatest] implicit def resultOfBeWordToForAnyRef[T <: AnyRef](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForAnyRef =
+    new ResultOfBeWordForAnyRef(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
+
+  private[scalatest] class ResultOfBeWord[T](val left: T, val shouldBeTrue: Boolean) {
+    def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right) // TODO: I think these two are wrong
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-    def anInstanceOf[T <: AnyRef](clazz: Class[T]) { 
+/*
+    // Can delete this one after checking it in once. Using the implicit conversion now.
+    def theSameInstanceAs(right: AnyRef) {
       left match {
       case leftRef: AnyRef =>
-        if (clazz.isAssignableFrom(leftRef.getClass) != shouldBeTrue) {
+        if ((leftRef eq right) != shouldBeTrue)
           throw new AssertionError(
             Resources(
-              if (shouldBeTrue) "wasNotAnInstanceOf" else "wasAnInstanceOf",
-              leftRef.toString,
-              "the specified type"
+              if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
+              left.toString,
+              right.toString
             )
           )
-        }
-      case _: AnyVal => throw new AssertionError("NOT SUPPORTED YET")
+      // I'd rather folks use equal for AnyVals, but the ResultOfBeWord left is an Any, and needs to
+      // be one. So I can't prevent it by the compiler. But what I could do is make it such that the right
+      // to theSameInstanceAs must be an AnyRef. So you can't say 1 should be theSameInstanceAs 1, that won't
+      // compile. But you could say 1 should be theSameInstanceAs "hi" or something, which would always fail.
+      // So this case will just always fail.
+      case leftVal: AnyVal =>
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
+            left.toString,
+            right.toString
+          )
+        )
       }
     }
+*/
   }
 
   private[scalatest] class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
@@ -435,6 +505,18 @@ private[scalatest] trait Matchers extends Assertions {
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left.toString,
             expectedLength.toString)
+        )
+  }
+  
+  private[scalatest] class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
+    def substring(expectedSubstring: String) =
+      if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
+            left,
+            expectedSubstring
+          )
         )
   }
   
@@ -503,6 +585,8 @@ private[scalatest] trait Matchers extends Assertions {
   implicit def shouldifyForString[K, V](o: String): StringShouldalizer = new StringShouldalizer(o)
   implicit def stringToHasLength(s: AnyRef with String): { def length: Int } = new { def length: Int = s.length() }
 
+  implicit def theBlock(f: => Any) = new ShouldalizerForBlocks(f)
+
   def equal(right: Any): Matcher[Any] =
     Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
 /*
@@ -525,19 +609,72 @@ private[scalatest] trait Matchers extends Assertions {
     }
 */
 
+  private[scalatest] class BeWordForOrdered {
+    def <[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            left < right,
+            Resources("wasNotLessThan", left.toString, right.toString),
+            Resources("wasLessThan", left.toString, right.toString)
+          )
+      }
+    def >[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            left > right,
+            Resources("wasNotGreaterThan", left.toString, right.toString),
+            Resources("wasGreaterThan", left.toString, right.toString)
+          )
+      }
+    def <=[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            left <= right,
+            Resources("wasNotLessThanOrEqualTo", left.toString, right.toString),
+            Resources("wasLessThanOrEqualTo", left.toString, right.toString)
+          )
+      }
+    def >=[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            left >= right,
+            Resources("wasNotGreaterThanOrEqualTo", left.toString, right.toString),
+            Resources("wasGreaterThanOrEqualTo", left.toString, right.toString)
+          )
+      }
+  }
+
+  private[scalatest] implicit def beWordToForOrdered(beWord: BeWord): BeWordForOrdered = new BeWordForOrdered
+
   private[scalatest] class BeWord {
 
     // These two are used if this shows up in a "x should { be a 'file and ..." type clause
     def a[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
 
-    def anInstanceOf[T <: AnyRef](clazz: Class[T]): Matcher[AnyRef] = 
+    def apply(doubleTolerance: DoubleTolerance): Matcher[Double] =
+      new Matcher[Double] {
+        def apply(left: Double) = {
+          import doubleTolerance._
+          MatcherResult(
+            left <= right + tolerance && left >= right - tolerance,
+            Resources("wasNotPlusOrMinus", left.toString, right.toString, tolerance.toString),
+            Resources("wasPlusOrMinus", left.toString, right.toString, tolerance.toString)
+          )
+        }
+      }
+
+    def theSameInstanceAs(right: AnyRef): Matcher[AnyRef] =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
           MatcherResult(
-            clazz.isAssignableFrom(left.getClass),
-            Resources("wasNotAnInstanceOf", left.toString, "the specified type"),
-            Resources("wasAnInstanceOf", left.toString, "the specified type")
+            left eq right,
+            Resources("wasNotSameInstanceAs", left.toString, right.toString),
+            Resources("wasSameInstanceAs", left.toString, right.toString)
           )
       }
 
@@ -574,7 +711,7 @@ private[scalatest] trait Matchers extends Assertions {
       }
   
     def apply[S <: AnyRef](right: Symbol): Matcher[S] = {
-  
+
       def matcherUsingReflection(left: S): MatcherResult = {
 
         // If 'empty passed, rightNoTick would be "empty"
@@ -641,7 +778,7 @@ private[scalatest] trait Matchers extends Assertions {
       new Matcher[S] {
         def apply(left: S) = {
   
-          left match {
+          left match { // TODO: I think I made a mistake here too, by just assuming empty. Could be another symbol.
             case leftString: String => 
               MatcherResult(
                 leftString.length == 0,
@@ -762,5 +899,26 @@ private[scalatest] trait Matchers extends Assertions {
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
   def have = new HaveWord
-  def contain = new ContainWord
+  def contain = new ContainWord // TODO: I think I forgot to do contain element x for the logical expressions
+  def include = new IncludeWord
+
+  case class DoubleTolerance(right: Double, tolerance: Double)
+
+  class HasPlusOrMinusForDouble(right: Double) {
+    def plusOrMinus(tolerance: Double): DoubleTolerance = DoubleTolerance(right, tolerance)
+  }
+
+  implicit def doubleToHasPlusOrMinus(right: Double) = new HasPlusOrMinusForDouble(right)
+
+  class HasExactlyForDouble(doubleValue: Double) {
+    def exactly: Double = doubleValue
+  }
+
+  implicit def doubleToHasExactly(doubleValue: Double) = new HasExactlyForDouble(doubleValue)
+
+  class HasExactlyForFloat(floatValue: Float) {
+    def exactly: Float = floatValue
+  }
+
+  implicit def floatToHasExactly(floatValue: Float) = new HasExactlyForFloat(floatValue)
 }

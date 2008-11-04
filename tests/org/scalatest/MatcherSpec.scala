@@ -1287,53 +1287,223 @@ class MatcherSpec extends Spec with Matchers {
     }
   }
 
-  "the be anInstanceOf syntax" -- {
-    "should do nothing if object is an instance of the specified type" - {
-      val stringObject = "howdy"
-      stringObject should be anInstanceOf classOf[String]
-      val anyObject1: Any = 1
-      anyObject1 should be anInstanceOf classOf[Integer]
-      anyObject1 shouldNot be anInstanceOf classOf[Map[_, _]]
-      anyObject1 shouldNot be anInstanceOf classOf[String]
-      anyObject1 shouldNot be anInstanceOf classOf[Array[_]]
-      val anyObject2: Any = "Howdy"
-      anyObject2 should be anInstanceOf classOf[String]
-      anyObject2 shouldNot be anInstanceOf classOf[Set[_]]
-      anyObject2 shouldNot be anInstanceOf classOf[Array[_]]
-/*
-      val array: Any = Array("Howdy")
-      array should be anInstanceOf classOf[Array[_]]
-      array should be anInstanceOf classOf[Array[String]]
-*/
+  "The be theSameInstanceAs syntax" -- {
+
+    val string = "Hi"
+    val obj: AnyRef = string
+    val otherString = new String("Hi")
+
+    "should do nothing if the two objects are the same" - {
+      string should be theSameInstanceAs string
+      obj should be theSameInstanceAs string
+      string should be theSameInstanceAs obj
+      otherString shouldNot be theSameInstanceAs string
     }
-    "should throw AssertionError if object is not an instance of the specified type" - {
-      val anyObject1: Any = "howdy"
+
+    "should throw AssertionError if the two objects are not the same" - {
       val caught1 = intercept(classOf[AssertionError]) {
-        anyObject1 shouldNot be anInstanceOf classOf[String]
+        string shouldNot be theSameInstanceAs string
       }
       val caught2 = intercept(classOf[AssertionError]) {
-        anyObject1 should be anInstanceOf classOf[Map[_, _]]
+        obj shouldNot be theSameInstanceAs string
       }
       val caught3 = intercept(classOf[AssertionError]) {
-        anyObject1 should be anInstanceOf classOf[java.util.Date]
+        string shouldNot be theSameInstanceAs obj
       }
       val caught4 = intercept(classOf[AssertionError]) {
-        anyObject1 should be anInstanceOf classOf[Array[_]]
+        otherString should be theSameInstanceAs string
       }
-
-/*
-      val array: Any = Array("Howdy")
-      val caught5 = intercept(classOf[AssertionError]) {
-        array shouldNot be anInstanceOf classOf[Array[String]]
-      }
-      val caught6 = intercept(classOf[AssertionError]) {
-        array shouldNot be anInstanceOf classOf[Array[_]]
-      }
-*/
-      assert(true)
+      assert(true) // TODO: test the failure message
     }
   }
-}
+
+  "The include substring syntax" -- {
+    "should do nothing if the string includes the expected substring" - {
+      val string = "Four score and seven years ago,..."
+      string should include substring "seven"
+      string should include substring "Four"
+      string should include substring ",..."
+      string shouldNot include substring "on this continent"
+    }
+
+    "should throw AssertionError if the string does not include the expected substring" - {
+      val string = "Four score and seven years ago,..."
+      val caught1 = intercept(classOf[AssertionError]) {
+        string shouldNot include substring "seven"
+      }
+      val caught2 = intercept(classOf[AssertionError]) {
+        string shouldNot include substring "Four"
+      }
+      val caught3 = intercept(classOf[AssertionError]) {
+        string shouldNot include substring ",..."
+      }
+      val caught4 = intercept(classOf[AssertionError]) {
+        string should include substring "on this continent"
+      }
+      assert(true) // TODO: test the failure message
+    }
+  }
+
+  "The should be >/>=/</<= syntax" -- {
+    "should do nothing if the specified relation is true" - {
+      val one = 1
+      one should be < 7
+      one should be > 0
+      one should be <= 7
+      one should be >= 0
+      one should be <= 1
+      one should be >= 1
+      one shouldNot be < 0
+      one shouldNot be > 9
+      one shouldNot be <= -4
+      one shouldNot be >= 21
+    }
+    "should throw AssertionError if the specified relation is not true" - {
+      val one = 1
+      val caught1 = intercept(classOf[AssertionError]) {
+        one shouldNot be < 7
+      }
+      val caught2 = intercept(classOf[AssertionError]) {
+        one shouldNot be > 0
+      }
+      val caught3 = intercept(classOf[AssertionError]) {
+        one shouldNot be <= 7
+      }
+      val caught4 = intercept(classOf[AssertionError]) {
+        one shouldNot be >= 0
+      }
+      val caught5 = intercept(classOf[AssertionError]) {
+        one shouldNot be <= 1
+      }
+      val caught6 = intercept(classOf[AssertionError]) {
+        one shouldNot be >= 1
+      }
+      val caught7 = intercept(classOf[AssertionError]) {
+        one should be < 0
+      }
+      val caught8 = intercept(classOf[AssertionError]) {
+        one should be > 9
+      }
+      val caught9 = intercept(classOf[AssertionError]) {
+        one should be <= -4
+      }
+      val caught10 = intercept(classOf[AssertionError]) {
+        one should be >= 21
+      }
+      assert(true) // TODO: test the failure message
+    }
+  }
+
+  "The floating point 'exactly' operator" -- {
+    "should do nothing if the floating point number is exactly equal to the specified value" - {
+      val sevenDotOh = 7.0
+      sevenDotOh should be (7.0 exactly)
+      sevenDotOh shouldEqual 7.0
+      sevenDotOh shouldNot be (7.0001 exactly)
+
+      val sixDotOh: Float = 6.0f
+      sixDotOh should be (6.0 exactly)
+      sixDotOh shouldEqual 6.0
+      sixDotOh shouldNot be (6.0001 exactly)
+    }
+
+    "should throw AssertionError if the floating point number is not exactly equal to the specified value" - {
+      val sevenDotOh = 7.0001
+      val caught1 = intercept(classOf[AssertionError]) {
+        sevenDotOh should be (7.0 exactly)
+      }
+      val caught2 = intercept(classOf[AssertionError]) {
+        sevenDotOh shouldEqual 7.0
+      }
+      val caught3 = intercept(classOf[AssertionError]) {
+        sevenDotOh shouldNot be (7.0001 exactly)
+      }
+
+      val sixDotOh: Float = 6.0001f
+      val caught4 = intercept(classOf[AssertionError]) {
+        sixDotOh should be (6.0f exactly)
+      }
+      val caught5 = intercept(classOf[AssertionError]) {
+        sixDotOh shouldEqual 6.0f
+      }
+      val caught6 = intercept(classOf[AssertionError]) {
+        sixDotOh shouldNot be (6.0001f exactly)
+      }
+      assert(true) // TODO: test the failure message
+    }
+  }
+  "The floating point 'plusOrMinus' operator" -- {
+    "should do nothing if the floating point number is within the specified range" - {
+      val sevenDotOh = 7.0
+      sevenDotOh should be (7.1 plusOrMinus 0.2)
+      sevenDotOh should be (6.9 plusOrMinus 0.2)
+      sevenDotOh shouldNot be (7.5 plusOrMinus 0.2)
+      sevenDotOh shouldNot be (6.5 plusOrMinus 0.2)
+      val minusSevenDotOh = -7.0
+      minusSevenDotOh should be (-7.1 plusOrMinus 0.2)
+      minusSevenDotOh should be (-6.9 plusOrMinus 0.2)
+      minusSevenDotOh shouldNot be (-7.5 plusOrMinus 0.2)
+      minusSevenDotOh shouldNot be (-6.5 plusOrMinus 0.2)
+    }
+    "should throw AssertionError if the floating point number is not within the specified range" - {
+      val sevenDotOh = 7.0
+      val caught1 = intercept(classOf[AssertionError]) {
+        sevenDotOh shouldNot be (7.1 plusOrMinus 0.2)
+      }
+      val caught2 = intercept(classOf[AssertionError]) {
+        sevenDotOh shouldNot be (6.9 plusOrMinus 0.2)
+      }
+      val caught3 = intercept(classOf[AssertionError]) {
+        sevenDotOh should be (7.5 plusOrMinus 0.2)
+      }
+      val caught4 = intercept(classOf[AssertionError]) {
+        sevenDotOh should be (6.5 plusOrMinus 0.2)
+      }
+      val minusSevenDotOh = -7.0
+      val caught5 = intercept(classOf[AssertionError]) {
+        minusSevenDotOh shouldNot be (-7.1 plusOrMinus 0.2)
+      }
+      val caught6 = intercept(classOf[AssertionError]) {
+        minusSevenDotOh shouldNot be (-6.9 plusOrMinus 0.2)
+      }
+      val caught7 = intercept(classOf[AssertionError]) {
+        minusSevenDotOh should be (-7.5 plusOrMinus 0.2)
+      }
+      val caught8 = intercept(classOf[AssertionError]) {
+        minusSevenDotOh should be (-6.5 plusOrMinus 0.2)
+      }
+      assert(true) // TODO: test the failure message
+    }
+  }
+
+  "The shouldThrow method" -- {
+
+    "should do nothing if the expected exception is thrown" - {
+      theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException]
+      theBlock {
+        "Howdy".charAt(-1)
+      } shouldThrow classOf[StringIndexOutOfBoundsException]
+      theBlock { "Howdy".charAt(-1); println("hi") } shouldThrow classOf[StringIndexOutOfBoundsException]
+    }
+
+    "should do nothing if an instance of a subclass of the specified expected exception class is thrown" - {
+      class MyException extends RuntimeException
+      class MyExceptionSubClass extends MyException
+      theBlock { throw new MyException } shouldThrow classOf[MyException]
+      theBlock { throw new MyExceptionSubClass } shouldThrow classOf[MyException]
+      // Try with a trait
+      trait MyTrait
+      class AnotherException extends RuntimeException with MyTrait
+      theBlock { throw new AnotherException } shouldThrow classOf[MyTrait]
+    }
+
+    "should throw AssertionError if the expected exception is not thrown" - {
+      intercept(classOf[AssertionError]) {
+        "Howdy".charAt(1) shouldThrow (classOf[StringIndexOutOfBoundsException])
+      } // TODO: Check messages. Try shouldNotThrow. Try throwing wrong exception. See tests for intercept.
+    }
+  }
+} // THE END
 
     /*
      // After should/shouldNot, if an even number of tokens, you need parens on the last thing.
@@ -1424,30 +1594,25 @@ class MatcherSpec extends Spec with Matchers {
      boolean should beTrue // DONE
      boolean should beFalse // DONE
 
-     // anInstanceOf takes a type param but no value params, used in postfix notation
-     object should be anInstanceOf[Something] 
-     object shouldNot be anInstanceOf[Something] 
+     object should be theSameInstanceAs anotherObjectReference // DONE
+     object shouldNot be theSameInstanceAs anotherObjectReference // DONE
 
-     object should be theSameInstanceAs anotherObjectReference
-     object shouldNot be theSameInstanceAs anotherObjectReference
+     string should include substring "bob" // DONE
+     string shouldNot include substring "bob" // DONE
 
-     string should contain substring "bob" // or if this is hard, could use "include" instead of "contain"
-     string shouldNot contain substring "bob"
+     ordered should be > 7 // DONE
+     ordered should be >= 7 // DONE
+     ordered should be < 7 // DONE
+     ordered should be <= 7 // DONE
 
-     string should matchRegEx ("""[a-zA-Z_]\w*""")
-     string shouldNot matchRegEx ("""[a-zA-Z_]\w*""")
-
-     // I think these could
-     // take a view bounds, something implicitly convertable to Ordered
-     ordered should be > 7
-     ordered should be >= 7
-     ordered should be < 7
-     ordered should be <= 7
-
-     floatingPointNumber should be (7.0 plusOrMinus 0.01)
-     floatingPointNumber should be (7.0 exactly)
+     floatingPointNumber should be (7.0 exactly) // DONE
+     floatingPointNumber should be (7.0 plusOrMinus 0.01) // DONE
 
      "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException])
+     theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException]
+     theBlock { throw new Something } shouldThrow classOf[StringIndexOutOfBoundsException]
+
+     string shouldMatch """[a-zA-Z_]\w*"""
 
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
@@ -1464,6 +1629,17 @@ class MatcherSpec extends Spec with Matchers {
      }
 
      THINGS I WON'T DO
+
+     // This doesn't work
+     object should be anInstanceOf[Something] 
+     object shouldNot be anInstanceOf[Something] 
+
+     // Had to do this instead:
+     object should be anInstanceOf classOf[String]
+
+     // That's ugly, and it has trouble with arrays and value types, because of boxing
+     // So instead, I'll let them do this:
+     anyObject1.isInstanceOf[Integer] should beTrue
 
      // Another one I won't do for now:
      string should equalIgnoringCase ("happy")
