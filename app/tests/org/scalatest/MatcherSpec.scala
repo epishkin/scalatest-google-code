@@ -723,7 +723,7 @@ class MatcherSpec extends Spec with Matchers {
     }
     "should work at the beginning of an and expression" - {
       val string = "Hello, world!"
-      string should { not { have length 7 } and startWith ("Hello") }
+      string should { not { have length 7 } and { startWith substring "Hello" } }
     }
   }
 
@@ -760,21 +760,21 @@ class MatcherSpec extends Spec with Matchers {
 
   "The startWith matcher" -- {
     "should do nothing when true" - {
-      "Hello, world" should startWith ("Hello")
+      "Hello, world" should startWith substring "Hello"
     }
     "should throw an assertion error when not true" - {
       val caught = intercept(classOf[AssertionError]) {
-        "Hello, world" should startWith ("Greetings")
+        "Hello, world" should startWith substring "Greetings"
       }
       assert(caught.getMessage.indexOf("did not start with") != -1)
       val caught1 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot startWith ("Hello")
+        "Hello, world" shouldNot startWith substring "Hello"
       }
       assert(caught1.getMessage.indexOf("started with") != -1)
     }
     "should work inside an and clause" - {
-      "Hello, world" should { startWith ("Hello") and equal ("Hello, world") }
-      "Hello, world" should { equal ("Hello, world") and startWith ("Hello") }
+      "Hello, world" should { startWith substring "Hello" and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (startWith substring "Hello") }
     }
   }
 
@@ -1725,6 +1725,7 @@ class MatcherSpec extends Spec with Matchers {
      theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
      theBlock { throw new Something } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
 
+     val anException = classOf[Throwable]
      theBlock { throw new Something } shouldNotThrow anException
      theBlock { throw new Something } shouldThrow anException
 
@@ -1735,6 +1736,14 @@ class MatcherSpec extends Spec with Matchers {
      string should endWith substring "howdy"
      string should startWith regex "howdy"
      string should endWith regex "howdy"
+
+     string should fullyMatch ("""[a-zA-Z_]\w*""")
+     string should include ("howdy")
+     string should include ("howdy")
+     string should startWith ("howdy")
+     string should endWith ("howdy")
+     string should startWith ("howdy")
+     string should endWith ("howdy")
 
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
