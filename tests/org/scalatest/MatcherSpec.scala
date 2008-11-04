@@ -741,27 +741,64 @@ class MatcherSpec extends Spec with Matchers {
   "The endWith matcher" -- {
     "should do nothing when true" - {
       "Hello, world" should endWith substring "world"
+      "Hello, world" shouldNot endWith substring "Hello"
+      "Hello, world" should endWith regex "wo.ld"
+      "Hello, world" shouldNot endWith regex "Hel*o"
+      "Hello, world" should endWith regex "wo.ld".r
+      "Hello, world" shouldNot endWith regex "Hel*o".r
     }
     "should throw an assertion error when not true" - {
-      val caught = intercept(classOf[AssertionError]) {
+      val caught1 = intercept(classOf[AssertionError]) {
         "Hello, world" should endWith substring "planet"
       }
-      assert(caught.getMessage.indexOf("did not end with") != -1)
-      val caught1 = intercept(classOf[AssertionError]) {
+      assert(caught1.getMessage.indexOf("did not end with") != -1)
+      val caught2 = intercept(classOf[AssertionError]) {
         "Hello, world" shouldNot endWith substring "world"
       }
-      assert(caught1.getMessage.indexOf("ended with") != -1)
+      assert(caught2.getMessage.indexOf("ended with") != -1)
+      val caught3 = intercept(classOf[AssertionError]) {
+        "Hello, world" should endWith regex "pla.et"
+      }
+      assert(caught3.getMessage.indexOf("did not end with a match for the regular expression") != -1)
+      val caught4 = intercept(classOf[AssertionError]) {
+        "Hello, world" shouldNot endWith regex "wo.ld"
+      }
+      assert(caught4.getMessage.indexOf("ended with a match for the regular expression") != -1)
+      val caught5 = intercept(classOf[AssertionError]) {
+        "Hello, world" should endWith regex "pla.et"
+      }
+      assert(caught5.getMessage.indexOf("did not end with a match for the regular expression") != -1)
+      val caught6 = intercept(classOf[AssertionError]) {
+        "Hello, world" shouldNot endWith regex "wo.ld"
+      }
+      assert(caught6.getMessage.indexOf("ended with a match for the regular expression") != -1)
     }
     "should work inside an and clause" - {
+
       "Hello, world" should { endWith substring "world" and equal ("Hello, world") }
       "Hello, world" should { equal ("Hello, world") and (endWith substring "world") }
+      "Hello, world" should { endWith regex "wo.ld" and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (endWith regex "wo.ld") }
+      "Hello, world" should { endWith regex "wo.ld".r and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (endWith regex "wo.ld".r) }
+
+      "Hello, world" shouldNot { endWith substring "planet" and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (endWith substring "planet") }
+      "Hello, world" shouldNot { endWith regex "wo.l" and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (endWith regex "wo.l") }
+      "Hello, world" shouldNot { endWith regex "wo.l".r and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (endWith regex "wo.l".r) }
     }
   }
 
   "The startWith matcher" -- {
     "should do nothing when true" - {
       "Hello, world" should startWith substring "Hello"
+      "Hello, world" shouldNot startWith substring "Goodbye"
       "Hello, world" should startWith regex "Hel*o"
+      "Hello, world" shouldNot startWith regex "Yel*o"
+      "Hello, world" should startWith regex "Hel*o".r
+      "Hello, world" shouldNot startWith regex "Yel*o".r
     }
     "should throw an assertion error when not true" - {
       val caught1 = intercept(classOf[AssertionError]) {
@@ -780,10 +817,30 @@ class MatcherSpec extends Spec with Matchers {
         "Hello, world" shouldNot startWith regex "Hel*o"
       }
       assert(caught4.getMessage.indexOf("started with a match for the regular expression") != -1)
+      val caught5 = intercept(classOf[AssertionError]) {
+        "Hello, world" should startWith regex "Gre*tings".r
+      }
+      assert(caught5.getMessage.indexOf("did not start with a match for the regular expression") != -1)
+      val caught6 = intercept(classOf[AssertionError]) {
+        "Hello, world" shouldNot startWith regex "Hel*o".r
+      }
+      assert(caught6.getMessage.indexOf("started with a match for the regular expression") != -1)
     }
     "should work inside an and clause" - {
+
       "Hello, world" should { startWith substring "Hello" and equal ("Hello, world") }
       "Hello, world" should { equal ("Hello, world") and (startWith substring "Hello") }
+      "Hello, world" should { startWith regex "Hel*o" and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (startWith regex "Hel*o") }
+      "Hello, world" should { startWith regex "Hel*o".r and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (startWith regex "Hel*o".r) }
+
+      "Hello, world" shouldNot { startWith substring "Yello" and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (startWith substring "Yello") }
+      "Hello, world" shouldNot { startWith regex "Yel*o" and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (startWith regex "Yel*o") }
+      "Hello, world" shouldNot { startWith regex "Yel*o".r and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (startWith regex "Yel*o".r) }
     }
   }
 
@@ -1752,9 +1809,9 @@ class MatcherSpec extends Spec with Matchers {
      string should include substring "howdy" // DONE
      string should startWith substring "howdy" // DONE
      string should endWith substring "howdy" // DONE
-     string should include regex "howdy"
-     string should startWith regex "howdy"
-     string should endWith regex "howdy"
+     string should include regex "howdy" // DONE
+     string should startWith regex "howdy" // DONE
+     string should endWith regex "howdy" // DONE
 
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
