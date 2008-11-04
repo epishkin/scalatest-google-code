@@ -2,6 +2,7 @@ package org.scalatest
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import scala.util.matching.Regex
 
 private[scalatest] case class MatcherResult(
   matches: Boolean,
@@ -292,7 +293,7 @@ private[scalatest] trait Matchers extends Assertions {
             Resources("fullyMatchedRegex", left, rightRegexString)
           )
       }
-    def regex(rightRegex: scala.util.matching.Regex): Matcher[String] =
+    def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
           MatcherResult(
@@ -572,7 +573,7 @@ private[scalatest] trait Matchers extends Assertions {
   }
   
   private[scalatest] class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
-    def substring(expectedSubstring: String) =
+    def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -581,8 +582,20 @@ private[scalatest] trait Matchers extends Assertions {
             expectedSubstring
           )
         )
+    }
+    def regex(rightRegexString: String) { regex(rightRegexString.r) }
+    def regex(rightRegex: Regex) {
+      if (rightRegex.findFirstIn(left).isDefined != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotIncludeRegex" else "includedRegex",
+            left,
+            rightRegex.toString
+          )
+        )
+    }
   }
-  
+
   private[scalatest] class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) =
       if ((left startsWith right) != shouldBeTrue)
@@ -591,6 +604,18 @@ private[scalatest] trait Matchers extends Assertions {
             if (shouldBeTrue) "didNotStartWith" else "startedWith",
             left,
             right
+          )
+        )
+    def regex(rightRegexString: String) { // TODO: Go through and make all these procedure style
+      regex(rightRegexString.r)
+    }
+    def regex(rightRegex: Regex) =
+      if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotIncludeRegex" else "includedRegex",
+            left,
+            rightRegex.toString
           )
         )
   }
@@ -617,7 +642,7 @@ private[scalatest] trait Matchers extends Assertions {
             rightRegexString
           )
         )
-    def regex(rightRegex: scala.util.matching.Regex) =
+    def regex(rightRegex: Regex) =
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
         throw new AssertionError(
           Resources(

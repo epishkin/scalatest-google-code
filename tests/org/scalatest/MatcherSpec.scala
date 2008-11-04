@@ -1318,12 +1318,21 @@ class MatcherSpec extends Spec with Matchers {
   }
 
   "The include substring syntax" -- {
+
+    val decimal = """(-)?(\d+)(\.\d*)?"""
+    val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
+
     "should do nothing if the string includes the expected substring" - {
       val string = "Four score and seven years ago,..."
       string should include substring "seven"
       string should include substring "Four"
       string should include substring ",..."
       string shouldNot include substring "on this continent"
+      "4 score and seven years ago" should include regex decimal
+      "Four score and 7 years ago" should include regex decimal
+      "4.0 score and seven years ago" should include regex decimal
+      "Four score and 7.0 years ago" should include regex decimal
+      string shouldNot include regex decimal
     }
 
     "should throw AssertionError if the string does not include the expected substring" - {
