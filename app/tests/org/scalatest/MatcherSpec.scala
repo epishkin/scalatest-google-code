@@ -1662,14 +1662,14 @@ class MatcherSpec extends Spec with Matchers {
      object shouldNot be an openBook // DONE
      object shouldNot be an openBook // DONE
 
-     string should startWith ("something") // DONE
-     string shouldNot startWith ("something") // DONE
-     string should endWith ("something") // DONE
-     string shouldNot endWith ("something") // DONE
+     string should startWith substring "something" // DONE
+     string shouldNot startWith substring "something" // DONE
+     string should endWith substring "something" // DONE
+     string shouldNot endWith substring "something" // DONE
 
      buf.length should be (20) // DONE
 
-     string should { not { have length 7 } and startWith "Hello" } // DONE
+     string should { not { have length 7 } and (startWith substring "Hello") } // DONE
 
      map should { have key 8 andNot equal (Map(8 -> "eight")) } // DONE
 
@@ -1730,20 +1730,12 @@ class MatcherSpec extends Spec with Matchers {
      theBlock { throw new Something } shouldThrow anException
 
      string should fullyMatch regex """[a-zA-Z_]\w*""" // DONE
-     string should include substring "howdy"
+     string should include substring "howdy" // DONE
+     string should startWith substring "howdy" // DONE
+     string should endWith substring "howdy" // DONE
      string should include regex "howdy"
-     string should startWith substring "howdy"
-     string should endWith substring "howdy"
      string should startWith regex "howdy"
      string should endWith regex "howdy"
-
-     string should fullyMatch ("""[a-zA-Z_]\w*""")
-     string should include ("howdy")
-     string should include ("howdy")
-     string should startWith ("howdy")
-     string should endWith ("howdy")
-     string should startWith ("howdy")
-     string should endWith ("howdy")
 
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
@@ -1760,6 +1752,16 @@ class MatcherSpec extends Spec with Matchers {
      }
 
      THINGS I WON'T DO
+
+     // Although string should startWith substring "howdy" also looks verbose, it is preferable I
+     // think to these parenthesized versions:
+     string should fullyMatch ("""[a-zA-Z_]\w*""")
+     string should include ("howdy")
+     string should include ("howdy")
+     string should startWith ("howdy")
+     string should endWith ("howdy")
+     string should startWith ("howdy")
+     string should endWith ("howdy")
 
      // This doesn't work
      object should be anInstanceOf[Something] 
