@@ -156,7 +156,7 @@ private[scalatest] trait Matchers extends Assertions {
   // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
   // 
   private[scalatest] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[Tuple2[K, V]](left, shouldBeTrue) {
-    def key(expectedKey: K) =
+    def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -164,7 +164,8 @@ private[scalatest] trait Matchers extends Assertions {
             left.toString,
             expectedKey.toString)
         )
-    def value(expectedValue: V) =
+    }
+    def value(expectedValue: V) {
       if (left.values.contains(expectedValue) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -172,6 +173,7 @@ private[scalatest] trait Matchers extends Assertions {
             left.toString,
             expectedValue.toString)
         )
+    }
   /*
     def size(expectedSize: Int) =
       if ((left.size == expectedSize) != shouldBeTrue)
@@ -470,7 +472,7 @@ private[scalatest] trait Matchers extends Assertions {
   // has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
   // 
   private[scalatest] class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
-    def size(expectedSize: Int) =
+    def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -478,10 +480,11 @@ private[scalatest] trait Matchers extends Assertions {
             left.toString,
             expectedSize.toString)
         )
+    }
   }
   
   private[scalatest] class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
-    def length(expectedLength: Int) =
+    def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -489,6 +492,7 @@ private[scalatest] trait Matchers extends Assertions {
             left.toString,
             expectedLength.toString)
         )
+    }
   }
   
   private[scalatest] class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
@@ -530,39 +534,10 @@ private[scalatest] trait Matchers extends Assertions {
   private[scalatest] class ResultOfBeWord[T](val left: T, val shouldBeTrue: Boolean) {
     def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right) // TODO: I think these two are wrong
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-/*
-    // Can delete this one after checking it in once. Using the implicit conversion now.
-    def theSameInstanceAs(right: AnyRef) {
-      left match {
-      case leftRef: AnyRef =>
-        if ((leftRef eq right) != shouldBeTrue)
-          throw new AssertionError(
-            Resources(
-              if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
-              left.toString,
-              right.toString
-            )
-          )
-      // I'd rather folks use equal for AnyVals, but the ResultOfBeWord left is an Any, and needs to
-      // be one. So I can't prevent it by the compiler. But what I could do is make it such that the right
-      // to theSameInstanceAs must be an AnyRef. So you can't say 1 should be theSameInstanceAs 1, that won't
-      // compile. But you could say 1 should be theSameInstanceAs "hi" or something, which would always fail.
-      // So this case will just always fail.
-      case leftVal: AnyVal =>
-        throw new AssertionError(
-          Resources(
-            if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
-            left.toString,
-            right.toString
-          )
-        )
-      }
-    }
-*/
   }
 
   private[scalatest] class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
-    def length(expectedLength: Int) =
+    def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -570,6 +545,7 @@ private[scalatest] trait Matchers extends Assertions {
             left.toString,
             expectedLength.toString)
         )
+    }
   }
   
   private[scalatest] class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
@@ -597,7 +573,7 @@ private[scalatest] trait Matchers extends Assertions {
   }
 
   private[scalatest] class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
-    def substring(right: String) =
+    def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -606,10 +582,9 @@ private[scalatest] trait Matchers extends Assertions {
             right
           )
         )
-    def regex(rightRegexString: String) { // TODO: Go through and make all these procedure style
-      regex(rightRegexString.r)
     }
-    def regex(rightRegex: Regex) =
+    def regex(rightRegexString: String) { regex(rightRegexString.r) }
+    def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -618,10 +593,11 @@ private[scalatest] trait Matchers extends Assertions {
             rightRegex.toString
           )
         )
+    }
   }
   
   private[scalatest] class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
-    def substring(right: String) =
+    def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -630,10 +606,11 @@ private[scalatest] trait Matchers extends Assertions {
             right
           )
         )
+    }
   }
 
   private[scalatest] class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
-    def regex(rightRegexString: String) =
+    def regex(rightRegexString: String) {
       if ((java.util.regex.Pattern.matches(rightRegexString, left)) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -642,7 +619,8 @@ private[scalatest] trait Matchers extends Assertions {
             rightRegexString
           )
         )
-    def regex(rightRegex: Regex) =
+    }
+    def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -651,10 +629,11 @@ private[scalatest] trait Matchers extends Assertions {
             rightRegex
           )
         )
+    }
   }
   
   private[scalatest] class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
-    def element(expectedElement: T) =
+    def element(expectedElement: T) {
       if ((left.elements.contains(expectedElement)) != shouldBeTrue)
         throw new AssertionError(
           Resources(
@@ -662,6 +641,7 @@ private[scalatest] trait Matchers extends Assertions {
             left.toString,
             expectedElement.toString)
         )
+    }
   }
   
   private[scalatest] trait ShouldContainWordForIterableMethods[T] {
