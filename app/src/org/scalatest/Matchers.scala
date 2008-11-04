@@ -224,6 +224,12 @@ private[scalatest] trait Matchers extends Assertions {
     def shouldNot(includeWord: IncludeWord): ResultOfIncludeWordForString = {
       new ResultOfIncludeWordForString(left, false)
     }
+    def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
+      new ResultOfFullyMatchWordForString(left, true)
+    }
+    def shouldNot(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
+      new ResultOfFullyMatchWordForString(left, false)
+    }
   }
 
   private[scalatest] class BehaveWord
@@ -236,6 +242,27 @@ private[scalatest] trait Matchers extends Assertions {
             left.indexOf(expectedSubstring) >= 0, 
             Resources("didNotIncludeSubstring", left.toString, expectedSubstring.toString),
             Resources("includedSubstring", left.toString, expectedSubstring.toString)
+          )
+      }
+  }
+
+  private[scalatest] class FullyMatchWord {
+    def regex(rightRegexString: String): Matcher[String] =
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            java.util.regex.Pattern.matches(rightRegexString, left),
+            Resources("didNotFullyMatchRegex", left, rightRegexString),
+            Resources("fullyMatchedRegex", left, rightRegexString)
+          )
+      }
+    def regex(rightRegex: scala.util.matching.Regex): Matcher[String] =
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            rightRegex.pattern.matcher(left).matches,
+            Resources("didNotFullyMatchRegex", left, rightRegex),
+            Resources("fullyMatchedRegex", left, rightRegex)
           )
       }
   }
@@ -309,7 +336,7 @@ private[scalatest] trait Matchers extends Assertions {
     // know the type, but it has a length method. This would work on strings and ints, but
     // I"m not sure what the story is on the parameterless or not. Probably should put parens in there.
     // String is a structural subtype of { def length(): Int }. Thus Matcher[{ def length(): Int }] should
-    // be a subtype of Matcher[String], because of contravariance. Yeah, this worked! XXX
+    // be a subtype of Matcher[String], because of contravariance. Yeah, this worked! 
     // Darn structural type won't work for both arrays and strings, because one requres a length and the other a length()
     // So they aren't the same structural type. Really want the syntax, so moving to reflection and a runtime error.
     def length(expectedLength: Int) =
@@ -516,6 +543,27 @@ private[scalatest] trait Matchers extends Assertions {
             if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
             left,
             expectedSubstring
+          )
+        )
+  }
+  
+  private[scalatest] class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
+    def regex(rightRegexString: String) =
+      if ((java.util.regex.Pattern.matches(rightRegexString, left)) != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotFullyMatchRegex" else "fullyMatchedRegex",
+            left,
+            rightRegexString
+          )
+        )
+    def regex(rightRegex: scala.util.matching.Regex) =
+      if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotFullyMatchRegex" else "fullyMatchedRegex",
+            left,
+            rightRegex
           )
         )
   }
@@ -901,6 +949,7 @@ private[scalatest] trait Matchers extends Assertions {
   def have = new HaveWord
   def contain = new ContainWord // TODO: I think I forgot to do contain element x for the logical expressions
   def include = new IncludeWord
+  def fullyMatch = new FullyMatchWord
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 

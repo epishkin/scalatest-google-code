@@ -1512,6 +1512,110 @@ class MatcherSpec extends Spec with Matchers {
       }
     }
   }
+
+  "The shouldMatch method" -- {
+
+    val decimal = """(-)?(\d+)(\.\d*)?"""
+    val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
+
+    "should do nothing if the string matches the regular expression specified as a string" - {
+      "1.7" should fullyMatch regex "1.7"
+      "1.7" should fullyMatch regex decimal
+      "-1.8" should fullyMatch regex decimal
+      "8" should fullyMatch regex decimal
+      "1." should fullyMatch regex decimal
+      "eight" shouldNot fullyMatch regex decimal
+      "1.eight" shouldNot fullyMatch regex decimal
+      "one.8" shouldNot fullyMatch regex decimal
+      "1.8-" shouldNot fullyMatch regex decimal
+      "1.7" should { fullyMatch regex decimal and equal ("1.7") }
+      "1.7++" shouldNot { fullyMatch regex decimal and equal ("1.7") }
+    }
+
+    "should do nothing if the string matches the regular expression specified as a Regex" - {
+      "1.7" should fullyMatch regex decimalRegex
+      "-1.8" should fullyMatch regex decimalRegex
+      "8" should fullyMatch regex decimalRegex
+      "1." should fullyMatch regex decimalRegex
+      "eight" shouldNot fullyMatch regex decimalRegex
+      "1.eight" shouldNot fullyMatch regex decimalRegex
+      "one.8" shouldNot fullyMatch regex decimalRegex
+      "1.8-" shouldNot fullyMatch regex decimalRegex
+      "1.7" should { fullyMatch regex decimalRegex and equal ("1.7") }
+      "1.7++" shouldNot { fullyMatch regex decimalRegex and equal ("1.7") }
+    }
+
+    "should throw AssertionError if the string does not match the regular expression specified as a string" - {
+      val caught1 = intercept(classOf[AssertionError]) {
+        "1.7" shouldNot fullyMatch regex "1.7"
+      }
+      val caught2 = intercept(classOf[AssertionError]) {
+        "1.7" shouldNot fullyMatch regex decimal
+      }
+      val caught3 = intercept(classOf[AssertionError]) {
+        "-1.8" shouldNot fullyMatch regex decimal
+      }
+      val caught4 = intercept(classOf[AssertionError]) {
+        "8" shouldNot fullyMatch regex decimal
+      }
+      val caught5 = intercept(classOf[AssertionError]) {
+        "1." shouldNot fullyMatch regex decimal
+      }
+      val caught6 = intercept(classOf[AssertionError]) {
+        "eight" should fullyMatch regex decimal
+      }
+      val caught7 = intercept(classOf[AssertionError]) {
+        "1.eight" should fullyMatch regex decimal
+      }
+      val caught8 = intercept(classOf[AssertionError]) {
+        "one.8" should fullyMatch regex decimal
+      }
+      val caught9 = intercept(classOf[AssertionError]) {
+        "1.8-" should fullyMatch regex decimal
+      }
+      val caught10 = intercept(classOf[AssertionError]) {
+        "1.7" shouldNot { fullyMatch regex decimal and equal ("1.7") }
+      }
+      val caught11 = intercept(classOf[AssertionError]) {
+        "1.7++" should { fullyMatch regex decimal and equal ("1.7") }
+      }
+      assert(true) // TODO: check failure messages
+    }
+
+    "should throw AssertionError if the string does not match the regular expression specified as a Regex" - {
+      val caught2 = intercept(classOf[AssertionError]) {
+        "1.7" shouldNot fullyMatch regex decimalRegex
+      }
+      val caught3 = intercept(classOf[AssertionError]) {
+        "-1.8" shouldNot fullyMatch regex decimalRegex
+      }
+      val caught4 = intercept(classOf[AssertionError]) {
+        "8" shouldNot fullyMatch regex decimalRegex
+      }
+      val caught5 = intercept(classOf[AssertionError]) {
+        "1." shouldNot fullyMatch regex decimalRegex
+      }
+      val caught6 = intercept(classOf[AssertionError]) {
+        "eight" should fullyMatch regex decimalRegex
+      }
+      val caught7 = intercept(classOf[AssertionError]) {
+        "1.eight" should fullyMatch regex decimalRegex
+      }
+      val caught8 = intercept(classOf[AssertionError]) {
+        "one.8" should fullyMatch regex decimalRegex
+      }
+      val caught9 = intercept(classOf[AssertionError]) {
+        "1.8-" should fullyMatch regex decimalRegex
+      }
+      val caught10 = intercept(classOf[AssertionError]) {
+        "1.7" shouldNot { fullyMatch regex decimalRegex and equal ("1.7") }
+      }
+      val caught11 = intercept(classOf[AssertionError]) {
+        "1.7++" should { fullyMatch regex decimalRegex and equal ("1.7") }
+      }
+      assert(true) // TODO: check failure messages
+    }
+  }
 } // THE END
 
     /*
@@ -1621,7 +1725,16 @@ class MatcherSpec extends Spec with Matchers {
      theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
      theBlock { throw new Something } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
 
-     string shouldMatch """[a-zA-Z_]\w*"""
+     theBlock { throw new Something } shouldNotThrow anException
+     theBlock { throw new Something } shouldThrow anException
+
+     string should fullyMatch regex """[a-zA-Z_]\w*""" // DONE
+     string should include substring "howdy"
+     string should include regex "howdy"
+     string should startWith substring "howdy"
+     string should endWith substring "howdy"
+     string should startWith regex "howdy"
+     string should endWith regex "howdy"
 
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
