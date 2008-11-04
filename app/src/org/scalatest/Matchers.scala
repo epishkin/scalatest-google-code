@@ -230,6 +230,12 @@ private[scalatest] trait Matchers extends Assertions {
     def shouldNot(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
       new ResultOfStartWithWordForString(left, false)
     }
+    def should(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
+      new ResultOfEndWithWordForString(left, true)
+    }
+    def shouldNot(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
+      new ResultOfEndWithWordForString(left, false)
+    }
     def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, true)
     }
@@ -252,17 +258,6 @@ private[scalatest] trait Matchers extends Assertions {
       }
   }
 
-/*
-  def startWith[T <: String](right: T) =
-    new Matcher[T] {
-      def apply(left: T) =
-        MatcherResult(
-          left startsWith right,
-          Resources("didNotStartWith", left, right),
-          Resources("startedWith", left, right)
-        )
-    }
-*/
   private[scalatest] class StartWithWord {
     def substring[T <: String](right: T) =
       new Matcher[T] {
@@ -271,6 +266,18 @@ private[scalatest] trait Matchers extends Assertions {
             left startsWith right,
             Resources("didNotStartWith", left, right),
             Resources("startedWith", left, right)
+          )
+      }
+  }
+
+  private[scalatest] class EndWithWord {
+    def substring[T <: String](right: T) =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            left endsWith right,
+            Resources("didNotEndWith", left, right),
+            Resources("endedWith", left, right)
           )
       }
   }
@@ -588,6 +595,18 @@ private[scalatest] trait Matchers extends Assertions {
         )
   }
   
+  private[scalatest] class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
+    def substring(right: String) =
+      if ((left endsWith right) != shouldBeTrue)
+        throw new AssertionError(
+          Resources(
+            if (shouldBeTrue) "didNotEndWith" else "endedWith",
+            left,
+            right
+          )
+        )
+  }
+
   private[scalatest] class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
     def regex(rightRegexString: String) =
       if ((java.util.regex.Pattern.matches(rightRegexString, left)) != shouldBeTrue)
@@ -888,6 +907,7 @@ private[scalatest] trait Matchers extends Assertions {
 
   def not[S <: Any](matcher: Matcher[S]) = Helper.not { matcher }
 
+/*
   def endWith[T <: String](right: T) =
     new Matcher[T] {
       def apply(left: T) =
@@ -897,6 +917,7 @@ private[scalatest] trait Matchers extends Assertions {
           Resources("endedWith", left, right)
         )
     }
+*/
 
   val behave = new BehaveWord
   val be = new BeWord
@@ -982,6 +1003,7 @@ private[scalatest] trait Matchers extends Assertions {
   def include = new IncludeWord
   def fullyMatch = new FullyMatchWord
   def startWith = new StartWithWord
+  def endWith = new EndWithWord
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 

@@ -740,21 +740,21 @@ class MatcherSpec extends Spec with Matchers {
 
   "The endWith matcher" -- {
     "should do nothing when true" - {
-      "Hello, world" should endWith ("world")
+      "Hello, world" should endWith substring "world"
     }
     "should throw an assertion error when not true" - {
       val caught = intercept(classOf[AssertionError]) {
-        "Hello, world" should endWith ("planet")
+        "Hello, world" should endWith substring "planet"
       }
       assert(caught.getMessage.indexOf("did not end with") != -1)
       val caught1 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot endWith ("world")
+        "Hello, world" shouldNot endWith substring "world"
       }
       assert(caught1.getMessage.indexOf("ended with") != -1)
     }
     "should work inside an and clause" - {
-      "Hello, world" should { endWith ("world") and equal ("Hello, world") }
-      "Hello, world" should { equal ("Hello, world") and endWith ("world") }
+      "Hello, world" should { endWith substring "world" and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (endWith substring "world") }
     }
   }
 
