@@ -506,7 +506,7 @@ class SuiteSuite extends Suite {
     val result = intercept(classOf[RuntimeException]) {
       throw e
     }
-    assert(result === e)
+    assert(result eq e)
   }
 
   def testStripDollars() {

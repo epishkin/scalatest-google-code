@@ -1497,10 +1497,19 @@ class MatcherSpec extends Spec with Matchers {
       theBlock { throw new AnotherException } shouldThrow classOf[MyTrait]
     }
 
+    "should return the caught exception" - {
+      val e = new RuntimeException
+      val result = theBlock { throw e } shouldThrow classOf[RuntimeException]
+      result should be theSameInstanceAs e
+    }
+
     "should throw AssertionError if the expected exception is not thrown" - {
       intercept(classOf[AssertionError]) {
         "Howdy".charAt(1) shouldThrow (classOf[StringIndexOutOfBoundsException])
       } // TODO: Check messages. Try shouldNotThrow. Try throwing wrong exception. See tests for intercept.
+      intercept(classOf[AssertionError]) {
+        "Howdy".charAt(-1) shouldThrow (classOf[ArrayIndexOutOfBoundsException])
+      }
     }
   }
 } // THE END
@@ -1608,9 +1617,9 @@ class MatcherSpec extends Spec with Matchers {
      floatingPointNumber should be (7.0 exactly) // DONE
      floatingPointNumber should be (7.0 plusOrMinus 0.01) // DONE
 
-     "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException])
-     theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException]
-     theBlock { throw new Something } shouldThrow classOf[StringIndexOutOfBoundsException]
+     "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException]) // DONE
+     theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
+     theBlock { throw new Something } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
 
      string shouldMatch """[a-zA-Z_]\w*"""
 
