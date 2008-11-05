@@ -69,9 +69,8 @@ trait StackBehaviors {
   }
 }
 
-class StackSpec extends Spec with ShouldMatchers with StackBehaviors {
+trait StackFixtureCreationMethods {
 
-  // Fixture creation methods
   def emptyStack = new Stack[Int]
   def fullStack = {
     val stack = new Stack[Int]
@@ -91,7 +90,10 @@ class StackSpec extends Spec with ShouldMatchers with StackBehaviors {
     stack
   }
   val lastValuePushed = 9
+}
       
+class StackSpec extends Spec with StackFixtureCreationMethods with ShouldMatchers with StackBehaviors {
+
   "A Stack" -- {
 
     "(when empty)" -- {
