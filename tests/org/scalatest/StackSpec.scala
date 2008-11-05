@@ -116,25 +116,22 @@ class StackSpec extends Spec with StackFixtureCreationMethods with ShouldMatcher
     }
 
     "(with one item)" -- {
-      // stackWithOneItem should behave like nonEmptyStack(lastValuePushed)
-      // stackWithOneItem should behave like nonFullStack
+      assertBehavesLike(stackWithOneItem, nonEmptyStack(lastValuePushed))
+      assertBehavesLike(stackWithOneItem, nonFullStack)
     }
     
     "(with one item less than capacity)"-- {
-      // stackWithOneItemLessThanCapacity should behave like nonEmptyStack(lastValuePushed)
-      // stackWithOneItemLessThanCapacity should behave like nonFullStack
+      assertBehavesLike(stackWithOneItemLessThanCapacity, nonEmptyStack(lastValuePushed))
+      assertBehavesLike(stackWithOneItemLessThanCapacity, nonFullStack)
     }
 
     "(full)" -- {
       
-      // fullStack should be full  .... could I get this to print the message "- should be full" ?
       "should be full" - {
         assert(fullStack.full)
-        // val full = 'full
-        // fullStack should be (full)
       }
       
-      // fullStack should behave like nonEmptyStack(lastValuePushed)
+      assertBehavesLike(fullStack, nonEmptyStack(lastValuePushed))
 
       "should complain on a push" - {
         intercept(classOf[IllegalStateException]) {

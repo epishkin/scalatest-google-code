@@ -55,6 +55,10 @@ trait Spec extends Suite {
     currentBranch.subNodes :::= sharedExamples
     examplesList :::= sharedExamples
   }
+
+  def assertBehavesLike[T](target: T, fun: (T) => Behavior) {
+    importSharedBehavior(fun(target))
+  }
 /*
   class Likifier[T](left: T) {
     def like(fun: (T) => Behavior) {
