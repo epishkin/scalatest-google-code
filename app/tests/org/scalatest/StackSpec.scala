@@ -130,7 +130,7 @@ class StackSpec extends Spec with StackFixtureCreationMethods with ShouldMatcher
       "should be full" - {
         assert(fullStack.full)
       }
-      
+
       assertBehavesLike(fullStack, nonEmptyStack(lastValuePushed))
 
       "should complain on a push" - {
