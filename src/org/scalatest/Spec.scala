@@ -43,13 +43,6 @@ trait Spec extends Suite {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
-/*
-  class ShouldWord {
-    def behave(likeWord: LikeWord) = new Likifier()
-  }
-*/
-
-// BEGIN NEW
   def importSharedBehavior(sharedBehavior: Behavior) {
     val sharedExamples = sharedBehavior.examples(currentBranch)
     currentBranch.subNodes :::= sharedExamples
@@ -59,20 +52,7 @@ trait Spec extends Suite {
   def assertBehavesLike[T](target: T, fun: (T) => Behavior) {
     importSharedBehavior(fun(target))
   }
-/*
-  class Likifier[T](left: T) {
-    def like(fun: (T) => Behavior) {
-      val sharedBehavior = fun(left)
-      val sharedExamples = sharedBehavior.examples(currentBranch)
-      currentBranch.subNodes :::= sharedExamples
-      examplesList :::= sharedExamples
-    }
-  }
-*/
 
-  // implicit def shouldifyForBehavior[T](left: T): ShouldalizerForBehavior[T] = new ShouldalizerForBehavior[T](left)
-
-// END NEW
   class LikeWord {}
 
   private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
@@ -87,23 +67,6 @@ trait Spec extends Suite {
     registerExample(exampleRawName, false, f)
   }
     
-/*
-  protected val like = new LikeWord
-  class Likifier {
-    def a(sharedBehavior: Behavior) {
-      val sharedExamples = sharedBehavior.examples(currentBranch)
-      currentBranch.subNodes :::= sharedExamples
-      examplesList :::= sharedExamples
-    }
-    def an(sharedBehavior: Behavior) { a(sharedBehavior) }
-    def the(sharedBehavior: Behavior) { a(sharedBehavior) }
-  }
-*/
-  
-/*
-  protected val should = new ShouldWord
-*/
-
   protected def describe(name: String)(f: => Unit) {
     
     def insertBranch(newBranch: Branch, f: () => Unit) {
