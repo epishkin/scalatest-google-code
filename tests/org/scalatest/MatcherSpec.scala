@@ -1,6 +1,6 @@
 package org.scalatest
 
-class MatcherSpec extends Spec with Matchers {
+class MatcherSpec extends Spec with ShouldMatchers {
 
   "The equal matcher" -- {
 

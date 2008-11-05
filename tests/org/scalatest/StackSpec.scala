@@ -69,7 +69,7 @@ trait StackBehaviors {
   }
 }
 
-class StackSpec extends Spec with Matchers with StackBehaviors {
+class StackSpec extends Spec with ShouldMatchers with StackBehaviors {
 
   // Fixture creation methods
   def emptyStack = new Stack[Int]
