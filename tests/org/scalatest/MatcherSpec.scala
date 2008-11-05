@@ -240,11 +240,35 @@ class MatcherSpec extends Spec with Matchers {
 
     "(for symbols)" -- {
 
+      "should look for a length of 0 when called on a string" - {
+        "" should be ('empty)
+        val caught = intercept(classOf[AssertionError]) {
+          "hi" should be ('empty)
+        }
+        caught.getMessage shouldEqual "\"hi\" was not empty"
+      }
+
       "should call isEmpty when passed 'empty" - {
         val emptySet = Set[Int]()
         emptySet should be ('empty)
         val nonEmptySet = Set(1, 2, 3)
         nonEmptySet should not { be ('empty) }
+        val caught1 = intercept(classOf[AssertionError]) {
+          nonEmptySet should be ('empty)
+        }
+        assert(caught1.getMessage === "Set(1, 2, 3) was not empty")
+        val caught2 = intercept(classOf[AssertionError]) {
+          nonEmptySet shouldNot be ('hasDefiniteSize)
+        }
+        assert(caught2.getMessage === "Set(1, 2, 3) was hasDefiniteSize")
+        val caught3 = intercept(classOf[IllegalArgumentException]) {
+          nonEmptySet shouldNot be ('happy)
+        }
+        assert(caught3.getMessage === "Set(1, 2, 3) has neither a happy nor an isHappy method")
+        val caught4 = intercept(classOf[IllegalArgumentException]) {
+          "unhappy" shouldNot be ('happy)
+        }
+        assert(caught4.getMessage === "\"unhappy\" has neither a happy nor an isHappy method")
       }
 
       "should be invokable from be a Symbol, be an Symbol, and be the Symbol" - {
@@ -278,15 +302,15 @@ class MatcherSpec extends Spec with Matchers {
         val ex1 = intercept(classOf[IllegalArgumentException]) {
           (new EmptyMock) should be ('empty)
         }
-        ex1.getMessage should equal ("EmptyMock has neither an empty or an isEmpty method.")
+        ex1.getMessage should equal ("EmptyMock has neither an empty nor an isEmpty method")
         val ex2 = intercept(classOf[IllegalArgumentException]) {
           (new NonEmptyMock) should not { be ('empty) }
         }
-        ex2.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
+        ex2.getMessage should equal ("NonEmptyMock has neither an empty nor an isEmpty method")
         val ex3 = intercept(classOf[IllegalArgumentException]) {
           (new NonEmptyMock) shouldNot be ('empty)
         }
-        ex3.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
+        ex3.getMessage should equal ("NonEmptyMock has neither an empty nor an isEmpty method")
       }
 
       "should throw IllegalArgumentException if both an empty and an isEmpty method exist" - {
@@ -303,15 +327,15 @@ class MatcherSpec extends Spec with Matchers {
         val ex1 = intercept(classOf[IllegalArgumentException]) {
           (new EmptyMock) should be ('empty)
         }
-        ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method.")
+        ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method")
         val ex2 = intercept(classOf[IllegalArgumentException]) {
           (new NonEmptyMock) should not { be ('empty) }
         }
-        ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
+        ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method")
         val ex3 = intercept(classOf[IllegalArgumentException]) {
           (new NonEmptyMock) shouldNot be ('empty)
         }
-        ex3.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
+        ex3.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method")
       }
 
       "should access an 'empty' val when passed 'empty" - {
@@ -387,15 +411,15 @@ class MatcherSpec extends Spec with Matchers {
       val ex1 = intercept(classOf[IllegalArgumentException]) {
         (new EmptyMock) should beEmpty
       }
-      ex1.getMessage should equal ("EmptyMock has neither an empty or an isEmpty method.")
+      ex1.getMessage should equal ("EmptyMock has neither an empty nor an isEmpty method")
       val ex2 = intercept(classOf[IllegalArgumentException]) {
         (new NonEmptyMock) should not { beEmpty }
       }
-      ex2.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
+      ex2.getMessage should equal ("NonEmptyMock has neither an empty nor an isEmpty method")
       val ex3 = intercept(classOf[IllegalArgumentException]) {
         (new NonEmptyMock) shouldNot beEmpty
       }
-      ex3.getMessage should equal ("NonEmptyMock has neither an empty or an isEmpty method.")
+      ex3.getMessage should equal ("NonEmptyMock has neither an empty nor an isEmpty method")
     }
 
     "should throw IllegalArgumentException if both an empty and an isEmpty method exist" - {
@@ -412,15 +436,15 @@ class MatcherSpec extends Spec with Matchers {
       val ex1 = intercept(classOf[IllegalArgumentException]) {
         (new EmptyMock) should beEmpty
       }
-      ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method.")
+      ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method")
       val ex2 = intercept(classOf[IllegalArgumentException]) {
         (new NonEmptyMock) should not { beEmpty }
       }
-      ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
+      ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method")
       val ex3 = intercept(classOf[IllegalArgumentException]) {
         (new NonEmptyMock) shouldNot beEmpty
       }
-      ex3.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method.")
+      ex3.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method")
     }
 
     "should access an 'empty' val when passed 'empty" - {
@@ -609,15 +633,15 @@ class MatcherSpec extends Spec with Matchers {
       val ex1 = intercept(classOf[IllegalArgumentException]) {
         (new DefinedMock) should beDefined
       }
-      ex1.getMessage should equal ("DefinedMock has neither a defined or an isDefined method.")
+      ex1.getMessage should equal ("DefinedMock has neither a defined nor an isDefined method")
       val ex2 = intercept(classOf[IllegalArgumentException]) {
         (new NonDefinedMock) should not { beDefined }
       }
-      ex2.getMessage should equal ("NonDefinedMock has neither a defined or an isDefined method.")
+      ex2.getMessage should equal ("NonDefinedMock has neither a defined nor an isDefined method")
       val ex3 = intercept(classOf[IllegalArgumentException]) {
         (new NonDefinedMock) shouldNot beDefined
       }
-      ex3.getMessage should equal ("NonDefinedMock has neither a defined or an isDefined method.")
+      ex3.getMessage should equal ("NonDefinedMock has neither a defined nor an isDefined method")
     }
 
     "should throw IllegalArgumentException if both a defined and an isDefined method exist" - {
@@ -634,15 +658,15 @@ class MatcherSpec extends Spec with Matchers {
       val ex1 = intercept(classOf[IllegalArgumentException]) {
         (new DefinedMock) should beDefined
       }
-      ex1.getMessage should equal ("DefinedMock has both a defined and an isDefined method.")
+      ex1.getMessage should equal ("DefinedMock has both a defined and an isDefined method")
       val ex2 = intercept(classOf[IllegalArgumentException]) {
         (new NonDefinedMock) should not { beDefined }
       }
-      ex2.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method.")
+      ex2.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method")
       val ex3 = intercept(classOf[IllegalArgumentException]) {
         (new NonDefinedMock) shouldNot beDefined
       }
-      ex3.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method.")
+      ex3.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method")
     }
 
     "should access an 'defined' val" - {
