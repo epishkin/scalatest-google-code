@@ -1601,7 +1601,7 @@ class MatcherSpec extends Spec with Matchers {
     }
   }
 
-  "The shouldMatch method" -- {
+  "The fullyMatch regex syntax" -- {
 
     val decimal = """(-)?(\d+)(\.\d*)?"""
     val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
@@ -1702,6 +1702,55 @@ class MatcherSpec extends Spec with Matchers {
         "1.7++" should { fullyMatch regex decimalRegex and equal ("1.7") }
       }
       assert(true) // TODO: check failure messages
+    }
+  }
+
+  "The shouldMatch method" -- {
+
+    "should do nothing if the object matches such that the partial function results in true" - {
+      List(1, 2, 3) shouldMatch {
+        case 1 :: _ :: 3 :: Nil => true
+        case _ => false
+      }
+      List(1, 2, 3) shouldMatch {
+        case 1 :: _ :: 3 :: Nil => true
+      }
+      List(1, 2, 4) shouldNotMatch {
+        case 1 :: _ :: 3 :: Nil => true
+        case _ => false
+      }
+      List(1, 2, 4) shouldNotMatch {
+        case 1 :: _ :: 3 :: Nil => true
+      }
+    }
+
+    "should throw AssertionError if the object matches, but the partial function results in false" - {
+      val caught = intercept(classOf[AssertionError]) {
+        List(1, 2, 4) shouldMatch {
+          case 1 :: _ :: 3 :: Nil => true
+          case _ => false
+        }
+      }
+      assert(caught.getMessage === "The value List(1, 2, 4) matched a case in the specified partial function, but the result was false")
+    }
+
+    "should throw AssertionError if the object does not match any case" - {
+      val caught = intercept(classOf[AssertionError]) {
+        List(1, 2, 4) shouldMatch {
+          case 1 :: _ :: 3 :: Nil => true
+        }
+      }
+      assert(caught.getMessage === "The value List(1, 2, 4) did not match any case in the specified partial function")
+    }
+
+    "should throw AssertionError (when using shouldNot) if the object matches, and the partial function results in true" - {
+      val caught = intercept(classOf[AssertionError]) {
+        List(1, 2, 3) shouldNotMatch {
+          case 1 :: _ :: 3 :: Nil => true
+          case _ => false
+        }
+      }
+      assert(caught.getMessage === "The value List(1, 2, 3) matched a case in the specified partial function, and the result was true")
     }
   }
 } // THE END
@@ -1815,7 +1864,7 @@ class MatcherSpec extends Spec with Matchers {
 
      val anException = classOf[Throwable] // DONE
      theBlock { throw new Something } shouldNotThrow anException // DONE
-     theBlock { throw new Something } shouldThrow anException
+     theBlock { throw new Something } shouldThrow anException // DONE
 
      string should fullyMatch regex """[a-zA-Z_]\w*""" // DONE
      string should include substring "howdy" // DONE
@@ -1827,13 +1876,13 @@ class MatcherSpec extends Spec with Matchers {
 
      // This could be nice. It's pretty clear, and a pattern match is
      // sometimes the most concise way to check an object.
-     object shouldMatch {
+     object shouldMatch { // DONE
        case 1 :: _ :: 3 :: Nil => true
        case _ => false
      }
 
-     // for symmetry, and perhaps some utility, have Not forms of other shoulds:
-     object shouldNotMatch {
+     // for symmetry:
+     object shouldNotMatch { // DONE
        case 1 :: _ :: 3 :: Nil => true
        case _ => false
      }
