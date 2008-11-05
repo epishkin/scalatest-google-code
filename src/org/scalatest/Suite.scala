@@ -1692,6 +1692,7 @@ private[scalatest] object Suite {
   
   private[scalatest] def decoratedToStringValue(o: Any): String =
     o match {
+      case null => "null"
       case aByte: Byte => aByte.toString
       case aShort: Short => aShort.toString
       case anInt: Int => anInt.toString

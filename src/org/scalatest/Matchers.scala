@@ -3,6 +3,7 @@ package org.scalatest
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
+import Suite.decoratedToStringValue
 
 private[scalatest] case class MatcherResult(
   matches: Boolean,
@@ -204,8 +205,16 @@ private[scalatest] trait Matchers extends Assertions {
     def should(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
-    def shouldEqual(rightOperand: Any) { assert(leftOperand === rightOperand) }
-    def shouldNotEqual(rightOperand: Any) { assert(leftOperand !== rightOperand) }
+    def shouldEqual(rightOperand: Any) {
+      if (leftOperand != rightOperand) {
+        throw new AssertionError(FailureMessages("didNotEqual", leftOperand, rightOperand))
+      }
+    }
+    def shouldNotEqual(rightOperand: Any) {
+      if (leftOperand == rightOperand) {
+        throw new AssertionError(FailureMessages("equaled", leftOperand, rightOperand))
+      }
+    }
     def shouldMatch(rightOperand: PartialFunction[T, Boolean]) {
       if (rightOperand.isDefinedAt(leftOperand)) {
         val result = rightOperand(leftOperand)
@@ -862,8 +871,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: AnyRef) = {
           MatcherResult(
             left == null,
-            Resources("wasNotNull", left),
-            Resources("wasNull", left)
+            FailureMessages("wasNotNull", left),
+            FailureMessages("wasNull", left)
           )
         }
       }
