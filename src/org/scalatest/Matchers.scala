@@ -3,7 +3,6 @@ package org.scalatest
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
-import Suite.decoratedToStringValue
 
 private[scalatest] case class MatcherResult(
   matches: Boolean,
