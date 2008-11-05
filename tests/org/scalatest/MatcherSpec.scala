@@ -1562,6 +1562,11 @@ class MatcherSpec extends Spec with Matchers {
       theBlock { "Howdy".charAt(-1); println("hi") } shouldThrow classOf[StringIndexOutOfBoundsException]
       theBlock { "Howdy".charAt(-1); println("hi") } shouldThrow anException
       "Howdy".charAt(1) shouldNotThrow anException
+      // "Howdy".charAt(1) shouldNotThrow classOf[IllegalArgumentException] This doesn't compile, by design
+      val caught = intercept(classOf[AssertionError]) {
+        "Howdy".charAt(-1) shouldNotThrow anException
+      }
+      assert(caught.getMessage === "Expected no exception to be thrown, but java.lang.StringIndexOutOfBoundsException was thrown.")
     }
 
     "should do nothing if an instance of a subclass of the specified expected exception class is thrown" - {
@@ -1808,8 +1813,8 @@ class MatcherSpec extends Spec with Matchers {
      theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
      theBlock { throw new Something } shouldThrow classOf[StringIndexOutOfBoundsException] // DONE
 
-     val anException = classOf[Throwable]
-     theBlock { throw new Something } shouldNotThrow anException
+     val anException = classOf[Throwable] // DONE
+     theBlock { throw new Something } shouldNotThrow anException // DONE
      theBlock { throw new Something } shouldThrow anException
 
      string should fullyMatch regex """[a-zA-Z_]\w*""" // DONE
@@ -1828,13 +1833,15 @@ class MatcherSpec extends Spec with Matchers {
      }
 
      // for symmetry, and perhaps some utility, have Not forms of other shoulds:
-     byNameParam shouldNotThrow classOf[IllegalArgumentException]
      object shouldNotMatch {
        case 1 :: _ :: 3 :: Nil => true
        case _ => false
      }
 
      THINGS I WON'T DO
+
+     // Decided not to allow this
+     byNameParam shouldNotThrow classOf[IllegalArgumentException]
 
      // Although string should startWith substring "howdy" also looks verbose, it is preferable I
      // think to these parenthesized versions:

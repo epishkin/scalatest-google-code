@@ -1040,12 +1040,14 @@ private[scalatest] trait Matchers extends Assertions {
     length and size can probably use structural types, because I want to use length on string and array for
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
-  def have = new HaveWord
-  def contain = new ContainWord // TODO: I think I forgot to do contain element x for the logical expressions
-  def include = new IncludeWord
-  def fullyMatch = new FullyMatchWord
-  def startWith = new StartWithWord
-  def endWith = new EndWithWord
+  val have = new HaveWord // TODO: Should I just make these singleton objects?
+  val contain = new ContainWord // TODO: I think I forgot to do contain element x for the logical expressions
+  val include = new IncludeWord
+  val fullyMatch = new FullyMatchWord
+  val startWith = new StartWithWord
+  val endWith = new EndWithWord
+
+  val anException: Class[Throwable] = classOf[Throwable]
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 
@@ -1066,6 +1068,4 @@ private[scalatest] trait Matchers extends Assertions {
   }
 
   implicit def floatToHasExactly(floatValue: Float) = new HasExactlyForFloat(floatValue)
-
-  lazy val anException: Class[Throwable] = classOf[Throwable]
 }
