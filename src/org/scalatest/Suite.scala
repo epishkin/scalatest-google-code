@@ -1689,22 +1689,5 @@ private[scalatest] object Suite {
       } 
       case _ => (a, b)
     }
-  
-  private[scalatest] def decoratedToStringValue(o: Any): String =
-    o match {
-      case null => "null"
-      case aByte: Byte => aByte.toString
-      case aShort: Short => aShort.toString
-      case anInt: Int => anInt.toString
-      case aLong: Long => aLong.toString // Can't we all get aLong?
-      case aFloat: Float => aFloat.toString
-      case aDouble: Double => aDouble.toString
-      case aBoolean: Boolean => aBoolean.toString
-      case aUnit: Unit => "<(), the Unit value>"
-      case aString: String => "\"" + aString + "\""
-      case aChar: Char =>  "\'" + aChar + "\'"
-      // case o: Any => "<" + o.toString + ">" // Looks ugly, and especially when XML gets printed out
-      case o: Any => o.toString
-    }
 }
 

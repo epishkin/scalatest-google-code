@@ -562,19 +562,18 @@ class SuiteSuite extends Suite {
   }
   
   def testDecorateToStringValue() {
-    expect("1") { Suite.decoratedToStringValue(1.toByte) }
-    expect("1") { Suite.decoratedToStringValue(1.toShort) }
-    expect("1") { Suite.decoratedToStringValue(1) }
-    expect("10") { Suite.decoratedToStringValue(10L) }
-    expect("1.0") { Suite.decoratedToStringValue(1.0f) }
-    expect("1.0") { Suite.decoratedToStringValue(1.0) }
-    expect("false") { Suite.decoratedToStringValue(false) }
-    expect("true") { Suite.decoratedToStringValue(true) }
-    expect("<(), the Unit value>") { Suite.decoratedToStringValue(()) }
-    expect("\"Howdy!\"") { Suite.decoratedToStringValue("Howdy!") }
-    expect("'c'") { Suite.decoratedToStringValue('c') }
-    expect("Hey!") { Suite.decoratedToStringValue(new Object { override def toString = "Hey!"}) }
-    // expect("<Hey!>") { Suite.decoratedToStringValue(new Object { override def toString = "Hey!"}) }
+    expect("1") { FailureMessages.decorateToStringValue(1.toByte) }
+    expect("1") { FailureMessages.decorateToStringValue(1.toShort) }
+    expect("1") { FailureMessages.decorateToStringValue(1) }
+    expect("10") { FailureMessages.decorateToStringValue(10L) }
+    expect("1.0") { FailureMessages.decorateToStringValue(1.0f) }
+    expect("1.0") { FailureMessages.decorateToStringValue(1.0) }
+    expect("false") { FailureMessages.decorateToStringValue(false) }
+    expect("true") { FailureMessages.decorateToStringValue(true) }
+    expect("<(), the Unit value>") { FailureMessages.decorateToStringValue(()) }
+    expect("\"Howdy!\"") { FailureMessages.decorateToStringValue("Howdy!") }
+    expect("'c'") { FailureMessages.decorateToStringValue('c') }
+    expect("Hey!") { FailureMessages.decorateToStringValue(new Object { override def toString = "Hey!"}) }
   }
 }
 
