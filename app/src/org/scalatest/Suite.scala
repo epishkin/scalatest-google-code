@@ -1703,7 +1703,8 @@ private[scalatest] object Suite {
       case aUnit: Unit => "<(), the Unit value>"
       case aString: String => "\"" + aString + "\""
       case aChar: Char =>  "\'" + aChar + "\'"
-      case o: Any => "<" + o.toString + ">"
+      // case o: Any => "<" + o.toString + ">" // Looks ugly, and especially when XML gets printed out
+      case o: Any => o.toString
     }
 }
 
