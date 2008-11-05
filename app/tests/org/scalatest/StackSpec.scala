@@ -114,13 +114,13 @@ class StackSpec extends Spec with ShouldMatchers with StackBehaviors {
     }
 
     "(with one item)" -- {
-      stackWithOneItem should behave like nonEmptyStack(lastValuePushed)
-      stackWithOneItem should behave like nonFullStack
+      // stackWithOneItem should behave like nonEmptyStack(lastValuePushed)
+      // stackWithOneItem should behave like nonFullStack
     }
     
     "(with one item less than capacity)"-- {
-      stackWithOneItemLessThanCapacity should behave like nonEmptyStack(lastValuePushed)
-      stackWithOneItemLessThanCapacity should behave like nonFullStack
+      // stackWithOneItemLessThanCapacity should behave like nonEmptyStack(lastValuePushed)
+      // stackWithOneItemLessThanCapacity should behave like nonFullStack
     }
 
     "(full)" -- {
@@ -132,7 +132,7 @@ class StackSpec extends Spec with ShouldMatchers with StackBehaviors {
         // fullStack should be (full)
       }
       
-      fullStack should behave like nonEmptyStack(lastValuePushed)
+      // fullStack should behave like nonEmptyStack(lastValuePushed)
 
       "should complain on a push" - {
         intercept(classOf[IllegalStateException]) {
