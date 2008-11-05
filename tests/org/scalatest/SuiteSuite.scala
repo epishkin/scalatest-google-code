@@ -573,7 +573,8 @@ class SuiteSuite extends Suite {
     expect("<(), the Unit value>") { Suite.decoratedToStringValue(()) }
     expect("\"Howdy!\"") { Suite.decoratedToStringValue("Howdy!") }
     expect("'c'") { Suite.decoratedToStringValue('c') }
-    expect("<Hey!>") { Suite.decoratedToStringValue(new Object { override def toString = "Hey!"}) }
+    expect("Hey!") { Suite.decoratedToStringValue(new Object { override def toString = "Hey!"}) }
+    // expect("<Hey!>") { Suite.decoratedToStringValue(new Object { override def toString = "Hey!"}) }
   }
 }
 

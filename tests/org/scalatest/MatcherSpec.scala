@@ -440,7 +440,7 @@ class MatcherSpec extends Spec with Matchers {
       val caught = intercept(classOf[AssertionError]) {
         "hi" should beEmpty
       }
-      caught.getMessage shouldEqual "hi was not empty"
+      caught.getMessage shouldEqual "\"hi\" was not empty"
     }
   }
 
@@ -2052,8 +2052,8 @@ class MatcherSpec extends Spec with Matchers {
     (left: Map[K, V]) => {
       MatcherResult(
         left.contains(expectedKey),
-        Resources("didNotHaveKey", left.toString, expectedKey.toString),
-        Resources("hadKey", left.toString, expectedKey.toString)
+        Resources("didNotHaveKey", left, expectedKey),
+        Resources("hadKey", left, expectedKey)
       ) 
     }
 
@@ -2063,8 +2063,8 @@ class MatcherSpec extends Spec with Matchers {
       def apply(left: Map[K, V]) =
         MatcherResult(
           left.contains(expectedKey),
-          Resources("didNotHaveKey", left.toString, expectedKey.toString),
-          Resources("hadKey", left.toString, expectedKey.toString)
+          Resources("didNotHaveKey", left, expectedKey),
+          Resources("hadKey", left, expectedKey)
         )
     }
 
@@ -2081,8 +2081,8 @@ class MatcherSpec extends Spec with Matchers {
       (left: Map[K, V]) => {
         MatcherResult(
           left.contains(expectedKey),
-          Resources("didNotHaveKey", left.toString, expectedKey.toString),
-          Resources("hadKey", left.toString, expectedKey.toString)
+          Resources("didNotHaveKey", left, expectedKey),
+          Resources("hadKey", left, expectedKey)
         ) 
       }
     }
@@ -2091,8 +2091,8 @@ class MatcherSpec extends Spec with Matchers {
       (left: Map[K, V]) => {
         MatcherResult(
           left.contains(expectedKey),
-          Resources("didNotHaveKey", left.toString, expectedKey.toString),
-          Resources("hadKey", left.toString, expectedKey.toString)
+          Resources("didNotHaveKey", left, expectedKey),
+          Resources("hadKey", left, expectedKey)
         ) 
       }
     }

@@ -11,6 +11,17 @@ private[scalatest] case class MatcherResult(
   negativeFailureMessage: String
 )
 
+// This is used to pass a string to the FailureMessages apply method
+// but prevent it from being quoted. This is useful when using a string
+// to talk about method names, for example.
+private[scalatest] class UnquotedString(s: String) {
+  override def toString = s
+}
+
+private[scalatest] object UnquotedString {
+  def apply(s: String) = new UnquotedString(s)
+}
+
 /*
 There are a set of implicit conversions that take different static types to Shouldalizers.
 The one that gets applied will be the one that matches the static type of left. The result
@@ -56,26 +67,20 @@ private[scalatest] object Helper {
 
   def equalAndBeAnyMatcher(right: Any, equaledResourceName: String, didNotEqualResourceName: String) = {
 
-      def toStringElseNull(o: Any) = if (o != null) o.toString else "null"
-
       new Matcher[Any] {
         def apply(left: Any) =
           left match {
             case leftArray: Array[_] => 
               MatcherResult(
                 leftArray.deepEquals(right),
-                Resources(didNotEqualResourceName, left.toString, right.toString),
-                Resources(equaledResourceName, left.toString, right.toString)
+                FailureMessages(didNotEqualResourceName, left, right),
+                FailureMessages(equaledResourceName, left, right)
               )
             case _ => 
               MatcherResult(
                 left == right,
-                Resources(didNotEqualResourceName, toStringElseNull(left), toStringElseNull(right)),
-                Resources(equaledResourceName, toStringElseNull(left), toStringElseNull(right))
-/*
-                Resources(didNotEqualResourceName, toStringOrElse(left) if (left != null) left.toString else "null", if (right != null) right.toString else "null"),
-                Resources(equaledResourceName, if (left != null) left.toString else "null", if (right != null) right.toString else "null")
-*/
+                FailureMessages(didNotEqualResourceName, left, right),
+                FailureMessages(equaledResourceName, left, right)
               )
         }
       }
@@ -160,29 +165,29 @@ private[scalatest] trait Matchers extends Assertions {
     def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotHaveKey" else "hadKey",
-            left.toString,
-            expectedKey.toString)
+            left,
+            expectedKey)
         )
     }
     def value(expectedValue: V) {
       if (left.values.contains(expectedValue) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotHaveValue" else "hadValue",
-            left.toString,
-            expectedValue.toString)
+            left,
+            expectedValue)
         )
     }
   /*
     def size(expectedSize: Int) =
       if ((left.size == expectedSize) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
-            left.toString,
-            expectedSize.toString)
+            left,
+            expectedSize)
         )
   */
   }
@@ -219,18 +224,18 @@ private[scalatest] trait Matchers extends Assertions {
       if (rightOperand.isDefinedAt(leftOperand)) {
         val result = rightOperand(leftOperand)
         if (!result) {
-          throw new AssertionError(Resources("matchResultedInFalse", leftOperand.toString))
+          throw new AssertionError(FailureMessages("matchResultedInFalse", leftOperand))
         }
       }
       else {
-        throw new AssertionError(Resources("didNotMatch", leftOperand.toString))
+        throw new AssertionError(FailureMessages("didNotMatch", leftOperand))
       }
     }
     def shouldNotMatch(rightOperand: PartialFunction[T, Boolean]) {
       if (rightOperand.isDefinedAt(leftOperand)) {
         val result = rightOperand(leftOperand)
         if (result) {
-          throw new AssertionError(Resources("matchResultedInTrue", leftOperand.toString))
+          throw new AssertionError(FailureMessages("matchResultedInTrue", leftOperand))
         }
       }
     }
@@ -244,7 +249,7 @@ private[scalatest] trait Matchers extends Assertions {
       }
       catch {
         case u: Throwable =>
-          val message = Resources("anException", u.getClass.getName)
+          val message = FailureMessages("anException", UnquotedString(u.getClass.getName))
           val ae = new AssertionError(message)
           ae.initCause(u)
           throw ae
@@ -295,8 +300,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: String) =
           MatcherResult(
             left.indexOf(expectedSubstring) >= 0, 
-            Resources("didNotIncludeSubstring", left.toString, expectedSubstring.toString),
-            Resources("includedSubstring", left.toString, expectedSubstring.toString)
+            FailureMessages("didNotIncludeSubstring", left, expectedSubstring),
+            FailureMessages("includedSubstring", left, expectedSubstring)
           )
       }
   }
@@ -307,8 +312,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: T) =
           MatcherResult(
             left startsWith right,
-            Resources("didNotStartWith", left, right),
-            Resources("startedWith", left, right)
+            FailureMessages("didNotStartWith", left, right),
+            FailureMessages("startedWith", left, right)
           )
       }
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
@@ -317,8 +322,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: String) =
           MatcherResult(
             rightRegex.pattern.matcher(left).lookingAt,
-            Resources("didNotStartWithRegex", left, rightRegex.toString),
-            Resources("startedWithRegex", left, rightRegex.toString)
+            FailureMessages("didNotStartWithRegex", left, rightRegex),
+            FailureMessages("startedWithRegex", left, rightRegex)
           )
       }
   }
@@ -329,8 +334,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: T) =
           MatcherResult(
             left endsWith right,
-            Resources("didNotEndWith", left, right),
-            Resources("endedWith", left, right)
+            FailureMessages("didNotEndWith", left, right),
+            FailureMessages("endedWith", left, right)
           )
       }
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
@@ -340,8 +345,8 @@ private[scalatest] trait Matchers extends Assertions {
           val allMatches = rightRegex.findAllIn(left)
           MatcherResult(
             allMatches.hasNext && (allMatches.end == left.length),
-            Resources("didNotEndWithRegex", left, rightRegex.toString),
-            Resources("endedWithRegex", left, rightRegex.toString)
+            FailureMessages("didNotEndWithRegex", left, rightRegex),
+            FailureMessages("endedWithRegex", left, rightRegex)
           )
         }
       }
@@ -353,8 +358,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: String) =
           MatcherResult(
             java.util.regex.Pattern.matches(rightRegexString, left),
-            Resources("didNotFullyMatchRegex", left, rightRegexString),
-            Resources("fullyMatchedRegex", left, rightRegexString)
+            FailureMessages("didNotFullyMatchRegex", left, rightRegexString),
+            FailureMessages("fullyMatchedRegex", left, rightRegexString)
           )
       }
     def regex(rightRegex: Regex): Matcher[String] =
@@ -362,8 +367,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: String) =
           MatcherResult(
             rightRegex.pattern.matcher(left).matches,
-            Resources("didNotFullyMatchRegex", left, rightRegex),
-            Resources("fullyMatchedRegex", left, rightRegex)
+            FailureMessages("didNotFullyMatchRegex", left, rightRegex),
+            FailureMessages("fullyMatchedRegex", left, rightRegex)
           )
       }
   }
@@ -385,8 +390,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: Map[K, Any]) =
           MatcherResult(
             left.contains(expectedKey), 
-            Resources("didNotHaveKey", left.toString, expectedKey.toString),
-            Resources("hadKey", left.toString, expectedKey.toString)
+            FailureMessages("didNotHaveKey", left, expectedKey),
+            FailureMessages("hadKey", left, expectedKey)
           )
       }
   
@@ -403,8 +408,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: Map[K, V] forSome { type K }) =
           MatcherResult(
             left.values.contains(expectedValue), 
-            Resources("didNotHaveValue", left.toString, expectedValue.toString),
-            Resources("hadValue", left.toString, expectedValue.toString)
+            FailureMessages("didNotHaveValue", left, expectedValue),
+            FailureMessages("hadValue", left, expectedValue)
           )
       }
   
@@ -413,8 +418,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: Collection[Any]) =
           MatcherResult(
             left.size == expectedSize, 
-            Resources("didNotHaveValue", left.toString, expectedSize.toString),
-            Resources("hadValue", left.toString, expectedSize.toString)
+            FailureMessages("didNotHaveValue", left, expectedSize),
+            FailureMessages("hadValue", left, expectedSize)
           )
       }
   /*
@@ -426,8 +431,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: { def size(): Int }) =
           MatcherResult(
             left.size == expectedSize, 
-            Resources("didNotHaveExpectedSize", left.toString, expectedSize.toString),
-            Resources("hadExpectedSize", left.toString, expectedSize.toString)
+            FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+            FailureMessages("hadExpectedSize", left, expectedSize)
           )
       }
   */
@@ -445,8 +450,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: { def length: Int }) =
           MatcherResult(
             left.length == expectedLength, 
-            Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
-            Resources("hadExpectedLength", left.toString, expectedLength.toString)
+            FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+            FailureMessages("hadExpectedLength", left, expectedLength)
           )
       }
   */
@@ -457,14 +462,14 @@ private[scalatest] trait Matchers extends Assertions {
             case leftSeq: Seq[_] =>
               MatcherResult(
                 leftSeq.length == expectedLength, 
-                Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
-                Resources("hadExpectedLength", left.toString, expectedLength.toString)
+                FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                FailureMessages("hadExpectedLength", left, expectedLength)
               )
             case leftString: String =>
               MatcherResult(
                 leftString.length == expectedLength, 
-                Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
-                Resources("hadExpectedLength", left.toString, expectedLength.toString)
+                FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                FailureMessages("hadExpectedLength", left, expectedLength)
               )
             case _ =>
               val methods = left.getClass.getMethods
@@ -485,15 +490,15 @@ private[scalatest] trait Matchers extends Assertions {
               if (hasLengthMethod) {
                 MatcherResult(
                   methodOption.get.invoke(left, Array[Object]()) == expectedLength, 
-                  Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
-                  Resources("hadExpectedLength", left.toString, expectedLength.toString)
+                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                  FailureMessages("hadExpectedLength", left, expectedLength)
                 )
               }
               else if (hasLengthField) {
                 MatcherResult(
                   fieldOption.get.get(left) == expectedLength, 
-                  Resources("didNotHaveExpectedLength", left.toString, expectedLength.toString),
-                  Resources("hadExpectedLength", left.toString, expectedLength.toString)
+                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                  FailureMessages("hadExpectedLength", left, expectedLength)
                 )
               }
               else {
@@ -537,10 +542,10 @@ private[scalatest] trait Matchers extends Assertions {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
-            left.toString,
-            expectedSize.toString)
+            left,
+            expectedSize)
         )
     }
   }
@@ -549,10 +554,10 @@ private[scalatest] trait Matchers extends Assertions {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
-            left.toString,
-            expectedLength.toString)
+            left,
+            expectedLength)
         )
     }
   }
@@ -561,10 +566,10 @@ private[scalatest] trait Matchers extends Assertions {
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
-            left.toString,
-            right.toString
+            left,
+            right
           )
         )
     }
@@ -577,10 +582,10 @@ private[scalatest] trait Matchers extends Assertions {
     def lessThan(right: T) {
       if ((left < right) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "wasNotLessThan" else "wasLessThan",
-            left.toString,
-            right.toString
+            left,
+            right
           )
         )
     }
@@ -602,10 +607,10 @@ private[scalatest] trait Matchers extends Assertions {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
-            left.toString,
-            expectedLength.toString)
+            left,
+            expectedLength)
         )
     }
   }
@@ -614,7 +619,7 @@ private[scalatest] trait Matchers extends Assertions {
     def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
             left,
             expectedSubstring
@@ -625,10 +630,10 @@ private[scalatest] trait Matchers extends Assertions {
     def regex(rightRegex: Regex) {
       if (rightRegex.findFirstIn(left).isDefined != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotIncludeRegex" else "includedRegex",
             left,
-            rightRegex.toString
+            rightRegex
           )
         )
     }
@@ -638,7 +643,7 @@ private[scalatest] trait Matchers extends Assertions {
     def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotStartWith" else "startedWith",
             left,
             right
@@ -649,10 +654,10 @@ private[scalatest] trait Matchers extends Assertions {
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotStartWithRegex" else "startedWithRegex",
             left,
-            rightRegex.toString
+            rightRegex
           )
         )
     }
@@ -662,7 +667,7 @@ private[scalatest] trait Matchers extends Assertions {
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotEndWith" else "endedWith",
             left,
             right
@@ -674,10 +679,10 @@ private[scalatest] trait Matchers extends Assertions {
       val allMatches = rightRegex.findAllIn(left)
       if ((allMatches.hasNext && (allMatches.end == left.length)) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotEndWithRegex" else "endedWithRegex",
             left,
-            rightRegex.toString
+            rightRegex
           )
         )
     }
@@ -688,7 +693,7 @@ private[scalatest] trait Matchers extends Assertions {
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotFullyMatchRegex" else "fullyMatchedRegex",
             left,
             rightRegex
@@ -701,10 +706,10 @@ private[scalatest] trait Matchers extends Assertions {
     def element(expectedElement: T) {
       if ((left.elements.contains(expectedElement)) != shouldBeTrue)
         throw new AssertionError(
-          Resources(
+          FailureMessages(
             if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
-            left.toString,
-            expectedElement.toString)
+            left,
+            expectedElement)
         )
     }
   }
@@ -774,14 +779,14 @@ private[scalatest] trait Matchers extends Assertions {
           case leftArray: Array[_] => 
             MatcherResult(
               leftArray.deepEquals(right),
-              Resources("didNotEqual", left.toString, right.toString),
-              Resources("equaled", left.toString, right.toString)
+              FailureMessages("didNotEqual", left, right),
+              FailureMessages("equaled", left, right)
             )
           case _ => 
             MatcherResult(
               left == right,
-              Resources("didNotEqual", if (left != null) left.toString else "null", if (right != null) right.toString else "null"),
-              Resources("equaled", if (left != null) left.toString else "null", if (right != null) right.toString else "null")
+              FailureMessages("didNotEqual", if (left != null) left else "null", if (right != null) right else "null"),
+              FailureMessages("equaled", if (left != null) left else "null", if (right != null) right else "null")
             )
       }
     }
@@ -793,8 +798,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: T) =
           MatcherResult(
             left < right,
-            Resources("wasNotLessThan", left.toString, right.toString),
-            Resources("wasLessThan", left.toString, right.toString)
+            FailureMessages("wasNotLessThan", left, right),
+            FailureMessages("wasLessThan", left, right)
           )
       }
     def >[T <% Ordered[T]](right: T): Matcher[T] =
@@ -802,8 +807,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: T) =
           MatcherResult(
             left > right,
-            Resources("wasNotGreaterThan", left.toString, right.toString),
-            Resources("wasGreaterThan", left.toString, right.toString)
+            FailureMessages("wasNotGreaterThan", left, right),
+            FailureMessages("wasGreaterThan", left, right)
           )
       }
     def <=[T <% Ordered[T]](right: T): Matcher[T] =
@@ -811,8 +816,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: T) =
           MatcherResult(
             left <= right,
-            Resources("wasNotLessThanOrEqualTo", left.toString, right.toString),
-            Resources("wasLessThanOrEqualTo", left.toString, right.toString)
+            FailureMessages("wasNotLessThanOrEqualTo", left, right),
+            FailureMessages("wasLessThanOrEqualTo", left, right)
           )
       }
     def >=[T <% Ordered[T]](right: T): Matcher[T] =
@@ -820,8 +825,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: T) =
           MatcherResult(
             left >= right,
-            Resources("wasNotGreaterThanOrEqualTo", left.toString, right.toString),
-            Resources("wasGreaterThanOrEqualTo", left.toString, right.toString)
+            FailureMessages("wasNotGreaterThanOrEqualTo", left, right),
+            FailureMessages("wasGreaterThanOrEqualTo", left, right)
           )
       }
   }
@@ -840,8 +845,8 @@ private[scalatest] trait Matchers extends Assertions {
           import doubleTolerance._
           MatcherResult(
             left <= right + tolerance && left >= right - tolerance,
-            Resources("wasNotPlusOrMinus", left.toString, right.toString, tolerance.toString),
-            Resources("wasPlusOrMinus", left.toString, right.toString, tolerance.toString)
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance)
           )
         }
       }
@@ -851,8 +856,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: AnyRef) =
           MatcherResult(
             left eq right,
-            Resources("wasNotSameInstanceAs", left.toString, right.toString),
-            Resources("wasSameInstanceAs", left.toString, right.toString)
+            FailureMessages("wasNotSameInstanceAs", left, right),
+            FailureMessages("wasSameInstanceAs", left, right)
           )
       }
 
@@ -861,8 +866,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: Boolean) =
           MatcherResult(
             left == right,
-            Resources("wasNot", left.toString, right.toString),
-            Resources("was", left.toString, right.toString)
+            FailureMessages("wasNot", left, right),
+            FailureMessages("was", left, right)
           )
       }
 
@@ -882,8 +887,8 @@ private[scalatest] trait Matchers extends Assertions {
         def apply(left: Option[_]) = {
           MatcherResult(
             left == None,
-            Resources("wasNotNone", left),
-            Resources("wasNone", left)
+            FailureMessages("wasNotNone", left),
+            FailureMessages("wasNone", left)
           )
         }
       }
@@ -923,31 +928,31 @@ private[scalatest] trait Matchers extends Assertions {
         val methodArray =
           for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
             yield m
-        
+
         methodArray.length match {
           case 0 =>
             throw new IllegalArgumentException(
-              Resources(
+              FailureMessages(
                 if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
                 left,
-                methodNameToInvoke,
-                methodNameToInvokeWithIs
+                UnquotedString(methodNameToInvoke),
+                UnquotedString(methodNameToInvokeWithIs)
               )
             )
           case 1 =>
             val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
             MatcherResult(
               result,
-              Resources("wasNot", left.toString, rightNoTick.toString),
-              Resources("was", left.toString, rightNoTick.toString)
+              FailureMessages("wasNot", left, UnquotedString(rightNoTick)),
+              FailureMessages("was", left, UnquotedString(rightNoTick))
             )
           case _ => // Should only ever be 2, but just in case
             throw new IllegalArgumentException(
-              Resources(
+              FailureMessages(
                 if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
                 left,
-                methodNameToInvoke,
-                methodNameToInvokeWithIs
+                UnquotedString(methodNameToInvoke),
+                UnquotedString(methodNameToInvokeWithIs)
               )
             )
         }
@@ -960,8 +965,8 @@ private[scalatest] trait Matchers extends Assertions {
             case leftString: String => 
               MatcherResult(
                 leftString.length == 0,
-                Resources("wasNotEmpty", left.toString),
-                Resources("wasEmpty", left.toString)
+                FailureMessages("wasNotEmpty", left),
+                FailureMessages("wasEmpty", left)
               )
             case _ => matcherUsingReflection(left)
           }
@@ -983,8 +988,8 @@ private[scalatest] trait Matchers extends Assertions {
       def apply(left: T) =
         MatcherResult(
           left endsWith right,
-          Resources("didNotEndWith", left, right),
-          Resources("endedWith", left, right)
+          FailureMessages("didNotEndWith", left, right),
+          FailureMessages("endedWith", left, right)
         )
     }
 */
@@ -1015,8 +1020,8 @@ private[scalatest] trait Matchers extends Assertions {
       def apply(left: Boolean) =
         MatcherResult(
           left,
-          Resources("booleanExpressionWasNot", "true"),
-          Resources("booleanExpressionWas", "true")
+          FailureMessages("booleanExpressionWasNot", true),
+          FailureMessages("booleanExpressionWas", true)
         )
     }
 
@@ -1025,8 +1030,8 @@ private[scalatest] trait Matchers extends Assertions {
       def apply(left: Boolean) =
         MatcherResult(
           !left,
-          Resources("booleanExpressionWasNot", "false"),
-          Resources("booleanExpressionWas", "false")
+          FailureMessages("booleanExpressionWasNot", false),
+          FailureMessages("booleanExpressionWas", false)
         )
     }
 
@@ -1036,14 +1041,14 @@ private[scalatest] trait Matchers extends Assertions {
           if (left.isEmpty) 
             MatcherResult(
               false,
-              Resources("wasNone", left),
-              Resources("wasSome", left)
+              FailureMessages("wasNone", left),
+              FailureMessages("wasSome", left)
             )
           else
             MatcherResult(
               left.get == payload,
-              Resources("wasSomeWrongValue", left, left.get.toString),
-              Resources("wasSomeRightValue", left, left.get.toString)
+              FailureMessages("wasSomeWrongValue", left, left.get),
+              FailureMessages("wasSomeRightValue", left, left.get)
             )
         }
       }
