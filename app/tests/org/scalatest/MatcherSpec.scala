@@ -11,9 +11,10 @@ class MatcherSpec extends Spec with Matchers {
     }
 
     "should throw an assertion error when not equal" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 should equal (2)
       }
+      assert(caught.getMessage === "1 did not equal 2")
     }
 
     "should do nothing when not equal and used with shouldNot" - {
@@ -23,9 +24,10 @@ class MatcherSpec extends Spec with Matchers {
     }
 
     "should throw an assertion error when equal but used with shouldNot" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 shouldNot equal (1)
       }
+      assert(caught.getMessage === "1 equaled 1")
     }
   }
 
@@ -38,9 +40,10 @@ class MatcherSpec extends Spec with Matchers {
     }
 
     "should throw an assertion error when not equal" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 shouldEqual 2
       }
+      assert(caught.getMessage === "1 did not equal 2")
     }
 
     "should do nothing when not equal and used with shouldNot" - {
@@ -50,9 +53,10 @@ class MatcherSpec extends Spec with Matchers {
     }
 
     "should throw an assertion error when equal but used with shouldNot" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 shouldNotEqual 1
       }
+      assert(caught.getMessage === "1 equaled 1")
     }
   }
 
@@ -69,9 +73,10 @@ class MatcherSpec extends Spec with Matchers {
       }
 
       "should throw an assertion error when not equal" - {
-        intercept(classOf[AssertionError]) {
+        val caught = intercept(classOf[AssertionError]) {
           false should be (true)
         }
+        assert(caught.getMessage === "false was not true")
       }
     }
 
@@ -84,10 +89,11 @@ class MatcherSpec extends Spec with Matchers {
       }
 
       "should throw an assertion error when non-null compared to null" - {
-        intercept(classOf[AssertionError]) {
+        val caught = intercept(classOf[AssertionError]) {
           val o = "Helloooooo"
           o should be (null)
         }
+        assert(caught.getMessage === "\"Helloooooo\" was not null")
       }
 
       "should do nothing when non-null is compared to not null" - {
