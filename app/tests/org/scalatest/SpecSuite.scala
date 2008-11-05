@@ -3,7 +3,7 @@ package org.scalatest
 class SpecSuite extends FunSuite {
 
   test("three fancy specifiers should be invoked in order") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -27,7 +27,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("three plain-old specifiers should be invoked in order") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -51,7 +51,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("three fancy specifiers should be invoked in order when two are surrounded by a plain-old describer") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -77,7 +77,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("three fancy specifiers should be invoked in order when two are surrounded by an fancy describer") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -103,7 +103,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("three plain-old specifiers should be invoked in order when two are surrounded by a plain-old describe") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -129,7 +129,7 @@ class SpecSuite extends FunSuite {
   }
    
   test("two fancy specifiers should show up in order of appearance in testNames") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       "it should get invoked" - {
@@ -148,7 +148,7 @@ class SpecSuite extends FunSuite {
   }
  
   test("two plain-old specifiers should show up in order of appearance in testNames") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       specify("it should get invoked") {
@@ -167,7 +167,7 @@ class SpecSuite extends FunSuite {
   }
  
   test("fancy specifier test names should include an enclosing describe string, separated by a space") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         "should allow me to pop" - {}
         "should allow me to push" - {}
@@ -180,7 +180,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("plain-old specifier test names should include an enclosing describe string, separated by a space") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         specify("must allow me to pop") {}
         specify("must allow me to push") {}
@@ -193,7 +193,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("fancy specifier test names should properly nest descriptions in test names") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
           "should allow me to pop" - {}
@@ -210,7 +210,7 @@ class SpecSuite extends FunSuite {
   }
   
   test("plain-old test names should properly nest plain-old descriptions in test names") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
           specify("must allow me to pop") {}
@@ -227,7 +227,7 @@ class SpecSuite extends FunSuite {
   }
   
   test("should be able to mix in BeforeAndAfter without any problems") {
-    class MySpec extends Spec with Matchers with BeforeAndAfter {
+    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
       describe("A Stack") {
         describe("(when not empty)") {
           "should allow me to pop" - {}
@@ -260,7 +260,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -288,7 +288,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("it must start with proper words") {}
     }
     val a = new MySpec
@@ -316,7 +316,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -344,7 +344,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("it must start with proper words") {}
     }
     val a = new MySpec
@@ -372,7 +372,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should start with proper words" - { fail() }
     }
     val a = new MySpec
@@ -400,7 +400,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("it must start with proper words") { fail() }
     }
     val a = new MySpec
@@ -452,7 +452,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "My Spec" -- {
         "should start with proper words" - {}
       }
@@ -508,7 +508,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("My Spec") {
         specify("must start with proper words") {}
       }
@@ -564,7 +564,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "My Spec" -- {
         "should start with proper words" - {}
       }
@@ -620,7 +620,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("My Spec") {
         specify("must start with proper words") {}
       }
@@ -676,7 +676,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "My Spec" -- {
         "should start with proper words" - { fail() }
       }
@@ -732,7 +732,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("My Spec") {
         specify("must start with proper words") { fail() }
       }
@@ -790,7 +790,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "My" -- {
         "Spec" -- {
           "should start with proper words" - {}
@@ -848,7 +848,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("My") {
         describe("Spec") {
           specify("must start with proper words") {}
@@ -906,7 +906,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "My" -- {
         "Spec" -- {
           "should start with proper words" - {}
@@ -964,7 +964,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("My") {
         describe("Spec") {
           specify("must start with proper words") {}
@@ -1022,7 +1022,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "My" -- {
         "Spec" -- {
           "should start with proper words" - { fail() }
@@ -1080,7 +1080,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("My") {
         describe("Spec") {
           specify("must start with proper words") { fail() }
@@ -1119,7 +1119,7 @@ class SpecSuite extends FunSuite {
     def myBehavior(i: Int) = new Behavior {
       "it should start with proper words" - {}
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
     }
     val a = new MySpec
@@ -1150,7 +1150,7 @@ class SpecSuite extends FunSuite {
     def myBehavior(i: Int) = new Behavior {
       specify("it must start with proper words") {}
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
     }
     val a = new MySpec
@@ -1181,7 +1181,7 @@ class SpecSuite extends FunSuite {
     def myBehavior(i: Int) = new Behavior {
       "it should start with proper words" - {}
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
     }
     val a = new MySpec
@@ -1212,7 +1212,7 @@ class SpecSuite extends FunSuite {
     def myBehavior(i: Int) = new Behavior {
       specify("it must start with proper words") {}
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
     }
     val a = new MySpec
@@ -1243,7 +1243,7 @@ class SpecSuite extends FunSuite {
     def myBehavior(i: Int) = new Behavior {
       "it should start with proper words" - { fail() }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
     }
     val a = new MySpec
@@ -1274,7 +1274,7 @@ class SpecSuite extends FunSuite {
     def myBehavior(i: Int) = new Behavior {
       specify("it must start with proper words") { fail() }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
     }
     val a = new MySpec
@@ -1329,7 +1329,7 @@ class SpecSuite extends FunSuite {
     def myBehavior(i: Int) = new Behavior {
       "should start with proper words" - {}
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("My Spec") {
         1 should behave like myBehavior
       }
@@ -1346,7 +1346,7 @@ class SpecSuite extends FunSuite {
 
   // Huh? what was I testing here?
   test("An empty describe shouldn't throw an exception") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("this will be empty") {}
     }
     val a = new MySpec
@@ -1356,7 +1356,7 @@ class SpecSuite extends FunSuite {
   test("Only a passed test name should be invoked.") {
     var correctTestWasInvoked = false
     var wrongTestWasInvoked = false
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should be invoked" - {
         correctTestWasInvoked = true
       }
@@ -1372,7 +1372,7 @@ class SpecSuite extends FunSuite {
   
   test("Goodies should make it through to runTest") {
     var foundMyGoodie = false
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
         foundMyGoodie = goodies.contains("my goodie")
         super.runTest(testName, reporter, stopper, goodies)
@@ -1394,7 +1394,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -1411,7 +1411,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should start with proper words" - { fail() }
     }
     val a = new MySpec
@@ -1429,7 +1429,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "A Stack" -- {
         "should push and pop properly" - {}
       }
@@ -1449,7 +1449,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when working right)") {
           "should push and pop properly" - {}
@@ -1462,7 +1462,7 @@ class SpecSuite extends FunSuite {
   }
   
   test("expectedTestCount is the number of fancy specifiers if no shares") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should one" - {}
       "it should two" - {}
       describe("behavior") {
@@ -1476,7 +1476,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("expectedTestCount is the number of plain-old specifiers if no shares") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("must one") {}
       specify("must two") {}
       describe("behavior") {
@@ -1499,7 +1499,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("this thing must start with proper words") {}
     }
     val a = new MySpec
@@ -1516,7 +1516,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("this thing must start with proper words") {}
     }
     val a = new MySpec
@@ -1533,7 +1533,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("this thing must start with proper words") { fail() }
     }
     val a = new MySpec
@@ -1551,7 +1551,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         specify("needs to push and pop properly") {}
       }
@@ -1610,7 +1610,7 @@ class SpecSuite extends FunSuite {
         ensureSpecReport(report)
 	  }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should send SpecReports" - {
         assert(true)
       }
@@ -1639,7 +1639,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -1662,7 +1662,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       specify("My spec text must have the proper words") {}
     }
     val a = new MySpec
@@ -1685,7 +1685,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "A Stack" -- {
         "should start with proper words" - {}
       }
@@ -1710,7 +1710,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         specify("My short name must have the proper words") {}
       }
@@ -1735,7 +1735,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "A Stack" -- {
         "(when empty)" -- {
           "should start with proper words" - {}
@@ -1762,7 +1762,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when empty)") {
           specify("My short name must have the proper words") {}
@@ -1790,7 +1790,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
           specify("might allow me to pop") {
@@ -1830,7 +1830,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         specify("should allow me to push") {}
       }
@@ -1878,7 +1878,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       "it should be at level 0" - {}
       "it should also be at level 0" - { fail() }
     }
@@ -1941,7 +1941,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("my describe clause") {
         "should be at level 1" - {}
         "should also be at level 1" - { fail() }
@@ -1961,7 +1961,7 @@ class SpecSuite extends FunSuite {
  
   // Testing Shared behaviors
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
-    class MySpec extends Spec with Matchers with BeforeAndAfter {
+    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) = new Behavior {
         "should be invoked" - {
@@ -1984,7 +1984,7 @@ class SpecSuite extends FunSuite {
   }
   
   test("two examples in a shared behavior should get invoked") {
-    class MySpec extends Spec with Matchers with BeforeAndAfter {
+    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
       def invocationVerifier(i: Int) = new Behavior {
@@ -2012,7 +2012,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("three examples in a shared behavior should be invoked in order") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -2039,7 +2039,7 @@ class SpecSuite extends FunSuite {
   }
   
   test("three examples in a shared behavior should not get invoked at all if the behavior isn't used in a like clause") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -2075,7 +2075,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers with BeforeAndAfter {
+    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) = new Behavior {
         "it should be invoked" - {
@@ -2098,7 +2098,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) = new Behavior {
         "should pop properly" - {
@@ -2115,8 +2115,8 @@ class SpecSuite extends FunSuite {
   }
  
   test("expectedTestCount should not include tests in shares if never called") {
-    class MySpec extends Spec with Matchers {
-      class Misbehavior extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
+      class Misbehavior extends Spec with ShouldMatchers {
         "should six" - {}
         "should seven" - {}
       }
@@ -2133,7 +2133,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("expectedTestCount should include tests in a share that is called") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       def misbehavior(i: Int) = new Behavior {
         "should six" - {}
         "should seven" - {}
@@ -2152,7 +2152,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("expectedTestCount should include tests in a share that is called twice") {
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       def misbehavior(i: Int) = new Behavior {
         "should six" - {}
         "should seven" - {}
@@ -2188,7 +2188,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with Matchers {
+    class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
           "should allow me to pop" - {
