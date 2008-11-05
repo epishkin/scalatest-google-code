@@ -960,8 +960,8 @@ private[scalatest] trait Matchers extends Assertions {
       new Matcher[S] {
         def apply(left: S) = {
   
-          left match { // TODO: I think I made a mistake here too, by just assuming empty. Could be another symbol.
-            case leftString: String => 
+          left match {
+            case leftString: String if right.toString == "'empty" => 
               MatcherResult(
                 leftString.length == 0,
                 FailureMessages("wasNotEmpty", left),
