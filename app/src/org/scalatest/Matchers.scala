@@ -206,6 +206,25 @@ private[scalatest] trait Matchers extends Assertions {
     def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
     def shouldEqual(rightOperand: Any) { assert(leftOperand === rightOperand) }
     def shouldNotEqual(rightOperand: Any) { assert(leftOperand !== rightOperand) }
+    def shouldMatch(rightOperand: PartialFunction[T, Boolean]) {
+      if (rightOperand.isDefinedAt(leftOperand)) {
+        val result = rightOperand(leftOperand)
+        if (!result) {
+          throw new AssertionError(Resources("matchResultedInFalse", leftOperand.toString))
+        }
+      }
+      else {
+        throw new AssertionError(Resources("didNotMatch", leftOperand.toString))
+      }
+    }
+    def shouldNotMatch(rightOperand: PartialFunction[T, Boolean]) {
+      if (rightOperand.isDefinedAt(leftOperand)) {
+        val result = rightOperand(leftOperand)
+        if (result) {
+          throw new AssertionError(Resources("matchResultedInTrue", leftOperand.toString))
+        }
+      }
+    }
   }
 
   private[scalatest] class ShouldalizerForBlocks(left: => Any) {
