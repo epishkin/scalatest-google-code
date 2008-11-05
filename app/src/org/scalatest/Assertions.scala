@@ -85,7 +85,7 @@ trait Assertions {
         None
       else {
         val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
-        Some(Resources("didNotEqual", Suite.decoratedToStringValue(leftee), Suite.decoratedToStringValue(rightee)))
+        Some(FailureMessages("didNotEqual", leftee, rightee))
       }
 
     def !==(right: Any) =
@@ -93,7 +93,7 @@ trait Assertions {
         None
       else {
         val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
-        Some(Resources("equaled", Suite.decoratedToStringValue(leftee), Suite.decoratedToStringValue(rightee)))
+        Some(FailureMessages("equaled", leftee, rightee))
       }
   }
 
@@ -289,8 +289,8 @@ trait Assertions {
   def expect(expected: Any, message: Any)(f: => Any): Unit = {
     val actual = f
     if (actual != expected) {
-        val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
-          val s = Resources("expectedButGot", Suite.decoratedToStringValue(exp), Suite.decoratedToStringValue(act))
+      val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
+      val s = FailureMessages("expectedButGot", exp, act)
       throw new AssertionError(message + "\n" + s)
     }
   }
