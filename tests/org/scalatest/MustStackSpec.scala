@@ -25,7 +25,7 @@ trait MustStackBehaviors extends MustMatchers {
     "must remove the top item on pop" - {
       val size = stack.size
       stack.pop mustEqual lastItemAdded
-      stack.size mustEqual (size - 1)
+      stack.size mustEqual size - 1
     }
   }
   
@@ -38,7 +38,7 @@ trait MustStackBehaviors extends MustMatchers {
     "must add to the top on push" - {
       val size = stack.size
       stack.push(7)
-      stack.size mustEqual (size + 1)
+      stack.size mustEqual size + 1
       stack.peek mustEqual 7
     }
   }
