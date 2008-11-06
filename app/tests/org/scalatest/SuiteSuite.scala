@@ -560,20 +560,44 @@ class SuiteSuite extends Suite {
         Suite.diffStrings("X0123456789012345678901234567890123456789X", "X01234567890123456789a01234567890123456789X")
     }
   }
-  
+
   def testDecorateToStringValue() {
-    expect("1") { FailureMessages.decorateToStringValue(1.toByte) }
-    expect("1") { FailureMessages.decorateToStringValue(1.toShort) }
-    expect("1") { FailureMessages.decorateToStringValue(1) }
-    expect("10") { FailureMessages.decorateToStringValue(10L) }
-    expect("1.0") { FailureMessages.decorateToStringValue(1.0f) }
-    expect("1.0") { FailureMessages.decorateToStringValue(1.0) }
-    expect("false") { FailureMessages.decorateToStringValue(false) }
-    expect("true") { FailureMessages.decorateToStringValue(true) }
-    expect("<(), the Unit value>") { FailureMessages.decorateToStringValue(()) }
-    expect("\"Howdy!\"") { FailureMessages.decorateToStringValue("Howdy!") }
-    expect("'c'") { FailureMessages.decorateToStringValue('c') }
-    expect("Hey!") { FailureMessages.decorateToStringValue(new Object { override def toString = "Hey!"}) }
+    expect("1") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, 1.toByte)
+    }
+    expect("1") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, 1.toShort)
+    }
+    expect("1") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, 1)
+    }
+    expect("10") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, 10L)
+    }
+    expect("1.0") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, 1.0f)
+    }
+    expect("1.0") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, 1.0)
+    }
+    expect("false") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, false)
+    }
+    expect("true") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, true)
+    }
+    expect("<(), the Unit value>") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, ())
+    }
+    expect("\"Howdy!\"") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, "Howdy!")
+    }
+    expect("'c'") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, 'c')
+    }
+    expect("Hey!") {
+      invokePrivate(FailureMessages, classOf[String], 'decorateToStringValue, new AnyRef { override def toString = "Hey!"})
+    }
   }
 }
 
