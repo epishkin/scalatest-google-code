@@ -27,7 +27,7 @@ import java.text.MessageFormat
  */
 private[scalatest] object FailureMessages {
   
-  private[scalatest] def decorateToStringValue(o: Any): String =
+  private def decorateToStringValue(o: Any): String =
     o match {
       case null => "null"
       case aUnit: Unit => "<(), the Unit value>"

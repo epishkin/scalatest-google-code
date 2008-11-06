@@ -1591,6 +1591,90 @@ trait Suite extends Assertions with ExecuteAndRun {
     case cr: CatchReporter => cr
     case _ => new CatchReporter(reporter)
   }
+
+  protected def invokePrivate[T](target: AnyRef, resultType: Class[T], methodName: Symbol, args: Any*): T = {
+
+    // If 'getMessage passed as methodName, methodNameToInvoke would be "getMessage"
+    val methodNameToInvoke = methodName.toString.substring(1)
+
+    def isMethodToInvoke(m: Method) = {
+
+      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+      val simpleName = m.getName
+      val paramTypes = m.getParameterTypes
+      val candidateResultType = m.getReturnType
+      val isPrivate = Modifier.isPrivate(m.getModifiers())
+
+      // I think until people complain, the result type should be exactly the same type as the
+      // passed class. This makes it easier to match the invokePrivate call with the actual private
+      // method. It is arguable I should allow the actual return type to be a subtype, but now that
+      // I think more about it, maybe that's not even knowable for sure because of erasure. So the result
+      // type must match exactly. 
+
+      // The AnyVals must go in as Java wrapper types. But the type is still Any, so this needs to be converted
+      // to AnyRef for the compiler to be happy. Implicit conversions are ambiguous, and really all that's needed
+      // is a type cast, so I use isInstanceOf.
+      def argsHaveValidTypes: Boolean = {
+
+        // First, the arrays must have the same length:
+        if (args.length == paramTypes.length) {
+          val zipped = args.toList zip paramTypes.toList
+
+          // The args classes need only be assignable to the parameter type. So therefore the parameter type
+          // must be assignable *from* the corresponding arg class type.
+          val invalidArgs =
+            for ((arg, paramType) <- zipped if !paramType.isAssignableFrom(arg.asInstanceOf[AnyRef].getClass)) yield arg
+          invalidArgs.length == 0
+        }
+        else false
+      }
+
+/*
+      // org$scalatest$FailureMessages$$decorateToStringValue
+// 0 org$scalatest$FailureMessages$$decorateToStringValue
+     [java] 1 true
+     [java] 2 false
+     [java] false
+     [java] false
+     [java] ^&^&^&^&^&^& invalidArgs.length is: 0
+     [java] 5 true
+
+      println("0 "+ simpleName)
+      println("1 "+ isInstanceMethod)
+      println("2 "+ isPrivate)
+      println("3 "+ simpleName == methodNameToInvoke)
+      println("4 "+ candidateResultType == resultType)
+      println("5 "+ argsHaveValidTypes)
+  This ugliness. I'll ignore the result type for now. Sheesh. Investigate that one. And I'll
+  have to ignore private too for now, because in the bytecodes it isn't even private. And I'll
+  also allow methods that end with $$<simpleName> if the simpleName doesn't match
+*/
+
+      // isInstanceMethod && isPrivate && simpleName == methodNameToInvoke && candidateResultType == resultType  && argsHaveValidTypes
+      isInstanceMethod && (simpleName == methodNameToInvoke || simpleName.endsWith("$$"+ methodNameToInvoke)) && argsHaveValidTypes
+    }
+
+    // Store in an array, because may have both isEmpty and empty, in which case I
+    // will throw an exception.
+    val methodArray =
+      for (m <- target.getClass.getDeclaredMethods; if isMethodToInvoke(m))
+        yield m
+
+    if (methodArray.length == 0)
+      throw new IllegalArgumentException("Can't find the method")
+    else if (methodArray.length > 1)
+      throw new IllegalArgumentException("Found two methods")
+    else {
+      val anyRefArgs = // Need to box these myself, because that's invoke is expecting an Array[Object], which maps to an Array[AnyRef]
+        for (arg <- args) yield arg match {
+          case anyVal: AnyVal => anyVal.asInstanceOf[AnyRef]
+          case anyRef: AnyRef => anyRef
+        }
+      val privateMethodToInvoke = methodArray(0)
+      privateMethodToInvoke.setAccessible(true)
+      privateMethodToInvoke.invoke(target, anyRefArgs.toArray).asInstanceOf[T]
+    }
+  }
 }
 
 private[scalatest] object Suite {
