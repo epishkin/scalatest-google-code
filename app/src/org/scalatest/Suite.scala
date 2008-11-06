@@ -1630,6 +1630,12 @@ trait Suite extends Assertions with ExecuteAndRun {
       }
 
 /*
+The rules may be that private mehods in standalone objects current get name mangled and made public,
+perhaps because there are two versions of each private method, one in the actual singleton and one int
+the class that also has static methods, and one calls the other. So if this is true, then I may change this
+to say if simpleName matches exactly and its private, or if ends with simpleName prepended by two dollar signs,
+then let it be public, but look for whatever the Scala compiler puts in there to mark it as private at the Scala source level.
+
       // org$scalatest$FailureMessages$$decorateToStringValue
 // 0 org$scalatest$FailureMessages$$decorateToStringValue
      [java] 1 true

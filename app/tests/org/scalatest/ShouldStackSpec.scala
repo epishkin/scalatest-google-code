@@ -25,7 +25,7 @@ trait ShouldStackBehaviors extends ShouldMatchers {
     "should remove the top item on pop" - {
       val size = stack.size
       stack.pop shouldEqual lastItemAdded
-      stack.size shouldEqual (size - 1)
+      stack.size shouldEqual size - 1
     }
   }
   
@@ -38,7 +38,7 @@ trait ShouldStackBehaviors extends ShouldMatchers {
     "should add to the top on push" - {
       val size = stack.size
       stack.push(7)
-      stack.size shouldEqual (size + 1)
+      stack.size shouldEqual size + 1
       stack.peek shouldEqual 7
     }
   }
