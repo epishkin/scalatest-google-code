@@ -1745,12 +1745,18 @@ class MatcherSpec extends Spec with ShouldMatchers {
       List(1, 2, 3) shouldMatch {
         case 1 :: _ :: 3 :: Nil => true
       }
+      List(1, 2, 3) shouldMatch {
+        case 1 :: a :: 3 :: Nil => a == 2
+      }
       List(1, 2, 4) shouldNotMatch {
         case 1 :: _ :: 3 :: Nil => true
         case _ => false
       }
       List(1, 2, 4) shouldNotMatch {
         case 1 :: _ :: 3 :: Nil => true
+      }
+      List(1, 2, 3) shouldNotMatch {
+        case 1 :: a :: 3 :: Nil => a == 5
       }
     }
 
