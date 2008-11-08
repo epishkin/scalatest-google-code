@@ -544,8 +544,8 @@ class FunSuiteSuite extends Suite {
     }
     intercept(classOf[IllegalArgumentException]) {
       new FunSuite {
-        test("test this") {}
-        test("test this") {}
+        ignore("test this") {}
+        ignore("test this") {}
       }
     }
   }
