@@ -286,10 +286,10 @@ trait Assertions {
    * @throws AssertionError if the passed function does not complete abruptly with an exception that is assignable to the 
    *     passed <code>Class</code>.
    */
-  def expect(expected: Any, message: Any)(f: => Any): Unit = {
-    val actual = f
-    if (actual != expected) {
-      val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
+  def expect(expected: Any, message: Any)(actual: => Any) {
+    val actualResult = actual // only execute by name once, in case there are side effects
+    if (actualResult != expected) {
+      val (act, exp) = Suite.getObjectsForFailureMessage(actualResult, expected)
       val s = FailureMessages("expectedButGot", exp, act)
       throw new AssertionError(message + "\n" + s)
     }
@@ -308,8 +308,8 @@ trait Assertions {
    * @throws AssertionError if the passed function does not complete abruptly with an exception that is assignable to the 
    *     passed <code>Class</code>.
    */
-  def expect(expected: Any)(f: => Any): Unit = {
-    expect(expected, "")(f)
+  def expect(expected: Any)(actual: => Any) {
+    expect(expected, "")(actual)
   }
   
     /**
