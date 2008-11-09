@@ -103,14 +103,16 @@ class MatcherSpec extends Spec with ShouldMatchers {
       }
 
       "should throw an assertion error when null compared to not null" - {
-        intercept(classOf[AssertionError]) {
+        val caught1 = intercept(classOf[AssertionError]) {
           val o: String = null
           o should not { be (null) }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught1.getMessage === "null was null")
+        val caught2 = intercept(classOf[AssertionError]) {
           val o: String = null
           o shouldNot be (null)
         }
+        assert(caught2.getMessage === "null was null")
       }
 
       "should work when used in a logical expression" - {
@@ -133,7 +135,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
         val caught1 = intercept(classOf[AssertionError]) {
           nonEmptyList should be (Nil)
         }
-        assert(caught1.getMessage === "List(Helloooooo) did not equal List()")
+        assert(caught1.getMessage === "List(Helloooooo) was not List()")
         val caught2 = intercept(classOf[AssertionError]) {
           nonEmptyList should equal (Nil)
         }
@@ -150,18 +152,25 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
       "should throw an assertion error when null compared to not null" - {
         val emptyList = List[String]()
-        intercept(classOf[AssertionError]) {
+        val caught1 = intercept(classOf[AssertionError]) {
           emptyList should not { be (Nil) }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught1.getMessage === "List() was List()")
+
+        val caught2 = intercept(classOf[AssertionError]) {
           emptyList shouldNot be (Nil)
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught2.getMessage === "List() was List()")
+
+        val caught3 = intercept(classOf[AssertionError]) {
           emptyList should not { equal (Nil) }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught3.getMessage === "List() equaled List()")
+
+        val caught4 = intercept(classOf[AssertionError]) {
           emptyList shouldNot equal (Nil)
         }
+        assert(caught4.getMessage === "List() equaled List()")
       }
 
       "should work when used in a logical expression" - {
@@ -201,31 +210,46 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
       "should throw an assertion error when None compared to not None" - {
         val none = None
-        intercept(classOf[AssertionError]) {
+        val caught1 = intercept(classOf[AssertionError]) {
           none should not { be (None) }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught1.getMessage === "None was None")
+
+        val caught2 = intercept(classOf[AssertionError]) {
           none shouldNot be (None)
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught2.getMessage === "None was None")
+
+        val caught3 = intercept(classOf[AssertionError]) {
           none should not { equal (None) }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught3.getMessage === "None equaled None")
+
+        val caught4 = intercept(classOf[AssertionError]) {
           none shouldNot equal (None)
         }
+        assert(caught4.getMessage === "None equaled None")
+
         val noString: Option[String] = None
-        intercept(classOf[AssertionError]) {
+        val caught5 = intercept(classOf[AssertionError]) {
           noString should not { be (None) }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught5.getMessage === "None was None")
+
+        val caught6 = intercept(classOf[AssertionError]) {
           noString shouldNot be (None)
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught6.getMessage === "None was None")
+
+        val caught7 = intercept(classOf[AssertionError]) {
           noString should not { equal (None) }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught7.getMessage === "None equaled None")
+
+        val caught8 = intercept(classOf[AssertionError]) {
           noString shouldNot equal (None)
         }
+        assert(caught8.getMessage === "None equaled None")
       }
 
       "should work when used in a logical expression" - {
@@ -1085,6 +1109,9 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val otherMap = Map("Howdy" -> 1)
       otherMap should have key "Howdy"
       otherMap should equal { Map("Howdy" -> 1) }
+      import scala.collection.immutable.TreeMap
+      val treeMap = TreeMap(1 -> "hi", 2 -> "howdy")
+      treeMap should have key 1
     }
 
     "should work with map and key, in a logical expression" - {

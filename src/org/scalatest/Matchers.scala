@@ -806,7 +806,16 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
     }
 
-    def apply(right: Nil.type): Matcher[List[_]] = equal(right)
+    def apply(right: Nil.type): Matcher[List[_]] =
+      new Matcher[List[_]] {
+        def apply(left: List[_]) = {
+          MatcherResult(
+            left == Nil,
+            FailureMessages("wasNotNil", left),
+            FailureMessages("wasNil", left)
+          )
+        }
+      }
 
     def apply(right: Any): Matcher[Any] =
       Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
