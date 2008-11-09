@@ -221,7 +221,7 @@ trait Assertions {
    * @throws AssertionError if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
    */
-  def intercept(clazz: java.lang.Class[_ <: AnyRef], message: Any)(f: => Unit): Throwable = {
+  def intercept[T <: AnyRef](clazz: java.lang.Class[T], message: Any)(f: => Unit): T = {
     val caught = try {
       f
       None
@@ -241,7 +241,7 @@ trait Assertions {
     }
     caught match {
       case None => fail(message + "\n" + Resources("exceptionExpected", clazz.getName))
-      case Some(e) => e
+      case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
 
@@ -267,7 +267,7 @@ trait Assertions {
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
    */
-  def intercept(clazz: java.lang.Class[_ <: AnyRef])(f: => Unit): Throwable = {
+  def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Unit): T = {
     intercept(clazz, "")(f)
   }
 

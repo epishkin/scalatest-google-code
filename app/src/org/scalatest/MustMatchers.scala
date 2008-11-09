@@ -52,8 +52,8 @@ private[scalatest] trait MustMatchers extends BaseMatchers {
   }
 
   private[scalatest] class MustalizerForBlocks(left: => Any) {
-    def mustThrow(clazz: java.lang.Class[_ <: AnyRef]): Throwable = { intercept(clazz)(left) }
-    def mustNotThrow(clazz: java.lang.Class[Throwable]) {
+    def mustThrow[T <: AnyRef](clazz: java.lang.Class[T]): T = { intercept(clazz)(left) }
+    def mustNotThrow(clazz: java.lang.Class[Throwable]) { 
       try {
         left
       }

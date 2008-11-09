@@ -52,7 +52,7 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
   }
 
   private[scalatest] class ShouldalizerForBlocks(left: => Any) {
-    def shouldThrow(clazz: java.lang.Class[_ <: AnyRef]): Throwable = { intercept(clazz)(left) }
+    def shouldThrow[T <: AnyRef](clazz: java.lang.Class[T]): T = { intercept(clazz)(left) }
     def shouldNotThrow(clazz: java.lang.Class[Throwable]) {
       try {
         left
