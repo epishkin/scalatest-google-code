@@ -494,11 +494,16 @@ class SuiteSuite extends Suite with Pimp {
       throw new MyExceptionSubClass
     }
     // Try with a trait
-    trait MyTrait
+    trait MyTrait {
+      def someRandomMethod() {}
+    }
     class AnotherException extends RuntimeException with MyTrait
-    intercept(classOf[MyTrait]) {
+    val caught = intercept(classOf[MyTrait]) {
       throw new AnotherException
     }
+    // Make sure the result type is the type passed in, so I can 
+    // not cast and still invoke any method on it I want
+    caught.someRandomMethod()
   }
 
   def testThatInterceptReturnsTheCaughtException() {

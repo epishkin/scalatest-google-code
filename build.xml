@@ -123,6 +123,21 @@
 		<!-- Compile the Java code from ${tests} into ${build.tests} -->
 		<javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
 		<!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
+		<scalac srcdir="${tests}/org/scalatest/jmock" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+			<include name="**/*.scala" />
+		</scalac>
+		<scalac srcdir="${tests}/org/scalatest/junit" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+			<include name="**/*.scala" />
+		</scalac>
+		<scalac srcdir="${tests}/org/scalatest/prop" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+			<include name="**/*.scala" />
+		</scalac>
+		<scalac srcdir="${tests}/org/scalatest/testng" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+			<include name="**/*.scala" />
+		</scalac>
+		<scalac srcdir="${tests}/org/scalatest/tools" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+			<include name="**/*.scala" />
+		</scalac>
 		<scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
 			<include name="**/*.scala" />
 		</scalac>

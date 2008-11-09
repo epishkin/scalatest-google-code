@@ -1795,21 +1795,22 @@ class MatcherSpec extends Spec with ShouldMatchers {
      // After should/shouldNot, if an even number of tokens, you need parens on the last thing.
      // If an odd number of tokens, you need not put parens on the last thing, but usually could if you wanted to.
 
-     map should have key 8 // DONE
+     map should have key 8 // DONE haveKey(8)
      map shouldNot have key 8 // DONE
      map should { have key 8 and equal (Map(8 -> "eight")) } // DONE
 
-     map should have value "eleven" // DONE
+     map should have value "eleven" // DONE haveValue("eleven") haveValue("eleven")
      map shouldNot have value "eleven" // DONE
-
-     iterable should contain element 42 // DONE
+ 
+     iterable should contain element 42 // DONE contain(42)   containElement(42)
      iterable shouldNot contain element 42 // DONE
+     iterable should_not contain element 42 // DONE
      assert(iterable contains 42) // DONE
 
-     collection should have size 3 // DONE
+     collection should have size 3 // DONE     haveSize(3)
      collection shouldNot have size 3 // DONE
 
-     string should have length 0 // DONE
+     string should have length 0 // DONE      haveLength(0)
      string shouldNot have length 0 // DONE
 
      array should have length 9 // DONE
@@ -1835,9 +1836,9 @@ class MatcherSpec extends Spec with ShouldMatchers {
      object shouldNot be an openBook // DONE
      object shouldNot be an openBook // DONE
 
-     string should startWith substring "something" // DONE
+     string should startWith substring "something" // DONE   startWith("something")
      string shouldNot startWith substring "something" // DONE
-     string should endWith substring "something" // DONE
+     string should endWith substring "something" // DONE  endWith("something")
      string shouldNot endWith substring "something" // DONE
 
      buf.length should be (20) // DONE
@@ -1882,14 +1883,17 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
      object should be theSameInstanceAs anotherObjectReference // DONE
      object shouldNot be theSameInstanceAs anotherObjectReference // DONE
+     object should beTheSameInstanceAs(anotherObjectReference) // DONE
 
      string should include substring "bob" // DONE
      string shouldNot include substring "bob" // DONE
 
+     string shouldNot include("bob") // DONE
+
      ordered should be > 7 // DONE
      ordered should be >= 7 // DONE
      ordered should be < 7 // DONE
-     ordered should be <= 7 // DONE
+     ordered should be <= 7 // DONE ordered.should(be.<=(7))
 
      floatingPointNumber should be (7.0 exactly) // DONE
      floatingPointNumber should be (7.0 plusOrMinus 0.01) // DONE
@@ -1904,7 +1908,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
      string should fullyMatch regex """[a-zA-Z_]\w*""" // DONE
      string should include substring "howdy" // DONE
-     string should startWith substring "howdy" // DONE
+     string should startWith substring "howdy" // DONE string.should(startWith).substring("howdy")
      string should endWith substring "howdy" // DONE
      string should include regex "howdy" // DONE
      string should startWith regex "howdy" // DONE
