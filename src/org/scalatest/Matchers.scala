@@ -907,7 +907,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
   val have = new HaveWord // TODO: Should I just make these singleton objects?
-  val contain = new ContainWord // TODO: I think I forgot to do contain element x for the logical expressions
+  val contain = new ContainWord
   val include = new IncludeWord
   val fullyMatch = new FullyMatchWord
   val startWith = new StartWithWord
