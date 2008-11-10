@@ -1251,6 +1251,8 @@ class MatcherSpec extends Spec with ShouldMatchers {
       }
       assert(caught1.getMessage.indexOf("did not contain element") != -1)
 
+      set should { contain element 2 and equal (Set(1, 2, 3)) }
+
       val list = List("one", "two", "three")
       list should contain element "two"
       val caught2 = intercept(classOf[AssertionError]) {

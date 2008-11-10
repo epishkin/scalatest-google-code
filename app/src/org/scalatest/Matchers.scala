@@ -192,7 +192,18 @@ private[scalatest] trait BaseMatchers extends Assertions {
   }
   
   private[scalatest] class BehaveWord
-  private[scalatest] class ContainWord
+  private[scalatest] class ContainWord {
+    def element[T](expectedElement: T): Matcher[Iterable[T]] =
+      new Matcher[Iterable[T]] {
+        def apply(left: Iterable[T]) =
+          MatcherResult(
+            left.elements.contains(expectedElement), 
+            FailureMessages("didNotContainExpectedElement", left, expectedElement),
+            FailureMessages("containedExpectedElement", left, expectedElement)
+          )
+      }
+  }
+
   private[scalatest] class IncludeWord {
     def substring(expectedSubstring: String): Matcher[String] =
       new Matcher[String] {
@@ -483,7 +494,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     new ResultOfBeWordForAnyRef(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
 
   private[scalatest] class ResultOfBeWord[T](val left: T, val shouldBeTrue: Boolean) {
-    def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right) // TODO: I think these two are wrong
+    def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
 
