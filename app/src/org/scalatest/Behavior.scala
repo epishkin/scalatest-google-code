@@ -31,6 +31,10 @@ trait Behavior extends Assertions {
     registerExample(exampleRawName, false, f)
   }
     
+  def it(exampleRawName: String)(f: => Unit) {
+    specify(exampleRawName)(f)
+  }
+
   protected val like = new LikeWord
   class Likifier {
     def a(sharedBehavior: Behavior) {
