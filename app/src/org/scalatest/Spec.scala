@@ -67,6 +67,10 @@ trait Spec extends Suite {
     registerExample(exampleRawName, false, f)
   }
     
+  def it(exampleRawName: String)(f: => Unit) {
+    specify(exampleRawName)(f)
+  }
+
   protected def describe(name: String)(f: => Unit) {
     
     def insertBranch(newBranch: Branch, f: () => Unit) {
