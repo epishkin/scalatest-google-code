@@ -1567,7 +1567,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
       }
       assert(caught10.getMessage === "1 was not greater than or equal to 21")
     }
-  } //XXX
+  }
 
   "The floating point 'exactly' operator" -- {
     "should do nothing if the floating point number is exactly equal to the specified value" - {
@@ -1587,28 +1587,38 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val caught1 = intercept(classOf[AssertionError]) {
         sevenDotOh should be (7.0 exactly)
       }
+      assert(caught1.getMessage === "7.0001 was not 7.0")
+
       val caught2 = intercept(classOf[AssertionError]) {
         sevenDotOh shouldEqual 7.0
       }
+      assert(caught2.getMessage === "7.0001 did not equal 7.0")
+
       val caught3 = intercept(classOf[AssertionError]) {
         sevenDotOh shouldNot be (7.0001 exactly)
       }
+      assert(caught3.getMessage === "7.0001 was 7.0001")
 
       val sixDotOh: Float = 6.0001f
       val caught4 = intercept(classOf[AssertionError]) {
         sixDotOh should be (6.0f exactly)
       }
+      assert(caught4.getMessage === "6.0001 was not 6.0")
+
       val caught5 = intercept(classOf[AssertionError]) {
         sixDotOh shouldEqual 6.0f
       }
+      assert(caught5.getMessage === "6.0001 did not equal 6.0")
+
       val caught6 = intercept(classOf[AssertionError]) {
         sixDotOh shouldNot be (6.0001f exactly)
       }
-      assert(true) // TODO: test the failure message
+      assert(caught6.getMessage === "6.0001 was 6.0001")
     }
   }
-  "The floating point 'plusOrMinus' operator" -- {
-    "should do nothing if the floating point number is within the specified range" - {
+
+  "The floating point 'plusOrMinus' operator" --{
+    "should do nothing if the floating point number is within the specified range" -{
       val sevenDotOh = 7.0
       sevenDotOh should be (7.1 plusOrMinus 0.2)
       sevenDotOh should be (6.9 plusOrMinus 0.2)
@@ -1620,34 +1630,49 @@ class MatcherSpec extends Spec with ShouldMatchers {
       minusSevenDotOh shouldNot be (-7.5 plusOrMinus 0.2)
       minusSevenDotOh shouldNot be (-6.5 plusOrMinus 0.2)
     }
+
     "should throw AssertionError if the floating point number is not within the specified range" - {
       val sevenDotOh = 7.0
       val caught1 = intercept(classOf[AssertionError]) {
         sevenDotOh shouldNot be (7.1 plusOrMinus 0.2)
       }
+      assert(caught1.getMessage === "7.0 was 7.1 plus or minus 0.2")
+
       val caught2 = intercept(classOf[AssertionError]) {
         sevenDotOh shouldNot be (6.9 plusOrMinus 0.2)
       }
+      assert(caught2.getMessage === "7.0 was 6.9 plus or minus 0.2")
+
       val caught3 = intercept(classOf[AssertionError]) {
         sevenDotOh should be (7.5 plusOrMinus 0.2)
       }
+      assert(caught3.getMessage === "7.0 was not 7.5 plus or minus 0.2")
+
       val caught4 = intercept(classOf[AssertionError]) {
         sevenDotOh should be (6.5 plusOrMinus 0.2)
       }
+      assert(caught4.getMessage === "7.0 was not 6.5 plus or minus 0.2")
+
       val minusSevenDotOh = -7.0
       val caught5 = intercept(classOf[AssertionError]) {
         minusSevenDotOh shouldNot be (-7.1 plusOrMinus 0.2)
       }
+      assert(caught5.getMessage === "-7.0 was -7.1 plus or minus 0.2")
+
       val caught6 = intercept(classOf[AssertionError]) {
         minusSevenDotOh shouldNot be (-6.9 plusOrMinus 0.2)
       }
+      assert(caught6.getMessage === "-7.0 was -6.9 plus or minus 0.2")
+
       val caught7 = intercept(classOf[AssertionError]) {
         minusSevenDotOh should be (-7.5 plusOrMinus 0.2)
       }
+      assert(caught7.getMessage === "-7.0 was not -7.5 plus or minus 0.2")
+
       val caught8 = intercept(classOf[AssertionError]) {
         minusSevenDotOh should be (-6.5 plusOrMinus 0.2)
       }
-      assert(true) // TODO: test the failure message
+      assert(caught8.getMessage === "-7.0 was not -6.5 plus or minus 0.2")
     }
   }
 
@@ -1691,12 +1716,16 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
 
     "should throw AssertionError if the expected exception is not thrown" - {
-      intercept(classOf[AssertionError]) {
+
+      val caught1 = intercept(classOf[AssertionError]) {
         "Howdy".charAt(1) shouldThrow (classOf[StringIndexOutOfBoundsException])
-      } // TODO: Check messages. Try shouldNotThrow. Try throwing wrong exception. See tests for intercept.
-      intercept(classOf[AssertionError]) {
+      } // TODO: Try shouldNotThrow. Try throwing wrong exception. See tests for intercept.
+      assert(caught1.getMessage === "Expected exception java.lang.StringIndexOutOfBoundsException to be thrown, but no exception was thrown.")
+
+      val caught2 = intercept(classOf[AssertionError]) {
         "Howdy".charAt(-1) shouldThrow (classOf[ArrayIndexOutOfBoundsException])
       }
+      assert(caught2.getMessage === "Expected exception java.lang.ArrayIndexOutOfBoundsException to be thrown, but java.lang.StringIndexOutOfBoundsException was thrown.")
     }
   }
 
@@ -1736,71 +1765,109 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val caught1 = intercept(classOf[AssertionError]) {
         "1.7" shouldNot fullyMatch regex "1.7"
       }
+      assert(caught1.getMessage === "\"1.7\" fully matched the regular expression 1.7")
+
       val caught2 = intercept(classOf[AssertionError]) {
         "1.7" shouldNot fullyMatch regex decimal
       }
+      assert(caught2.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught3 = intercept(classOf[AssertionError]) {
         "-1.8" shouldNot fullyMatch regex decimal
       }
+      assert(caught3.getMessage === "\"-1.8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught4 = intercept(classOf[AssertionError]) {
         "8" shouldNot fullyMatch regex decimal
       }
+      assert(caught4.getMessage === "\"8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught5 = intercept(classOf[AssertionError]) {
         "1." shouldNot fullyMatch regex decimal
       }
+      assert(caught5.getMessage === "\"1.\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught6 = intercept(classOf[AssertionError]) {
         "eight" should fullyMatch regex decimal
       }
+      assert(caught6.getMessage === "\"eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught7 = intercept(classOf[AssertionError]) {
         "1.eight" should fullyMatch regex decimal
       }
+      assert(caught7.getMessage === "\"1.eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught8 = intercept(classOf[AssertionError]) {
         "one.8" should fullyMatch regex decimal
       }
+      assert(caught8.getMessage === "\"one.8\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught9 = intercept(classOf[AssertionError]) {
         "1.8-" should fullyMatch regex decimal
       }
+      assert(caught9.getMessage === "\"1.8-\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught10 = intercept(classOf[AssertionError]) {
         "1.7" shouldNot { fullyMatch regex decimal and equal ("1.7") }
       }
+      assert(caught10.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" equaled \"1.7\"")
+
       val caught11 = intercept(classOf[AssertionError]) {
         "1.7++" should { fullyMatch regex decimal and equal ("1.7") }
       }
-      assert(true) // TODO: check failure messages
+      assert(caught11.getMessage === "\"1.7++\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
     }
 
     "should throw AssertionError if the string does not match the regular expression specified as a Regex" - {
       val caught2 = intercept(classOf[AssertionError]) {
         "1.7" shouldNot fullyMatch regex decimalRegex
       }
+      assert(caught2.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught3 = intercept(classOf[AssertionError]) {
         "-1.8" shouldNot fullyMatch regex decimalRegex
       }
+      assert(caught3.getMessage === "\"-1.8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught4 = intercept(classOf[AssertionError]) {
         "8" shouldNot fullyMatch regex decimalRegex
       }
+      assert(caught4.getMessage === "\"8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught5 = intercept(classOf[AssertionError]) {
         "1." shouldNot fullyMatch regex decimalRegex
       }
+      assert(caught5.getMessage === "\"1.\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught6 = intercept(classOf[AssertionError]) {
         "eight" should fullyMatch regex decimalRegex
       }
+      assert(caught6.getMessage === "\"eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught7 = intercept(classOf[AssertionError]) {
         "1.eight" should fullyMatch regex decimalRegex
       }
+      assert(caught7.getMessage === "\"1.eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught8 = intercept(classOf[AssertionError]) {
         "one.8" should fullyMatch regex decimalRegex
       }
+      assert(caught8.getMessage === "\"one.8\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught9 = intercept(classOf[AssertionError]) {
         "1.8-" should fullyMatch regex decimalRegex
       }
+      assert(caught9.getMessage === "\"1.8-\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
       val caught10 = intercept(classOf[AssertionError]) {
         "1.7" shouldNot { fullyMatch regex decimalRegex and equal ("1.7") }
       }
+      assert(caught10.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" equaled \"1.7\"")
+
       val caught11 = intercept(classOf[AssertionError]) {
         "1.7++" should { fullyMatch regex decimalRegex and equal ("1.7") }
       }
-      assert(true) // TODO: check failure messages
+      assert(caught11.getMessage === "\"1.7++\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
     }
   }
 

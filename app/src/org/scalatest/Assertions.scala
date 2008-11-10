@@ -222,6 +222,7 @@ trait Assertions {
    *     passed <code>expected</code> value.
    */
   def intercept[T <: AnyRef](clazz: java.lang.Class[T], message: Any)(f: => Unit): T = {
+    val messagePrefix = if (message.toString.trim.isEmpty) "" else (message +"\n")
     val caught = try {
       f
       None
@@ -230,7 +231,7 @@ trait Assertions {
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          val ae = new AssertionError(message + "\n" + s)
+          val ae = new AssertionError(messagePrefix + s)
           ae.initCause(u)
           throw ae
         }
@@ -240,7 +241,7 @@ trait Assertions {
       }
     }
     caught match {
-      case None => fail(message + "\n" + Resources("exceptionExpected", clazz.getName))
+      case None => fail(messagePrefix + Resources("exceptionExpected", clazz.getName))
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
