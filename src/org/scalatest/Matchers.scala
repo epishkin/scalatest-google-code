@@ -111,7 +111,7 @@ private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftM
           MatcherResult(
             rightMatcherResult.matches,
             Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.failureMessage),
-            Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.negativeFailureMessage)
+            Resources("commaAnd", leftMatcherResult.negativeFailureMessage, rightMatcherResult.negativeFailureMessage)
           )
         }
       }
@@ -257,8 +257,8 @@ private[scalatest] trait BaseMatchers extends Assertions {
         def apply(left: String) =
           MatcherResult(
             java.util.regex.Pattern.matches(rightRegexString, left),
-            FailureMessages("didNotFullyMatchRegex", left, rightRegexString),
-            FailureMessages("fullyMatchedRegex", left, rightRegexString)
+            FailureMessages("didNotFullyMatchRegex", left, UnquotedString(rightRegexString)),
+            FailureMessages("fullyMatchedRegex", left, UnquotedString(rightRegexString))
           )
       }
     def regex(rightRegex: Regex): Matcher[String] =
