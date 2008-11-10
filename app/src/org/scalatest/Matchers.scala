@@ -867,18 +867,11 @@ private[scalatest] trait BaseMatchers extends Assertions {
   def beSome[S](payload: S): Matcher[Option[S]] =
       new Matcher[Option[S]] {
         def apply(left: Option[S]) = {
-          if (left.isEmpty) 
-            MatcherResult(
-              false,
-              FailureMessages("wasNone", left),
-              FailureMessages("wasSome", left)
-            )
-          else
-            MatcherResult(
-              left.get == payload,
-              FailureMessages("wasSomeWrongValue", left, left.get),
-              FailureMessages("wasSomeRightValue", left, left.get)
-            )
+          MatcherResult(
+            !left.isEmpty && left.get == payload,
+            FailureMessages("wasNotSome", left, payload),
+            FailureMessages("wasSome", left, payload)
+          )
         }
       }
 
