@@ -499,10 +499,11 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
 
     "should throw an assertion error when non-null compared to null" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         val o = "Helloooooo"
         o should beNull
       }
+      assert(caught.getMessage === "\"Helloooooo\" was not null")
     }
 
     "should do nothing when non-null is compared to not null" - {
@@ -512,14 +513,16 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
 
     "should throw an assertion error when null compared to not null" - {
-      intercept(classOf[AssertionError]) {
+      val caught1 = intercept(classOf[AssertionError]) {
         val o: String = null
         o should not { beNull }
       }
-      intercept(classOf[AssertionError]) {
+      assert(caught1.getMessage === "null was null")
+      val caught2 = intercept(classOf[AssertionError]) {
         val o: String = null
         o shouldNot beNull
       }
+      assert(caught2.getMessage === "null was null")
     }
 
     "should work when used in a logical expression" - {
@@ -544,20 +547,22 @@ class MatcherSpec extends Spec with ShouldMatchers {
       assert(caught1.getMessage === "List(Helloooooo) was not List()")
     }
 
-    "should do nothing when non-null is compared to not null" - {
+    "should do nothing when non-Nil is compared to not Nil" - {
       val nonEmptyList = List("Helloooooo")
       nonEmptyList should not { beNil }
       nonEmptyList shouldNot beNil
     }
 
-    "should throw an assertion error when null compared to not null" - {
+    "should throw an assertion error when Nil compared to not Nil" - {
       val emptyList = List[String]()
-      intercept(classOf[AssertionError]) {
+      val caught1 = intercept(classOf[AssertionError]) {
         emptyList should not { beNil }
       }
-      intercept(classOf[AssertionError]) {
+      assert(caught1.getMessage === "List() was List()")
+      val caught2 = intercept(classOf[AssertionError]) {
         emptyList shouldNot beNil
       }
+      assert(caught2.getMessage === "List() was List()")
     }
 
     "should work when used in a logical expression" - {
@@ -589,20 +594,28 @@ class MatcherSpec extends Spec with ShouldMatchers {
       }
 
       "should throw an assertion error when None compared to not None" - {
+
         val none = None
-        intercept(classOf[AssertionError]) {
+        val caught1 = intercept(classOf[AssertionError]) {
           none should not { beNone }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught1.getMessage === "None was None")
+
+        val caught2 = intercept(classOf[AssertionError]) {
           none shouldNot beNone
         }
+        assert(caught2.getMessage === "None was None")
+
         val noString: Option[String] = None
-        intercept(classOf[AssertionError]) {
+        val caught3 = intercept(classOf[AssertionError]) {
           noString should not { beNone }
         }
-        intercept(classOf[AssertionError]) {
+        assert(caught3.getMessage === "None was None")
+
+        val caught4 = intercept(classOf[AssertionError]) {
           noString shouldNot beNone
         }
+        assert(caught4.getMessage === "None was None")
       }
 
       "should work when used in a logical expression" - {
@@ -626,13 +639,15 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
     "should throw AssertionError when used with a None" - {
       val none: None.type = None
-      intercept(classOf[AssertionError]) {
+      val caught1 = intercept(classOf[AssertionError]) {
         none should beDefined
       }
+      assert(caught1.getMessage === "None was not defined")
       val option: Option[Int] = None
-      intercept(classOf[AssertionError]) {
+      val caught2 = intercept(classOf[AssertionError]) {
         option should beDefined
       }
+      assert(caught2.getMessage === "None was not defined")
     }
 
     "should call defined" - {
@@ -718,13 +733,15 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
     "should throw AssertionError when used with a None" - {
       val none: None.type = None
-      intercept(classOf[AssertionError]) {
+      val caught1 = intercept(classOf[AssertionError]) {
         none should beSome("hi")
       }
+      assert(caught1.getMessage === "None was not Some(\"hi\")")
       val option: Option[Int] = None
-      intercept(classOf[AssertionError]) {
+      val caught2 = intercept(classOf[AssertionError]) {
         option should beSome(3)
       }
+      assert(caught2.getMessage === "None was not Some(3)")
     }
   }
 
@@ -771,9 +788,10 @@ class MatcherSpec extends Spec with ShouldMatchers {
       1 should not { equal (2) }
     }
     "should throw an assertion error when true" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 should not { equal (1) }
       }
+      assert(caught.getMessage === "1 equaled 1")
     }
     "should work at the beginning of an and expression" - {
       val string = "Hello, world!"
@@ -786,9 +804,10 @@ class MatcherSpec extends Spec with ShouldMatchers {
       1 shouldNot equal (2)
     }
     "should throw an assertion error when true" - {
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         1 shouldNot equal (1)
       }
+      assert(caught.getMessage === "1 equaled 1")
     }
   }
 
@@ -921,11 +940,12 @@ class MatcherSpec extends Spec with ShouldMatchers {
     "should not execute the right matcher creation function when the left operand is false" - {
       var called = false
       def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         // This should fail, but without applying the matcher returned by mockMatcher
         1 should { equal (2) and mockMatcher }
       }
       called should be (false)
+      assert(caught.getMessage === "1 did not equal 2")
     }
 
     "should execute the right matcher creation function when the left operand is true" - {
@@ -1025,11 +1045,12 @@ class MatcherSpec extends Spec with ShouldMatchers {
     "should not execute the right matcher creation function when the left operand is false" - {
       var called = false
       def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
-      intercept(classOf[AssertionError]) {
+      val caught = intercept(classOf[AssertionError]) {
         // This should fail, but without applying the matcher returned by mockMatcher
         1 should { equal (2) andNot mockMatcher }
       }
       called should be (false)
+      assert(caught.getMessage === "1 did not equal 2")
     }
 
     "should execute the right matcher creation function when the left operand is true" - {
@@ -1464,16 +1485,19 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val caught1 = intercept(classOf[AssertionError]) {
         string shouldNot include substring "seven"
       }
+      assert(caught1.getMessage === "\"Four score and seven years ago,...\" included substring \"seven\"")
       val caught2 = intercept(classOf[AssertionError]) {
         string shouldNot include substring "Four"
       }
+      assert(caught2.getMessage === "\"Four score and seven years ago,...\" included substring \"Four\"")
       val caught3 = intercept(classOf[AssertionError]) {
         string shouldNot include substring ",..."
       }
+      assert(caught3.getMessage === "\"Four score and seven years ago,...\" included substring \",...\"")
       val caught4 = intercept(classOf[AssertionError]) {
         string should include substring "on this continent"
       }
-      assert(true) // TODO: test the failure message
+      assert(caught4.getMessage === "\"Four score and seven years ago,...\" did not include substring \"on this continent\"")
     }
   }
 
@@ -1496,36 +1520,54 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val caught1 = intercept(classOf[AssertionError]) {
         one shouldNot be < 7
       }
+      assert(caught1.getMessage === "1 was less than 7")
+
       val caught2 = intercept(classOf[AssertionError]) {
         one shouldNot be > 0
       }
+      assert(caught2.getMessage === "1 was greater than 0")
+
       val caught3 = intercept(classOf[AssertionError]) {
         one shouldNot be <= 7
       }
+      assert(caught3.getMessage === "1 was less than or equal to 7")
+
       val caught4 = intercept(classOf[AssertionError]) {
         one shouldNot be >= 0
       }
+      assert(caught4.getMessage === "1 was greater than or equal to 0")
+
       val caught5 = intercept(classOf[AssertionError]) {
         one shouldNot be <= 1
       }
+      assert(caught5.getMessage === "1 was less than or equal to 1")
+
       val caught6 = intercept(classOf[AssertionError]) {
         one shouldNot be >= 1
       }
+      assert(caught6.getMessage === "1 was greater than or equal to 1")
+
       val caught7 = intercept(classOf[AssertionError]) {
         one should be < 0
       }
+      assert(caught7.getMessage === "1 was not less than 0")
+
       val caught8 = intercept(classOf[AssertionError]) {
         one should be > 9
       }
+      assert(caught8.getMessage === "1 was not greater than 9")
+
       val caught9 = intercept(classOf[AssertionError]) {
         one should be <= -4
       }
+      assert(caught9.getMessage === "1 was not less than or equal to -4")
+
       val caught10 = intercept(classOf[AssertionError]) {
         one should be >= 21
       }
-      assert(true) // TODO: test the failure message
+      assert(caught10.getMessage === "1 was not greater than or equal to 21")
     }
-  }
+  } //XXX
 
   "The floating point 'exactly' operator" -- {
     "should do nothing if the floating point number is exactly equal to the specified value" - {
