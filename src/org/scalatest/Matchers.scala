@@ -837,7 +837,7 @@ trait BaseMatchers extends Assertions {
   val behave = new BehaveWord
   val be = new BeWord
 
-  def importSharedBehavior(behavior: Behavior)
+  protected def importSharedBehavior(behavior: Behavior)
 
   class Likifier[T](left: T) {
     def like(fun: (T) => Behavior) {
