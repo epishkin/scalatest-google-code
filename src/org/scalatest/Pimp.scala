@@ -24,13 +24,26 @@ import java.lang.reflect.Modifier
  * object, like this: 
  *
  * <pre>
- * 
+ * val decorateToStringValue = PrivateMethod[String]('decorateToStringValue)
  * </pre>
+ *
+ * <p>
+ * The type parameter on <code>PrivateMethod</code> is the result type of the method. The symbol
+ * is the name of the private method to invoke. To test a private method, use the <code>invokePrivate</code>
+ * operator, like this:
+ * </p>
+ *
+ * <pre>
+ * FailureMessages invokePrivate decorateToStringValue(1)
+ * </pre>
+ *
+ * The result of an <code>invokePrivate</code> operation will be the type parameter of the <code>PrivateMethod</code>
+ * object.
  *
  * @author Bill Venners
  */
-trait Pimp {
-  
+trait PrivateMethodTester {
+
   case class PrivateMethod[T](methodName: Symbol) {
     def apply(args: Any*) = Invocation[T](methodName, args: _*)
   }
@@ -43,26 +56,19 @@ trait Pimp {
 
       // If 'getMessage passed as methodName, methodNameToInvoke would be "getMessage"
       val methodNameToInvoke = methodName.toString.substring(1)
-  
+
       def isMethodToInvoke(m: Method) = {
-  
+
         val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
         val simpleName = m.getName
         val paramTypes = m.getParameterTypes
-        val candidateResultType = m.getReturnType
         val isPrivate = Modifier.isPrivate(m.getModifiers())
-  
-        // I think until people complain, the result type should be exactly the same type as the
-        // passed class. This makes it easier to match the invokePrivate call with the actual private
-        // method. It is arguable I should allow the actual return type to be a subtype, but now that
-        // I think more about it, maybe that's not even knowable for sure because of erasure. So the result
-        // type must match exactly. 
-  
+
         // The AnyVals must go in as Java wrapper types. But the type is still Any, so this needs to be converted
         // to AnyRef for the compiler to be happy. Implicit conversions are ambiguous, and really all that's needed
         // is a type cast, so I use isInstanceOf.
         def argsHaveValidTypes: Boolean = {
-  
+
           // First, the arrays must have the same length:
           if (args.length == paramTypes.length) {
             val zipped = args.toList zip paramTypes.toList
@@ -75,35 +81,35 @@ trait Pimp {
           }
           else false
         }
-  
-  /*
-  The rules may be that private mehods in standalone objects current get name mangled and made public,
-  perhaps because there are two versions of each private method, one in the actual singleton and one int
-  the class that also has static methods, and one calls the other. So if this is true, then I may change this
-  to say if simpleName matches exactly and its private, or if ends with simpleName prepended by two dollar signs,
-  then let it be public, but look for whatever the Scala compiler puts in there to mark it as private at the Scala source level.
-  
+
+        /*
+        The rules may be that private mehods in standalone objects currently get name mangled and made public,
+        perhaps because there are two versions of each private method, one in the actual singleton and one int
+        the class that also has static methods, and one calls the other. So if this is true, then I may change this
+        to say if simpleName matches exactly and its private, or if ends with simpleName prepended by two dollar signs,
+        then let it be public, but look for whatever the Scala compiler puts in there to mark it as private at the Scala source level.
+
         // org$scalatest$FailureMessages$$decorateToStringValue
-  // 0 org$scalatest$FailureMessages$$decorateToStringValue
-       [java] 1 true
-       [java] 2 false
-       [java] false
-       [java] false
-       [java] ^&^&^&^&^&^& invalidArgs.length is: 0
-       [java] 5 true
-  
+        // 0 org$scalatest$FailureMessages$$decorateToStringValue
+        [java] 1 true
+        [java] 2 false
+        [java] false
+        [java] false
+        [java] ^&^&^&^&^&^& invalidArgs.length is: 0
+        [java] 5 true
+
         println("0 "+ simpleName)
         println("1 "+ isInstanceMethod)
         println("2 "+ isPrivate)
         println("3 "+ simpleName == methodNameToInvoke)
         println("4 "+ candidateResultType == resultType)
         println("5 "+ argsHaveValidTypes)
-    This ugliness. I'll ignore the result type for now. Sheesh. Investigate that one. And I'll
-    have to ignore private too for now, because in the bytecodes it isn't even private. And I'll
-    also allow methods that end with $$<simpleName> if the simpleName doesn't match
-  */
-  
-        // isInstanceMethod && isPrivate && simpleName == methodNameToInvoke && candidateResultType == resultType  && argsHaveValidTypes
+
+        This ugliness. I'll ignore the result type for now. Sheesh. Investigate that one. And I'll
+        have to ignore private too for now, because in the bytecodes it isn't even private. And I'll
+        also allow methods that end with $$<simpleName> if the simpleName doesn't match
+        */
+
         isInstanceMethod && (simpleName == methodNameToInvoke || simpleName.endsWith("$$"+ methodNameToInvoke)) && argsHaveValidTypes
       }
   
@@ -129,6 +135,7 @@ trait Pimp {
       }
     }
   }
+
   implicit def anyRefToInvoker(anyRef: AnyRef): Invoker = new Invoker(anyRef)
 }
 
