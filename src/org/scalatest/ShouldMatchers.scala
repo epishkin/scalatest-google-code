@@ -1,8 +1,8 @@
 package org.scalatest
 
-private[scalatest] trait ShouldMatchers extends BaseMatchers {
+trait ShouldMatchers extends BaseMatchers {
 
-  private[scalatest] trait ShouldMethods[T] {
+  protected trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
       rightMatcher(leftOperand) match {
@@ -51,7 +51,7 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
 
-  private[scalatest] class ShouldalizerForBlocks(left: => Any) {
+  protected class ShouldalizerForBlocks(left: => Any) {
     def shouldThrow[T <: AnyRef](clazz: java.lang.Class[T]): T = { intercept(clazz)(left) }
     def shouldNotThrow(clazz: java.lang.Class[Throwable]) {
       try {
@@ -67,9 +67,9 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
 
-  private[scalatest] class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
+  protected class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
 
-  private[scalatest] class StringShouldalizer(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
+  protected class StringShouldalizer(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
@@ -102,7 +102,7 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
 
-  private[scalatest] class MapShouldalizer[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]] {
+  protected class MapShouldalizer[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]] {
     def should(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
       new ResultOfContainWordForIterable(left, true)
     }
@@ -117,7 +117,7 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
   
-  private[scalatest] trait ShouldContainWordForIterableMethods[T] {
+  protected trait ShouldContainWordForIterableMethods[T] {
     protected val leftOperand: Iterable[T]
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(leftOperand, true)
@@ -127,10 +127,10 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
   
-  private[scalatest] class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]]
+  protected class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]]
       with ShouldContainWordForIterableMethods[T]
   
-  private[scalatest] trait ShouldHaveWordForCollectionMethods[T] {
+  protected trait ShouldHaveWordForCollectionMethods[T] {
     protected val leftOperand: Collection[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
       new ResultOfHaveWordForCollection(leftOperand, true)
@@ -140,7 +140,7 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
   
-  private[scalatest] trait ShouldHaveWordForSeqMethods[T] {
+  protected trait ShouldHaveWordForSeqMethods[T] {
     protected val leftOperand: Seq[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(leftOperand, true)
@@ -150,16 +150,16 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
   
-  private[scalatest] class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
+  protected class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
   
-  private[scalatest] class SeqShouldalizer[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
+  protected class SeqShouldalizer[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
-  private[scalatest] class ArrayShouldalizer[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
+  protected class ArrayShouldalizer[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
-  private[scalatest] class ListShouldalizer[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
+  protected class ListShouldalizer[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
   implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
