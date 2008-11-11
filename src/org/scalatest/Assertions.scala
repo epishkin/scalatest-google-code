@@ -87,7 +87,7 @@ trait Assertions {
         val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
         Some(FailureMessages("didNotEqual", leftee, rightee))
       }
-
+/*
     def !==(right: Any) =
       if (left != right)
         None
@@ -95,6 +95,7 @@ trait Assertions {
         val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
         Some(FailureMessages("equaled", leftee, rightee))
       }
+*/
   }
 
   /**
