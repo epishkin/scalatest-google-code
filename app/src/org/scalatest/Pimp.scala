@@ -19,16 +19,22 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
- * Helps you test private methods.
+ * Trait that grants objects access to the private members of other objects. If you wish to test
+ * a private method, mix in trait <code>Pimp</code>. You must then create a <code>PrivateMethod</code>
+ * object, like this: 
+ *
+ * <pre>
+ * 
+ * </pre>
  *
  * @author Bill Venners
  */
 trait Pimp {
   
-  case class PrivateMethod[T](methodName: Symbol, resultType: Class[T]) {
-    def apply(args: Any*) = Invocation(methodName, resultType, args: _*)
+  case class PrivateMethod[T](methodName: Symbol) {
+    def apply(args: Any*) = Invocation[T](methodName, args: _*)
   }
-  case class Invocation[T](methodName: Symbol, resultType: Class[T], args: Any*)
+  case class Invocation[T](methodName: Symbol, args: Any*)
 
   class Invoker(target: AnyRef) {
 

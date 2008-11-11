@@ -568,7 +568,7 @@ class SuiteSuite extends Suite with Pimp {
 
   def testDecorateToStringValue() {
 
-    val decorateToStringValue = PrivateMethod('decorateToStringValue, classOf[String])
+    val decorateToStringValue = PrivateMethod[String]('decorateToStringValue)
 
     expect("1") {
       FailureMessages invokePrivate decorateToStringValue(1.toByte)
