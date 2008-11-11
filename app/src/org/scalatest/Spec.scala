@@ -43,7 +43,7 @@ trait Spec extends Suite {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
-  def importSharedBehavior(sharedBehavior: Behavior) {
+  protected def importSharedBehavior(sharedBehavior: Behavior) {
     val sharedExamples = sharedBehavior.examples(currentBranch)
     currentBranch.subNodes :::= sharedExamples
     examplesList :::= sharedExamples
