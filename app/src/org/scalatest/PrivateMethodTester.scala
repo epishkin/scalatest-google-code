@@ -19,26 +19,35 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 /**
- * Trait that grants objects access to the private members of other objects. If you wish to test
- * a private method, mix in trait <code>Pimp</code>. You must then create a <code>PrivateMethod</code>
- * object, like this: 
+ * Trait that facilitates the testing of private methods.
+ *
+ * To test a private method, mix in trait <code>PrivateMethodTester</code> and
+ * create a <code>PrivateMethod</code> object, like this: 
  *
  * <pre>
  * val decorateToStringValue = PrivateMethod[String]('decorateToStringValue)
  * </pre>
  *
  * <p>
- * The type parameter on <code>PrivateMethod</code> is the result type of the method. The symbol
- * is the name of the private method to invoke. To test a private method, use the <code>invokePrivate</code>
- * operator, like this:
+ * The type parameter on <code>PrivateMethod</code>, in this case <code>String</code>, is the result type of the private method
+ * you wish to invoke. The symbol passed to the <code>PrivateMethod.apply</code> factory method, in this
+ * case <code>'decorateToStringValue</code>, is the name of the private method to invoke. To test
+ * the private method, use the <code>invokePrivate</code> operator, like this:
  * </p>
  *
  * <pre>
- * FailureMessages invokePrivate decorateToStringValue(1)
+ * targetObject invokePrivate decorateToStringValue(1)
  * </pre>
  *
- * The result of an <code>invokePrivate</code> operation will be the type parameter of the <code>PrivateMethod</code>
- * object.
+ * Here, <code>targetObject</code> is a variable or singleton object name referring to the object whose
+ * private method you want to test. You pass the arguments to the private method in the parentheses after
+ * the <code>PrivateMethod</code> object.
+ * The result type of an <code>invokePrivate</code> operation will be the type parameter of the <code>PrivateMethod</code>
+ * object, thus you need not cast the result to use it. In other words, after creating a <code>PrivateMethod</code> object, the
+ * syntax to invoke the private method
+ * looks like a regular method invocation, but with the dot (<code>.</code>) replaced by <code>invokePrivate</code>.
+ * The private method is invoked dynamically via reflection, so if you have a typo in the method name symbol, specify the wrong result type,
+ * or pass invalid parameters, the <code>invokePrivate</code> operation will compile, but throw an exception at runtime.
  *
  * @author Bill Venners
  */
