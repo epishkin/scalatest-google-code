@@ -26,7 +26,7 @@ class SuiteFriend(suite: Suite) {
   }
 }
 
-class SuiteSuite extends Suite with Pimp {
+class SuiteSuite extends Suite with PrivateMethodTester {
 
   def testSimpleNameForTest() {
     val s = new SuiteFriend(new Suite {})
