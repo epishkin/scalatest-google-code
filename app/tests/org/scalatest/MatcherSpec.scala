@@ -1575,23 +1575,28 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
   }
 
-  "The floating point 'exactly' operator" -- {
+  "The floating point numbers when compared with equals" -- {
     "should do nothing if the floating point number is exactly equal to the specified value" - {
       val sevenDotOh = 7.0
-      sevenDotOh should be (7.0 exactly)
+      // sevenDotOh should be (7.0 exactly)
+      sevenDotOh should be (7.0)
       sevenDotOh shouldEqual 7.0
-      sevenDotOh shouldNot be (7.0001 exactly)
+      // sevenDotOh shouldNot be (7.0001 exactly)
+      sevenDotOh shouldNot be (7.0001)
 
       val sixDotOh: Float = 6.0f
-      sixDotOh should be (6.0 exactly)
+      // sixDotOh should be (6.0 exactly)
+      sixDotOh should be (6.0)
       sixDotOh shouldEqual 6.0
-      sixDotOh shouldNot be (6.0001 exactly)
+      // sixDotOh shouldNot be (6.0001 exactly)
+      sixDotOh shouldNot be (6.0001)
     }
 
     "should throw AssertionError if the floating point number is not exactly equal to the specified value" - {
       val sevenDotOh = 7.0001
       val caught1 = intercept(classOf[AssertionError]) {
-        sevenDotOh should be (7.0 exactly)
+        sevenDotOh should be (7.0)
+        // sevenDotOh should be (7.0 exactly)
       }
       assert(caught1.getMessage === "7.0001 was not 7.0")
 
@@ -1601,13 +1606,15 @@ class MatcherSpec extends Spec with ShouldMatchers {
       assert(caught2.getMessage === "7.0001 did not equal 7.0")
 
       val caught3 = intercept(classOf[AssertionError]) {
-        sevenDotOh shouldNot be (7.0001 exactly)
+        // sevenDotOh shouldNot be (7.0001 exactly)
+        sevenDotOh shouldNot be (7.0001)
       }
       assert(caught3.getMessage === "7.0001 was 7.0001")
 
       val sixDotOh: Float = 6.0001f
       val caught4 = intercept(classOf[AssertionError]) {
-        sixDotOh should be (6.0f exactly)
+        // sixDotOh should be (6.0f exactly)
+        sixDotOh should be (6.0f)
       }
       assert(caught4.getMessage === "6.0001 was not 6.0")
 
@@ -1617,7 +1624,8 @@ class MatcherSpec extends Spec with ShouldMatchers {
       assert(caught5.getMessage === "6.0001 did not equal 6.0")
 
       val caught6 = intercept(classOf[AssertionError]) {
-        sixDotOh shouldNot be (6.0001f exactly)
+        // sixDotOh shouldNot be (6.0001f exactly)
+        sixDotOh shouldNot be (6.0001f)
       }
       assert(caught6.getMessage === "6.0001 was 6.0001")
     }
@@ -2037,7 +2045,6 @@ class MatcherSpec extends Spec with ShouldMatchers {
      ordered should be < 7 // DONE
      ordered should be <= 7 // DONE ordered.should(be.<=(7))
 
-     floatingPointNumber should be (7.0 exactly) // DONE
      floatingPointNumber should be (7.0 plusOrMinus 0.01) // DONE
 
      "Howdy".charAt(-1) shouldThrow (classOf[StringIndexOutOfBoundsException]) // DONE
@@ -2070,6 +2077,9 @@ class MatcherSpec extends Spec with ShouldMatchers {
      }
 
      THINGS I WON'T DO
+
+     // I cut this one. Just use (7.0)
+     floatingPointNumber should be (7.0 exactly) // DONE
 
      // Decided not to allow this
      byNameParam shouldNotThrow classOf[IllegalArgumentException]

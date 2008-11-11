@@ -4,7 +4,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
 
-private[scalatest] case class MatcherResult(
+case class MatcherResult(
   matches: Boolean,
   failureMessage: String,
   negativeFailureMessage: String
@@ -86,7 +86,7 @@ private[scalatest] object Helper {
   }
 }
 
-private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
+trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 
   // left is generally the object on which should is invoked.
   def apply(left: T): MatcherResult
@@ -143,7 +143,7 @@ private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftM
   def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
 }
 
-private[scalatest] trait BaseMatchers extends Assertions {
+trait BaseMatchers extends Assertions {
 
   //
   // This class is used as the return type of the overloaded should method (in MapShouldalizer)
@@ -160,7 +160,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
   // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
   // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
   // 
-  private[scalatest] class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[Tuple2[K, V]](left, shouldBeTrue) {
+  protected class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[Tuple2[K, V]](left, shouldBeTrue) {
     def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
         throw new AssertionError(
@@ -191,8 +191,8 @@ private[scalatest] trait BaseMatchers extends Assertions {
   */
   }
   
-  private[scalatest] class BehaveWord
-  private[scalatest] class ContainWord {
+  protected class BehaveWord
+  protected class ContainWord {
     def element[T](expectedElement: T): Matcher[Iterable[T]] =
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) =
@@ -204,7 +204,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
   }
 
-  private[scalatest] class IncludeWord {
+  protected class IncludeWord {
     def substring(expectedSubstring: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -216,7 +216,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
   }
 
-  private[scalatest] class StartWithWord {
+  protected class StartWithWord {
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
@@ -238,7 +238,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
   }
 
-  private[scalatest] class EndWithWord {
+  protected class EndWithWord {
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
@@ -262,7 +262,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
   }
 
-  private[scalatest] class FullyMatchWord {
+  protected class FullyMatchWord {
     def regex(rightRegexString: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -283,7 +283,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
   }
 
-  private[scalatest] class HaveWord {
+  protected class HaveWord {
     //
     // This key method is called when "have" is used in a logical expression, such as:
     // map should { have key 1 and equal (Map(1 -> "Howdy")) }. It results in a matcher
@@ -433,7 +433,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
   // ResultOfHaveWordForCollectionPassedToShould that remembers the map to the left of should. Then this class
   // has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
   // 
-  private[scalatest] class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
+  protected class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw new AssertionError(
@@ -445,7 +445,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
   
-  private[scalatest] class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
+  protected class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw new AssertionError(
@@ -457,7 +457,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
   
-  private[scalatest] class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
+  protected class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
         throw new AssertionError(
@@ -473,7 +473,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
 /*
   // This worked, but the < because it's an operator gets run first: be < 7. So I need to do the
   // matcher for that one and that should suffice.
-  private[scalatest] class ResultOfBeWordForOrdered[T <% Ordered[T]](left: T, shouldBeTrue: Boolean) {
+  protected class ResultOfBeWordForOrdered[T <% Ordered[T]](left: T, shouldBeTrue: Boolean) {
     def lessThan(right: T) {
       if ((left < right) != shouldBeTrue)
         throw new AssertionError(
@@ -486,19 +486,19 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
 
-  private[scalatest] implicit def resultOfBeWordToForOrdered[T <% Ordered[T]](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForOrdered[T] =
+  implicit def resultOfBeWordToForOrdered[T <% Ordered[T]](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForOrdered[T] =
     new ResultOfBeWordForOrdered(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
 */
 
-  private[scalatest] implicit def resultOfBeWordToForAnyRef[T <: AnyRef](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForAnyRef =
+  implicit def resultOfBeWordToForAnyRef[T <: AnyRef](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForAnyRef =
     new ResultOfBeWordForAnyRef(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
 
-  private[scalatest] class ResultOfBeWord[T](val left: T, val shouldBeTrue: Boolean) {
+  protected class ResultOfBeWord[T](val left: T, val shouldBeTrue: Boolean) {
     def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
 
-  private[scalatest] class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
+  protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw new AssertionError(
@@ -510,7 +510,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
   
-  private[scalatest] class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
+  protected class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
         throw new AssertionError(
@@ -534,7 +534,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
 
-  private[scalatest] class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
+  protected class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
         throw new AssertionError(
@@ -558,7 +558,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
 
-  private[scalatest] class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
+  protected class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
         throw new AssertionError(
@@ -583,7 +583,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
 
-  private[scalatest] class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
+  protected class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
@@ -597,7 +597,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
   }
   
-  private[scalatest] class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
+  protected class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
     def element(expectedElement: T) {
       if ((left.elements.contains(expectedElement)) != shouldBeTrue)
         throw new AssertionError(
@@ -635,7 +635,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
     }
 */
 
-  private[scalatest] class BeWordForOrdered {
+  protected class BeWordForOrdered {
     def <[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
@@ -674,9 +674,9 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
   }
 
-  private[scalatest] implicit def beWordToForOrdered(beWord: BeWord): BeWordForOrdered = new BeWordForOrdered
+  implicit def beWordToForOrdered(beWord: BeWord): BeWordForOrdered = new BeWordForOrdered
 
-  private[scalatest] class BeWord {
+  protected class BeWord {
 
     // These two are used if this shows up in a "x should { be a 'file and ..." type clause
     def a[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
@@ -922,24 +922,5 @@ private[scalatest] trait BaseMatchers extends Assertions {
   }
 
   implicit def doubleToHasPlusOrMinus(right: Double) = new HasPlusOrMinusForDouble(right)
-
-  class HasExactlyForDouble(doubleValue: Double) {
-    def exactly: Double = doubleValue
-  }
-
-  implicit def doubleToHasExactly(doubleValue: Double) = new HasExactlyForDouble(doubleValue)
-
-  class HasExactlyForFloat(floatValue: Float) {
-    def exactly: Float = floatValue
-  }
-
-  implicit def floatToHasExactly(floatValue: Float) = new HasExactlyForFloat(floatValue)
-
-/*
-  implicit def shouldify[T](o: T): Behaviorizer[T] = new Behaviorizer(o)
-  private[scalatest] class Behaviorizer[T](left: T) {
-    def should(behaveWord: BehaveWord) = new Likifier[T](left)
-  }
-*/
 }
 

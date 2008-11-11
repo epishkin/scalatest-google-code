@@ -41,7 +41,7 @@ trait StackItBehaviors {
     }
   }
 }
-class StackSpec extends Spec with StackFixtureCreationMethods with StackItBehaviors {
+class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBehaviors {
 
   describe("A Stack") {
 
