@@ -20,6 +20,7 @@ trait MustMatchers extends BaseMatchers {
     def must(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
     def must(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     def mustNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
+/*
     def mustEqual(rightOperand: Any) {
       if (leftOperand != rightOperand) {
         throw new AssertionError(FailureMessages("didNotEqual", leftOperand, rightOperand))
@@ -30,6 +31,7 @@ trait MustMatchers extends BaseMatchers {
         throw new AssertionError(FailureMessages("equaled", leftOperand, rightOperand))
       }
     }
+*/
     def mustMatch(rightOperand: PartialFunction[T, Boolean]) {
       if (rightOperand.isDefinedAt(leftOperand)) {
         val result = rightOperand(leftOperand)
