@@ -756,6 +756,98 @@ class MatcherSpec extends Spec with ShouldMatchers {
   }
 */
 
+  "The be 'defined syntax" -- {
+
+    "should do nothing when used with a Some" - {
+      val someString: Some[String] = Some("hi")
+      someString should be ('defined)
+      val optionString: Option[String] = Some("hi")
+      optionString should be ('defined)
+    }
+
+    "should throw AssertionError when used with a None" - {
+      val none: None.type = None
+      val caught1 = intercept(classOf[AssertionError]) {
+        none should be ('defined)
+      }
+      assert(caught1.getMessage === "None was not defined")
+      val option: Option[Int] = None
+      val caught2 = intercept(classOf[AssertionError]) {
+        option should be ('defined)
+      }
+      assert(caught2.getMessage === "None was not defined")
+    }
+
+    "should call defined" - {
+      class DefinedMock {
+        def defined: Boolean = true
+      }
+      class NonDefinedMock {
+        def defined: Boolean = false
+      }
+      (new DefinedMock) should be ('defined)
+      (new NonDefinedMock) should not { be ('defined) }
+      (new NonDefinedMock) shouldNot be ('defined)
+    }
+
+    "should throw IllegalArgumentException if no defined or isDefined method" - {
+      class DefinedMock {
+        override def toString = "DefinedMock"
+      }
+      class NonDefinedMock {
+        override def toString = "NonDefinedMock"
+      }
+      val ex1 = intercept(classOf[IllegalArgumentException]) {
+        (new DefinedMock) should be ('defined)
+      }
+      ex1.getMessage should equal ("DefinedMock has neither a defined nor an isDefined method")
+      val ex2 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) should not { be ('defined) }
+      }
+      ex2.getMessage should equal ("NonDefinedMock has neither a defined nor an isDefined method")
+      val ex3 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) shouldNot be ('defined)
+      }
+      ex3.getMessage should equal ("NonDefinedMock has neither a defined nor an isDefined method")
+    }
+
+    "should throw IllegalArgumentException if both a defined and an isDefined method exist" - {
+      class DefinedMock {
+        def defined: Boolean = true
+        def isDefined: Boolean = true
+        override def toString = "DefinedMock"
+      }
+      class NonDefinedMock {
+        def defined: Boolean = true
+        def isDefined: Boolean = true
+        override def toString = "NonDefinedMock"
+      }
+      val ex1 = intercept(classOf[IllegalArgumentException]) {
+        (new DefinedMock) should be ('defined)
+      }
+      ex1.getMessage should equal ("DefinedMock has both a defined and an isDefined method")
+      val ex2 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) should not { be ('defined) }
+      }
+      ex2.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method")
+      val ex3 = intercept(classOf[IllegalArgumentException]) {
+        (new NonDefinedMock) shouldNot be ('defined)
+      }
+      ex3.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method")
+    }
+
+    "should access an 'defined' val" - {
+      class DefinedMock {
+        val defined: Boolean = true
+      }
+      class NonDefinedMock {
+        val defined: Boolean = false
+      }
+      (new DefinedMock) should be ('defined)
+      (new NonDefinedMock) should not { be ('defined) }
+      (new NonDefinedMock) shouldNot be ('defined)
+    }
+  }
   "The not matcher" -- {
     "should do nothing when not true" - {
       1 should not { equal (2) }
