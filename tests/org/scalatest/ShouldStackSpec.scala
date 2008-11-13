@@ -9,23 +9,23 @@ trait ShouldStackBehaviors extends ShouldMatchers {
   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior {
 
     "should be non-empty" - {
-      stack shouldNot beEmpty
+      stack shouldNot be ('empty)
     }  
 
     "should return the top item on peek" - {
-      stack.peek shouldEqual lastItemAdded
+      stack.peek should equal (lastItemAdded)
     }
   
     "should not remove the top item on peek" - {
       val size = stack.size
-      stack.peek shouldEqual lastItemAdded
-      stack.size shouldEqual size
+      stack.peek should equal (lastItemAdded)
+      stack.size should equal (size)
     }
   
     "should remove the top item on pop" - {
       val size = stack.size
-      stack.pop shouldEqual lastItemAdded
-      stack.size shouldEqual size - 1
+      stack.pop should equal (lastItemAdded)
+      stack.size should equal (size - 1)
     }
   }
   
@@ -38,8 +38,8 @@ trait ShouldStackBehaviors extends ShouldMatchers {
     "should add to the top on push" - {
       val size = stack.size
       stack.push(7)
-      stack.size shouldEqual size + 1
-      stack.peek shouldEqual 7
+      stack.size should equal (size + 1)
+      stack.peek should equal (7)
     }
   }
 }
@@ -51,26 +51,26 @@ class ShouldStackSpec extends ShouldSpec with StackFixtureCreationMethods with S
     "(when empty)" -- {
       
       "should be empty" - {
-        emptyStack should beEmpty
+        emptyStack should be ('empty)
       }
 
       "should complain on peek" - {
-        emptyStack.peek shouldThrow classOf[IllegalStateException]
+        emptyStack.peek shouldThrow (classOf[IllegalStateException])
       }
 
       "should complain on pop" - {
-        emptyStack.pop shouldThrow classOf[IllegalStateException]
+        emptyStack.pop shouldThrow (classOf[IllegalStateException])
       }
     }
 
     "(with one item)" -- {
-      stackWithOneItem should behave like nonEmptyStack(lastValuePushed)
-      stackWithOneItem should behave like nonFullStack
+      stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
+      stackWithOneItem should behave like (nonFullStack)
     }
     
     "(with one item less than capacity)"-- {
-      stackWithOneItemLessThanCapacity should behave like nonEmptyStack(lastValuePushed)
-      stackWithOneItemLessThanCapacity should behave like nonFullStack
+      stackWithOneItemLessThanCapacity should behave like (nonEmptyStack(lastValuePushed))
+      stackWithOneItemLessThanCapacity should behave like (nonFullStack)
     }
 
     "(full)" -- {
@@ -83,7 +83,7 @@ class ShouldStackSpec extends ShouldSpec with StackFixtureCreationMethods with S
       fullStack should behave like nonEmptyStack(lastValuePushed)
 
       "should complain on a push" - {
-        fullStack.push(10) shouldThrow classOf[IllegalStateException]
+        fullStack.push(10) shouldThrow (classOf[IllegalStateException])
       }
     }
   }
