@@ -31,35 +31,6 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
   }
 
-  "The shouldEqual method" -- {
-
-    "should do nothing when equal" - {
-      1 shouldEqual 1
-      val option = Some(1)
-      option shouldEqual Some(1)
-    }
-
-    "should throw an assertion error when not equal" - {
-      val caught = intercept(classOf[AssertionError]) {
-        1 shouldEqual 2
-      }
-      assert(caught.getMessage === "1 did not equal 2")
-    }
-
-    "should do nothing when not equal and used with shouldNot" - {
-      1 shouldNotEqual 2
-      val option = Some(1)
-      option shouldNotEqual Some(2)
-    }
-
-    "should throw an assertion error when equal but used with shouldNot" - {
-      val caught = intercept(classOf[AssertionError]) {
-        1 shouldNotEqual 1
-      }
-      assert(caught.getMessage === "1 equaled 1")
-    }
-  }
-
   "The be matcher" -- {
 
     "(for booleans)" -- {
@@ -269,7 +240,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
         val caught = intercept(classOf[AssertionError]) {
           "hi" should be ('empty)
         }
-        caught.getMessage shouldEqual "\"hi\" was not empty"
+        caught.getMessage should equal ("\"hi\" was not empty")
       }
 
       "should call isEmpty when passed 'empty" - {
@@ -297,11 +268,11 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
       "should be invokable from be a Symbol, be an Symbol, and be the Symbol" - {
         val emptySet = Set()
-        emptySet should be a 'empty
-        emptySet should be an 'empty
+        emptySet should be a ('empty)
+        emptySet should be an ('empty)
         val nonEmptySet = Set(1, 2, 3)
-        nonEmptySet should not { be a 'empty }
-        nonEmptySet should not { be an 'empty }
+        nonEmptySet should not { be a ('empty) }
+        nonEmptySet should not { be an ('empty) }
       }
 
       "should call empty when passed 'empty" - {
@@ -404,11 +375,12 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
   }
 
+/*
   "the beEmpty matcher" -- {
 
     "should call isEmpty" - {
       val emptySet = Set[Int]()
-      emptySet should beEmpty
+      emptySet should be (empty)
       val nonEmptySet = Set(1, 2, 3)
       nonEmptySet should not { beEmpty }
     }
@@ -462,7 +434,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
       }
       ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method")
       val ex2 = intercept(classOf[IllegalArgumentException]) {
-        (new NonEmptyMock) should not { beEmpty }
+        (new NonEmptyMock) should not { be (empty) }
       }
       ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method")
       val ex3 = intercept(classOf[IllegalArgumentException]) {
@@ -488,7 +460,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val caught = intercept(classOf[AssertionError]) {
         "hi" should beEmpty
       }
-      caught.getMessage shouldEqual "\"hi\" was not empty"
+      caught.getMessage should equal ("\"hi\" was not empty")
     }
   }
 
@@ -716,8 +688,8 @@ class MatcherSpec extends Spec with ShouldMatchers {
         val defined: Boolean = false
       }
       (new DefinedMock) should beDefined
-      (new NonDefinedMock) should not { beDefined }
-      (new NonDefinedMock) shouldNot beDefined
+      (new NonDefinedMock) should not { be (defined) }
+      (new NonDefinedMock) shouldNot be (defined)
     }
   }
 
@@ -739,7 +711,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
       assert(caught1.getMessage === "None was not Some(\"hi\")")
       val option: Option[Int] = None
       val caught2 = intercept(classOf[AssertionError]) {
-        option should beSome(3)
+        option should be (Some(3))
       }
       assert(caught2.getMessage === "None was not Some(3)")
     }
@@ -756,11 +728,11 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val caught1 = intercept(classOf[AssertionError]) {
         falseBoolean should beTrue
       }
-      caught1.getMessage shouldEqual "the boolean expression was not true"
+      caught1.getMessage should equal ("the boolean expression was not true")
       val caught2 = intercept(classOf[AssertionError]) {
         trueBoolean shouldNot beTrue
       }
-      caught2.getMessage shouldEqual "the boolean expression was true"
+      caught2.getMessage should equal ("the boolean expression was true")
     }
   }
 
@@ -775,13 +747,14 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val caught1 = intercept(classOf[AssertionError]) {
         trueBoolean should beFalse
       }
-      caught1.getMessage shouldEqual "the boolean expression was not false"
+      caught1.getMessage should equal ("the boolean expression was not false")
       val caught2 = intercept(classOf[AssertionError]) {
         falseBoolean shouldNot beFalse
       }
-      caught2.getMessage shouldEqual "the boolean expression was false"
+      caught2.getMessage should equal ("the boolean expression was false")
     }
   }
+*/
 
   "The not matcher" -- {
     "should do nothing when not true" - {
@@ -813,36 +786,36 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
   "The endWith matcher" -- {
     "should do nothing when true" - {
-      "Hello, world" should endWith substring "world"
-      "Hello, world" shouldNot endWith substring "Hello"
-      "Hello, world" should endWith regex "wo.ld"
-      "Hello, world" shouldNot endWith regex "Hel*o"
-      "Hello, world" should endWith regex "wo.ld".r
-      "Hello, world" shouldNot endWith regex "Hel*o".r
+      "Hello, world" should endWith substring ("world")
+      "Hello, world" shouldNot endWith substring ("Hello")
+      "Hello, world" should endWith regex ("wo.ld")
+      "Hello, world" shouldNot endWith regex ("Hel*o")
+      "Hello, world" should endWith regex ("wo.ld".r)
+      "Hello, world" shouldNot endWith regex ("Hel*o".r)
     }
     "should throw an assertion error when not true" - {
       val caught1 = intercept(classOf[AssertionError]) {
-        "Hello, world" should endWith substring "planet"
+        "Hello, world" should endWith substring ("planet")
       }
       assert(caught1.getMessage.indexOf("did not end with") != -1)
       val caught2 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot endWith substring "world"
+        "Hello, world" shouldNot endWith substring ("world")
       }
       assert(caught2.getMessage.indexOf("ended with") != -1)
       val caught3 = intercept(classOf[AssertionError]) {
-        "Hello, world" should endWith regex "pla.et"
+        "Hello, world" should endWith regex ("pla.et")
       }
       assert(caught3.getMessage.indexOf("did not end with a match for the regular expression") != -1)
       val caught4 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot endWith regex "wo.ld"
+        "Hello, world" shouldNot endWith regex ("wo.ld")
       }
       assert(caught4.getMessage.indexOf("ended with a match for the regular expression") != -1)
       val caught5 = intercept(classOf[AssertionError]) {
-        "Hello, world" should endWith regex "pla.et"
+        "Hello, world" should endWith regex ("pla.et")
       }
       assert(caught5.getMessage.indexOf("did not end with a match for the regular expression") != -1)
       val caught6 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot endWith regex "wo.ld"
+        "Hello, world" shouldNot endWith regex ("wo.ld")
       }
       assert(caught6.getMessage.indexOf("ended with a match for the regular expression") != -1)
     }
@@ -866,54 +839,54 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
   "The startWith matcher" -- {
     "should do nothing when true" - {
-      "Hello, world" should startWith substring "Hello"
-      "Hello, world" shouldNot startWith substring "Goodbye"
-      "Hello, world" should startWith regex "Hel*o"
-      "Hello, world" shouldNot startWith regex "Yel*o"
-      "Hello, world" should startWith regex "Hel*o".r
-      "Hello, world" shouldNot startWith regex "Yel*o".r
+      "Hello, world" should startWith substring ("Hello")
+      "Hello, world" shouldNot startWith substring ("Goodbye")
+      "Hello, world" should startWith regex ("Hel*o")
+      "Hello, world" shouldNot startWith regex ("Yel*o")
+      "Hello, world" should startWith regex ("Hel*o".r)
+      "Hello, world" shouldNot startWith regex ("Yel*o".r)
     }
     "should throw an assertion error when not true" - {
       val caught1 = intercept(classOf[AssertionError]) {
-        "Hello, world" should startWith substring "Greetings"
+        "Hello, world" should startWith substring ("Greetings")
       }
       assert(caught1.getMessage.indexOf("did not start with") != -1)
       val caught2 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot startWith substring "Hello"
+        "Hello, world" shouldNot startWith substring ("Hello")
       }
       assert(caught2.getMessage.indexOf("started with") != -1)
       val caught3 = intercept(classOf[AssertionError]) {
-        "Hello, world" should startWith regex "Gre*tings"
+        "Hello, world" should startWith regex ("Gre*tings")
       }
       assert(caught3.getMessage.indexOf("did not start with a match for the regular expression") != -1)
       val caught4 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot startWith regex "Hel*o"
+        "Hello, world" shouldNot startWith regex ("Hel*o")
       }
       assert(caught4.getMessage.indexOf("started with a match for the regular expression") != -1)
       val caught5 = intercept(classOf[AssertionError]) {
-        "Hello, world" should startWith regex "Gre*tings".r
+        "Hello, world" should startWith regex ("Gre*tings".r)
       }
       assert(caught5.getMessage.indexOf("did not start with a match for the regular expression") != -1)
       val caught6 = intercept(classOf[AssertionError]) {
-        "Hello, world" shouldNot startWith regex "Hel*o".r
+        "Hello, world" shouldNot startWith regex ("Hel*o".r)
       }
       assert(caught6.getMessage.indexOf("started with a match for the regular expression") != -1)
     }
     "should work inside an and clause" - {
 
-      "Hello, world" should { startWith substring "Hello" and equal ("Hello, world") }
-      "Hello, world" should { equal ("Hello, world") and (startWith substring "Hello") }
-      "Hello, world" should { startWith regex "Hel*o" and equal ("Hello, world") }
-      "Hello, world" should { equal ("Hello, world") and (startWith regex "Hel*o") }
-      "Hello, world" should { startWith regex "Hel*o".r and equal ("Hello, world") }
-      "Hello, world" should { equal ("Hello, world") and (startWith regex "Hel*o".r) }
+      "Hello, world" should { startWith substring ("Hello") and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (startWith substring ("Hello")) }
+      "Hello, world" should { startWith regex ("Hel*o") and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (startWith regex ("Hel*o")) }
+      "Hello, world" should { startWith regex ("Hel*o".r) and equal ("Hello, world") }
+      "Hello, world" should { equal ("Hello, world") and (startWith regex ("Hel*o".r)) }
 
-      "Hello, world" shouldNot { startWith substring "Yello" and equal ("Hello, world") }
-      "Hello, world" shouldNot { equal ("Hello, world") and (startWith substring "Yello") }
-      "Hello, world" shouldNot { startWith regex "Yel*o" and equal ("Hello, world") }
-      "Hello, world" shouldNot { equal ("Hello, world") and (startWith regex "Yel*o") }
-      "Hello, world" shouldNot { startWith regex "Yel*o".r and equal ("Hello, world") }
-      "Hello, world" shouldNot { equal ("Hello, world") and (startWith regex "Yel*o".r) }
+      "Hello, world" shouldNot { startWith substring ("Yello") and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (startWith substring ("Yello")) }
+      "Hello, world" shouldNot { startWith regex ("Yel*o") and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (startWith regex ("Yel*o")) }
+      "Hello, world" shouldNot { startWith regex ("Yel*o".r) and equal ("Hello, world") }
+      "Hello, world" shouldNot { equal ("Hello, world") and (startWith regex ("Yel*o".r)) }
     }
   }
 
@@ -1124,39 +1097,39 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
     "should work with map and key, right after a 'should'" - {
       val map = Map(1 -> "Howdy")
-      map should have key 1
+      map should have key (1)
       map should have key (1)
       map should equal { Map(1 -> "Howdy") }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should have key "Howdy"
+      otherMap should have key ("Howdy")
       otherMap should equal { Map("Howdy" -> 1) }
       import scala.collection.immutable.TreeMap
       val treeMap = TreeMap(1 -> "hi", 2 -> "howdy")
-      treeMap should have key 1
+      treeMap should have key (1)
     }
 
     "should work with map and key, in a logical expression" - {
       val map = Map(1 -> "Howdy")
       // The compiler infer the type of the value to be Nothing if I say: map should { have key 1 and equal (Map(1 -> "Howdy")) }
       // map should { have.key[Int, String](1) and equal (Map(1 -> "Howdy")) }
-      map should { have key 1 and equal (Map(1 -> "Howdy")) }
+      map should { have key (1) and equal (Map(1 -> "Howdy")) }
       val otherMap = Map("Howdy" -> 1)
       // otherMap should { have.key[String, Int]("Howdy") and equal (Map("Howdy" -> 1)) }
-      otherMap should { have key "Howdy" and equal (Map("Howdy" -> 1)) }
+      otherMap should { have key ("Howdy") and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and key, right after a 'shouldNot'" - {
       val map = Map(1 -> "Howdy")
-      map shouldNot have key 2
+      map shouldNot have key (2)
     }
 
     "should work with map and value, right after a 'should'" - {
       val map = Map(1 -> "Howdy")
-      map should have value "Howdy"
+      map should have value ("Howdy")
       map should have value ("Howdy")
       map should equal { Map(1 -> "Howdy") }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should have value 1
+      otherMap should have value (1)
       otherMap should equal { Map("Howdy" -> 1) }
     }
 
@@ -1164,39 +1137,39 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val map = Map(1 -> "Howdy")
       map should { equal (Map(1 -> "Howdy")) and (have value "Howdy") }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should { have value 1 and equal (Map("Howdy" -> 1)) }
+      otherMap should { have value (1) and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and value, right after a 'shouldNot'" - {
       val map = Map(1 -> "Howdy")
-      map shouldNot have value "Doody"
+      map shouldNot have value ("Doody")
     }
 
     "should work with collection and size, in an and expression." - {
       val list = List(1, 2, 3)
-      list should { have size 3 and equal (List(1, 2, 3)) }
+      list should { have size (3) and equal (List(1, 2, 3)) }
     }
 
     "should work with collection and size, right after a 'should'" - {
 
       val map = Map(1 -> "Howdy")
-      map should have size 1
+      map should have size (1)
       val caught1 = intercept(classOf[AssertionError]) {
-        map should have size 5
+        map should have size (5)
       }
       assert(caught1.getMessage.indexOf("did not have size") != -1)
 
       val list = List(1, 2, 3, 4, 5)
-      list should have size 5
+      list should have size (5)
       val caught2 = intercept(classOf[AssertionError]) {
-        list should have size 6
+        list should have size (6)
       }
       assert(caught2.getMessage.indexOf("did not have size") != -1)
 
       val set = Set(1.0, 2.0, 3.0)
-      set should have size 3
+      set should have size (3)
       val caught3 = intercept(classOf[AssertionError]) {
-        set should have size 0
+        set should have size (0)
       }
       assert(caught3.getMessage.indexOf("did not have size") != -1)
 
@@ -1211,30 +1184,30 @@ class MatcherSpec extends Spec with ShouldMatchers {
     "should work with collection and size, right after a 'shouldNot'" - {
 
       val map = Map(1 -> "Howdy")
-      map shouldNot have size 2
+      map shouldNot have size (2)
       val caught1 = intercept(classOf[AssertionError]) {
-        map shouldNot have size 1
+        map shouldNot have size (1)
       }
       assert(caught1.getMessage.indexOf("had size") != -1)
 
       val list = List(1, 2, 3, 4, 5)
-      list shouldNot have size 6
+      list shouldNot have size (6)
       val caught2 = intercept(classOf[AssertionError]) {
-        list shouldNot have size 5
+        list shouldNot have size (5)
       }
       assert(caught2.getMessage.indexOf("had size") != -1)
 
       val set = Set(1.0, 2.0, 3.0)
-      set shouldNot have size 0
+      set shouldNot have size (0)
       val caught3 = intercept(classOf[AssertionError]) {
-        set shouldNot have size 3
+        set shouldNot have size (3)
       }
       assert(caught3.getMessage.indexOf("had size") != -1)
 
       val array = Array[String]()
-      array shouldNot have size 2
+      array shouldNot have size (2)
       val caught4 = intercept(classOf[AssertionError]) {
-        array shouldNot have size 0
+        array shouldNot have size (0)
       }
       assert(caught4.getMessage.indexOf("had size") != -1)
     }
@@ -1245,37 +1218,37 @@ class MatcherSpec extends Spec with ShouldMatchers {
     "should work with a set, list, array, and map right after a 'should'" - {
 
       val set = Set(1, 2, 3)
-      set should contain element 2
+      set should contain element (2)
       val caught1 = intercept(classOf[AssertionError]) {
-        set should contain element 5
+        set should contain element (5)
       }
       assert(caught1.getMessage.indexOf("did not contain element") != -1)
 
-      set should { contain element 2 and equal (Set(1, 2, 3)) }
+      set should { contain element (2) and equal (Set(1, 2, 3)) }
       val caught1b = intercept(classOf[AssertionError]) {
-        set should { contain element 5 and equal(Set(1, 2, 3)) }
+        set should { contain element (5) and equal(Set(1, 2, 3)) }
       }
       assert(caught1b.getMessage.indexOf("did not contain element") != -1)
 
       val list = List("one", "two", "three")
-      list should contain element "two"
+      list should contain element ("two")
       val caught2 = intercept(classOf[AssertionError]) {
-        list should contain element "five"
+        list should contain element ("five")
       }
       assert(caught2.getMessage.indexOf("did not contain element") != -1)
 
       val array = Array("one", "two", "three")
-      array should contain element "one"
+      array should contain element ("one")
       val caught3 = intercept(classOf[AssertionError]) {
-        array should contain element "five"
+        array should contain element ("five")
       }
       assert(caught3.getMessage.indexOf("did not contain element") != -1)
 
       val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
       val tuple2: Tuple2[Int, String] = 1 -> "one"
-      map should contain element tuple2
+      map should contain element (tuple2)
       val caught4 = intercept(classOf[AssertionError]) {
-        map should contain element 1 -> "won"
+        map should contain element (1 -> "won")
       }
       assert(caught4.getMessage.indexOf("did not contain element") != -1)
     }
@@ -1283,103 +1256,103 @@ class MatcherSpec extends Spec with ShouldMatchers {
     "should work with a set, list, array, and map right after a 'shouldNot'" - {
 
       val set = Set(1, 2, 3)
-      set shouldNot contain element 5
+      set shouldNot contain element (5)
       val caught1 = intercept(classOf[AssertionError]) {
-        set shouldNot contain element 2
+        set shouldNot contain element (2)
       }
       assert(caught1.getMessage.indexOf("contained element") != -1)
 
       val list = List("one", "two", "three")
-      list shouldNot contain element "five"
+      list shouldNot contain element ("five")
       val caught2 = intercept(classOf[AssertionError]) {
-        list shouldNot contain element "two"
+        list shouldNot contain element ("two")
       }
       assert(caught2.getMessage.indexOf("contained element") != -1)
 
       val array = Array("one", "two", "three")
-      array shouldNot contain element "five"
+      array shouldNot contain element ("five")
       val caught3 = intercept(classOf[AssertionError]) {
-        array shouldNot contain element "one"
+        array shouldNot contain element ("one")
       }
       assert(caught3.getMessage.indexOf("contained element") != -1)
 
       val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
       val tuple2: Tuple2[Int, String] = 1 -> "won"
-      map shouldNot contain element tuple2
+      map shouldNot contain element (tuple2)
       val caught4 = intercept(classOf[AssertionError]) {
-        map shouldNot contain element 1 -> "one"
+        map shouldNot contain element (1 -> "one")
       }
       assert(caught4.getMessage.indexOf("contained element") != -1)
     }
 
     "should work with string and have length right after a 'should'" - {
       val string = "hi"
-      string should have length 2
+      string should have length (2)
       val caught = intercept(classOf[AssertionError]) {
-        string should have length 3
+        string should have length (3)
       }
       assert(caught.getMessage.indexOf("did not have length") != -1)
     }
 
     "should work with string and have length right after a 'shouldNot'" - {
       val string = "hi"
-      string shouldNot have length 3
+      string shouldNot have length (3)
       val caught = intercept(classOf[AssertionError]) {
-        string shouldNot have length 2
+        string shouldNot have length (2)
       }
       assert(caught.getMessage.indexOf("had length") != -1)
     }
 
     "should work with string, should, and have length in an and expression" - {
       val string = "hi"
-      string should { have length 2 and equal ("hi") }
+      string should { have length (2) and equal ("hi") }
       val caught = intercept(classOf[AssertionError]) {
-        string should { have length 3 and equal ("hi") }
+        string should { have length (3) and equal ("hi") }
       }
       assert(caught.getMessage.indexOf("did not have length") != -1)
     }
 
     "should work with string, shouldNot, and have length in an and expression" - {
       val string = "hi"
-      string shouldNot { have length 3 and equal ("hi") }
+      string shouldNot { have length (3) and equal ("hi") }
       val caught = intercept(classOf[AssertionError]) {
-        string shouldNot { have length 2 and equal ("hi") }
+        string shouldNot { have length (2) and equal ("hi") }
       }
       assert(caught.getMessage.indexOf("had length") != -1)
     }
 
     "should work with array and have length right after a 'should'" - {
       val array = Array('h', 'i')
-      array should have length 2
+      array should have length (2)
       val caught = intercept(classOf[AssertionError]) {
-        array should have length 3
+        array should have length (3)
       }
       assert(caught.getMessage.indexOf("did not have length") != -1)
     }
 
     "should work with array and have length right after a 'shouldNot'" - {
       val array = Array('h', 'i')
-      array shouldNot have length 3
+      array shouldNot have length (3)
       val caught = intercept(classOf[AssertionError]) {
-        array shouldNot have length 2
+        array shouldNot have length (2)
       }
       assert(caught.getMessage.indexOf("had length") != -1)
     }
 
     "should work with array, should, and have length in an and expression" - {
       val array = Array('h', 'i')
-      array should { have length 2 and equal (Array('h', 'i')) }
+      array should { have length (2) and equal (Array('h', 'i')) }
       val caught = intercept(classOf[AssertionError]) {
-        array should { have length 3 and equal (Array('h', 'i')) }
+        array should { have length (3) and equal (Array('h', 'i')) }
       }
       assert(caught.getMessage.indexOf("did not have length") != -1)
     }
 
     "should work with array, shouldNot, and have length in an and expression" - {
       val array = Array('h', 'i')
-      array shouldNot { have length 3 and equal (Array('h', 'i')) }
+      array shouldNot { have length (3) and equal (Array('h', 'i')) }
       val caught = intercept(classOf[AssertionError]) {
-        array shouldNot { have length 2 and equal (Array('h', 'i')) }
+        array shouldNot { have length (2) and equal (Array('h', 'i')) }
       }
       assert(caught.getMessage.indexOf("had length") != -1)
     }
@@ -1389,9 +1362,9 @@ class MatcherSpec extends Spec with ShouldMatchers {
         def length(): Int = 2
       }
       val hasLengthMethod = new HasLengthMethod
-      hasLengthMethod should { have length 2 and equal (hasLengthMethod) }
+      hasLengthMethod should { have length (2) and equal (hasLengthMethod) }
       val caught = intercept(classOf[AssertionError]) {
-        hasLengthMethod shouldNot { have length 2 and equal (hasLengthMethod) }
+        hasLengthMethod shouldNot { have length (2) and equal (hasLengthMethod) }
       }
       assert(caught.getMessage.indexOf("had length") != -1)
     }
@@ -1401,9 +1374,9 @@ class MatcherSpec extends Spec with ShouldMatchers {
         def length: Int = 2
       }
       val hasLengthMethod = new HasLengthMethod
-      hasLengthMethod should { have length 2 and equal (hasLengthMethod) }
+      hasLengthMethod should { have length (2) and equal (hasLengthMethod) }
       val caught = intercept(classOf[AssertionError]) {
-        hasLengthMethod shouldNot { have length 2 and equal (hasLengthMethod) }
+        hasLengthMethod shouldNot { have length (2) and equal (hasLengthMethod) }
       }
       assert(caught.getMessage.indexOf("had length") != -1)
     }
@@ -1413,9 +1386,9 @@ class MatcherSpec extends Spec with ShouldMatchers {
         val length: Int = 2
       }
       val hasLengthField = new HasLengthField
-      hasLengthField should { have length 2 and equal (hasLengthField) }
+      hasLengthField should { have length (2) and equal (hasLengthField) }
       val caught = intercept(classOf[AssertionError]) {
-        hasLengthField shouldNot { have length 2 and equal (hasLengthField) }
+        hasLengthField shouldNot { have length (2) and equal (hasLengthField) }
       }
       assert(caught.getMessage.indexOf("had length") != -1)
     }
@@ -1426,12 +1399,12 @@ class MatcherSpec extends Spec with ShouldMatchers {
       }
       val hasNoLength = new HasNoLength
       val caught1 = intercept(classOf[AssertionError]) {
-        hasNoLength should { have length 2 and equal (hasNoLength) }
+        hasNoLength should { have length (2) and equal (hasNoLength) }
       }
       val expectedSubstring = "used with an object that had neither a public field or method named 'length'"
       assert(caught1.getMessage.indexOf(expectedSubstring) != -1)
       val caught2 = intercept(classOf[AssertionError]) {
-        hasNoLength shouldNot { have length 2 and equal (hasNoLength) }
+        hasNoLength shouldNot { have length (2) and equal (hasNoLength) }
       }
       assert(caught2.getMessage.indexOf(expectedSubstring) != -1)
     }
@@ -1444,24 +1417,24 @@ class MatcherSpec extends Spec with ShouldMatchers {
     val otherString = new String("Hi")
 
     "should do nothing if the two objects are the same" - {
-      string should be theSameInstanceAs string
-      obj should be theSameInstanceAs string
-      string should be theSameInstanceAs obj
-      otherString shouldNot be theSameInstanceAs string
+      string should be theSameInstanceAs (string)
+      obj should be theSameInstanceAs (string)
+      string should be theSameInstanceAs (obj)
+      otherString shouldNot be theSameInstanceAs (string)
     }
 
     "should throw AssertionError if the two objects are not the same" - {
       val caught1 = intercept(classOf[AssertionError]) {
-        string shouldNot be theSameInstanceAs string
+        string shouldNot be theSameInstanceAs (string)
       }
       val caught2 = intercept(classOf[AssertionError]) {
-        obj shouldNot be theSameInstanceAs string
+        obj shouldNot be theSameInstanceAs (string)
       }
       val caught3 = intercept(classOf[AssertionError]) {
-        string shouldNot be theSameInstanceAs obj
+        string shouldNot be theSameInstanceAs (obj)
       }
       val caught4 = intercept(classOf[AssertionError]) {
-        otherString should be theSameInstanceAs string
+        otherString should be theSameInstanceAs (string)
       }
       assert(true) // TODO: test the failure message
     }
@@ -1474,34 +1447,34 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
     "should do nothing if the string includes the expected substring" - {
       val string = "Four score and seven years ago,..."
-      string should include substring "seven"
-      string should include substring "Four"
-      string should include substring ",..."
-      string shouldNot include substring "on this continent"
-      "4 score and seven years ago" should include regex decimal
-      "Four score and 7 years ago" should include regex decimal
-      "4.0 score and seven years ago" should include regex decimal
-      "Four score and 7.0 years ago" should include regex decimal
-      "Four score and 7.0" should include regex decimal
-      string shouldNot include regex decimal
+      string should include substring ("seven")
+      string should include substring ("Four")
+      string should include substring (",...")
+      string shouldNot include substring ("on this continent")
+      "4 score and seven years ago" should include regex (decimal)
+      "Four score and 7 years ago" should include regex (decimal)
+      "4.0 score and seven years ago" should include regex (decimal)
+      "Four score and 7.0 years ago" should include regex (decimal)
+      "Four score and 7.0" should include regex (decimal)
+      string shouldNot include regex (decimal)
     }
 
     "should throw AssertionError if the string does not include the expected substring" - {
       val string = "Four score and seven years ago,..."
       val caught1 = intercept(classOf[AssertionError]) {
-        string shouldNot include substring "seven"
+        string shouldNot include substring ("seven")
       }
       assert(caught1.getMessage === "\"Four score and seven years ago,...\" included substring \"seven\"")
       val caught2 = intercept(classOf[AssertionError]) {
-        string shouldNot include substring "Four"
+        string shouldNot include substring ("Four")
       }
       assert(caught2.getMessage === "\"Four score and seven years ago,...\" included substring \"Four\"")
       val caught3 = intercept(classOf[AssertionError]) {
-        string shouldNot include substring ",..."
+        string shouldNot include substring (",...")
       }
       assert(caught3.getMessage === "\"Four score and seven years ago,...\" included substring \",...\"")
       val caught4 = intercept(classOf[AssertionError]) {
-        string should include substring "on this continent"
+        string should include substring ("on this continent")
       }
       assert(caught4.getMessage === "\"Four score and seven years ago,...\" did not include substring \"on this continent\"")
     }
@@ -1510,66 +1483,66 @@ class MatcherSpec extends Spec with ShouldMatchers {
   "The should be >/>=/</<= syntax" -- {
     "should do nothing if the specified relation is true" - {
       val one = 1
-      one should be < 7
-      one should be > 0
-      one should be <= 7
-      one should be >= 0
-      one should be <= 1
-      one should be >= 1
-      one shouldNot be < 0
-      one shouldNot be > 9
-      one shouldNot be <= -4
-      one shouldNot be >= 21
+      one should be < (7)
+      one should be > (0)
+      one should be <= (7)
+      one should be >= (0)
+      one should be <= (1)
+      one should be >= (1)
+      one shouldNot be < (0)
+      one shouldNot be > (9)
+      one shouldNot be <= (-4)
+      one shouldNot be >= (21)
     }
     "should throw AssertionError if the specified relation is not true" - {
       val one = 1
       val caught1 = intercept(classOf[AssertionError]) {
-        one shouldNot be < 7
+        one shouldNot be < (7)
       }
       assert(caught1.getMessage === "1 was less than 7")
 
       val caught2 = intercept(classOf[AssertionError]) {
-        one shouldNot be > 0
+        one shouldNot be > (0)
       }
       assert(caught2.getMessage === "1 was greater than 0")
 
       val caught3 = intercept(classOf[AssertionError]) {
-        one shouldNot be <= 7
+        one shouldNot be <= (7)
       }
       assert(caught3.getMessage === "1 was less than or equal to 7")
 
       val caught4 = intercept(classOf[AssertionError]) {
-        one shouldNot be >= 0
+        one shouldNot be >= (0)
       }
       assert(caught4.getMessage === "1 was greater than or equal to 0")
 
       val caught5 = intercept(classOf[AssertionError]) {
-        one shouldNot be <= 1
+        one shouldNot be <= (1)
       }
       assert(caught5.getMessage === "1 was less than or equal to 1")
 
       val caught6 = intercept(classOf[AssertionError]) {
-        one shouldNot be >= 1
+        one shouldNot be >= (1)
       }
       assert(caught6.getMessage === "1 was greater than or equal to 1")
 
       val caught7 = intercept(classOf[AssertionError]) {
-        one should be < 0
+        one should be < (0)
       }
       assert(caught7.getMessage === "1 was not less than 0")
 
       val caught8 = intercept(classOf[AssertionError]) {
-        one should be > 9
+        one should be > (9)
       }
       assert(caught8.getMessage === "1 was not greater than 9")
 
       val caught9 = intercept(classOf[AssertionError]) {
-        one should be <= -4
+        one should be <= (-4)
       }
       assert(caught9.getMessage === "1 was not less than or equal to -4")
 
       val caught10 = intercept(classOf[AssertionError]) {
-        one should be >= 21
+        one should be >= (21)
       }
       assert(caught10.getMessage === "1 was not greater than or equal to 21")
     }
@@ -1580,14 +1553,14 @@ class MatcherSpec extends Spec with ShouldMatchers {
       val sevenDotOh = 7.0
       // sevenDotOh should be (7.0 exactly)
       sevenDotOh should be (7.0)
-      sevenDotOh shouldEqual 7.0
+      sevenDotOh should equal (7.0)
       // sevenDotOh shouldNot be (7.0001 exactly)
       sevenDotOh shouldNot be (7.0001)
 
       val sixDotOh: Float = 6.0f
       // sixDotOh should be (6.0 exactly)
       sixDotOh should be (6.0)
-      sixDotOh shouldEqual 6.0
+      sixDotOh should equal (6.0)
       // sixDotOh shouldNot be (6.0001 exactly)
       sixDotOh shouldNot be (6.0001)
     }
@@ -1601,7 +1574,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
       assert(caught1.getMessage === "7.0001 was not 7.0")
 
       val caught2 = intercept(classOf[AssertionError]) {
-        sevenDotOh shouldEqual 7.0
+        sevenDotOh should equal (7.0)
       }
       assert(caught2.getMessage === "7.0001 did not equal 7.0")
 
@@ -1619,7 +1592,7 @@ class MatcherSpec extends Spec with ShouldMatchers {
       assert(caught4.getMessage === "6.0001 was not 6.0")
 
       val caught5 = intercept(classOf[AssertionError]) {
-        sixDotOh shouldEqual 6.0f
+        sixDotOh should equal (6.0f)
       }
       assert(caught5.getMessage === "6.0001 did not equal 6.0")
 
@@ -1696,13 +1669,13 @@ class MatcherSpec extends Spec with ShouldMatchers {
       theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException]
       theBlock {
         "Howdy".charAt(-1)
-      } shouldThrow classOf[StringIndexOutOfBoundsException]
+      } shouldThrow (classOf[StringIndexOutOfBoundsException])
       theBlock { "Howdy".charAt(-1); println("hi") } shouldThrow classOf[StringIndexOutOfBoundsException]
       theBlock { "Howdy".charAt(-1); println("hi") } shouldThrow anException
-      "Howdy".charAt(1) shouldNotThrow anException
+      "Howdy".charAt(1) shouldNotThrow (anException)
       // "Howdy".charAt(1) shouldNotThrow classOf[IllegalArgumentException] This doesn't compile, by design
       val caught = intercept(classOf[AssertionError]) {
-        "Howdy".charAt(-1) shouldNotThrow anException
+        "Howdy".charAt(-1) shouldNotThrow (anException)
       }
       assert(caught.getMessage === "Expected no exception to be thrown, but java.lang.StringIndexOutOfBoundsException was thrown.")
     }
@@ -1710,23 +1683,23 @@ class MatcherSpec extends Spec with ShouldMatchers {
     "should do nothing if an instance of a subclass of the specified expected exception class is thrown" - {
       class MyException extends RuntimeException
       class MyExceptionSubClass extends MyException
-      theBlock { throw new MyException } shouldThrow classOf[MyException]
-      theBlock { throw new MyException } shouldThrow anException
-      theBlock { throw new MyExceptionSubClass } shouldThrow classOf[MyException]
-      theBlock { throw new MyExceptionSubClass } shouldThrow anException
+      theBlock { throw new MyException } shouldThrow (classOf[MyException])
+      theBlock { throw new MyException } shouldThrow (anException)
+      theBlock { throw new MyExceptionSubClass } shouldThrow (classOf[MyException])
+      theBlock { throw new MyExceptionSubClass } shouldThrow (anException)
       // Try with a trait
       trait MyTrait
       class AnotherException extends RuntimeException with MyTrait
-      theBlock { throw new AnotherException } shouldThrow classOf[MyTrait]
-      theBlock { throw new AnotherException } shouldThrow anException
+      theBlock { throw new AnotherException } shouldThrow (classOf[MyTrait])
+      theBlock { throw new AnotherException } shouldThrow (anException)
     }
 
     "should return the caught exception" - {
       val e = new RuntimeException
-      val result1 = theBlock { throw e } shouldThrow classOf[RuntimeException]
-      result1 should be theSameInstanceAs e
-      val result2 = theBlock { throw e } shouldThrow anException
-      result2 should be theSameInstanceAs e
+      val result1 = theBlock { throw e } shouldThrow (classOf[RuntimeException])
+      result1 should be theSameInstanceAs (e)
+      val result2 = theBlock { throw e } shouldThrow (anException)
+      result2 should be theSameInstanceAs (e)
     }
 
     "should throw AssertionError if the expected exception is not thrown" - {
@@ -1749,137 +1722,137 @@ class MatcherSpec extends Spec with ShouldMatchers {
     val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
 
     "should do nothing if the string matches the regular expression specified as a string" - {
-      "1.7" should fullyMatch regex "1.7"
-      "1.7" should fullyMatch regex decimal
-      "-1.8" should fullyMatch regex decimal
-      "8" should fullyMatch regex decimal
-      "1." should fullyMatch regex decimal
-      "eight" shouldNot fullyMatch regex decimal
-      "1.eight" shouldNot fullyMatch regex decimal
-      "one.8" shouldNot fullyMatch regex decimal
-      "1.8-" shouldNot fullyMatch regex decimal
-      "1.7" should { fullyMatch regex decimal and equal ("1.7") }
-      "1.7++" shouldNot { fullyMatch regex decimal and equal ("1.7") }
+      "1.7" should fullyMatch regex ("1.7")
+      "1.7" should fullyMatch regex (decimal)
+      "-1.8" should fullyMatch regex (decimal)
+      "8" should fullyMatch regex (decimal)
+      "1." should fullyMatch regex (decimal)
+      "eight" shouldNot fullyMatch regex (decimal)
+      "1.eight" shouldNot fullyMatch regex (decimal)
+      "one.8" shouldNot fullyMatch regex (decimal)
+      "1.8-" shouldNot fullyMatch regex (decimal)
+      "1.7" should { fullyMatch regex (decimal) and equal ("1.7") }
+      "1.7++" shouldNot { fullyMatch regex (decimal) and equal ("1.7") }
     }
 
     "should do nothing if the string matches the regular expression specified as a Regex" - {
-      "1.7" should fullyMatch regex decimalRegex
-      "-1.8" should fullyMatch regex decimalRegex
-      "8" should fullyMatch regex decimalRegex
-      "1." should fullyMatch regex decimalRegex
-      "eight" shouldNot fullyMatch regex decimalRegex
-      "1.eight" shouldNot fullyMatch regex decimalRegex
-      "one.8" shouldNot fullyMatch regex decimalRegex
-      "1.8-" shouldNot fullyMatch regex decimalRegex
-      "1.7" should { fullyMatch regex decimalRegex and equal ("1.7") }
-      "1.7++" shouldNot { fullyMatch regex decimalRegex and equal ("1.7") }
+      "1.7" should fullyMatch regex (decimalRegex)
+      "-1.8" should fullyMatch regex (decimalRegex)
+      "8" should fullyMatch regex (decimalRegex)
+      "1." should fullyMatch regex (decimalRegex)
+      "eight" shouldNot fullyMatch regex (decimalRegex)
+      "1.eight" shouldNot fullyMatch regex (decimalRegex)
+      "one.8" shouldNot fullyMatch regex (decimalRegex)
+      "1.8-" shouldNot fullyMatch regex (decimalRegex)
+      "1.7" should { fullyMatch regex (decimalRegex) and equal ("1.7") }
+      "1.7++" shouldNot { fullyMatch regex (decimalRegex) and equal ("1.7") }
     }
 
     "should throw AssertionError if the string does not match the regular expression specified as a string" - {
       val caught1 = intercept(classOf[AssertionError]) {
-        "1.7" shouldNot fullyMatch regex "1.7"
+        "1.7" shouldNot fullyMatch regex ("1.7")
       }
       assert(caught1.getMessage === "\"1.7\" fully matched the regular expression 1.7")
 
       val caught2 = intercept(classOf[AssertionError]) {
-        "1.7" shouldNot fullyMatch regex decimal
+        "1.7" shouldNot fullyMatch regex (decimal)
       }
       assert(caught2.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught3 = intercept(classOf[AssertionError]) {
-        "-1.8" shouldNot fullyMatch regex decimal
+        "-1.8" shouldNot fullyMatch regex (decimal)
       }
       assert(caught3.getMessage === "\"-1.8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught4 = intercept(classOf[AssertionError]) {
-        "8" shouldNot fullyMatch regex decimal
+        "8" shouldNot fullyMatch regex (decimal)
       }
       assert(caught4.getMessage === "\"8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught5 = intercept(classOf[AssertionError]) {
-        "1." shouldNot fullyMatch regex decimal
+        "1." shouldNot fullyMatch regex (decimal)
       }
       assert(caught5.getMessage === "\"1.\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught6 = intercept(classOf[AssertionError]) {
-        "eight" should fullyMatch regex decimal
+        "eight" should fullyMatch regex (decimal)
       }
       assert(caught6.getMessage === "\"eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught7 = intercept(classOf[AssertionError]) {
-        "1.eight" should fullyMatch regex decimal
+        "1.eight" should fullyMatch regex (decimal)
       }
       assert(caught7.getMessage === "\"1.eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught8 = intercept(classOf[AssertionError]) {
-        "one.8" should fullyMatch regex decimal
+        "one.8" should fullyMatch regex (decimal)
       }
       assert(caught8.getMessage === "\"one.8\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught9 = intercept(classOf[AssertionError]) {
-        "1.8-" should fullyMatch regex decimal
+        "1.8-" should fullyMatch regex (decimal)
       }
       assert(caught9.getMessage === "\"1.8-\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught10 = intercept(classOf[AssertionError]) {
-        "1.7" shouldNot { fullyMatch regex decimal and equal ("1.7") }
+        "1.7" shouldNot { fullyMatch regex (decimal) and equal ("1.7") }
       }
       assert(caught10.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" equaled \"1.7\"")
 
       val caught11 = intercept(classOf[AssertionError]) {
-        "1.7++" should { fullyMatch regex decimal and equal ("1.7") }
+        "1.7++" should { fullyMatch regex (decimal) and equal ("1.7") }
       }
       assert(caught11.getMessage === "\"1.7++\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
     }
 
     "should throw AssertionError if the string does not match the regular expression specified as a Regex" - {
       val caught2 = intercept(classOf[AssertionError]) {
-        "1.7" shouldNot fullyMatch regex decimalRegex
+        "1.7" shouldNot fullyMatch regex (decimalRegex)
       }
       assert(caught2.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught3 = intercept(classOf[AssertionError]) {
-        "-1.8" shouldNot fullyMatch regex decimalRegex
+        "-1.8" shouldNot fullyMatch regex (decimalRegex)
       }
       assert(caught3.getMessage === "\"-1.8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught4 = intercept(classOf[AssertionError]) {
-        "8" shouldNot fullyMatch regex decimalRegex
+        "8" shouldNot fullyMatch regex (decimalRegex)
       }
       assert(caught4.getMessage === "\"8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught5 = intercept(classOf[AssertionError]) {
-        "1." shouldNot fullyMatch regex decimalRegex
+        "1." shouldNot fullyMatch regex (decimalRegex)
       }
       assert(caught5.getMessage === "\"1.\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught6 = intercept(classOf[AssertionError]) {
-        "eight" should fullyMatch regex decimalRegex
+        "eight" should fullyMatch regex (decimalRegex)
       }
       assert(caught6.getMessage === "\"eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught7 = intercept(classOf[AssertionError]) {
-        "1.eight" should fullyMatch regex decimalRegex
+        "1.eight" should fullyMatch regex (decimalRegex)
       }
       assert(caught7.getMessage === "\"1.eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught8 = intercept(classOf[AssertionError]) {
-        "one.8" should fullyMatch regex decimalRegex
+        "one.8" should fullyMatch regex (decimalRegex)
       }
       assert(caught8.getMessage === "\"one.8\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught9 = intercept(classOf[AssertionError]) {
-        "1.8-" should fullyMatch regex decimalRegex
+        "1.8-" should fullyMatch regex (decimalRegex)
       }
       assert(caught9.getMessage === "\"1.8-\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
 
       val caught10 = intercept(classOf[AssertionError]) {
-        "1.7" shouldNot { fullyMatch regex decimalRegex and equal ("1.7") }
+        "1.7" shouldNot { fullyMatch regex (decimalRegex) and equal ("1.7") }
       }
       assert(caught10.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" equaled \"1.7\"")
 
       val caught11 = intercept(classOf[AssertionError]) {
-        "1.7++" should { fullyMatch regex decimalRegex and equal ("1.7") }
+        "1.7++" should { fullyMatch regex (decimalRegex) and equal ("1.7") }
       }
       assert(caught11.getMessage === "\"1.7++\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
     }
