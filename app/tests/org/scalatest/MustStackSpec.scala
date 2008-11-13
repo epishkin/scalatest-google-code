@@ -9,23 +9,23 @@ trait MustStackBehaviors extends MustMatchers {
   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior {
 
     "must be non-empty" - {
-      stack mustNot beEmpty
+      stack mustNot be ('empty)
     }  
 
     "must return the top item on peek" - {
-      stack.peek mustEqual lastItemAdded
+      stack.peek must equal (lastItemAdded)
     }
   
     "must not remove the top item on peek" - {
       val size = stack.size
-      stack.peek mustEqual lastItemAdded
-      stack.size mustEqual size
+      stack.peek must equal (lastItemAdded)
+      stack.size must equal (size)
     }
   
     "must remove the top item on pop" - {
       val size = stack.size
-      stack.pop mustEqual lastItemAdded
-      stack.size mustEqual size - 1
+      stack.pop must equal (lastItemAdded)
+      stack.size must equal (size - 1)
     }
   }
   
@@ -38,8 +38,8 @@ trait MustStackBehaviors extends MustMatchers {
     "must add to the top on push" - {
       val size = stack.size
       stack.push(7)
-      stack.size mustEqual size + 1
-      stack.peek mustEqual 7
+      stack.size must equal (size + 1)
+      stack.peek must equal (7)
     }
   }
 }
@@ -51,7 +51,7 @@ class MustStackSpec extends MustSpec with StackFixtureCreationMethods with MustS
     "(when empty)" -- {
       
       "must be empty" - {
-        emptyStack must beEmpty
+        emptyStack must be ('empty)
       }
 
       "must complain on peek" - {
