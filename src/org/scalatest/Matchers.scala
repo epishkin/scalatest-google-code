@@ -845,6 +845,7 @@ trait BaseMatchers extends Assertions {
     }
   }
 
+/*
   def beNil: Matcher[List[_]] = Helper.equalAndBeAnyMatcher(Nil, "was", "wasNot")
 
   def beNull: Matcher[Any] = Helper.equalAndBeAnyMatcher(null, "was", "wasNot")
@@ -885,6 +886,7 @@ trait BaseMatchers extends Assertions {
           )
         }
       }
+*/
 
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
