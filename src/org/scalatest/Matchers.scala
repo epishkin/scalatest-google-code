@@ -846,49 +846,6 @@ trait BaseMatchers extends Assertions {
   }
 
 /*
-  def beNil: Matcher[List[_]] = Helper.equalAndBeAnyMatcher(Nil, "was", "wasNot")
-
-  def beNull: Matcher[Any] = Helper.equalAndBeAnyMatcher(null, "was", "wasNot")
-
-  def beEmpty: Matcher[AnyRef] = be.apply('empty)
-
-  def beNone: Matcher[Option[_]] = be.apply(None)
-
-  def beDefined: Matcher[AnyRef] = be.apply('defined)
-
-  def beTrue: Matcher[Boolean] =
-    new Matcher[Boolean] {
-      def apply(left: Boolean) =
-        MatcherResult(
-          left,
-          FailureMessages("booleanExpressionWasNot", true),
-          FailureMessages("booleanExpressionWas", true)
-        )
-    }
-
-  def beFalse: Matcher[Boolean] =
-    new Matcher[Boolean] {
-      def apply(left: Boolean) =
-        MatcherResult(
-          !left,
-          FailureMessages("booleanExpressionWasNot", false),
-          FailureMessages("booleanExpressionWas", false)
-        )
-    }
-
-  def beSome[S](payload: S): Matcher[Option[S]] =
-      new Matcher[Option[S]] {
-        def apply(left: Option[S]) = {
-          MatcherResult(
-            !left.isEmpty && left.get == payload,
-            FailureMessages("wasNotSome", left, payload),
-            FailureMessages("wasSome", left, payload)
-          )
-        }
-      }
-*/
-
-/*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which
     stores the key value in a val and whose apply method checks the passed map for the remembered key. This
