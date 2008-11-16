@@ -590,7 +590,7 @@ import scala.collection.immutable.TreeSet
  *
  * <p>
  * If you are more comfortable with reassigning instance variables, however, you can
- * instead use <code>BeforeAndAfter</code>, a trait that provides
+ * instead use the <code>BeforeAndAfter</code> trait, which provides
  * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
  * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
  * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>

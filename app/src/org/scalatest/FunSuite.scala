@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicReference
  * </pre>
  *
  * <p>
- * &#8220;<code>test</code>&#8221; is a method, defined in <code>FunSuite</code>, that will be invoked
+ * &#8220;<code>test</code>&#8221; is a method, defined in <code>FunSuite</code>, which will be invoked
  * by the primary constructor of <code>MySuite</code>. You specify the name of the test as
  * a string between the parentheses, and the test code itself between curly braces.
  * The test code is a function passed as a by-name parameter to <code>test</code>, which registers
@@ -99,7 +99,7 @@ import java.util.concurrent.atomic.AtomicReference
  * it needs to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
  * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use <code>ImpSuite</code>,
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
  * between tests. Before going that route, you should consider two approaches that
@@ -249,22 +249,22 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * <p>
  * If you are more comfortable with reassigning instance variables, however, you can
- * instead use <code>ImpSuite</code>, a subtrait of <code>Suite</code> that provides
- * methods that will be run before and after each test. <code>ImpSuite</code>'s
+ * instead use the <code>BeforeAndafter</code> trait, which provides
+ * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
  * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
  * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
  * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with an <code>ImpSuite</code>:
+ * test that uses a temp file with <code>BeforeAndAfter</code>:
  * </p>
  *
  * <pre>
  * import org.scalatest.FunSuite
- * import org.scalatest.ImpSuite
+ * import org.scalatest.BeforeAndAfter
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FunSuite with ImpSuite {
+ * class MySuite extends FunSuite with BeforeAndAfter {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -312,7 +312,7 @@ import java.util.concurrent.atomic.AtomicReference
  * want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>ImpSuite</code>. See the documentation for <code>ImpSuite</code> for
+ * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
  * an example.
  * </p>
  *
