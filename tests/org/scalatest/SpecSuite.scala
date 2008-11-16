@@ -31,14 +31,14 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      specify("it should get invoked") {
+      it("should get invoked") {
         example1WasInvoked = true
       }
-      specify("it should also get invoked") {
+      it("should also get invoked") {
         if (example1WasInvoked)
           example2WasInvokedAfterExample1 = true
       }
-      specify("it should also also get invoked") {
+      it("should also also get invoked") {
         if (example2WasInvokedAfterExample1)
           example3WasInvokedAfterExample2 = true
       }
@@ -107,15 +107,15 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      specify("it should get invoked") {
+      it("should get invoked") {
         example1WasInvoked = true
       }
       describe("Stack") {
-        specify("should also get invoked") {
+        it("should also get invoked") {
           if (example1WasInvoked)
             example2WasInvokedAfterExample1 = true
         }
-        specify("should also also get invoked") {
+        it("should also also get invoked") {
           if (example2WasInvokedAfterExample1)
             example3WasInvokedAfterExample2 = true
         }
@@ -151,10 +151,10 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
-      specify("it should get invoked") {
+      it("should get invoked") {
         example1WasInvoked = true
       }
-      specify("it should also get invoked") {
+      it("should also get invoked") {
         if (example1WasInvoked)
           example2WasInvokedAfterExample1 = true
       }
@@ -162,8 +162,8 @@ class SpecSuite extends FunSuite {
     val a = new MySpec
     a.execute()
     assert(a.testNames.size === 2)
-    assert(a.testNames.elements.toList(0) === "it should get invoked")
-    assert(a.testNames.elements.toList(1) === "it should also get invoked")
+    assert(a.testNames.elements.toList(0) === "should get invoked")
+    assert(a.testNames.elements.toList(1) === "should also get invoked")
   }
  
   test("fancy specifier test names should include an enclosing describe string, separated by a space") {
@@ -182,8 +182,8 @@ class SpecSuite extends FunSuite {
   test("plain-old specifier test names should include an enclosing describe string, separated by a space") {
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
-        specify("must allow me to pop") {}
-        specify("must allow me to push") {}
+        it("must allow me to pop") {}
+        it("must allow me to push") {}
       }
     }
     val a = new MySpec
@@ -213,10 +213,10 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
-          specify("must allow me to pop") {}
+          it("must allow me to pop") {}
         }
         describe("(when not full)") {
-          specify("must allow me to push") {}
+          it("must allow me to push") {}
         }
       }
     }
@@ -276,20 +276,20 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
-        if (report.name.indexOf("it must start with proper words") != -1)
+        if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it must start with proper words")
+            if (specReport.specText == "must start with proper words")
               reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- it must start with proper words")
+            if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
           case _ =>
         }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
-      specify("it must start with proper words") {}
+      it("must start with proper words") {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -332,20 +332,20 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
       override def testSucceeded(report: Report) {
-        if (report.name.indexOf("it must start with proper words") != -1)
+        if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it must start with proper words")
+            if (specReport.specText == "must start with proper words")
               reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- it must start with proper words")
+            if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
           case _ =>
         }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
-      specify("it must start with proper words") {}
+      it("must start with proper words") {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -388,20 +388,20 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
       override def testFailed(report: Report) {
-        if (report.name.indexOf("it must start with proper words") != -1)
+        if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it must start with proper words")
+            if (specReport.specText == "must start with proper words")
               reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- it must start with proper words")
+            if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
           case _ =>
         }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
-      specify("it must start with proper words") { fail() }
+      it("must start with proper words") { fail() }
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -510,7 +510,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with ShouldMatchers {
       describe("My Spec") {
-        specify("must start with proper words") {}
+        it("must start with proper words") {}
       }
     }
     val a = new MySpec
@@ -622,7 +622,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with ShouldMatchers {
       describe("My Spec") {
-        specify("must start with proper words") {}
+        it("must start with proper words") {}
       }
     }
     val a = new MySpec
@@ -734,7 +734,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with ShouldMatchers {
       describe("My Spec") {
-        specify("must start with proper words") { fail() }
+        it("must start with proper words") { fail() }
       }
     }
     val a = new MySpec
@@ -851,7 +851,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       describe("My") {
         describe("Spec") {
-          specify("must start with proper words") {}
+          it("must start with proper words") {}
         }
       }
     }
@@ -967,7 +967,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       describe("My") {
         describe("Spec") {
-          specify("must start with proper words") {}
+          it("must start with proper words") {}
         }
       }
     }
@@ -1083,7 +1083,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       describe("My") {
         describe("Spec") {
-          specify("must start with proper words") { fail() }
+          it("must start with proper words") { fail() }
         }
       }
     }
@@ -1135,20 +1135,20 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
-        if (report.name.indexOf("it must start with proper words") != -1)
+        if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it must start with proper words")
+            if (specReport.specText == "must start with proper words")
               reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- it must start with proper words")
+            if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
           case _ =>
         }
       }
     }
     def myBehavior(i: Int) = new Behavior {
-      specify("it must start with proper words") {}
+      it("must start with proper words") {}
     }
     class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
@@ -1197,20 +1197,20 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
       override def testSucceeded(report: Report) {
-        if (report.name.indexOf("it must start with proper words") != -1)
+        if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it must start with proper words")
+            if (specReport.specText == "must start with proper words")
               reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- it must start with proper words")
+            if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
           case _ =>
         }
       }
     }
     def myBehavior(i: Int) = new Behavior {
-      specify("it must start with proper words") {}
+      it("must start with proper words") {}
     }
     class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
@@ -1259,20 +1259,20 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
       override def testFailed(report: Report) {
-        if (report.name.indexOf("it must start with proper words") != -1)
+        if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it must start with proper words")
+            if (specReport.specText == "must start with proper words")
               reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- it must start with proper words")
+            if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
           case _ =>
         }
       }
     }
     def myBehavior(i: Int) = new Behavior {
-      specify("it must start with proper words") { fail() }
+      it("must start with proper words") { fail() }
     }
     class MySpec extends Spec with ShouldMatchers {
       1 should behave like myBehavior
@@ -1477,20 +1477,20 @@ class SpecSuite extends FunSuite {
 
   test("expectedTestCount is the number of plain-old specifiers if no shares") {
     class MySpec extends Spec with ShouldMatchers {
-      specify("must one") {}
-      specify("must two") {}
+      it("must one") {}
+      it("must two") {}
       describe("behavior") {
-        specify("must three") {}  
-        specify("must four") {}
+        it("must three") {}  
+        it("must four") {}
       }
-      specify("must five") {}
+      it("must five") {}
     }
     val a = new MySpec
     assert(a.expectedTestCount(Set(), Set()) === 5)
   }
 
   // Testing strings sent in reports
-  test("In a testStarting report, the example name should be verbatim if top level if example registered with specify") {
+  test("In a testStarting report, the example name should be verbatim if top level if example registered with it") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
@@ -1500,14 +1500,14 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
-      specify("this thing must start with proper words") {}
+      it("this thing must start with proper words") {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testStartingReportHadCorrectTestName)
   }
 
-  test("In a testSucceeded report, the example name should be verbatim if top level if example registered with specify") {
+  test("In a testSucceeded report, the example name should be verbatim if top level if example registered with it") {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
       override def testSucceeded(report: Report) {
@@ -1517,14 +1517,14 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
-      specify("this thing must start with proper words") {}
+      it("this thing must start with proper words") {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(testSucceededReportHadCorrectTestName)
   }
 
-  test("In a testFailed report, the example name should be verbatim if top level if example registered with specify") {
+  test("In a testFailed report, the example name should be verbatim if top level if example registered with it") {
     var testFailedReportHadCorrectTestName = false
     class MyReporter extends Reporter {
       override def testFailed(report: Report) {
@@ -1534,7 +1534,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
-      specify("this thing must start with proper words") { fail() }
+      it("this thing must start with proper words") { fail() }
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1542,7 +1542,7 @@ class SpecSuite extends FunSuite {
   }
   
   test("In a testStarting report, the example name should start with '<description> ' if nested one level " +
-        "inside a describe clause and registered with specify") {
+        "inside a describe clause and registered with it") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
       override def testStarting(report: Report) {
@@ -1553,7 +1553,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
-        specify("needs to push and pop properly") {}
+        it("needs to push and pop properly") {}
       }
     }
     val a = new MySpec
@@ -1647,7 +1647,7 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectShortName, lastShortName match { case Some(s) => s; case None => "No report"})
   }
 
-  test("SpecText should come through correctly in a SpecReport when registering with specify") {
+  test("SpecText should come through correctly in a SpecReport when registering with it") {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
@@ -1663,7 +1663,7 @@ class SpecSuite extends FunSuite {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
-      specify("My spec text must have the proper words") {}
+      it("My spec text must have the proper words") {}
     }
     val a = new MySpec
     a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1695,7 +1695,7 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
-  test("Spec text should come through correctly in a SpecReport when registering with specify when nested in one describe") {
+  test("Spec text should come through correctly in a SpecReport when registering with it when nested in one describe") {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
@@ -1712,7 +1712,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
-        specify("My short name must have the proper words") {}
+        it("My short name must have the proper words") {}
       }
     }
     val a = new MySpec
@@ -1747,7 +1747,7 @@ class SpecSuite extends FunSuite {
     assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
-  test("Spec text should come through correctly in a SpecReport when registering with specify when nested in two describes") {
+  test("Spec text should come through correctly in a SpecReport when registering with it when nested in two describes") {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
@@ -1765,7 +1765,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when empty)") {
-          specify("My short name must have the proper words") {}
+          it("My short name must have the proper words") {}
         }
       }
     }
@@ -1793,14 +1793,14 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
-          specify("might allow me to pop") {
+          it("might allow me to pop") {
             val report = new Report("myName", expectedMessage)
             // info(report)
             ()
           }
         }
         describe("(when not full)") {
-          specify("allow me to push") {}
+          it("allow me to push") {}
         }
       }
     }
@@ -1832,7 +1832,7 @@ class SpecSuite extends FunSuite {
 
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
-        specify("should allow me to push") {}
+        it("should allow me to push") {}
       }
     }
     
