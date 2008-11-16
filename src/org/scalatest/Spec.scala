@@ -63,12 +63,14 @@ trait Spec extends Suite {
     examplesList ::= example
   }
   
+/*
   def specify(exampleRawName: String)(f: => Unit) {
     registerExample(exampleRawName, false, f)
   }
+*/
     
   def it(exampleRawName: String)(f: => Unit) {
-    specify(exampleRawName)(f)
+    registerExample(exampleRawName, false, f)
   }
 
   protected def describe(name: String)(f: => Unit) {
@@ -201,7 +203,7 @@ trait Spec extends Suite {
       describe(s)(f)
     }
     def - (f: => Unit) {
-      specify(s)(f)
+      it(s)(f)
     }
   }
   
