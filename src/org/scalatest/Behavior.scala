@@ -27,12 +27,14 @@ trait Behavior extends Assertions {
     sharedExamplesList ::= SharedExample(exampleRawName, needsShould, f _)
   }
   
+/*
   def specify(exampleRawName: String)(f: => Unit) {
     registerExample(exampleRawName, false, f)
   }
-    
+*/
+
   def it(exampleRawName: String)(f: => Unit) {
-    specify(exampleRawName)(f)
+    registerExample(exampleRawName, false, f)
   }
 
   protected val like = new LikeWord
@@ -46,7 +48,7 @@ trait Behavior extends Assertions {
 
   class Dasher(s: String) {
     def - (f: => Unit) {
-      specify(s)(f)
+      it(s)(f)
     }
   }
   
