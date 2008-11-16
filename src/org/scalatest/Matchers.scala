@@ -4,7 +4,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
 
-case class MatcherResult(
+private[scalatest] case class MatcherResult(
   matches: Boolean,
   failureMessage: String,
   negativeFailureMessage: String
@@ -143,7 +143,7 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
   def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
 }
 
-trait BaseMatchers extends Assertions {
+private[scalatest] trait BaseMatchers extends Assertions {
 
   //
   // This class is used as the return type of the overloaded should method (in MapShouldalizer)
