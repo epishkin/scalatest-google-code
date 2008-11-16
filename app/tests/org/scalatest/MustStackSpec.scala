@@ -44,7 +44,7 @@ trait MustStackBehaviors extends MustMatchers {
   }
 }
 
-class MustStackSpec extends MustSpec with StackFixtureCreationMethods with MustStackBehaviors {
+class MustStackSpec extends Spec with MustMatchers with StackFixtureCreationMethods with MustStackBehaviors {
 
   "A Stack" -- {
 
