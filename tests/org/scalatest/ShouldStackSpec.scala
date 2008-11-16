@@ -44,7 +44,7 @@ trait ShouldStackBehaviors extends ShouldMatchers {
   }
 }
 
-class ShouldStackSpec extends ShouldSpec with StackFixtureCreationMethods with ShouldStackBehaviors {
+class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreationMethods with ShouldStackBehaviors {
 
   "A Stack" -- {
 
