@@ -19,20 +19,51 @@ import NodeFamily._
 import scala.collection.immutable.ListSet
 
 /**
- * Trait that facilitates writing specification-oriented tests in a literary-programming style.
+ * Trait that facilitates a &#8220;behavior-driven&$8221; style of development, in which tests
+ * are combined with text that specifies the behavior the tests verify.
+ * Here's an example <code>Spec</code>:
  *
  * <pre>
- * import org.scalatest.spec.Spec
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
  *
- * class MySpec extends Spec {
+ * class StackSpec extends Spec {
  *
- *   describe("Stack") {
+ *   describe("A Stack") {
  *
- *     it should "work right the first time" in {
- *       println("and how")
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *       val emptyStack = new Stack[String]
+ *       intercept(classOf[NoSuchElementException]) {
+ *         emptyStack.pop()
+ *       }
  *     }
  *   }
  * }
+ * </pre>
+ *
+ * <p>
+ * A <code>Spec</code> contains <em>describers</em> and <em>specifiers</em>. You define a describer
+ * with <code>describe</code>, and a specifier with </code>it</code>. Both
+ * <code>describe</code> and <code>it</code> are methods, defined in
+ * <code>Spec</code>, which will be invoked
+ * by the primary constructor of <code>StackSpec</code>. 
+ * A describer names, or gives more information about, the class or other entity you are specifying
+ * and testing. In the above example, "A Stack"
+ * is the class of object under specification and test. With each specifier you provide a string that specifies
+ * one bit of behavior of the entity under specification, and a block of code that tests that behavior.
+ * You place the specification string between the parentheses, and the test code between curly braces.
+ * The test code is a function passed as a by-name parameter to <code>it</code>, which registers
+ * the test for later execution.
+ * </p>
+ *
  * @author Bill Venners
  */
 trait Spec extends Suite {
