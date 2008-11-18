@@ -34,13 +34,13 @@ private[scalatest] class DiscoverySuiteSuite extends Suite {
   val loader = DiscoverySuite.getClass.getClassLoader
 
   def testConstructor() {
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       new DiscoverySuite(null, Set(), false, loader)
     }
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       new DiscoverySuite("hi", null, false, loader)
     }
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       new DiscoverySuite(null, Set(), false, null)
     }
     expect(Nil) {

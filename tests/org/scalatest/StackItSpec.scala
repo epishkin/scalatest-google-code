@@ -52,13 +52,13 @@ class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBeha
       }
 
       it("should complain on peek") {
-        intercept(classOf[IllegalStateException]) {
+        intercept[IllegalStateException] {
           emptyStack.peek
         }
       }
 
       it("should complain on pop") {
-        intercept(classOf[IllegalStateException]) {
+        intercept[IllegalStateException] {
           emptyStack.pop
         }
       }
@@ -83,7 +83,7 @@ class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBeha
       assertBehavesLike(fullStack, nonEmptyStack(lastValuePushed))
 
       it("should complain on a push") {
-        intercept(classOf[IllegalStateException]) {
+        intercept[IllegalStateException] {
           fullStack.push(10)
         }
       }

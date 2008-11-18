@@ -51,87 +51,87 @@ class FunSuiteSuite extends Suite {
     }
 
     // Test duplicate names
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
-      new FunSuite {
-        test("test this") {}
-        ignore("test this") {}
-      }
-    }
-    intercept(classOf[IllegalArgumentException]) {
-      new FunSuite {
-        ignore("test this") {}
-        ignore("test this") {}
-      }
-    }
-    intercept(classOf[IllegalArgumentException]) {
-      new FunSuite {
-        ignore("test this") {}
-        ignore("test this") {}
-      }
-    }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         ignore("test this") {}
       }
     }
-
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept(classOf[IllegalArgumentException]) {
-      new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept(classOf[IllegalArgumentException]) {
-      new FunSuite {
-        test("test this") {}
+        ignore("test this") {}
         ignore("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
+      new FunSuite {
+        ignore("test this") {}
+        ignore("test this") {}
+      }
+    }
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         ignore("test this") {}
       }
     }
 
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
+      new FunSuite {
+        test("test this") {}
+        ignore("test this") {}
+      }
+    }
+    intercept[IllegalArgumentException] {
+      new FunSuite {
+        test("test this") {}
+        ignore("test this") {}
+      }
+    }
+
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
+      new FunSuite {
+        test("test this") {}
+        test("test this") {}
+      }
+    }
+    intercept[IllegalArgumentException] {
+      new FunSuite {
+        test("test this") {}
+        test("test this") {}
+      }
+    }
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
@@ -513,25 +513,25 @@ class FunSuiteSuite extends Suite {
   }
 
   def testThatTestNameCantBeReused() {
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         ignore("test this") {}
         test("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
         ignore("test this") {}
       }
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       new FunSuite {
         ignore("test this") {}
         ignore("test this") {}
@@ -556,7 +556,7 @@ class FunSuiteSuite extends Suite {
     a.execute()
     assert(a.fromConstructorTestExecuted)
     assert(!a.fromMethodTestExecuted)
-    intercept(classOf[IllegalStateException]) {
+    intercept[IllegalStateException] {
       a.registerOne()
     }
     a.execute()

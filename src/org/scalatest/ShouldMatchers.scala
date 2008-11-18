@@ -1,5 +1,7 @@
 package org.scalatest
 
+import scala.reflect.Manifest
+
 private[scalatest] trait ShouldMatchers extends BaseMatchers {
 
   protected trait ShouldMethods[T] {
@@ -53,8 +55,9 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
     }
   }
 
+/*
   protected class ShouldalizerForBlocks(left: => Any) {
-    def shouldThrow[T <: AnyRef](clazz: java.lang.Class[T]): T = { intercept(clazz)(left) }
+    def shouldThrow[T <: AnyRef](implicit manifest: Manifest[T]): T = { intercept(left)(manifest) }
     def shouldNotThrow(clazz: java.lang.Class[Throwable]) {
       try {
         left
@@ -68,6 +71,7 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
       }
     }
   }
+*/
 
   protected class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
 
@@ -171,5 +175,5 @@ private[scalatest] trait ShouldMatchers extends BaseMatchers {
   implicit def shouldifyForArray[T](o: Array[T]): ArrayShouldalizer[T] = new ArrayShouldalizer[T](o)
   implicit def shouldifyForList[T](o: List[T]): ListShouldalizer[T] = new ListShouldalizer[T](o)
   implicit def shouldifyForString[K, V](o: String): StringShouldalizer = new StringShouldalizer(o)
-  implicit def theBlock(f: => Any) = new ShouldalizerForBlocks(f)
+  // implicit def theBlock(f: => Any) = new ShouldalizerForBlocks(f)
 }

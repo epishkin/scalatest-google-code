@@ -103,13 +103,13 @@ class StackSpec extends Spec with StackFixtureCreationMethods with ShouldMatcher
       }
 
       "should complain on peek" - {
-        intercept(classOf[IllegalStateException]) {
+        intercept[IllegalStateException] {
           emptyStack.peek
         }
       }
 
       "should complain on pop" - {
-        intercept(classOf[IllegalStateException]) {
+        intercept[IllegalStateException] {
           emptyStack.pop
         }
       }
@@ -134,7 +134,7 @@ class StackSpec extends Spec with StackFixtureCreationMethods with ShouldMatcher
       assertBehavesLike(fullStack, nonEmptyStack(lastValuePushed))
 
       "should complain on a push" - {
-        intercept(classOf[IllegalStateException]) {
+        intercept[IllegalStateException] {
           fullStack.push(10)
         }
       }

@@ -55,11 +55,15 @@ class MustStackSpec extends Spec with MustMatchers with StackFixtureCreationMeth
       }
 
       "must complain on peek" - {
-        emptyStack.peek mustThrow classOf[IllegalStateException]
+        intercept[IllegalStateException] {
+          emptyStack.peek
+        }
       }
 
       "must complain on pop" - {
-        emptyStack.pop mustThrow classOf[IllegalStateException]
+        intercept[IllegalStateException] {
+          emptyStack.pop
+        }
       }
     }
 
@@ -83,7 +87,9 @@ class MustStackSpec extends Spec with MustMatchers with StackFixtureCreationMeth
       fullStack must behave like nonEmptyStack(lastValuePushed)
 
       "must complain on a push" - {
-        fullStack.push(10) mustThrow classOf[IllegalStateException]
+        intercept[IllegalStateException] {
+          fullStack.push(10)
+        }
       }
     }
   }

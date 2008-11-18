@@ -487,10 +487,10 @@ class SuiteSuite extends Suite with PrivateMethodTester {
   def testThatInterceptCatchesSubtypes() {
     class MyException extends RuntimeException
     class MyExceptionSubClass extends MyException
-    intercept(classOf[MyException]) {
+    intercept[MyException] {
       throw new MyException
     }
-    intercept(classOf[MyException]) {
+    intercept[MyException] {
       throw new MyExceptionSubClass
     }
     // Try with a trait
@@ -498,7 +498,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def someRandomMethod() {}
     }
     class AnotherException extends RuntimeException with MyTrait
-    val caught = intercept(classOf[MyTrait]) {
+    val caught = intercept[MyTrait] {
       throw new AnotherException
     }
     // Make sure the result type is the type passed in, so I can 
@@ -508,7 +508,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
 
   def testThatInterceptReturnsTheCaughtException() {
     val e = new RuntimeException
-    val result = intercept(classOf[RuntimeException]) {
+    val result = intercept[RuntimeException] {
       throw e
     }
     assert(result eq e)

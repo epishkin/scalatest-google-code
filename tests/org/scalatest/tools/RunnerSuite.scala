@@ -196,19 +196,19 @@ class RunnerSuite() extends Suite {
 
   def testParseConfigSet() {
 
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseConfigSet(null)
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseConfigSet("-fX")
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseConfigSet("-oYZTFUPBISARG-")
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseConfigSet("-")
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseConfigSet("")
     }
 
@@ -278,37 +278,37 @@ class RunnerSuite() extends Suite {
   }
 
   def testParseReporterArgsIntoSpecs() {
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseReporterArgsIntoSpecs(null)
     }
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseReporterArgsIntoSpecs(List("Hello", null, "World"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("Hello", "-", "World"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("Hello", "", "World"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("-g", "-x", "-o"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("Hello", " there", " world!"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("-g", "-o", "-g", "-e"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("-o", "-o", "-g", "-e"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("-e", "-o", "-g", "-e"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("-f")) // Can't have -f last, because need a file name
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoSpecs(List("-r")) // Can't have -r last, because need a reporter class
     }
     expect(new ReporterSpecs(None, Nil, None, None, Nil)) {
@@ -347,16 +347,16 @@ class RunnerSuite() extends Suite {
   }
 
   def testParseSuiteArgsIntoClassNameStrings() {
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseSuiteArgsIntoNameStrings(null, "-s")
     }
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseSuiteArgsIntoNameStrings(List("-s", null, "-s"), "-s")
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseSuiteArgsIntoNameStrings(List("-s", "SweetSuite", "-s"), "-s")
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseSuiteArgsIntoNameStrings(List("-s", "SweetSuite", "-s", "-s"), "-s")
     }
     expect(List("SweetSuite", "OKSuite")) {
@@ -368,28 +368,28 @@ class RunnerSuite() extends Suite {
   }
 
   def testParseRunpathArgIntoList() {
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseRunpathArgIntoList(null)
     }
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseRunpathArgIntoList(List("-p", null))
     }
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parseRunpathArgIntoList(List(null, "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseRunpathArgIntoList(List("-p"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseRunpathArgIntoList(List("-p", "bla", "bla"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseRunpathArgIntoList(List("-pX", "bla"))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseRunpathArgIntoList(List("-p", "  "))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parseRunpathArgIntoList(List("-p", "\t"))
     }
     expect(List("bla")) {
@@ -404,22 +404,22 @@ class RunnerSuite() extends Suite {
   }
 
   def testParsePropertiesArgsIntoMap() {
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parsePropertiesArgsIntoMap(null)
     }
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.parsePropertiesArgsIntoMap(List("-Da=b", null))
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parsePropertiesArgsIntoMap(List("-Dab")) // = sign missing
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parsePropertiesArgsIntoMap(List("ab")) // needs to start with -D
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parsePropertiesArgsIntoMap(List("-D=ab")) // no key
     }
-    intercept(classOf[IllegalArgumentException]) {
+    intercept[IllegalArgumentException] {
       Runner.parsePropertiesArgsIntoMap(List("-Dab=")) // no value
     }
     expect(Map("a" -> "b", "cat" -> "dog", "Glorp" -> "Glib")) {
@@ -428,7 +428,7 @@ class RunnerSuite() extends Suite {
   }
 
   def testCheckArgsForValidity() {
-    intercept(classOf[NullPointerException]) {
+    intercept[NullPointerException] {
       Runner.checkArgsForValidity(null)
     }
     expect(None) {
