@@ -24,7 +24,7 @@ package org.scalatest.testng {
      
      mockTest( "Reporter Should Be Notified When Test Passes" ){
     
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting{
          singleTestToPass( reporter )
@@ -38,7 +38,7 @@ package org.scalatest.testng {
 
      mockTest( "Reporter Should Be Notified When Test Fails" ){
     
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting { 
          singleTestToFail( reporter )
@@ -64,7 +64,7 @@ package org.scalatest.testng {
 
      mockTest( "Report should be generated for each invocation" ){
        
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting( "reporter gets 10 passing reports because invocationCount=10" ) {
          nTestsToPass( 10, reporter )
@@ -77,14 +77,14 @@ package org.scalatest.testng {
      
      mockTest( "Reporter should be notified when test is skipped" ){
        
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting ( "a single test should fail, followed by a single test being skipped" ){ 
-         one(reporter).suiteStarting(any(classOf[Report])) 
-         one(reporter).testStarting(any(classOf[Report])) 
-         one(reporter).testFailed(any(classOf[Report])) 
-         one(reporter).testIgnored(any(classOf[Report]))
-         one(reporter).suiteCompleted(any(classOf[Report])) 
+         one(reporter).suiteStarting(any[Report]) 
+         one(reporter).testStarting(any[Report]) 
+         one(reporter).testFailed(any[Report]) 
+         one(reporter).testIgnored(any[Report])
+         one(reporter).suiteCompleted(any[Report]) 
        }
 
        when ( "run the suite with a test that should fail and a test that should be skipped" ){
@@ -94,7 +94,7 @@ package org.scalatest.testng {
      
      mockTest( "Only the correct method should be run when specifying a single method to run" ){
        
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting { 
          singleTestToPass( reporter )

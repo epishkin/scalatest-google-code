@@ -20,6 +20,9 @@ import org.specs.mock.JMocker._
  
 trait SMocker extends JMocker{
 
+  // I have no idea what this is for. No documentation. Want to dump this stuff.
+  def addExpectation: org.specs.specification.Example = null
+
   def expecting(block: => Any) = expect{ block }
   
   def expecting( desc: String )(block: => Any) = expect{ block }

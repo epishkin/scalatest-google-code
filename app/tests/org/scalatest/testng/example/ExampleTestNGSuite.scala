@@ -27,6 +27,9 @@ import org.specs.mock._
 
 class ExampleTestNGSuite extends TestNGSuite with JMocker{
 
+  // I have no idea what this is for. No documentation. Want to dump this stuff.
+  def addExpectation: org.specs.specification.Example = null
+
   @AfterSuite
   def failAfterSuite(){ throw new Exception("fail in before method") }
 
