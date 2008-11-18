@@ -140,7 +140,7 @@ trait PrivateMethodTester {
           }
         val privateMethodToInvoke = methodArray(0)
         privateMethodToInvoke.setAccessible(true)
-        privateMethodToInvoke.invoke(target, anyRefArgs.toArray).asInstanceOf[T]
+        privateMethodToInvoke.invoke(target, anyRefArgs.toArray: _*).asInstanceOf[T]
       }
     }
   }

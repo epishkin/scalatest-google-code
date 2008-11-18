@@ -119,7 +119,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
         classOf[Suite].isAssignableFrom(clazz) && 
           Modifier.isPublic(clazz.getModifiers) &&
           !Modifier.isAbstract(clazz.getModifiers) &&
-          Modifier.isPublic(clazz.getConstructor(emptyClassArray).getModifiers)
+          Modifier.isPublic(clazz.getConstructor(emptyClassArray: _*).getModifiers)
       }
       catch {
         case nsme: NoSuchMethodException => false

@@ -1124,8 +1124,11 @@ trait Suite extends Assertions with ExecuteAndRun {
 
   private def testMethodTakesInformer(testName: String) = testName.endsWith(InformerInParens)
 
-  private def getMethodForTestName(testName: String) = getClass.getMethod(simpleNameForTest(testName),
-                                                         if (testMethodTakesInformer(testName)) Array(classOf[Informer]) else Array())
+  private def getMethodForTestName(testName: String) =
+    getClass.getMethod(
+      simpleNameForTest(testName),
+      (if (testMethodTakesInformer(testName)) Array(classOf[Informer]) else new Array[Class[_]](0)): _*
+    )
 
   /**
    * Run a test. This trait's implementation uses Java reflection to invoke on this object the test method identified by the passed <code>testName</code>.
@@ -1184,7 +1187,7 @@ trait Suite extends Assertions with ExecuteAndRun {
       else Array()
 
     try {
-      method.invoke(this, args)
+      method.invoke(this, args: _*)
 
       val report =
         if (hasPublicNoArgConstructor)
@@ -1611,7 +1614,7 @@ private[scalatest] object Suite {
   private[scalatest] def checkForPublicNoArgConstructor(clazz: java.lang.Class[_]) = {
     
     try {
-      val constructor = clazz.getConstructor(new Array[java.lang.Class[T] forSome { type T }](0))
+      val constructor = clazz.getConstructor(new Array[java.lang.Class[T] forSome { type T }](0): _*)
 
       Modifier.isPublic(constructor.getModifiers)
     }

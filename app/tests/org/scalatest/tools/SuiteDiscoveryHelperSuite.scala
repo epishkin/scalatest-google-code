@@ -22,39 +22,39 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
 
   def transformToClassName(fileName: String, fileSeparator: Char): Option[String] = {
     val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$SuiteDiscoveryHelper$$transformToClassName",
-      Array(classOf[String], classOf[Char]))
+      Array(classOf[String], classOf[Char]): _*)
     m.setAccessible(true)
-    m.invoke(sdt, Array[Object](fileName, new java.lang.Character(fileSeparator))).asInstanceOf[Option[String]]
+    m.invoke(sdt, Array[Object](fileName, new java.lang.Character(fileSeparator)): _*).asInstanceOf[Option[String]]
   }
 
   def extractClassNames(fileNames: Iterator[String], fileSeparator: Char): Iterator[String] = {
     val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("extractClassNames",
-      Array(classOf[Iterator[String]], classOf[Char]))
+      Array(classOf[Iterator[String]], classOf[Char]): _*)
     m.setAccessible(true)
-    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator))).asInstanceOf[Iterator[String]]
+    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator)): _*).asInstanceOf[Iterator[String]]
   }
 
   def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
     val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("isAccessibleSuite",
-      Array(classOf[Class[_]])) // This one works in 2.7
+      Array(classOf[Class[_]]): _*) // This one works in 2.7
       // Array(classOf[Class])) // This one works in 2.6
     m.setAccessible(true)
-    m.invoke(sdt, Array[Object](clazz)).asInstanceOf[Boolean]
+    m.invoke(sdt, Array[Object](clazz): _*).asInstanceOf[Boolean]
   }
 
   def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader): Set[String] = {
 
     val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$SuiteDiscoveryHelper$$processFileNames",
-      Array(classOf[Iterator[String]], classOf[Char], classOf[ClassLoader]))
+      Array(classOf[Iterator[String]], classOf[Char], classOf[ClassLoader]): _*)
     m.setAccessible(true)
-    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator), loader)).asInstanceOf[Set[String]]
+    m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator), loader): _*).asInstanceOf[Set[String]]
   }
 
   def getFileNamesSetFromFile(file: File, fileSeparator: Char): Set[String] = {
     val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$SuiteDiscoveryHelper$$getFileNamesSetFromFile",
-      Array(classOf[File], classOf[Char]))
+      Array(classOf[File], classOf[Char]): _*)
     m.setAccessible(true)
-    m.invoke(sdt, Array[Object](file, new java.lang.Character(fileSeparator))).asInstanceOf[Set[String]]
+    m.invoke(sdt, Array[Object](file, new java.lang.Character(fileSeparator)): _*).asInstanceOf[Set[String]]
   }
 }
 
