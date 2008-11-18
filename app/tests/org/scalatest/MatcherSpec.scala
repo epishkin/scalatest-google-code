@@ -1846,6 +1846,9 @@ class MatcherSpec extends Spec with ShouldMatchers {
   "The shouldThrow method" -- {
 
     "should do nothing if the expected exception is thrown" - {
+
+      // "Howdy".charAt(-1) shouldThrow [StringIndexOutOfBoundsException]
+
       theBlock { "Howdy".charAt(-1) } shouldThrow classOf[StringIndexOutOfBoundsException]
       theBlock {
         "Howdy".charAt(-1)
