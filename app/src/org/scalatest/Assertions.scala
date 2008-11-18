@@ -271,11 +271,24 @@ trait Assertions {
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
    */
+
+  // MartinX: Uncomment either of the following two and you'll get the compiler errors 
+  // The body of the first isn't implemented right now, as I was experimenting trying to get it to overload successfully.
+  // I don't need a manifest if they are passing the class instance in, so either of these would suffice if I could get
+  // the overloading to work.
+  //
 /*
   def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Unit): T = {
-    intercept(clazz, "")(f)
+    // intercept(clazz)(f)(manifest)
+    "hi".asInstanceOf[T]
   }
 */
+/*
+  def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Unit)(implicit manifest: Manifest[T]): T = {
+    intercept(clazz)(f)(manifest)
+  }
+*/
+
 
   /**
    * Expect that the value passed as <code>expected</code> equals the value resulting from the passed function <code>f</code>.
