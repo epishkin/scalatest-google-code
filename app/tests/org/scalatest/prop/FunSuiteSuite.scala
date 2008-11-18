@@ -30,19 +30,19 @@ class FunSuiteSuite extends prop.FunSuite {
 
     // Ensure a failed property does throw an assertion error
     val propConcatListsBadly = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size + 1)
-    intercept(classOf[AssertionError]) {
+    intercept[AssertionError] {
       check(propConcatListsBadly)
     }
 
     // Ensure a property that throws an exception causes an assertion error
     val propConcatListsExceptionally = property((a: List[Int], b: List[Int]) => throw new StringIndexOutOfBoundsException)
-    intercept(classOf[AssertionError]) {
+    intercept[AssertionError] {
       check(propConcatListsExceptionally)
     }
 
     // Ensure a property that doesn't generate enough test cases throws an assertion error
     val propTrivial = property( (n: Int) => (n == 0) ==> (n == 0) )
-    intercept(classOf[AssertionError]) {
+    intercept[AssertionError] {
       check(propTrivial)
     }
 
@@ -60,7 +60,7 @@ class FunSuiteSuite extends prop.FunSuite {
     // val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (throw new ArrayIndexOutOfBoundsException)
     val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (n => throw new ArrayIndexOutOfBoundsException)
     val propEvenIntegerWithBuggyGen = Prop.forAll(smallEvenIntegerWithBug)(n => n >= 0 && n <= 200 && n % 2 == 0)
-    intercept(classOf[AssertionError]) {
+    intercept[AssertionError] {
       check(propEvenIntegerWithBuggyGen)
     }
   }

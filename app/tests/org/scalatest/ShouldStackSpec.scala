@@ -55,11 +55,15 @@ class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreation
       }
 
       "should complain on peek" - {
-        emptyStack.peek shouldThrow (classOf[IllegalStateException])
+        intercept[IllegalStateException] {
+          emptyStack.peek
+        }
       }
 
       "should complain on pop" - {
-        emptyStack.pop shouldThrow (classOf[IllegalStateException])
+        intercept[IllegalStateException] {
+          emptyStack.pop
+        }
       }
     }
 
@@ -83,7 +87,9 @@ class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreation
       fullStack should behave like nonEmptyStack(lastValuePushed)
 
       "should complain on a push" - {
-        fullStack.push(10) shouldThrow (classOf[IllegalStateException])
+        intercept[IllegalStateException] {
+          fullStack.push(10)
+        }
       }
     }
   }

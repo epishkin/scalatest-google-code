@@ -85,7 +85,7 @@ class BeforeAndAfterSuite extends FunSuite {
     class MySuite extends Suite with BeforeAndAfter {
       override def beforeEach() { throw new NumberFormatException } 
     }
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       val a = new MySuite
       a.runTest("july", new Reporter {}, new Stopper {}, Map())
     }
@@ -105,7 +105,7 @@ class BeforeAndAfterSuite extends FunSuite {
       }
     }
     val a = new MySuite
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       a.runTest("july", new Reporter {}, new Stopper {}, Map())
     }
     assert(a.afterEachCalled)
@@ -126,7 +126,7 @@ class BeforeAndAfterSuite extends FunSuite {
       }
     }
     val a = new MySuite
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       a.runTest("july", new Reporter {}, new Stopper {}, Map())
     }
     assert(a.afterEachCalled)
@@ -139,7 +139,7 @@ class BeforeAndAfterSuite extends FunSuite {
       override def afterEach() { throw new NumberFormatException }
       def testJuly() = ()
     }
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       val a = new MySuite
       a.runTest("testJuly", new Reporter {}, new Stopper {}, Map())
     }
@@ -153,7 +153,7 @@ class BeforeAndAfterSuite extends FunSuite {
       override def beforeAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       val a = new MySuite
       a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
     }
@@ -174,7 +174,7 @@ class BeforeAndAfterSuite extends FunSuite {
       }
     }
     val a = new MySuite
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
     }
     assert(a.afterAllCalled)
@@ -196,7 +196,7 @@ class BeforeAndAfterSuite extends FunSuite {
       }
     }
     val a = new MySuite
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
     }
     assert(a.afterAllCalled)
@@ -209,7 +209,7 @@ class BeforeAndAfterSuite extends FunSuite {
       override def afterAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
-    intercept(classOf[NumberFormatException]) {
+    intercept[NumberFormatException] {
       val a = new MySuite
       a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
     }

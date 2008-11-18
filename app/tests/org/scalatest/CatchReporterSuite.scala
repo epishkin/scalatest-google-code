@@ -68,72 +68,72 @@ class CatchReporterSuite extends Suite {
     val catchReporter = new CatchReporter(buggyReporter, new PrintStream(new ByteArrayOutputStream))
     val report = new Report("name", "msg")
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.testStarting(report)
     }
     catchReporter.testStarting(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.runStarting(1)
     }
     catchReporter.runStarting(1)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.testStarting(report)
     }
     catchReporter.testStarting(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.testSucceeded(report)
     }
     catchReporter.testSucceeded(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.testIgnored(report)
     }
     catchReporter.testIgnored(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.testFailed(report)
     }
     catchReporter.testFailed(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.suiteStarting(report)
     }
     catchReporter.suiteStarting(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.suiteCompleted(report)
     }
     catchReporter.suiteCompleted(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.suiteAborted(report)
     }
     catchReporter.suiteAborted(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.infoProvided(report)
     }
     catchReporter.infoProvided(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.runStopped()
     }
     catchReporter.runStopped()
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.runAborted(report)
     }
     catchReporter.runAborted(report)
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.runCompleted()
     }
     catchReporter.runCompleted()
 
-    intercept(classOf[RuntimeException]) {
+    intercept[RuntimeException] {
       buggyReporter.dispose()
     }
     catchReporter.dispose()

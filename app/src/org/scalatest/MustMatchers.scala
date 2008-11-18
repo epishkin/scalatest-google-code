@@ -1,5 +1,7 @@
 package org.scalatest
 
+import scala.reflect.Manifest
+
 private[scalatest] trait MustMatchers extends BaseMatchers {
 
   protected trait MustMethods[T] {
@@ -53,8 +55,9 @@ private[scalatest] trait MustMatchers extends BaseMatchers {
     }
   }
 
+/*
   protected class MustalizerForBlocks(left: => Any) {
-    def mustThrow[T <: AnyRef](clazz: java.lang.Class[T]): T = { intercept(clazz)(left) }
+    def mustThrow[T <: AnyRef](implicit manifest: Manifest[T]): T = { intercept(left)(manifest) }
     def mustNotThrow(clazz: java.lang.Class[Throwable]) { 
       try {
         left
@@ -68,6 +71,7 @@ private[scalatest] trait MustMatchers extends BaseMatchers {
       }
     }
   }
+*/
 
   protected class Mustalizer[T](left: T) extends { val leftOperand = left } with MustMethods[T]
 
@@ -171,5 +175,5 @@ private[scalatest] trait MustMatchers extends BaseMatchers {
   implicit def mustifyForArray[T](o: Array[T]): ArrayMustalizer[T] = new ArrayMustalizer[T](o)
   implicit def mustifyForList[T](o: List[T]): ListMustalizer[T] = new ListMustalizer[T](o)
   implicit def mustifyForString[K, V](o: String): StringMustalizer = new StringMustalizer(o)
-  implicit def theBlock(f: => Any) = new MustalizerForBlocks(f)
+  // implicit def theBlock(f: => Any) = new MustalizerForBlocks(f)
 }

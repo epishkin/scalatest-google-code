@@ -56,7 +56,7 @@ class MyStory extends Story("transfer from savings to checking account") {
     val myChecking = new Account(10)
 
     when("I transfer $60 from savings to checking")
-    intercept(classOf[InsufficientFundsException]) {
+    intercept[InsufficientFundsException] {
       mySavings.transfer(60, myChecking)
     }
 

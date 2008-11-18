@@ -1,5 +1,7 @@
 package org.scalatest
 
+import scala.reflect.Manifest
+
 /**
  * Trait that contains ScalaTest's basic assertion methods.
  */
@@ -222,8 +224,8 @@ trait Assertions {
    * @throws AssertionError if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
    */
-  def intercept[T <: AnyRef](clazz: java.lang.Class[T], message: Any)(f: => Unit): T = {
-    val messagePrefix = if (message.toString.trim.isEmpty) "" else (message +"\n")
+  def intercept[T <: AnyRef](f: => Unit)(implicit manifest: Manifest[T]): T = {
+    val clazz = manifest.erasure.asInstanceOf[Class[T]]
     val caught = try {
       f
       None
@@ -232,7 +234,7 @@ trait Assertions {
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          val ae = new AssertionError(messagePrefix + s)
+          val ae = new AssertionError(s)
           ae.initCause(u)
           throw ae
         }
@@ -242,12 +244,12 @@ trait Assertions {
       }
     }
     caught match {
-      case None => fail(messagePrefix + Resources("exceptionExpected", clazz.getName))
+      case None => fail(Resources("exceptionExpected", clazz.getName))
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
 
-  /**
+  /*
    * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
@@ -269,9 +271,11 @@ trait Assertions {
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
    */
+/*
   def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Unit): T = {
     intercept(clazz, "")(f)
   }
+*/
 
   /**
    * Expect that the value passed as <code>expected</code> equals the value resulting from the passed function <code>f</code>.
