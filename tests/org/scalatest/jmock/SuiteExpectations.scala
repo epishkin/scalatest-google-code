@@ -1,4 +1,6 @@
-package org.scalatest.jmock;
+package org.scalatest.jmock
+
+import scala.reflect.Manifest
 
 trait SuiteExpectations extends SMocker{
 
@@ -7,23 +9,23 @@ trait SuiteExpectations extends SMocker{
   
   def nTestsToPass( n: int, reporter: Reporter ) = {
     expectNTestsToRun( n, reporter ){ 
-      one(reporter).testSucceeded(any(classOf[Report])) 
+      one(reporter).testSucceeded(any[Report]) 
     }
   }
   
   def nTestsToFail( n: int, reporter: Reporter ) = {
     expectNTestsToRun( n, reporter ){ 
-      one(reporter).testFailed(any(classOf[Report])) 
+      one(reporter).testFailed(any[Report]) 
     }
   }
 
   def expectNTestsToRun(n: int, reporter: Reporter)(f: => Unit) = {
-    one(reporter).suiteStarting(any(classOf[Report])) 
+    one(reporter).suiteStarting(any[Report]) 
     for( i <- 1 to n ){
-      one(reporter).testStarting(any(classOf[Report])) 
+      one(reporter).testStarting(any[Report]) 
       f
     }
-    one(reporter).suiteCompleted(any(classOf[Report])) 
+    one(reporter).suiteCompleted(any[Report]) 
   }
   
 }

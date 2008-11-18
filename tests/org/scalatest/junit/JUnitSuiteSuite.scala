@@ -22,7 +22,7 @@ package org.scalatest.junit {
 
      mockTest( "Reporter Should Be Notified When Test Passes" ){
        
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting{
          singleTestToPass( reporter )
@@ -35,7 +35,7 @@ package org.scalatest.junit {
   
      mockTest( "Reporter Should Be Notified When Test Fails" ){
        
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting { 
          singleTestToFail( reporter )
@@ -72,7 +72,7 @@ package org.scalatest.junit {
      
      mockTest( "Report should be generated for each invocation" ){
        
-       val reporter = mock(classOf[Reporter])
+       val reporter = mock[Reporter]
 
        expecting( "reporter gets 2 passing reports because there are 2 test methods" ) {
          nTestsToPass( 2, reporter )

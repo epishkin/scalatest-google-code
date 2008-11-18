@@ -22,7 +22,7 @@ package org.scalatest.testng{
     
       val xmlSuiteFile = this.createSuite( legacySuiteXml )
           
-      val reporter = mock(classOf[Reporter])
+      val reporter = mock[Reporter]
 
       expecting { singleTestToPass( reporter ) }
       
@@ -43,7 +43,7 @@ package org.scalatest.testng{
       
       val xmlSuiteFile = this.createSuite( legacySuiteWithThreeTestsXml )
           
-      val reporter = mock(classOf[Reporter])
+      val reporter = mock[Reporter]
 
       expecting { 
         nTestsToPass( 3, reporter ) 
