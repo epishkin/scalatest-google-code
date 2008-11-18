@@ -399,7 +399,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
                 }
               if (hasLengthMethod) {
                 MatcherResult(
-                  methodOption.get.invoke(left, Array[Object]()) == expectedLength, 
+                  methodOption.get.invoke(left, Array[Object](): _*) == expectedLength, 
                   FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                   FailureMessages("hadExpectedLength", left, expectedLength)
                 )
@@ -783,7 +783,7 @@ private[scalatest] trait BaseMatchers extends Assertions {
               )
             )
           case 1 =>
-            val result = methodArray(0).invoke(left, Array[AnyRef]()).asInstanceOf[Boolean]
+            val result = methodArray(0).invoke(left, Array[AnyRef](): _*).asInstanceOf[Boolean]
             MatcherResult(
               result,
               FailureMessages("wasNot", left, UnquotedString(rightNoTick)),

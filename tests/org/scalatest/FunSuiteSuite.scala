@@ -15,17 +15,6 @@
  */
 package org.scalatest
 
-/*
-class SuiteFriend(suite: Suite) {
-
-  def simpleNameForTest(testName: String) = {
-    val m = Class.forName("org.scalatest.Suite$class").getDeclaredMethod("simpleNameForTest", Array(classOf[org.scalatest.Suite], classOf[String]))
-    m.setAccessible(true)
-    m.invoke(suite, Array[Object](suite, testName)).asInstanceOf[String]
-  }
-}
-*/
-
 // Group classes used in tests
 package mygroups {
   object SlowAsMolasses extends Group("org.scalatest.SlowAsMolasses")
