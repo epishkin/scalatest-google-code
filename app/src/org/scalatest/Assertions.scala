@@ -202,6 +202,79 @@ trait Assertions {
    */
   implicit def convertToEqualizer(left: Any) = new Equalizer(left)
 
+/**
+   * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
+   * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
+   * function. If it throws an exception that's an instance of the passed class or one of its
+   * subclasses, this method returns that exception. Else, whether the passed function returns normally
+   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>
+   * whose detail message includes the <code>String</code> obtained by invoking <code>toString</code> on the passed <code>message</code>.
+   *
+   * <p>
+   * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
+   * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
+   * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
+   * for example), this method will complete abruptly with an <code>AssertionError</code>.
+   * </p>
+   *
+   * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
+   * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
+   * @param f the function value that should throw the expected exception
+   * @return the intercepted exception, if
+   * @throws AssertionError if the passed function does not result in a value equal to the
+   *     passed <code>expected</code> value.
+   */
+  def intercept[T <: AnyRef](clazz: java.lang.Class[T], message: Any)(f: => Any): T = {
+    val messagePrefix = if (message.toString.trim.isEmpty) "" else (message +"\n")
+    val caught = try {
+      f
+      None
+    }
+    catch {
+      case u: Throwable => {
+        if (!clazz.isAssignableFrom(u.getClass)) {
+          val s = Resources("wrongException", clazz.getName, u.getClass.getName)
+          val ae = new AssertionError(messagePrefix + s)
+          ae.initCause(u)
+          throw ae
+        }
+        else {
+          Some(u)
+        }
+      }
+    }
+    caught match {
+      case None => fail(messagePrefix + Resources("exceptionExpected", clazz.getName))
+      case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
+    }
+  }
+
+  /**
+   * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
+   * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
+   * function. If it throws an exception that's an instance of the passed class or one of its
+   * subclasses, this method returns that exception. Else, whether the passed function returns normally
+   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>.
+   *
+   * <p>
+   * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
+   * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
+   * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
+   * for example), this method will complete abruptly with an <code>AssertionError</code>.
+   * </p>
+   *
+   * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
+   * @param f the function value that should throw the expected exception
+   * @return the intercepted exception, if
+   * @throws AssertionError if the passed function does not complete abruptly with an exception that is assignable to the
+   *     passed <code>Class</code>.
+   * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
+   *     one of its subclasses.
+   */
+  def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Any): T = {
+    intercept(clazz, "")(f)
+  }
+
   /**
    * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
@@ -224,7 +297,7 @@ trait Assertions {
    * @throws AssertionError if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
    */
-  def intercept[T <: AnyRef](f: => Unit)(implicit manifest: Manifest[T]): T = {
+  def intercept[T <: AnyRef](f: => Any)(implicit manifest: Manifest[T]): T = {
     val clazz = manifest.erasure.asInstanceOf[Class[T]]
     val caught = try {
       f
@@ -272,11 +345,6 @@ trait Assertions {
    *     one of its subclasses.
    */
 
-  // MartinX: Uncomment either of the following two and you'll get the compiler errors 
-  // The body of the first isn't implemented right now, as I was experimenting trying to get it to overload successfully.
-  // I don't need a manifest if they are passing the class instance in, so either of these would suffice if I could get
-  // the overloading to work.
-  //
 /*
   def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Unit): T = {
     // intercept(clazz)(f)(manifest)
