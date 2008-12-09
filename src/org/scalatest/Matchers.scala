@@ -4,7 +4,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
 
-private[scalatest] case class MatcherResult(
+case class MatcherResult(
   matches: Boolean,
   failureMessage: String,
   negativeFailureMessage: String
@@ -143,7 +143,7 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
   def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
 }
 
-private[scalatest] trait BaseMatchers extends Assertions {
+trait BaseMatchers extends Assertions {
 
   //
   // This class is used as the return type of the overloaded should method (in MapShouldalizer)
@@ -283,6 +283,35 @@ private[scalatest] trait BaseMatchers extends Assertions {
       }
   }
 
+  trait LengthWrapper {
+    def length: Int
+  }
+
+  implicit def wrapLengthField(o: { val length: Int }) =
+    new LengthWrapper {
+      def length = o.length
+    }
+
+  implicit def wrapLengthMethod(o: { def length(): Int }) =
+    new LengthWrapper {
+      def length = o.length()
+    }
+
+  implicit def wrapGetLengthMethod(o: { def getLength(): Int }) =
+    new LengthWrapper {
+      def length = o.getLength()
+    }
+
+  implicit def wrapArrayLength[T](o: Array[T]) =
+    new LengthWrapper {
+      def length = o.length
+    }
+
+  implicit def wrapStringLength[T](o: String) =
+    new LengthWrapper {
+      def length = o.length
+    }
+
   protected class HaveWord {
     //
     // This key method is called when "have" is used in a logical expression, such as:
@@ -365,6 +394,16 @@ private[scalatest] trait BaseMatchers extends Assertions {
           )
       }
   */
+    def langth[T <% LengthWrapper](expectedLength: Int) = {
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            left.length == expectedLength,
+            FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+            FailureMessages("hadExpectedLength", left, expectedLength)
+          )
+      }
+    }
     def length(expectedLength: Int) =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =

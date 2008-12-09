@@ -2,7 +2,7 @@ package org.scalatest
 
 import scala.reflect.Manifest
 
-private[scalatest] trait MustMatchers extends BaseMatchers {
+trait MustMatchers extends BaseMatchers {
 
   protected trait MustMethods[T] {
     protected val leftOperand: T
