@@ -1596,7 +1596,17 @@ class MatcherSpec extends Spec with ShouldMatchers {
         def getLength(): Int = 7
       }
       val bob = new PurpleElephant
-      bob should have length 8
+      bob should have length 7
+    }
+  }
+
+  "Any object with a length field" -- {
+    "should be usable with 'should have length N' syntax" - {
+      class PurpleElephant {
+        val length: Int = 7
+      }
+      val bob = new PurpleElephant
+      bob should have length 888
     }
   }
 
