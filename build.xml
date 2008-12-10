@@ -7,9 +7,13 @@
 	<property name="jar.contents" value="${build}/jar_contents" />
 	<!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
 	<property name="classes" value="${jar.contents}" />
+	<property name="pluginsrc" value="compilerplugin/src" />
 	<property name="generators" value="generators" />
+	<property name="build.plugin" value="${build}/plugin" />
 	<property name="build.tests" value="${build}/tests" />
 	<property name="build.generators" value="${build}/generators" />
+	<property name="plugin.jar" value="${build}/scalatest-plugin.jar" />
+	<property name="test.params" value="-Xplugin:${plugin.jar}" />
 	<property name="dist" value="${build}/dist" />
 	<property name="doc" value="${build}/doc" />
 	<property name="jdoc" value="${build}/jdoc" />
@@ -30,6 +34,7 @@
 		<tstamp />
 		<!-- Create the build directory structure used by compile -->
 		<mkdir dir="${jar.contents}" />
+		<mkdir dir="${build.plugin}" />
 		<mkdir dir="${build.tests}" />
 		<mkdir dir="${build.generators}" />
 		<mkdir dir="${dist}" />
@@ -114,32 +119,46 @@
 			<include name="org/scalatest/tools/ScalaTestTask.java" />
 		</javac>
 	</target>
+	
+	<target name="compile-plugin" depends="init">
+		<!-- Compile the plugin source from ${pluginsrc} to ${build.plugin} -->
+		<scalac srcdir="${pluginsrc}" destdir="${build.plugin}" target="jvm-1.5" classpathref="build.class.path" />
+		
+		<!-- Build the plugin's jar -->
+		<jar destfile="${plugin.jar}">
+			<fileset dir="${build.plugin}" />
+			<fileset file="compilerplugin/scalac-plugin.xml" />
+		</jar>
+	</target>
 
-	<target name="compile-tests" depends="compile-main">
+	<target name="compile-tests" depends="compile-main,compile-plugin">
 		<!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
-		<scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+		
+		<scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
 			<include name="org/scalatest/EasySuite.scala" />
 		</scalac>
 
 		<!-- Compile the Java code from ${tests} into ${build.tests} -->
 		<javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
 		<!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
-		<scalac srcdir="${tests}/org/scalatest/jmock" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+
+		<scalac srcdir="${tests}/org/scalatest/jmock" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
 			<include name="**/*.scala" />
 		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/junit" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+		<scalac srcdir="${tests}/org/scalatest/junit" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
 			<include name="**/*.scala" />
 		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/prop" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+		<scalac srcdir="${tests}/org/scalatest/prop" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
 			<include name="**/*.scala" />
 		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/testng" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+		<scalac srcdir="${tests}/org/scalatest/testng" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
 			<include name="**/*.scala" />
 		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/tools" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+		<scalac srcdir="${tests}/org/scalatest/tools" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
 			<include name="**/*.scala" />
 		</scalac>
-		<scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+
+		<scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
 			<include name="**/*.scala" />
 		</scalac>
 	</target>
