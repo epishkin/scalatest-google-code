@@ -1590,6 +1590,16 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
   }
 
+  "Any object with a getLength method" -- {
+    "should be usable with 'should have length N' syntax" - {
+      class PurpleElephant {
+        def getLength(): Int = 7
+      }
+      val bob = new PurpleElephant
+      bob should have length 8
+    }
+  }
+
   "The be theSameInstanceAs syntax" -- {
 
     val string = "Hi"
