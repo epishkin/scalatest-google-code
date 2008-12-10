@@ -129,7 +129,7 @@ trait PrivateMethodTester {
           yield m
   
       if (methodArray.length == 0)
-        throw new IllegalArgumentException("Can't find the method")
+        throw new IllegalArgumentException("Can't find a private method named: " + methodNameToInvoke)
       else if (methodArray.length > 1)
         throw new IllegalArgumentException("Found two methods")
       else {
