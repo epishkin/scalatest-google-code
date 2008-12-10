@@ -4,6 +4,18 @@ import scala.reflect.Manifest
 
 trait ShouldMatchers extends BaseMatchers {
 
+  class ResultOfHaveWordForGetLength[A <: { def getLength(): Int }](left: A, shouldBeTrue: Boolean) {
+    def length(expectedLength: Int) {
+      if ((left.getLength == expectedLength) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)
+        )
+    }
+  }
+
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
@@ -74,6 +86,12 @@ trait ShouldMatchers extends BaseMatchers {
 */
 
   protected class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
+
+  protected class GetLengthShouldalizer[A <: { def getLength(): Int }](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+    def should(haveWord: HaveWord): ResultOfHaveWordForGetLength[A] = {
+      new ResultOfHaveWordForGetLength(left, true)
+    }
+  }
 
   protected class StringShouldalizer(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
@@ -175,5 +193,6 @@ trait ShouldMatchers extends BaseMatchers {
   implicit def shouldifyForArray[T](o: Array[T]): ArrayShouldalizer[T] = new ArrayShouldalizer[T](o)
   implicit def shouldifyForList[T](o: List[T]): ListShouldalizer[T] = new ListShouldalizer[T](o)
   implicit def shouldifyForString[K, V](o: String): StringShouldalizer = new StringShouldalizer(o)
+  implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): GetLengthShouldalizer[T] = new GetLengthShouldalizer[T](o)
   // implicit def theBlock(f: => Any) = new ShouldalizerForBlocks(f)
 }
