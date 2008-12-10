@@ -28,6 +28,18 @@ trait ShouldMatchers extends BaseMatchers {
     }
   }
 
+  class ResultOfHaveWordForLengthMethod[A <: { def length(): Int }](left: A, shouldBeTrue: Boolean) {
+    def length(expectedLength: Int) {
+      if ((left.length() == expectedLength) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)
+        )
+    }
+  }
+
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
@@ -108,6 +120,12 @@ trait ShouldMatchers extends BaseMatchers {
   protected class LengthFieldShouldalizer[A <: { val length: Int }](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthField[A] = {
       new ResultOfHaveWordForLengthField(left, true)
+    }
+  }
+
+  protected class LengthMethodShouldalizer[A <: { def length(): Int }](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+    def should(haveWord: HaveWord): ResultOfHaveWordForLengthMethod[A] = {
+      new ResultOfHaveWordForLengthMethod(left, true)
     }
   }
 
@@ -213,5 +231,6 @@ trait ShouldMatchers extends BaseMatchers {
   implicit def shouldifyForString[K, V](o: String): StringShouldalizer = new StringShouldalizer(o)
   implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): GetLengthShouldalizer[T] = new GetLengthShouldalizer[T](o)
   implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthFieldShouldalizer[T] = new LengthFieldShouldalizer[T](o)
+  implicit def shouldifyForLengthMethod[T <:{ def length(): Int}](o: T): LengthMethodShouldalizer[T] = new LengthMethodShouldalizer[T](o)
   // implicit def theBlock(f: => Any) = new ShouldalizerForBlocks(f)
 }
