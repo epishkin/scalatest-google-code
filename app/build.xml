@@ -1,7 +1,7 @@
 <project name="ScalaTest" default="dist" basedir=".">
 
 	<!-- set global properties for this build -->
-	<property name="src" value="src" />
+ 	<property name="src" value="src" />
 	<property name="tests" value="tests" />
 	<property name="build" value="build" />
 	<property name="jar.contents" value="${build}/jar_contents" />
