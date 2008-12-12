@@ -275,26 +275,30 @@ trait Assertions {
     intercept(clazz, "")(f)
   }
 
+
   /**
-   * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
-   * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
-   * function. If it throws an exception that's an instance of the passed class or one of its
-   * subclasses, this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>
-   * whose detail message includes the <code>String</code> obtained by invoking <code>toString</code> on the passed <code>message</code>.
+   * Intercept and return an exception that's expected to
+   * be thrown by the passed function value. The thrown exception must be an instance of the
+   * type specified by the type parameter of this method. This method invokes the passed
+   * function. If the function throws an exception that's an instance of the specified type,
+   * this method returns that exception. Else, whether the passed function returns normally
+   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>.
    *
    * <p>
-   * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
-   * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
-   * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
+   * Note that the type specified as this method's type parameter may represent any subtype of
+   * <code>AnyRef</code>, not just <code>Throwable</code> or one of its subclasses. In
+   * Scala, exceptions can be caught based on traits they implement, so it may at times make sense
+   * to specify a trait that the intercepted exception's class must mix in. If a class instance is
+   * passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
    * for example), this method will complete abruptly with an <code>AssertionError</code>.
    * </p>
    *
-   * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
-   * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
    * @param f the function value that should throw the expected exception
-   * @return the intercepted exception, if 
-   * @throws AssertionError if the passed function does not result in a value equal to the
+   * @param manifest an implicit <code>Manifest</code> representing the type of the specified
+   * type parameter.
+   * @return the intercepted exception, if it is of the expected type
+   * @throws AssertionError if the passed function does not complete abruptly with an exception
+   *    that's an instance of the specified type
    *     passed <code>expected</code> value.
    */
   def intercept[T <: AnyRef](f: => Any)(implicit manifest: Manifest[T]): T = {
