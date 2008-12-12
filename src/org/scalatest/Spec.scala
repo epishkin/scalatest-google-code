@@ -19,7 +19,7 @@ import NodeFamily._
 import scala.collection.immutable.ListSet
 
 /**
- * Trait that facilitates a &#8220;behavior-driven&$8221; style of development, in which tests
+ * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
  * Here's an example <code>Spec</code>:
  *
@@ -51,7 +51,7 @@ import scala.collection.immutable.ListSet
  *
  * <p>
  * A <code>Spec</code> contains <em>describers</em> and <em>specifiers</em>. You define a describer
- * with <code>describe</code>, and a specifier with </code>it</code>. Both
+ * with <code>describe</code>, and a specifier with <code>it</code>. Both
  * <code>describe</code> and <code>it</code> are methods, defined in
  * <code>Spec</code>, which will be invoked
  * by the primary constructor of <code>StackSpec</code>. 
@@ -59,10 +59,32 @@ import scala.collection.immutable.ListSet
  * and testing. In the above example, "A Stack"
  * is the class of object under specification and test. With each specifier you provide a string that specifies
  * one bit of behavior of the entity under specification, and a block of code that tests that behavior.
- * You place the specification string between the parentheses, and the test code between curly braces.
- * The test code is a function passed as a by-name parameter to <code>it</code>, which registers
- * the test for later execution.
+ * (In traditional BDD terminology, this test is referred to as an <em>example</em>.)
+ * You place the specification string between the parentheses, followed by the test code between curly
+ * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
+ * <code>it</code>, which will register the test for later execution.
  * </p>
+ *
+ * <p>
+ * When you execute a <code>Spec</code>, it will send <code>SpecReport</code>s to the
+ * <code>Reporter</code>. ScalaTest's built-in reporters will report these <code>SpecReports</code> in such a way
+ * that the output is easy to read as an informal specification of the entity under test.
+ * For example, if you run <code>StackSpec</code> from within the Scala interpreter:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).execute()
+ * </pre>
+ *
+ * <p>
+ * You would see:
+ * </p>
+ *
+ * <pre>
+ * A Stack
+ * - should pop values in last-in-first-out order
+ * - should throw NoSuchElementException if an empty stack is popped
+ * </pre>
  *
  * @author Bill Venners
  */
@@ -70,7 +92,7 @@ trait Spec extends Suite {
 
   private val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
-  
+
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
