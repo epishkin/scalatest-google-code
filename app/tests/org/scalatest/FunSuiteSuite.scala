@@ -60,12 +60,6 @@ class FunSuiteSuite extends Suite {
     intercept[IllegalArgumentException] {
       new FunSuite {
         test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
         ignore("test this") {}
       }
     }
@@ -78,62 +72,6 @@ class FunSuiteSuite extends Suite {
     intercept[IllegalArgumentException] {
       new FunSuite {
         ignore("test this") {}
-        ignore("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        ignore("test this") {}
-      }
-    }
-
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        ignore("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        ignore("test this") {}
-      }
-    }
-
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept[IllegalArgumentException] {
-      new FunSuite {
-        test("test this") {}
         test("test this") {}
       }
     }

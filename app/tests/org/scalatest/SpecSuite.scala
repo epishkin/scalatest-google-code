@@ -2,8 +2,178 @@ package org.scalatest
 
 class SpecSuite extends FunSuite {
 
+  test("groups work correctly in Spec") {
+    
+    val d = new Spec {
+      it("test this", mygroups.SlowAsMolasses) {}
+      ignore("test that", mygroups.SlowAsMolasses) {}
+    }
+    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+      d.groups
+    }
+
+    val e = new Spec {}
+    expect(Map()) {
+      e.groups
+    }
+
+    val f = new Spec {
+      it("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
+      it("test that", mygroups.SlowAsMolasses) {}
+    }
+    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+      f.groups
+    }
+  }
+
+  test("duplicate test names should generate an exception") {
+
+    intercept[IllegalArgumentException] {
+      new Spec {
+        it("test this") {}
+        it("test this") {}
+      }
+    }
+    intercept[IllegalArgumentException] {
+      new Spec {
+        it("test this") {}
+        ignore("test this") {}
+      }
+    }
+    intercept[IllegalArgumentException] {
+      new Spec {
+        ignore("test this") {}
+        ignore("test this") {}
+      }
+    }
+    intercept[IllegalArgumentException] {
+      new Spec {
+        ignore("test this") {}
+        it("test this") {}
+      }
+    }
+  }
+
+  test("make sure ignored examples show up in groups list") {
+
+    val a = new Spec {
+      ignore("test this") {}
+      it("test that") {}
+    }
+    expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
+      a.groups
+    }
+
+    val b = new Spec {
+      it("test this") {}
+      ignore("test that") {}
+    }
+    expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
+      b.groups
+    }
+
+    val c = new Spec {
+      ignore("test this") {}
+      ignore("test that") {}
+    }
+    expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
+      c.groups
+    }
+
+    val d = new Spec {
+      it("test this") {}
+      it("test that") {}
+    }
+    expect(Map()) {
+      d.groups
+    }
+  }
+
+  class MyReporter extends Reporter {
+    var testIgnoredCalled = false
+    var lastReport: Report = null
+    override def testIgnored(report: Report) {
+      testIgnoredCalled = true
+      lastReport = report
+    }
+  }
+
+  test("make sure ignored tests don't get executed") {
+
+    val a = new Spec {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      it("test this") { theTestThisCalled = true }
+      it("test that") { theTestThatCalled = true }
+    }
+
+    val repA = new MyReporter
+    a.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+    assert(!repA.testIgnoredCalled)
+    assert(a.theTestThisCalled)
+    assert(a.theTestThatCalled)
+
+    val b = new Spec {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      ignore("test this") { theTestThisCalled = true }
+      it("test that") { theTestThatCalled = true }
+    }
+
+    val repB = new MyReporter
+    b.execute(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    assert(repB.testIgnoredCalled)
+    assert(repB.lastReport.name endsWith "test this")
+    assert(!b.theTestThisCalled)
+    assert(b.theTestThatCalled)
+
+    val c = new Spec {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      it("test this") { theTestThisCalled = true }
+      ignore("test that") { theTestThatCalled = true }
+    }
+
+    val repC = new MyReporter
+    c.execute(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    assert(repC.testIgnoredCalled)
+    assert(repC.lastReport.name endsWith "test that", repC.lastReport.name)
+    assert(c.theTestThisCalled)
+    assert(!c.theTestThatCalled)
+
+    // The order I want is order of appearance in the file.
+    // Will try and implement that tomorrow. Subtypes will be able to change the order.
+    val d = new Spec {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      ignore("test this") { theTestThisCalled = true }
+      ignore("test that") { theTestThatCalled = true }
+    }
+
+    val repD = new MyReporter
+    d.execute(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    assert(repD.testIgnoredCalled)
+    assert(repD.lastReport.name endsWith "test that") // last because should be in order of appearance
+    assert(!d.theTestThisCalled)
+    assert(!d.theTestThatCalled)
+
+    // If I provide a specific testName to execute, then it should ignore an Ignore on that test
+    // method and actually invoke it.
+    val e = new Spec {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      ignore("test this") { theTestThisCalled = true }
+      it("test that") { theTestThatCalled = true }
+    }
+
+    val repE = new MyReporter
+    e.execute(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None)
+    assert(!repE.testIgnoredCalled)
+    assert(e.theTestThisCalled)
+  }
+
   test("three fancy specifiers should be invoked in order") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -51,7 +221,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("three fancy specifiers should be invoked in order when two are surrounded by a plain-old describer") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -77,7 +247,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("three fancy specifiers should be invoked in order when two are surrounded by an fancy describer") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -129,7 +299,7 @@ class SpecSuite extends FunSuite {
   }
    
   test("two fancy specifiers should show up in order of appearance in testNames") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       "it should get invoked" - {
@@ -167,7 +337,7 @@ class SpecSuite extends FunSuite {
   }
  
   test("fancy specifier test names should include an enclosing describe string, separated by a space") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       describe("A Stack") {
         "should allow me to pop" - {}
         "should allow me to push" - {}
@@ -193,7 +363,7 @@ class SpecSuite extends FunSuite {
   }
 
   test("fancy specifier test names should properly nest descriptions in test names") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
           "should allow me to pop" - {}
@@ -230,10 +400,10 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
       describe("A Stack") {
         describe("(when not empty)") {
-          "should allow me to pop" - {}
+          it("should allow me to pop") {}
         }
         describe("(when not full)") {
-          "should allow me to push" - {}
+          it("should allow me to push") {}
         }
       }
     }
@@ -260,7 +430,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -316,7 +486,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -372,7 +542,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should start with proper words" - { fail() }
     }
     val a = new MySpec
@@ -452,7 +622,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "My Spec" -- {
         "should start with proper words" - {}
       }
@@ -564,7 +734,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "My Spec" -- {
         "should start with proper words" - {}
       }
@@ -676,7 +846,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "My Spec" -- {
         "should start with proper words" - { fail() }
       }
@@ -790,7 +960,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "My" -- {
         "Spec" -- {
           "should start with proper words" - {}
@@ -906,7 +1076,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "My" -- {
         "Spec" -- {
           "should start with proper words" - {}
@@ -1022,7 +1192,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "My" -- {
         "Spec" -- {
           "should start with proper words" - { fail() }
@@ -1116,7 +1286,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior {
+    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
       "it should start with proper words" - {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1178,7 +1348,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior {
+    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
       "it should start with proper words" - {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1240,7 +1410,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior {
+    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
       "it should start with proper words" - { fail() }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1326,7 +1496,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior {
+    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
       "should start with proper words" - {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1356,7 +1526,7 @@ class SpecSuite extends FunSuite {
   test("Only a passed test name should be invoked.") {
     var correctTestWasInvoked = false
     var wrongTestWasInvoked = false
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should be invoked" - {
         correctTestWasInvoked = true
       }
@@ -1372,7 +1542,7 @@ class SpecSuite extends FunSuite {
   
   test("Goodies should make it through to runTest") {
     var foundMyGoodie = false
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
         foundMyGoodie = goodies.contains("my goodie")
         super.runTest(testName, reporter, stopper, goodies)
@@ -1394,7 +1564,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -1411,7 +1581,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should start with proper words" - { fail() }
     }
     val a = new MySpec
@@ -1429,7 +1599,7 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "A Stack" -- {
         "should push and pop properly" - {}
       }
@@ -1452,7 +1622,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with ShouldMatchers {
       describe("A Stack") {
         describe("(when working right)") {
-          "should push and pop properly" - {}
+          it("should push and pop properly") {}
         }
       }
     }
@@ -1462,10 +1632,10 @@ class SpecSuite extends FunSuite {
   }
   
   test("expectedTestCount is the number of fancy specifiers if no shares") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should one" - {}
       "it should two" - {}
-      describe("behavior") {
+      "behavior" -- {
         "should three" - {}  
         "should four" - {}
       }
@@ -1610,11 +1780,11 @@ class SpecSuite extends FunSuite {
         ensureSpecReport(report)
 	  }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should send SpecReports" - {
         assert(true)
       }
-      "it should send SpecReports" - {
+      "it should also send SpecReports" - {
         assert(false)
       }
     }
@@ -1639,7 +1809,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should start with proper words" - {}
     }
     val a = new MySpec
@@ -1685,7 +1855,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "A Stack" -- {
         "should start with proper words" - {}
       }
@@ -1735,7 +1905,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "A Stack" -- {
         "(when empty)" -- {
           "should start with proper words" - {}
@@ -1878,7 +2048,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       "it should be at level 0" - {}
       "it should also be at level 0" - { fail() }
     }
@@ -1941,7 +2111,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       describe("my describe clause") {
         "should be at level 1" - {}
         "should also be at level 1" - { fail() }
@@ -1961,9 +2131,9 @@ class SpecSuite extends FunSuite {
  
   // Testing Shared behaviors
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
-    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
-      def invocationVerifier(i: Int) = new Behavior {
+      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
         "should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -1984,10 +2154,10 @@ class SpecSuite extends FunSuite {
   }
   
   test("two examples in a shared behavior should get invoked") {
-    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
-      def invocationVerifier(i: Int) = new Behavior {
+      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
         "should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -2012,11 +2182,11 @@ class SpecSuite extends FunSuite {
   }
 
   test("three examples in a shared behavior should be invoked in order") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      def invocationVerifier(i: Int) = new Behavior {
+      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
         "should get invoked" - {
           example1WasInvoked = true
         }
@@ -2039,11 +2209,11 @@ class SpecSuite extends FunSuite {
   }
   
   test("three examples in a shared behavior should not get invoked at all if the behavior isn't used in a like clause") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      def invocationVerifier(i: Int) = new Behavior {
+      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
         "should get invoked" - {
           example1WasInvoked = true
         }
@@ -2075,9 +2245,9 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
-      def invocationVerifier(i: Int) = new Behavior {
+      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
         "it should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -2098,9 +2268,9 @@ class SpecSuite extends FunSuite {
         }  
       }
     }
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var sharedExampleInvoked = false
-      def invocationVerifier(i: Int) = new Behavior {
+      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
         "should pop properly" - {
           sharedExampleInvoked = true
         }
@@ -2115,7 +2285,7 @@ class SpecSuite extends FunSuite {
   }
  
   test("expectedTestCount should not include tests in shares if never called") {
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       class Misbehavior extends Spec with ShouldMatchers {
         "should six" - {}
         "should seven" - {}
@@ -2133,8 +2303,8 @@ class SpecSuite extends FunSuite {
   }
 
   test("expectedTestCount should include tests in a share that is called") {
-    class MySpec extends Spec with ShouldMatchers {
-      def misbehavior(i: Int) = new Behavior {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
+      def misbehavior(i: Int) = new Behavior with BehaviorDasher {
         "should six" - {}
         "should seven" - {}
       }
@@ -2152,8 +2322,8 @@ class SpecSuite extends FunSuite {
   }
 
   test("expectedTestCount should include tests in a share that is called twice") {
-    class MySpec extends Spec with ShouldMatchers {
-      def misbehavior(i: Int) = new Behavior {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
+      def misbehavior(i: Int) = new Behavior with BehaviorDasher {
         "should six" - {}
         "should seven" - {}
       }
@@ -2188,7 +2358,7 @@ class SpecSuite extends FunSuite {
       }
     }
 
-    class MySpec extends Spec with ShouldMatchers {
+    class MySpec extends Spec with SpecDasher with ShouldMatchers {
       describe("A Stack") {
         describe("(when not empty)") {
           "should allow me to pop" - {

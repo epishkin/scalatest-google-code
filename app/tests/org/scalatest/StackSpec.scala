@@ -31,7 +31,7 @@ class Stack[T] {
 
 trait StackBehaviors {
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
 
     "should be non-empty" - {
       assert(!stack.empty)
@@ -54,7 +54,7 @@ trait StackBehaviors {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Behavior = new Behavior {
+  def nonFullStack(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
       
     "should not be full" - {
       assert(!stack.full)
@@ -92,7 +92,7 @@ trait StackFixtureCreationMethods {
   val lastValuePushed = 9
 }
       
-class StackSpec extends Spec with StackFixtureCreationMethods with ShouldMatchers with StackBehaviors {
+class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods with ShouldMatchers with StackBehaviors {
 
   "A Stack" -- {
 

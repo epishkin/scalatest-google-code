@@ -32,7 +32,7 @@ import scala.collection.immutable.TreeSet
 /**
  * <p>
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
- * suite (i.e., a collection) of tests. This trait defines a default way to create
+ * suite (<em>i.e.</em>, a collection) of tests. This trait defines a default way to create
  * and execute tests, which involves writing <em>test methods</em>. This approach will likely suffice
  * in the vast majority of applications, but if desired, subtypes can override certain methods
  * to define other ways to create and execute tests.
