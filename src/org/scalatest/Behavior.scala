@@ -45,6 +45,9 @@ trait Behavior extends Assertions {
   }
   
   protected val should = new ShouldWord
+}
+
+trait BehaviorDasher { this: Behavior =>
 
   class Dasher(s: String) {
     def - (f: => Unit) {
@@ -54,4 +57,3 @@ trait Behavior extends Assertions {
   
   implicit def stringToDasher(s: String) = new Dasher(s)
 }
-

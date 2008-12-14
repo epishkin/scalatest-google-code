@@ -20,7 +20,7 @@ import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
 /**
- * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code> &#8221;in <code>FunSuite</code> stands for functional.
+ * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands for functional.
  * Here's an example <code>FunSuite</code>:
  *
  * <pre>
@@ -67,11 +67,11 @@ import java.util.concurrent.atomic.AtomicReference
  * </p>
  *
  * <p>
- * If a fixture is used by only one test method, then the definitions of the fixture objects should
- * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
- * previous <code>MySuite</code> examples. If multiple methods need to share a fixture, the best approach
+ * If a fixture is used by only one test, then the definitions of the fixture objects should
+ * be local to the test function, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
+ * previous <code>MySuite</code> examples. If multiple tests need to share a fixture, the best approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
- * to <code>shared</code> is used by multiple test methods:
+ * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
  * <pre>
@@ -106,7 +106,7 @@ import java.util.concurrent.atomic.AtomicReference
  * avoid <code>var</code>s. One approach is to write one or more "create" methods
  * that return a new instance of a needed object (or a tuple of new instances of
  * multiple objects) each time it is called. You can then call a create method at the beginning of each
- * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
  * <pre>
@@ -325,7 +325,7 @@ import java.util.concurrent.atomic.AtomicReference
  * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
  * optionally be included and/or excluded. To place <code>FunSuite</code> tests into
  * groups, you pass objects that extend abstract class <code>org.scalatest.Group</code> to methods
- * that register tests. Class <code>Group</code> takes one type parameter, a string name.  If you have
+ * that register tests. Class <code>Group</code> takes one parameter, a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
@@ -379,7 +379,7 @@ import java.util.concurrent.atomic.AtomicReference
  * </p>
  *
  * <p>
- * To support the common use case of &#8220;temporarily&#8221; disabling tests, with the
+ * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
  * good intention of resurrecting the test at a later time, <code>FunSuite</code> provides registration
  * methods that start with <code>ignore</code> instead of <code>test</code>. For example, to temporarily
  * disable the test named <code>addition</code>, just change &#8220;<code>test</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
@@ -442,11 +442,10 @@ import java.util.concurrent.atomic.AtomicReference
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
  * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
  * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
- * For this purpose, you can optionally register a test with a function value that takes an <code>Informer</code> parameter via
- * the &#8220;<code>...WithInformer</code>
- * variants of the test registration methods. You can then
- * pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods. The <code>Informer</code>
- * will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
  * Here's an example:
  * </p>
  *
@@ -455,13 +454,11 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * class MySuite extends FunSuite {
  *
- *   testWithInformer("addition") {
- *     info => {
- *       val sum = 1 + 1
- *       assert(sum === 2)
- *       assert(sum + 2 === 4)
- *       info("Addition seems to work")
- *     }
+ *   test("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *     info("Addition seems to work")
  *   }
  * }
  * </pre>
@@ -490,7 +487,7 @@ trait FunSuite extends Suite {
   // by execute. When running tests concurrently with ScalaTest Runner, different threads can
   // instantiate and execute the Suite. Instead of synchronizing, I put them in an immutable Bundle object (and
   // all three collections--testNamesList, testsMap, and groupsMap--are immuable collections), then I put the Bundle
-  // in an AtomicReference. Since the expected use case is the test, testWithInformer, etc., methods will be called
+  // in an AtomicReference. Since the expected use case is the test method will be called
   // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
   // If two threads ever called test at the same time, they could get a ConcurrentModificationException.
   // Test names are in reverse order of test registration method invocations
@@ -503,7 +500,7 @@ trait FunSuite extends Suite {
   ) {
     def unpack = (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked)
   }
-  
+
   private object Bundle {
     def apply(
       testNamesList: List[String],

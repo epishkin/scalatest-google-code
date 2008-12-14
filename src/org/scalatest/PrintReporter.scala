@@ -266,6 +266,11 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
                 Some(Resources("specTextAndNote", specReport.formattedSpecText, Resources("failedNote")))
               else
                 None
+            case "testIgnored" =>
+              if (specReport.includeInSpecOutput)
+                Some(Resources("specTextAndNote", specReport.formattedSpecText, Resources("ignoredNote")))
+              else
+                None
             case _ => 
               if (specReport.includeInSpecOutput)
                 Some(specReport.formattedSpecText)

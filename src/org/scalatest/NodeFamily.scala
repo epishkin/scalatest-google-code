@@ -7,12 +7,28 @@ private[scalatest] object NodeFamily {
   case class SharedExample(exampleRawName: String, needsShould: Boolean, f: () => Unit)
   
   sealed abstract class Node(parentOption: Option[Branch], val level: Int)
+
   abstract class Branch(parentOption: Option[Branch], override val level: Int) extends Node(parentOption, level) {
     var subNodes: List[Node] = Nil
   }
+
   case class Trunk extends Branch(None, -1)
-  case class Example(parent: Branch, exampleFullName: String, exampleRawName: String, needsShould: Boolean, specText: String, override val level: Int, f: () => Unit) extends Node(Some(parent), level)
-  case class Description(parent: Branch, descriptionName: String, override val level: Int) extends Branch(Some(parent), level)
+
+  case class Example(
+    parent: Branch,
+    exampleFullName: String,
+    exampleRawName: String,
+    needsShould: Boolean,
+    specText: String,
+    override val level: Int,
+    f: () => Unit
+  ) extends Node(Some(parent), level)
+
+  case class Description(
+    parent: Branch,
+    descriptionName: String,
+    override val level: Int
+  ) extends Branch(Some(parent), level)
 
   protected[scalatest] def getPrefix(branch: Branch): String = {
     branch match {

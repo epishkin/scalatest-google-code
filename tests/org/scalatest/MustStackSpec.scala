@@ -6,7 +6,7 @@ trait MustStackBehaviors extends MustMatchers {
 
   val full = 'full
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
 
     "must be non-empty" - {
       stack mustNot be ('empty)
@@ -29,7 +29,7 @@ trait MustStackBehaviors extends MustMatchers {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Behavior = new Behavior {
+  def nonFullStack(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
       
     "must not be full" - {
       stack mustNot be (full)
@@ -44,7 +44,7 @@ trait MustStackBehaviors extends MustMatchers {
   }
 }
 
-class MustStackSpec extends Spec with MustMatchers with StackFixtureCreationMethods with MustStackBehaviors {
+class MustStackSpec extends Spec with SpecDasher with MustMatchers with StackFixtureCreationMethods with MustStackBehaviors {
 
   "A Stack" -- {
 
