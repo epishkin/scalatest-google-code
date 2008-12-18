@@ -499,10 +499,10 @@ trait Spec extends Suite {
   class LikeWord {}
 
   private def registerExample(exampleRawName: String, f: => Unit) = {
-    val exampleFullName = getExampleFullName(exampleRawName, false, currentBranch)
+    val exampleFullName = getExampleFullName(exampleRawName, currentBranch)
     require(!examplesList.exists(_.exampleFullName == exampleFullName), "Duplicate test name: " + exampleFullName)
-    val exampleShortName = getExampleShortName(exampleRawName, false, currentBranch)
-    val example = Example(currentBranch, exampleFullName, exampleRawName, false, exampleShortName, currentBranch.level + 1, f _)
+    val exampleShortName = getExampleShortName(exampleRawName, currentBranch)
+    val example = Example(currentBranch, exampleFullName, exampleRawName, exampleShortName, currentBranch.level + 1, f _)
     currentBranch.subNodes ::= example
     examplesList ::= example
     exampleFullName
@@ -587,7 +587,7 @@ trait Spec extends Suite {
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, exampleFullName, exampleRawName, needsShould, specText, level, f) => {
+        case ex @ Example(parent, exampleFullName, exampleRawName, specText, level, f) => {
           // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
           // so that exceptions are caught and transformed
           // into error messages on the standard error stream.
