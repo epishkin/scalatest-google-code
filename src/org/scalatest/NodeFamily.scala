@@ -41,40 +41,20 @@ private[scalatest] object NodeFamily {
   private[scalatest] def getExampleFullName(exampleRawName: String, needsShould: Boolean, parent: Branch): String = {
     val prefix = getPrefix(parent).trim
     if (prefix.isEmpty) {
-      if (needsShould) {
-        // class MySpec extends Spec {
-        //   it should "pop when asked" in {}
-        // }
-        // Should yield: "it should pop when asked"
-        Resources("itShould", exampleRawName)
-      }
-      else {
-        // class MySpec extends Spec {
-        //   specify("It sure ought to pop when asked") {}
-        // }
-        // Should yield: "It sure ought to pop when asked"
-        exampleRawName
-      }
+      // class MySpec extends Spec {
+      //   it("should pop when asked") {}
+      // }
+      // Should yield: "should pop when asked"
+      exampleRawName
     }
     else {
-      if (needsShould) {
-        // class MySpec extends Spec {
-        //   describe("A Stack") {
-        //     it should "pop when asked" in {}
-        //   }
-        // }
-        // Should yield: "A Stack should pop when asked"
-        Resources("prefixShouldSuffix", prefix, exampleRawName)
-      }
-      else {
-        // class MySpec extends Spec {
-        //   describe("A Stack") {
-        //     specify("must pop when asked") {}
-        //   }
-        // }
-        // Should yield: "A Stack must pop when asked"
-        Resources("prefixSuffix", prefix, exampleRawName)
-      }
+      // class MySpec extends Spec {
+      //   describe("A Stack") {
+      //     specify("must pop when asked") {}
+      //   }
+      // }
+      // Should yield: "A Stack must pop when asked"
+      Resources("prefixSuffix", prefix, exampleRawName)
     }
   }
 
