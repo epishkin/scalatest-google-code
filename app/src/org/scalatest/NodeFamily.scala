@@ -1,7 +1,5 @@
 package org.scalatest
 
-// shouldImplied in Example indicates we need to insert a should in front of the example name when
-// showing it to the user
 private[scalatest] object NodeFamily {
   
   case class SharedExample(exampleRawName: String, f: () => Unit)
