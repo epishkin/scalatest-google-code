@@ -10,9 +10,9 @@ trait Behavior extends Assertions {
   private[scalatest] def examples(newParent: Branch): List[Example] = {
     
     def transform(sharedExample: SharedExample): Example = {
-      val exampleFullName = getExampleFullName(sharedExample.exampleRawName, sharedExample.needsShould, newParent)
-      val exampleShortName = getExampleShortName(sharedExample.exampleRawName, sharedExample.needsShould, newParent)
-      Example(newParent, exampleFullName, sharedExample.exampleRawName, sharedExample.needsShould, exampleShortName, -1, sharedExample.f)
+      val exampleFullName = getExampleFullName(sharedExample.exampleRawName, newParent)
+      val exampleShortName = getExampleShortName(sharedExample.exampleRawName, newParent)
+      Example(newParent, exampleFullName, sharedExample.exampleRawName, exampleShortName, -1, sharedExample.f)
     }
     sharedExamplesList.map(transform)
   }
@@ -23,18 +23,12 @@ trait Behavior extends Assertions {
   
   class LikeWord {}
 
-  private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) {
-    sharedExamplesList ::= SharedExample(exampleRawName, needsShould, f _)
+  private def registerExample(exampleRawName: String, f: => Unit) {
+    sharedExamplesList ::= SharedExample(exampleRawName, f _)
   }
   
-/*
-  def specify(exampleRawName: String)(f: => Unit) {
-    registerExample(exampleRawName, false, f)
-  }
-*/
-
   def it(exampleRawName: String)(f: => Unit) {
-    registerExample(exampleRawName, false, f)
+    registerExample(exampleRawName, f)
   }
 
   protected val like = new LikeWord

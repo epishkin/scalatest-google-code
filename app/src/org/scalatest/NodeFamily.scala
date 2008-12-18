@@ -4,7 +4,7 @@ package org.scalatest
 // showing it to the user
 private[scalatest] object NodeFamily {
   
-  case class SharedExample(exampleRawName: String, needsShould: Boolean, f: () => Unit)
+  case class SharedExample(exampleRawName: String, f: () => Unit)
   
   sealed abstract class Node(parentOption: Option[Branch], val level: Int)
 
@@ -18,7 +18,6 @@ private[scalatest] object NodeFamily {
     parent: Branch,
     exampleFullName: String,
     exampleRawName: String,
-    needsShould: Boolean,
     specText: String,
     override val level: Int,
     f: () => Unit
@@ -38,7 +37,7 @@ private[scalatest] object NodeFamily {
     }
   }
   
-  private[scalatest] def getExampleFullName(exampleRawName: String, needsShould: Boolean, parent: Branch): String = {
+  private[scalatest] def getExampleFullName(exampleRawName: String, parent: Branch): String = {
     val prefix = getPrefix(parent).trim
     if (prefix.isEmpty) {
       // class MySpec extends Spec {
@@ -50,7 +49,7 @@ private[scalatest] object NodeFamily {
     else {
       // class MySpec extends Spec {
       //   describe("A Stack") {
-      //     specify("must pop when asked") {}
+      //     it("must pop when asked") {}
       //   }
       // }
       // Should yield: "A Stack must pop when asked"
@@ -58,44 +57,20 @@ private[scalatest] object NodeFamily {
     }
   }
 
-  private[scalatest] def getExampleShortName(exampleRawName: String, needsShould: Boolean, parent: Branch): String = {
-    val prefix = getPrefix(parent).trim
-    if (prefix.isEmpty) {
-      if (needsShould) {
-        // class MySpec extends Spec {
-        //   it should "pop when asked" in {}
-        // }
-        // Should yield: "it should pop when asked"
-        Resources("itShould", exampleRawName)
-      }
-      else {
-        // class MySpec extends Spec {
-        //   specify("It sure ought to pop when asked") {}
-        // }
-        // Should yield: "It sure ought to pop when asked"
-        exampleRawName
-      }
-    }
-    else {
-      if (needsShould) {
-        // class MySpec extends Spec {
-        //   describe("A Stack") {
-        //     it should "pop when asked" in {}
-        //   }
-        // }
-        // Should yield: "should pop when asked"
-        Resources("should", exampleRawName)
-      }
-      else {
-        // class MySpec extends Spec {
-        //   describe("A Stack") {
-        //     specify("must pop when asked") {}
-        //   }
-        // }
-        // Should yield: "A Stack must pop when asked"
-        exampleRawName
-      }
-    }
+  private[scalatest] def getExampleShortName(exampleRawName: String, parent: Branch): String = {
+    //
+    // class MySpec extends Spec {
+    //   it("sure ought to pop when asked") {}
+    // }
+    // Should yield: "sure ought to pop when asked"
+    //
+    // class MySpec extends Spec {
+    //   describe("A Stack") {
+    //     it("must pop when asked") {}
+    //   }
+    // }
+    // Should yield: "must pop when asked"
+    exampleRawName
   }
 
   private[scalatest] def countTestsInBranch(branch: Branch): Int = {
@@ -111,7 +86,7 @@ private[scalatest] object NodeFamily {
 }
 
 /*
- * The exampleRawName and needsShould is now stored in Example because when I import a
+ * The exampleRawName is now stored in Example because when I import a
  * shared example, I recalculate the exampleFullName and specText. This is needed because
  * when a shared behavior is instantiated, it doesn't know what describe clauses it might
  * be nested in yet. When it is passed to like, though, at the point it is known, so the
