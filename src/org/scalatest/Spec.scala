@@ -50,17 +50,16 @@ import scala.collection.immutable.ListSet
  * </pre>
  *
  * <p>
- * A <code>Spec</code> contains <em>describers</em> and <em>specifiers</em>. You define a describer
- * with <code>describe</code>, and a specifier with <code>it</code>. Both
+ * A <code>Spec</code> contains <em>describers</em> and <em>examples</em>. You define a describer
+ * with <code>describe</code>, and a example with <code>it</code>. Both
  * <code>describe</code> and <code>it</code> are methods, defined in
  * <code>Spec</code>, which will be invoked
  * by the primary constructor of <code>StackSpec</code>. 
- * A describer names, or gives more information about, the class or other entity you are specifying
+ * A describer names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
  * and testing. In the above example, "A Stack"
- * is the class of object under specification and test. With each specifier you provide a string that specifies
- * one bit of behavior of the entity under specification, and a block of code that tests that behavior.
- * (In traditional BDD terminology, this test is referred to as an <em>example</em>.)
- * You place the specification string between the parentheses, followed by the test code between curly
+ * is the subject under specification and test. With each example you provide a string (the <em>spec text</em>) that specifies
+ * one bit of behavior of the subject, and a block of code that tests that behavior.
+ * You place the spec text between the parentheses, followed by the test code between curly
  * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
  * <code>it</code>, which will register the test for later execution.
  * </p>
@@ -486,17 +485,15 @@ trait Spec extends Suite {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
-  protected def importSharedBehavior(sharedBehavior: Behavior) {
+  /**
+   *
+   */
+  protected def assertBehavesLike[T](target: T, fun: (T) => Behavior) {
+    val sharedBehavior = fun(target)
     val sharedExamples = sharedBehavior.examples(currentBranch)
     currentBranch.subNodes :::= sharedExamples
     examplesList :::= sharedExamples
   }
-
-  def assertBehavesLike[T](target: T, fun: (T) => Behavior) {
-    importSharedBehavior(fun(target))
-  }
-
-  class LikeWord {}
 
   private def registerExample(exampleRawName: String, f: => Unit) = {
     val exampleFullName = getExampleFullName(exampleRawName, currentBranch)
@@ -510,15 +507,17 @@ trait Spec extends Suite {
 
   /**
    * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
+   * An invocation of this method is called an &#8220;example.&#8221;
+   *
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
    * methods. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance. An invocation of this method is called as &#8220;specifier.&#8221;
+   * this <code>Spec</code> instance.
    *
    * @throws IllegalArgumentException if a test with the same name had been registered previously
    */
-  def it(specText: String, testGroups: Group*)(f: => Unit) {
+  protected def it(specText: String, testGroups: Group*)(f: => Unit) {
     val exampleFullName = registerExample(specText, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
@@ -537,14 +536,20 @@ trait Spec extends Suite {
    *
    * @throws IllegalArgumentException if a test with the same name had been registered previously
    */
-  def ignore(specText: String, testGroups: Group*)(f: => Unit) {
+  protected def ignore(specText: String, testGroups: Group*)(f: => Unit) {
     val exampleFullName = registerExample(specText, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (exampleFullName -> (groupNames + IgnoreGroupName))
 
   }
 
-  protected def describe(name: String)(f: => Unit) {
+  /**
+   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
+   * passed function value may contain more describers (defined with <code>describe</code>) and/or examples
+   * (defined with <code>it</code>). This trait's implementation of this method will register the
+   * description string and immediately invoke the passed function.
+   */
+  protected def describe(description: String)(f: => Unit) {
 
     def insertBranch(newBranch: Branch, f: () => Unit) {
       val oldBranch = currentBranch
@@ -554,7 +559,7 @@ trait Spec extends Suite {
       currentBranch = oldBranch
     }
 
-    insertBranch(Description(currentBranch, name, currentBranch.level + 1), f _)
+    insertBranch(Description(currentBranch, description, currentBranch.level + 1), f _)
   }
 
   /**
@@ -699,7 +704,8 @@ trait Spec extends Suite {
     }
     
   }
- 
+
+  // ACK: TODO: COUNT tests in nested suites!
   /**
    * The total number of tests that are expected to run when this <code>Spec</code>'s <code>execute</code> method is invoked.
    * This trait's implementation of this method returns the sum of:
@@ -723,7 +729,7 @@ trait Spec extends Suite {
    * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's
    * iterator will return those names in the order in which the tests were registered. Each test's name is composed
    * of the concatenation of the text of each surrounding describer, in order from outside in, and the text of the
-   * specifier itself, with all components separated by a space. For example, consider this Spec:
+   * example itself, with all components separated by a space. For example, consider this Spec:
    * </p>
    *
    * <pre>

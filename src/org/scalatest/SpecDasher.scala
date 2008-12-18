@@ -1,12 +1,12 @@
 package org.scalatest
 
 /**
- * Trait that enables a more concise expression of <code>Spec</code> describers and specifiers by providing an
+ * Trait that enables a more concise expression of <code>Spec</code> describers and examples by providing an
  * implicit conversion that adds &#8220;dash methods&#8221; (<code>--</code> and <code>-</code>) to
  * <code>String</code>. A string followed by a double dash (<code>--</code>) denotes a describer, and
  * results at runtime in an invocation of <code>describe</code>. A string followed by a single
- * dash (<code>-</code>) denotes a specifier, and results at runtime in an invocation of <code>it</code>.
- * Here's an example <code>Spec</code> written in &#8220;dashes&#8221; style:
+ * dash (<code>-</code>) denotes an example, and results at runtime in an invocation of <code>it</code>.
+ * Here's an sample <code>Spec</code> written in &#8220;dashes&#8221; style:
  *
  * <pre>
  * import org.scalatest.Spec
