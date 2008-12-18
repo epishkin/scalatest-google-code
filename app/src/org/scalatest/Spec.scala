@@ -69,7 +69,7 @@ import scala.collection.immutable.ListSet
  * When you execute a <code>Spec</code>, it will send <code>SpecReport</code>s to the
  * <code>Reporter</code>. ScalaTest's built-in reporters will report these <code>SpecReports</code> in such a way
  * that the output is easy to read as an informal specification of the entity under test.
- * For example, if you run <code>StackSpec</code> from within the Scala interpreter:
+ * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
  * </p>
  *
  * <pre>
@@ -498,25 +498,33 @@ trait Spec extends Suite {
 
   class LikeWord {}
 
-  private def registerExample(exampleRawName: String, needsShould: Boolean, f: => Unit) = {
-    val exampleFullName = getExampleFullName(exampleRawName, needsShould, currentBranch)
+  private def registerExample(exampleRawName: String, f: => Unit) = {
+    val exampleFullName = getExampleFullName(exampleRawName, false, currentBranch)
     require(!examplesList.exists(_.exampleFullName == exampleFullName), "Duplicate test name: " + exampleFullName)
-    val exampleShortName = getExampleShortName(exampleRawName, needsShould, currentBranch)
-    val example = Example(currentBranch, exampleFullName, exampleRawName, needsShould, exampleShortName, currentBranch.level + 1, f _)
+    val exampleShortName = getExampleShortName(exampleRawName, false, currentBranch)
+    val example = Example(currentBranch, exampleFullName, exampleRawName, false, exampleShortName, currentBranch.level + 1, f _)
     currentBranch.subNodes ::= example
     examplesList ::= example
     exampleFullName
   }
-  
+
+  /**
+   * Register an example with the given spec text, optional groups, and test function value that takes no arguments.
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The passed name must not have been registered previously on
+   * this <code>Spec</code> instance.
+   *
+   * @throws IllegalArgumentException if <code>exampleRawName</code> had been registered previously
+   */
   def it(exampleRawName: String, testGroups: Group*)(f: => Unit) {
-    val exampleFullName = registerExample(exampleRawName, false, f)
+    val exampleFullName = registerExample(exampleRawName, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (exampleFullName -> groupNames)
   }
 
   def ignore(exampleRawName: String, testGroups: Group*)(f: => Unit) {
-    val exampleFullName = registerExample(exampleRawName, false, f)
+    val exampleFullName = registerExample(exampleRawName, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (exampleFullName -> (groupNames + IgnoreGroupName))
 
@@ -603,6 +611,16 @@ trait Spec extends Suite {
     )
   }
 
+  /**
+   * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
+   *
+   * @param testName the name of one test to execute.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   *     is <code>null</code>.
+   */
   override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
 
     examplesList.find(_.exampleFullName == testName) match {
@@ -668,10 +686,29 @@ trait Spec extends Suite {
     
   }
  
+  /**
+   * The total number of tests that are expected to run when this <code>Spec</code>'s <code>execute</code> method is invoked.
+   * This trait's implementation of this method returns the sum of:
+   *
+   * <ul>
+   * <li>the size of the <code>testNames</code> <code>List</code>
+   * <li>the sum of the values obtained by invoking
+   *     <code>expecteTestCount</code> on every nested <code>Suite</code> contained in
+   *     <code>nestedSuites</code>
+   * </ul>
+   */
   override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
     countTestsInBranch(trunk)
   }
 
+  /**
+  * An immutable <code>Set</code> of test names. If this <code>Spec</code> contains no tests, this method returns an empty <code>Set</code>.
+  *
+  * <p>
+  * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's iterator will
+  * return those names in the order in which the tests were registered.
+  * </p>
+  */
   override def testNames: Set[String] = ListSet(examplesList.map(_.exampleFullName): _*)
 }
 
