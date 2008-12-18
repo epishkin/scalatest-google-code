@@ -509,22 +509,36 @@ trait Spec extends Suite {
   }
 
   /**
-   * Register an example with the given spec text, optional groups, and test function value that takes no arguments.
+   * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The passed name must not have been registered previously on
-   * this <code>Spec</code> instance.
+   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>Spec</code> instance. An invocation of this method is called as &#8220;specifier.&#8221;
    *
-   * @throws IllegalArgumentException if <code>exampleRawName</code> had been registered previously
+   * @throws IllegalArgumentException if a test with the same name had been registered previously
    */
-  def it(exampleRawName: String, testGroups: Group*)(f: => Unit) {
-    val exampleFullName = registerExample(exampleRawName, f)
+  def it(specText: String, testGroups: Group*)(f: => Unit) {
+    val exampleFullName = registerExample(specText, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (exampleFullName -> groupNames)
   }
 
-  def ignore(exampleRawName: String, testGroups: Group*)(f: => Unit) {
-    val exampleFullName = registerExample(exampleRawName, f)
+  /**
+   * Register a test to ignore, which has the given spec text, optional groups, and test function value that takes no arguments.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>Spec</code> instance.
+   *
+   * @throws IllegalArgumentException if a test with the same name had been registered previously
+   */
+  def ignore(specText: String, testGroups: Group*)(f: => Unit) {
+    val exampleFullName = registerExample(specText, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (exampleFullName -> (groupNames + IgnoreGroupName))
 
