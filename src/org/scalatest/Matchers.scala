@@ -884,11 +884,11 @@ trait BaseMatchers extends Assertions {
     }
   }
   */
-  protected def includeExamples[T](target: T, fun: (T) => Examples)
+  protected def includeExamples[T](sharedExamples: Examples)
 
   class Likifier[T](left: T) {
     def like(fun: (T) => Examples) {
-      includeExamples(left, fun)
+      includeExamples(fun(left))
     }
   }
 
