@@ -486,7 +486,7 @@ trait Spec extends Suite {
   private var examplesList = List[Example]()
 
   /**
-   *
+   * Register a behavior that 
    */
   protected def assertBehavesLike[T](target: T, fun: (T) => Behavior) {
     val sharedBehavior = fun(target)
@@ -515,7 +515,7 @@ trait Spec extends Suite {
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
    * this <code>Spec</code> instance.
    *
-   * @throws IllegalArgumentException if a test with the same name had been registered previously
+   * @throws IllegalArgumentException if a test with the same name has been registered previously
    */
   protected def it(specText: String, testGroups: Group*)(f: => Unit) {
     val exampleFullName = registerExample(specText, f)
@@ -534,7 +534,7 @@ trait Spec extends Suite {
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
    * this <code>Spec</code> instance.
    *
-   * @throws IllegalArgumentException if a test with the same name had been registered previously
+   * @throws IllegalArgumentException if a test with the same name has been registered previously
    */
   protected def ignore(specText: String, testGroups: Group*)(f: => Unit) {
     val exampleFullName = registerExample(specText, f)
