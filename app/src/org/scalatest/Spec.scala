@@ -489,9 +489,17 @@ trait Spec extends Suite {
    * Include the specified examples. This traits implementation of this method
    * will register the examples contained in the passed <code>Examples</code> to this
    * <code>Spec</code>, and run them when <code>execute</code> is invoked.
+   *
+   * @throws IllegalArgumentException if a test with the same name has been registered previously
    */
   protected def includeExamples[T](sharedExamples: Examples) {
     val includedExamples = sharedExamples.examples(currentBranch)
+    for (includedExample <- includedExamples) {
+      if (examplesList.exists(_.testName == includedExample.testName)) {
+        val duplicateName = examplesList.find(_.testName == includedExample.testName).getOrElse("")
+        throw new IllegalArgumentException("Duplicate test name: " + duplicateName)
+      }
+    }
     currentBranch.subNodes :::= includedExamples
     examplesList :::= includedExamples
   }

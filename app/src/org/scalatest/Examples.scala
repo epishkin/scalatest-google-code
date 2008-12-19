@@ -14,14 +14,11 @@ trait Examples extends Assertions {
     
     def transform(sharedExample: SharedExample): Example = {
       val testName = getTestName(sharedExample.specText, newParent)
-      //val exampleShortName = sharedExample.exampleRawName
       Example(newParent, testName, sharedExample.specText, -1, sharedExample.f)
     }
     sharedExamplesList.map(transform)
   }
 
-  // TODO: test that duplicate names are caught. Actually, they may be caught only when sucked into a
-  // Spec, but why not catch them here too.
   /**
    * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
    * An invocation of this method is called an &#8220;example.&#8221;
@@ -32,6 +29,10 @@ trait Examples extends Assertions {
    * @throws IllegalArgumentException if an example with the same spec text has been registered previously
    */
   def it(specText: String)(f: => Unit) {
+    if (sharedExamplesList.exists(_.specText == specText)) {
+      val duplicateName = sharedExamplesList.find(_.specText == specText).getOrElse("")
+      throw new IllegalArgumentException("Duplicate spec text: " + duplicateName)
+    }
     sharedExamplesList ::= SharedExample(specText, f _)
   }
 }
