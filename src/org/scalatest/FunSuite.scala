@@ -637,13 +637,13 @@ trait FunSuite extends Suite {
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   * @param goodies a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
 
-    if (testName == null || reporter == null || stopper == null || properties == null)
+    if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)

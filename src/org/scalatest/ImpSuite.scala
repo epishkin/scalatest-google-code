@@ -16,7 +16,7 @@
 package org.scalatest
 
 /**
- * Trait that can be mixed into suites that need methods invoked before and after executing the
+ * <strong>Deprecated: Use BeforeAndAfter instead</strong> Trait that can be mixed into suites that need methods invoked before and after executing the
  * suite, and/or before and after running each test. The "imp" in <code>ImpSuite</code> stands
  * for <em>imperative</em>, because this trait facilitates a style of testing in which mutable
  * fixture objects held in instance variables are replaced or reinitialized before each test or
@@ -75,6 +75,7 @@ package org.scalatest
  * </p>
  *
  */
+@deprecated
 trait ImpSuite extends Suite {
   
   /**

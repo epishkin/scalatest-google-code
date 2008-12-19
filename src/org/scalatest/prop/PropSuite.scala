@@ -26,7 +26,7 @@ import org.scalacheck.Test
 import org.scalacheck.Test._
 
 /**
- * A <code>FunSuite</code> subtrait that provides methods that perform
+ * <strong>Deprecated: Use org.scalatest.prop.FunSuite instead</strong> A <code>FunSuite</code> subtrait that provides methods that perform
  * ScalaCheck property checks.
  * If ScalaCheck, when invoked via one of the methods provided by <cod>PropSuite</code>, finds a test case for which a property doesn't hold, the problem will be reported as a ScalaTest test failure.
  * 
@@ -249,6 +249,7 @@ import org.scalacheck.Test._
  *
  * @author Bill Venners
  */
+@deprecated
 trait PropSuite extends org.scalatest.FunSuite with Checkers {
 
   /**
