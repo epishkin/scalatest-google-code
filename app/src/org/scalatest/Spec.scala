@@ -766,22 +766,6 @@ trait Spec extends Suite {
     }
   }
 
-  // ACK: TODO: COUNT tests in nested suites!
-  /**
-   * The total number of tests that are expected to run when this <code>Spec</code>'s <code>execute</code> method is invoked.
-   * This trait's implementation of this method returns the sum of:
-   *
-   * <ul>
-   * <li>the size of the <code>testNames</code> <code>List</code>
-   * <li>the sum of the values obtained by invoking
-   *     <code>expecteTestCount</code> on every nested <code>Suite</code> contained in
-   *     <code>nestedSuites</code>
-   * </ul>
-   */
-  override def expectedTestCount(includes: Set[String], excludes: Set[String]): Int = {
-    countTestsInBranch(trunk)
-  }
-
   /**
    * An immutable <code>Set</code> of test names. If this <code>Spec</code> contains no tests, this method returns an
    * empty <code>Set</code>.

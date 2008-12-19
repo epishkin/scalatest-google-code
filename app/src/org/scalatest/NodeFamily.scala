@@ -70,17 +70,6 @@ private[scalatest] object NodeFamily {
     // Should yield: "must pop when asked"
     exampleRawName
   }
-
-  private[scalatest] def countTestsInBranch(branch: Branch): Int = {
-    var count = 0
-    branch.subNodes.foreach(
-      _ match {
-        case ex: Example => count += 1
-        case branch: Branch => count += countTestsInBranch(branch)
-      }
-    )
-    count
-  }
 }
 
 /*

@@ -2341,6 +2341,21 @@ class SpecSuite extends FunSuite {
     assert(a.expectedTestCount(Set(), Set()) === 9)
   }
 
+  test("Spec's expectedTestCount includes tests in nested suites") {
+    class TwoTestSpec extends Spec {
+      it("should count this test") {}
+      it("should count this test also") {}
+    }
+    class MySpec extends Spec {
+
+      override def nestedSuites = List(new TwoTestSpec, new TwoTestSpec, new TwoTestSpec)
+
+      it("should count this here test") {}
+    }
+    val mySpec = new MySpec
+    assert(mySpec.expectedTestCount(Set(), Set()) === 7)
+  }
+
   // End of Share stuff
   ignore("A given reporter clause should be able to send info to the reporter") {
 
