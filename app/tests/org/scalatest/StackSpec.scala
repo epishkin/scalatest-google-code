@@ -31,7 +31,7 @@ class Stack[T] {
 
 trait StackBehaviors {
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples with BehaviorDasher {
 
     "should be non-empty" - {
       assert(!stack.empty)
@@ -54,7 +54,7 @@ trait StackBehaviors {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
+  def nonFullStack(stack: Stack[Int]): Examples = new Examples with BehaviorDasher {
       
     "should not be full" - {
       assert(!stack.full)

@@ -4,7 +4,7 @@ import scala.collection.mutable.ListBuffer
 
 trait StackItBehaviors {
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples {
 
     it("should be non-empty") {
       assert(!stack.empty)
@@ -27,7 +27,7 @@ trait StackItBehaviors {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Behavior = new Behavior {
+  def nonFullStack(stack: Stack[Int]): Examples = new Examples {
       
     it("should not be full") {
       assert(!stack.full)

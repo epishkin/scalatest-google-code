@@ -2,7 +2,7 @@ package org.scalatest
 
 import NodeFamily._
 
-trait BehaviorDasher { this: Behavior =>
+trait BehaviorDasher { this: Examples =>
 
   class Dasher(s: String) {
     def - (f: => Unit) {
