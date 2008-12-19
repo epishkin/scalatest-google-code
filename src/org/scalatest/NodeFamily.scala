@@ -54,22 +54,6 @@ private[scalatest] object NodeFamily {
       Resources("prefixSuffix", prefix, exampleRawName)
     }
   }
-
-  private[scalatest] def getExampleShortName(exampleRawName: String, parent: Branch): String = {
-    //
-    // class MySpec extends Spec {
-    //   it("sure ought to pop when asked") {}
-    // }
-    // Should yield: "sure ought to pop when asked"
-    //
-    // class MySpec extends Spec {
-    //   describe("A Stack") {
-    //     it("must pop when asked") {}
-    //   }
-    // }
-    // Should yield: "must pop when asked"
-    exampleRawName
-  }
 }
 
 /*

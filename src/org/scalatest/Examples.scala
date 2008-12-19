@@ -14,7 +14,7 @@ trait Examples extends Assertions {
     
     def transform(sharedExample: SharedExample): Example = {
       val exampleFullName = getExampleFullName(sharedExample.exampleRawName, newParent)
-      val exampleShortName = getExampleShortName(sharedExample.exampleRawName, newParent)
+      val exampleShortName = sharedExample.exampleRawName
       Example(newParent, exampleFullName, sharedExample.exampleRawName, exampleShortName, -1, sharedExample.f)
     }
     sharedExamplesList.map(transform)
