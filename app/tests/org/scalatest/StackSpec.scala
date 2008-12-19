@@ -116,13 +116,13 @@ class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods wi
     }
 
     "(with one item)" -- {
-      includeExamples(stackWithOneItem, nonEmptyStack(lastValuePushed))
-      includeExamples(stackWithOneItem, nonFullStack)
+      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItem))
+      includeExamples(nonFullStack(stackWithOneItem))
     }
     
     "(with one item less than capacity)"-- {
-      includeExamples(stackWithOneItemLessThanCapacity, nonEmptyStack(lastValuePushed))
-      includeExamples(stackWithOneItemLessThanCapacity, nonFullStack)
+      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity))
+      includeExamples(nonFullStack(stackWithOneItemLessThanCapacity))
     }
 
     "(full)" -- {
@@ -131,7 +131,7 @@ class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods wi
         assert(fullStack.full)
       }
 
-      includeExamples(fullStack, nonEmptyStack(lastValuePushed))
+      includeExamples(nonEmptyStack(lastValuePushed)(fullStack))
 
       "should complain on a push" - {
         intercept[IllegalStateException] {

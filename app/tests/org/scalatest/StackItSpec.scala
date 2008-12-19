@@ -65,13 +65,13 @@ class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBeha
     }
 
     describe("(with one item)") {
-      includeExamples(stackWithOneItem, nonEmptyStack(lastValuePushed))
-      includeExamples(stackWithOneItem, nonFullStack)
+      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItem))
+      includeExamples(nonFullStack(stackWithOneItem))
     }
     
     describe("(with one item less than capacity)") {
-      includeExamples(stackWithOneItemLessThanCapacity, nonEmptyStack(lastValuePushed))
-      includeExamples(stackWithOneItemLessThanCapacity, nonFullStack)
+      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity))
+      includeExamples(nonFullStack(stackWithOneItemLessThanCapacity))
     }
 
     describe("(full)") {
@@ -80,7 +80,7 @@ class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBeha
         assert(fullStack.full)
       }
 
-      includeExamples(fullStack, nonEmptyStack(lastValuePushed))
+      includeExamples(nonEmptyStack(lastValuePushed)(fullStack))
 
       it("should complain on a push") {
         intercept[IllegalStateException] {
