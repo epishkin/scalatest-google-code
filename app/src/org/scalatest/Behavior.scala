@@ -2,6 +2,9 @@ package org.scalatest
 
 import NodeFamily._
 
+/**
+ * A trait that specifies and tests behavior that can be shared by different subjects.
+ */
 trait Behavior extends Assertions {
 
   // All shared examples, in reverse order of registration
@@ -17,37 +20,18 @@ trait Behavior extends Assertions {
     sharedExamplesList.map(transform)
   }
 
-  class ShouldWord {
-    def behave(likeWord: LikeWord) = new Likifier()
+  // TODO: test that duplicate names are caught. Actually, they may be caught only when sucked into a
+  // Spec, but why not catch them here too.
+  /**
+   * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
+   * An invocation of this method is called an &#8220;example.&#8221;
+   *
+   * This method will register the example for later importing into a <code>Spec</code>. The passed
+   * spec text must not have been registered previously on this <code>Behavior</code> instance.
+   *
+   * @throws IllegalArgumentException if an example with the same spec text has been registered previously
+   */
+  def it(specText: String)(f: => Unit) {
+    sharedExamplesList ::= SharedExample(specText, f _)
   }
-  
-  class LikeWord {}
-
-  private def registerExample(exampleRawName: String, f: => Unit) {
-    sharedExamplesList ::= SharedExample(exampleRawName, f _)
-  }
-  
-  def it(exampleRawName: String)(f: => Unit) {
-    registerExample(exampleRawName, f)
-  }
-
-  protected val like = new LikeWord
-  class Likifier {
-    def a(sharedBehavior: Behavior) {
-      sharedExamplesList :::= sharedBehavior.sharedExamplesList
-    }
-  }
-  
-  protected val should = new ShouldWord
-}
-
-trait BehaviorDasher { this: Behavior =>
-
-  class Dasher(s: String) {
-    def - (f: => Unit) {
-      it(s)(f)
-    }
-  }
-  
-  implicit def stringToDasher(s: String) = new Dasher(s)
 }
