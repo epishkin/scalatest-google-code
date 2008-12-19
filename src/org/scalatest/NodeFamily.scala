@@ -2,7 +2,7 @@ package org.scalatest
 
 private[scalatest] object NodeFamily {
   
-  case class SharedExample(exampleRawName: String, f: () => Unit)
+  case class SharedExample(specText: String, f: () => Unit)
   
   sealed abstract class Node(parentOption: Option[Branch], val level: Int)
 
@@ -14,8 +14,7 @@ private[scalatest] object NodeFamily {
 
   case class Example(
     parent: Branch,
-    exampleFullName: String,
-    exampleRawName: String,
+    testName: String,
     specText: String,
     override val level: Int,
     f: () => Unit
@@ -35,14 +34,14 @@ private[scalatest] object NodeFamily {
     }
   }
   
-  private[scalatest] def getExampleFullName(exampleRawName: String, parent: Branch): String = {
+  private[scalatest] def getTestName(specText: String, parent: Branch): String = {
     val prefix = getPrefix(parent).trim
     if (prefix.isEmpty) {
       // class MySpec extends Spec {
       //   it("should pop when asked") {}
       // }
       // Should yield: "should pop when asked"
-      exampleRawName
+      specText
     }
     else {
       // class MySpec extends Spec {
@@ -51,7 +50,7 @@ private[scalatest] object NodeFamily {
       //   }
       // }
       // Should yield: "A Stack must pop when asked"
-      Resources("prefixSuffix", prefix, exampleRawName)
+      Resources("prefixSuffix", prefix, specText)
     }
   }
 }

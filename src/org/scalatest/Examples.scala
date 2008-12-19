@@ -13,9 +13,9 @@ trait Examples extends Assertions {
   private[scalatest] def examples(newParent: Branch): List[Example] = {
     
     def transform(sharedExample: SharedExample): Example = {
-      val exampleFullName = getExampleFullName(sharedExample.exampleRawName, newParent)
-      val exampleShortName = sharedExample.exampleRawName
-      Example(newParent, exampleFullName, sharedExample.exampleRawName, exampleShortName, -1, sharedExample.f)
+      val testName = getTestName(sharedExample.specText, newParent)
+      //val exampleShortName = sharedExample.exampleRawName
+      Example(newParent, testName, sharedExample.specText, -1, sharedExample.f)
     }
     sharedExamplesList.map(transform)
   }
