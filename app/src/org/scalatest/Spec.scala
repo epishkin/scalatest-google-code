@@ -489,11 +489,11 @@ trait Spec extends Suite {
    * Register a behavior to which the subject should adhere. This traits implementation of this method
    * will add the examples contained in the <code>Examples</code> resulting
    */
-  protected def assertBehavesLike[T](target: T, fun: (T) => Examples) {
+  protected def includeExamples[T](target: T, fun: (T) => Examples) {
     val sharedBehavior = fun(target)
-    val sharedExamples = sharedBehavior.examples(currentBranch)
-    currentBranch.subNodes :::= sharedExamples
-    examplesList :::= sharedExamples
+    val includedExamples = sharedBehavior.examples(currentBranch)
+    currentBranch.subNodes :::= includedExamples
+    examplesList :::= includedExamples
   }
 
   private def registerExample(exampleRawName: String, f: => Unit) = {
