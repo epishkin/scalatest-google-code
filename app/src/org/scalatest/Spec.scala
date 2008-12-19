@@ -496,14 +496,14 @@ trait Spec extends Suite {
     examplesList :::= includedExamples
   }
 
-  private def registerExample(exampleRawName: String, f: => Unit) = {
-    val exampleFullName = getExampleFullName(exampleRawName, currentBranch)
-    require(!examplesList.exists(_.exampleFullName == exampleFullName), "Duplicate test name: " + exampleFullName)
-    val exampleShortName = exampleRawName
-    val example = Example(currentBranch, exampleFullName, exampleRawName, exampleShortName, currentBranch.level + 1, f _)
+  private def registerExample(specText: String, f: => Unit) = {
+    val testName = getTestName(specText, currentBranch)
+    require(!examplesList.exists(_.testName == testName), "Duplicate test name: " + testName)
+    val exampleShortName = specText
+    val example = Example(currentBranch, testName, specText, currentBranch.level + 1, f _)
     currentBranch.subNodes ::= example
     examplesList ::= example
-    exampleFullName
+    testName
   }
 
   /**
@@ -519,10 +519,10 @@ trait Spec extends Suite {
    * @throws IllegalArgumentException if a test with the same name has been registered previously
    */
   protected def it(specText: String, testGroups: Group*)(f: => Unit) {
-    val exampleFullName = registerExample(specText, f)
+    val testName = registerExample(specText, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
-      groupsMap += (exampleFullName -> groupNames)
+      groupsMap += (testName -> groupNames)
   }
 
   /**
@@ -538,9 +538,9 @@ trait Spec extends Suite {
    * @throws IllegalArgumentException if a test with the same name has been registered previously
    */
   protected def ignore(specText: String, testGroups: Group*)(f: => Unit) {
-    val exampleFullName = registerExample(specText, f)
+    val testName = registerExample(specText, f)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
-    groupsMap += (exampleFullName -> (groupNames + IgnoreGroupName))
+    groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
   }
 
@@ -607,13 +607,13 @@ trait Spec extends Suite {
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, exampleFullName, exampleRawName, specText, level, f) => {
+        case ex @ Example(parent, testName, specText, level, f) => {
           // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
           // so that exceptions are caught and transformed
           // into error messages on the standard error stream.
           val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-          val tn = ex.exampleFullName
+          val tn = ex.testName
           if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (excludes.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
@@ -646,7 +646,7 @@ trait Spec extends Suite {
    */
   override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
 
-    examplesList.find(_.exampleFullName == testName) match {
+    examplesList.find(_.testName == testName) match {
       case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
       case Some(example) => {
         val wrappedReporter = wrapReporterIfNecessary(reporter)
@@ -656,22 +656,22 @@ trait Spec extends Suite {
 
         // A testStarting report won't normally show up in a specification-style output, but
         // will show up in a test-style output.
-        val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, false)
+        val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false)
 
         wrappedReporter.testStarting(report)
 
         try {
           example.f()
 
-          val report = new SpecReport(getTestNameForReport(example.exampleFullName), "", example.specText, formattedSpecText, true)
+          val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true)
 
           wrappedReporter.testSucceeded(report)
         }
         catch { 
           case e: Exception => 
-            handleFailedTest(e, false, example.exampleFullName, example.specText, None, wrappedReporter)          
+            handleFailedTest(e, false, example.testName, example.specText, None, wrappedReporter)
           case ae: AssertionError =>
-            handleFailedTest(ae, false, example.exampleFullName, example.specText, None, wrappedReporter)
+            handleFailedTest(ae, false, example.testName, example.specText, None, wrappedReporter)
         }
       }
     }
@@ -685,7 +685,7 @@ trait Spec extends Suite {
     suiteName + ": " + testName
   }
 
-  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, exampleFullName: String,
+  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       specText: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
 
     val msg =
@@ -694,7 +694,7 @@ trait Spec extends Suite {
       else
         t.toString
 
-    val report = new SpecReport(getTestNameForReport(exampleFullName), msg, specText, "- " + specText, true, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(t), None)
 
     reporter.testFailed(report)
   }
@@ -800,6 +800,6 @@ trait Spec extends Suite {
    * "A Stack (when not full) must allow me to push"
    * </pre>
    */
-  override def testNames: Set[String] = ListSet(examplesList.map(_.exampleFullName): _*)
+  override def testNames: Set[String] = ListSet(examplesList.map(_.testName): _*)
 }
 
