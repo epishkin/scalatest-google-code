@@ -486,7 +486,8 @@ trait Spec extends Suite {
   private var examplesList = List[Example]()
 
   /**
-   * Register a behavior that 
+   * Register a behavior to which the subject should adhere. This traits implementation of this method
+   * will add the examples contained in the <code>Behavior</code> resulting
    */
   protected def assertBehavesLike[T](target: T, fun: (T) => Behavior) {
     val sharedBehavior = fun(target)
