@@ -499,7 +499,7 @@ trait Spec extends Suite {
   private def registerExample(exampleRawName: String, f: => Unit) = {
     val exampleFullName = getExampleFullName(exampleRawName, currentBranch)
     require(!examplesList.exists(_.exampleFullName == exampleFullName), "Duplicate test name: " + exampleFullName)
-    val exampleShortName = getExampleShortName(exampleRawName, currentBranch)
+    val exampleShortName = exampleRawName
     val example = Example(currentBranch, exampleFullName, exampleRawName, exampleShortName, currentBranch.level + 1, f _)
     currentBranch.subNodes ::= example
     examplesList ::= example
