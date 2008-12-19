@@ -486,8 +486,9 @@ trait Spec extends Suite {
   private var examplesList = List[Example]()
 
   /**
-   * Register a behavior to which the subject should adhere. This traits implementation of this method
-   * will add the examples contained in the <code>Examples</code> resulting
+   * Include the specified examples. This traits implementation of this method
+   * will register the examples contained in the passed <code>Examples</code> to this
+   * <code>Spec</code>, and run them when <code>execute</code> is invoked.
    */
   protected def includeExamples[T](sharedExamples: Examples) {
     val includedExamples = sharedExamples.examples(currentBranch)
@@ -631,13 +632,16 @@ trait Spec extends Suite {
   }
 
   /**
-   * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
+   * Run a test. This trait's implementation runs the test registered with the name specified by
+   * <code>testName</code>. Each test's name is a concatenation of the text of all describers surrounding an example,
+   * from outside in, and the example's  spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.)
    *
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   * @param goodies a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
   override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
@@ -695,6 +699,64 @@ trait Spec extends Suite {
     reporter.testFailed(report)
   }
 
+  /**
+   * <p>
+   * Run zero to many of this <code>Spec</code>'s tests.
+   * </p>
+   *
+   * <p>
+   * This method takes a <code>testName</code> parameter that optionally specifies a test to invoke.
+   * If <code>testName</code> is <code>Some</code>, this trait's implementation of this method
+   * invokes <code>runTest</code> on this object, passing in:
+   * </p>
+   *
+   * <ul>
+   * <li><code>testName</code> - the <code>String</code> value of the <code>testName</code> <code>Option</code> passed
+   *   to this method</li>
+   * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * </ul>
+   *
+   * <p>
+   * This method takes a <code>Set</code> of group names that should be included (<code>includes</code>), and a <code>Set</code>
+   * that should be excluded (<code>excludes</code>), when deciding which of this <code>Suite</code>'s tests to execute.
+   * If <code>includes</code> is empty, all tests will be executed
+   * except those those belonging to groups listed in the <code>excludes</code> <code>Set</code>. If <code>includes</code> is non-empty, only tests
+   * belonging to groups mentioned in <code>includes</code>, and not mentioned in <code>excludes</code>
+   * will be executed. However, if <code>testName</code> is <code>Some</code>, <code>includes</code> and <code>excludes</code> are essentially ignored.
+   * Only if <code>testName</code> is <code>None</code> will <code>includes</code> and <code>excludes</code> be consulted to
+   * determine which of the tests named in the <code>testNames</code> <code>Set</code> should be run. For more information on trait groups, see the main documentation for this trait.
+   * </p>
+   *
+   * <p>
+   * If <code>testName</code> is <code>None</code>, this trait's implementation of this method
+   * invokes <code>testNames</code> on this <code>Suite</code> to get a <code>Set</code> of names of tests to potentially execute.
+   * (A <code>testNames</code> value of <code>None</code> essentially acts as a wildcard that means all tests in
+   * this <code>Suite</code> that are selected by <code>includes</code> and <code>excludes</code> should be executed.)
+   * For each test in the <code>testName</code> <code>Set</code>, in the order
+   * they appear in the iterator obtained by invoking the <code>elements</code> method on the <code>Set</code>, this trait's implementation
+   * of this method checks whether the test should be run based on the <code>includes</code> and <code>excludes</code> <code>Set</code>s.
+   * If so, this implementation invokes <code>runTest</code>, passing in:
+   * </p>
+   *
+   * <ul>
+   * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
+   * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * </ul>
+   *
+   * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param includes a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Spec</code>
+   * @param excludes a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Spec</code>
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>includes</code>,
+   *     <code>excludes</code>, or <code>goodies</code> is <code>null</code>.
+   */
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
       goodies: Map[String, Any]) {
     
@@ -702,7 +764,6 @@ trait Spec extends Suite {
       case None => runTestsInBranch(trunk, reporter, stopper, includes, excludes, goodies)
       case Some(exampleName) => runTest(exampleName, reporter, stopper, goodies)
     }
-    
   }
 
   // ACK: TODO: COUNT tests in nested suites!
