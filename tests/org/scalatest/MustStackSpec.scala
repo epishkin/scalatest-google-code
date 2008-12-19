@@ -6,7 +6,7 @@ trait MustStackBehaviors extends MustMatchers {
 
   val full = 'full
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples with BehaviorDasher {
 
     "must be non-empty" - {
       stack mustNot be ('empty)
@@ -29,7 +29,7 @@ trait MustStackBehaviors extends MustMatchers {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Behavior = new Behavior with BehaviorDasher {
+  def nonFullStack(stack: Stack[Int]): Examples = new Examples with BehaviorDasher {
       
     "must not be full" - {
       stack mustNot be (full)

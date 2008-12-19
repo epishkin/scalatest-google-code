@@ -264,7 +264,7 @@ class BeforeAndAfterExtendingFunSuite extends FunSuite with BeforeAndAfter {
   }
   
   // This now fails to compile, as I want
-  // class IWantThisToFailToCompile extends Behavior with BeforeAndAfter
+  // class IWantThisToFailToCompile extends Examples with BeforeAndAfter
 }
 
 

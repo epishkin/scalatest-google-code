@@ -5,7 +5,7 @@ import NodeFamily._
 /**
  * A trait that specifies and tests behavior that can be shared by different subjects.
  */
-trait Behavior extends Assertions {
+trait Examples extends Assertions {
 
   // All shared examples, in reverse order of registration
   private var sharedExamplesList = List[SharedExample]()
@@ -27,7 +27,7 @@ trait Behavior extends Assertions {
    * An invocation of this method is called an &#8220;example.&#8221;
    *
    * This method will register the example for later importing into a <code>Spec</code>. The passed
-   * spec text must not have been registered previously on this <code>Behavior</code> instance.
+   * spec text must not have been registered previously on this <code>Examples</code> instance.
    *
    * @throws IllegalArgumentException if an example with the same spec text has been registered previously
    */

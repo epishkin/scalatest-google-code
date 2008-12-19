@@ -1286,7 +1286,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
+    def myBehavior(i: Int) = new Examples with BehaviorDasher {
       "it should start with proper words" - {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1317,7 +1317,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior {
+    def myBehavior(i: Int) = new Examples {
       it("must start with proper words") {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1348,7 +1348,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
+    def myBehavior(i: Int) = new Examples with BehaviorDasher {
       "it should start with proper words" - {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1379,7 +1379,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior {
+    def myBehavior(i: Int) = new Examples {
       it("must start with proper words") {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1410,7 +1410,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
+    def myBehavior(i: Int) = new Examples with BehaviorDasher {
       "it should start with proper words" - { fail() }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1441,7 +1441,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior {
+    def myBehavior(i: Int) = new Examples {
       it("must start with proper words") { fail() }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1496,7 +1496,7 @@ class SpecSuite extends FunSuite {
         }
       }
     }
-    def myBehavior(i: Int) = new Behavior with BehaviorDasher {
+    def myBehavior(i: Int) = new Examples with BehaviorDasher {
       "should start with proper words" - {}
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -2133,7 +2133,7 @@ class SpecSuite extends FunSuite {
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
     class MySpec extends Spec with SpecDasher with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
-      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
+      def invocationVerifier(i: Int) = new Examples with BehaviorDasher {
         "should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -2157,7 +2157,7 @@ class SpecSuite extends FunSuite {
     class MySpec extends Spec with SpecDasher with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
-      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
+      def invocationVerifier(i: Int) = new Examples with BehaviorDasher {
         "should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -2186,7 +2186,7 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
+      def invocationVerifier(i: Int) = new Examples with BehaviorDasher {
         "should get invoked" - {
           example1WasInvoked = true
         }
@@ -2213,7 +2213,7 @@ class SpecSuite extends FunSuite {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
-      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
+      def invocationVerifier(i: Int) = new Examples with BehaviorDasher {
         "should get invoked" - {
           example1WasInvoked = true
         }
@@ -2247,7 +2247,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with SpecDasher with ShouldMatchers with BeforeAndAfter {
       var sharedExampleInvoked = false
-      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
+      def invocationVerifier(i: Int) = new Examples with BehaviorDasher {
         "it should be invoked" - {
           sharedExampleInvoked = true
         }
@@ -2270,7 +2270,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with SpecDasher with ShouldMatchers {
       var sharedExampleInvoked = false
-      def invocationVerifier(i: Int) = new Behavior with BehaviorDasher {
+      def invocationVerifier(i: Int) = new Examples with BehaviorDasher {
         "should pop properly" - {
           sharedExampleInvoked = true
         }
@@ -2304,7 +2304,7 @@ class SpecSuite extends FunSuite {
 
   test("expectedTestCount should include tests in a share that is called") {
     class MySpec extends Spec with SpecDasher with ShouldMatchers {
-      def misbehavior(i: Int) = new Behavior with BehaviorDasher {
+      def misbehavior(i: Int) = new Examples with BehaviorDasher {
         "should six" - {}
         "should seven" - {}
       }
@@ -2323,7 +2323,7 @@ class SpecSuite extends FunSuite {
 
   test("expectedTestCount should include tests in a share that is called twice") {
     class MySpec extends Spec with SpecDasher with ShouldMatchers {
-      def misbehavior(i: Int) = new Behavior with BehaviorDasher {
+      def misbehavior(i: Int) = new Examples with BehaviorDasher {
         "should six" - {}
         "should seven" - {}
       }
