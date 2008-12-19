@@ -884,11 +884,11 @@ trait BaseMatchers extends Assertions {
     }
   }
   */
-  protected def assertBehavesLike[T](target: T, fun: (T) => Examples)
+  protected def includeExamples[T](target: T, fun: (T) => Examples)
 
   class Likifier[T](left: T) {
     def like(fun: (T) => Examples) {
-      assertBehavesLike(left, fun)
+      includeExamples(left, fun)
     }
   }
 
