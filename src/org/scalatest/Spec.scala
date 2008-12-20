@@ -681,6 +681,9 @@ trait Spec extends Suite {
    */
   override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
 
+    if (testName == null || reporter == null || stopper == null || goodies == null)
+      throw new NullPointerException
+
     examplesList.find(_.testName == testName) match {
       case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
       case Some(example) => {
@@ -786,17 +789,30 @@ trait Spec extends Suite {
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param includes a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Spec</code>
-   * @param excludes a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Spec</code>
+   * @param groupsToInclude a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Spec</code>
+   * @param groupsToExclude a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Spec</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>includes</code>,
    *     <code>excludes</code>, or <code>goodies</code> is <code>null</code>.
    */
-  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any]) {
     
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+    if (reporter == null)
+      throw new NullPointerException("reporter was null")
+    if (stopper == null)
+      throw new NullPointerException("stopper was null")
+    if (groupsToInclude == null)
+      throw new NullPointerException("groupsToInclude was null")
+    if (groupsToExclude == null)
+      throw new NullPointerException("groupsToExclude was null")
+    if (goodies == null)
+      throw new NullPointerException("goodies was null")
+
     testName match {
-      case None => runTestsInBranch(trunk, reporter, stopper, includes, excludes, goodies)
+      case None => runTestsInBranch(trunk, reporter, stopper, groupsToInclude, groupsToExclude, goodies)
       case Some(exampleName) => runTest(exampleName, reporter, stopper, goodies)
     }
   }
