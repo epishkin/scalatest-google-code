@@ -41,7 +41,7 @@ import scala.collection.immutable.ListSet
  *
  *     it("should throw NoSuchElementException if an empty stack is popped") {
  *       val emptyStack = new Stack[String]
- *       intercept(classOf[NoSuchElementException]) {
+ *       intercept[NoSuchElementException] {
  *         emptyStack.pop()
  *       }
  *     }
@@ -436,7 +436,7 @@ import scala.collection.immutable.ListSet
  *
  *     it("should throw NoSuchElementException if an empty stack is popped") {
  *       val emptyStack = new Stack[String]
- *       intercept(classOf[NoSuchElementException]) {
+ *       intercept[NoSuchElementException] {
  *         emptyStack.pop()
  *       }
  *     }
