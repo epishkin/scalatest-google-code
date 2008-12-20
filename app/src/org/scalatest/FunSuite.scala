@@ -366,11 +366,11 @@ import java.util.concurrent.atomic.AtomicReference
  * </p>
  *
  * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>includes</code> and
- * <code>excludes</code>. If <code>includes</code> is empty, all tests will be executed
+ * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
  * except those those belonging to groups listed in the
- * <code>excludes</code> <code>Set</code>. If <code>includes</code> is non-empty, only tests
- * belonging to groups mentioned in <code>includes</code>, and not mentioned in <code>excludes</code>,
+ * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
+ * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
  * will be executed.
  * </p>
  *
@@ -424,7 +424,7 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * <p>
  * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The <code>execute</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>excludes</code> <code>Set</code> it passes to
+ * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
  * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
  * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
  * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
@@ -726,7 +726,7 @@ trait FunSuite extends Suite {
     suiteName + ": " + testName
   }
   
-  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any]) {
 
     if (testName == null)
@@ -735,10 +735,10 @@ trait FunSuite extends Suite {
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (includes == null)
-      throw new NullPointerException("includes was null")
-    if (excludes == null)
-      throw new NullPointerException("excludes was null")
+    if (groupsToInclude == null)
+      throw new NullPointerException("groupsToInclude was null")
+    if (groupsToExclude == null)
+      throw new NullPointerException("groupsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
@@ -757,11 +757,11 @@ trait FunSuite extends Suite {
           node match {
             case Info(message) => info(message)
             case Test(tn, _) =>
-              if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
-                if (excludes.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
+              if (!stopper.stopRequested && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
+                if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
                   wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
                 }
-                else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
+                else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
                   runTest(tn, wrappedReporter, stopper, goodies)
                 }
               }
@@ -771,7 +771,7 @@ trait FunSuite extends Suite {
     }
   }
 
-  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     // Set the flag that indicates execute has been invoked, which will disallow any further
@@ -800,7 +800,7 @@ trait FunSuite extends Suite {
       }
 
     try {
-      super.execute(testName, wrappedReporter, stopper, includes, excludes, goodies, distributor)
+      super.execute(testName, wrappedReporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor)
     }
     finally {
       currentInformer = zombieInformer

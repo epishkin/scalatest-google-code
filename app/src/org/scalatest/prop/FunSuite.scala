@@ -174,11 +174,11 @@ import org.scalacheck.Test._
  * </p>
  *
  * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>includes</code> and
- * <code>excludes</code>. If <code>includes</code> is empty, all tests will be executed
+ * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
+ * <code>excludes</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
  * except those those belonging to groups listed in the
- * <code>excludes</code> <code>Set</code>. If <code>includes</code> is non-empty, only tests
- * belonging to groups mentioned in <code>includes</code>, and not mentioned in <code>excludes</code>,
+ * <code>excludes</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
+ * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
  * will be executed.
  * </p>
  *
@@ -235,7 +235,7 @@ import org.scalacheck.Test._
  *
  * <p>
  * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The <code>execute</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>excludes</code> <code>Set</code> it passes to
+ * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
  * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
  * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
  * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
