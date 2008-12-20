@@ -792,8 +792,8 @@ trait Spec extends Suite {
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Spec</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Spec</code>
+   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Spec</code>
+   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Spec</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
