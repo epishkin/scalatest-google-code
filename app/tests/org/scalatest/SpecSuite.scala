@@ -2393,5 +2393,13 @@ class SpecSuite extends FunSuite {
     assert(myRep.infoProvidedCalled)
     assert(myRep.expectedMessageReceived)
   }
+
+  test("that a null specText results in a thrown NPE at construction time") {
+    intercept[NullPointerException] {
+      new Spec {
+        it(null) {}
+      }
+    }
+  }
 }
 
