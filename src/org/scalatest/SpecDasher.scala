@@ -56,12 +56,28 @@ package org.scalatest
  */
 trait SpecDasher { this: Spec => 
 
-  class Dasher(s: String) {
-    def -- (f: => Unit) {
-      describe(s)(f)
+  /**
+   * Class used via an implicit conversion to enable describers and examples in a <code>Spec</code>
+   * subclass to be specified by string followed by dashes, such as:
+   *
+   * <pre>
+   * "A Stack (when empty)" -- {
+   *   "should not be full" - {
+   *     assert(!stack.full)
+   *   }
+   * }
+   * </pre>
+   *
+   * @param text the describer or specification text
+   *
+   * @author Bill Venners
+   */
+  class Dasher(text: String) {
+    def -- (descFun: => Unit) {
+      describe(text)(descFun)
     }
-    def - (f: => Unit) {
-      it(s)(f)
+    def - (testFun: => Unit) {
+      it(text)(testFun)
     }
   }
   

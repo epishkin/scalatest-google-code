@@ -2400,6 +2400,48 @@ class SpecSuite extends FunSuite {
         it(null) {}
       }
     }
+    intercept[NullPointerException] {
+      new Spec {
+        ignore(null) {}
+      }
+    }
+  }
+
+  test("that a null test group results in a thrown NPE at construction time") {
+    // it
+    intercept[NullPointerException] {
+      new Spec {
+        it("hi", null) {}
+      }
+    }
+    val caught = intercept[NullPointerException] {
+      new Spec {
+        it("hi", mygroups.SlowAsMolasses, null) {}
+      }
+    }
+    assert(caught.getMessage === "a test group was null")
+    intercept[NullPointerException] {
+      new Spec {
+        it("hi", mygroups.SlowAsMolasses, null, mygroups.WeakAsAKitten) {}
+      }
+    }
+    // ignore
+    intercept[NullPointerException] {
+      new Spec {
+        ignore("hi", null) {}
+      }
+    }
+    val caught2 = intercept[NullPointerException] {
+      new Spec {
+        ignore("hi", mygroups.SlowAsMolasses, null) {}
+      }
+    }
+    assert(caught2.getMessage === "a test group was null")
+    intercept[NullPointerException] {
+      new Spec {
+        ignore("hi", mygroups.SlowAsMolasses, null, mygroups.WeakAsAKitten) {}
+      }
+    }
   }
 }
 

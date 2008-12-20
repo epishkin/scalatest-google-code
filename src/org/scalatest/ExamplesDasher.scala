@@ -61,7 +61,9 @@ trait ExamplesDasher { this: Examples =>
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
-   * @param testFun the test function   */
+   *
+   * @author Bill Venners
+   */
   class Dasher(specText: String) {
 
     /**
@@ -69,6 +71,8 @@ trait ExamplesDasher { this: Examples =>
      * has a self type of <code>Examples</code>), passing in the string <code>specText</code> passed to the <code>Dasher</code>
      * constructor as the first parameter and the function value passed as
      * a by-name parameter to <code>-</code> as the second parameter.
+     *
+     * @param testFun the test function
      */
     def - (testFun: => Unit) {
       it(specText)(testFun)

@@ -4,6 +4,8 @@ import scala.reflect.Manifest
 
 /**
  * Trait that contains ScalaTest's basic assertion methods.
+ *
+ * @author Bill Venners
  */
 trait Assertions {
 
@@ -58,6 +60,8 @@ trait Assertions {
    * @param left An object to convert to <code>Equalizer</code>, which represents the <code>left</code> value
    *     of an assertion.
    * @throws NullPointerException if <code>left</code> is <code>null</code>
+   *
+   * @author Bill Venners
    */
   class Equalizer(left: Any) {
 

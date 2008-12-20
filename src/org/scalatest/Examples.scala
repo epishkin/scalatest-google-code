@@ -214,6 +214,8 @@ import NodeFamily._
  * - should remove the top item on pop
  * - should complain on a push
  * </pre>
+ *
+ * @author Bill Venners
  */
 trait Examples extends Assertions {
 
@@ -229,7 +231,7 @@ trait Examples extends Assertions {
     sharedExamplesList.map(transform)
   }
 
-  // TODO: Sheesh, I forgot about groups! 
+  // TODO: Sheesh, I forgot about groups! And ignore!
   /**
    * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
    * An invocation of this method is called an &#8220;example.&#8221;
