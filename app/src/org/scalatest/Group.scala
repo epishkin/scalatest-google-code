@@ -16,7 +16,7 @@
 package org.scalatest
 
 /**
- * Abstract class whose subclasses can be as to <code>FunSuite</code> test
+ * Abstract class whose subclasses can be passed to <code>FunSuite</code> and <code>Spec</code> test
  * registration methods to place tests into groups. For example, if you define:
  * <pre>
  * object SlowTest extends Group("SlowTest")
@@ -24,6 +24,8 @@ package org.scalatest
  *
  * then you can place a test into the <code>SlowTest</code> group like this:
  * <pre>
+ * import org.scalatest.FunSuite
+ *
  * class MySuite extends FunSuite {
  *
  *   test("my test", SlowTest) {
@@ -32,6 +34,21 @@ package org.scalatest
  * }
  * </pre>
  *
+ * <p>
+ * or
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ *
+ * class MySpec extends Spec {
+ *
+ *   it("should sleep for a second", SlowTest) {
+ *     Thread.sleep(1000)
+ *   }
+ * }
+ * </pre>
+
  * If you have created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've

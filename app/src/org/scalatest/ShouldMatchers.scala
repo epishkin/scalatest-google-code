@@ -2,7 +2,7 @@ package org.scalatest
 
 import scala.reflect.Manifest
 
-trait ShouldMatchers extends BaseMatchers {
+private[scalatest] trait ShouldMatchers extends BaseMatchers {
 
   class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
