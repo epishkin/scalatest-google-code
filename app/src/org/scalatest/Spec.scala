@@ -495,8 +495,8 @@ trait Spec extends Suite {
   private var examplesList = List[Example]()
 
   /**
-   * Include the specified examples. This traits implementation of this method
-   * will register the examples contained in the passed <code>Examples</code> to this
+   * Include the specified examples. This trait's implementation of this method
+   * will register the examples contained in the passed <code>Examples</code> in this
    * <code>Spec</code>, and run them when <code>execute</code> is invoked.
    *
    * @throws IllegalArgumentException if a test with the same name has been registered previously
@@ -535,13 +535,16 @@ trait Spec extends Suite {
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
+   * @param testGroups the optional list of groups to which this test belongs
    * @param testFun the test function
    * @throws IllegalArgumentException if a test with the same name has been registered previously
-   * @throws NullPointerException if <code>specText</code>is <code>null</code>
+   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String, testGroups: Group*)(testFun: => Unit) {
     if (specText == null)
       throw new NullPointerException("specText was null")
+    if (testGroups.exists(_ == null))
+      throw new NullPointerException("a test group was null")
     val testName = registerExample(specText, testFun)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
@@ -558,10 +561,19 @@ trait Spec extends Suite {
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
    * this <code>Spec</code> instance.
    *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testGroups the optional list of groups to which this test belongs
+   * @param testFun the test function
    * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
-  protected def ignore(specText: String, testGroups: Group*)(f: => Unit) {
-    val testName = registerExample(specText, f)
+  protected def ignore(specText: String, testGroups: Group*)(testFun: => Unit) {
+    if (specText == null)
+      throw new NullPointerException("specText was null")
+    if (testGroups.exists(_ == null))
+      throw new NullPointerException("a test group was null")
+    val testName = registerExample(specText, testFun)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 

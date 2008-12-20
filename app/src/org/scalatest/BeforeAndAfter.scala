@@ -73,6 +73,7 @@ package org.scalatest
  * and <code>afterAll</code> methods of <code>BeforeAndAfter</code>.
  * </p>
  *
+ * @author Bill Venners
  */
 trait BeforeAndAfter extends ExecuteAndRun {
 

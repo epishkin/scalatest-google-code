@@ -74,6 +74,8 @@ package org.scalatest
  * and <code>afterAll</code> methods of <code>ImpSuite</code>.
  * </p>
  *
+ *
+ * @author Bill Venners
  */
 @deprecated
 trait ImpSuite extends Suite {

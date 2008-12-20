@@ -19,6 +19,8 @@ package org.scalatest
  * given <code>Suite</code> would not be <code>super</code>, and calling <code>execute</code> on <code>this</code>
  * would result in infinite recursion.
  * </p>
+ *
+ * @author Bill Venners
  */
 trait ExecuteAndRun {
 
