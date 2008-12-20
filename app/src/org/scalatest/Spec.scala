@@ -472,6 +472,10 @@ import scala.collection.immutable.ListSet
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
+ * <p>
+ * <strong>Shared examples</strong>
+ * </p>
+ *
  * @author Bill Venners
  */
 trait Spec extends Suite {
