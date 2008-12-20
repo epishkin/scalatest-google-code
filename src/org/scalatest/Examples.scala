@@ -229,6 +229,7 @@ trait Examples extends Assertions {
     sharedExamplesList.map(transform)
   }
 
+  // TODO: Sheesh, I forgot about groups! 
   /**
    * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
    * An invocation of this method is called an &#8220;example.&#8221;
@@ -236,13 +237,19 @@ trait Examples extends Assertions {
    * This method will register the example for later importing into a <code>Spec</code>. The passed
    * spec text must not have been registered previously on this <code>Examples</code> instance.
    *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testFun the test function
    * @throws IllegalArgumentException if an example with the same spec text has been registered previously
+   * @throws NullPointerException if <code>specText</code>is <code>null</code>
    */
-  def it(specText: String)(f: => Unit) {
+  def it(specText: String)(testFun: => Unit) {
+    if (specText == null)
+      throw new NullPointerException("specText was null")
     if (sharedExamplesList.exists(_.specText == specText)) {
       val duplicateName = sharedExamplesList.find(_.specText == specText).getOrElse("")
       throw new IllegalArgumentException("Duplicate spec text: " + duplicateName)
     }
-    sharedExamplesList ::= SharedExample(specText, f _)
+    sharedExamplesList ::= SharedExample(specText, testFun _)
   }
 }

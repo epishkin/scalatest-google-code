@@ -533,10 +533,16 @@ trait Spec extends Suite {
    * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
    * this <code>Spec</code> instance.
    *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testFun the test function
    * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws NullPointerException if <code>specText</code>is <code>null</code>
    */
-  protected def it(specText: String, testGroups: Group*)(f: => Unit) {
-    val testName = registerExample(specText, f)
+  protected def it(specText: String, testGroups: Group*)(testFun: => Unit) {
+    if (specText == null)
+      throw new NullPointerException("specText was null")
+    val testName = registerExample(specText, testFun)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)

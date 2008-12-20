@@ -35,4 +35,12 @@ class ExamplesSuite extends FunSuite {
       new MyOtherSpec  
     }
   }
+
+  test("that a null specText results in a thrown NPE at construction time") {
+    intercept[NullPointerException] {
+      new Examples {
+        it(null) {}
+      }
+    }
+  }
 }
