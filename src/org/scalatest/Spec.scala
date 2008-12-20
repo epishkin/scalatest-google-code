@@ -399,11 +399,11 @@ import scala.collection.immutable.ListSet
  * </p>
  *
  * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>includes</code> and
- * <code>excludes</code>. If <code>includes</code> is empty, all tests will be executed
+ * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
  * except those those belonging to groups listed in the
- * <code>excludes</code> <code>Set</code>. If <code>includes</code> is non-empty, only tests
- * belonging to groups mentioned in <code>includes</code>, and not mentioned in <code>excludes</code>,
+ * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
+ * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
  * will be executed.
  * </p>
  *
@@ -465,7 +465,7 @@ import scala.collection.immutable.ListSet
  * <p>
  * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The
  * <code>execute</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>excludes</code> <code>Set</code> it passes to
+ * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
  * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
  * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
  * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
@@ -500,8 +500,11 @@ trait Spec extends Suite {
    * <code>Spec</code>, and run them when <code>execute</code> is invoked.
    *
    * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws NullPointerException if <code>sharedExamples</code> is <code>null</code>
    */
   protected def includeExamples[T](sharedExamples: Examples) {
+    if (sharedExamples == null)
+      throw new NullPointerException("sharedExamples was null")
     val includedExamples = sharedExamples.examples(currentBranch)
     for (includedExample <- includedExamples) {
       if (examplesList.exists(_.testName == includedExample.testName)) {
@@ -609,12 +612,12 @@ trait Spec extends Suite {
    */
   override def groups: Map[String, Set[String]] = groupsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String], goodies: Map[String, Any]) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any]) {
     branch match {
       case desc @ Description(_, descriptionName, level) => {
 
         def sendInfoProvidedMessage() {
-          // Need to use the full name of the description, which includes all the descriptions it is nested inside
+          // Need to use the full name of the description, which groupsToInclude all the descriptions it is nested inside
           // Call getPrefix and pass in this Desc, to get the full name
           val descriptionFullName = getPrefix(desc).trim
          
@@ -649,19 +652,19 @@ trait Spec extends Suite {
           val wrappedReporter = wrapReporterIfNecessary(reporter)
 
           val tn = ex.testName
-          if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
-            if (excludes.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
+          if (!stopper.stopRequested && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
+            if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
               val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
               val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true)
               wrappedReporter.testIgnored(report)
             }
-            else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
+            else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, wrappedReporter, stopper, goodies)
             }
           }
         }
-        case branch: Branch => runTestsInBranch(branch, reporter, stopper, includes, excludes, goodies)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopper, groupsToInclude, groupsToExclude, goodies)
       }
     )
   }
@@ -757,13 +760,13 @@ trait Spec extends Suite {
    * </ul>
    *
    * <p>
-   * This method takes a <code>Set</code> of group names that should be included (<code>includes</code>), and a <code>Set</code>
-   * that should be excluded (<code>excludes</code>), when deciding which of this <code>Suite</code>'s tests to execute.
-   * If <code>includes</code> is empty, all tests will be executed
-   * except those those belonging to groups listed in the <code>excludes</code> <code>Set</code>. If <code>includes</code> is non-empty, only tests
-   * belonging to groups mentioned in <code>includes</code>, and not mentioned in <code>excludes</code>
-   * will be executed. However, if <code>testName</code> is <code>Some</code>, <code>includes</code> and <code>excludes</code> are essentially ignored.
-   * Only if <code>testName</code> is <code>None</code> will <code>includes</code> and <code>excludes</code> be consulted to
+   * This method takes a <code>Set</code> of group names that should be included (<code>groupsToInclude</code>), and a <code>Set</code>
+   * that should be excluded (<code>groupsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to execute.
+   * If <code>groupsToInclude</code> is empty, all tests will be executed
+   * except those those belonging to groups listed in the <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
+   * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>
+   * will be executed. However, if <code>testName</code> is <code>Some</code>, <code>groupsToInclude</code> and <code>groupsToExclude</code> are essentially ignored.
+   * Only if <code>testName</code> is <code>None</code> will <code>groupsToInclude</code> and <code>groupsToExclude</code> be consulted to
    * determine which of the tests named in the <code>testNames</code> <code>Set</code> should be run. For more information on trait groups, see the main documentation for this trait.
    * </p>
    *
@@ -771,10 +774,10 @@ trait Spec extends Suite {
    * If <code>testName</code> is <code>None</code>, this trait's implementation of this method
    * invokes <code>testNames</code> on this <code>Suite</code> to get a <code>Set</code> of names of tests to potentially execute.
    * (A <code>testNames</code> value of <code>None</code> essentially acts as a wildcard that means all tests in
-   * this <code>Suite</code> that are selected by <code>includes</code> and <code>excludes</code> should be executed.)
+   * this <code>Suite</code> that are selected by <code>groupsToInclude</code> and <code>groupsToExclude</code> should be executed.)
    * For each test in the <code>testName</code> <code>Set</code>, in the order
    * they appear in the iterator obtained by invoking the <code>elements</code> method on the <code>Set</code>, this trait's implementation
-   * of this method checks whether the test should be run based on the <code>includes</code> and <code>excludes</code> <code>Set</code>s.
+   * of this method checks whether the test should be run based on the <code>groupsToInclude</code> and <code>groupsToExclude</code> <code>Set</code>s.
    * If so, this implementation invokes <code>runTest</code>, passing in:
    * </p>
    *
@@ -792,8 +795,8 @@ trait Spec extends Suite {
    * @param groupsToInclude a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Spec</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Spec</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>includes</code>,
-   *     <code>excludes</code>, or <code>goodies</code> is <code>null</code>.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
+   *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any]) {

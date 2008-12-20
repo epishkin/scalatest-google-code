@@ -2443,5 +2443,13 @@ class SpecSuite extends FunSuite {
       }
     }
   }
+
+  test("that a null sharedExamples passed to includeExamples results in a thrown NPE at construction time") {
+    intercept[NullPointerException] {
+      new Spec {
+        includeExamples(null)
+      }
+    }
+  }
 }
 
