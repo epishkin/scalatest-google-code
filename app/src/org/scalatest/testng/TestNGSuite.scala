@@ -89,10 +89,10 @@ trait TestNGSuite extends Suite {
    *              Because TestNG handles its own concurrency, this class ignores this parameter.
    * <br><br>
    */
-  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], 
-      excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
+  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
     
-    runTestNG(testName, reporter, includes, excludes);
+    runTestNG(testName, reporter, groupsToInclude, groupsToExclude);
   }
   
   /**
@@ -156,7 +156,7 @@ trait TestNGSuite extends Suite {
   /**
    * Tells TestNG which groups to include and exclude, which is directly a one-to-one mapping.
    */
-  private[testng] def handleGroups( groupsToInclude: Set[String], groupsToExclude: Set[String], testng: TestNG){
+  private[testng] def handleGroups(groupsToInclude: Set[String], groupsToExclude: Set[String], testng: TestNG) {
     testng.setGroups(groupsToInclude.mkString(","))
     testng.setExcludedGroups(groupsToExclude.mkString(","))
   }
@@ -173,7 +173,7 @@ trait TestNGSuite extends Suite {
    * 
    * @param    testName    the name of the test method to be executed
    */
-  private def setupTestNGToRunSingleMethod( testName: String, testng: TestNG ) = {
+  private def setupTestNGToRunSingleMethod(testName: String, testng: TestNG) = {
     
     import org.testng.internal.annotations.IAnnotationTransformer
     import org.testng.internal.annotations.ITest
@@ -201,7 +201,7 @@ trait TestNGSuite extends Suite {
    * (12:02:27 AM) bvenners: onTestFailedButWithinSuccessPercentage(ITestResult tr) 
    * (12:02:34 AM) bvenners: maybe a testSucceeded with some extra info in the report
    */
-  private[testng] class MyTestListenerAdapter( reporter: Reporter ) extends TestListenerAdapter{
+  private[testng] class MyTestListenerAdapter(reporter: Reporter) extends TestListenerAdapter {
     
     import org.testng.ITestContext
     import org.testng.ITestResult

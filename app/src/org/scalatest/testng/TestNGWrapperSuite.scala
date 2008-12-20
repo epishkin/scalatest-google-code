@@ -68,17 +68,17 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
    *              Because TestNG handles its own concurrency, this class ignores this parameter.
    * <br><br>
    */
-  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], 
-      excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
+  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
     
-    runTestNG(reporter, includes, excludes);
+    runTestNG(reporter, groupsToInclude, groupsToExclude);
   }
 
   /**
    * Runs all tests in the xml suites.
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
-  override private[testng] def runTestNG(reporter: Reporter) : TestListenerAdapter = {
+  override private[testng] def runTestNG(reporter: Reporter): TestListenerAdapter = {
     runTestNG( reporter, Set(), Set() )
   }
 

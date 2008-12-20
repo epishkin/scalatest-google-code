@@ -84,8 +84,8 @@ trait JUnit3Suite extends TestCase with Suite {
    * @param testName an optional name of one test to execute. If <code>None</code>, all tests will be executed.
    *                 I.e., <code>None</code> acts like a wildcard that means execute all tests in this <code>JUnit3Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param includes Contains the names of groups to run. This class ignores this parameter.
-   * @param excludes Tests in groups in this Set will not be executed. This class ignores this parameter.
+   * @param groupsToInclude Contains the names of groups to run. This class ignores this parameter.
+   * @param groupsToExclude Tests in groups in this Set will not be executed. This class ignores this parameter.
    *
    * @param stopper the <code>Stopper</code> may be used to request an early termination of a suite of tests. Currently, this class ignores this parameter.
    * @param   properties a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests. This class
@@ -96,10 +96,10 @@ trait JUnit3Suite extends TestCase with Suite {
    *
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], 
-      excludes: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
+  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
 
-    runJUnit(testName, reporter, includes, excludes);
+    runJUnit(testName, reporter, groupsToInclude, groupsToExclude);
   }
 
   /**
