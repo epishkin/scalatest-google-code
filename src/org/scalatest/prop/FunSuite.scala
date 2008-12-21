@@ -175,9 +175,9 @@ import org.scalacheck.Test._
  *
  * <p>
  * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
- * <code>excludes</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
  * except those those belonging to groups listed in the
- * <code>excludes</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
+ * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
  * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
  * will be executed.
  * </p>
