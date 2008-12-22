@@ -45,9 +45,16 @@ import NodeFamily._
  * }
  * </pre>
  *
+ * <p>
+ * <em>Note: This trait is deprecated and may be removed in a future release of ScalaTest. I included it in 0.9.4 so I could get
+ * informed feedback from users as to whether you think this should be included in the ScalaTest API. If
+ * it gets removed, then those who like this style of code can always just do this themselves, so it
+ * isn't that risky to use. But bear in mind it may go away.</em>
+ * </p>
+ *
  * @author Bill Venners
  */
-trait ExamplesDasher { this: Examples =>
+@deprecated trait ExamplesDasher { this: Examples =>
 
   /**
    * Class used via an implicit conversion to enable examples in an <code>Examples</code>
@@ -64,7 +71,7 @@ trait ExamplesDasher { this: Examples =>
    *
    * @author Bill Venners
    */
-  class Dasher(specText: String) {
+  @deprecated class Dasher(specText: String) {
 
     /**
      * The <code>-</code> method invokes <code>it</code> on <code>this</code> (possible because <code>ExamplesDasher</code>

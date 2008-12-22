@@ -5,24 +5,25 @@ import scala.collection.mutable.ListBuffer
 trait ShouldStackBehaviors extends ShouldMatchers {
 
   val full = 'full
+  val empty = 'empty
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples with ExamplesDasher {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples {
 
-    "should be non-empty" - {
-      stack shouldNot be ('empty)
+    it("should be non-empty") {
+      stack shouldNot be (empty)
     }  
 
-    "should return the top item on peek" - {
+    it("should return the top item on peek") {
       stack.peek should equal (lastItemAdded)
     }
   
-    "should not remove the top item on peek" - {
+    it("should not remove the top item on peek") {
       val size = stack.size
       stack.peek should equal (lastItemAdded)
       stack.size should equal (size)
     }
   
-    "should remove the top item on pop" - {
+    it("should remove the top item on pop") {
       val size = stack.size
       stack.pop should equal (lastItemAdded)
       stack.size should equal (size - 1)
@@ -31,11 +32,11 @@ trait ShouldStackBehaviors extends ShouldMatchers {
   
   def nonFullStack(stack: Stack[Int]): Examples = new Examples with ExamplesDasher {
       
-    "should not be full" - {
+    it("should not be full") {
       stack shouldNot be (full)
     }
 
-    "should add to the top on push" - {
+    it("should add to the top on push") {
       val size = stack.size
       stack.push(7)
       stack.size should equal (size + 1)
@@ -44,49 +45,49 @@ trait ShouldStackBehaviors extends ShouldMatchers {
   }
 }
 
-class ShouldStackSpec extends Spec with SpecDasher with ShouldMatchers with StackFixtureCreationMethods with ShouldStackBehaviors {
+class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreationMethods with ShouldStackBehaviors {
 
-  "A Stack" -- {
+  describe("A Stack") {
 
-    "(when empty)" -- {
+    describe("(when empty)") {
       
-      "should be empty" - {
-        emptyStack should be ('empty)
+      it("should be empty") {
+        emptyStack should be (empty)
       }
 
-      "should complain on peek" - {
+      it("should complain on peek") {
         intercept[IllegalStateException] {
           emptyStack.peek
         }
       }
 
-      "should complain on pop" - {
+      it("should complain on pop") {
         intercept[IllegalStateException] {
           emptyStack.pop
         }
       }
     }
 
-    "(with one item)" -- {
+    describe("(with one item)") {
       stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
       stackWithOneItem should behave like (nonFullStack)
     }
     
-    "(with one item less than capacity)"-- {
+    describe("(with one item less than capacity)") {
       stackWithOneItemLessThanCapacity should behave like (nonEmptyStack(lastValuePushed))
       stackWithOneItemLessThanCapacity should behave like (nonFullStack)
     }
 
-    "(full)" -- {
+    describe("(full)") {
       
       // fullStack should be full  .... could I get this to print the message "- should be full" ?
-      "should be full" - {
+      it("should be full") {
         fullStack should be (full)
       }
       
       fullStack should behave like nonEmptyStack(lastValuePushed)
 
-      "should complain on a push" - {
+      it("should complain on a push") {
         intercept[IllegalStateException] {
           fullStack.push(10)
         }
