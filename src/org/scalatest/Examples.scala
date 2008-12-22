@@ -36,6 +36,84 @@ import NodeFamily._
  * </p>
  *
  * <p>
+ * <strong>Test groups</strong>
+ * </p>
+ *
+ * <p>
+ * An <code>Examples</code>' tests may be classified into named <em>groups</em>.
+ * When executing a <code>Spec</code> that includes an <code>Examples</code>, groups of tests can
+ * optionally be included and/or excluded. To place <code>Examples</code> tests into
+ * groups, you pass objects that extend abstract class <code>org.scalatest.Group</code> to the methods
+ * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Group</code> takes one parameter,
+ * a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>Examples</code>s that match. To do so, simply
+ * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
+ * create matching groups for <code>Spec</code>s like this:
+ * </p>
+ * <pre>
+ * import org.scalatest.Group
+ *
+ * object SlowTest extends Group("com.mycompany.groups.SlowTest")
+ * object DBTest extends Group("com.mycompany.groups.DBTest")
+ * </pre>
+ * <p>
+ * Given these definitions, you could place <code>Examples</code> tests into groups like this:
+ * </p>
+ * <pre>
+ * def nonFullStack(stack: Stack[Int]) = new Examples {
+ *
+ *   it("should not be full", SlowTest) {
+ *     assert(!stack.full)
+ *   }
+ *
+ *   it("should add to the top on push", SlowTest, DBTest) {
+ *     val size = stack.size
+ *     stack.push(7)
+ *     assert(stack.size === size + 1)
+ *     assert(stack.peek === 7)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group,
+ * and test <code>"should add to the top on push"</code> into the <code>com.mycompany.groups.DBTest</code> group.
+ * </p>
+ *
+ * <p>
+ * <strong>Ignored tests</strong>
+ * </p>
+ *
+ * <p>
+ * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
+ * good intention of resurrecting the test at a later time, <code>Examples</code> provides registration
+ * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
+ * disable the test with the name <code>"shoud not be full"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * </p>
+ *
+ * <pre>
+ * def nonFullStack(stack: Stack[Int]) = new Examples {
+ *
+ *   ignore("should not be full") {
+ *     assert(!stack.full)
+ *   }
+ *
+ *   it("should add to the top on push") {
+ *     val size = stack.size
+ *     stack.push(7)
+ *     assert(stack.size === size + 1)
+ *     assert(stack.peek === 7)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * <strong>A longer example</strong>
+ * </p>
+ *
+ * <p>
  * To get a better idea of how to use <code>Examples</code>, here's a more complete, well, example:
  * </p>
  *
