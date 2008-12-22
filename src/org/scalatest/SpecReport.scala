@@ -30,18 +30,18 @@ import java.util.Date
  * </p>
  *
  * <p>
- * The difference between <code>message</code>, <code>specText</code>, and <code>formattedText</code> is that <code>message</code> is
- * formatted as a "normal" test report, <code>specText</code> is formatted for specification-style output, and
- * <code>formattedSpectText</code> is formatted for specification-style output
+ * The difference between <code>message</code>, <code>plainSpecText</code>, and <code>formattedSpecText</code> is that <code>message</code> is
+ * formatted as a "normal" test report, <code>plainSpecText</code> is formatted for specification-style output, and
+ * <code>formattedSpecText</code> is formatted for specification-style output
  * to the console. For example, if the <code>message</code> looks like this:
  * </p>
  *
  * <p>
- * <code>StacSpec - A Stack (with one item less than capacity) should not be full</code>
+ * <code>StackSpec - A Stack (with one item less than capacity) should not be full</code>
  * </p>
  *
  * <p>
- * The <code>specText</code> might look like:
+ * The <code>plainSpecText</code> might look like:
  * </p>
  *
  * <p>
@@ -89,7 +89,7 @@ import java.util.Date
  *
  * @param name the name of the entity about which this report was generated.
  * @param message a <code>String</code> message.
- * @param specText the raw specification text <code>String</code>, with no formatting.
+ * @param plainSpecText the plain specification text <code>String</code>, with no formatting.
  * @param formattedSpecText the specification text <code>String</code> formatted for printing to the console.
  * @param includeInSpecOutput a <code>Boolean</code> flag that indicates whether this <code>SpecReport</code> should be
  *   included in a specification-style output.
@@ -104,8 +104,8 @@ import java.util.Date
  *      indicating the time the event reported by this <code>Report</code> occurred.
  *
  * @throws NullPointerException if any of the specified
- *     <code>name</code>, <code>message</code>, <code>throwable</code>, or <code>rerunnable</code>, <code>threadName</code>, or
- *     <code>date</code> references are <code>null</code>.
+ *     <code>name</code>, <code>message</code>, <code>plainSpecText</code>, <code>formattedSpecText</code>, <code>throwable</code>,
+ *     <code>rerunnable</code>, <code>threadName</code>, or <code>date</code> references are <code>null</code>.
  *
  * @author Bill Venners
  */
@@ -113,7 +113,7 @@ import java.util.Date
 class SpecReport(
   override val name: String,
   override val message: String,
-  val specText: String,
+  val plainSpecText: String,
   val formattedSpecText: String,
   val includeInSpecOutput: Boolean,
   override val throwable: Option[Throwable],
@@ -122,6 +122,12 @@ class SpecReport(
   override val date: Date
 ) extends Report(name, message, throwable, rerunnable, threadName, date) {
 
+  if (plainSpecText == null)
+    throw new NullPointerException("plainSpecText was null")
+  if (formattedSpecText == null)
+    throw new NullPointerException("formattedSpecText was null")
+
+
    /**
    * Constructs a new <code>Report</code> with specified name
    * and message.
@@ -129,11 +135,11 @@ class SpecReport(
    * @param name the name of the entity about which this report was generated.
    * @param message a <code>String</code> message.
    *
-   * @throws NullPointerException if either of the specified <code>name</code>
-   *     or <code>message</code> parameters are <code>null</code>.
+   * @throws NullPointerException if any of the specified <code>name</code>,
+   *     <code>message</code>, <code>plainSpecText</code>, or <code>formattedSpecText</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, specText: String, formattedSpecText: String, includeInSpecOutput: Boolean) =
-    this(name, message, specText, formattedSpecText, includeInSpecOutput, None, None, Thread.currentThread.getName, new Date)
+  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean) =
+    this(name, message, plainSpecText, formattedSpecText, includeInSpecOutput, None, None, Thread.currentThread.getName, new Date)
 
     /**
    * Constructs a new <code>Report</code> with specified name,
@@ -148,9 +154,9 @@ class SpecReport(
    * @param rerunnable a <code>Rerunnable</code> that can be used to rerun a test or other entity, or <code>None</code>.
    *
    * @throws NullPointerException if any of the specified 
-   *     <code>name</code>, <code>message</code>, <code>throwable</code>,
+   *     <code>name</code>, <code>message</code>, , <code>plainSpecText</code>, <code>formattedSpecText</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, specText: String, formattedSpecText: String, includeInSpecOutput: Boolean, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
-      message, specText, formattedSpecText, includeInSpecOutput, throwable, rerunnable, Thread.currentThread.getName, new Date)
+  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
+      message, plainSpecText, formattedSpecText, includeInSpecOutput, throwable, rerunnable, Thread.currentThread.getName, new Date)
 }
