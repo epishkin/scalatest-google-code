@@ -483,7 +483,7 @@ import scala.collection.immutable.ListSet
  *
  * @author Bill Venners
  */
-trait Spec extends Suite {
+trait Spec extends Suite with SpecDasher {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
