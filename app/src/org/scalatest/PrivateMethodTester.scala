@@ -53,13 +53,81 @@ import java.lang.reflect.Modifier
  */
 trait PrivateMethodTester {
 
-  case class PrivateMethod[T](methodName: Symbol) {
-    def apply(args: Any*) = Invocation[T](methodName, args: _*)
-  }
-  case class Invocation[T](methodName: Symbol, args: Any*)
+  /**
+   * Represent a private method, whose apply method returns an <code>Invocation</code> object that
+   * records the name of the private method to invoke, and any arguments to pass to it when invoked.
+   * The type parameter, <code>T</code>, is the return type of the private method.
+   *
+   * @param methodName a <code>Symbol</code> representing the name of the private method to invoke
+   * @throws NullPointerException if <code>methodName</code> is <code>null</code>
+   */
+  class PrivateMethod[T] private (methodName: Symbol) {
 
+    if (methodName == null)
+      throw new NullPointerException("methodName was null")
+
+    /**
+     * Apply arguments to a private method. This method returns an <code>Invocation</code>
+     * object, ready to be passed to an <code>invokePrivate</code> method call.
+     * The type parameter, <code>T</code>, is the return type of the private method.
+     *
+     * @param args zero to many arguments to pass to the private method when invoked
+     * @return an <code>Invocation</code> object that can be passed to <code>invokePrivate</code> to invoke
+     * the private method
+     */
+    def apply(args: Any*) = new Invocation[T](methodName, args: _*)
+  }
+
+  /**
+   * Contains a factory method for instantiating <code>PrivateMethod</code> objects.
+   */
+  object PrivateMethod {
+
+    /**
+     * Construct a new <code>PrivateMethod</code> object with passed <code>methodName</code> symbol.
+     * The type parameter, <code>T</code>, is the return type of the private method.
+     *
+     * @param methodName a <code>Symbol</code> representing the name of the private method to invoke
+     * @throws NullPointerException if <code>methodName</code> is <code>null</code>
+     */
+    def apply[T](methodName: Symbol) = new PrivateMethod[T](methodName)
+  }
+
+  /**
+   * Class whose instances represent an invocation of a private method. Instances of this
+   * class contain the name of the private method (<code>methodName</code>) and the arguments
+   * to pass to it during the invocation (<code>args</code>).
+   * The type parameter, <code>T</code>, is the return type of the private method.
+   *
+   * @param methodName a <code>Symbol</code> representing the name of the private method to invoke
+   * @param args zero to many arguments to pass to the private method when invoked
+   * @throws NullPointerException if <code>methodName</code> is <code>null</code>
+   */
+  class Invocation[T](val methodName: Symbol, val args: Any*) {
+    if (methodName == null)
+      throw new NullPointerException
+  }
+
+  /**
+   * Class used via an implicit conversion to enable private methods to be tested.
+   */
   class Invoker(target: AnyRef) {
 
+    if (target == null)
+      throw new NullPointerException
+    
+    /**
+     * Invoke a private method. This method will attempt to invoke via reflection a private method.
+     * The name of the method to invoke is contained in the <code>methodName</code> field of the passed <code>Invocation</code>.
+     * The arguments to pass are contained in the <code>args</code> field. The object on which to invoke the private
+     * method is the <code>target</code> object passed to this <code>Invoker</code>'s primary constructor.
+     * The type parameter, <code>T</code>, is the return type of the private method.
+     *
+     * @param invocation the <code>Invocation</code> object containing the method name symbol and args of the invocation.
+     * @return the value returned by the invoked private method
+     * @throws IllegalArgumentException if the target object does not have a method of the name, with argument types
+     * compatible with the objects in the passed args array, specified in the passed <code>Invocation</code> object.
+     */
     def invokePrivate[T](invocation: Invocation[T]): T = {
       import invocation._
 
@@ -145,6 +213,13 @@ trait PrivateMethodTester {
     }
   }
 
-  implicit def anyRefToInvoker(anyRef: AnyRef): Invoker = new Invoker(anyRef)
+  /**
+   * Implicit conversion from <code>AnyRef</code> to <code>Invoker</code>, used to enable
+   * assertions testing of private methods.
+   *
+   * @param target the target object on which to invoke a private method.
+   * @throws NullPointerException if <code>target</code> is <code>null</code>.
+   */
+  implicit def anyRefToInvoker(target: AnyRef): Invoker = new Invoker(target)
 }
 

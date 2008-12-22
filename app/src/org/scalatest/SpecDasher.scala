@@ -52,9 +52,16 @@ package org.scalatest
  * - should throw NoSuchElementException if an empty stack is popped
  * </pre>
  *
+ * <p>
+ * <em>Note: This trait is deprecated and may be removed in a future release of ScalaTest. I included it in 0.9.4 so I could get
+ * informed feedback from users as to whether you think this should be included in the ScalaTest API. If
+ * it gets removed, then those who like this style of code can always just do this themselves, so it
+ * isn't that risky to use. But bear in mind it may go away.</em>
+ * </p>
+ *
  * @author Bill Venners
  */
-trait SpecDasher { this: Spec => 
+@deprecated trait SpecDasher { this: Spec => 
 
   /**
    * Class used via an implicit conversion to enable describers and examples in a <code>Spec</code>
@@ -72,7 +79,7 @@ trait SpecDasher { this: Spec =>
    *
    * @author Bill Venners
    */
-  class Dasher(text: String) {
+  @deprecated class Dasher(text: String) {
     def -- (descFun: => Unit) {
       describe(text)(descFun)
     }
