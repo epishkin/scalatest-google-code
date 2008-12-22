@@ -295,7 +295,7 @@ import NodeFamily._
  *
  * @author Bill Venners
  */
-trait Examples extends Assertions {
+trait Examples extends Assertions with ExamplesDasher {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
