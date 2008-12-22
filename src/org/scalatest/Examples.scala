@@ -219,9 +219,15 @@ import NodeFamily._
  */
 trait Examples extends Assertions {
 
+  private val IgnoreGroupName = "org.scalatest.Ignore"
+
   // All shared examples, in reverse order of registration
   private var sharedExamplesList = List[SharedExample]()
-    
+
+  // This map contains specText keys mapped to group name sets, not testName keys, because
+  // the testName isn't known until this Examples is included in a Spec.
+  private var sharedGroupsMap: Map[String, Set[String]] = Map()
+
   private[scalatest] def examples(newParent: Branch): List[Example] = {
     
     def transform(sharedExample: SharedExample): Example = {
@@ -231,7 +237,16 @@ trait Examples extends Assertions {
     sharedExamplesList.map(transform)
   }
 
-  // TODO: Sheesh, I forgot about groups! And ignore!
+  private[scalatest] def groups(newParent: Branch): Map[String, Set[String]] = {
+
+    def transform(sharedGroupElement: (String, Set[String])): (String, Set[String]) = {
+      val (specText, groupsSet) = sharedGroupElement
+      val testName = getTestName(specText, newParent)
+      (testName, groupsSet)
+    }
+    Map() ++ sharedGroupsMap.map(transform)
+  }
+
   /**
    * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
    * An invocation of this method is called an &#8220;example.&#8221;
@@ -245,7 +260,7 @@ trait Examples extends Assertions {
    * @throws IllegalArgumentException if an example with the same spec text has been registered previously
    * @throws NullPointerException if <code>specText</code>is <code>null</code>
    */
-  def it(specText: String)(testFun: => Unit) {
+  def it(specText: String, testGroups: Group*)(testFun: => Unit) {
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (sharedExamplesList.exists(_.specText == specText)) {
@@ -253,5 +268,37 @@ trait Examples extends Assertions {
       throw new IllegalArgumentException("Duplicate spec text: " + duplicateName)
     }
     sharedExamplesList ::= SharedExample(specText, testFun _)
+    val groupNames = Set[String]() ++ testGroups.map(_.name)
+    if (!groupNames.isEmpty)
+      sharedGroupsMap += (specText -> groupNames)
+  }
+
+  /**
+   * Register a test to ignore, which has the given spec text, optional groups, and test function value that takes no arguments.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>Spec</code> instance.
+   *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testGroups the optional list of groups to which this test belongs
+   * @param testFun the test function
+   * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
+   */
+  def ignore(specText: String, testGroups: Group*)(testFun: => Unit) {
+    if (specText == null)
+      throw new NullPointerException("specText was null")
+    if (sharedExamplesList.exists(_.specText == specText)) {
+      val duplicateName = sharedExamplesList.find(_.specText == specText).getOrElse("")
+      throw new IllegalArgumentException("Duplicate spec text: " + duplicateName)
+    }
+    sharedExamplesList ::= SharedExample(specText, testFun _)
+    val groupNames = Set[String]() ++ testGroups.map(_.name)
+    sharedGroupsMap += (specText -> (groupNames + IgnoreGroupName))
   }
 }

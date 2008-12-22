@@ -514,6 +514,7 @@ trait Spec extends Suite {
     }
     currentBranch.subNodes :::= includedExamples
     examplesList :::= includedExamples
+    groupsMap ++= sharedExamples.groups(currentBranch)
   }
 
   private def registerExample(specText: String, f: => Unit) = {
@@ -579,7 +580,6 @@ trait Spec extends Suite {
     val testName = registerExample(specText, testFun)
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
-
   }
 
   /**
