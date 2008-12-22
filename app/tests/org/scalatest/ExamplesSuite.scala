@@ -43,4 +43,37 @@ class ExamplesSuite extends FunSuite {
       }
     }
   }
+
+  test("groups work correctly in Examples") {
+
+    val aEx = new Examples {
+      it("test this", mygroups.SlowAsMolasses) {}
+      ignore("test that", mygroups.SlowAsMolasses) {}
+    }
+    val a = new Spec {
+      includeExamples(aEx)
+    }
+    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+      a.groups
+    }
+
+    val bEx = new Examples {}
+    val b = new Spec {
+      includeExamples(bEx)
+    }
+    expect(Map()) {
+      b.groups
+    }
+
+    val cEx = new Examples {
+      it("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
+      it("test that", mygroups.SlowAsMolasses) {}
+    }
+    val c = new Spec {
+      includeExamples(cEx)
+    }
+    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+      c.groups
+    }
+  }
 }
