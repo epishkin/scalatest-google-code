@@ -249,7 +249,7 @@ import org.scalacheck.Test._
  *
  * @author Bill Venners
  */
-trait FunSuite extends scalatest.FunSuite with Checkers {
+private[scalatest] trait FunSuite extends scalatest.FunSuite with Checkers {
 
   /**
    * Convert the passed 1-arg function into a property, and register it as a test.
