@@ -26,7 +26,7 @@ import org.scalacheck.Test
 import org.scalacheck.Test._
 
 /**
- * A <code>FunSuite</code> subtrait that provides methods that perform
+ * <strong>Deprecated: mix in Checkers and make explicit calls to check instead</strong> A <code>FunSuite</code> subtrait that provides methods that perform
  * ScalaCheck property checks.
  * If ScalaCheck, when invoked via one of the methods provided by <cod>FunSuite</code>, finds a test case for which a property doesn't hold, the problem will be reported as a ScalaTest test failure.
  * 
@@ -249,7 +249,8 @@ import org.scalacheck.Test._
  *
  * @author Bill Venners
  */
-private[scalatest] trait FunSuite extends scalatest.FunSuite with Checkers {
+@deprecated
+trait FunSuite extends scalatest.FunSuite with Checkers {
 
   /**
    * Convert the passed 1-arg function into a property, and register it as a test.
