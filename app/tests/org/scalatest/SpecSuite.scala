@@ -422,7 +422,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it should start with proper words")
+            if (specReport.plainSpecText == "it should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- it should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -450,7 +450,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -478,7 +478,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it should start with proper words")
+            if (specReport.plainSpecText == "it should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- it should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -506,7 +506,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -534,7 +534,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it should start with proper words")
+            if (specReport.plainSpecText == "it should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- it should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -562,7 +562,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -599,7 +599,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -614,7 +614,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -655,7 +655,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -670,7 +670,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -711,7 +711,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -726,7 +726,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -767,7 +767,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -782,7 +782,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -823,7 +823,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -838,7 +838,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -879,7 +879,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -894,7 +894,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -937,7 +937,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -952,7 +952,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -995,7 +995,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -1010,7 +1010,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1053,7 +1053,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -1068,7 +1068,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1111,7 +1111,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -1126,7 +1126,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1169,7 +1169,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -1184,7 +1184,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1227,7 +1227,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -1242,7 +1242,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1278,7 +1278,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it should start with proper words")
+            if (specReport.plainSpecText == "it should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- it should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1309,7 +1309,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1340,7 +1340,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it should start with proper words")
+            if (specReport.plainSpecText == "it should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- it should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1371,7 +1371,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1402,7 +1402,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it should start with proper words")
+            if (specReport.plainSpecText == "it should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- it should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1433,7 +1433,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "must start with proper words")
+            if (specReport.plainSpecText == "must start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- must start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1473,7 +1473,7 @@ class SpecSuite extends FunSuite {
           infoReportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My Spec")
+            if (specReport.plainSpecText == "My Spec")
               infoReportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "My Spec")
               infoReportHadCorrectFormattedSpecText = true
@@ -1488,7 +1488,7 @@ class SpecSuite extends FunSuite {
           reportHadCorrectTestName = true
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               reportHadCorrectSpecText = true
             if (specReport.formattedSpecText == "- should start with proper words")
               reportHadCorrectFormattedSpecText = true
@@ -1801,10 +1801,10 @@ class SpecSuite extends FunSuite {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "it should start with proper words")
+            if (specReport.plainSpecText == "it should start with proper words")
               testStartingReportHadCorrectShortName = true
             else
-              lastShortName = Some(specReport.specText)
+              lastShortName = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -1824,10 +1824,10 @@ class SpecSuite extends FunSuite {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My spec text must have the proper words")
+            if (specReport.plainSpecText == "My spec text must have the proper words")
               testStartingReportHadCorrectSpecText = true
             else
-              lastSpecText = Some(specReport.specText)
+              lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -1847,10 +1847,10 @@ class SpecSuite extends FunSuite {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               testStartingReportHadCorrectSpecText = true
             else
-              lastSpecText = Some(specReport.specText)
+              lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -1872,10 +1872,10 @@ class SpecSuite extends FunSuite {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My short name must have the proper words")
+            if (specReport.plainSpecText == "My short name must have the proper words")
               testStartingReportHadCorrectSpecText = true
             else
-              lastSpecText = Some(specReport.specText)
+              lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -1897,10 +1897,10 @@ class SpecSuite extends FunSuite {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "should start with proper words")
+            if (specReport.plainSpecText == "should start with proper words")
               testStartingReportHadCorrectSpecText = true
             else
-              lastSpecText = Some(specReport.specText)
+              lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -1924,10 +1924,10 @@ class SpecSuite extends FunSuite {
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
-            if (specReport.specText == "My short name must have the proper words")
+            if (specReport.plainSpecText == "My short name must have the proper words")
               testStartingReportHadCorrectSpecText = true
             else
-              lastSpecText = Some(specReport.specText)
+              lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
         }
       }
@@ -1992,7 +1992,7 @@ class SpecSuite extends FunSuite {
           case specReport: SpecReport => {
             infoProvidedCalled = true
             if (!expectedMessageReceived) {
-              expectedMessageReceived = (specReport.specText == expectedSpecText)
+              expectedMessageReceived = (specReport.plainSpecText == expectedSpecText)
             }
           }
           case _ =>
