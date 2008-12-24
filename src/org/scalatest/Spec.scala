@@ -472,15 +472,6 @@ import scala.collection.immutable.ListSet
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
- * <p>
- * <strong>Shared examples</strong>
- * </p>
- *
- * <p>
- * You can place examples that you would like to reuse in multiple places in <code>Examples</code> classes,
- * then include these &#8220;shared&#8221; examples wherever you want to reuse them with <code>includeExamples</code>.
- * For more information and a complete example, see the documentation for trait <code>Examples</code>.
- *
  * @author Bill Venners
  */
 trait Spec extends Suite with SpecDasher {
