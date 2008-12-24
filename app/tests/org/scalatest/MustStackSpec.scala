@@ -2,11 +2,11 @@ package org.scalatest
 
 import scala.collection.mutable.ListBuffer
 
-trait MustStackBehaviors extends MustMatchers {
+trait MustStackBehaviors extends MustMatchers { this: Spec with SpecDasher =>
 
   val full = 'full
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples with ExamplesDasher {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
 
     "must be non-empty" - {
       stack mustNot be ('empty)
@@ -29,7 +29,7 @@ trait MustStackBehaviors extends MustMatchers {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Examples = new Examples with ExamplesDasher {
+  def nonFullStack(stack: Stack[Int]) {
       
     "must not be full" - {
       stack mustNot be (full)

@@ -2,9 +2,9 @@ package org.scalatest
 
 import scala.collection.mutable.ListBuffer
 
-trait StackItBehaviors {
+trait StackItBehaviors { this: Spec =>
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
 
     it("should be non-empty") {
       assert(!stack.empty)
@@ -27,7 +27,7 @@ trait StackItBehaviors {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Examples = new Examples {
+  def nonFullStack(stack: Stack[Int]) {
       
     it("should not be full") {
       assert(!stack.full)
@@ -65,13 +65,13 @@ class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBeha
     }
 
     describe("(with one item)") {
-      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItem))
-      includeExamples(nonFullStack(stackWithOneItem))
+      nonEmptyStack(lastValuePushed)(stackWithOneItem)
+      nonFullStack(stackWithOneItem)
     }
     
     describe("(with one item less than capacity)") {
-      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity))
-      includeExamples(nonFullStack(stackWithOneItemLessThanCapacity))
+      nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
+      nonFullStack(stackWithOneItemLessThanCapacity)
     }
 
     describe("(full)") {
@@ -80,7 +80,7 @@ class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBeha
         assert(fullStack.full)
       }
 
-      includeExamples(nonEmptyStack(lastValuePushed)(fullStack))
+      nonEmptyStack(lastValuePushed)(fullStack)
 
       it("should complain on a push") {
         intercept[IllegalStateException] {
