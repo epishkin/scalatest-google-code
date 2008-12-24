@@ -875,20 +875,10 @@ private[scalatest] trait BaseMatchers extends Assertions {
 
   val behave = new BehaveWord
   val be = new BeWord
-/*
-  protected def importSharedBehavior(behavior: Examples)
 
   class Likifier[T](left: T) {
-    def like(fun: (T) => Examples) {
-      importSharedBehavior(fun(left))
-    }
-  }
-  */
-  protected def includeExamples[T](sharedExamples: Examples)
-
-  class Likifier[T](left: T) {
-    def like(fun: (T) => Examples) {
-      includeExamples(fun(left))
+    def like(fun: (T) => Unit) {
+      fun(left)
     }
   }
 

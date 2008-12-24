@@ -2,34 +2,49 @@ package org.scalatest
 
 class ExamplesSuite extends FunSuite {
 
-  class MyOtherExamples extends Examples {
-    it("should lead the whole game") {}
-    it("should lead just part of the game") {}
-  }
-
   test("that duplicate specTexts result in a thrown exception at construction time") {
 
-    new MyOtherExamples
+    class MySpec extends Spec {
 
-    class MyExamples extends Examples {
-      it("should lead the whole game") {}
-      it("should lead the whole game") {}
+      def myOtherExamples() {
+        it("should lead the whole game") {}
+        it("should lead just part of the game") {}
+      }
+
+      myOtherExamples()
+
+      def myExamples() {
+        it("should lead the whole game") {}
+        it("should lead the whole game") {}
+      }
+
+      intercept[IllegalArgumentException] {
+        myExamples()
+      }
     }
-    intercept[IllegalArgumentException] {
-      new MyExamples  
-    }
+
+    new MySpec
   }
+
   test("duplicate testNames should result in an exception when one is in the Examples and the other in the Spec") {
     class MySpec extends Spec {
-      includeExamples(new MyOtherExamples)
+      def myOtherExamples() {
+        it("should lead the whole game") {}
+        it("should lead just part of the game") {}
+      }
+      myOtherExamples()
       it("should lead the whole game") {}
     }
     intercept[IllegalArgumentException] {
       new MySpec  
     }
     class MyOtherSpec extends Spec {
+      def myOtherExamples() {
+        it("should lead the whole game") {}
+        it("should lead just part of the game") {}
+      }
       it("should lead the whole game") {}
-      includeExamples(new MyOtherExamples)
+      myOtherExamples()
     }
     intercept[IllegalArgumentException] {
       new MyOtherSpec  
@@ -37,40 +52,46 @@ class ExamplesSuite extends FunSuite {
   }
 
   test("that a null specText results in a thrown NPE at construction time") {
-    intercept[NullPointerException] {
-      new Examples {
+
+    class MySpec extends Spec {
+
+      def examples() {
         it(null) {}
       }
+      intercept[NullPointerException] {
+        examples()
+      }
     }
+    new MySpec
   }
 
   test("groups work correctly in Examples") {
 
-    val aEx = new Examples {
-      it("test this", mygroups.SlowAsMolasses) {}
-      ignore("test that", mygroups.SlowAsMolasses) {}
-    }
     val a = new Spec {
-      includeExamples(aEx)
+      def aExamples() {
+        it("test this", mygroups.SlowAsMolasses) {}
+        ignore("test that", mygroups.SlowAsMolasses) {}
+      }
+      aExamples()
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
       a.groups
     }
 
-    val bEx = new Examples {}
     val b = new Spec {
-      includeExamples(bEx)
+      def bExamples() {}
+      bExamples()
     }
     expect(Map()) {
       b.groups
     }
 
-    val cEx = new Examples {
-      it("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
-      it("test that", mygroups.SlowAsMolasses) {}
-    }
     val c = new Spec {
-      includeExamples(cEx)
+      def cExamples() {
+        it("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
+        it("test that", mygroups.SlowAsMolasses) {}
+      }
+      cExamples()
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
       c.groups

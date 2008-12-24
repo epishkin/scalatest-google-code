@@ -29,9 +29,9 @@ class Stack[T] {
 }
 
 
-trait StackBehaviors {
+trait StackBehaviors { this: Spec with SpecDasher =>
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]): Examples = new Examples with ExamplesDasher {
+  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
 
     "should be non-empty" - {
       assert(!stack.empty)
@@ -54,7 +54,7 @@ trait StackBehaviors {
     }
   }
   
-  def nonFullStack(stack: Stack[Int]): Examples = new Examples with ExamplesDasher {
+  def nonFullStack(stack: Stack[Int]) {
       
     "should not be full" - {
       assert(!stack.full)
@@ -116,13 +116,13 @@ class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods wi
     }
 
     "(with one item)" -- {
-      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItem))
-      includeExamples(nonFullStack(stackWithOneItem))
+      nonEmptyStack(lastValuePushed)(stackWithOneItem)
+      nonFullStack(stackWithOneItem)
     }
     
     "(with one item less than capacity)"-- {
-      includeExamples(nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity))
-      includeExamples(nonFullStack(stackWithOneItemLessThanCapacity))
+      nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
+      nonFullStack(stackWithOneItemLessThanCapacity)
     }
 
     "(full)" -- {
@@ -131,7 +131,7 @@ class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods wi
         assert(fullStack.full)
       }
 
-      includeExamples(nonEmptyStack(lastValuePushed)(fullStack))
+      nonEmptyStack(lastValuePushed)(fullStack)
 
       "should complain on a push" - {
         intercept[IllegalStateException] {
