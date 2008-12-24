@@ -485,29 +485,6 @@ trait Spec extends Suite with SpecDasher {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
-  /*
-   * Include the specified examples. This trait's implementation of this method
-   * will register the examples contained in the passed <code>Examples</code> in this
-   * <code>Spec</code>, and run them when <code>execute</code> is invoked.
-   *
-   * @throws IllegalArgumentException if a test with the same name has been registered previously
-   * @throws NullPointerException if <code>sharedExamples</code> is <code>null</code>
-
-  def includeExamples[T](sharedExamples: Examples) {
-    if (sharedExamples == null)
-      throw new NullPointerException("sharedExamples was null")
-    val includedExamples = sharedExamples.examples(currentBranch)
-    for (includedExample <- includedExamples) {
-      if (examplesList.exists(_.testName == includedExample.testName)) {
-        val duplicateName = examplesList.find(_.testName == includedExample.testName).getOrElse("")
-        throw new IllegalArgumentException("Duplicate test name: " + duplicateName)
-      }
-    }
-    currentBranch.subNodes :::= includedExamples
-    examplesList :::= includedExamples
-    groupsMap ++= sharedExamples.groups(currentBranch)
-  }
-   */
   private def registerExample(specText: String, f: => Unit) = {
     val testName = getTestName(specText, currentBranch)
     require(!examplesList.exists(_.testName == testName), "Duplicate test name: " + testName)
