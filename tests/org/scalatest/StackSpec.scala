@@ -1,34 +1,5 @@
 package org.scalatest
 
-import scala.collection.mutable.ListBuffer
-
-class Stack[T] {
-  val MAX = 10
-  private var buf = new ListBuffer[T]
-  def push(o: T) {
-    if (!full)
-      o +: buf
-    else
-      throw new IllegalStateException("can't push onto a full stack")
-  }
-  def pop(): T = {
-    if (!empty)
-      buf.remove(0)
-    else
-      throw new IllegalStateException("can't pop an empty stack")
-  }
-  def peek: T = {
-    if (!empty)
-      buf(0)
-    else
-      throw new IllegalStateException("can't pop an empty stack")
-  }
-  def full: Boolean = buf.size == MAX
-  def empty: Boolean = buf.size == 0
-  def size = buf.size
-}
-
-
 trait StackBehaviors { this: Spec with SpecDasher =>
 
   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
@@ -69,29 +40,6 @@ trait StackBehaviors { this: Spec with SpecDasher =>
   }
 }
 
-trait StackFixtureCreationMethods {
-
-  def emptyStack = new Stack[Int]
-  def fullStack = {
-    val stack = new Stack[Int]
-    for (i <- 0 until stack.MAX)
-      stack.push(i)
-    stack
-  }
-  def stackWithOneItem = {
-    val stack = new Stack[Int]
-    stack.push(9)
-    stack
-  }
-  def stackWithOneItemLessThanCapacity = {
-    val stack = new Stack[Int]
-    for (i <- 1 to 9)
-      stack.push(i)
-    stack
-  }
-  val lastValuePushed = 9
-}
-      
 class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods with ShouldMatchers with StackBehaviors {
 
   "A Stack" -- {
