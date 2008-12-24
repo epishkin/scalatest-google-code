@@ -1,184 +1,184 @@
 <project name="ScalaTest" default="dist" basedir=".">
 
-	<!-- set global properties for this build -->
- 	<property name="src" value="src" />
-	<property name="tests" value="tests" />
-	<property name="build" value="build" />
-	<property name="jar.contents" value="${build}/jar_contents" />
-	<!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
-	<property name="classes" value="${jar.contents}" />
-	<property name="pluginsrc" value="compilerplugin/src" />
-	<property name="generators" value="generators" />
-	<property name="build.plugin" value="${build}/plugin" />
-	<property name="build.tests" value="${build}/tests" />
-	<property name="build.generators" value="${build}/generators" />
-	<property name="plugin.jar" value="${build}/scalatest-plugin.jar" />
-	<property name="test.params" value="-Xplugin:${plugin.jar}" />
-	<property name="dist" value="${build}/dist" />
-	<property name="doc" value="${build}/doc" />
-	<property name="jdoc" value="${build}/jdoc" />
-	<property name="zipper" value="zipper" />
-	<property name="project.name" value="ScalaTest" />
-	<property name="release" value="0.9.4" />
-	<property name="demo" value="${build}/demo" />
-	<property name="demodoc" value="${demo}/example/javadoc" />
-	<property name="example" value="${demo}/example" />
-	<property name="lib" value="lib" />
+    <!-- set global properties for this build -->
+     <property name="src" value="src" />
+    <property name="tests" value="tests" />
+    <property name="build" value="build" />
+    <property name="jar.contents" value="${build}/jar_contents" />
+    <!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
+    <property name="classes" value="${jar.contents}" />
+    <property name="pluginsrc" value="compilerplugin/src" />
+    <property name="generators" value="generators" />
+    <property name="build.plugin" value="${build}/plugin" />
+    <property name="build.tests" value="${build}/tests" />
+    <property name="build.generators" value="${build}/generators" />
+    <property name="plugin.jar" value="${build}/scalatest-plugin.jar" />
+    <property name="test.params" value="-Xplugin:${plugin.jar}" />
+    <property name="dist" value="${build}/dist" />
+    <property name="doc" value="${build}/doc" />
+    <property name="jdoc" value="${build}/jdoc" />
+    <property name="zipper" value="zipper" />
+    <property name="project.name" value="ScalaTest" />
+    <property name="release" value="0.9.4" />
+    <property name="demo" value="${build}/demo" />
+    <property name="demodoc" value="${demo}/example/javadoc" />
+    <property name="example" value="${demo}/example" />
+    <property name="lib" value="lib" />
 
-	<!--
+    <!--
   <property name="build.compiler" value="jikes"/>
   -->
 
-	<target name="init">
-		<!-- Create the time stamp -->
-		<tstamp />
-		<!-- Create the build directory structure used by compile -->
-		<mkdir dir="${jar.contents}" />
-		<mkdir dir="${build.plugin}" />
-		<mkdir dir="${build.tests}" />
-		<mkdir dir="${build.generators}" />
-		<mkdir dir="${dist}" />
-		<mkdir dir="${demodoc}" />
-		<mkdir dir="${doc}" />
-		<mkdir dir="${jdoc}" />
-		<mkdir dir="${jdoc}" />
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp />
+        <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${jar.contents}" />
+        <mkdir dir="${build.plugin}" />
+        <mkdir dir="${build.tests}" />
+        <mkdir dir="${build.generators}" />
+        <mkdir dir="${dist}" />
+        <mkdir dir="${demodoc}" />
+        <mkdir dir="${doc}" />
+        <mkdir dir="${jdoc}" />
+        <mkdir dir="${jdoc}" />
 
-		<path id="lib.path">
-			<fileset dir="${lib}"><include name="**/*.jar" /></fileset>
-			<pathelement location="${lib}/scala-library.jar" />
-		</path>		
-		
-		<path id="build.class.path">
-			<pathelement location="${classes}" />
-			<path refid="lib.path"></path>
-		</path>
+        <path id="lib.path">
+            <fileset dir="${lib}"><include name="**/*.jar" /></fileset>
+            <pathelement location="${lib}/scala-library.jar" />
+        </path>        
+        
+        <path id="build.class.path">
+            <pathelement location="${classes}" />
+            <path refid="lib.path"></path>
+        </path>
 
-		<!-- this is the class path used to run ScalaTest to test itself, in the "test" target -->
-		<path id="test.class.path">
-			<pathelement location="${dist}/lib/scalatest.jar" />
-			<path refid="lib.path"></path>
-		</path>
-		
-		<path id="build.test.class.path">
-			<pathelement location="${classes}" />
-			<pathelement location="${build.tests}" />
-			<path refid="lib.path"></path>
-		</path>
+        <!-- this is the class path used to run ScalaTest to test itself, in the "test" target -->
+        <path id="test.class.path">
+            <pathelement location="${dist}/lib/scalatest.jar" />
+            <path refid="lib.path"></path>
+        </path>
+        
+        <path id="build.test.class.path">
+            <pathelement location="${classes}" />
+            <pathelement location="${build.tests}" />
+            <path refid="lib.path"></path>
+        </path>
 
-		<path id="build.generators.class.path">
-			<pathelement location="${lib}/stringtemplate.jar" />
-			<pathelement location="${lib}/scala-library.jar" />
-		</path>
+        <path id="build.generators.class.path">
+            <pathelement location="${lib}/stringtemplate.jar" />
+            <pathelement location="${lib}/scala-library.jar" />
+        </path>
 
-		<path id="run.generators.class.path">
-			<pathelement location="${build.generators}" />
-			<pathelement location="${lib}/scala-library.jar" />
-			<pathelement location="${lib}/stringtemplate.jar" />
-			<pathelement location="${lib}/antlr-2.7.7.jar" />
-		</path>
+        <path id="run.generators.class.path">
+            <pathelement location="${build.generators}" />
+            <pathelement location="${lib}/scala-library.jar" />
+            <pathelement location="${lib}/stringtemplate.jar" />
+            <pathelement location="${lib}/antlr-2.7.7.jar" />
+        </path>
 
-		<taskdef resource="scala/tools/ant/antlib.xml">
-			<classpath>
-				<pathelement location="${lib}/scala-compiler.jar" />
-				<pathelement location="${lib}/scala-library.jar" />
-			</classpath>
-		</taskdef>
+        <taskdef resource="scala/tools/ant/antlib.xml">
+            <classpath>
+                <pathelement location="${lib}/scala-compiler.jar" />
+                <pathelement location="${lib}/scala-library.jar" />
+            </classpath>
+        </taskdef>
 
-		<path id="scaladoc.source.path">
-			<pathelement location="${src}" />
-		</path>
+        <path id="scaladoc.source.path">
+            <pathelement location="${src}" />
+        </path>
 
-	</target>
+    </target>
 
-	<target name="clean" depends="init">
-		<delete dir="${build}" />
-		<delete dir="test-output" quiet="true" />
-	</target>
+    <target name="clean" depends="init">
+        <delete dir="${build}" />
+        <delete dir="test-output" quiet="true" />
+    </target>
 
-	<target name="gencode" depends="init">
-		<!-- First, compile the code generator from ${generators} into ${build.generators} -->
-		<scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
-		<!-- Then, run it. -->
-		<java classname="GenFunSuiteN" classpathref="run.generators.class.path" fork="false" />
-	</target>
+    <target name="gencode" depends="init">
+        <!-- First, compile the code generator from ${generators} into ${build.generators} -->
+        <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
+        <!-- Then, run it. -->
+        <java classname="GenFunSuiteN" classpathref="run.generators.class.path" fork="false" />
+    </target>
 
-	<target name="compile" depends="compile-main, compile-tests"/>
+    <target name="compile" depends="compile-main, compile-tests"/>
 
-	<target name="compile-main" depends="gencode">
-		<!-- Compile the Java code from ${src} into ${classes} -->
-		<javac srcdir="${src}" destdir="${classes}" debug="yes" classpathref="build.class.path" >
-			<include name="org/scalatest/Ignore.java" />
-			<include name="org/scalatest/junit/JUnitVersionHelper.java"/>
-		</javac>
+    <target name="compile-main" depends="gencode">
+        <!-- Compile the Java code from ${src} into ${classes} -->
+        <javac srcdir="${src}" destdir="${classes}" debug="yes" classpathref="build.class.path" >
+            <include name="org/scalatest/Ignore.java" />
+            <include name="org/scalatest/junit/JUnitVersionHelper.java"/>
+        </javac>
 
-		<!-- Then compile the Scala code from ${src} into ${classes} -->
-		<scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
+        <!-- Then compile the Scala code from ${src} into ${classes} -->
+        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
-		<!-- Compile the Ant task (Depends on org.scalatest.tools.Runner)-->
-		<javac srcdir="${src}" destdir="${classes}" classpath="${build.class.path}" debug="yes">
-			<include name="org/scalatest/tools/ScalaTestTask.java" />
-		</javac>
-	</target>
-	
-	<target name="compile-plugin" depends="init">
-		<!-- Compile the plugin source from ${pluginsrc} to ${build.plugin} -->
-		<scalac srcdir="${pluginsrc}" destdir="${build.plugin}" target="jvm-1.5" classpathref="build.class.path" />
-		
-		<!-- Build the plugin's jar -->
-		<jar destfile="${plugin.jar}">
-			<fileset dir="${build.plugin}" />
-			<fileset file="compilerplugin/scalac-plugin.xml" />
-		</jar>
-	</target>
+        <!-- Compile the Ant task (Depends on org.scalatest.tools.Runner)-->
+        <javac srcdir="${src}" destdir="${classes}" classpath="${build.class.path}" debug="yes">
+            <include name="org/scalatest/tools/ScalaTestTask.java" />
+        </javac>
+    </target>
 
-	<target name="compile-tests" depends="compile-main,compile-plugin">
-		<!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
-		
-		<scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
-			<include name="org/scalatest/EasySuite.scala" />
-		</scalac>
+    <target name="compile-plugin" depends="init">
+        <!-- Compile the plugin source from ${pluginsrc} to ${build.plugin} -->
+        <scalac srcdir="${pluginsrc}" destdir="${build.plugin}" target="jvm-1.5" classpathref="build.class.path" />
+        
+        <!-- Build the plugin's jar -->
+        <jar destfile="${plugin.jar}">
+            <fileset dir="${build.plugin}" />
+            <fileset file="compilerplugin/scalac-plugin.xml" />
+        </jar>
+    </target>
 
-		<!-- Compile the Java code from ${tests} into ${build.tests} -->
-		<javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
-		<!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
+    <target name="compile-tests" depends="compile-main,compile-plugin">
+        <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
+        
+        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
+            <include name="org/scalatest/EasySuite.scala" />
+        </scalac>
 
-		<scalac srcdir="${tests}/org/scalatest/jmock" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
-			<include name="**/*.scala" />
-		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/junit" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
-			<include name="**/*.scala" />
-		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/prop" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
-			<include name="**/*.scala" />
-		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/testng" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
-			<include name="**/*.scala" />
-		</scalac>
-		<scalac srcdir="${tests}/org/scalatest/tools" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
-			<include name="**/*.scala" />
-		</scalac>
+        <!-- Compile the Java code from ${tests} into ${build.tests} -->
+        <javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
+        <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
 
-		<scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
-			<include name="**/*.scala" />
-		</scalac>
-	</target>
+        <scalac srcdir="${tests}/org/scalatest/jmock" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
+            <include name="**/*.scala" />
+        </scalac>
+        <scalac srcdir="${tests}/org/scalatest/junit" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
+            <include name="**/*.scala" />
+        </scalac>
+        <scalac srcdir="${tests}/org/scalatest/prop" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
+            <include name="**/*.scala" />
+        </scalac>
+        <scalac srcdir="${tests}/org/scalatest/testng" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
+            <include name="**/*.scala" />
+        </scalac>
+        <scalac srcdir="${tests}/org/scalatest/tools" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
+            <include name="**/*.scala" />
+        </scalac>
+
+        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="${test.params}">
+            <include name="**/*.scala" />
+        </scalac>
+    </target>
 
 
 
-	<!-- Compile demo into its own directory. I.e., the class files will sit alongside the java files
+    <!-- Compile demo into its own directory. I.e., the class files will sit alongside the java files
        so that people can more easily look at them. All of these source files are used as demonstrations
        of something, usually described in articles on Artima.com. -->
-	<target name="demo" depends="dist">
-		<javac srcdir="${example}" destdir="${example}" classpath="${classes}:${lib}/junit-3.8.1.jar" debug="yes" />
-	</target>
+    <target name="demo" depends="dist">
+        <javac srcdir="${example}" destdir="${example}" classpath="${classes}:${lib}/junit-3.8.1.jar" debug="yes" />
+    </target>
 
-	<target name="doc" depends="compile">
-		<javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpath="${classes}" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved." />
+    <target name="doc" depends="compile">
+        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpath="${classes}" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved." />
 
-		<scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved.">
-			<include name="**/*.scala" />
-		</scaladoc>
-		<!--
+        <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved.">
+            <include name="**/*.scala" />
+        </scaladoc>
+        <!--
       <javadoc sourcepath="${example}"
         destdir="${demodoc}"
         packagenames="com.artima.examples.*"
@@ -187,173 +187,173 @@
         doctitle="ScalaTest Examples ${release}"
         bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved."/>
 -->
-	</target>
+    </target>
 
-	<target name="dist" depends="compile">
-		<!-- Create the distribution directory -->
-		<mkdir dir="${dist}/lib" />
-		<delete file="${dist}/lib/scalatest.jar" />
+    <target name="dist" depends="compile">
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}/lib" />
+        <delete file="${dist}/lib/scalatest.jar" />
 
-		<copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
-		<copy todir="${jar.contents}/images">
-			<fileset dir="${src}/images" />
-		</copy>
+        <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
+        <copy todir="${jar.contents}/images">
+            <fileset dir="${src}/images" />
+        </copy>
 
-		<!-- Put everything in ${jar.contents} into the MyProject-${DSTAMP}.jar file -->
-		<jar jarfile="${dist}/lib/scalatest.jar" basedir="${jar.contents}">
-			<manifest>
-				<attribute name="Main-Class" value="org.scalatest.tools.Runner" />
-				<attribute name="Class-Path" value="junit-4.1.jar" />
-			</manifest>
-		</jar>
-		<jar jarfile="${dist}/lib/scalatest-wbt.jar" basedir="${build.tests}" includes="org/scalatest/*.class" />
+        <!-- Put everything in ${jar.contents} into the MyProject-${DSTAMP}.jar file -->
+        <jar jarfile="${dist}/lib/scalatest.jar" basedir="${jar.contents}">
+            <manifest>
+                <attribute name="Main-Class" value="org.scalatest.tools.Runner" />
+                <attribute name="Class-Path" value="junit-4.1.jar" />
+            </manifest>
+        </jar>
+        <jar jarfile="${dist}/lib/scalatest-wbt.jar" basedir="${build.tests}" includes="org/scalatest/*.class" />
 
-		<echo message="All finished building ${project.name}!" />
-	</target>
+        <echo message="All finished building ${project.name}!" />
+    </target>
 
-	<target name="zipper" depends="allfiles">
-		<delete dir="${zipper}" />
-		<mkdir dir="${zipper}" />
+    <target name="zipper" depends="allfiles">
+        <delete dir="${zipper}" />
+        <mkdir dir="${zipper}" />
 
-		<copy file="${dist}/lib/scalatest.jar" tofile="${zipper}/scalatest-${release}/scalatest-${release}.jar" />
-		<copy file="${dist}/lib/scalatest-wbt.jar" tofile="${zipper}/scalatest-${release}/scalatest-${release}-tests.jar" />
+        <copy file="${dist}/lib/scalatest.jar" tofile="${zipper}/scalatest-${release}/scalatest-${release}.jar" />
+        <copy file="${dist}/lib/scalatest-wbt.jar" tofile="${zipper}/scalatest-${release}/scalatest-${release}-tests.jar" />
 
-		<copy file="README.txt" tofile="${zipper}/scalatest-${release}/README.txt" />
-		<copy file="LICENSE" tofile="${zipper}/scalatest-${release}/LICENSE" />
-		<copy file="NOTICE" tofile="${zipper}/scalatest-${release}/NOTICE" />
+        <copy file="README.txt" tofile="${zipper}/scalatest-${release}/README.txt" />
+        <copy file="LICENSE" tofile="${zipper}/scalatest-${release}/LICENSE" />
+        <copy file="NOTICE" tofile="${zipper}/scalatest-${release}/NOTICE" />
 
-		<copy todir="${zipper}/scalatest-${release}/doc">
-			<fileset dir="${doc}/" />
-		</copy>
+        <copy todir="${zipper}/scalatest-${release}/doc">
+            <fileset dir="${doc}/" />
+        </copy>
 
-		<copy todir="${zipper}/scalatest-${release}/src">
-			<fileset dir="${src}/" />
-		</copy>
+        <copy todir="${zipper}/scalatest-${release}/src">
+            <fileset dir="${src}/" />
+        </copy>
 
-		<copy todir="${zipper}/scalatest-${release}/tests">
-			<fileset dir="${tests}/" />
-		</copy>
+        <copy todir="${zipper}/scalatest-${release}/tests">
+            <fileset dir="${tests}/" />
+        </copy>
 
-		<!--
+        <!--
     <zip zipfile="${zipper}/scalatest-${release}/scalatest-${release}-src.zip" basedir="${src}"/>
     <zip zipfile="${zipper}/scalatest-${release}/scalatest-${release}-tests-src.zip" basedir="${tests}"/>
 -->
 
-		<zip zipfile="scalatest-${release}.zip" basedir="${zipper}" />
-	</target>
+        <zip zipfile="scalatest-${release}.zip" basedir="${zipper}" />
+    </target>
 
-	<target name="test" depends="dist">
-		<java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
+    <target name="test" depends="dist">
+        <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
 
-			<arg value="-p" />
-			<arg value="${build.tests} ${classes}" />
+            <arg value="-p" />
+            <arg value="${build.tests} ${classes}" />
 
-			<arg value="-g" />
-			<arg value="-o" />
+            <arg value="-g" />
+            <arg value="-o" />
 
-			<arg value="-m" />
-			<arg value="org.scalatest" />
+            <arg value="-m" />
+            <arg value="org.scalatest" />
 
-			<arg value="-m" />
-			<arg value="org.scalatest.matchers" />
+            <arg value="-m" />
+            <arg value="org.scalatest.matchers" />
 
-			<arg value="-m" />
-			<arg value="org.scalatest.testng" />
+            <arg value="-m" />
+            <arg value="org.scalatest.testng" />
 
-			<arg value="-m" />
-			<arg value="org.scalatest.junit" />
+            <arg value="-m" />
+            <arg value="org.scalatest.junit" />
 
-			<arg value="-m" />
-			<arg value="org.scalatest.prop" />
-		</java>
-	</target>
+            <arg value="-m" />
+            <arg value="org.scalatest.prop" />
+        </java>
+    </target>
 
-	<target name="bvtest" depends="dist">
-		<java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
+    <target name="bvtest" depends="dist">
+        <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
 
-			<arg value="-p" />
-			<arg value="${build.tests} ${classes}" />
+            <arg value="-p" />
+            <arg value="${build.tests} ${classes}" />
 
-			<arg value="-g" />
-			<arg value="-o" />
+            <arg value="-g" />
+            <arg value="-o" />
 
-			<arg value="-s" />
-			<arg value="org.scalatest.StackSpec" />
+            <arg value="-s" />
+            <arg value="org.scalatest.StackSpec" />
 
-			<arg value="-s" />
-			<arg value="org.scalatest.SpecSuite" />
+            <arg value="-s" />
+            <arg value="org.scalatest.SpecSuite" />
 
 <!--
-			<arg value="-s" />
-			<arg value="org.scalatest.SpecSuite" />
+            <arg value="-s" />
+            <arg value="org.scalatest.SpecSuite" />
 
-			<arg value="-s" />
-			<arg value="org.scalatest.StackSpec" />
+            <arg value="-s" />
+            <arg value="org.scalatest.StackSpec" />
 
-			<arg value="-s" />
-			<arg value="org.scalatest.PrintReporterSpec" />
+            <arg value="-s" />
+            <arg value="org.scalatest.PrintReporterSpec" />
 -->
-		</java>
-	</target>
+        </java>
+    </target>
 
 
-	<path id="example.class.path">
-		<pathelement location="${dist}/lib/scalatest.jar" />
-		<pathelement location="${classes}" />
-		<pathelement location="${build.tests}" />
-		<path refid="lib.path"></path>
-	</path>
+    <path id="example.class.path">
+        <pathelement location="${dist}/lib/scalatest.jar" />
+        <pathelement location="${classes}" />
+        <pathelement location="${build.tests}" />
+        <path refid="lib.path"></path>
+    </path>
 
 
-	<target name="testng-example" depends="dist">
-		<run-example package="org.scalatest.testng.example" />
-	</target>
+    <target name="testng-example" depends="dist">
+        <run-example package="org.scalatest.testng.example" />
+    </target>
 
-	<target name="junit-example" depends="dist">
-		<run-example package="org.scalatest.junit.example" />
-	</target>
-
-
-	<macrodef name="run-example">
-		<attribute name="package" />
-		<sequential>
-			<java classname="org.scalatest.tools.Runner" classpathref="example.class.path" fork="true">
-
-				<arg value="-p" />
-				<arg value="${build.tests} ${classes}" />
-
-				<arg value="-g" />
-				<arg value="-o" />
-
-				<arg value="-m" />
-				<arg value="@{package}" />
-			</java>
-		</sequential>
-	</macrodef>
-
-	<target name="allfiles" depends="dist, doc, demo" />
+    <target name="junit-example" depends="dist">
+        <run-example package="org.scalatest.junit.example" />
+    </target>
 
 
-	<target name="ant-task-test" depends="compile">
-		<taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask">
-			<classpath>
-				<pathelement location="${classes}" />
-				<pathelement location="${lib}/scala-library.jar" />
-			</classpath>
-		</taskdef>
+    <macrodef name="run-example">
+        <attribute name="package" />
+        <sequential>
+            <java classname="org.scalatest.tools.Runner" classpathref="example.class.path" fork="true">
 
-		<scalatest runpath="${build.tests};${classes}">
-			<runpath>
-				<pathelement location="dist" />
-			</runpath>
-			<runpathurl url="http://foo.com/bar.jar" />
+                <arg value="-p" />
+                <arg value="${build.tests} ${classes}" />
 
-			<suite classname="org.scalatest.SuiteSuite" />
-			
-			<reporter type="stdout" />
-			<reporter type="graphic" />
-		</scalatest>
-	</target>
+                <arg value="-g" />
+                <arg value="-o" />
+
+                <arg value="-m" />
+                <arg value="@{package}" />
+            </java>
+        </sequential>
+    </macrodef>
+
+    <target name="allfiles" depends="dist, doc, demo" />
+
+
+    <target name="ant-task-test" depends="compile">
+        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask">
+            <classpath>
+                <pathelement location="${classes}" />
+                <pathelement location="${lib}/scala-library.jar" />
+            </classpath>
+        </taskdef>
+
+        <scalatest runpath="${build.tests};${classes}">
+            <runpath>
+                <pathelement location="dist" />
+            </runpath>
+            <runpathurl url="http://foo.com/bar.jar" />
+
+            <suite classname="org.scalatest.SuiteSuite" />
+            
+            <reporter type="stdout" />
+            <reporter type="graphic" />
+        </scalatest>
+    </target>
 
 </project>
 
