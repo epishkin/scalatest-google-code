@@ -92,7 +92,7 @@
 
     <target name="gencode" depends="init">
         <!-- First, compile the code generator from ${generators} into ${build.generators} -->
-        <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
+        <fsc srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
         <!-- Then, run it. -->
         <java classname="GenFunSuiteN" classpathref="run.generators.class.path" fork="false" />
     </target>
@@ -100,48 +100,30 @@
     <target name="compile" depends="compile-main, compile-tests"/>
 
     <target name="compile-main" depends="gencode">
+
+        <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
+        <fsc srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
+
         <!-- Compile the Java code from ${src} into ${classes} -->
-        <javac srcdir="${src}" destdir="${classes}" debug="yes" classpathref="build.class.path" >
+        <javac srcdir="${src}" destdir="${classes}" classpathref="build.class.path" debug="yes">
             <include name="org/scalatest/Ignore.java" />
             <include name="org/scalatest/junit/JUnitVersionHelper.java"/>
-        </javac>
-
-        <!-- Then compile the Scala code from ${src} into ${classes} -->
-        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
-
-        <!-- Compile the Ant task (Depends on org.scalatest.tools.Runner)-->
-        <javac srcdir="${src}" destdir="${classes}" classpath="${build.class.path}" debug="yes">
             <include name="org/scalatest/tools/ScalaTestTask.java" />
         </javac>
     </target>
 
     <target name="compile-tests" depends="compile-main">
         <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
-        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+        <fsc srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
             <include name="org/scalatest/EasySuite.scala" />
-        </scalac>
+        </fsc>
 
         <!-- Compile the Java code from ${tests} into ${build.tests} -->
         <javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
         <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
-        <scalac srcdir="${tests}/org/scalatest/jmock" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
+        <fsc srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
             <include name="**/*.scala" />
-        </scalac>
-        <scalac srcdir="${tests}/org/scalatest/junit" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
-            <include name="**/*.scala" />
-        </scalac>
-        <scalac srcdir="${tests}/org/scalatest/prop" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
-            <include name="**/*.scala" />
-        </scalac>
-        <scalac srcdir="${tests}/org/scalatest/testng" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
-            <include name="**/*.scala" />
-        </scalac>
-        <scalac srcdir="${tests}/org/scalatest/tools" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
-            <include name="**/*.scala" />
-        </scalac>
-        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
-            <include name="**/*.scala" />
-        </scalac>
+        </fsc>
     </target>
 
 
