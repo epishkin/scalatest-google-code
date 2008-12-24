@@ -472,6 +472,181 @@ import scala.collection.immutable.ListSet
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
+ * <strong>Shared examples</strong>
+ *
+ * <p>
+ * You can place examples that you would like to reuse in multiple places in methods or functions, then include these
+ * "shared" examples wherever you want to reuse them by invoking the method or function. Here's a longer code example
+ * illustrating this manner of factoring out of common examples into methods:
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import org.scalatest.SpecDasher
+ * 
+ * import scala.collection.mutable.ListBuffer
+ * 
+ * class Stack[T] {
+ *   val MAX = 10
+ *   private var buf = new ListBuffer[T]
+ *   def push(o: T) {
+ *     if (!full)
+ *       o +: buf
+ *     else
+ *       throw new IllegalStateException("can't push onto a full stack")
+ *   }
+ *   def pop(): T = {
+ *     if (!empty)
+ *       buf.remove(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *   def peek: T = {
+ *     if (!empty)
+ *       buf(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *   def full: Boolean = buf.size == MAX
+ *   def empty: Boolean = buf.size == 0
+ *   def size = buf.size
+ * }
+ * 
+ * 
+ * trait StackBehaviors { this: Spec =>
+ * 
+ *   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
+ * 
+ *     it("should be non-empty") {
+ *       assert(!stack.empty)
+ *     }  
+ * 
+ *     it("should return the top item on peek") {
+ *       assert(stack.peek === lastItemAdded)
+ *     }
+ *   
+ *     it("should not remove the top item on peek") {
+ *       val size = stack.size
+ *       assert(stack.peek === lastItemAdded)
+ *       assert(stack.size === size)
+ *     }
+ *   
+ *     it("should remove the top item on pop") {
+ *       val size = stack.size
+ *       assert(stack.pop === lastItemAdded)
+ *       assert(stack.size === size - 1)
+ *     }
+ *   }
+ *   
+ *   def nonFullStack(stack: Stack[Int]) {
+ *       
+ *     it("should not be full") {
+ *       assert(!stack.full)
+ *     }
+ *       
+ *     it("should add to the top on push") {
+ *       val size = stack.size
+ *       stack.push(7)
+ *       assert(stack.size === size + 1)
+ *       assert(stack.peek === 7)
+ *     }
+ *   }
+ * }
+ * 
+ * trait StackFixtureCreationMethods {
+ * 
+ *   def emptyStack = new Stack[Int]
+ *   def fullStack = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 0 until stack.MAX)
+ *       stack.push(i)
+ *     stack
+ *   }
+ *   def stackWithOneItem = {
+ *     val stack = new Stack[Int]
+ *     stack.push(9)
+ *     stack
+ *   }
+ *   def stackWithOneItemLessThanCapacity = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 1 to 9)
+ *       stack.push(i)
+ *     stack
+ *   }
+ *   val lastValuePushed = 9
+ * }
+ *       
+ * class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods
+ *     with StackBehaviors {
+ * 
+ *   describe("A Stack") {
+ * 
+ *     describe("(when empty)") {
+ *       
+ *       it("should be empty") {
+ *         assert(emptyStack.empty)
+ *       }
+ * 
+ *       it("should complain on peek") {
+ *         intercept[IllegalStateException] {
+ *           emptyStack.peek
+ *         }
+ *       }
+ * 
+ *       it("should complain on pop") {
+ *         intercept[IllegalStateException] {
+ *           emptyStack.pop
+ *         }
+ *       }
+ *     }
+ * 
+ *     describe("(with one item)") {
+ *       nonEmptyStack(lastValuePushed)(stackWithOneItem)
+ *       nonFullStack(stackWithOneItem)
+ *     }
+ *     
+ *     describe("(with one item less than capacity)") {
+ *       nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
+ *       nonFullStack(stackWithOneItemLessThanCapacity)
+ *     }
+ * 
+ *     describe("(full)") {
+ *       
+ *       it("should be full") {
+ *         assert(fullStack.full)
+ *       }
+ * 
+ *       nonEmptyStack(lastValuePushed)(fullStack)
+ * 
+ *       it("should complain on a push") {
+ *         intercept[IllegalStateException] {
+ *           fullStack.push(10)
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In this example, the names of the methods (and the currying in <code>nonEmptyStack</code>) were chosen so that they will look nice when used
+ * with a syntax that will be available in the future release of ScalaTest that includes ScalaTest matchers.
+ * With the matcher syntax, instead of saying this:
+ * </p>
+ *
+ * <pre>
+ * nonEmptyStack(lastValuePushed)(stackWithOneItem)
+ * nonFullStack(stackWithOneItem)
+ * </pre>
+ *
+ * <p>
+ * You'll be able to write:
+ * </p>
+ *
+ * <pre>
+ * stackWithOneItem should behave like nonEmptyStack(lastValuePushed)
+ * stackWithOneItem should behave like nonFullStack
+ * </pre>
+ * 
  * @author Bill Venners
  */
 trait Spec extends Suite with SpecDasher {
