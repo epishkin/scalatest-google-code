@@ -502,7 +502,7 @@ trait Spec extends Suite with SpecDasher {
    * @throws IllegalArgumentException if a test with the same name has been registered previously
    * @throws NullPointerException if <code>sharedExamples</code> is <code>null</code>
    */
-  protected def includeExamples[T](sharedExamples: Examples) {
+  protected[scalatest] def includeExamples[T](sharedExamples: Examples) {
     if (sharedExamples == null)
       throw new NullPointerException("sharedExamples was null")
     val includedExamples = sharedExamples.examples(currentBranch)

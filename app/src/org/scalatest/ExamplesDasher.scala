@@ -54,7 +54,7 @@ import NodeFamily._
  *
  * @author Bill Venners
  */
-@deprecated trait ExamplesDasher { this: Examples =>
+private[scalatest] trait ExamplesDasher { this: Examples =>
 
   /**
    * Class used via an implicit conversion to enable examples in an <code>Examples</code>
