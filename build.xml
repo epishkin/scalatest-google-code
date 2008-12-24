@@ -113,17 +113,12 @@
     </target>
 
     <target name="compile-tests" depends="compile-main">
-        <!-- Compile EasySuite.scala from ${tests} into ${build.tests} -->
-        <fsc srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
-            <include name="org/scalatest/EasySuite.scala" />
-        </fsc>
+
+        <!-- Compile the Scala code from ${tests} into ${build.tests} -->
+        <fsc srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path"/>
 
         <!-- Compile the Java code from ${tests} into ${build.tests} -->
         <javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
-        <!-- Compile the rest of the Scala code from ${tests} into ${build.tests} -->
-        <fsc srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path">
-            <include name="**/*.scala" />
-        </fsc>
     </target>
 
 
@@ -216,9 +211,6 @@
 
             <arg value="-m" />
             <arg value="org.scalatest" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.matchers" />
 
             <arg value="-m" />
             <arg value="org.scalatest.testng" />
