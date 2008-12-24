@@ -521,6 +521,14 @@ trait FunSuite extends Suite {
   
   // later will initialize with an informer that registers things between tests for later passing to the informer
   private var currentInformer = zombieInformer
+
+  /**
+   * Returns an <code>Informer</code> that during test execution will forward strings (or reports) passed to its
+   * apply method to the current reporter. If invoked inside a test function, it will forward the information to
+   * the current reporter immediately. If invoked outside a test function, but in the primary constructor, it
+   * will register the info for forwarding later during test execution. If invoked at any other time, it will
+   * throw an exception.
+   */
   implicit def info: Informer = {
     if (currentInformer == null)
       registrationInformer
@@ -565,14 +573,14 @@ trait FunSuite extends Suite {
       }
     }
 
-  /**
-   * Register a test with the specified name, optional groups, and function value that takes no arguments.
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The passed test name must not have been registered previously on
-   * this <code>FunSuite</code> instance.
-   *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
-   */
+    /**
+     *  Register a test with the specified name, optional groups, and function value that takes no arguments.
+     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+     * methods. The passed test name must not have been registered previously on
+     * this <code>FunSuite</code> instance.
+     *
+     * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+     */
   protected def test(testName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
