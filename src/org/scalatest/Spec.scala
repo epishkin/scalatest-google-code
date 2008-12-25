@@ -606,7 +606,7 @@ import scala.collection.immutable.ListSet
  *       includeNonFullStackExamples(stackWithOneItemLessThanCapacity)
  *     }
  * 
- *     describe("(full)") {
+ *     describe("(when full)") {
  *       
  *       it("should be full") {
  *         assert(fullStack.full)
@@ -649,7 +649,7 @@ import scala.collection.immutable.ListSet
  * - should remove the top item on pop
  * - should not be full
  * - should add to the top on push
- * A Stack (full)
+ * A Stack (when full)
  * - should be full
  * - should be non-empty
  * - should return the top item on peek
