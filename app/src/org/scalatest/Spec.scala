@@ -480,8 +480,8 @@ import scala.collection.immutable.ListSet
  * illustrating this manner of factoring out of common examples into methods:
  *
  * <pre>
+ * 
  * import org.scalatest.Spec
- * import org.scalatest.SpecDasher
  * 
  * import scala.collection.mutable.ListBuffer
  * 
@@ -514,7 +514,7 @@ import scala.collection.immutable.ListSet
  * 
  * trait StackBehaviors { this: Spec =>
  * 
- *   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
+ *   def includeNonEmptyStackExamples(stack: Stack[Int], lastItemAdded: Int) {
  * 
  *     it("should be non-empty") {
  *       assert(!stack.empty)
@@ -537,7 +537,7 @@ import scala.collection.immutable.ListSet
  *     }
  *   }
  *   
- *   def nonFullStack(stack: Stack[Int]) {
+ *   def includeNonFullStackExamples(stack: Stack[Int]) {
  *       
  *     it("should not be full") {
  *       assert(!stack.full)
@@ -552,8 +552,9 @@ import scala.collection.immutable.ListSet
  *   }
  * }
  * 
- * trait StackFixtureCreationMethods {
+ * class StackSpec extends Spec with StackBehaviors {
  * 
+ *   // fixture creation methods
  *   def emptyStack = new Stack[Int]
  *   def fullStack = {
  *     val stack = new Stack[Int]
@@ -573,10 +574,6 @@ import scala.collection.immutable.ListSet
  *     stack
  *   }
  *   val lastValuePushed = 9
- * }
- *       
- * class StackSpec extends Spec with SpecDasher with StackFixtureCreationMethods
- *     with StackBehaviors {
  * 
  *   describe("A Stack") {
  * 
@@ -600,13 +597,13 @@ import scala.collection.immutable.ListSet
  *     }
  * 
  *     describe("(with one item)") {
- *       nonEmptyStack(lastValuePushed)(stackWithOneItem)
- *       nonFullStack(stackWithOneItem)
+ *       includeNonEmptyStackExamples(stackWithOneItem, lastValuePushed)
+ *       includeNonFullStackExamples(stackWithOneItem)
  *     }
  *     
  *     describe("(with one item less than capacity)") {
- *       nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
- *       nonFullStack(stackWithOneItemLessThanCapacity)
+ *       includeNonEmptyStackExamples(stackWithOneItemLessThanCapacity, lastValuePushed)
+ *       includeNonFullStackExamples(stackWithOneItemLessThanCapacity)
  *     }
  * 
  *     describe("(full)") {
@@ -615,7 +612,7 @@ import scala.collection.immutable.ListSet
  *         assert(fullStack.full)
  *       }
  * 
- *       nonEmptyStack(lastValuePushed)(fullStack)
+ *       includeNonEmptyStackExamples(fullStack, lastValuePushed)
  * 
  *       it("should complain on a push") {
  *         intercept[IllegalStateException] {
@@ -628,23 +625,37 @@ import scala.collection.immutable.ListSet
  * </pre>
  *
  * <p>
- * In this example, the names of the methods (and the currying in <code>nonEmptyStack</code>) were chosen so that they will look nice when used
- * with a syntax that will be available in the future release of ScalaTest that includes ScalaTest matchers.
- * With the matcher syntax, instead of saying this:
+ * If you load this file into the Scala interpreter (with scalatest's JAR file on the class path), and execute it,
+ * you'll see:
  * </p>
  *
  * <pre>
- * nonEmptyStack(lastValuePushed)(stackWithOneItem)
- * nonFullStack(stackWithOneItem)
- * </pre>
- *
- * <p>
- * You'll be able to write:
- * </p>
- *
- * <pre>
- * stackWithOneItem should behave like nonEmptyStack(lastValuePushed)
- * stackWithOneItem should behave like nonFullStack
+ * scala> (new StackSpec).execute()
+ * A Stack (when empty)
+ * - should be empty
+ * - should complain on peek
+ * - should complain on pop
+ * A Stack (with one item)
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (with one item less than capacity)
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (full)
+ * - should be full
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should complain on a push
  * </pre>
  * 
  * @author Bill Venners
@@ -699,6 +710,26 @@ trait Spec extends Suite with SpecDasher {
   }
 
   /**
+   * Register a test with the given spec text and test function value that takes no arguments.
+   * An invocation of this method is called an &#8220;example.&#8221;
+   *
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>Spec</code> instance.
+   *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testFun the test function
+   * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
+   */
+  protected def it(specText: String)(testFun: => Unit) {
+    it(specText, Array[Group](): _*)(testFun)
+  }
+
+  /**
    * Register a test to ignore, which has the given spec text, optional groups, and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
    * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
@@ -725,6 +756,25 @@ trait Spec extends Suite with SpecDasher {
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
   }
 
+  /**
+   * Register a test to ignore, which has the given spec text and test function value that takes no arguments.
+   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>Spec</code> instance.
+   *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testFun the test function
+   * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
+   */
+  protected def ignore(specText: String)(testFun: => Unit) {
+    ignore(specText, Array[Group](): _*)(testFun)
+  }
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
    * passed function value may contain more describers (defined with <code>describe</code>) and/or examples
