@@ -1050,3 +1050,186 @@ trait Spec extends Suite with SpecDasher {
   override def testNames: Set[String] = ListSet(examplesList.map(_.testName): _*)
 }
 
+/*
+Here's one way to do pending. I'll need to add a testPending message to Reporter. The pending methods
+that take a testFun would execute the function, catch any exception that comes out and probably throw
+it away, then throw a pending exception. The caller would catch PendingException and report it with
+a testPending rather than a testSucceeded or testFailed message:
+
+Actually I changed my mind. Won't do this. Will just make a
+
+object pending
+
+And have it, text, scenario, and ignore that take it after the string, before any groups.
+
+  it("should do something", pending) {}
+
+I could eventually give the pending object an apply method, which would just do the usual take
+an implicit Informer thing, but I think I will ask people just to use info to start with:
+
+  scenario("should be almost spiritual", pending) {}
+
+  scenario("should be almost spiritual", pending) {
+
+    given("bla given")
+      info("pending bla bla bla bla bla")
+    when("bla when")
+    and("bla and")
+    then("bla then")
+  }
+
+The reason I thought it might be confusing is to see pending down there you may think the whole thing is pending
+but it isn't pending unless you put pending after the specText:
+  scenario("should be almost spiritual", pending) {
+
+    given("bla given")
+      pending("bla bla bla bla bla")
+    when("bla when")
+    and("bla and")
+    then("bla then")
+  }
+
+Well maybe that's OK. I could also make them different by making the one after specText all caps:
+
+  scenario("should be almost spiritual", PENDING) {
+
+    given("bla given")
+      pending("bla bla bla bla bla")
+    when("bla when")
+    and("bla and")
+    then("bla then")
+  }
+
+Or just the first letter upper case?
+
+  scenario("should be almost spiritual", Pending) {
+
+    given("bla given")
+      pending("bla bla bla bla bla")
+    when("bla when")
+    and("bla and")
+    then("bla then")
+  }
+
+Nah, that's too subtle
+
+I can have an @Pending annotation for Suite, and this can be when
+I make a requirement that the group annotations must extend GroupAnnotation
+interface.
+
+class Spec {
+
+  class PendingException(msg: String) extends RuntimeException(msg)
+
+  def pending(msg: String)(testFun: => Unit) {
+    testFun
+    throw new PendingException(msg)
+  }
+
+  def pending: Unit = pending("Not Yet Implemented") {}
+
+  def pending(testFun: => Unit): Unit = pending("Not Yet Implemented") {}
+
+  def it(specText: String)(testFun: => Unit) {
+    println(specText + " implemented")
+  }
+  def given(s: String) { println("given " + s) }
+  def when(s: String) { println("when " + s) }
+  def then(s: String) { println("then " + s) }
+  def and(s: String) { println("and " + s) }
+}
+
+class MySpec extends Spec {
+
+  it("should be almost spiritual") { pending }
+
+  it("should be almost spiritual") {
+    pending("something") {
+      given("bla given")
+      when("bla when")
+      and("bla and")
+      then("bla then")
+    }
+  }
+
+  it("should be almost spiritual") {
+    pending {
+      given("bla given")
+      when("bla when")
+      and("bla and")
+      then("bla then")
+    }
+  }
+
+  it("should be quite animal") {
+    println("hi")
+  }
+}
+
+The other thought I had was that runTests can wrap the passed reporter in a SpecReporter, which would
+ hold onto infoProvided messages until after the next testSucceeded or testFailed message, at which
+ point it would release them. This would also be done in Scenarios. That way the given, when, then stuff
+ would show up under the line about the test itself:
+
+ - should do something decent !!! FAILED !!!
+   + given some setup thing
+   + and some other setup then
+   + when some action happens
+   + then some result occurs
+   + and some other result occurs
+
+ This would be the spec output even though the information that the test failed was reported chronologically
+ after the given when then info provided's were reported.
+
+// I like this one. Features, not Feature. Can have
+// a FeatureParser though.
+class MyFeatures extends Features {
+
+  feature("transfer from savings to checking account") {
+
+    As a "savings account holder"
+    I want "to transfer money from my savings account to my checking account"
+    So that "I can get cash easily from an ATM"
+
+    scenario("savings account has sufficient funds", PENDING) {
+      given("my savings account balance is $100")
+      and("my checking account balance is $10")
+      when("I transfer $20 from savings to checking")
+      then("my savings account balance should be $80")
+      and("my checking account balance should be $30")
+    }
+
+    scenario("savings account has insufficient funds", PENDING) {
+      given("my savings account balance is $50")
+      and("my checking account balance is $10")
+      when("I transfer $60 from savings to checking")
+      then("my savings account balance should be $50")
+      and("my checking account balance should be $10")
+    }
+  }
+
+  feature("transfer from checking to savings account") {
+
+    As a "savings account holder"
+    I want "to transfer money from my savings account to my checking account"
+    So that "I can get cash easily from an ATM"
+
+    scenario("savings account has sufficient funds", PENDING) {
+      given("my savings account balance is $100")
+      and("my checking account balance is $10")
+      when("I transfer $20 from savings to checking")
+      then("my savings account balance should be $80")
+      and("my checking account balance should be $30")
+    }
+
+    scenario("savings account has insufficient funds", PENDING) {
+      given("my savings account balance is $50")
+      and("my checking account balance is $10")
+      when("I transfer $60 from savings to checking")
+      then("my savings account balance should be $50")
+      and("my checking account balance should be $10")
+    }
+  }
+}
+ */
+
