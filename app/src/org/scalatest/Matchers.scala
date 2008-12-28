@@ -19,12 +19,6 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
 
-private[scalatest] case class MatcherResult(
-  matches: Boolean,
-  failureMessage: String,
-  negativeFailureMessage: String
-)
-
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
 // to talk about method names, for example.
@@ -99,63 +93,6 @@ private[scalatest] object Helper {
         }
       }
   }
-}
-
-private[scalatest] trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
-
-  // left is generally the object on which should is invoked.
-  def apply(left: T): MatcherResult
-
-  // left is generally the object on which should is invoked. leftMatcher
-  // is the left operand to and. For example, in:
-  // cat should { haveLives (9) and landOn (feet) }
-  // left is 'cat' and leftMatcher is the matcher produced by 'haveLives (9)'.
-  // rightMatcher, by the way, is the matcher produced by 'landOn (feet)'
-  def and[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
-    new Matcher[U] {
-      def apply(left: U) = {
-        val leftMatcherResult = leftMatcher(left)
-        if (!leftMatcherResult.matches)
-          MatcherResult(
-            false,
-            leftMatcherResult.failureMessage,
-            leftMatcherResult.negativeFailureMessage
-          )
-        else {
-          val rightMatcherResult = rightMatcher(left)
-          MatcherResult(
-            rightMatcherResult.matches,
-            Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.failureMessage),
-            Resources("commaAnd", leftMatcherResult.negativeFailureMessage, rightMatcherResult.negativeFailureMessage)
-          )
-        }
-      }
-    }
-
-  def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
-
-  def or[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
-    new Matcher[U] {
-      def apply(left: U) = {
-        val leftMatcherResult = leftMatcher(left)
-        if (leftMatcherResult.matches)
-          MatcherResult(
-            true,
-            leftMatcherResult.negativeFailureMessage,
-            leftMatcherResult.failureMessage
-          )
-        else {
-          val rightMatcherResult = rightMatcher(left)
-          MatcherResult(
-            rightMatcherResult.matches,
-            Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.failureMessage),
-            Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.negativeFailureMessage)
-          )
-        }
-      }
-    }
-
-  def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
 }
 
 private[scalatest] trait BaseMatchers extends Assertions {
