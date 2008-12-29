@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * @author Bill Venners
  */
-private[scalatest] class Scenarios(override val suiteName: String) extends Suite with GivenWhenThen {
+private[scalatest] class FeatureSpec(override val suiteName: String) extends Suite with GivenWhenThen {
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
@@ -119,7 +119,7 @@ private[scalatest] class Scenarios(override val suiteName: String) extends Suite
    * Register a scenario with the specified name, optional groups, and function value that takes no arguments.
    * This method will register the scenario for later execution via an invocation of one of the <code>execute</code>
    * methods. The passed scenario name must not have been registered previously on
-   * this <code>Scenarios</code> instance.
+   * this <code>FeatureSpec</code> instance.
    *
    * @throws IllegalArgumentException if <code>scenarioName</code> had been registered previously
    */
@@ -150,7 +150,7 @@ private[scalatest] class Scenarios(override val suiteName: String) extends Suite
    * methods. This method exists to make it easy to ignore an existing scenario method by changing the call to <code>scenario</code>
    * to <code>ignore</code> without deleting or commenting out the actual scenario code. The scenario will not be executed, but a
    * report will be sent that indicates the scenario was ignored. The passed scenario name must not have been registered previously on
-   * this <code>Scenarios</code> instance.
+   * this <code>FeatureSpec</code> instance.
    *
    * @throws IllegalArgumentException if <code>scenarioName</code> had been registered previously
    */
@@ -168,7 +168,7 @@ private[scalatest] class Scenarios(override val suiteName: String) extends Suite
   }
 
   /**
-  * An immutable <code>Set</code> of scenario names. If this <code>Scenarios</code> contains no scenarios, this method returns an empty <code>Set</code>.
+  * An immutable <code>Set</code> of scenario names. If this <code>FeatureSpec</code> contains no scenarios, this method returns an empty <code>Set</code>.
   *
   * <p>
   * This trait's implementation of this method will return a set that contains the names of all registered scenarios. The set's iterator will
@@ -187,7 +187,7 @@ private[scalatest] class Scenarios(override val suiteName: String) extends Suite
    * @param scenarioName the name of one scenario to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param properties a <code>Map</code> of properties that can be used by the executing <code>Scenarios</code>.
+   * @param properties a <code>Map</code> of properties that can be used by the executing <code>FeatureSpec</code>.
    * @throws NullPointerException if any of <code>scenarioName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
    *     is <code>null</code>.
    */
@@ -261,8 +261,8 @@ private[scalatest] class Scenarios(override val suiteName: String) extends Suite
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> group names to which scenarios in this <code>Scenarios</code> belong, and values
-   * the <code>Set</code> of scenario names that belong to each group. If this <code>Scenarios</code> contains no groups, this method returns an empty <code>Map</code>.
+   * A <code>Map</code> whose keys are <code>String</code> group names to which scenarios in this <code>FeatureSpec</code> belong, and values
+   * the <code>Set</code> of scenario names that belong to each group. If this <code>FeatureSpec</code> contains no groups, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
