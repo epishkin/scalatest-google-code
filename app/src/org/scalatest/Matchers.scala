@@ -283,6 +283,8 @@ trait Matchers extends Assertions {
     }
 
   protected class HaveWord {
+
+    // TODO: And size should do the structural view bounds stuff too. Why should length have all the fun?
     def size(expectedSize: Int) =
       new Matcher[Collection[Any]] {
         def apply(left: Collection[Any]) =
@@ -335,6 +337,9 @@ trait Matchers extends Assertions {
           )
       }
     }
+
+
+    // TODO: I think this one should also use the structural view bounds stuff.
     def length(expectedLength: Int) =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
