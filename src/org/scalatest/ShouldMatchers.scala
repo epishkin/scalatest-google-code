@@ -104,7 +104,10 @@ trait ShouldMatchers extends Matchers {
 
   protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
 
- protected class LengthWrapperShouldWrapper[A <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  // I think the type hasn't been converted yet here. It is just a pass-through. It finally gets
+  // converted in ResultOfHaveWordForLengthWrapper, at which point the actual implicit conversions
+  // from String, Array, and the structural types get applied.
+  protected class LengthShouldWrapper[A <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
       new ResultOfHaveWordForLengthWrapper(left, true)
     }
@@ -210,9 +213,17 @@ trait ShouldMatchers extends Matchers {
   implicit def convertToArrayShouldWrapper[T](o: Array[T]): ArrayShouldWrapper[T] = new ArrayShouldWrapper[T](o)
   implicit def convertToListShouldWrapper[T](o: List[T]): ListShouldWrapper[T] = new ListShouldWrapper[T](o)
   implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
-  implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): LengthWrapperShouldWrapper[T] = new LengthWrapperShouldWrapper[T](o)
-  implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthWrapperShouldWrapper[T] = new LengthWrapperShouldWrapper[T](o)
-  implicit def shouldifyForLengthMethod[T <:{ def length(): Int}](o: T): LengthWrapperShouldWrapper[T] = new LengthWrapperShouldWrapper[T](o)
+
+  // This implicit conversion is just used to trigger the addition of the should method. The LengthShouldWrapper
+  // doesn't actually convert them, just passes it through. The conversion that happens here is to LengthShouldWrapper,
+  // and later, inside ResultOfHaveWordForLengthWrapper, the implicit conversion from T to LengthWrapper takes place. So
+  // weirdly enough, here strings are treated structurally for the implicit that adds the should, but later they are
+  // treated nominally by the implicit conversion from plain old String to StringLengthWrapper. So when length is
+  // ultimately invoked up in ResultOfHaveWordForLengthWrapper, it is done directly, not with reflection. That's my
+  // theory anyway.
+  implicit def convertHasGetLengthMethodToLengthShouldWrapper[T <:{ def getLength(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasLengthFieldToLengthShouldWrapper[T <:{ val length: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasLengthMethodToLengthShouldWrapper[T <:{ def length(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
     /*
   implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): GetLengthShouldalizer[T] = new GetLengthShouldalizer[T](o)
   implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthFieldShouldalizer[T] = new LengthFieldShouldalizer[T](o)
