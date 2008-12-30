@@ -33,7 +33,7 @@ private[scalatest] object UnquotedString {
 /*
 There are a set of implicit conversions that take different static types to Shouldalizers.
 The one that gets applied will be the one that matches the static type of left. The result
-of the implicit conversion will be a Shouldalizer.
+of the implicit conversion will be a ShouldWrapper.
 
 The should methods take different static types, so they are overloaded. These types don't all
 inherit from the same supertype. There's a plain-old Matcher for example, but there's also maybe
@@ -76,17 +76,17 @@ private[scalatest] object Helper {
 trait Matchers extends Assertions {
 
   //
-  // This class is used as the return type of the overloaded should method (in MapShouldalizer)
+  // This class is used as the return type of the overloaded should method (in MapShouldWrapper)
   // that takes a HaveWord. It's key method will be called in situations like this:
   //
   // map should have key 1
   //
   // This gets changed to :
   //
-  // shouldifyForMap(map).should(have).key(1)
+  // convertToMapShouldWrapper(map).should(have).key(1)
   //
-  // Thus, the map is wrapped in a shouldifyForMap call via an implicit conversion, which results in 
-  // a MapShouldalizer. This has a should method that takes a HaveWord. That method returns a
+  // Thus, the map is wrapped in a convertToMapShouldWrapper call via an implicit conversion, which results in
+  // a MapShouldWrapper. This has a should method that takes a HaveWord. That method returns a
   // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
   // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
   // 
@@ -399,17 +399,17 @@ trait Matchers extends Assertions {
   }
   
   //
-  // This class is used as the return type of the overloaded should method (in CollectionShouldalizer)
+  // This class is used as the return type of the overloaded should method (in CollectionShouldWrapper)
   // that takes a HaveWord. It's size method will be called in situations like this:
   //
   // list should have size 1
   //
   // This gets changed to :
   //
-  // shouldifyForCollection(list).should(have).size(1)
+  // convertToCollectionShouldWrapper(list).should(have).size(1)
   //
-  // Thus, the list is wrapped in a shouldifyForCollection call via an implicit conversion, which results in 
-  // a CollectionShouldalizer. This has a should method that takes a HaveWord. That method returns a
+  // Thus, the list is wrapped in a convertToCollectionShouldWrapper call via an implicit conversion, which results in
+  // a CollectionShouldWrapper. This has a should method that takes a HaveWord. That method returns a
   // ResultOfHaveWordForCollectionPassedToShould that remembers the map to the left of should. Then this class
   // has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
   // 

@@ -102,34 +102,15 @@ trait ShouldMatchers extends Matchers {
   }
 */
 
-  protected class Shouldalizer[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
+  protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
 
-  protected class LengthWrapperShouldalizer[A <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+ protected class LengthWrapperShouldWrapper[A <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
       new ResultOfHaveWordForLengthWrapper(left, true)
     }
   }
-/*
-  protected class GetLengthShouldalizer[A <: { def getLength(): Int }](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
-    def should(haveWord: HaveWord): ResultOfHaveWordForGetLength[A] = {
-      new ResultOfHaveWordForGetLength(left, true)
-    }
-  }
 
-  protected class LengthFieldShouldalizer[A <: { val length: Int }](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
-    def should(haveWord: HaveWord): ResultOfHaveWordForLengthField[A] = {
-      new ResultOfHaveWordForLengthField(left, true)
-    }
-  }
-
-  protected class LengthMethodShouldalizer[A <: { def length(): Int }](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
-    def should(haveWord: HaveWord): ResultOfHaveWordForLengthMethod[A] = {
-      new ResultOfHaveWordForLengthMethod(left, true)
-    }
-  }
-*/
-
-  protected class StringShouldalizer(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
+  protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
@@ -162,7 +143,7 @@ trait ShouldMatchers extends Matchers {
     } */
   }
 
-  protected class MapShouldalizer[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]] {
+  protected class MapShouldWrapper[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]] {
     def should(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
       new ResultOfContainWordForIterable(left, true)
     }
@@ -210,29 +191,29 @@ trait ShouldMatchers extends Matchers {
     } */
   }
   
-  protected class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
+  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
   
-  protected class SeqShouldalizer[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
+  protected class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
-  protected class ArrayShouldalizer[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
+  protected class ArrayShouldWrapper[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
-  protected class ListShouldalizer[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
+  protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
-  implicit def shouldify[T](o: T): Shouldalizer[T] = new Shouldalizer(o)
-  implicit def shouldifyForMap[K, V](o: Map[K, V]): MapShouldalizer[K, V] = new MapShouldalizer[K, V](o)
-  implicit def shouldifyForCollection[T](o: Collection[T]): CollectionShouldalizer[T] = new CollectionShouldalizer[T](o)
-  implicit def shouldifyForSeq[T](o: Seq[T]): SeqShouldalizer[T] = new SeqShouldalizer[T](o)
-  implicit def shouldifyForArray[T](o: Array[T]): ArrayShouldalizer[T] = new ArrayShouldalizer[T](o)
-  implicit def shouldifyForList[T](o: List[T]): ListShouldalizer[T] = new ListShouldalizer[T](o)
-  implicit def shouldifyForString[K, V](o: String): StringShouldalizer = new StringShouldalizer(o)
-  implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): LengthWrapperShouldalizer[T] = new LengthWrapperShouldalizer[T](o)
-  implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthWrapperShouldalizer[T] = new LengthWrapperShouldalizer[T](o)
-  implicit def shouldifyForLengthMethod[T <:{ def length(): Int}](o: T): LengthWrapperShouldalizer[T] = new LengthWrapperShouldalizer[T](o)
-/*
+  implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
+  implicit def convertToMapShouldWrapper[K, V](o: Map[K, V]): MapShouldWrapper[K, V] = new MapShouldWrapper[K, V](o)
+  implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
+  implicit def convertToSeqShouldWrapper[T](o: Seq[T]): SeqShouldWrapper[T] = new SeqShouldWrapper[T](o)
+  implicit def convertToArrayShouldWrapper[T](o: Array[T]): ArrayShouldWrapper[T] = new ArrayShouldWrapper[T](o)
+  implicit def convertToListShouldWrapper[T](o: List[T]): ListShouldWrapper[T] = new ListShouldWrapper[T](o)
+  implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
+  implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): LengthWrapperShouldWrapper[T] = new LengthWrapperShouldWrapper[T](o)
+  implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthWrapperShouldWrapper[T] = new LengthWrapperShouldWrapper[T](o)
+  implicit def shouldifyForLengthMethod[T <:{ def length(): Int}](o: T): LengthWrapperShouldWrapper[T] = new LengthWrapperShouldWrapper[T](o)
+    /*
   implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): GetLengthShouldalizer[T] = new GetLengthShouldalizer[T](o)
   implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthFieldShouldalizer[T] = new LengthFieldShouldalizer[T](o)
   implicit def shouldifyForLengthMethod[T <:{ def length(): Int}](o: T): LengthMethodShouldalizer[T] = new LengthMethodShouldalizer[T](o)
