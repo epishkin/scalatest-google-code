@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-private[scalatest] abstract class ScenarioParser {
+private[scalatest] abstract class FeatureParser {
 
   type F
   def createFixture: F
@@ -33,5 +33,7 @@ private[scalatest] abstract class ScenarioParser {
   class Twosie (val first: String, val second: String, val third: String)
 
   def given(twosie: Twosie)(f: (F, String, String) => Unit) { /* register the function */ }
+
+  val example = "my" ___ "account balance is $" ___ ""
 }
 
