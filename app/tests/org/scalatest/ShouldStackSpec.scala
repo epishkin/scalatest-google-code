@@ -25,7 +25,7 @@ trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>
   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
 
     it("should be non-empty") {
-      stack shouldNot be (empty)
+      stack should not { be (empty) }
     }  
 
     it("should return the top item on peek") {
@@ -48,7 +48,7 @@ trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>
   def nonFullStack(stack: Stack[Int]) {
       
     it("should not be full") {
-      stack shouldNot be (full)
+      stack should not { be (full) }
     }
 
     it("should add to the top on push") {

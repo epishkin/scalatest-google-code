@@ -17,7 +17,7 @@ package org.scalatest
 
 import scala.reflect.Manifest
 
-private[scalatest] trait ShouldMatchers extends Matchers {
+trait ShouldMatchers extends Matchers {
 
   class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
@@ -30,43 +30,6 @@ private[scalatest] trait ShouldMatchers extends Matchers {
         )
     }
   }
-/*
-  class ResultOfHaveWordForGetLength[A <: { def getLength(): Int }](left: A, shouldBeTrue: Boolean) {
-    def length(expectedLength: Int) {
-      if ((left.getLength == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
-          FailureMessages(
-            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
-            left,
-            expectedLength)
-        )
-    }
-  }
-
-  class ResultOfHaveWordForLengthField[A <: { val length: Int }](left: A, shouldBeTrue: Boolean) {
-    def length(expectedLength: Int) {
-      if ((left.length == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
-          FailureMessages(
-            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
-            left,
-            expectedLength)
-        )
-    }
-  }
-
-  class ResultOfHaveWordForLengthMethod[A <: { def length(): Int }](left: A, shouldBeTrue: Boolean) {
-    def length(expectedLength: Int) {
-      if ((left.length() == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
-          FailureMessages(
-            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
-            left,
-            expectedLength)
-        )
-    }
-  }
-*/
 
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
@@ -76,16 +39,16 @@ private[scalatest] trait ShouldMatchers extends Matchers {
         case _ => ()
       }
     }
-    def shouldNot(rightMatcher: Matcher[T]) {
+    /* def shouldNot(rightMatcher: Matcher[T]) {
       rightMatcher(leftOperand) match {
         case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
         case _ => ()
       }
-    }
+    } */
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
-    def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
+    // def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
 /*
     def shouldEqual(rightOperand: Any) {
       if (leftOperand != rightOperand) {
@@ -98,6 +61,7 @@ private[scalatest] trait ShouldMatchers extends Matchers {
       }
     }
 */
+   /* 
     def shouldMatch(rightOperand: PartialFunction[T, Boolean]) {
       if (rightOperand.isDefinedAt(leftOperand)) {
         val result = rightOperand(leftOperand)
@@ -117,6 +81,7 @@ private[scalatest] trait ShouldMatchers extends Matchers {
         }
       }
     }
+   */
   }
 
 /*
@@ -168,48 +133,48 @@ private[scalatest] trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
-    def shouldNot(haveWord: HaveWord): ResultOfHaveWordForString = {
+    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, false)
-    }
+    } */
     def should(includeWord: IncludeWord): ResultOfIncludeWordForString = {
       new ResultOfIncludeWordForString(left, true)
     }
-    def shouldNot(includeWord: IncludeWord): ResultOfIncludeWordForString = {
+    /* def shouldNot(includeWord: IncludeWord): ResultOfIncludeWordForString = {
       new ResultOfIncludeWordForString(left, false)
-    }
+    } */
     def should(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
       new ResultOfStartWithWordForString(left, true)
     }
-    def shouldNot(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
+    /* def shouldNot(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
       new ResultOfStartWithWordForString(left, false)
-    }
+    } */
     def should(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
       new ResultOfEndWithWordForString(left, true)
     }
-    def shouldNot(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
+    /* def shouldNot(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
       new ResultOfEndWithWordForString(left, false)
-    }
+    } */
     def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, true)
     }
-    def shouldNot(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
+    /* def shouldNot(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, false)
-    }
+    } */
   }
 
   protected class MapShouldalizer[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]] {
     def should(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
       new ResultOfContainWordForIterable(left, true)
     }
-    def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
+    /* def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
       new ResultOfContainWordForIterable(left, false)
-    }
+    } */
     def should(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
       new ResultOfHaveWordForMap(left, true)
     }
-    def shouldNot(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
+    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
       new ResultOfHaveWordForMap(left, false)
-    }
+    } */
   }
   
   protected trait ShouldContainWordForIterableMethods[T] {
@@ -217,9 +182,9 @@ private[scalatest] trait ShouldMatchers extends Matchers {
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(leftOperand, true)
     }
-    def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+    /* def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(leftOperand, false)
-    }
+    } */
   }
   
   protected class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]]
@@ -230,9 +195,9 @@ private[scalatest] trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
       new ResultOfHaveWordForCollection(leftOperand, true)
     }
-    def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
+    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
       new ResultOfHaveWordForCollection(leftOperand, false)
-    }
+    } */
   }
   
   protected trait ShouldHaveWordForSeqMethods[T] {
@@ -240,9 +205,9 @@ private[scalatest] trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(leftOperand, true)
     }
-    def shouldNot(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
+    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(leftOperand, false)
-    }
+    } */
   }
   
   protected class CollectionShouldalizer[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]

@@ -144,6 +144,16 @@ trait Matchers extends Assertions {
             FailureMessages("includedSubstring", left, expectedSubstring)
           )
       }
+    def regex[T <: String](right: T): Matcher[T] = regex(right.r)
+    def regex(expectedRegex: Regex): Matcher[String] =
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            expectedRegex.findFirstIn(left).isDefined,
+            FailureMessages("didNotIncludeRegex", left, expectedRegex),
+            FailureMessages("includedRegex", left, expectedRegex)
+          )
+      }
   }
 
   protected class StartWithWord {
@@ -287,8 +297,8 @@ trait Matchers extends Assertions {
         def apply(left: Collection[Any]) =
           MatcherResult(
             left.size == expectedSize, 
-            FailureMessages("didNotHaveValue", left, expectedSize),
-            FailureMessages("hadValue", left, expectedSize)
+            FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+            FailureMessages("hadExpectedSize", left, expectedSize)
           )
       }
   /*
@@ -839,7 +849,7 @@ trait Matchers extends Assertions {
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
-  val anException: Class[Throwable] = classOf[Throwable]
+  // val anException: Class[Throwable] = classOf[Throwable]
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 
