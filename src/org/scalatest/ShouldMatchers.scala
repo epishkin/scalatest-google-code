@@ -209,7 +209,9 @@ trait ShouldMatchers extends Matchers {
   
   protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
-  
+
+  // TODO: I think the Map conversion is for immutable maps, but it should be for collection.Map. Can also
+  // try adding some for java.util.maps, etc.
   implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
   implicit def convertToMapShouldWrapper[K, V](o: Map[K, V]): MapShouldWrapper[K, V] = new MapShouldWrapper[K, V](o)
   implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
