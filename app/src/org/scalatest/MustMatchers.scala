@@ -17,7 +17,7 @@ package org.scalatest
 
 import scala.reflect.Manifest
 
-trait MustMatchers extends Matchers {
+private[scalatest] trait MustMatchers extends Matchers {
 
   protected trait MustMethods[T] {
     protected val leftOperand: T
@@ -34,7 +34,7 @@ trait MustMatchers extends Matchers {
       }
     }
     // This one supports it must behave like
-    def must(behaveWord: BehaveWord) = new Likifier[T](leftOperand)
+    def must(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     def must(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     // def mustNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
 /*
