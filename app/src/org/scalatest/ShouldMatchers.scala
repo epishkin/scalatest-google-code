@@ -146,16 +146,20 @@ trait ShouldMatchers extends Matchers {
     } */
   }
 
-  protected class MapShouldWrapper[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]] {
-    def should(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
-      new ResultOfContainWordForIterable(left, true)
+  protected class MapShouldWrapper[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]]
+      with ShouldHaveWordForCollectionMethods[(K, V)] {
+
+    def should(containWord: ContainWord): ResultOfContainWordForMap[K, V] = {
+      new ResultOfContainWordForMap(left, true)
     }
     /* def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
       new ResultOfContainWordForIterable(left, false)
     } */
-    def should(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
+/*
+    def should(containWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
       new ResultOfHaveWordForMap(left, true)
     }
+*/
     /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
       new ResultOfHaveWordForMap(left, false)
     } */
@@ -170,9 +174,9 @@ trait ShouldMatchers extends Matchers {
       new ResultOfContainWordForIterable(leftOperand, false)
     } */
   }
-  
-  protected class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]]
-      with ShouldContainWordForIterableMethods[T]
+  // Is this one not being used? No implicit conversion
+  /* protected class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]]
+      with ShouldContainWordForIterableMethods[T] */
   
   protected trait ShouldHaveWordForCollectionMethods[T] {
     protected val leftOperand: Collection[T]

@@ -90,7 +90,7 @@ trait Matchers extends Assertions {
   // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
   // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
   // 
-  protected class ResultOfHaveWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[Tuple2[K, V]](left, shouldBeTrue) {
+  protected class ResultOfContainWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
     def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
         throw new AssertionError(
@@ -109,16 +109,6 @@ trait Matchers extends Assertions {
             expectedValue)
         )
     }
-  /*
-    def size(expectedSize: Int) =
-      if ((left.size == expectedSize) != shouldBeTrue)
-        throw new AssertionError(
-          FailureMessages(
-            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
-            left,
-            expectedSize)
-        )
-  */
   }
   
   protected class BehaveWord
@@ -130,6 +120,45 @@ trait Matchers extends Assertions {
             left.elements.contains(expectedElement), 
             FailureMessages("didNotContainExpectedElement", left, expectedElement),
             FailureMessages("containedExpectedElement", left, expectedElement)
+          )
+      }
+
+    //
+    // This key method is called when "contain" is used in a logical expression, such as:
+    // map should { contain key 1 and equal (Map(1 -> "Howdy")) }. It results in a matcher
+    // that remembers the key value. By making the value type Any, it causes overloaded shoulds
+    // to work, because for example a Matcher[Map[Int, Any]] is a subtype of Matcher[Map[Int, String]],
+    // given Map is covariant in its V (the value type stored in the map) parameter and Matcher is
+    // contravariant in its lone type parameter. Thus, the type of the Matcher resulting from contain key 1
+    // is a subtype of the map type that has a known value type parameter because its that of the map
+    // to the left of should. This means the should method that takes a map will be selected by Scala's
+    // method overloading rules.
+    //
+    def key[K](expectedKey: K): Matcher[Map[K, Any]] =
+      new Matcher[Map[K, Any]] {
+        def apply(left: Map[K, Any]) =
+          MatcherResult(
+            left.contains(expectedKey),
+            FailureMessages("didNotHaveKey", left, expectedKey),
+            FailureMessages("hadKey", left, expectedKey)
+          )
+      }
+
+    // Holy smokes I'm starting to scare myself. I fixed the problem of the compiler not being
+    // able to infer the value type in contain value 1 and ... like expressions, because the
+    // value type is there, with an existential type. Since I don't know what K is, I decided to
+    // try just saying that with an existential type, and it compiled and ran. Pretty darned
+    // amazing compiler. The problem could not be fixed like I fixed the key method above, because
+    // Maps are nonvariant in their key type parameter, whereas they are covariant in their value
+    // type parameter, so the same trick wouldn't work. But this existential type trick seems to
+    // work like a charm.
+    def value[V](expectedValue: V): Matcher[Map[K, V] forSome { type K }] =
+      new Matcher[Map[K, V] forSome { type K }] {
+        def apply(left: Map[K, V] forSome { type K }) =
+          MatcherResult(
+            left.values.contains(expectedValue),
+            FailureMessages("didNotHaveValue", left, expectedValue),
+            FailureMessages("hadValue", left, expectedValue)
           )
       }
   }
@@ -254,45 +283,6 @@ trait Matchers extends Assertions {
     }
 
   protected class HaveWord {
-    //
-    // This key method is called when "have" is used in a logical expression, such as:
-    // map should { have key 1 and equal (Map(1 -> "Howdy")) }. It results in a matcher
-    // that remembers the key value. By making the value type Any, it causes overloaded shoulds
-    // to work, because for example a Matcher[Map[Int, Any]] is a subtype of Matcher[Map[Int, String]],
-    // given Map is covariant in its V (the value type stored in the map) parameter and Matcher is
-    // contravariant in its lone type parameter. Thus, the type of the Matcher resulting from have key 1
-    // is a subtype of the map type that has a known value type parameter because its that of the map
-    // to the left of should. This means the should method that takes a map will be selected by Scala's
-    // method overloading rules.
-    // 
-    def key[K](expectedKey: K): Matcher[Map[K, Any]] =
-      new Matcher[Map[K, Any]] {
-        def apply(left: Map[K, Any]) =
-          MatcherResult(
-            left.contains(expectedKey), 
-            FailureMessages("didNotHaveKey", left, expectedKey),
-            FailureMessages("hadKey", left, expectedKey)
-          )
-      }
-  
-    // Holy smokes I'm starting to scare myself. I fixed the problem of the compiler not being
-    // able to infer the value type in  have value 1 and ... like expressions, because the
-    // value type is there, with an existential type. Since I don't know what K is, I decided to
-    // try just saying that with an existential type, and it compiled and ran. Pretty darned
-    // amazing compiler. The problem could not be fixed like I fixed the key method above, because
-    // Maps are nonvariant in their key type parameter, whereas they are covariant in their value
-    // type parameter, so the same trick wouldn't work. But this existential type trick seems to
-    // work like a charm.
-    def value[V](expectedValue: V): Matcher[Map[K, V] forSome { type K }] =
-      new Matcher[Map[K, V] forSome { type K }] {
-        def apply(left: Map[K, V] forSome { type K }) =
-          MatcherResult(
-            left.values.contains(expectedValue), 
-            FailureMessages("didNotHaveValue", left, expectedValue),
-            FailureMessages("hadValue", left, expectedValue)
-          )
-      }
-  
     def size(expectedSize: Int) =
       new Matcher[Collection[Any]] {
         def apply(left: Collection[Any]) =
@@ -780,19 +770,22 @@ trait Matchers extends Assertions {
       }
 
       new Matcher[S] {
-        def apply(left: S) = {
-  
-          left match {
-            case leftString: String if right.toString == "'empty" => 
-              MatcherResult(
-                leftString.length == 0,
-                FailureMessages("wasNotEmpty", left),
-                FailureMessages("wasEmpty", left)
-              )
-            case _ => matcherUsingReflection(left)
-          }
-        }
+        def apply(left: S) = matcherUsingReflection(left)
       }
+      /*  new Matcher[S] {  // Dropping this to reduce redundancy and the special case for string
+          def apply(left: S) = {
+
+            left match {
+              case leftString: String if right.toString == "'empty" =>
+                MatcherResult(
+                  leftString.length == 0,
+                  FailureMessages("wasNotEmpty", left),
+                  FailureMessages("wasEmpty", left)
+                )
+              case _ => matcherUsingReflection(left)
+            }
+          }
+        } */
     }
 
     def apply(right: Nil.type): Matcher[List[_]] =

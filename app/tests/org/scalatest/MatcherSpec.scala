@@ -252,13 +252,16 @@ class MatcherSpec extends Spec with SpecDasher with ShouldMatchers {
 
     "(for symbols)" -- {
 
+       /* Took this out to eliminate redundancy and special treatment of string
       "should look for a length of 0 when called on a string" - {
-        "" should be ('empty)
+        val caught1 = intercept[AssertionError] {
+          "" should be ('empty)
+        }
         val caught = intercept[AssertionError] {
           "hi" should be ('empty)
         }
         caught.getMessage should equal ("\"hi\" was not empty")
-      }
+      } */
 
       "should call isEmpty when passed 'empty" - {
         val emptySet = Set[Int]()
@@ -295,7 +298,7 @@ class MatcherSpec extends Spec with SpecDasher with ShouldMatchers {
         assert(caught4.getMessage === "\"unhappy\" has neither a happy nor an isHappy method")
       }
 
-      "should be invokable from be a Symbol, be an Symbol, and be the Symbol" - {
+      "should be invokable from be a Symbol and be an Symbol" - {
         val emptySet = Set()
         emptySet should be a ('empty)
         emptySet should be an ('empty)
@@ -486,13 +489,14 @@ class MatcherSpec extends Spec with SpecDasher with ShouldMatchers {
       // (new NonEmptyMock) shouldNot be ('empty)
     }
 
+    /* This was dropped to eliminate redundancy and the special treatment of strings 
     "should look for a length of 0 when called on a string" - {
       "" should be ('empty)
       val caught = intercept[AssertionError] {
         "hi" should be ('empty)
       }
       caught.getMessage should equal ("\"hi\" was not empty")
-    }
+    } */
   }
 
 /*
@@ -1438,54 +1442,54 @@ class MatcherSpec extends Spec with SpecDasher with ShouldMatchers {
 
     "should work with map and key, right after a 'should'" - {
       val map = Map(1 -> "Howdy")
-      map should have key (1)
-      map should have key (1)
+      map should contain key (1)
+      map should contain key (1)
       map should equal { Map(1 -> "Howdy") }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should have key ("Howdy")
+      otherMap should contain key ("Howdy")
       otherMap should equal { Map("Howdy" -> 1) }
       import scala.collection.immutable.TreeMap
       val treeMap = TreeMap(1 -> "hi", 2 -> "howdy")
-      treeMap should have key (1)
+      treeMap should contain key (1)
     }
 
     "should work with map and key, in a logical expression" - {
       val map = Map(1 -> "Howdy")
-      // The compiler infer the type of the value to be Nothing if I say: map should { have key 1 and equal (Map(1 -> "Howdy")) }
+      // The compiler infer the type of the value to be Nothing if I say: map should { contain key 1 and equal (Map(1 -> "Howdy")) }
       // map should { have.key[Int, String](1) and equal (Map(1 -> "Howdy")) }
-      map should { have key (1) and equal (Map(1 -> "Howdy")) }
+      map should { contain key (1) and equal (Map(1 -> "Howdy")) }
       val otherMap = Map("Howdy" -> 1)
       // otherMap should { have.key[String, Int]("Howdy") and equal (Map("Howdy" -> 1)) }
-      otherMap should { have key ("Howdy") and equal (Map("Howdy" -> 1)) }
+      otherMap should { contain key ("Howdy") and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and key, right after a 'shouldNot'" - {
       val map = Map(1 -> "Howdy")
-      // map shouldNot have key (2)
-      map should not { have key (2) }
+      // map shouldNot contain key (2)
+      map should not { contain key (2) }
     }
 
     "should work with map and value, right after a 'should'" - {
       val map = Map(1 -> "Howdy")
-      map should have value ("Howdy")
-      map should have value ("Howdy")
+      map should contain value ("Howdy")
+      map should contain value ("Howdy")
       map should equal { Map(1 -> "Howdy") }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should have value (1)
+      otherMap should contain value (1)
       otherMap should equal { Map("Howdy" -> 1) }
     }
 
     "should work with map and value, in a logical expression" - {
       val map = Map(1 -> "Howdy")
-      map should { equal (Map(1 -> "Howdy")) and (have value "Howdy") }
+      map should { equal (Map(1 -> "Howdy")) and (contain value "Howdy") }
       val otherMap = Map("Howdy" -> 1)
-      otherMap should { have value (1) and equal (Map("Howdy" -> 1)) }
+      otherMap should { contain value (1) and equal (Map("Howdy" -> 1)) }
     }
 
     "should work with map and value, right after a 'shouldNot'" - {
       val map = Map(1 -> "Howdy")
-      // map shouldNot have value ("Doody")
-      map should not { have value ("Doody") }
+      // map shouldNot contain value ("Doody")
+      map should not { contain value ("Doody") }
     }
 
     "should work with collection and size, in an and expression." - {
