@@ -15,6 +15,9 @@
  */
 package org.scalatest
 
+/**
+ * 
+ */
 trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 
   // left is generally the object on which should is invoked.
@@ -46,7 +49,8 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
       }
     }
 
-  def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
+  // Dropping to eliminate redundancy. Redundant with and not { ... }
+  // def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
 
   def or[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
     new Matcher[U] {
@@ -69,6 +73,7 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
       }
     }
 
-  def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
+  // Dropping to eliminate redundancy. Redundant with or not { ... }
+  // def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
 }
 

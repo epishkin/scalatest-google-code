@@ -1190,6 +1190,107 @@ class MatcherSpec extends Spec with SpecDasher with ShouldMatchers {
     }
   }
 
+  // I dropped the tests for andNot and orNot, and replaced them with tests for and not { ... } and or not { ... }
+  "The and not combination" -- {
+
+    "should do nothing when left operands is true and right false" - {
+      1 should { equal (1) and not { equal (2) }}
+    }
+
+    "should throw AssertionError when first operands is false" - {
+      val caught = intercept[AssertionError] {
+        1 should (equal (2) and not (equal (2)))
+      }
+      caught.getMessage should equal ("1 did not equal 2") // because and short circuits
+    }
+
+    "should throw AssertionError when second operand is true" - {
+      val caught = intercept[AssertionError] {
+        1 should (equal (1) and not (equal (1)))
+      }
+      caught.getMessage should equal ("1 equaled 1, but 1 equaled 1")
+    }
+
+    "should not execute the right matcher creation function when the left operand is false" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      val caught = intercept[AssertionError] {
+        // This should fail, but without applying the matcher returned by mockMatcher
+        1 should { equal (2) and not { mockMatcher }}
+      }
+      called should be (false)
+      assert(caught.getMessage === "1 did not equal 2")
+    }
+
+    "should execute the right matcher creation function when the left operand is true" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(false, "", "") } }
+      1 should { equal (1) and not { mockMatcher }}
+      called should be (true)
+    }
+
+    "should give good failure messages when used with not" - {
+      val caught1 = intercept[AssertionError] {
+        1 should (not { equal (1) } and not (equal (2)))
+      }
+      caught1.getMessage should equal ("1 equaled 1") // because andNot short circuits
+      val caught2 = intercept[AssertionError] {
+        1 should (equal (1) and not { equal (1) })
+      }
+      caught2.getMessage should equal ("1 equaled 1, but 1 equaled 1")
+    }
+  }
+
+  "The or not combination" -- {
+
+    "should do nothing when left operand is true and right false" - {
+      1 should { equal (1) or not { equal (2) }}
+    }
+
+    "should do nothing when when both operands are false" - {
+      1 should (equal (2) or not (equal (2)))
+    }
+
+    "should do nothing when left operand is true and right true" - {
+      1 should { equal (1) or not { equal (1) }}
+    }
+
+    "should throw AssertionError when first operand is false and second operand is true" - {
+      val caught = intercept[AssertionError] {
+        1 should (equal (2) or not (equal (1)))
+      }
+      caught.getMessage should equal ("1 did not equal 2, and 1 equaled 1")
+    }
+
+    "should not execute the right matcher creation function when the left operand is true" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(true, "", "") } }
+      // This should succeed, but without applying the matcher returned by mockMatcher
+      1 should { equal (1) or not { mockMatcher }}
+      called should be (false)
+    }
+
+    "should execute the right matcher creation function when the left operand is false" - {
+      var called = false
+      def mockMatcher = new Matcher[Int] { def apply(i: Int) = { called = true; MatcherResult(false, "", "") } }
+      1 should { equal (2) or not { mockMatcher }}
+      called should be (true)
+    }
+
+    "should give good failure messages when used with not" - {
+      val caught1 = intercept[AssertionError] {
+        1 should (not { equal (1) } or not (equal (1)))
+      }
+      caught1.getMessage should equal ("1 equaled 1, and 1 equaled 1")
+      val caught2 = intercept[AssertionError] {
+        1 should (equal (2) or not { not { equal (2) }}) // Don't do this at home
+      }
+      caught2.getMessage should equal ("1 did not equal 2, and 1 did not equal 2")
+    }
+  }
+
+  /* removed andNot and orNot to eliminate redundancy
+
   "The andNot matcher" -- {
 
     "should do nothing when left operands is true and right false" - {
@@ -1287,7 +1388,7 @@ class MatcherSpec extends Spec with SpecDasher with ShouldMatchers {
       caught2.getMessage should equal ("1 did not equal 2, and 1 did not equal 2")
     }
   }
-
+*/
   "The have word" -- {
 
     "should work with map and key, right after a 'should'" - {
