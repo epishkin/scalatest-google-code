@@ -16,24 +16,49 @@
 package org.scalatest
 
 /**
- * I'll probably delete this one.
+ * Trait that contains methods named <code>given</code>, <code>when</code>, <code>then</code>, and <code>and</code>,
+ * which take a string message and implicit <code>Informer</code>, and forward the message to the informer.
  *
  * @author Bill Venners
  */
-private [scalatest] trait GivenWhenThen {
+trait GivenWhenThen {
 
+  /**
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "given."
+   *
+   * @param message the message to forward to the passed informer
+   * @param info the <code>Informer</code> to which to forward the message
+   */
   def given(message: String)(implicit info: Informer) {
     info(Resources("givenMessage", message))
   }
 
+  /**
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "when."
+   *
+   * @param message the message to forward to the passed informer
+   * @param info the <code>Informer</code> to which to forward the message
+   */
   def when(message: String)(implicit info: Informer) {
     info(Resources("whenMessage", message))
   }
 
+  /**
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "then."
+   *
+   * @param message the message to forward to the passed informer
+   * @param info the <code>Informer</code> to which to forward the message
+   */
   def then(message: String)(implicit info: Informer) {
     info(Resources("thenMessage", message))
   }
 
+  /**
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "and."
+   *
+   * @param message the message to forward to the passed informer
+   * @param info the <code>Informer</code> to which to forward the message
+   */
   def and(message: String)(implicit info: Informer) {
     info(Resources("andMessage", message))
   }
