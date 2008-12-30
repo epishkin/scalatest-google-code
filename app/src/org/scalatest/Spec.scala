@@ -1168,7 +1168,7 @@ class MySpec extends Spec {
 
 The other thought I had was that runTests can wrap the passed reporter in a SpecReporter, which would
  hold onto infoProvided messages until after the next testSucceeded or testFailed message, at which
- point it would release them. This would also be done in FeatureSpec. That way the given, when, then stuff
+ point it would release them. This would also be done in FeatureSuite. That way the given, when, then stuff
  would show up under the line about the test itself:
 
  - should do something decent !!! FAILED !!!
