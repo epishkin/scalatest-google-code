@@ -227,27 +227,28 @@ trait Matchers extends Assertions {
     def length: Int
   }
 
-  implicit def wrapLengthField(o: { val length: Int }) =
+  implicit def convertLengthFieldToLengthWrapper(o: { val length: Int }) =
     new LengthWrapper {
       def length = o.length
     }
 
-  implicit def wrapLengthMethod(o: { def length(): Int }) =
+  implicit def convertLengthMethodToLengthWrapper(o: { def length(): Int }) =
     new LengthWrapper {
       def length = o.length()
     }
 
-  implicit def wrapGetLengthMethod(o: { def getLength(): Int }) =
+  implicit def convertGetLengthMethodToLengthWrapper(o: { def getLength(): Int }) =
     new LengthWrapper {
       def length = o.getLength()
     }
 
-  implicit def wrapArrayLength[T](o: Array[T]) =
+  // This should be a Seq. Could also make one for java.util.List.
+  implicit def convertArrayToLengthWrapper[T](o: Array[T]) =
     new LengthWrapper {
       def length = o.length
     }
 
-  implicit def wrapStringLength[T](o: String) =
+  implicit def convertStringToLengthWrapper[T](o: String) =
     new LengthWrapper {
       def length = o.length
     }
@@ -469,6 +470,7 @@ trait Matchers extends Assertions {
     new ResultOfBeWordForOrdered(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
 */
 
+  // What's this one for again?
   implicit def resultOfBeWordToForAnyRef[T <: AnyRef](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForAnyRef =
     new ResultOfBeWordForAnyRef(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
 
