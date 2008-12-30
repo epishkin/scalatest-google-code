@@ -590,10 +590,6 @@ trait Matchers extends Assertions {
     }
   }
   
-  // Hey, how about an implicit conversion from val length to def length, and one from def length() to def length().
-  // A bit ugly, but it might let me use structural typing. Is this being used now?
-  implicit def stringToHasLength(s: AnyRef with String): { def length: Int } = new { def length: Int = s.length() }
-
   def equal(right: Any): Matcher[Any] =
     Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
 /*
@@ -616,7 +612,7 @@ trait Matchers extends Assertions {
     }
 */
 
-  protected class BeWordForOrdered {
+  protected class TreatedAsOrderedWrapper {
     def <[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
@@ -655,7 +651,8 @@ trait Matchers extends Assertions {
       }
   }
 
-  implicit def beWordToForOrdered(beWord: BeWord): BeWordForOrdered = new BeWordForOrdered
+  // This one is for one should be < (7)
+  implicit def convertBeWordToForOrdered(beWord: BeWord): TreatedAsOrderedWrapper = new TreatedAsOrderedWrapper
 
   protected class BeWord {
 
@@ -818,7 +815,7 @@ trait Matchers extends Assertions {
   val behave = new BehaveWord
   val be = new BeWord
 
-  class Likifier[T](left: T) {
+  class ResultOfBehaveWord[T](left: T) {
     def like(fun: (T) => Unit) {
       fun(left)
     }
@@ -855,10 +852,10 @@ trait Matchers extends Assertions {
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 
-  class HasPlusOrMinusForDouble(right: Double) {
+  class PlusOrMinusWrapper(right: Double) {
     def plusOrMinus(tolerance: Double): DoubleTolerance = DoubleTolerance(right, tolerance)
   }
 
-  implicit def doubleToHasPlusOrMinus(right: Double) = new HasPlusOrMinusForDouble(right)
+  implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new PlusOrMinusWrapper(right)
 }
 
