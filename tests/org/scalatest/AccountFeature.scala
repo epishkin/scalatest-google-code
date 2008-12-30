@@ -38,7 +38,7 @@ class Account(private var theBalance: Int) {
   }
 }
 
-class AccountFeature extends FeatureSpec("transfer from savings to checking account") {
+class AccountFeature extends FeatureSuite("transfer from savings to checking account") {
 
   info("As a savings account holder")
   info("I want to transfer money from my savings account to my checking account")
