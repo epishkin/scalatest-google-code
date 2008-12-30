@@ -124,9 +124,10 @@ private[scalatest] trait MustMatchers extends Matchers {
   }
 
   protected class MapMustalizer[K, V](left: Map[K, V]) extends { val leftOperand = left } with MustMethods[Map[K, V]] {
-    def must(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
-      new ResultOfContainWordForIterable(left, true)
+    def must(containWord: ContainWord): ResultOfContainWordForMap[K, V] = {
+      new ResultOfContainWordForMap(left, true)
     }
+/*
     def mustNot(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
       new ResultOfContainWordForIterable(left, false)
     }
@@ -136,6 +137,7 @@ private[scalatest] trait MustMatchers extends Matchers {
     def mustNot(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
       new ResultOfHaveWordForMap(left, false)
     }
+*/
   }
   
   protected trait MustContainWordForIterableMethods[T] {
