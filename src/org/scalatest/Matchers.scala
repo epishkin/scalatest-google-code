@@ -40,28 +40,6 @@ inherit from the same supertype. There's a plain-old Matcher for example, but th
 a BeMatcher, and BeMatcher doesn't extend Matcher. This reduces the number of incorrect static
 matches, which can happen if a more specific type is held from a more general variable type.
 And reduces the chances for ambiguity, I suspect.
-
-On my jog I thought perhaps that Matcher should be contravariant in T, because
-if I have hierarchy Fruit <-- Orange <-- ValenciaOrange, and I have:
-
-val orange = Orange
-
-"orange should" will give me a Shouldalizer[Orange], which has an apply method that takes a Matcher[Orange].
-If I have a Matcher[ValenciaOrange], that shouldn't compile, but if I have a Matcher[Fruit], it should compile.
-Thus I should be able to pass a Matcher[Fruit] to a should method that expects a Matcher[Orange], which is
-contravariance. Then the type of the "left" parameter of the apply method can just be T, because in the case
-of Matcher[Fruit], for example, T is Fruit, and you can pass an Orange to an apply method that expects a Fruit.
-
-So it should be:
-
-trait Matcher[-T] { leftMatcher => ...
-
-Yay, that worked, so long as I do the upper bound thing in add. All makes sense. If I do
-matcherOfOrange and matcherOfValencia, then the type of the resulting matcher needs to be
-matcherOfValencia. But if I do "matcherOfOrange and matcherOfFruit", the type stays at
-matcherOfOrange. And the right operand is considered a matcher of orange, because of contravariance.
-
-Made it extend Function1 for the heck of it. Can pass it as a Function1 now.
 */
 
 private[scalatest] object Helper {
@@ -95,7 +73,7 @@ private[scalatest] object Helper {
   }
 }
 
-private[scalatest] trait BaseMatchers extends Assertions {
+trait Matchers extends Assertions {
 
   //
   // This class is used as the return type of the overloaded should method (in MapShouldalizer)
