@@ -345,7 +345,6 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
-    def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
     // def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
 /*
     def shouldEqual(rightOperand: Any) {

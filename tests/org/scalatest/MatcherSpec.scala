@@ -25,7 +25,6 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
 
     it("should do nothing when not equal and used with should not") {
-      1 should not equal (2)
       1 should not { equal (2) }
     }
 
@@ -38,7 +37,6 @@ class MatcherSpec extends Spec with ShouldMatchers {
     }
 
     it("should do nothing when not equal and used in a logical-and expression with not") {
-      // 1 should { not equal (2) and not equal (3 - 1) }
       1 should { not { equal (2) } and not { equal (3 - 1) }}
     }
 
