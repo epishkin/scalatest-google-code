@@ -17,6 +17,302 @@ package org.scalatest
 
 import scala.reflect.Manifest
 
+/**
+ * <p>
+ * The next release of ScalaTest will include two new traits, <code>ShouldMatchers</code> and <code>MustMatchers</code>. These two traits are basically identical except where <code>ShouldMatchers</code> says <code>should</code>, <code>MustMatchers</code> says <code>must</code>. None of the suite traits will mix either of these in by default, for two reasons. One is that some people prefer "should," and others "must," and this way everyone can select the verb they prefer. Also, both matchers traits involve a lot of implicit conversions, and I prefer that people invite these conversion into their test code explicitly. In this blog post, I'll show <code>ShouldMatchers</code> examples.
+ * </p>
+ * 
+ * <p>
+ * Matchers represent a kind of domain specific language (DSL) for assertions, which read a bit more like natural language in the source code, and provide more detailed error messages in assertions when they fail. Some examples of matchers in other test frameworks are <a href="http://code.google.com/p/hamcrest/wiki/Tutorial">Hamcrest matchers</a> (Java), <a href="http://rspec.rubyforge.org/rspec/1.1.11/classes/Spec/Matchers.html">RSpec matchers</a> (Ruby), <a href="http://easyb.org/dsls.html">easyb's ensure syntax</a> (Groovy), and <a href="http://code.google.com/p/specs/wiki/MatchersGuide">specs matchers</a> (Scala).
+ * </p>
+ * 
+ * <p>
+ * For example, for a basic equality comparison with ScalaTest matchers, you can say:
+ * </p>
+ * <pre class="indent">
+ * object should equal (3)
+ * </pre>
+ * <p>
+ * Here <code>object</code> is a variable, and can be of any type. If the object is an <code>Int</code> with the value 3, nothing will happen. Otherwise, an assertion error will be thrown with the detail message, such as <code>"7 did not equal 3"</code>.
+ * </p>
+ * 
+ * <h2>Checking size and length</h2>
+ * 
+ * <p>
+ * You can check for a size of length of just about any type of object for which it would make sense. Here's how checking for length looks:
+ * </p>
+ * <pre class="indent">
+ * object should have length (3)
+ * </pre>
+ * 
+ * <p>
+ * This syntax can be used with any object that has a field or method named <code>length</code> or a method named <code>getLength</code>. (The Scala compiler will check for this at compile time.) Size is similar:
+ * </p>
+ * 
+ * <pre class="indent">
+ * object should have size (10)
+ * </pre>
+ * 
+ * <h2>Checking strings</h2>
+ * 
+ * <p>
+ * You can check for whether a string starts with, ends with, or includes a substring or regular expression, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * string should startWith substring ("Hello")
+ * string should startWith regex ("Hel*o")
+ * string should endWith substring ("world")
+ * string should endWith regex ("wo.ld")
+ * string should include substring ("seven")
+ * string should include regex ("wo.ld")
+ * </pre>
+ * 
+ * <p>
+ * You can check whether a string fully matches a regular expression, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * string should fullyMatch regex (decimal)
+ * </pre>
+ * 
+ * <h2>Greater and less than</h2>
+ * <p>
+ * You can check whether any type that either is, or can be implicitly converted to,
+ * an <code>Ordered[T]</code> is greater than, less than, greater than or equal, or less
+ * than or equal to a value of type <code>T</code>, like this: 
+ * </p>
+ * <pre class="indent">
+ * one should be < (7)
+ * one should be > (0)
+ * one should be <= (7)
+ * one should be >= (0)
+ * </pre>
+ * 
+ * <h2>Checking predicate methods</h2>
+ * 
+ * <p>
+ * If an object has a method that takes no parameters and returns boolean, you can check it by placing a <code>Symbol</code> (after <code>be</code>) that specifies the name of the method (excluding an optional prefix of "<code>is</code>"). A symbol literal in Scala begins with a tick mark and ends at the first non-identifier character. Thus, <code>'empty</code> results in a <code>Symbol</code> object at runtime, as does <code>'defined</code> and <code>'file</code>. Here's an example:
+ * </p>
+ * 
+ * <pre class="indent">
+ * emptySet should be ('empty)
+ * </pre>
+ * 
+ * Given this code, ScalaTest will use reflection to look on the object referenced from <code>emptySet</code> for a method that takes no parameters and results in <code>Boolean</code>, with either the name <code>empty</code> or <code>isEmpty</code>. If found, it invokes that method. If the method returns <code>true</code>, nothing happens. But if it returns <code>false</code>, an assertion error will be thrown that will contain a detail message like:
+ * 
+ * <pre class="indent">
+ * Set(1, 2, 3) was not empty</code>
+ * </pre>
+ * 
+ * <p>
+ * This <code>be</code> syntax can be used with any type, as there's no way in Scala's type system to restrict it just to types that have an appropriate method. If the object does not have an appropriately named predicate method, you'll get an <code>IllegalArgumentException</code> at runtime with a detail message that explains the problem. (Such errors could be caught at compile time, however, with a compiler plug-in.)  
+ * </p>
+ * 
+ * <p>
+ * If you think it reads better, you can optionally put <code>a</code> or <code>an</code> after <code>be</code>. For example, <code>java.util.File</code> has two predicate methods, <code>isFile</code> and <code>isDirectory</code>. Thus with a <code>File</code> object named <code>temp</code>, you could write:
+ * </p>
+ * 
+ * <pre class="indent">
+ * temp should be a ('file)
+ * </pre>
+ * 
+ * <h2>Checking object identity</h2>
+ * 
+ * <p>
+ * If you need to check that two references refer to the exact same object, you can write:
+ * </p>
+ * 
+ * <pre class="indent">
+ * ref1 should be theSameInstanceAs (ref2)
+ * </pre>
+ * 
+ * <h2>Working with floating point numbers</h2>
+ * 
+ * <p>
+ * To check wether a floating point number has a value that exactly matches another, you can use <code>should equal</code>: 
+ * </p>
+ * 
+ * <pre class="indent">
+ * sevenDotOh should equal (7.0)
+ * </pre>
+ * 
+ * <p>
+ * Sometimes, however, you may want to check whether a floating point number is within a range. You can do that using <code>be</code> and <code>plusOrMinus</code>, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * sevenDotOh should be (6.9 plusOrMinus 0.2)
+ * </pre>
+ * 
+ * <p>
+ * This expression will cause an assertion error to be thrown if the floating point value, <code>sevenDotOh</code> is outside the range <code>6.7</code> to <code>7.1</code>.
+ * </p>
+ * 
+ * <h2>Iterables, collections, sequences, and maps</h2>
+ * 
+ * <p>
+ * You can use some of the syntax shown previously with <code>Iterable</code> and its subtypes. For example, you can check whether an <code>Iterable</code> is <code>empty</code>, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * iterable should be ('empty)
+ * </pre>
+ * 
+ * <p>
+ * You can check the length of an <code>Seq</code> (<code>Array</code>, <code>List</code>, etc.), like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * array should have length (3)
+ * list should have length (9)
+ * </pre>
+ * 
+ * <p>
+ * You can check the size of any <code>Collection</code>, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * map should have size (20)
+ * set should have size (90)
+ * </pre>
+ * 
+ * <p>
+ * In addition, you can check whether an <code>Iterable</code> contains a particular
+ * element, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * iterable should contain element ("five")
+ * </pre>
+ * 
+ * <p>
+ * You can also check whether a <code>Map</code> contains a particular key, or value, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * map should contain key (1)
+ * map should contain value ("Howdy")
+ * </pre>
+ * 
+ * <h2>Be as an equality comparison</h2>
+ * 
+ * <p>
+ * All uses of <code>be</code> other than those shown previously work the same as if <code>be</code> were replaced by <code>equals</code>. This will be the only redundancy
+ * in the first release of ScalaTest matchers. It is there because it enables syntax
+ * that sounds more natural. For example, instead of writing: 
+ * </p>
+ * 
+ * <pre class="indent">
+ * result should equal (null)
+ * </pre>
+ * 
+ * <p>
+ * You can write:
+ * </p>
+ * 
+ * <pre class="indent">
+ * result should be (null)
+ * </pre>
+ * 
+ * <p>
+ * (Hopefully you won't write that too much given <code>null</code> is error prone, and <code>Option</code> is usually a better, well, option.) Here are some other examples of <code>be</code> used for equality comparison:
+ * </p>
+ * 
+ * <pre class="indent">
+ * sum should be (7.0)
+ * boring should be (false)
+ * fun should be (true)
+ * list should be (Nil)
+ * </pre>
+ * 
+ * <h2>Being negative</h2>
+ * 
+ * <p>
+ * If you wish to check the opposite of some condition, you can use <code>not</code>. However, when you use <code>not</code>, you must enclose the expression being negated in parentheses or curly braces. Here are a few examples:
+ * </p>
+ * 
+ * <pre class="indent">
+ * object should not (be (null))
+ * sum should not { be <= 10 }
+ * mylist should not (equal (yourList))
+ * string should not { startWith substring ("Hello") }
+ * </pre>
+ * 
+ * <h2>Combining matchers with <code>and</code> and/or <code>or</code></h2>
+ * 
+ * <p>
+ * You can also combine matcher expressions with <code>and</code> and <code>or</code>, however, you must usually place parentheses or curly braces around the larger
+ * (<code>and</code> or <code>or</code>) expression. Here are a few examples:
+ * </p>
+ * 
+ * <pre class="indent">
+ * ten should { equal (2 * 5) and equal (12 - 2) }
+ * one should { equal (999) or equal (2 - 1) }
+ * one should { not (be >= 7) and equal (2 - 1) }
+ * </pre>
+ * 
+ * <h2>Working with <code>Option</code>s</h2>
+ * 
+ * <p>
+ * ScalaTest matchers has no special support for <code>Option</code>s, but you can 
+ * work with them quite easily using syntax shown previously. For example, if you wish to check
+ * whether an option is <code>None</code>, you can write any of:
+ * </p>
+ * 
+ * <pre class="indent">
+ * option should equal (None)
+ * option should be (None)
+ * option should not { be ('defined) }
+ * </pre>
+ * 
+ * <p>
+ * If you wish to check an option is defined, and holds a specific value, you can write either of:
+ * </p>
+ * 
+ * <pre class="indent">
+ * option should equal (Some("hi"))
+ * option should be (Some("ho"))
+ * </pre>
+ * 
+ * <p>
+ * If you only wish to check that an option is defined, but don't care what it's value is, you can write:
+ * </p>
+ * 
+ * <pre class="indent">
+ * option should be ('defined)
+ * </pre>
+ * 
+ * <h2>Those pesky parens</h2>
+ * 
+ * <p>
+ * You may have noticed that I always put parentheses on the last token in the expressions I've shown. This not always required, but the rule is a bit subtle. If the number of tokens in the expression is odd, the parentheses are not needed. But if the number of tokens is even, the parentheses are required. As a result, I usually include them, because then there's no subtle rule to remember. In addition, although ScalaTest matchers doesn't define which value is "actual" and which "expected," I usually put the expected value last and I think wrapping it in parentheses emphasizes the expected value nicely. Nevertheless, you're free to leave them off in many cases, and you may feel it makes the code more readable. Here are some expressions that work without parentheses:
+ * </p>
+ * 
+ * <pre class="indent">
+ * object should have length 3
+ * object should have size 10
+ * string should startWith substring "Hello"
+ * string should startWith regex "Hel*o"
+ * string should endWith substring "world"
+ * string should endWith regex "wo.ld"
+ * string should include substring "seven"
+ * string should include regex "wo.ld"
+ * string should fullyMatch regex decimal
+ * one should be < 7
+ * one should be > 0
+ * one should be <= 7
+ * one should be >= 0
+ * temp should be a 'file
+ * object1 should be theSameInstanceAs object2
+ * iterable should contain element "five"
+ * map should contain key 1
+ * map should contain value "Howdy"
+ * </pre>
+ * 
+ * 
+ *
+ */
 trait ShouldMatchers extends Matchers {
 
   class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
@@ -31,6 +327,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  // TODO: In the tests, make sure they can create their own matcher and use it.
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
@@ -48,6 +345,7 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
+    def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
     // def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
 /*
     def shouldEqual(rightOperand: Any) {
