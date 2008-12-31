@@ -66,7 +66,7 @@ private[scalatest] object Helper {
   }
 }
 
-trait Matchers extends Assertions { matchers =>
+trait Matchers extends Assertions {
 
   //
   // This class is used as the return type of the overloaded should method (in MapShouldWrapper)
