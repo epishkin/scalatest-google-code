@@ -43,13 +43,6 @@ And reduces the chances for ambiguity, I suspect.
 */
 
 private[scalatest] object Helper {
-  def not[S <: Any](matcher: Matcher[S]) =
-    new Matcher[S] {
-      def apply(left: S) =
-        matcher(left) match {
-          case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
-        }
-    }
 
   def equalAndBeAnyMatcher(right: Any, equaledResourceName: String, didNotEqualResourceName: String) = {
 
@@ -73,7 +66,7 @@ private[scalatest] object Helper {
   }
 }
 
-trait Matchers extends Assertions {
+trait Matchers extends Assertions { matchers =>
 
   //
   // This class is used as the return type of the overloaded should method (in MapShouldWrapper)
@@ -252,6 +245,8 @@ trait Matchers extends Assertions {
       }
   }
 
+  // TODO: Ahah, I think I may have just realized a cause of the ugly left values. I probably
+  // need to override toString in these anonymous LengthWrapper classes. 
   trait LengthWrapper {
     def length: Int
   }
@@ -474,6 +469,19 @@ trait Matchers extends Assertions {
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
 
+  protected class ResultOfNotWord[T](val left: T, val shouldBeTrue: Boolean) {
+    def equal(right: Any) {
+      if ((left == right) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotEqual" else "equaled",
+            left,
+            right
+          )
+        )
+    }
+  }
+
   protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -481,7 +489,8 @@ trait Matchers extends Assertions {
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left,
-            expectedLength)
+            expectedLength
+          )
         )
     }
   }
@@ -587,25 +596,6 @@ trait Matchers extends Assertions {
   
   def equal(right: Any): Matcher[Any] =
     Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
-/*
-    new Matcher[Any] {
-      def apply(left: Any) =
-        left match {
-          case leftArray: Array[_] => 
-            MatcherResult(
-              leftArray.deepEquals(right),
-              FailureMessages("didNotEqual", left, right),
-              FailureMessages("equaled", left, right)
-            )
-          case _ => 
-            MatcherResult(
-              left == right,
-              FailureMessages("didNotEqual", if (left != null) left else "null", if (right != null) right else "null"),
-              FailureMessages("equaled", if (left != null) left else "null", if (right != null) right else "null")
-            )
-      }
-    }
-*/
 
   protected class TreatedAsOrderedWrapper {
     def <[T <% Ordered[T]](right: T): Matcher[T] =
@@ -808,8 +798,21 @@ trait Matchers extends Assertions {
       Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
   }
 
-  def not[S <: Any](matcher: Matcher[S]) = Helper.not { matcher }
 
+  class NotWord {
+      
+    def apply[S <: Any](matcher: Matcher[S]) =
+      new Matcher[S] {
+        def apply(left: S) =
+          matcher(left) match {
+            case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
+          }
+      }
+
+    def equal(right: Any): Matcher[Any] = matchers.equal(right)
+  }
+
+  val not = new NotWord
   val behave = new BehaveWord
   val be = new BeWord
 
