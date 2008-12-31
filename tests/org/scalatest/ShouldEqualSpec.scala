@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-class ShouldEqualSuite extends Spec with ShouldMatchers {
+class ShouldEqualSpec extends Spec with ShouldMatchers {
 
   // Checking for equality with "equal"
   describe("The equal token") {
