@@ -469,19 +469,6 @@ trait Matchers extends Assertions { matchers =>
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
 
-  protected class ResultOfNotWord[T](val left: T, val shouldBeTrue: Boolean) {
-    def equal(right: Any) {
-      if ((left == right) != shouldBeTrue)
-        throw new AssertionError(
-          FailureMessages(
-            if (shouldBeTrue) "didNotEqual" else "equaled",
-            left,
-            right
-          )
-        )
-    }
-  }
-
   protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -799,20 +786,14 @@ trait Matchers extends Assertions { matchers =>
   }
 
 
-  class NotWord {
-      
-    def apply[S <: Any](matcher: Matcher[S]) =
-      new Matcher[S] {
-        def apply(left: S) =
-          matcher(left) match {
-            case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
-          }
-      }
+  def not[S <: Any](matcher: Matcher[S]) =
+    new Matcher[S] {
+      def apply(left: S) =
+        matcher(left) match {
+          case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
+        }
+    }
 
-    def equal(right: Any): Matcher[Any] = matchers.equal(right)
-  }
-
-  val not = new NotWord
   val behave = new BehaveWord
   val be = new BeWord
 
