@@ -244,6 +244,83 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
     }
 
+    describe("on java.List") {
+
+      val javaList: java.util.List[Int] = new java.util.ArrayList
+      javaList.add(1)
+      javaList.add(2)
+      
+      it("should do nothing if list length matches specified length") {
+        javaList should have length (2)
+        // check((lst: java.util.List[Int]) => returnsNormally(lst should have length (lst.length)))
+      }
+
+      it("should do nothing if list length does not match and used with should not") {
+        javaList should not { have length (3) }
+        // check((lst: List[Int], i: Int) => i != lst.length ==> returnsNormally(lst should not { have length (i) }))
+      }
+
+      it("should do nothing when list length matches and used in a logical-and expression") {
+        javaList should { have length (2) and (have length (3 - 1)) }
+      }
+
+      it("should do nothing when list length matches and used in a logical-or expression") {
+        javaList should { have length (77) or (have length (3 - 1)) }
+      }
+
+      it("should do nothing when list length doesn't match and used in a logical-and expression with not") {
+        javaList should { not { have length (5) } and not { have length (3) }}
+      }
+
+      it("should do nothing when list length doesn't match and used in a logical-or expression with not") {
+        javaList should { not { have length (2) } or not { have length (3) }}
+      }
+
+      it("should throw AssertionError if list length does not match specified length") {
+        val caught = intercept[AssertionError] {
+          javaList should have length (3)
+        }
+        assert(caught.getMessage === "[1, 2] did not have length 3")
+        // check((lst: List[String]) => throwsAssertionError(lst should have length (lst.length + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified length is negative") {
+        val caught = intercept[AssertionError] {
+          javaList should have length (-2)
+        }
+        assert(caught.getMessage === "[1, 2] did not have length -2")
+        // check((lst: List[Int]) => throwsAssertionError(lst should have length (if (lst.length == 0) -1 else -lst.length)))
+      }
+
+      it("should throw an assertion error when list length doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          javaList should { have length (5) and (have length (2 - 1)) }
+        }
+        assert(caught.getMessage === "[1, 2] did not have length 5")
+      }
+
+      it("should throw an assertion error when list length doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          javaList should { have length (55) or (have length (22)) }
+        }
+        assert(caught.getMessage === "[1, 2] did not have length 55, and [1, 2] did not have length 22")
+      }
+
+      it("should throw an assertion error when list length matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          javaList should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught.getMessage === "[1, 2] did not have length 3, but [1, 2] had length 2")
+      }
+
+      it("should throw an assertion error when list length matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          javaList should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught.getMessage === "[1, 2] had length 2, and [1, 2] had length 2")
+      }
+    }
+
     it("should work with string and have length right after a 'shouldNot'") {
       val string = "hi"
       // string shouldNot have length (3)
