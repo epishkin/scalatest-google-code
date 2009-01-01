@@ -805,13 +805,12 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       val caught1 = intercept[AssertionError] {
         hasNoLength should { have length (2) and equal (hasNoLength) }
       }
-      val expectedSubstring = "used with an object that had neither a public field or method named 'length'"
-      assert(caught1.getMessage.indexOf(expectedSubstring) != -1)
+      val expectedMessage = "have length (2) used with an object that had no public field or method named length or getLength"
+      assert(caught1.getMessage === expectedMessage)
       val caught2 = intercept[AssertionError] {
-        // hasNoLength shouldNot { have length (2) and equal (hasNoLength) }
         hasNoLength should not { have length (2) and equal (hasNoLength) }
       }
-      assert(caught2.getMessage.indexOf(expectedSubstring) != -1)
+      assert(caught2.getMessage === expectedMessage)
     }
   }
 }
