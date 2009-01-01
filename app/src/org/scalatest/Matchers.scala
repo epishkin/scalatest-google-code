@@ -834,6 +834,7 @@ trait Matchers extends Assertions {
     length and size can probably use structural types, because I want to use length on string and array for
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
+
   val have = new HaveWord // TODO: Should I just make these singleton objects?
   val contain = new ContainWord
   val include = new IncludeWord
