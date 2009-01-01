@@ -527,6 +527,11 @@ trait ShouldMatchers extends Matchers {
   implicit def convertHasGetLengthMethodToLengthShouldWrapper[T <:{ def getLength(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   implicit def convertHasLengthFieldToLengthShouldWrapper[T <:{ val length: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   implicit def convertHasLengthMethodToLengthShouldWrapper[T <:{ def length(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
+  // of like to have it work with should have length too, so I have to do one for it explicitly here.
+  implicit def convertJavaUtilListToLengthShouldWrapper[T <: java.util.List[Int]](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+
+
     /*
   implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): GetLengthShouldalizer[T] = new GetLengthShouldalizer[T](o)
   implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthFieldShouldalizer[T] = new LengthFieldShouldalizer[T](o)

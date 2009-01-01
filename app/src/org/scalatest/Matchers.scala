@@ -277,6 +277,11 @@ trait Matchers extends Assertions {
       def length = o.length
     }
 
+  implicit def convertJavaUtilListToLengthWrapper[Int](o: java.util.List[Int]) =
+    new LengthWrapper {
+      def length = o.size
+    }
+
   protected class HaveWord {
 
     // TODO: And size should do the structural view bounds stuff too. Why should length have all the fun?
@@ -322,19 +327,19 @@ trait Matchers extends Assertions {
           )
       }
   */
-    def langth[T <% LengthWrapper](expectedLength: Int) = {
-      new Matcher[T] {
-        def apply(left: T) =
+  /*  def length[T <% LengthWrapper](expectedLength: Int) = {
+      new Matcher[T <% LengthWrapper] {              // XXX
+        def apply[T <% LengthWrapper](left: T) =
           MatcherResult(
             left.length == expectedLength,
             FailureMessages("didNotHaveExpectedLength", left, expectedLength),
             FailureMessages("hadExpectedLength", left, expectedLength)
           )
       }
-    }
+    } */
 
 
-    // TODO: I think this one should also use the structural view bounds stuff.
+    // I couldn't figure out how to combine view bounds with existential types. Going dynamic for now.
     def length(expectedLength: Int) =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
@@ -348,6 +353,12 @@ trait Matchers extends Assertions {
             case leftString: String =>
               MatcherResult(
                 leftString.length == expectedLength, 
+                FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                FailureMessages("hadExpectedLength", left, expectedLength)
+              )
+            case leftJavaList: java.util.List[_] =>
+              MatcherResult(
+                leftJavaList.size == expectedLength,
                 FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                 FailureMessages("hadExpectedLength", left, expectedLength)
               )
