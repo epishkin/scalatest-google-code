@@ -435,8 +435,8 @@ trait Matchers extends Assertions {
                 )
               }
               else {
-                // TODO: put these strings in properties, also don't allow overloaded ones, i.e., don't pick one arbitratily
-                throw new AssertionError("'have length "+ expectedLength +"' used with an object that had neither a public field or method named 'length'.")
+                // TODO: don't allow overloaded ones, i.e., don't pick one arbitratily
+                throw new AssertionError(Resources("noLengthStructure", expectedLength.toString))
               }
         }
       }
