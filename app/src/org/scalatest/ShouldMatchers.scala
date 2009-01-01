@@ -525,6 +525,7 @@ trait ShouldMatchers extends Matchers {
   // ultimately invoked up in ResultOfHaveWordForLengthWrapper, it is done directly, not with reflection. That's my
   // theory anyway.
   implicit def convertHasGetLengthMethodToLengthShouldWrapper[T <:{ def getLength(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasGetLengthFieldToLengthShouldWrapper[T <:{ val getLength: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   implicit def convertHasLengthFieldToLengthShouldWrapper[T <:{ val length: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   implicit def convertHasLengthMethodToLengthShouldWrapper[T <:{ def length(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind

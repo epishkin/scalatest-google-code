@@ -261,6 +261,11 @@ trait Matchers extends Assertions {
       def length = o.length()
     }
 
+  implicit def convertGetLengthFieldToLengthWrapper(o: { val getLength: Int }) =
+    new LengthWrapper {
+      def length = o.getLength
+    }
+
   implicit def convertGetLengthMethodToLengthWrapper(o: { def getLength(): Int }) =
     new LengthWrapper {
       def length = o.getLength()
@@ -363,36 +368,74 @@ trait Matchers extends Assertions {
                 FailureMessages("hadExpectedLength", left, expectedLength)
               )
             case _ =>
+
               val methods = left.getClass.getMethods
-              val methodOption = methods.find(_.getName == "length")
+
+              // TODO: This is not perfect because it just grabs the first one, but there can be overloaded ones
+              val lengthMethodOption = methods.find(_.getName == "length")
               val hasLengthMethod =
-                methodOption match {
+                lengthMethodOption match {
                   case Some(method) =>
                     method.getParameterTypes.length == 0
                   case None => false
+
                 }
+
+              val getLengthMethodOption = methods.find(_.getName == "getLength")
+              val hasGetLengthMethod =
+                getLengthMethodOption match {
+                  case Some(method) =>
+                    method.getParameterTypes.length == 0
+                  case None => false
+
+                }
+
               val fields = left.getClass.getFields
-              val fieldOption = fields.find(_.getName == "length")
+
+              val lengthFieldOption = fields.find(_.getName == "length")
               val hasLengthField =
-                fieldOption match {
+                lengthFieldOption match {
                   case Some(_) => true
                   case None => false
                 }
+
+              val getLengthFieldOption = fields.find(_.getName == "getLength")
+              val hasGetLengthField =
+                getLengthFieldOption match {
+                  case Some(_) => true
+                  case None => false
+                }
+
               if (hasLengthMethod) {
                 MatcherResult(
-                  methodOption.get.invoke(left, Array[Object](): _*) == expectedLength, 
+                  lengthMethodOption.get.invoke(left, Array[Object](): _*) == expectedLength,
                   FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                   FailureMessages("hadExpectedLength", left, expectedLength)
                 )
               }
               else if (hasLengthField) {
                 MatcherResult(
-                  fieldOption.get.get(left) == expectedLength, 
+                  lengthFieldOption.get.get(left) == expectedLength,
+                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                  FailureMessages("hadExpectedLength", left, expectedLength)
+                )
+              }
+              else if (hasGetLengthMethod) {
+                MatcherResult(
+                  getLengthMethodOption.get.invoke(left, Array[Object](): _*) == expectedLength,
+                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                  FailureMessages("hadExpectedLength", left, expectedLength)
+                )
+              }
+              else if (hasGetLengthField) {
+                MatcherResult(
+                  getLengthFieldOption.get.get(left) == expectedLength,
                   FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                   FailureMessages("hadExpectedLength", left, expectedLength)
                 )
               }
               else {
+                // TODO: put these strings in properties, also don't allow overloaded ones, i.e., don't pick one arbitratily
                 throw new AssertionError("'have length "+ expectedLength +"' used with an object that had neither a public field or method named 'length'.")
               }
         }
