@@ -15,17 +15,52 @@
  */
 package org.scalatest
 
-class ShouldEqualSpec extends Spec with ShouldMatchers {
+import prop.Checkers
+import org.scalacheck._
+import Arbitrary._
+import Prop._
+
+class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers {
+
+  def returnsNormally(f: => Unit): Boolean = {
+    try {
+      f
+      true
+    }
+    catch {
+      case e: Throwable => false
+    }
+  }
+
+  def throwsAssertionError(f: => Unit): Boolean = {
+    try {
+      f
+      false
+    }
+    catch {
+      case e: AssertionError => true
+    }
+  }
 
   // Checking for equality with "equal"
   describe("The equal token") {
 
     it("should do nothing when equal") {
-      1 should equal (2)
+      1 should equal (1)
+
+      // objects should equal themselves
+      check((s: String) => returnsNormally(s should equal (s)))
+      check((i: Int) => returnsNormally(i should equal (i)))
+
+      // a string should equal another string with the same value
+      check((s: String) => returnsNormally(s should equal (new String(s))))
     }
 
     it("should do nothing when not equal and used with should not") {
       1 should not { equal (2) }
+
+      // unequal objects should not equal each other
+      check((s: String, t: String) => s != t ==> returnsNormally(s should not { equal (t) }))
     }
 
     it("should do nothing when equal and used in a logical-and expression") {
@@ -49,6 +84,9 @@ class ShouldEqualSpec extends Spec with ShouldMatchers {
         1 should equal (2)
       }
       assert(caught.getMessage === "1 did not equal 2")
+
+      // unequal objects used with "a should equal (b)" should throw an AssertionError
+      check((s: String, t: String) => s != t ==> throwsAssertionError(s should equal (t)))
     }
 
     it("should throw an assertion error when equal but used with should not") {
@@ -56,6 +94,13 @@ class ShouldEqualSpec extends Spec with ShouldMatchers {
         1 should not { equal (1) }
       }
       assert(caught.getMessage === "1 equaled 1")
+
+      // the same object used with "a should not { equal (a) } should throw AssertionError
+      check((s: String) => throwsAssertionError(s should not { equal (s) }))
+      check((i: Int) => throwsAssertionError(i should not { equal (i) }))
+
+      // two different strings with the same value used with "s should not { equal (t) } should throw AssertionError
+      check((s: String) => throwsAssertionError(s should not { equal (new String(s)) }))
     }
 
     it("should throw an assertion error when not equal and used in a logical-and expression") {
