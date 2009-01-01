@@ -20,27 +20,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers {
-
-  def returnsNormally(f: => Unit): Boolean = {
-    try {
-      f
-      true
-    }
-    catch {
-      case e: Throwable => false
-    }
-  }
-
-  def throwsAssertionError(f: => Unit): Boolean = {
-    try {
-      f
-      false
-    }
-    catch {
-      case e: AssertionError => true
-    }
-  }
+class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for equality with "equal"
   describe("The equal token") {

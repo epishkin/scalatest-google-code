@@ -61,6 +61,8 @@ package org.scalatest
  */
 trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 
+  // TODO: to make these nice, I think I'll have to put everything that's after should or must also
+  // after not, or, and and
   /**
    * Check to see if the specified object, <code>left</code>, matches, and report the result in
    * the returned <code>MatcherResult</code>. The parameter is named <code>left</code>, because it is
