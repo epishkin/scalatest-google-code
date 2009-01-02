@@ -18,6 +18,7 @@ package org.scalatest
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
+import java.lang.reflect.Field
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
@@ -343,8 +344,8 @@ trait Matchers extends Assertions {
       }
     } */
 
-
-    // I couldn't figure out how to combine view bounds with existential types. Going dynamic for now.
+    // I couldn't figure out how to combine view bounds with existential types. May or may not
+    // be possible, but going dynamic for now at least.
     def length(expectedLength: Int) =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
@@ -369,76 +370,50 @@ trait Matchers extends Assertions {
               )
             case _ =>
 
-              val methods = left.getClass.getMethods
+              // I don't check to see whether it is public, private, etc., because Scala maps these
+              // anyway. If it is not accessible, it will throw an access control exception here, which
+              // is sufficient to cause the test to fail.
+              def isMethodToInvoke(method: Method): Boolean =
+                (method.getName == "length" || method.getName == "getLength") &&
+                    method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers()) &&
+                    method.getReturnType == classOf[Int]
 
-              // TODO: This is not perfect because it just grabs the first one, but there can be overloaded ones
-              val lengthMethodOption = methods.find(_.getName == "length")
-              val hasLengthMethod =
-                lengthMethodOption match {
-                  case Some(method) =>
-                    method.getParameterTypes.length == 0
-                  case None => false
+              def isFieldToAccess(field: Field): Boolean =
+                (field.getName == "length" || field.getName == "getLength") &&
+                field.getType == classOf[Int]
 
-                }
+              val methodArray =
+                for (method <- left.getClass.getMethods; if isMethodToInvoke(method))
+                 yield method
+              //YYY
+              val fieldArray =
+                for (field <- left.getClass.getFields; if isFieldToAccess(field))
+                 yield field // rhymes: code as poetry
 
-              val getLengthMethodOption = methods.find(_.getName == "getLength")
-              val hasGetLengthMethod =
-                getLengthMethodOption match {
-                  case Some(method) =>
-                    method.getParameterTypes.length == 0
-                  case None => false
+              (methodArray.length, fieldArray.length) match {
 
-                }
+                case (0, 0) =>
+                  throw new AssertionError(Resources("noLengthStructure", expectedLength.toString))
 
-              val fields = left.getClass.getFields
+                case (0, 1) => // Has either a length or getLength field
+                  MatcherResult(
+                    fieldArray(0).getInt(left) == expectedLength,
+                    FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                    FailureMessages("hadExpectedLength", left, expectedLength)
+                  )
 
-              val lengthFieldOption = fields.find(_.getName == "length")
-              val hasLengthField =
-                lengthFieldOption match {
-                  case Some(_) => true
-                  case None => false
-                }
+                case (1, 0) => // Has either a length or getLength method
+                  val result = methodArray(0).invoke(left, Array[AnyRef](): _*).asInstanceOf[Int]
+                  MatcherResult(
+                    result == expectedLength,
+                    FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                    FailureMessages("hadExpectedLength", left, expectedLength)
+                  )
 
-              val getLengthFieldOption = fields.find(_.getName == "getLength")
-              val hasGetLengthField =
-                getLengthFieldOption match {
-                  case Some(_) => true
-                  case None => false
-                }
-
-              if (hasLengthMethod) {
-                MatcherResult(
-                  lengthMethodOption.get.invoke(left, Array[Object](): _*) == expectedLength,
-                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
-                  FailureMessages("hadExpectedLength", left, expectedLength)
-                )
+                case _ => // too many
+                  throw new IllegalArgumentException(Resources("lengthAndGetLength", expectedLength.toString))
               }
-              else if (hasLengthField) {
-                MatcherResult(
-                  lengthFieldOption.get.get(left) == expectedLength,
-                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
-                  FailureMessages("hadExpectedLength", left, expectedLength)
-                )
-              }
-              else if (hasGetLengthMethod) {
-                MatcherResult(
-                  getLengthMethodOption.get.invoke(left, Array[Object](): _*) == expectedLength,
-                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
-                  FailureMessages("hadExpectedLength", left, expectedLength)
-                )
-              }
-              else if (hasGetLengthField) {
-                MatcherResult(
-                  getLengthFieldOption.get.get(left) == expectedLength,
-                  FailureMessages("didNotHaveExpectedLength", left, expectedLength),
-                  FailureMessages("hadExpectedLength", left, expectedLength)
-                )
-              }
-              else {
-                // TODO: don't allow overloaded ones, i.e., don't pick one arbitratily
-                throw new AssertionError(Resources("noLengthStructure", expectedLength.toString))
-              }
-        }
+          }
       }
   }
   
@@ -769,7 +744,7 @@ trait Matchers extends Assertions {
           (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
           resultType == classOf[Boolean]
         }
-
+        // XXX
         // Store in an array, because may have both isEmpty and empty, in which case I
         // will throw an exception.
         val methodArray =

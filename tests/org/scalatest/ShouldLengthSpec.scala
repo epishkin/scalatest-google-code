@@ -812,5 +812,18 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
       assert(caught2.getMessage === expectedMessage)
     }
+
+    it ("should give an IllegalArgumentException with an arbitrary object that has multiple members with a valid lengths structure") {
+      class Lengthy(len: Int) {
+        def getLength: Int = len
+        def length: Int = len
+        override def toString = "lengthy"
+      }
+      val obj = new Lengthy(2)
+      val lengthMatcher = have length (2)
+      intercept[IllegalArgumentException] {
+        lengthMatcher.apply(obj)
+      }
+    }
   }
 }
