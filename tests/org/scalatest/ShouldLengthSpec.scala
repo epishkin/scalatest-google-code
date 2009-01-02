@@ -813,7 +813,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       assert(caught2.getMessage === expectedMessage)
     }
 
-    it ("should give an IllegalArgumentException with an arbitrary object that has multiple members with a valid lengths structure") {
+    it("should give an IllegalArgumentException with an arbitrary object that has multiple members with a valid lengths structure") {
       class Lengthy(len: Int) {
         def getLength: Int = len
         def length: Int = len
@@ -821,9 +821,10 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
       val obj = new Lengthy(2)
       val lengthMatcher = have length (2)
-      intercept[IllegalArgumentException] {
+      val caught = intercept[IllegalArgumentException] {
         lengthMatcher.apply(obj)
       }
+      assert(caught.getMessage === "have length (2) used with an object that has multiple fields and/or methods named length and getLength")
     }
   }
 }
