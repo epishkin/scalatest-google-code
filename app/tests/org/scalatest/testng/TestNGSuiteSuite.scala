@@ -19,24 +19,22 @@ package org.scalatest.testng {
    import org.scalatest.jmock._
    import testng.test._
 
-   class TestNGSuiteSuite extends SMockFunSuite with SuiteExpectations{
+   class TestNGSuiteSuite extends SMockFunSuite with SuiteExpectations {
 
-     
-     mockTest( "Reporter Should Be Notified When Test Passes" ){
+     mockTest("Reporter Should Be Notified When Test Passes") {
     
        val reporter = mock[Reporter]
 
-       expecting{
+       expecting {
          singleTestToPass( reporter )
        }
        
-       when{
+       when {
          new SuccessTestNGSuite().runTestNG(reporter)
        }
      }
-  
 
-     mockTest( "Reporter Should Be Notified When Test Fails" ){
+     mockTest("Reporter Should Be Notified When Test Fails") {
     
        val reporter = mock[Reporter]
 
@@ -44,13 +42,12 @@ package org.scalatest.testng {
          singleTestToFail( reporter )
        }
 
-       when{
+       when {
          new FailureTestNGSuite().runTestNG(reporter)
        }
      }
 
-     
-     test( "If a test fails due to an exception, Report should have the exception" ){
+     test("If a test fails due to an exception, Report should have the exception") {
        
        val testReporter = new TestReporter
 
@@ -58,28 +55,27 @@ package org.scalatest.testng {
        new FailureTestNGSuite().runTestNG(testReporter)
 
        // then
-       assert( testReporter.errorMessage === "fail" )
+       assert(testReporter.errorMessage === "fail")
      }
-     
 
-     mockTest( "Report should be generated for each invocation" ){
+     mockTest("Report should be generated for each invocation") {
        
        val reporter = mock[Reporter]
 
-       expecting( "reporter gets 10 passing reports because invocationCount=10" ) {
-         nTestsToPass( 10, reporter )
+       expecting("reporter gets 10 passing reports because invocationCount=10") {
+         nTestsToPass(10, reporter)
        }
 
-       when ( "run the suite with method that has invocationCount=10" ){
+       when ("run the suite with method that has invocationCount=10") {
         new TestNGSuiteWithInvocationCount().runTestNG(reporter)
        }
      }
      
-     mockTest( "Reporter should be notified when test is skipped" ){
+     mockTest("Reporter should be notified when test is skipped") {
        
        val reporter = mock[Reporter]
 
-       expecting ( "a single test should fail, followed by a single test being skipped" ){ 
+       expecting ("a single test should fail, followed by a single test being skipped") {
          one(reporter).suiteStarting(any[Report]) 
          one(reporter).testStarting(any[Report]) 
          one(reporter).testFailed(any[Report]) 
@@ -87,12 +83,12 @@ package org.scalatest.testng {
          one(reporter).suiteCompleted(any[Report]) 
        }
 
-       when ( "run the suite with a test that should fail and a test that should be skipped" ){
+       when ("run the suite with a test that should fail and a test that should be skipped") {
          new SuiteWithSkippedTest().runTestNG(reporter)
        }
      }
      
-     mockTest( "Only the correct method should be run when specifying a single method to run" ){
+     mockTest("Only the correct method should be run when specifying a single method to run") {
        
        val reporter = mock[Reporter]
 
@@ -104,9 +100,8 @@ package org.scalatest.testng {
          new SuiteWithTwoTests().runTestNG("testThatPasses", reporter)
        }
      }
-     
-     
-     test( "Report for failing tests should include rerunner" ){
+
+     test("Report for failing tests should include rerunner") {
        
        val testReporter = new TestReporter
 
@@ -119,7 +114,7 @@ package org.scalatest.testng {
      }
 
      
-     test( "Report for passing tests should include rerunner" ){
+     test("Report for passing tests should include rerunner") {
        
        val testReporter = new TestReporter
 
@@ -132,18 +127,18 @@ package org.scalatest.testng {
      }
      
      
-     test( "infoProvided should be available for BeforeMethod/Class/Suite annotations" ){
+     test("infoProvided should be available for BeforeMethod/Class/Suite annotations") {
        // this needs to be written after i figure out the mock integration
      }     
      
-     test( "infoProvided should be available for AfterMethod/Class/Suite annotations" ){
+     test("infoProvided should be available for AfterMethod/Class/Suite annotations") {
        // this needs to be written after i figure out the mock integration
      }     
 
      
    }
 
-   package test{
+   package test {
      
      import org.testng.annotations._
      
@@ -170,9 +165,7 @@ package org.scalatest.testng {
      }      
      
      class SuiteWithBeforeAndAfterAnnotations extends TestNGSuite {
-       
      }
-     
    }
 }
 
