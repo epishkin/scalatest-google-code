@@ -246,8 +246,6 @@ trait Matchers extends Assertions {
       }
   }
 
-  // TODO: Ahah, I think I may have just realized a cause of the ugly left values. I probably
-  // need to override toString in these anonymous LengthWrapper classes. 
   trait LengthWrapper {
     def length: Long
   }
@@ -308,10 +306,54 @@ trait Matchers extends Assertions {
       def length = o.size
     }
 
+  trait SizeWrapper {
+    def size: Long
+  }
+
+  implicit def convertSizeFieldToIntSizeWrapper(o: { val size: Int }) =
+    new SizeWrapper {
+      def size = o.size
+    }
+
+  implicit def convertSizeMethodToIntSizeWrapper(o: { def size(): Int }) =
+    new SizeWrapper {
+      def size = o.size()
+    }
+
+  implicit def convertGetSizeFieldToIntSizeWrapper(o: { val getSize: Int }) =
+    new SizeWrapper {
+      def size = o.getSize
+    }
+
+  implicit def convertGetSizeMethodToIntSizeWrapper(o: { def getSize(): Int }) =
+    new SizeWrapper {
+      def size = o.getSize()
+    }
+
+  implicit def convertSizeFieldToLongSizeWrapper(o: { val size: Long }) =
+    new SizeWrapper {
+      def size = o.size
+    }
+
+  implicit def convertSizeMethodToLongSizeWrapper(o: { def size(): Long }) =
+    new SizeWrapper {
+      def size = o.size()
+    }
+
+  implicit def convertGetSizeFieldToLongSizeWrapper(o: { val getSize: Long }) =
+    new SizeWrapper {
+      def size = o.getSize
+    }
+
+  implicit def convertGetSizeMethodToLongSizeWrapper(o: { def getSize(): Long }) =
+    new SizeWrapper {
+      def size = o.getSize()
+    }
+
   protected class HaveWord {
 
     // TODO: And size should do the structural view bounds stuff too. Why should length have all the fun?
-    def size(expectedSize: Int) =
+    /* def size(expectedSize: Int) =
       new Matcher[Collection[Any]] {
         def apply(left: Collection[Any]) =
           MatcherResult(
@@ -319,7 +361,7 @@ trait Matchers extends Assertions {
             FailureMessages("didNotHaveExpectedSize", left, expectedSize),
             FailureMessages("hadExpectedSize", left, expectedSize)
           )
-      }
+      }*/
   /*
     // Go ahead and use a structural type here too, to make it more general. Can then
     // use this on any type that has a size method. I guess it doesn't matter in structural
@@ -439,6 +481,83 @@ trait Matchers extends Assertions {
 
                 case _ => // too many
                   throw new IllegalArgumentException(Resources("lengthAndGetLength", expectedLength.toString))
+              }
+          }
+      }
+
+    def size(expectedSize: Long) =
+      new Matcher[AnyRef] {
+        def apply(left: AnyRef) =
+          left match {
+            case leftSeq: Seq[_] =>
+              MatcherResult(
+                leftSeq.size == expectedSize, 
+                FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+                FailureMessages("hadExpectedSize", left, expectedSize)
+              )
+            case leftString: String =>
+              MatcherResult(
+                leftString.size == expectedSize, 
+                FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+                FailureMessages("hadExpectedSize", left, expectedSize)
+              )
+            case leftJavaList: java.util.List[_] =>
+              MatcherResult(
+                leftJavaList.size == expectedSize,
+                FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+                FailureMessages("hadExpectedSize", left, expectedSize)
+              )
+            case _ =>
+
+              // I'm only checking for public methods here. Maybe it should also do package access, protected, etc.
+              // if it is accessible, it would work.
+              def isMethodToInvoke(method: Method): Boolean =
+                (method.getName == "size" || method.getName == "getSize") &&
+                    method.getParameterTypes.size == 0 && !Modifier.isStatic(method.getModifiers()) &&
+                    (method.getReturnType == classOf[Int] || method.getReturnType == classOf[Long])
+
+              def isFieldToAccess(field: Field): Boolean =
+                (field.getName == "size" || field.getName == "getSize") &&
+                (field.getType == classOf[Int] || field.getType == classOf[Long])
+
+              val methodArray =
+                for (method <- left.getClass.getMethods; if isMethodToInvoke(method))
+                 yield method
+              //YYY
+              val fieldArray =
+                for (field <- left.getClass.getFields; if isFieldToAccess(field))
+                 yield field // rhymes: code as poetry
+
+              (methodArray.size, fieldArray.size) match {
+
+                case (0, 0) =>
+                  throw new AssertionError(Resources("noSizeStructure", expectedSize.toString))
+
+                case (0, 1) => // Has either a size or getSize field
+                  val field = fieldArray(0)
+                  val value: Long = if (field.getType == classOf[Int]) field.getInt(left) else field.getLong(left)
+                  MatcherResult(
+                    value == expectedSize,
+                    FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+                    FailureMessages("hadExpectedSize", left, expectedSize)
+                  )
+
+                case (1, 0) => // Has either a size or getSize method
+                  val method = methodArray(0)
+                  val result: Long =
+                    if (method.getReturnType == classOf[Int])
+                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Int]
+                    else
+                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Long]
+
+                  MatcherResult(
+                    result == expectedSize,
+                    FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+                    FailureMessages("hadExpectedSize", left, expectedSize)
+                  )
+
+                case _ => // too many
+                  throw new IllegalArgumentException(Resources("sizeAndGetSize", expectedSize.toString))
               }
           }
       }
