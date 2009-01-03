@@ -323,7 +323,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
     // I repeat these with copy and paste, becuase I need to test that each static structural type works, and
     // that makes it hard to pass them to a common "behaves like" method
-    describe("on an arbitrary object that has an empty-paren length method") {
+    describe("on an arbitrary object that has an empty-paren Int length method") {
   
       class Lengthy(len: Int) {
         def length(): Int = len
@@ -402,7 +402,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
     }
 
-    describe("on an arbitrary object that has a parameterless length method") {
+    describe("on an arbitrary object that has a parameterless Int length method") {
 
       class Lengthy(len: Int) {
         def length: Int = len  // The only difference between the previous is the structure of this member
@@ -481,7 +481,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
     }
 
-    describe("on an arbitrary object that has a length field") {
+    describe("on an arbitrary object that has a Int length field") {
 
       class Lengthy(len: Int) {
         val length: Int = len // The only difference between the previous is the structure of this member
@@ -560,7 +560,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
     }
 
-    describe("on an arbitrary object that has an empty-paren getLength method") {
+    describe("on an arbitrary object that has an empty-paren Int getLength method") {
 
       class Lengthy(len: Int) {
         def getLength(): Int = len  // The only difference between the previous is the structure of this member
@@ -639,7 +639,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
     }
 
-    describe("on an arbitrary object that has a parameterless getLength method") {
+    describe("on an arbitrary object that has a parameterless Int getLength method") {
 
       class Lengthy(len: Int) {
         def getLength: Int = len  // The only difference between the previous is the structure of this member
@@ -718,10 +718,486 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
     }
 
-    describe("on an arbitrary object that has a getLength field") {
+    describe("on an arbitrary object that has an Int getLength field") {
 
       class Lengthy(len: Int) {
         val getLength: Int = len // The only difference between the previous is the structure of this member
+        override def toString = "lengthy"
+      }
+      val obj = new Lengthy(2)
+
+      it("should do nothing if object length matches specified length") {
+        obj should have length (2)
+        check((len: Int) => returnsNormally(new Lengthy(len) should have length (len)))
+      }
+
+      it("should do nothing if object length does not match and used with should not") {
+        obj should not { have length (3) }
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+      }
+
+      it("should do nothing when object length matches and used in a logical-and expression") {
+        obj should { have length (2) and (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length matches and used in a logical-or expression") {
+        obj should { have length (77) or (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-and expression with not") {
+        obj should { not { have length (5) } and not { have length (3) }}
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-or expression with not") {
+        obj should { not { have length (2) } or not { have length (3) }}
+      }
+
+      it("should throw AssertionError if object length does not match specified length") {
+        val caught = intercept[AssertionError] {
+          obj should have length (3)
+        }
+        assert(caught.getMessage === "lengthy did not have length 3")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (len + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified length is negative") {
+        val caught = intercept[AssertionError] {
+          obj should have length (-2)
+        }
+        assert(caught.getMessage === "lengthy did not have length -2")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (5) and (have length (2 - 1)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 5")
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (55) or (have length (22)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy did not have length 3, but lengthy had length 2")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy had length 2, and lengthy had length 2")
+      }
+    }
+
+    describe("on an arbitrary object that has an empty-paren Long length method") {
+
+      class Lengthy(len: Long) {
+        def length(): Long = len
+        override def toString = "lengthy"
+      }
+      val obj = new Lengthy(2)
+
+      it("should do nothing if object length matches specified length") {
+        obj should have length (2)
+        obj should have length (2L)
+        check((len: Int) => returnsNormally(new Lengthy(len) should have length (len)))
+        check((len: Long) => returnsNormally(new Lengthy(len) should have length (len)))
+      }
+
+      it("should do nothing if object length does not match and used with should not") {
+        obj should not { have length (3) }
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+      }
+
+      it("should do nothing when object length matches and used in a logical-and expression") {
+        obj should { have length (2) and (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length matches and used in a logical-or expression") {
+        obj should { have length (77) or (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-and expression with not") {
+        obj should { not { have length (5) } and not { have length (3) }}
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-or expression with not") {
+        obj should { not { have length (2) } or not { have length (3) }}
+      }
+
+      it("should throw AssertionError if object length does not match specified length") {
+        val caught = intercept[AssertionError] {
+          obj should have length (3)
+        }
+        assert(caught.getMessage === "lengthy did not have length 3")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (len + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified length is negative") {
+        val caught = intercept[AssertionError] {
+          obj should have length (-2)
+        }
+        assert(caught.getMessage === "lengthy did not have length -2")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (5) and (have length (2 - 1)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 5")
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (55) or (have length (22)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy did not have length 3, but lengthy had length 2")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy had length 2, and lengthy had length 2")
+      }
+    }
+
+    describe("on an arbitrary object that has a parameterless Long length method") {
+
+      class Lengthy(len: Long) {
+        def length: Long = len  // The only difference between the previous is the structure of this member
+        override def toString = "lengthy"
+      }
+      val obj = new Lengthy(2)
+
+      it("should do nothing if object length matches specified length") {
+        obj should have length (2)
+        check((len: Int) => returnsNormally(new Lengthy(len) should have length (len)))
+      }
+
+      it("should do nothing if object length does not match and used with should not") {
+        obj should not { have length (3) }
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+      }
+
+      it("should do nothing when object length matches and used in a logical-and expression") {
+        obj should { have length (2) and (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length matches and used in a logical-or expression") {
+        obj should { have length (77) or (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-and expression with not") {
+        obj should { not { have length (5) } and not { have length (3) }}
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-or expression with not") {
+        obj should { not { have length (2) } or not { have length (3) }}
+      }
+
+      it("should throw AssertionError if object length does not match specified length") {
+        val caught = intercept[AssertionError] {
+          obj should have length (3)
+        }
+        assert(caught.getMessage === "lengthy did not have length 3")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (len + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified length is negative") {
+        val caught = intercept[AssertionError] {
+          obj should have length (-2)
+        }
+        assert(caught.getMessage === "lengthy did not have length -2")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (5) and (have length (2 - 1)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 5")
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (55) or (have length (22)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy did not have length 3, but lengthy had length 2")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy had length 2, and lengthy had length 2")
+      }
+    }
+
+    describe("on an arbitrary object that has a Long length field") {
+
+      class Lengthy(len: Long) {
+        val length: Long = len // The only difference between the previous is the structure of this member
+        override def toString = "lengthy"
+      }
+      val obj = new Lengthy(2)
+
+      it("should do nothing if object length matches specified length") {
+        obj should have length (2)
+        check((len: Int) => returnsNormally(new Lengthy(len) should have length (len)))
+      }
+
+      it("should do nothing if object length does not match and used with should not") {
+        obj should not { have length (3) }
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+      }
+
+      it("should do nothing when object length matches and used in a logical-and expression") {
+        obj should { have length (2) and (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length matches and used in a logical-or expression") {
+        obj should { have length (77) or (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-and expression with not") {
+        obj should { not { have length (5) } and not { have length (3) }}
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-or expression with not") {
+        obj should { not { have length (2) } or not { have length (3) }}
+      }
+
+      it("should throw AssertionError if object length does not match specified length") {
+        val caught = intercept[AssertionError] {
+          obj should have length (3)
+        }
+        assert(caught.getMessage === "lengthy did not have length 3")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (len + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified length is negative") {
+        val caught = intercept[AssertionError] {
+          obj should have length (-2)
+        }
+        assert(caught.getMessage === "lengthy did not have length -2")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (5) and (have length (2 - 1)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 5")
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (55) or (have length (22)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy did not have length 3, but lengthy had length 2")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy had length 2, and lengthy had length 2")
+      }
+    }
+
+    describe("on an arbitrary object that has an empty-paren Long getLength method") {
+
+      class Lengthy(len: Long) {
+        def getLength(): Long = len  // The only difference between the previous is the structure of this member
+        override def toString = "lengthy"
+      }
+      val obj = new Lengthy(2)
+
+      it("should do nothing if object length matches specified length") {
+        obj should have length (2)
+        check((len: Int) => returnsNormally(new Lengthy(len) should have length (len)))
+      }
+
+      it("should do nothing if object length does not match and used with should not") {
+        obj should not { have length (3) }
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+      }
+
+      it("should do nothing when object length matches and used in a logical-and expression") {
+        obj should { have length (2) and (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length matches and used in a logical-or expression") {
+        obj should { have length (77) or (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-and expression with not") {
+        obj should { not { have length (5) } and not { have length (3) }}
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-or expression with not") {
+        obj should { not { have length (2) } or not { have length (3) }}
+      }
+
+      it("should throw AssertionError if object length does not match specified length") {
+        val caught = intercept[AssertionError] {
+          obj should have length (3)
+        }
+        assert(caught.getMessage === "lengthy did not have length 3")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (len + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified length is negative") {
+        val caught = intercept[AssertionError] {
+          obj should have length (-2)
+        }
+        assert(caught.getMessage === "lengthy did not have length -2")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (5) and (have length (2 - 1)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 5")
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (55) or (have length (22)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy did not have length 3, but lengthy had length 2")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy had length 2, and lengthy had length 2")
+      }
+    }
+
+    describe("on an arbitrary object that has a parameterless Long getLength method") {
+
+      class Lengthy(len: Long) {
+        def getLength: Long = len  // The only difference between the previous is the structure of this member
+        override def toString = "lengthy"
+      }
+      val obj = new Lengthy(2)
+
+      it("should do nothing if object length matches specified length") {
+        obj should have length (2)
+        check((len: Int) => returnsNormally(new Lengthy(len) should have length (len)))
+      }
+
+      it("should do nothing if object length does not match and used with should not") {
+        obj should not { have length (3) }
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+      }
+
+      it("should do nothing when object length matches and used in a logical-and expression") {
+        obj should { have length (2) and (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length matches and used in a logical-or expression") {
+        obj should { have length (77) or (have length (3 - 1)) }
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-and expression with not") {
+        obj should { not { have length (5) } and not { have length (3) }}
+      }
+
+      it("should do nothing when object length doesn't match and used in a logical-or expression with not") {
+        obj should { not { have length (2) } or not { have length (3) }}
+      }
+
+      it("should throw AssertionError if object length does not match specified length") {
+        val caught = intercept[AssertionError] {
+          obj should have length (3)
+        }
+        assert(caught.getMessage === "lengthy did not have length 3")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (len + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified length is negative") {
+        val caught = intercept[AssertionError] {
+          obj should have length (-2)
+        }
+        assert(caught.getMessage === "lengthy did not have length -2")
+        check((len: Int) => throwsAssertionError(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (5) and (have length (2 - 1)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 5")
+      }
+
+      it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          obj should { have length (55) or (have length (22)) }
+        }
+        assert(caught.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy did not have length 3, but lengthy had length 2")
+      }
+
+      it("should throw an assertion error when object length matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          obj should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught.getMessage === "lengthy had length 2, and lengthy had length 2")
+      }
+    }
+
+    describe("on an arbitrary object that has a Long getLength field") {
+
+      class Lengthy(len: Long) {
+        val getLength: Long = len // The only difference between the previous is the structure of this member
         override def toString = "lengthy"
       }
       val obj = new Lengthy(2)

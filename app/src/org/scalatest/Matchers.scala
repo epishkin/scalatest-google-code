@@ -249,25 +249,45 @@ trait Matchers extends Assertions {
   // TODO: Ahah, I think I may have just realized a cause of the ugly left values. I probably
   // need to override toString in these anonymous LengthWrapper classes. 
   trait LengthWrapper {
-    def length: Int
+    def length: Long
   }
 
-  implicit def convertLengthFieldToLengthWrapper(o: { val length: Int }) =
+  implicit def convertLengthFieldToIntLengthWrapper(o: { val length: Int }) =
     new LengthWrapper {
       def length = o.length
     }
 
-  implicit def convertLengthMethodToLengthWrapper(o: { def length(): Int }) =
+  implicit def convertLengthMethodToIntLengthWrapper(o: { def length(): Int }) =
     new LengthWrapper {
       def length = o.length()
     }
 
-  implicit def convertGetLengthFieldToLengthWrapper(o: { val getLength: Int }) =
+  implicit def convertGetLengthFieldToIntLengthWrapper(o: { val getLength: Int }) =
     new LengthWrapper {
       def length = o.getLength
     }
 
-  implicit def convertGetLengthMethodToLengthWrapper(o: { def getLength(): Int }) =
+  implicit def convertGetLengthMethodToIntLengthWrapper(o: { def getLength(): Int }) =
+    new LengthWrapper {
+      def length = o.getLength()
+    }
+
+  implicit def convertLengthFieldToLongLengthWrapper(o: { val length: Long }) =
+    new LengthWrapper {
+      def length = o.length
+    }
+
+  implicit def convertLengthMethodToLongLengthWrapper(o: { def length(): Long }) =
+    new LengthWrapper {
+      def length = o.length()
+    }
+
+  implicit def convertGetLengthFieldToLongLengthWrapper(o: { val getLength: Long }) =
+    new LengthWrapper {
+      def length = o.getLength
+    }
+
+  implicit def convertGetLengthMethodToLongLengthWrapper(o: { def getLength(): Long }) =
     new LengthWrapper {
       def length = o.getLength()
     }
@@ -346,7 +366,7 @@ trait Matchers extends Assertions {
 
     // I couldn't figure out how to combine view bounds with existential types. May or may not
     // be possible, but going dynamic for now at least.
-    def length(expectedLength: Int) =
+    def length(expectedLength: Long) =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
           left match {
@@ -370,17 +390,16 @@ trait Matchers extends Assertions {
               )
             case _ =>
 
-              // I don't check to see whether it is public, private, etc., because Scala maps these
-              // anyway. If it is not accessible, it will throw an access control exception here, which
-              // is sufficient to cause the test to fail.
+              // I'm only checking for public methods here. Maybe it should also do package access, protected, etc.
+              // if it is accessible, it would work.
               def isMethodToInvoke(method: Method): Boolean =
                 (method.getName == "length" || method.getName == "getLength") &&
                     method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers()) &&
-                    method.getReturnType == classOf[Int]
+                    (method.getReturnType == classOf[Int] || method.getReturnType == classOf[Long])
 
               def isFieldToAccess(field: Field): Boolean =
                 (field.getName == "length" || field.getName == "getLength") &&
-                field.getType == classOf[Int]
+                (field.getType == classOf[Int] || field.getType == classOf[Long])
 
               val methodArray =
                 for (method <- left.getClass.getMethods; if isMethodToInvoke(method))
@@ -396,14 +415,22 @@ trait Matchers extends Assertions {
                   throw new AssertionError(Resources("noLengthStructure", expectedLength.toString))
 
                 case (0, 1) => // Has either a length or getLength field
+                  val field = fieldArray(0)
+                  val value: Long = if (field.getType == classOf[Int]) field.getInt(left) else field.getLong(left)
                   MatcherResult(
-                    fieldArray(0).getInt(left) == expectedLength,
+                    value == expectedLength,
                     FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                     FailureMessages("hadExpectedLength", left, expectedLength)
                   )
 
                 case (1, 0) => // Has either a length or getLength method
-                  val result = methodArray(0).invoke(left, Array[AnyRef](): _*).asInstanceOf[Int]
+                  val method = methodArray(0)
+                  val result: Long =
+                    if (method.getReturnType == classOf[Int])
+                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Int]
+                    else
+                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Long]
+
                   MatcherResult(
                     result == expectedLength,
                     FailureMessages("didNotHaveExpectedLength", left, expectedLength),
