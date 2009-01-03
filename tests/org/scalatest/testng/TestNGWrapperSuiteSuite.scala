@@ -20,7 +20,7 @@ import org.apache.commons.io.FileUtils
 
 package org.scalatest.testng{
 
-  class TestNGWrapperSuiteSuite extends SMockFunSuite with SuiteExpectations{
+  class TestNGWrapperSuiteSuite extends SMockFunSuite with SuiteExpectations {
   
     val XML_SUITES_PROPERTY = "xml_suites"
       
@@ -69,11 +69,10 @@ package org.scalatest.testng{
     
     
     def createSuite( suiteNode: scala.xml.Elem ) : String = {
-      val tmp = File.createTempFile( "testng", "wrapper" )
-      FileUtils.writeStringToFile( tmp, suiteNode.toString )
+      val tmp = File.createTempFile("testng", "wrapper")
+      FileUtils.writeStringToFile(tmp, suiteNode.toString)
       tmp.getAbsolutePath
     }
-    
   }
   
   package test{
