@@ -1323,6 +1323,18 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         lengthMatcher.apply(obj)
       }
       assert(caught.getMessage === "have length (2) used with an object that has multiple fields and/or methods named length and getLength")
+
+      class IntAndLong(intLen: Int, longLen: Long) {
+        def getLength: Int = intLen
+        def length: Long = longLen
+        override def toString = "lengthy"
+      }
+      val obj2 = new Lengthy(2)
+      val lengthMatcher2 = have length (2)
+      val caught2 = intercept[IllegalArgumentException] {
+        lengthMatcher2.apply(obj)
+      }
+      assert(caught2.getMessage === "have length (2) used with an object that has multiple fields and/or methods named length and getLength")
     }
   }
 }
