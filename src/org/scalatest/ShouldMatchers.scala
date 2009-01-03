@@ -336,6 +336,27 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
+    def size(expectedSize: Int) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+    def size(expectedSize: Long) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+  }
+
   // TODO: In the tests, make sure they can create their own matcher and use it.
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
@@ -416,6 +437,12 @@ trait ShouldMatchers extends Matchers {
   protected class LengthShouldWrapper[A <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
       new ResultOfHaveWordForLengthWrapper(left, true)
+    }
+  }
+
+  protected class SizeShouldWrapper[A <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+    def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] = {
+      new ResultOfHaveWordForSizeWrapper(left, true)
     }
   }
 
@@ -542,10 +569,20 @@ trait ShouldMatchers extends Matchers {
   implicit def convertHasLongGetLengthFieldToLengthShouldWrapper[T <:{ val getLength: Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   implicit def convertHasLongLengthFieldToLengthShouldWrapper[T <:{ val length: Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   implicit def convertHasLongLengthMethodToLengthShouldWrapper[T <:{ def length(): Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+
   // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
   // of like to have it work with should have length too, so I have to do one for it explicitly here.
   implicit def convertJavaUtilListToLengthShouldWrapper[T <: java.util.List[Int]](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
 
+  implicit def convertHasIntGetSizeMethodToSizeShouldWrapper[T <:{ def getSize(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasIntGetSizeFieldToSizeShouldWrapper[T <:{ val getSize: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasIntSizeFieldToSizeShouldWrapper[T <:{ val size: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasIntSizeMethodToSizeShouldWrapper[T <:{ def size(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+
+  implicit def convertHasLongGetSizeMethodToSizeShouldWrapper[T <:{ def getSize(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasLongGetSizeFieldToSizeShouldWrapper[T <:{ val getSize: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasLongSizeFieldToSizeShouldWrapper[T <:{ val size: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasLongSizeMethodToSizeShouldWrapper[T <:{ def size(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
 
     /*
   implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): GetLengthShouldalizer[T] = new GetLengthShouldalizer[T](o)
