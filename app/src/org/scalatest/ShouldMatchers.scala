@@ -407,7 +407,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
   
-  protected trait ShouldHaveWordForJavaRListMethods[T] {
+  protected trait ShouldHaveWordForJavaListMethods[T] {
     protected val leftOperand: java.util.List[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
       new ResultOfHaveWordForJavaList(leftOperand, true)
