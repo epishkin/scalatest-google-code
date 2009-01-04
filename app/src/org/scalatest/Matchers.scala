@@ -296,9 +296,10 @@ trait Matchers extends Assertions {
       def length = o.length
     }
 
-  implicit def convertStringToLengthWrapper[T](o: String) =
-    new LengthWrapper {
+  implicit def convertStringToLengthSizeWrapper[T](o: String) =
+    new LengthWrapper with SizeWrapper {
       def length = o.length
+      def size = o.size
     }
 
   implicit def convertJavaUtilListToLengthWrapper[Int](o: java.util.List[Int]) =
@@ -350,60 +351,12 @@ trait Matchers extends Assertions {
       def size = o.getSize()
     }
 
-  protected class HaveWord {
+  implicit def convertJavaUtilCollectionToSizeWrapper[Int](o: java.util.Collection[Int]) =
+    new SizeWrapper {
+      def size = o.size
+    }
 
-    /* def size(expectedSize: Int) =
-      new Matcher[Collection[Any]] {
-        def apply(left: Collection[Any]) =
-          MatcherResult(
-            left.size == expectedSize, 
-            FailureMessages("didNotHaveExpectedSize", left, expectedSize),
-            FailureMessages("hadExpectedSize", left, expectedSize)
-          )
-      }*/
-  /*
-    // Go ahead and use a structural type here too, to make it more general. Can then
-    // use this on any type that has a size method. I guess it doesn't matter in structural
-    // types if you put the empty parens on there or not.
-    def size(expectedSize: Int) =
-      new Matcher[{ def size(): Int }] {
-        def apply(left: { def size(): Int }) =
-          MatcherResult(
-            left.size == expectedSize, 
-            FailureMessages("didNotHaveExpectedSize", left, expectedSize),
-            FailureMessages("hadExpectedSize", left, expectedSize)
-          )
-      }
-  */
-  
-  /*
-    // This should give me { def length(): Int } I don't
-    // know the type, but it has a length method. This would work on strings and ints, but
-    // I"m not sure what the story is on the parameterless or not. Probably should put parens in there.
-    // String is a structural subtype of { def length(): Int }. Thus Matcher[{ def length(): Int }] should
-    // be a subtype of Matcher[String], because of contravariance. Yeah, this worked! 
-    // Darn structural type won't work for both arrays and strings, because one requres a length and the other a length()
-    // So they aren't the same structural type. Really want the syntax, so moving to reflection and a runtime error.
-    def length(expectedLength: Int) =
-      new Matcher[{ def length: Int }] {
-        def apply(left: { def length: Int }) =
-          MatcherResult(
-            left.length == expectedLength, 
-            FailureMessages("didNotHaveExpectedLength", left, expectedLength),
-            FailureMessages("hadExpectedLength", left, expectedLength)
-          )
-      }
-  */
-  /*  def length[T <% LengthWrapper](expectedLength: Int) = {
-      new Matcher[T <% LengthWrapper] {              // XXX
-        def apply[T <% LengthWrapper](left: T) =
-          MatcherResult(
-            left.length == expectedLength,
-            FailureMessages("didNotHaveExpectedLength", left, expectedLength),
-            FailureMessages("hadExpectedLength", left, expectedLength)
-          )
-      }
-    } */
+  protected class HaveWord {
 
     // I couldn't figure out how to combine view bounds with existential types. May or may not
     // be possible, but going dynamic for now at least.
@@ -491,12 +444,6 @@ trait Matchers extends Assertions {
             case leftSeq: Collection[_] =>
               MatcherResult(
                 leftSeq.size == expectedSize, 
-                FailureMessages("didNotHaveExpectedSize", left, expectedSize),
-                FailureMessages("hadExpectedSize", left, expectedSize)
-              )
-            case leftString: String =>
-              MatcherResult(
-                leftString.size == expectedSize, 
                 FailureMessages("didNotHaveExpectedSize", left, expectedSize),
                 FailureMessages("hadExpectedSize", left, expectedSize)
               )
@@ -613,26 +560,6 @@ trait Matchers extends Assertions {
         )
     }
   }
-
-/*
-  // This worked, but the < because it's an operator gets run first: be < 7. So I need to do the
-  // matcher for that one and that should suffice.
-  protected class ResultOfBeWordForOrdered[T <% Ordered[T]](left: T, shouldBeTrue: Boolean) {
-    def lessThan(right: T) {
-      if ((left < right) != shouldBeTrue)
-        throw new AssertionError(
-          FailureMessages(
-            if (shouldBeTrue) "wasNotLessThan" else "wasLessThan",
-            left,
-            right
-          )
-        )
-    }
-  }
-
-  implicit def resultOfBeWordToForOrdered[T <% Ordered[T]](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForOrdered[T] =
-    new ResultOfBeWordForOrdered(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
-*/
 
   // What's this one for again?
   implicit def resultOfBeWordToForAnyRef[T <: AnyRef](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForAnyRef =
