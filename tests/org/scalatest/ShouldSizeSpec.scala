@@ -245,7 +245,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
     }
 
-    /* describe("on java.List") {
+    describe("on java.List") {
 
       val javaList: java.util.List[Int] = new java.util.ArrayList
       javaList.add(1)
@@ -320,7 +320,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         }
         assert(caught.getMessage === "[1, 2] had size 2, and [1, 2] had size 2")
       }
-    } */
+    }
 
     // I repeat these with copy and paste, becuase I need to test that each static structural type works, and
     // that makes it hard to pass them to a common "behaves like" method

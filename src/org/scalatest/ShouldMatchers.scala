@@ -357,6 +357,45 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  class ResultOfHaveWordForJavaListWrapper[A <: java.util.List[Int]](left: A, shouldBeTrue: Boolean) {
+    def size(expectedSize: Int) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+    def size(expectedSize: Long) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+    def length(expectedLength: Int) {
+      if ((left.length == expectedLength) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)
+        )
+    }
+    def length(expectedLength: Long) {
+      if ((left.length == expectedLength) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)
+        )
+    }
+  }
+
   // TODO: In the tests, make sure they can create their own matcher and use it.
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
@@ -366,68 +405,11 @@ trait ShouldMatchers extends Matchers {
         case _ => ()
       }
     }
-    /* def shouldNot(rightMatcher: Matcher[T]) {
-      rightMatcher(leftOperand) match {
-        case MatcherResult(true, _, failureMessage) => throw new AssertionError(failureMessage)
-        case _ => ()
-      }
-    } */
+
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
-    // def shouldNot(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, false)
-/*
-    def shouldEqual(rightOperand: Any) {
-      if (leftOperand != rightOperand) {
-        throw new AssertionError(FailureMessages("didNotEqual", leftOperand, rightOperand))
-      }
-    }
-    def shouldNotEqual(rightOperand: Any) {
-      if (leftOperand == rightOperand) {
-        throw new AssertionError(FailureMessages("equaled", leftOperand, rightOperand))
-      }
-    }
-*/
-   /* 
-    def shouldMatch(rightOperand: PartialFunction[T, Boolean]) {
-      if (rightOperand.isDefinedAt(leftOperand)) {
-        val result = rightOperand(leftOperand)
-        if (!result) {
-          throw new AssertionError(FailureMessages("matchResultedInFalse", leftOperand))
-        }
-      }
-      else {
-        throw new AssertionError(FailureMessages("didNotMatch", leftOperand))
-      }
-    }
-    def shouldNotMatch(rightOperand: PartialFunction[T, Boolean]) {
-      if (rightOperand.isDefinedAt(leftOperand)) {
-        val result = rightOperand(leftOperand)
-        if (result) {
-          throw new AssertionError(FailureMessages("matchResultedInTrue", leftOperand))
-        }
-      }
-    }
-   */
   }
-
-/*
-  protected class ShouldalizerForBlocks(left: => Any) {
-    def shouldThrow[T <: AnyRef](implicit manifest: Manifest[T]): T = { intercept(left)(manifest) }
-    def shouldNotThrow(clazz: java.lang.Class[Throwable]) {
-      try {
-        left
-      }
-      catch {
-        case u: Throwable =>
-          val message = FailureMessages("anException", UnquotedString(u.getClass.getName))
-          val ae = new AssertionError(message)
-          ae.initCause(u)
-          throw ae
-      }
-    }
-  }
-*/
 
   protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
 
@@ -446,37 +428,28 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  protected class JavaListShouldWrapper[A <: java.util.List[Int]](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+    def should(haveWord: HaveWord): ResultOfHaveWordForJavaListWrapper[A] = {
+      new ResultOfHaveWordForJavaListWrapper(left, true)
+    }
+  }
+
   protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
-    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForString = {
-      new ResultOfHaveWordForString(left, false)
-    } */
     def should(includeWord: IncludeWord): ResultOfIncludeWordForString = {
       new ResultOfIncludeWordForString(left, true)
     }
-    /* def shouldNot(includeWord: IncludeWord): ResultOfIncludeWordForString = {
-      new ResultOfIncludeWordForString(left, false)
-    } */
     def should(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
       new ResultOfStartWithWordForString(left, true)
     }
-    /* def shouldNot(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
-      new ResultOfStartWithWordForString(left, false)
-    } */
     def should(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
       new ResultOfEndWithWordForString(left, true)
     }
-    /* def shouldNot(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
-      new ResultOfEndWithWordForString(left, false)
-    } */
     def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, true)
     }
-    /* def shouldNot(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
-      new ResultOfFullyMatchWordForString(left, false)
-    } */
   }
 
   protected class MapShouldWrapper[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]]
@@ -485,17 +458,6 @@ trait ShouldMatchers extends Matchers {
     def should(containWord: ContainWord): ResultOfContainWordForMap[K, V] = {
       new ResultOfContainWordForMap(left, true)
     }
-    /* def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[(K, V)] = {
-      new ResultOfContainWordForIterable(left, false)
-    } */
-/*
-    def should(containWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
-      new ResultOfHaveWordForMap(left, true)
-    }
-*/
-    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForMap[K, V] = {
-      new ResultOfHaveWordForMap(left, false)
-    } */
   }
   
   protected trait ShouldContainWordForIterableMethods[T] {
@@ -503,22 +465,13 @@ trait ShouldMatchers extends Matchers {
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(leftOperand, true)
     }
-    /* def shouldNot(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-      new ResultOfContainWordForIterable(leftOperand, false)
-    } */
   }
-  // Is this one not being used? No implicit conversion
-  /* protected class IterableShouldalizer[T](left: Iterable[T]) extends { val leftOperand = left } with ShouldMethods[Iterable[T]]
-      with ShouldContainWordForIterableMethods[T] */
-  
+
   protected trait ShouldHaveWordForCollectionMethods[T] {
     protected val leftOperand: Collection[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
       new ResultOfHaveWordForCollection(leftOperand, true)
     }
-    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
-      new ResultOfHaveWordForCollection(leftOperand, false)
-    } */
   }
   
   protected trait ShouldHaveWordForSeqMethods[T] {
@@ -526,9 +479,6 @@ trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(leftOperand, true)
     }
-    /* def shouldNot(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
-      new ResultOfHaveWordForSeq(leftOperand, false)
-    } */
   }
   
   protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
@@ -572,7 +522,7 @@ trait ShouldMatchers extends Matchers {
 
   // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
   // of like to have it work with should have length too, so I have to do one for it explicitly here.
-  implicit def convertJavaUtilListToLengthShouldWrapper[T <: java.util.List[Int]](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertJavaUtilListToJavaListShouldWrapper[T <: java.util.List[Int]](o: T): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
 
   implicit def convertHasIntGetSizeMethodToSizeShouldWrapper[T <:{ def getSize(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
   implicit def convertHasIntGetSizeFieldToSizeShouldWrapper[T <:{ val getSize: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
@@ -584,10 +534,5 @@ trait ShouldMatchers extends Matchers {
   implicit def convertHasLongSizeFieldToSizeShouldWrapper[T <:{ val size: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
   implicit def convertHasLongSizeMethodToSizeShouldWrapper[T <:{ def size(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
 
-    /*
-  implicit def shouldifyForGetLength[T <:{ def getLength(): Int}](o: T): GetLengthShouldalizer[T] = new GetLengthShouldalizer[T](o)
-  implicit def shouldifyForLengthField[T <:{ val length: Int}](o: T): LengthFieldShouldalizer[T] = new LengthFieldShouldalizer[T](o)
-  implicit def shouldifyForLengthMethod[T <:{ def length(): Int}](o: T): LengthMethodShouldalizer[T] = new LengthMethodShouldalizer[T](o)
-*/
-  // implicit def theBlock(f: => Any) = new ShouldalizerForBlocks(f)
+  implicit def convertJavaUtilCollectionToSizeShouldWrapper[T <: java.util.Collection[Int]](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
 }
