@@ -925,5 +925,87 @@ trait Matchers extends Assertions {
   }
 
   implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new PlusOrMinusWrapper(right)
+
+    class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
+      def length(expectedLength: Int) {
+        if ((left.length == expectedLength) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              expectedLength)
+          )
+      }
+      def length(expectedLength: Long) {
+        if ((left.length == expectedLength) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              expectedLength)
+          )
+      }
+    }
+
+    class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
+      def size(expectedSize: Int) {
+        if ((left.size == expectedSize) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              expectedSize)
+          )
+      }
+      def size(expectedSize: Long) {
+        if ((left.size == expectedSize) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              expectedSize)
+          )
+      }
+    }
+
+    class ResultOfHaveWordForJavaListWrapper[A <: java.util.List[Int]](left: A, shouldBeTrue: Boolean) {
+      def size(expectedSize: Int) {
+        if ((left.size == expectedSize) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              expectedSize)
+          )
+      }
+      def size(expectedSize: Long) {
+        if ((left.size == expectedSize) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              expectedSize)
+          )
+      }
+      def length(expectedLength: Int) {
+        if ((left.length == expectedLength) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              expectedLength)
+          )
+      }
+      def length(expectedLength: Long) {
+        if ((left.length == expectedLength) != shouldBeTrue)
+          throw new AssertionError(
+            FailureMessages(
+              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              expectedLength)
+          )
+      }
+    }
+    
 }
 
