@@ -536,6 +536,18 @@ trait Matchers extends Assertions {
     }
   }
   
+  protected class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
+    def size(expectedSize: Int) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+  }
+
   protected class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -1006,6 +1018,5 @@ trait Matchers extends Assertions {
           )
       }
     }
-    
 }
 

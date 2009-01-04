@@ -393,6 +393,13 @@ trait ShouldMatchers extends Matchers {
     }
   }
   
+  protected trait ShouldHaveWordForJavaCollectionMethods[T] {
+    protected val leftOperand: java.util.Collection[T]
+    def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] = {
+      new ResultOfHaveWordForJavaCollection(leftOperand, true)
+    }
+  }
+
   protected trait ShouldHaveWordForSeqMethods[T] {
     protected val leftOperand: Seq[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
@@ -403,6 +410,9 @@ trait ShouldMatchers extends Matchers {
   protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
   
+  protected class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
+      with ShouldHaveWordForJavaCollectionMethods[T]
+
   protected class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
@@ -415,12 +425,17 @@ trait ShouldMatchers extends Matchers {
   // TODO: I think the Map conversion is for immutable maps, but it should be for collection.Map. Can also
   // try adding some for java.util.maps, etc.
   implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
-  implicit def convertToMapShouldWrapper[K, V](o: Map[K, V]): MapShouldWrapper[K, V] = new MapShouldWrapper[K, V](o)
   implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
   implicit def convertToSeqShouldWrapper[T](o: Seq[T]): SeqShouldWrapper[T] = new SeqShouldWrapper[T](o)
   implicit def convertToArrayShouldWrapper[T](o: Array[T]): ArrayShouldWrapper[T] = new ArrayShouldWrapper[T](o)
   implicit def convertToListShouldWrapper[T](o: List[T]): ListShouldWrapper[T] = new ListShouldWrapper[T](o)
+  implicit def convertToMapShouldWrapper[K, V](o: Map[K, V]): MapShouldWrapper[K, V] = new MapShouldWrapper[K, V](o)
   implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
+
+  // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
+  // of like to have it work with should have length too, so I have to do one for it explicitly here.
+  implicit def convertToJavaCollectionShouldWrapper[T](o: java.util.Collection[T]): JavaCollectionShouldWrapper[T] = new JavaCollectionShouldWrapper[T](o)
+  implicit def convertToJavaListShouldWrapper[T <: java.util.List[Int]](o: T): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
 
   // This implicit conversion is just used to trigger the addition of the should method. The LengthShouldWrapper
   // doesn't actually convert them, just passes it through. The conversion that happens here is to LengthShouldWrapper,
@@ -439,10 +454,6 @@ trait ShouldMatchers extends Matchers {
   implicit def convertHasLongLengthFieldToLengthShouldWrapper[T <:{ val length: Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
   implicit def convertHasLongLengthMethodToLengthShouldWrapper[T <:{ def length(): Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
 
-  // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
-  // of like to have it work with should have length too, so I have to do one for it explicitly here.
-  implicit def convertJavaUtilListToJavaListShouldWrapper[T <: java.util.List[Int]](o: T): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
-
   implicit def convertHasIntGetSizeMethodToSizeShouldWrapper[T <:{ def getSize(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
   implicit def convertHasIntGetSizeFieldToSizeShouldWrapper[T <:{ val getSize: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
   implicit def convertHasIntSizeFieldToSizeShouldWrapper[T <:{ val size: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
@@ -452,6 +463,44 @@ trait ShouldMatchers extends Matchers {
   implicit def convertHasLongGetSizeFieldToSizeShouldWrapper[T <:{ val getSize: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
   implicit def convertHasLongSizeFieldToSizeShouldWrapper[T <:{ val size: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
   implicit def convertHasLongSizeMethodToSizeShouldWrapper[T <:{ def size(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
-
-  implicit def convertJavaUtilCollectionToSizeShouldWrapper[T <: java.util.Collection[Int]](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
 }
+/*
+When Scala must chose between an implicit with a structural type and one with a nominal one,
+the nominal one wins.
+
+scala> set.size
+res0: Int = 3
+
+scala> class SetWrapper(payload: Set[Int]) { def prove() { println("SetWrapper") }}
+defined class SetWrapper
+
+scala> class SizeWrapper(payload: { def size: Int }) { def prove() { println("SizeWrapper") }}
+defined class SizeWrapper
+
+scala> new SizeWrapper(set)
+res1: SizeWrapper = SizeWrapper@39ce9b
+
+scala> res1.prove
+SizeWrapper
+
+scala> new SetWrapper(set)
+res3: SetWrapper = SetWrapper@9fc9fe
+
+scala> res3.prove
+SetWrapper
+
+scala> implicit def convertToSetWrapper(setParam: Set[Int]): SetWrapper = new SetWrapper(setParam)
+convertToSetWrapper: (Set[Int])SetWrapper
+
+scala> implicit def convertToSizeWrapper(setParam: { def size: Int }): SizeWrapper = new SizeWrapper(setParam)
+convertToSizeWrapper: (AnyRef{def size: Int})SizeWrapper
+
+scala> convertToSetWrapper(set)
+res5: SetWrapper = SetWrapper@598095
+
+scala> convertToSizeWrapper(set)
+res6: SizeWrapper = SizeWrapper@660ff1
+
+scala> set.prove
+SetWrapper
+ */
