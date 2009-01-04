@@ -560,6 +560,18 @@ trait Matchers extends Assertions {
     }
   }
   
+  protected class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
+    def length(expectedLength: Int) {
+      if ((left.length == expectedLength) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)
+        )
+    }
+  }
+
   protected class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
@@ -980,7 +992,7 @@ trait Matchers extends Assertions {
       }
     }
 
-    class ResultOfHaveWordForJavaListWrapper[A <: java.util.List[Int]](left: A, shouldBeTrue: Boolean) {
+    /* class ResultOfHaveWordForJavaListWrapper[A <: java.util.List[Int]](left: A, shouldBeTrue: Boolean) {
       def size(expectedSize: Int) {
         if ((left.size == expectedSize) != shouldBeTrue)
           throw new AssertionError(
@@ -1017,6 +1029,6 @@ trait Matchers extends Assertions {
               expectedLength)
           )
       }
-    }
+    } */
 }
 

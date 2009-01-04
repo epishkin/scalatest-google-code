@@ -347,11 +347,11 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class JavaListShouldWrapper[A <: java.util.List[Int]](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  /*protected class JavaListShouldWrapper[A <: java.util.List[Int]](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaListWrapper[A] = {
       new ResultOfHaveWordForJavaListWrapper(left, true)
     }
-  }
+  }*/
 
   protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
@@ -407,6 +407,13 @@ trait ShouldMatchers extends Matchers {
     }
   }
   
+  protected trait ShouldHaveWordForJavaRListMethods[T] {
+    protected val leftOperand: java.util.List[T]
+    def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
+      new ResultOfHaveWordForJavaList(leftOperand, true)
+    }
+  }
+
   protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
   
@@ -422,6 +429,9 @@ trait ShouldMatchers extends Matchers {
   protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
 
+  protected class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
+      with ShouldHaveWordForJavaListMethods[T]
+
   // TODO: I think the Map conversion is for immutable maps, but it should be for collection.Map. Can also
   // try adding some for java.util.maps, etc.
   implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
@@ -435,7 +445,7 @@ trait ShouldMatchers extends Matchers {
   // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
   // of like to have it work with should have length too, so I have to do one for it explicitly here.
   implicit def convertToJavaCollectionShouldWrapper[T](o: java.util.Collection[T]): JavaCollectionShouldWrapper[T] = new JavaCollectionShouldWrapper[T](o)
-  implicit def convertToJavaListShouldWrapper[T <: java.util.List[Int]](o: T): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
+  implicit def convertToJavaListShouldWrapper[T](o: java.util.List[T]): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
 
   // This implicit conversion is just used to trigger the addition of the should method. The LengthShouldWrapper
   // doesn't actually convert them, just passes it through. The conversion that happens here is to LengthShouldWrapper,
