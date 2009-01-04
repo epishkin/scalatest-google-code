@@ -855,20 +855,6 @@ trait Matchers extends Assertions {
       new Matcher[S] {
         def apply(left: S) = matcherUsingReflection(left)
       }
-      /*  new Matcher[S] {  // Dropping this to reduce redundancy and the special case for string
-          def apply(left: S) = {
-
-            left match {
-              case leftString: String if right.toString == "'empty" =>
-                MatcherResult(
-                  leftString.length == 0,
-                  FailureMessages("wasNotEmpty", left),
-                  FailureMessages("wasEmpty", left)
-                )
-              case _ => matcherUsingReflection(left)
-            }
-          }
-        } */
     }
 
     def apply(right: Nil.type): Matcher[List[_]] =
@@ -931,8 +917,6 @@ trait Matchers extends Assertions {
   val fullyMatch = new FullyMatchWord
   val startWith = new StartWithWord
   val endWith = new EndWithWord
-
-  // val anException: Class[Throwable] = classOf[Throwable]
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 
