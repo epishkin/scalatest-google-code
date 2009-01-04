@@ -347,12 +347,6 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  /*protected class JavaListShouldWrapper[A <: java.util.List[Int]](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
-    def should(haveWord: HaveWord): ResultOfHaveWordForJavaListWrapper[A] = {
-      new ResultOfHaveWordForJavaListWrapper(left, true)
-    }
-  }*/
-
   protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
