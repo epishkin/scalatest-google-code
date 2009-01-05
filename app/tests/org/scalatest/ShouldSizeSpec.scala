@@ -39,14 +39,31 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when array size matches and used in a logical-and expression") {
         Array(1, 2) should { have size (2) and (have size (3 - 1)) }
-      }
+        // Array(1, 2) should both (have size (2)) and (have size (3 - 1))
+       }
 
       it("should do nothing when array size matches and used in a logical-or expression") {
         Array(1, 2) should { have size (77) or (have size (3 - 1)) }
+        // Array(1, 2) should either (have size (77)) or (have size (3 - 1))
       }
 
+      /*
+       * I can mark the matcher returned by the bare either and both words so that should can
+       * see whether the matcher came from one of those, and if so, ..., actually it doesn't matter.
+       * It will just call apply on it. This was the case where people put parens around the whole
+       * thing like this:
+       *
+       * Array(1, 2) should (both (not have size (5)) and (either (not have size (3)) or (equal (2))))
+       *
+       * These bare word both and either just create something that will take and or or, respectively,
+       * and that and and or will just return a matcher. But the both and either that can get passed
+       * to should/must is different. It's apply method takes a matcher and returns
+       * a value that remembers the left matcher, and whose and/or will actually and or or the
+       * matchers right then and there, and throw an exception if they don't hold true.
+       */
       it("should do nothing when array size doesn't match and used in a logical-and expression with not") {
         Array(1, 2) should { not { have size (5) } and not { have size (3) }}
+        // Array(1, 2) should both (not have size (5)) and (either (not have size (3)) or (equal (2)))
       }
 
       it("should do nothing when array size doesn't match and used in a logical-or expression with not") {
