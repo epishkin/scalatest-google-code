@@ -98,11 +98,11 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
     }
 
-    // TODO: Don't forget to make sure this stuff works with mutable and other sets, maps, etc.
-    describe("on scala.Set") {
+    describe("on scala.collection.immutable.Set") {
 
       it("should do nothing if set size matches specified size") {
         Set(1, 2) should have size (2)
+        Set("one", "two") should have size (2)
         // check((set: Set[Int]) => returnsNormally(set should have size (set.size)))
       }
 
@@ -167,6 +167,310 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
         val caught = intercept[AssertionError] {
           Set(1, 2) should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.mutable.Set") {
+
+      import scala.collection.mutable
+
+      it("should do nothing if set size matches specified size") {
+        mutable.Set(1, 2) should have size (2)
+        mutable.Set("one", "two") should have size (2)
+        // check((set: Set[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        mutable.Set(1, 2) should not { have size (3) }
+        // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        mutable.Set(1, 2) should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        mutable.Set(1, 2) should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        mutable.Set(1, 2) should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        mutable.Set(1, 2) should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          mutable.Set(1, 2) should have size (3)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3")
+        // check((set: Set[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          mutable.Set(1, 2) should have size (-2)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size -2")
+        // check((set: Set[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          mutable.Set(1, 2) should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          mutable.Set(1, 2) should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 55, and Set(1, 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.Set(1, 2) should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3, but Set(1, 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.Set(1, 2) should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.Set") {
+
+      val set: scala.collection.Set[Int] = Set(1, 2)
+
+      it("should do nothing if set size matches specified size") {
+        set should have size (2)
+        Set("one", "two") should have size (2)
+        // check((set: Set[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        set should not { have size (3) }
+        // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        set should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        set should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        set should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        set should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          set should have size (3)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3")
+        // check((set: Set[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          set should have size (-2)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size -2")
+        // check((set: Set[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          set should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          set should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 55, and Set(1, 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          set should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3, but Set(1, 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          set should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.immutable.HashSet") {
+
+      import scala.collection.immutable.HashSet
+        
+      it("should do nothing if set size matches specified size") {
+        HashSet(1, 2) should have size (2)
+        Set("one", "two") should have size (2)
+        // check((set: Set[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        HashSet(1, 2) should not { have size (3) }
+        // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        HashSet(1, 2) should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        HashSet(1, 2) should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        HashSet(1, 2) should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        HashSet(1, 2) should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          HashSet(1, 2) should have size (3)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3")
+        // check((set: Set[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          HashSet(1, 2) should have size (-2)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size -2")
+        // check((set: Set[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          HashSet(1, 2) should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          HashSet(1, 2) should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 55, and Set(1, 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          HashSet(1, 2) should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3, but Set(1, 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          HashSet(1, 2) should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.mutable.HashSet") {
+
+      import scala.collection.mutable
+
+      it("should do nothing if set size matches specified size") {
+        mutable.HashSet(1, 2) should have size (2)
+        mutable.HashSet("one", "two") should have size (2)
+        // check((set: Set[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        mutable.HashSet(1, 2) should not { have size (3) }
+        // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        mutable.HashSet(1, 2) should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        mutable.HashSet(1, 2) should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        mutable.HashSet(1, 2) should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        mutable.HashSet(1, 2) should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should have size (3)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3")
+        // check((set: Set[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should have size (-2)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size -2")
+        // check((set: Set[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 55, and Set(1, 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Set(1, 2) did not have size 3, but Set(1, 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
       }
@@ -319,6 +623,384 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           javaList should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught.getMessage === "[1, 2] had size 2, and [1, 2] had size 2")
+      }
+    }
+
+    describe("on scala.collection.immutable.Map") {
+
+      it("should do nothing if set size matches specified size") {
+        Map("one" -> 1, "two" -> 2) should have size (2)
+        Map(1 -> "one", 2 -> "two") should have size (2)
+        // check((set: Map[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        Map("one" -> 1, "two" -> 2) should not { have size (3) }
+        // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        Map("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        Map("one" -> 1, "two" -> 2) should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        Map("one" -> 1, "two" -> 2) should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        Map("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should have size (3)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3")
+        // check((set: Map[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should have size (-2)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size -2")
+        // check((set: Map[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.mutable.Map") {
+
+      import scala.collection.mutable
+
+      it("should do nothing if set size matches specified size") {
+        mutable.Map("one" -> 1, "two" -> 2) should have size (2)
+        mutable.Map(1 -> "one", 2 -> "two") should have size (2)
+        // check((set: Map[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        mutable.Map("one" -> 1, "two" -> 2) should not { have size (3) }
+        // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        mutable.Map("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        mutable.Map("one" -> 1, "two" -> 2) should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        mutable.Map("one" -> 1, "two" -> 2) should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        mutable.Map("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should have size (3)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3")
+        // check((set: Map[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should have size (-2)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size -2")
+        // check((set: Map[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.Map") {
+
+      val map: scala.collection.Map[String, Int] = Map("one" -> 1, "two" -> 2)
+
+      it("should do nothing if set size matches specified size") {
+        map should have size (2)
+        Map(1 -> "one", 2 -> "two") should have size (2)
+        // check((set: Map[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        map should not { have size (3) }
+        // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        map should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        map should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        map should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        map should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          map should have size (3)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3")
+        // check((set: Map[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          map should have size (-2)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size -2")
+        // check((set: Map[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          map should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          map should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          map should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          map should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.immutable.HashMap") {
+
+      import scala.collection.immutable.HashMap
+
+      it("should do nothing if set size matches specified size") {
+        HashMap("one" -> 1, "two" -> 2) should have size (2)
+        Map(1 -> "one", 2 -> "two") should have size (2)
+        // check((set: Map[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        HashMap("one" -> 1, "two" -> 2) should not { have size (3) }
+        // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        HashMap("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        HashMap("one" -> 1, "two" -> 2) should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        HashMap("one" -> 1, "two" -> 2) should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should have size (3)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3")
+        // check((set: Map[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should have size (-2)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size -2")
+        // check((set: Map[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+      }
+    }
+
+    describe("on scala.collection.mutable.HashMap") {
+
+      import scala.collection.mutable
+
+      it("should do nothing if set size matches specified size") {
+        mutable.HashMap("one" -> 1, "two" -> 2) should have size (2)
+        mutable.HashMap(1 -> "one", 2 -> "two") should have size (2)
+        // check((set: Map[Int]) => returnsNormally(set should have size (set.size)))
+      }
+
+      it("should do nothing if set size does not match and used with should not") {
+        mutable.HashMap("one" -> 1, "two" -> 2) should not { have size (3) }
+        // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
+      }
+
+      it("should do nothing when set size matches and used in a logical-and expression") {
+        mutable.HashMap("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size matches and used in a logical-or expression") {
+        mutable.HashMap("one" -> 1, "two" -> 2) should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-and expression with not") {
+        mutable.HashMap("one" -> 1, "two" -> 2) should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when set size doesn't match and used in a logical-or expression with not") {
+        mutable.HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if set size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should have size (3)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3")
+        // check((set: Map[String]) => throwsAssertionError(set should have size (set.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should have size (-2)
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size -2")
+        // check((set: Map[Int]) => throwsAssertionError(set should have size (if (set.size == 0) -1 else -set.size)))
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
       }
     }
 
