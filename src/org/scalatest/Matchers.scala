@@ -290,23 +290,6 @@ trait Matchers extends Assertions {
       def length = o.getLength()
     }
 
-  // This should be a Seq. Could also make one for java.util.List.
-  implicit def convertArrayToLengthWrapper[T](o: Array[T]) =
-    new LengthWrapper {
-      def length = o.length
-    }
-
-  implicit def convertStringToLengthSizeWrapper[T](o: String) =
-    new LengthWrapper with SizeWrapper {
-      def length = o.length
-      def size = o.size
-    }
-
-  implicit def convertJavaUtilListToLengthWrapper[Int](o: java.util.List[Int]) =
-    new LengthWrapper {
-      def length = o.size
-    }
-
   trait SizeWrapper {
     def size: Long
   }
@@ -349,11 +332,6 @@ trait Matchers extends Assertions {
   implicit def convertGetSizeMethodToLongSizeWrapper(o: { def getSize(): Long }) =
     new SizeWrapper {
       def size = o.getSize()
-    }
-
-  implicit def convertJavaUtilCollectionToSizeWrapper[Int](o: java.util.Collection[Int]) =
-    new SizeWrapper {
-      def size = o.size
     }
 
   protected class HaveWord {
@@ -562,7 +540,7 @@ trait Matchers extends Assertions {
   
   protected class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
-      if ((left.length == expectedLength) != shouldBeTrue)
+      if ((left.size == expectedLength) != shouldBeTrue)
         throw new AssertionError(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
