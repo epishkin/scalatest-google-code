@@ -365,7 +365,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class MapShouldWrapper[K, V](left: Map[K, V]) extends { val leftOperand = left } with ShouldMethods[Map[K, V]]
+  protected class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
       with ShouldHaveWordForCollectionMethods[(K, V)] {
 
     def should(containWord: ContainWord): ResultOfContainWordForMap[K, V] = {
@@ -426,14 +426,13 @@ trait ShouldMatchers extends Matchers {
   protected class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
       with ShouldHaveWordForJavaListMethods[T]
 
-  // TODO: I think the Map conversion is for immutable maps, but it should be for collection.Map. Can also
-  // try adding some for java.util.maps, etc.
+  // TODO:  Test some java.util.maps, etc.
   implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
   implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
   implicit def convertToSeqShouldWrapper[T](o: Seq[T]): SeqShouldWrapper[T] = new SeqShouldWrapper[T](o)
   implicit def convertToArrayShouldWrapper[T](o: Array[T]): ArrayShouldWrapper[T] = new ArrayShouldWrapper[T](o)
   implicit def convertToListShouldWrapper[T](o: List[T]): ListShouldWrapper[T] = new ListShouldWrapper[T](o)
-  implicit def convertToMapShouldWrapper[K, V](o: Map[K, V]): MapShouldWrapper[K, V] = new MapShouldWrapper[K, V](o)
+  implicit def convertToMapShouldWrapper[K, V](o: scala.collection.Map[K, V]): MapShouldWrapper[K, V] = new MapShouldWrapper[K, V](o)
   implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
 
   // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
