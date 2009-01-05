@@ -84,7 +84,7 @@ trait Matchers extends Assertions {
   // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
   // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
   // 
-  protected class ResultOfContainWordForMap[K, V](left: Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
+  protected class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
     def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
         throw new AssertionError(
@@ -128,9 +128,9 @@ trait Matchers extends Assertions {
     // to the left of should. This means the should method that takes a map will be selected by Scala's
     // method overloading rules.
     //
-    def key[K](expectedKey: K): Matcher[Map[K, Any]] =
-      new Matcher[Map[K, Any]] {
-        def apply(left: Map[K, Any]) =
+    def key[K](expectedKey: K): Matcher[scala.collection.Map[K, Any]] =
+      new Matcher[scala.collection.Map[K, Any]] {
+        def apply(left: scala.collection.Map[K, Any]) =
           MatcherResult(
             left.contains(expectedKey),
             FailureMessages("didNotHaveKey", left, expectedKey),
@@ -146,9 +146,9 @@ trait Matchers extends Assertions {
     // Maps are nonvariant in their key type parameter, whereas they are covariant in their value
     // type parameter, so the same trick wouldn't work. But this existential type trick seems to
     // work like a charm.
-    def value[V](expectedValue: V): Matcher[Map[K, V] forSome { type K }] =
-      new Matcher[Map[K, V] forSome { type K }] {
-        def apply(left: Map[K, V] forSome { type K }) =
+    def value[V](expectedValue: V): Matcher[scala.collection.Map[K, V] forSome { type K }] =
+      new Matcher[scala.collection.Map[K, V] forSome { type K }] {
+        def apply(left: scala.collection.Map[K, V] forSome { type K }) =
           MatcherResult(
             left.values.contains(expectedValue),
             FailureMessages("didNotHaveValue", left, expectedValue),
