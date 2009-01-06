@@ -114,6 +114,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         Array(1, 2) should not { have length (3) }
         Array(1, 2) should not have length (3)
         check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not { have length (i) }))
+        check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not have length (i)))
       }
 
       it("should do nothing when array length matches and used in a logical-and expression") {
@@ -126,10 +127,12 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when array length doesn't match and used in a logical-and expression with not") {
         Array(1, 2) should { not { have length (5) } and not { have length (3) }}
+        Array(1, 2) should { not have length (5) and (not have length (3)) }
       }
 
       it("should do nothing when array length doesn't match and used in a logical-or expression with not") {
         Array(1, 2) should { not { have length (2) } or not { have length (3) }}
+        Array(1, 2) should { not have length (2) or (not have length (3)) }
       }
 
       it("should throw AssertionError if array length does not match specified length") {
@@ -163,17 +166,29 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
 
       it("should throw an assertion error when array length matches and used in a logical-and expression with not") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           Array(1, 2) should { not { have length (3) } and not { have length (2) }}
         }
-        assert(caught.getMessage === "Array(1, 2) did not have length 3, but Array(1, 2) had length 2")
+        assert(caught1.getMessage === "Array(1, 2) did not have length 3, but Array(1, 2) had length 2")
+
+        val caught2 = intercept[AssertionError] {
+          Array(1, 2) should { not have length (3) and (not have length (2)) }
+        }
+        assert(caught2.getMessage === "Array(1, 2) did not have length 3, but Array(1, 2) had length 2")
       }
 
       it("should throw an assertion error when array length matches and used in a logical-or expression with not") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           Array(1, 2) should { not { have length (2) } or not { have length (2) }}
         }
-        assert(caught.getMessage === "Array(1, 2) had length 2, and Array(1, 2) had length 2")
+        assert(caught1.getMessage === "Array(1, 2) had length 2, and Array(1, 2) had length 2")
+
+        val caught2 = intercept[AssertionError] {
+          Array(1, 2) should { not have length (2) or (not have length (2)) }
+        }
+        assert(caught2.getMessage === "Array(1, 2) had length 2, and Array(1, 2) had length 2")
       }
     }
 
