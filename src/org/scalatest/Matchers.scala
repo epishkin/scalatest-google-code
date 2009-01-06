@@ -513,7 +513,7 @@ trait Matchers extends Assertions { matchers =>
         )
     }
   }
-  
+
   protected class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
@@ -538,6 +538,23 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  protected class ResultOfNotWordForSeq[T <: Seq[_]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWord(left, shouldBeTrue) {
+
+    def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
+      val right = resultOfLengthWordApplication.expectedLength
+      if ((left.length == right) != shouldBeTrue) {
+          throw new AssertionError(
+            FailureMessages(
+             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+
   protected class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.size == expectedLength) != shouldBeTrue)
@@ -572,7 +589,7 @@ trait Matchers extends Assertions { matchers =>
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
 
-  protected class ResultOfNotWord[T](val left: T, val shouldBeTrue: Boolean) {
+  protected class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
     def equal(right: Any) {
       if ((left == right) != shouldBeTrue)
         throw new AssertionError(
@@ -584,8 +601,9 @@ trait Matchers extends Assertions { matchers =>
         )
     }
   }
-  protected class ResultOfNotWordForString(lowerLeft: String, lowerShouldBeTrue: Boolean)
-      extends ResultOfNotWord[String](lowerLeft, lowerShouldBeTrue) {
+
+  protected class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[String](left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength

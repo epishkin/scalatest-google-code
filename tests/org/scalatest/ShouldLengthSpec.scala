@@ -112,7 +112,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if array length does not match and used with should not") {
         Array(1, 2) should not { have length (3) }
-        // Array(1, 2) should not have length (3)
+        Array(1, 2) should not have length (3)
         check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not { have length (i) }))
       }
 
