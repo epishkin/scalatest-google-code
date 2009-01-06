@@ -446,7 +446,12 @@ trait ShouldMatchers extends Matchers {
   }
   
   protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
-      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
+      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
+
+    override def should(notWord: NotWord): ResultOfNotWordForSeq[List[T]] = {
+      new ResultOfNotWordForSeq(leftOperand, false)
+    }
+  }
 
   protected class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
       with ShouldHaveWordForJavaListMethods[T]
