@@ -53,6 +53,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when string length doesn't match and used in a logical-or expression with not") {
         "hi" should { not { have length (2) } or not { have length (3) }}
+        "hi" should { not have length (2) or (not have length (3)) }
       }
 
       it("should throw AssertionError if string length does not match specified length") {
@@ -88,6 +89,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       it("should throw an assertion error when string length matches and used in a logical-and expression with not") {
         val caught = intercept[AssertionError] {
           "hi" should { not { have length (3) } and not { have length (2) }}
+          "hi" should { not have length (3) and (not have length (2)) }
         }
         assert(caught.getMessage === "\"hi\" did not have length 3, but \"hi\" had length 2")
       }
@@ -95,6 +97,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       it("should throw an assertion error when string length matches and used in a logical-or expression with not") {
         val caught = intercept[AssertionError] {
           "hi" should { not { have length (2) } or not { have length (2) }}
+          "hi" should { not have length (2) or (not have length (2)) }
         }
         assert(caught.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
       }
@@ -109,6 +112,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if array length does not match and used with should not") {
         Array(1, 2) should not { have length (3) }
+        // Array(1, 2) should not have length (3)
         check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not { have length (i) }))
       }
 
