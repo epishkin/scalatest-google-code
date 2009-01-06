@@ -228,17 +228,6 @@ class MatcherSpec extends Spec with ShouldMatchers {
 
     describe("(for symbols)") {
 
-       /* Took this out to eliminate redundancy and special treatment of string
-      it("should look for a length of 0 when called on a string") {
-        val caught1 = intercept[AssertionError] {
-          "" should be ('empty)
-        }
-        val caught = intercept[AssertionError] {
-          "hi" should be ('empty)
-        }
-        caught.getMessage should equal ("\"hi\" was not empty")
-      } */
-
       it("should call isEmpty when passed 'empty") {
         val emptySet = Set[Int]()
         emptySet should be ('empty)
