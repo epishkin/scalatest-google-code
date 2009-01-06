@@ -20,7 +20,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldContainSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for a specific size
   describe("The 'contain element (Int)' syntax") {
