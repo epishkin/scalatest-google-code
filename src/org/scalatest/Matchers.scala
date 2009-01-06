@@ -584,6 +584,22 @@ trait Matchers extends Assertions { matchers =>
         )
     }
   }
+  protected class ResultOfNotWordForString(lowerLeft: String, lowerShouldBeTrue: Boolean)
+      extends ResultOfNotWord[String](lowerLeft, lowerShouldBeTrue) {
+
+    def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
+      val right = resultOfLengthWordApplication.expectedLength
+      if ((left.length == right) != shouldBeTrue) {
+          throw new AssertionError(
+            FailureMessages(
+             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
 
   protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
@@ -906,7 +922,7 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
-    def equal(right: Any): Matcher[Any] = apply(matchers.equal(right)) 
+    def equal(right: Any): Matcher[Any] = apply(matchers.equal(right))
   }
 
   val not = new NotWord
@@ -947,6 +963,14 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
+  class ResultOfLengthWordApplication(val expectedLength: Long)
+
+  class LengthWord {
+    def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
+  }
+
+  val length = new LengthWord
+    
   case class DoubleTolerance(right: Double, tolerance: Double)
 
   class PlusOrMinusWrapper(right: Double) {

@@ -364,6 +364,9 @@ trait ShouldMatchers extends Matchers {
     def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, true)
     }
+    override def should(notWord: NotWord): ResultOfNotWordForString = {
+      new ResultOfNotWordForString(left, false)
+    }
   }
 
   protected class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
