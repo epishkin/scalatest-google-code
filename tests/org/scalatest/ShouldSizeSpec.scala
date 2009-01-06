@@ -566,7 +566,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
     }
 
-    describe("on java.List") {
+    describe("on java.util.List") {
 
       val javaList: java.util.List[Int] = new java.util.ArrayList
       javaList.add(1)
@@ -1018,6 +1018,160 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           mutable.HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+      }
+    }
+
+    describe("on java.util.Set") {
+
+      val javaSet: java.util.Set[Int] = new java.util.HashSet
+      javaSet.add(1)
+      javaSet.add(2)
+
+      it("should do nothing if list size matches specified size") {
+        javaSet should have size (2)
+        // check((lst: java.util.List[Int]) => returnsNormally(lst should have size (lst.size)))
+      }
+
+      it("should do nothing if list size does not match and used with should not") {
+        javaSet should not { have size (3) }
+        // check((lst: List[Int], i: Int) => i != lst.size ==> returnsNormally(lst should not { have size (i) }))
+      }
+
+      it("should do nothing when list size matches and used in a logical-and expression") {
+        javaSet should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when list size matches and used in a logical-or expression") {
+        javaSet should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when list size doesn't match and used in a logical-and expression with not") {
+        javaSet should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when list size doesn't match and used in a logical-or expression with not") {
+        javaSet should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if list size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          javaSet should have size (3)
+        }
+        assert(caught.getMessage === "[2, 1] did not have size 3")
+        // check((lst: List[String]) => throwsAssertionError(lst should have size (lst.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          javaSet should have size (-2)
+        }
+        assert(caught.getMessage === "[2, 1] did not have size -2")
+        // check((lst: List[Int]) => throwsAssertionError(lst should have size (if (lst.size == 0) -1 else -lst.size)))
+      }
+
+      it("should throw an assertion error when list size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          javaSet should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "[2, 1] did not have size 5")
+      }
+
+      it("should throw an assertion error when list size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          javaSet should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "[2, 1] did not have size 55, and [2, 1] did not have size 22")
+      }
+
+      it("should throw an assertion error when list size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          javaSet should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "[2, 1] did not have size 3, but [2, 1] had size 2")
+      }
+
+      it("should throw an assertion error when list size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          javaSet should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "[2, 1] had size 2, and [2, 1] had size 2")
+      }
+    }
+
+    describe("on java.util.Map") {
+
+      val javaMap: java.util.Map[String, Int] = new java.util.HashMap
+      javaMap.put("one",1)
+      javaMap.put("two", 2)
+
+      it("should do nothing if list size matches specified size") {
+        javaMap should have size (2)
+        // check((lst: java.util.List[Int]) => returnsNormally(lst should have size (lst.size)))
+      }
+
+      it("should do nothing if list size does not match and used with should not") {
+        javaMap should not { have size (3) }
+        // check((lst: List[Int], i: Int) => i != lst.size ==> returnsNormally(lst should not { have size (i) }))
+      }
+
+      it("should do nothing when list size matches and used in a logical-and expression") {
+        javaMap should { have size (2) and (have size (3 - 1)) }
+      }
+
+      it("should do nothing when list size matches and used in a logical-or expression") {
+        javaMap should { have size (77) or (have size (3 - 1)) }
+      }
+
+      it("should do nothing when list size doesn't match and used in a logical-and expression with not") {
+        javaMap should { not { have size (5) } and not { have size (3) }}
+      }
+
+      it("should do nothing when list size doesn't match and used in a logical-or expression with not") {
+        javaMap should { not { have size (2) } or not { have size (3) }}
+      }
+
+      it("should throw AssertionError if list size does not match specified size") {
+        val caught = intercept[AssertionError] {
+          javaMap should have size (3)
+        }
+        assert(caught.getMessage === "{one=1, two=2} did not have size 3")
+        // check((lst: List[String]) => throwsAssertionError(lst should have size (lst.size + 1)))
+      }
+
+      it("should throw AssertionError with normal error message if specified size is negative") {
+        val caught = intercept[AssertionError] {
+          javaMap should have size (-2)
+        }
+        assert(caught.getMessage === "{one=1, two=2} did not have size -2")
+        // check((lst: List[Int]) => throwsAssertionError(lst should have size (if (lst.size == 0) -1 else -lst.size)))
+      }
+
+      it("should throw an assertion error when list size doesn't match and used in a logical-and expression") {
+        val caught = intercept[AssertionError] {
+          javaMap should { have size (5) and (have size (2 - 1)) }
+        }
+        assert(caught.getMessage === "{one=1, two=2} did not have size 5")
+      }
+
+      it("should throw an assertion error when list size doesn't match and used in a logical-or expression") {
+        val caught = intercept[AssertionError] {
+          javaMap should { have size (55) or (have size (22)) }
+        }
+        assert(caught.getMessage === "{one=1, two=2} did not have size 55, and {one=1, two=2} did not have size 22")
+      }
+
+      it("should throw an assertion error when list size matches and used in a logical-and expression with not") {
+        val caught = intercept[AssertionError] {
+          javaMap should { not { have size (3) } and not { have size (2) }}
+        }
+        assert(caught.getMessage === "{one=1, two=2} did not have size 3, but {one=1, two=2} had size 2")
+      }
+
+      it("should throw an assertion error when list size matches and used in a logical-or expression with not") {
+        val caught = intercept[AssertionError] {
+          javaMap should { not { have size (2) } or not { have size (2) }}
+        }
+        assert(caught.getMessage === "{one=1, two=2} had size 2, and {one=1, two=2} had size 2")
       }
     }
 
