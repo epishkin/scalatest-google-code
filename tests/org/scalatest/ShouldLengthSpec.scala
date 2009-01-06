@@ -203,6 +203,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         List(1, 2) should not { have length (3) }
         List(1, 2) should not have length (3)
         check((lst: List[Int], i: Int) => i != lst.length ==> returnsNormally(lst should not { have length (i) }))
+        check((lst: List[Int], i: Int) => i != lst.length ==> returnsNormally(lst should not have length (i)))
       }
 
       it("should do nothing when list length matches and used in a logical-and expression") {
@@ -215,10 +216,12 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when list length doesn't match and used in a logical-and expression with not") {
         List(1, 2) should { not { have length (5) } and not { have length (3) }}
+        List(1, 2) should { not have length (5) and (not have length (3)) }  
       }
 
       it("should do nothing when list length doesn't match and used in a logical-or expression with not") {
         List(1, 2) should { not { have length (2) } or not { have length (3) }}
+        List(1, 2) should { not have length (2) or (not have length (3)) }
       }
 
       it("should throw AssertionError if list length does not match specified length") {
@@ -252,17 +255,29 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
 
       it("should throw an assertion error when list length matches and used in a logical-and expression with not") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           List(1, 2) should { not { have length (3) } and not { have length (2) }}
         }
-        assert(caught.getMessage === "List(1, 2) did not have length 3, but List(1, 2) had length 2")
+        assert(caught1.getMessage === "List(1, 2) did not have length 3, but List(1, 2) had length 2")
+
+        val caught2 = intercept[AssertionError] {
+          List(1, 2) should { not have length (3) and (not have length (2)) }
+        }
+        assert(caught2.getMessage === "List(1, 2) did not have length 3, but List(1, 2) had length 2")
       }
 
       it("should throw an assertion error when list length matches and used in a logical-or expression with not") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           List(1, 2) should { not { have length (2) } or not { have length (2) }}
         }
-        assert(caught.getMessage === "List(1, 2) had length 2, and List(1, 2) had length 2")
+        assert(caught1.getMessage === "List(1, 2) had length 2, and List(1, 2) had length 2")
+
+        val caught2 = intercept[AssertionError] {
+          List(1, 2) should { not have length (2) or (not have length (2)) }
+        }
+        assert(caught2.getMessage === "List(1, 2) had length 2, and List(1, 2) had length 2")
       }
     }
 
