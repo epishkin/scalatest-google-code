@@ -201,6 +201,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if list length does not match and used with should not") {
         List(1, 2) should not { have length (3) }
+        List(1, 2) should not have length (3)
         check((lst: List[Int], i: Int) => i != lst.length ==> returnsNormally(lst should not { have length (i) }))
       }
 
