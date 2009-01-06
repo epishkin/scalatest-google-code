@@ -923,6 +923,9 @@ trait Matchers extends Assertions { matchers =>
       }
 
     def equal(right: Any): Matcher[Any] = apply(matchers.equal(right))
+
+    def have(resultOfLengthWordApplication: ResultOfLengthWordApplication): Matcher[AnyRef] =
+      apply(matchers.have.length(resultOfLengthWordApplication.expectedLength))
   }
 
   val not = new NotWord
