@@ -34,6 +34,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if string length does not match and used with should not") {
         "hi" should not { have length (3) }
+        "hi" should not have length (3)
         check((s: String, i: Int) => i != s.length ==> returnsNormally(s should not { have length (i) }))
       }
 
