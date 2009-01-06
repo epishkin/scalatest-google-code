@@ -316,6 +316,10 @@ import scala.reflect.Manifest
 trait ShouldMatchers extends Matchers {
 
   // TODO: In the tests, make sure they can create their own matcher and use it.
+  /*protected trait ShouldNotMethod[T] {
+      def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
+  }*/
+
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
@@ -327,8 +331,8 @@ trait ShouldMatchers extends Matchers {
 
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
-    def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
     def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
+    def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
   }
 
   protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
@@ -405,6 +409,18 @@ trait ShouldMatchers extends Matchers {
     }
   }
   
+ /* protected trait ShouldNotWordForSeqMethods[T] extends ShouldMethods[Seq[T]] {
+    override def should(notWord: NotWord): ResultOfNotWordForSeq[T] = {
+      new ResultOfNotWordForSeq(leftOperand, true)
+    }
+  }
+
+  protected trait ShouldNotWordForArrayMethods[T] extends ShouldMethods[Array[T]] {
+    override def should(notWord: NotWord): ResultOfNotWordForSeq[T] = {
+      new ResultOfNotWordForSeq(leftOperand, true)
+    }
+  } */
+
   protected trait ShouldHaveWordForJavaListMethods[T] {
     protected val leftOperand: java.util.List[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
@@ -422,7 +438,12 @@ trait ShouldMatchers extends Matchers {
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
   
   protected class ArrayShouldWrapper[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
-      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
+      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
+
+    override def should(notWord: NotWord): ResultOfNotWordForSeq[Array[T]] = {
+      new ResultOfNotWordForSeq(leftOperand, false)
+    }
+  }
   
   protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
