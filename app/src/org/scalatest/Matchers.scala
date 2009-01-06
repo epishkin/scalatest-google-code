@@ -67,7 +67,7 @@ private[scalatest] object Helper {
   }
 }
 
-trait Matchers extends Assertions {
+trait Matchers extends Assertions { matchers =>
 
   //
   // This class is used as the return type of the overloaded should method (in MapShouldWrapper)
@@ -572,6 +572,19 @@ trait Matchers extends Assertions {
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
 
+  protected class ResultOfNotWord[T](val left: T, val shouldBeTrue: Boolean) {
+    def equal(right: Any) {
+      if ((left == right) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+           if (shouldBeTrue) "didNotEqual" else "equaled",
+            left,
+            right
+          )
+        )
+    }
+  }
+
   protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -875,14 +888,28 @@ trait Matchers extends Assertions {
   }
 
 
-  def not[S <: Any](matcher: Matcher[S]) =
+/*  def not[S <: Any](matcher: Matcher[S]) =
     new Matcher[S] {
       def apply(left: S) =
         matcher(left) match {
           case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
         }
-    }
+    }*/
 
+  class NotWord {
+
+    def apply[S <: Any](matcher: Matcher[S]) =
+      new Matcher[S] {
+        def apply(left: S) =
+          matcher(left) match {
+            case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
+          }
+      }
+
+    def equal(right: Any): Matcher[Any] = apply(matchers.equal(right)) 
+  }
+
+  val not = new NotWord
   val behave = new BehaveWord
   val be = new BeWord
 
