@@ -1303,7 +1303,7 @@ class SpecSuite extends FunSuite {
     }
     class MySpec extends Spec with ShouldMatchers {
       def myBehavior(i: Int) {
-        "it should start with proper words" - {}
+        it("it should start with proper words") {}
       }
       1 should behave like myBehavior
     }
