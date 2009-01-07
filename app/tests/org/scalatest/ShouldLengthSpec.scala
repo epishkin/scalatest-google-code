@@ -39,7 +39,8 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
 
       it("should do nothing when string length matches and used in a logical-and expression") {
-        "hi" should { have length (2) and (have length (3 - 1)) }
+        "hi" should (have length (2) and (have length (3 - 1)))
+        // "hi" should both (have length (2)) und (have length (3 - 1))
       }
 
       it("should do nothing when string length matches and used in a logical-or expression") {

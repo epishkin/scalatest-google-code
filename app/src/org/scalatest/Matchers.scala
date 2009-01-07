@@ -956,6 +956,13 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /* class ResultOfBothApplication[T](val leftMatcher: Matcher[T])
+
+  class BothWord {
+    def apply[T](leftMatcher: Matcher[T]): ResultOfBothApplication[T] = new ResultOfBothApplication(leftMatcher)
+  }
+
+  val both = new BothWord */
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which
