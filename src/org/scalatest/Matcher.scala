@@ -134,6 +134,8 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
       }
     }
 
+  // def &&[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = and(rightMatcher)
+
   // Dropping to eliminate redundancy. Redundant with and not { ... }
   // def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
 
@@ -180,6 +182,8 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
         }
       }
     }
+
+  // def ||[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = and(rightMatcher)
 
   // Dropping to eliminate redundancy. Redundant with or not { ... }
   // def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
