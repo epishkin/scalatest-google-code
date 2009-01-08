@@ -166,6 +166,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when array length matches and used in a logical-and expression") {
         Array(1, 2) should { have length (2) and (have length (3 - 1)) }
+        Array(1, 2) should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when array length matches and used in a logical-or expression") {
@@ -255,6 +256,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when list length matches and used in a logical-and expression") {
         List(1, 2) should { have length (2) and (have length (3 - 1)) }
+        List(1, 2) should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when list length matches and used in a logical-or expression") {
@@ -347,6 +349,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when list length matches and used in a logical-and expression") {
         javaList should { have length (2) and (have length (3 - 1)) }
+        javaList should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when list length matches and used in a logical-or expression") {
@@ -430,6 +433,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
   
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
   
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -511,6 +515,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -592,6 +597,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -673,6 +679,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -754,6 +761,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -835,6 +843,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -1011,6 +1020,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -1094,6 +1104,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -1181,6 +1192,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -1268,6 +1280,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
@@ -1355,6 +1368,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when object length matches and used in a logical-and expression") {
         obj should { have length (2) and (have length (3 - 1)) }
+        obj should (have length (2) and have length (3 - 1))
       }
 
       it("should do nothing when object length matches and used in a logical-or expression") {
