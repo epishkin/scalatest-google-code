@@ -69,7 +69,7 @@ private[scalatest] object Helper {
 
 trait Matchers extends Assertions { matchers =>
 
-  class MatcherWrapper[T](leftMatcher: Matcher[T]) {
+  class MatcherWrapper[T](leftMatcher: Matcher[T]) { matchersWrapper =>
 
     /**
      * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
@@ -115,8 +115,18 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    def and(haveWord: HaveWord): HaveWord = haveWord
-    def and(notWord: NotWord): NotWord = notWord
+    class AndHaveWord {
+      def length(expectedLength: Long) = and(have.length(expectedLength))  
+    }
+    def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
+
+    class AndNotWord {
+
+      def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
+        matchersWrapper.and(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
+    }
+
+    def and(notWord: NotWord): AndNotWord = new AndNotWord
 
     /**
      * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
@@ -162,8 +172,19 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    def or(haveWord: HaveWord): HaveWord = haveWord
-    def or(notWord: NotWord): NotWord = notWord
+    class OrHaveWord {
+      def length(expectedLength: Long) = or(have.length(expectedLength))
+    }
+
+    def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
+
+    class OrNotWord {
+
+      def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
+        matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
+    }
+
+    def or(notWord: NotWord): OrNotWord = new OrNotWord
   }
 
   implicit def convertToMatcherWrapper[T](leftMatcher: Matcher[T]): MatcherWrapper[T] = new MatcherWrapper(leftMatcher)

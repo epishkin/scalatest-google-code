@@ -49,10 +49,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
 
       it("should do nothing when string length doesn't match and used in a logical-and expression with not") {
-        "hi" should { not { have length (5) } and not { have length (3) }}
+        "hi" should (not (have length (5)) and not (have length (3)))
         "hi" should { not have length (5) and (not have length (3)) }
         "hi" should (not have length (5) and not have length (3))
-        "hi" should (not (have length (5)) and not (have length (3)))
       }
 
       it("should do nothing when string length doesn't match and used in a logical-or expression with not") {
@@ -78,33 +77,75 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
 
       it("should throw an assertion error when string length doesn't match and used in a logical-and expression") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           "hi" should { have length (5) and (have length (2 - 1)) }
         }
-        assert(caught.getMessage === "\"hi\" did not have length 5")
+        assert(caught1.getMessage === "\"hi\" did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          "hi" should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "\"hi\" did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          "hi" should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "\"hi\" did not have length 5")
       }
 
       it("should throw an assertion error when string length doesn't match and used in a logical-or expression") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           "hi" should { have length (55) or (have length (22)) }
         }
-        assert(caught.getMessage === "\"hi\" did not have length 55, and \"hi\" did not have length 22")
+        assert(caught1.getMessage === "\"hi\" did not have length 55, and \"hi\" did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          "hi" should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "\"hi\" did not have length 55, and \"hi\" did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          "hi" should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "\"hi\" did not have length 55, and \"hi\" did not have length 22")
       }
 
       it("should throw an assertion error when string length matches and used in a logical-and expression with not") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           "hi" should { not { have length (3) } and not { have length (2) }}
+        }
+        assert(caught1.getMessage === "\"hi\" did not have length 3, but \"hi\" had length 2")
+
+        val caught2 = intercept[AssertionError] {
           "hi" should { not have length (3) and (not have length (2)) }
         }
-        assert(caught.getMessage === "\"hi\" did not have length 3, but \"hi\" had length 2")
+        assert(caught2.getMessage === "\"hi\" did not have length 3, but \"hi\" had length 2")
+
+        val caught3 = intercept[AssertionError] {
+          "hi" should (not have length (3) and not have length (2))
+        }
+        assert(caught3.getMessage === "\"hi\" did not have length 3, but \"hi\" had length 2")
       }
 
       it("should throw an assertion error when string length matches and used in a logical-or expression with not") {
-        val caught = intercept[AssertionError] {
+
+        val caught1 = intercept[AssertionError] {
           "hi" should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught1.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
+
+        val caught2 = intercept[AssertionError] {
           "hi" should { not have length (2) or (not have length (2)) }
         }
-        assert(caught.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
+        assert(caught2.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
+
+        val caught3 = intercept[AssertionError] {
+          "hi" should (not have length (2) or not have length (2))
+        }
+        assert(caught3.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
       }
     }
 
