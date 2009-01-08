@@ -46,7 +46,21 @@ class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers with Return
     }
 
     it("should do nothing when equal and used in a logical-and expression") {
-      1 should { equal (1) and equal (2 - 1) }
+      1 should (equal (1) and equal (2 - 1))
+    }
+
+    it("should do nothing when equal and used in multi-part logical expressions") {
+
+        // Just to make sure these work strung together
+        1 should (equal (1) and equal (1) and equal (1) and equal (1))
+        1 should (equal (1) and equal (1) or equal (1) and equal (1) or equal (1))
+        1 should (
+            equal (1) and
+            equal (1) or
+            equal (1) and
+            equal (1) or
+            equal (1)
+        )
     }
 
     it("should do nothing when equal and used in a logical-or expression") {

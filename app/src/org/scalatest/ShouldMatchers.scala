@@ -315,17 +315,7 @@ import scala.reflect.Manifest
  */
 trait ShouldMatchers extends Matchers {
 
-  /* class ResultOfShouldBothPhrase[T](left: T, leftMatcher: Matcher[T]) {
-    def und[U <: T](rightMatcher: Matcher[U]) {
-        throw new AssertionError("got here dude")
-    }
-  } */
-    
   // TODO: In the tests, make sure they can create their own matcher and use it.
-  /*protected trait ShouldNotMethod[T] {
-      def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
-  }*/
-
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
@@ -339,7 +329,6 @@ trait ShouldMatchers extends Matchers {
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
-    // def should(resultOfBothApplication: ResultOfBothApplication[T]) = new ResultOfShouldBothPhrase(leftOperand, resultOfBothApplication.leftMatcher)
   }
 
   protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]

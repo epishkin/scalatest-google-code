@@ -61,8 +61,6 @@ package org.scalatest
  */
 trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
 
-  // TODO: to make these nice, I think I'll have to put everything that's after should or must also
-  // after not, or, and and
   /**
    * Check to see if the specified object, <code>left</code>, matches, and report the result in
    * the returned <code>MatcherResult</code>. The parameter is named <code>left</code>, because it is
@@ -113,7 +111,7 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
    * @param the matcher to logical-and with this matcher
    * @return a matcher that performs the logical-and of this and the passed matcher 
    */
-  def and[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+  /* def and[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
     new Matcher[U] {
       def apply(left: U) = {
         val leftMatcherResult = leftMatcher(left)
@@ -132,12 +130,7 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
           )
         }
       }
-    }
-
-  // def &&[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = and(rightMatcher)
-
-  // Dropping to eliminate redundancy. Redundant with and not { ... }
-  // def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
+    }*/
 
   /**
    * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
@@ -162,7 +155,7 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
    * @param the matcher to logical-or with this matcher
    * @return a matcher that performs the logical-or of this and the passed matcher
    */
-  def or[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+  /*def or[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
     new Matcher[U] {
       def apply(left: U) = {
         val leftMatcherResult = leftMatcher(left)
@@ -181,11 +174,6 @@ trait Matcher[-T] extends Function1[T, MatcherResult] { leftMatcher =>
           )
         }
       }
-    }
-
-  // def ||[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = and(rightMatcher)
-
-  // Dropping to eliminate redundancy. Redundant with or not { ... }
-  // def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
+    }*/
 }
 

@@ -69,6 +69,114 @@ private[scalatest] object Helper {
 
 trait Matchers extends Assertions { matchers =>
 
+    class MatcherWrapper[T](leftMatcher: Matcher[T]) {
+
+      // left is generally the object on which should is invoked. leftMatcher
+      // is the left operand to and. For example, in:
+      // cat should { haveLives (9) and landOn (feet) }
+      // left is 'cat' and leftMatcher is the matcher produced by 'haveLives (9)'.
+      // rightMatcher, by the way, is the matcher produced by 'landOn (feet)'
+
+      /**
+       * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
+       * that represents the logical-and of the results of this and the passed matcher applied to
+       * the same value.
+       *
+       * <p>
+       * The reason <code>and</code> has an upper bound on its type parameter is so that the <code>Matcher</code>
+       * resulting from an invocation of <code>and</code> will have the correct type parameter. If you call
+       * <code>and</code> on a <code>Matcher[Orange]</code>, passing in a <code>Matcher[Valencia]</code>,
+       * the result will have type <code>Matcher[Valencia]</code>. This is correct because both a
+       * <code>Matcher[Orange]</code> and a <code>Matcher[Valencia]</code> know how to match a
+       * <code>Valencia</code> (but a <code>Matcher[Valencia]</code> doesn't know how to
+       * match any old <code>Orange</code>).  If you call
+       * <code>and</code> on a <code>Matcher[Orange]</code>, passing in a <code>Matcher[Fruit]</code>,
+       * the result will have type <code>Matcher[Orange]</code>. This is also correct because both a
+       * <code>Matcher[Orange]</code> and a <code>Matcher[Fruit]</code> know how to match an
+       * <code>Orange</code> (but a <code>Matcher[Orange]</code> doesn't know how to
+       * match any old <code>Fruit</code>).
+       * </p>
+       *
+       * @param the matcher to logical-and with this matcher
+       * @return a matcher that performs the logical-and of this and the passed matcher
+       */
+      def and[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+        new Matcher[U] {
+          def apply(left: U) = {
+            val leftMatcherResult = leftMatcher(left)
+            if (!leftMatcherResult.matches)
+              MatcherResult(
+                false,
+                leftMatcherResult.failureMessage,
+                leftMatcherResult.negativeFailureMessage
+              )
+            else {
+              val rightMatcherResult = rightMatcher(left)
+              MatcherResult(
+                rightMatcherResult.matches,
+                Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.failureMessage),
+                Resources("commaAnd", leftMatcherResult.negativeFailureMessage, rightMatcherResult.negativeFailureMessage)
+              )
+            }
+          }
+        }
+
+      // def &&[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = and(rightMatcher)
+
+      // Dropping to eliminate redundancy. Redundant with and not { ... }
+      // def andNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher and Helper.not { rightMatcher }
+
+      /**
+       * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
+       * that represents the logical-or of the results of this and the passed matcher applied to
+       * the same value.
+       *
+       * <p>
+       * The reason <code>or</code> has an upper bound on its type parameter is so that the <code>Matcher</code>
+       * resulting from an invocation of <code>or</code> will have the correct type parameter. If you call
+       * <code>or</code> on a <code>Matcher[Orange]</code>, passing in a <code>Matcher[Valencia]</code>,
+       * the result will have type <code>Matcher[Valencia]</code>. This is correct because both a
+       * <code>Matcher[Orange]</code> and a <code>Matcher[Valencia]</code> know how to match a
+       * <code>Valencia</code> (but a <code>Matcher[Valencia]</code> doesn't know how to
+       * match any old <code>Orange</code>).  If you call
+       * <code>or</code> on a <code>Matcher[Orange]</code>, passing in a <code>Matcher[Fruit]</code>,
+       * the result will have type <code>Matcher[Orange]</code>. This is also correct because both a
+       * <code>Matcher[Orange]</code> and a <code>Matcher[Fruit]</code> know how to match an
+       * <code>Orange</code> (but a <code>Matcher[Orange]</code> doesn't know how to
+       * match any old <code>Fruit</code>).
+       * </p>
+       *
+       * @param the matcher to logical-or with this matcher
+       * @return a matcher that performs the logical-or of this and the passed matcher
+       */
+      def or[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+        new Matcher[U] {
+          def apply(left: U) = {
+            val leftMatcherResult = leftMatcher(left)
+            if (leftMatcherResult.matches)
+              MatcherResult(
+                true,
+                leftMatcherResult.negativeFailureMessage,
+                leftMatcherResult.failureMessage
+              )
+            else {
+              val rightMatcherResult = rightMatcher(left)
+              MatcherResult(
+                rightMatcherResult.matches,
+                Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.failureMessage),
+                Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.negativeFailureMessage)
+              )
+            }
+          }
+        }
+
+      // def ||[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = and(rightMatcher)
+
+      // Dropping to eliminate redundancy. Redundant with or not { ... }
+      // def orNot[U <: T](rightMatcher: => Matcher[U]): Matcher[U] = leftMatcher or Helper.not { rightMatcher }
+    }
+  implicit def convertToMatcherWrapper[T](leftMatcher: Matcher[T]): MatcherWrapper[T] = new MatcherWrapper(leftMatcher)
+
   //
   // This class is used as the return type of the overloaded should method (in MapShouldWrapper)
   // that takes a HaveWord. It's key method will be called in situations like this:
@@ -956,13 +1064,6 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
-  /* class ResultOfBothApplication[T](val leftMatcher: Matcher[T])
-
-  class BothWord {
-    def apply[T](leftMatcher: Matcher[T]): ResultOfBothApplication[T] = new ResultOfBothApplication(leftMatcher)
-  }
-
-  val both = new BothWord */
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which
