@@ -36,6 +36,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         "hi" should not { have length (3) }
         "hi" should not have length (3)
         check((s: String, i: Int) => i != s.length ==> returnsNormally(s should not { have length (i) }))
+        check((s: String, i: Int) => i != s.length ==> returnsNormally(s should not have length (i)))
       }
 
       it("should do nothing when string length matches and used in a logical-and expression") {
@@ -340,6 +341,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if list length does not match and used with should not") {
         javaList should not { have length (3) }
+        javaList should not have length (3)
         // check((lst: List[Int], i: Int) => i != lst.length ==> returnsNormally(lst should not { have length (i) }))
       }
 
@@ -421,7 +423,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
   
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
+        obj should not have length (3)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
   
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -500,7 +504,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
+        obj should not have length (3)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -579,7 +585,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
+        obj should not have length (3)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -658,7 +666,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
+        obj should not have length (3)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -737,7 +747,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
+        obj should not have length (3)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -816,7 +828,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
+        obj should not have length (3)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -898,8 +912,12 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
         obj should not { have length (3L) }
+        obj should not have length (3)
+        obj should not have length (3L)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
         check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
+        check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -983,8 +1001,12 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
         obj should not { have length (3L) }
+        obj should not have length (3)
+        obj should not have length (3L)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
         check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
+        check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -1065,7 +1087,9 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
+        obj should not have length (3)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -1146,9 +1170,13 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
-        obj should not { have length (3) }
+        obj should not { have length (3L) }
+        obj should not have length (3)
+        obj should not have length (3L)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
         check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
+        check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -1230,8 +1258,12 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
         obj should not { have length (3L) }
+        obj should not have length (3)
+        obj should not have length (3L)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
         check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
+        check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {
@@ -1313,8 +1345,12 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       it("should do nothing if object length does not match and used with should not") {
         obj should not { have length (3) }
         obj should not { have length (3L) }
+        obj should not have length (3)
+        obj should not have length (3L)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
         check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not { have length (wrongLen) }))
+        check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
+        check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Lengthy(len) should not have length (wrongLen)))
       }
 
       it("should do nothing when object length matches and used in a logical-and expression") {

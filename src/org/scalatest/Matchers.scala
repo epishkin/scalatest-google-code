@@ -687,6 +687,23 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  protected class ResultOfNotWordForJavaList[T <: java.util.List[_]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWord(left, shouldBeTrue) {
+
+    def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
+      val right = resultOfLengthWordApplication.expectedLength
+      if ((left.size == right) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+
   protected class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
@@ -985,7 +1002,7 @@ trait Matchers extends Assertions { matchers =>
           (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
           resultType == classOf[Boolean]
         }
-        // XXX
+
         // Store in an array, because may have both isEmpty and empty, in which case I
         // will throw an exception.
         val methodArray =
@@ -1120,6 +1137,24 @@ trait Matchers extends Assertions { matchers =>
 
   implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new PlusOrMinusWrapper(right)
 
+  class ResultOfNotWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean)
+      extends ResultOfNotWord(left, shouldBeTrue) {
+
+    def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
+      val right = resultOfLengthWordApplication.expectedLength
+      if ((left.length == right) != shouldBeTrue) {
+          throw new AssertionError(
+            FailureMessages(
+             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+
+    // TODO fix this indentation
     class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
       def length(expectedLength: Int) {
         if ((left.length == expectedLength) != shouldBeTrue)
