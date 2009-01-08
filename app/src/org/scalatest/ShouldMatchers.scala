@@ -337,8 +337,13 @@ trait ShouldMatchers extends Matchers {
   // converted in ResultOfHaveWordForLengthWrapper, at which point the actual implicit conversions
   // from String, Array, and the structural types get applied.
   protected class LengthShouldWrapper[A <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
       new ResultOfHaveWordForLengthWrapper(left, true)
+    }
+
+    override def should(notWord: NotWord): ResultOfNotWordForLengthWrapper[A] = {
+      new ResultOfNotWordForLengthWrapper(leftOperand, false)
     }
   }
 
@@ -450,7 +455,12 @@ trait ShouldMatchers extends Matchers {
   }
 
   protected class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
-      with ShouldHaveWordForJavaListMethods[T]
+      with ShouldHaveWordForJavaListMethods[T]  {
+
+    override def should(notWord: NotWord): ResultOfNotWordForJavaList[java.util.List[T]] = {
+      new ResultOfNotWordForJavaList(leftOperand, false)
+    }
+  }
 
   // TODO:  Test some java.util.maps, etc.
   implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
