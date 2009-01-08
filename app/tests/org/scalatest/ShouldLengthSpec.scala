@@ -221,10 +221,21 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
 
       it("should throw an assertion error when array length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           Array(1, 2) should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "Array(1, 2) did not have length 55, and Array(1, 2) did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          Array(1, 2) should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "Array(1, 2) did not have length 55, and Array(1, 2) did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          Array(1, 2) should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "Array(1, 2) did not have length 55, and Array(1, 2) did not have length 22")
       }
 
       it("should throw an assertion error when array length matches and used in a logical-and expression with not") {
@@ -311,13 +322,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           List(1, 2) should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "List(1, 2) did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          List(1, 2) should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "List(1, 2) did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          List(1, 2) should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "List(1, 2) did not have length 5")
       }
 
       it("should throw an assertion error when list length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           List(1, 2) should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "List(1, 2) did not have length 55, and List(1, 2) did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          List(1, 2) should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "List(1, 2) did not have length 55, and List(1, 2) did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          List(1, 2) should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "List(1, 2) did not have length 55, and List(1, 2) did not have length 22")
       }
 
       it("should throw an assertion error when list length matches and used in a logical-and expression with not") {
@@ -406,13 +438,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           javaList should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "[1, 2] did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          javaList should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "[1, 2] did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          javaList should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "[1, 2] did not have length 5")
       }
 
       it("should throw an assertion error when list length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           javaList should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "[1, 2] did not have length 55, and [1, 2] did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          javaList should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "[1, 2] did not have length 55, and [1, 2] did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          javaList should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "[1, 2] did not have length 55, and [1, 2] did not have length 22")
       }
 
       it("should throw an assertion error when list length matches and used in a logical-and expression with not") {
@@ -494,13 +547,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
   
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
   
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -580,13 +654,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -666,13 +761,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -752,13 +868,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -838,13 +975,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -924,13 +1082,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -1016,13 +1195,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -1108,13 +1308,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -1196,13 +1417,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -1288,13 +1530,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -1380,13 +1643,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
@@ -1472,13 +1756,34 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should { have length (5) and (have length (2 - 1)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 5")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (5)) and (have length (2 - 1)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 5")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (5) and have length (2 - 1))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 5")
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-or expression") {
+
         val caught1 = intercept[AssertionError] {
           obj should { have length (55) or (have length (22)) }
         }
         assert(caught1.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((have length (55)) or (have length (22)))
+        }
+        assert(caught2.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (have length (55) or have length (22))
+        }
+        assert(caught3.getMessage === "lengthy did not have length 55, and lengthy did not have length 22")
       }
 
       it("should throw an assertion error when object length matches and used in a logical-and expression with not") {
