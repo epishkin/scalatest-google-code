@@ -1154,47 +1154,46 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
-    // TODO fix this indentation
-    class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
-      def length(expectedLength: Int) {
-        if ((left.length == expectedLength) != shouldBeTrue)
-          throw new AssertionError(
-            FailureMessages(
-              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
-              left,
-              expectedLength)
-          )
-      }
-      def length(expectedLength: Long) {
-        if ((left.length == expectedLength) != shouldBeTrue)
-          throw new AssertionError(
-            FailureMessages(
-              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
-              left,
-              expectedLength)
-          )
-      }
+  class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
+    def length(expectedLength: Int) {
+      if ((left.length == expectedLength) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)
+        )
     }
+    def length(expectedLength: Long) {
+      if ((left.length == expectedLength) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)
+        )
+    }
+  }
 
-    class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
-      def size(expectedSize: Int) {
-        if ((left.size == expectedSize) != shouldBeTrue)
-          throw new AssertionError(
-            FailureMessages(
-              if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
-              left,
-              expectedSize)
-          )
-      }
-      def size(expectedSize: Long) {
-        if ((left.size == expectedSize) != shouldBeTrue)
-          throw new AssertionError(
-            FailureMessages(
-              if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
-              left,
-              expectedSize)
-          )
-      }
+  class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
+    def size(expectedSize: Int) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
     }
+    def size(expectedSize: Long) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+  }
 }
 
