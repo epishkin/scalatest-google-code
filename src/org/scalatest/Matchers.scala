@@ -116,7 +116,8 @@ trait Matchers extends Assertions { matchers =>
       }
 
     def and(haveWord: HaveWord): HaveWord = haveWord
-    
+    def and(notWord: NotWord): NotWord = notWord
+
     /**
      * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
      * that represents the logical-or of the results of this and the passed matcher applied to
@@ -160,6 +161,9 @@ trait Matchers extends Assertions { matchers =>
           }
         }
       }
+
+    def or(haveWord: HaveWord): HaveWord = haveWord
+    def or(notWord: NotWord): NotWord = notWord
   }
 
   implicit def convertToMatcherWrapper[T](leftMatcher: Matcher[T]): MatcherWrapper[T] = new MatcherWrapper(leftMatcher)

@@ -45,16 +45,20 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing when string length matches and used in a logical-or expression") {
         "hi" should { have length (77) or (have length (3 - 1)) }
+        "hi" should (have length (77) or have length (3 - 1))
       }
 
       it("should do nothing when string length doesn't match and used in a logical-and expression with not") {
         "hi" should { not { have length (5) } and not { have length (3) }}
         "hi" should { not have length (5) and (not have length (3)) }
+        "hi" should (not have length (5) and not have length (3))
+        "hi" should (not (have length (5)) and not (have length (3)))
       }
 
       it("should do nothing when string length doesn't match and used in a logical-or expression with not") {
-        "hi" should { not { have length (2) } or not { have length (3) }}
-        "hi" should { not have length (2) or (not have length (3)) }
+        "hi" should (not (have length (2)) or not (have length (3)))
+        "hi" should ((not have length (2)) or (not have length (3)))
+        "hi" should (not have length (2) or not have length (3))
       }
 
       it("should throw AssertionError if string length does not match specified length") {
