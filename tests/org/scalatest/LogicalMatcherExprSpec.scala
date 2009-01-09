@@ -56,5 +56,30 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
         verify(mockClown, times(0)).hasBigRedNose
       }
     }
+
+    describe("(not have length N syntax)") {
+      it("should short-circuit if left matcher doesn't match") {
+
+        val mockClown = mock(classOf[Clown])
+
+        intercept[AssertionError] {
+          "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
+        }
+
+        verify(mockClown, times(0)).hasBigRedNose
+
+        intercept[AssertionError] {
+          "hi" should (have length (1) and not {mockClown.hasBigRedNose; have length (1)})
+        }
+
+        verify(mockClown, times(0)).hasBigRedNose
+
+        intercept[AssertionError] {
+          "hi" should (have length (1) and {mockClown.hasBigRedNose; not have length (1)})
+        }
+
+        verify(mockClown, times(0)).hasBigRedNose
+      }
+    }
   }
 }

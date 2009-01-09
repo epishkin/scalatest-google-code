@@ -124,7 +124,9 @@ trait Matchers extends Assertions { matchers =>
 
     class AndNotWord {
 
-      def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
+      // By-name parameter is to get this to short circuit:
+      // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
+      def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
         matchersWrapper.and(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
     }
 
