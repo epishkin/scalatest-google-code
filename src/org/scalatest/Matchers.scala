@@ -177,7 +177,8 @@ trait Matchers extends Assertions { matchers =>
       }
 
     class OrHaveWord {
-      def length(expectedLength: Long) = or(have.length(expectedLength))
+      // the by-name is to make it short circuit.
+      def length(expectedLength: => Long) = or(have.length(expectedLength))
     }
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
@@ -188,7 +189,9 @@ trait Matchers extends Assertions { matchers =>
       def equal(any: Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
 
-      def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
+      // By-name parameter is to get this to short circuit:
+      // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
+      def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
         matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
     }
 
