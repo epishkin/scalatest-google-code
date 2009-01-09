@@ -187,6 +187,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         mutable.Set(1, 2) should not { have size (3) }
+        mutable.Set(1, 2) should not have size (3)
         // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 

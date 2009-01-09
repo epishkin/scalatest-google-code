@@ -178,7 +178,11 @@ trait Matchers extends Assertions { matchers =>
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
 
+    // This is not yet short-circuiting. Need by-name params for things passed here.
     class OrNotWord {
+
+      def equal(any: Any) =
+        matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
 
       def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
         matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
