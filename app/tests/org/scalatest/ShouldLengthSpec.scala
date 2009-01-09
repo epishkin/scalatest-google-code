@@ -148,6 +148,24 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         }
         assert(caught3.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
       }
+
+      it("should give good error messages when more than two clauses are used with logical connectors") {
+
+        val caught1 = intercept[AssertionError] {
+          "hi" should { not { have length (2) } or not { have length (2) }}
+        }
+        assert(caught1.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
+
+        val caught2 = intercept[AssertionError] {
+          "hi" should { not have length (2) or (not have length (2)) }
+        }
+        assert(caught2.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
+
+        val caught3 = intercept[AssertionError] {
+          "hi" should (not have length (2) or not have length (2))
+        }
+        assert(caught3.getMessage === "\"hi\" had length 2, and \"hi\" had length 2")
+      }
     }
 
     describe("on Array") {

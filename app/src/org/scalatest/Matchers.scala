@@ -658,8 +658,25 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
-  protected class ResultOfNotWordForSeq[T <: Seq[_]](left: T, shouldBeTrue: Boolean)
+  protected class ResultOfNotWordForCollection[T <: Collection[_]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWord(left, shouldBeTrue) {
+
+    def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
+      val right = resultOfSizeWordApplication.expectedSize
+      if ((left.size == right) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+
+  protected class ResultOfNotWordForSeq[T <: Seq[_]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWordForCollection(left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
@@ -1129,6 +1146,14 @@ trait Matchers extends Assertions { matchers =>
 
   val length = new LengthWord
     
+  class ResultOfSizeWordApplication(val expectedSize: Long)
+
+  class SizeWord {
+    def apply(expectedSize: Long) = new ResultOfSizeWordApplication(expectedSize)
+  }
+
+  val size = new SizeWord
+
   case class DoubleTolerance(right: Double, tolerance: Double)
 
   class PlusOrMinusWrapper(right: Double) {
