@@ -430,7 +430,12 @@ trait ShouldMatchers extends Matchers {
   }
 
   protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
-      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T]
+      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
+
+    override def should(notWord: NotWord): ResultOfNotWordForCollection[Collection[T]] = {
+      new ResultOfNotWordForCollection(leftOperand, false)
+    }
+  }
   
   protected class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
       with ShouldHaveWordForJavaCollectionMethods[T]
