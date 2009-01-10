@@ -124,6 +124,11 @@ trait Matchers extends Assertions { matchers =>
 
     class AndNotWord {
 
+    // 1 should (not equal (2) and not equal (3 - 1)) The second half, after "not"
+    // the by-name parametere is to get this to short circuit
+    def equal(any: => Any) =
+      matchersWrapper.and(matchers.not.apply(matchers.equal(any)))
+
       // By-name parameter is to get this to short circuit:
       // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
       def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
@@ -186,7 +191,8 @@ trait Matchers extends Assertions { matchers =>
     // This is not yet short-circuiting. Need by-name params for things passed here.
     class OrNotWord {
 
-      def equal(any: Any) =
+      // The by-name parameter is to get this to short circuit
+      def equal(any: => Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
 
       // By-name parameter is to get this to short circuit:
@@ -686,6 +692,26 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  protected class ResultOfNotWordForJavaCollection[T <: java.util.Collection[_]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWord(left, shouldBeTrue) {
+
+    def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
+      val right = resultOfSizeWordApplication.expectedSize
+      if ((left.size == right) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+
+  protected class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
+      extends ResultOfNotWordForCollection(left, shouldBeTrue)
+
   protected class ResultOfNotWordForSeq[T <: Seq[_]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection(left, shouldBeTrue) {
 
@@ -724,6 +750,20 @@ trait Matchers extends Assertions { matchers =>
         throw new AssertionError(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              right
+            )
+          )
+      }
+    }
+
+      //UUU I think I should inherit this from one used by Java collections
+    def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
+      val right = resultOfSizeWordApplication.expectedSize
+      if ((left.size == right) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
               left,
               right
             )
