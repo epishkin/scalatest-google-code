@@ -264,6 +264,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         set should not { have size (3) }
+        set should not have size (3)
         // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -340,6 +341,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         HashSet(1, 2) should not { have size (3) }
+        HashSet(1, 2) should not have size (3)
         // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -416,6 +418,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         mutable.HashSet(1, 2) should not { have size (3) }
+        mutable.HashSet(1, 2) should not have size (3)
         // check((set: Set[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -489,6 +492,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if list size does not match and used with should not") {
         List(1, 2) should not { have size (3) }
+        List(1, 2) should not have size (3)
         check((lst: List[Int], i: Int) => i != lst.size ==> returnsNormally(lst should not { have size (i) }))
       }
 
@@ -566,6 +570,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if list size does not match and used with should not") {
         javaList should not { have size (3) }
+        javaList should not have size (3)
         // check((lst: List[Int], i: Int) => i != lst.size ==> returnsNormally(lst should not { have size (i) }))
       }
 
@@ -640,6 +645,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         Map("one" -> 1, "two" -> 2) should not { have size (3) }
+        Map("one" -> 1, "two" -> 2) should not have size (3)
         // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -716,6 +722,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         mutable.Map("one" -> 1, "two" -> 2) should not { have size (3) }
+        mutable.Map("one" -> 1, "two" -> 2) should not have size (3)
         // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -792,6 +799,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         map should not { have size (3) }
+        map should not have size (3)
         // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -868,6 +876,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         HashMap("one" -> 1, "two" -> 2) should not { have size (3) }
+        HashMap("one" -> 1, "two" -> 2) should not have size (3)
         // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -944,6 +953,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size does not match and used with should not") {
         mutable.HashMap("one" -> 1, "two" -> 2) should not { have size (3) }
+        mutable.HashMap("one" -> 1, "two" -> 2) should not have size (3)
         // check((set: Map[Int], i: Int) => i != set.size ==> returnsNormally(set should not { have size (i) }))
       }
 
@@ -1021,6 +1031,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if list size does not match and used with should not") {
         javaSet should not { have size (3) }
+        javaSet should not have size (3)
         // check((lst: List[Int], i: Int) => i != lst.size ==> returnsNormally(lst should not { have size (i) }))
       }
 
