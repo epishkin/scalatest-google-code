@@ -41,7 +41,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when array size matches and used in a logical-and expression") {
         Array(1, 2) should { have size (2) and (have size (3 - 1)) }
-       }
+      }
 
       it("should do nothing when array size matches and used in a logical-or expression") {
         Array(1, 2) should { have size (77) or (have size (3 - 1)) }
