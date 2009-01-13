@@ -57,25 +57,6 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
       }
     }
 
-    describe("(have size N syntax)") {
-      it("should short-circuit if left matcher doesn't match") {
-
-        val mockClown = mock(classOf[Clown])
-
-        intercept[AssertionError] {
-          Array(1, 2) should (have size (1) and have size {mockClown.hasBigRedNose; 2})
-        }
-
-        verify(mockClown, times(0)).hasBigRedNose
-
-        intercept[AssertionError] {
-          "hi" should (have size (1) and {mockClown.hasBigRedNose; have size 2})
-        }
-
-        verify(mockClown, times(0)).hasBigRedNose
-      }
-    }
-
     describe("(not have length N syntax)") {
       it("should short-circuit if left matcher doesn't match") {
 
@@ -95,6 +76,25 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
         intercept[AssertionError] {
           "hi" should (have length (1) and {mockClown.hasBigRedNose; not have length (1)})
+        }
+
+        verify(mockClown, times(0)).hasBigRedNose
+      }
+    }
+
+    describe("(have size N syntax)") {
+      it("should short-circuit if left matcher doesn't match") {
+
+        val mockClown = mock(classOf[Clown])
+
+        intercept[AssertionError] {
+          Array(1, 2) should (have size (1) and have size {mockClown.hasBigRedNose; 2})
+        }
+
+        verify(mockClown, times(0)).hasBigRedNose
+
+        intercept[AssertionError] {
+          "hi" should (have size (1) and {mockClown.hasBigRedNose; have size 2})
         }
 
         verify(mockClown, times(0)).hasBigRedNose
@@ -181,6 +181,21 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
         verify(mockClown, times(0)).hasBigRedNose
 
         "hi" should (have length (2) or {mockClown.hasBigRedNose; not have length (1)})
+
+        verify(mockClown, times(0)).hasBigRedNose
+      }
+    }
+
+    describe("(have size N syntax)") {
+      it("should short-circuit if left matcher does match") {
+
+        val mockClown = mock(classOf[Clown])
+
+        Array(1, 2) should (have size (2) or have size {mockClown.hasBigRedNose; 2})
+
+        verify(mockClown, times(0)).hasBigRedNose
+
+        Array(1, 2) should (have size (2) or {mockClown.hasBigRedNose; have size 2})
 
         verify(mockClown, times(0)).hasBigRedNose
       }

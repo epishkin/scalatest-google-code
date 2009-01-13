@@ -188,6 +188,11 @@ trait Matchers extends Assertions { matchers =>
     class OrHaveWord {
       // the by-name is to make it short circuit.
       def length(expectedLength: => Long) = or(have.length(expectedLength))
+
+      // Array(1, 2) should (have size (2) and have size (3 - 1))
+      //                                       ^
+      // the by-name is to make it short circuit.
+      def size(expectedSize: => Long) = or(have.size(expectedSize))
     }
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
