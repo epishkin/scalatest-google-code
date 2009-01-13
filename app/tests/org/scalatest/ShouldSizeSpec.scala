@@ -41,6 +41,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when array size matches and used in a logical-and expression") {
         Array(1, 2) should { have size (2) and (have size (3 - 1)) }
+        Array(1, 2) should ((have size (2)) and (have size (3 - 1)))
+        Array(1, 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when array size matches and used in a logical-or expression") {
@@ -116,6 +118,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         Set(1, 2) should { have size (2) and (have size (3 - 1)) }
+        Set(1, 2) should ((have size (2)) and (have size (3 - 1)))
+        Set(1, 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -193,6 +197,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         mutable.Set(1, 2) should { have size (2) and (have size (3 - 1)) }
+        mutable.Set(1, 2) should ((have size (2)) and (have size (3 - 1)))
+        mutable.Set(1, 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -270,6 +276,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         set should { have size (2) and (have size (3 - 1)) }
+        set should ((have size (2)) and (have size (3 - 1)))
+        set should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -347,6 +355,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         HashSet(1, 2) should { have size (2) and (have size (3 - 1)) }
+        HashSet(1, 2) should ((have size (2)) and (have size (3 - 1)))
+        HashSet(1, 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -424,6 +434,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         mutable.HashSet(1, 2) should { have size (2) and (have size (3 - 1)) }
+        mutable.HashSet(1, 2) should ((have size (2)) and (have size (3 - 1)))
+        mutable.HashSet(1, 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -498,6 +510,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when list size matches and used in a logical-and expression") {
         List(1, 2) should { have size (2) and (have size (3 - 1)) }
+        List(1, 2) should ((have size (2)) and (have size (3 - 1)))
+        List(1, 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when list size matches and used in a logical-or expression") {
