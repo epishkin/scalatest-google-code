@@ -118,6 +118,10 @@ trait Matchers extends Assertions { matchers =>
     class AndHaveWord {
       // the by-name is to make it short circuit.
       def length(expectedLength: => Long) = and(have.length(expectedLength))
+      // Array(1, 2) should (have size (2) and have size (3 - 1))
+      //                                       ^
+      // the by-name is to make it short circuit.
+      def size(expectedSize: => Long) = and(have.size(expectedSize))
     }
 
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
