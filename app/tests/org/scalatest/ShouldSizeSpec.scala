@@ -590,6 +590,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when list size matches and used in a logical-and expression") {
         javaList should { have size (2) and (have size (3 - 1)) }
+        javaList should ((have size (2)) and (have size (3 - 1)))
+        javaList should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when list size matches and used in a logical-or expression") {
@@ -665,6 +667,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         Map("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+        Map("one" -> 1, "two" -> 2) should ((have size (2)) and (have size (3 - 1)))
+        Map("one" -> 1, "two" -> 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -742,6 +746,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         mutable.Map("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+        mutable.Map("one" -> 1, "two" -> 2) should ((have size (2)) and (have size (3 - 1)))
+        mutable.Map("one" -> 1, "two" -> 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -819,6 +825,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         map should { have size (2) and (have size (3 - 1)) }
+        map should ((have size (2)) and (have size (3 - 1)))
+        map should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -896,6 +904,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         HashMap("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+        HashMap("one" -> 1, "two" -> 2) should ((have size (2)) and (have size (3 - 1)))
+        HashMap("one" -> 1, "two" -> 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -973,6 +983,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when set size matches and used in a logical-and expression") {
         mutable.HashMap("one" -> 1, "two" -> 2) should { have size (2) and (have size (3 - 1)) }
+        mutable.HashMap("one" -> 1, "two" -> 2) should ((have size (2)) and (have size (3 - 1)))
+        mutable.HashMap("one" -> 1, "two" -> 2) should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when set size matches and used in a logical-or expression") {
@@ -1051,6 +1063,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when list size matches and used in a logical-and expression") {
         javaSet should { have size (2) and (have size (3 - 1)) }
+        javaSet should ((have size (2)) and (have size (3 - 1)))
+        javaSet should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when list size matches and used in a logical-or expression") {
@@ -1128,6 +1142,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when list size matches and used in a logical-and expression") {
         javaMap should { have size (2) and (have size (3 - 1)) }
+        javaMap should ((have size (2)) and (have size (3 - 1)))
+        javaMap should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when list size matches and used in a logical-or expression") {
@@ -1209,6 +1225,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
   
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
   
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1288,6 +1306,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1367,6 +1387,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1446,6 +1468,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1525,6 +1549,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1604,6 +1630,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1688,6 +1716,10 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
         obj should { have size (2L) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should ((have size (2L)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
+        obj should (have size (2L) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1772,6 +1804,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1853,6 +1887,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -1936,6 +1972,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -2019,6 +2057,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
@@ -2102,6 +2142,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing when object size matches and used in a logical-and expression") {
         obj should { have size (2) and (have size (3 - 1)) }
+        obj should ((have size (2)) and (have size (3 - 1)))
+        obj should (have size (2) and have size (3 - 1))
       }
 
       it("should do nothing when object size matches and used in a logical-or expression") {
