@@ -50,7 +50,7 @@
 
         <!-- this is the class path used to run ScalaTest to test itself, in the "test" target -->
         <path id="test.class.path">
-            <pathelement location="${dist}/lib/scalatest.jar" />
+            <pathelement location="${classes}" />
             <path refid="lib.path"></path>
         </path>
         
@@ -200,7 +200,11 @@
         <zip zipfile="scalatest-${release}.zip" basedir="${zipper}" />
     </target>
 
-    <target name="test" depends="dist">
+    <target name="test" depends="compile">
+        <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
+        <copy todir="${jar.contents}/images">
+            <fileset dir="${src}/images" />
+        </copy>
         <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
 
             <arg value="-p" />
