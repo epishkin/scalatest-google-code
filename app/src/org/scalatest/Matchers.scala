@@ -235,10 +235,29 @@ trait Matchers extends Assertions { matchers =>
       def equal(any: => Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
 
+      // See explanation in have for AndNotWord
+      def have(resultOfLengthOrSizeWordApplication: => ResultOfLengthOrSizeWordApplication) =
+        matchersWrapper.or(
+          matchers.not.apply(
+            resultOfLengthOrSizeWordApplication match {
+              case resultOfLengthWordApplication: ResultOfLengthWordApplication =>
+                matchers.have.length(resultOfLengthWordApplication.expectedLength)
+              case resultOfSizeWordApplication: ResultOfSizeWordApplication =>
+                matchers.have.size(resultOfSizeWordApplication.expectedSize)
+            }
+          )
+        )
+/*
       // By-name parameter is to get this to short circuit:
       // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
       def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
         matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
+
+      // Array(1, 2) should (not have size (2) or not have size (3))
+      //                                          ^
+      def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) =
+        matchersWrapper.or(matchers.not.apply(matchers.have.size(resultOfSizeWordApplication.expectedSize)))
+*/
     }
 
     def or(notWord: NotWord): OrNotWord = new OrNotWord
