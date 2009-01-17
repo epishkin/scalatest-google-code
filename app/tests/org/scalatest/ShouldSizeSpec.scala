@@ -133,10 +133,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when array size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           Array(1, 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Array(1, 2) had size 2, and Array(1, 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          Array(1, 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Array(1, 2) had size 2, and Array(1, 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          Array(1, 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Array(1, 2) had size 2, and Array(1, 2) had size 2")
       }
     }
 
@@ -249,10 +260,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           Set(1, 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          Set(1, 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          Set(1, 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
       }
     }
 
@@ -367,10 +389,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           mutable.Set(1, 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          mutable.Set(1, 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          mutable.Set(1, 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
       }
     }
 
@@ -485,10 +518,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           set should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          set should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          set should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
       }
     }
 
@@ -603,10 +647,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           HashSet(1, 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          HashSet(1, 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          HashSet(1, 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
       }
     }
 
@@ -721,10 +776,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           mutable.HashSet(1, 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          mutable.HashSet(1, 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) had size 2, and Set(1, 2) had size 2")
       }
     }
 
@@ -836,10 +902,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when list size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           List(1, 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "List(1, 2) had size 2, and List(1, 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          List(1, 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "List(1, 2) had size 2, and List(1, 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          List(1, 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "List(1, 2) had size 2, and List(1, 2) had size 2")
       }
     }
 
@@ -955,10 +1032,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when list size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           javaList should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "[1, 2] had size 2, and [1, 2] had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          javaList should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "[1, 2] had size 2, and [1, 2] had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          javaList should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "[1, 2] had size 2, and [1, 2] had size 2")
       }
     }
 
@@ -1071,10 +1159,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           Map("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          Map("one" -> 1, "two" -> 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
       }
     }
 
@@ -1189,10 +1288,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           mutable.Map("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          mutable.Map("one" -> 1, "two" -> 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
       }
     }
 
@@ -1307,10 +1417,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           map should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          map should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          map should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
       }
     }
 
@@ -1425,10 +1546,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          HashMap("one" -> 1, "two" -> 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
       }
     }
 
@@ -1543,10 +1675,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           mutable.HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          mutable.HashMap("one" -> 1, "two" -> 2) should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
       }
     }
 
@@ -1662,10 +1805,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when list size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           javaSet should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "[2, 1] had size 2, and [2, 1] had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          javaSet should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "[2, 1] had size 2, and [2, 1] had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          javaSet should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "[2, 1] had size 2, and [2, 1] had size 2")
       }
     }
 
@@ -1780,10 +1934,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when list size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           javaMap should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "{one=1, two=2} had size 2, and {one=1, two=2} had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          javaMap should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "{one=1, two=2} had size 2, and {one=1, two=2} had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          javaMap should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "{one=1, two=2} had size 2, and {one=1, two=2} had size 2")
       }
     }
 
@@ -1902,10 +2067,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
   
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2022,10 +2198,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2142,10 +2329,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2262,10 +2460,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2382,10 +2591,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2502,10 +2722,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2628,10 +2859,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2752,10 +2994,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2874,10 +3127,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -2998,10 +3262,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -3122,10 +3397,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
@@ -3246,10 +3532,21 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       }
 
       it("should throw an assertion error when object size matches and used in a logical-or expression with not") {
+
         val caught1 = intercept[AssertionError] {
           obj should { not { have size (2) } or not { have size (2) }}
         }
         assert(caught1.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught2 = intercept[AssertionError] {
+          obj should ((not have size (2)) or (not have size (2)))
+        }
+        assert(caught2.getMessage === "sizey had size 2, and sizey had size 2")
+
+        val caught3 = intercept[AssertionError] {
+          obj should (not have size (2) or not have size (2))
+        }
+        assert(caught3.getMessage === "sizey had size 2, and sizey had size 2")
       }
     }
 
