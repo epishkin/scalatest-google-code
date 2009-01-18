@@ -155,6 +155,18 @@ trait Matchers extends Assertions { matchers =>
           )
         )
 
+      def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
+        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanComparison)))
+
+      def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
+        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
+
+      def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
+        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
+
+      def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
+        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
+
 /*
       This won't override because the types are the same after erasure. See note on definition of ResultOfLengthOrSizeWordApplication
       // By-name parameter is to get this to short circuit:
@@ -1262,6 +1274,21 @@ trait Matchers extends Assertions { matchers =>
     //                     ^
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication): Matcher[AnyRef] =
       apply(matchers.have.size(resultOfSizeWordApplication.expectedSize))
+
+    // These next four are for things like not be </>/<=/>=:
+    // left should ((not be < (right)) and (not be < (right + 1)))
+    //               ^
+    def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]): Matcher[T] =
+      apply(matchers.be(resultOfLessThanComparison))
+
+    def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]): Matcher[T] =
+      apply(matchers.be(resultOfGreaterThanComparison))
+
+    def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]): Matcher[T] =
+      apply(matchers.be(resultOfLessThanOrEqualToComparison))
+
+    def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]): Matcher[T] =
+      apply(matchers.be(resultOfGreaterThanOrEqualToComparison))
   }
 
   val not = new NotWord
