@@ -864,6 +864,54 @@ trait Matchers extends Assertions { matchers =>
           )
         )
     }
+
+    def be(comparison: ResultOfLessThanOrEqualToComparison[T]) {
+      if (comparison(left) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotLessThanOrEqualTo" else "wasLessThanOrEqualTo",
+            left,
+            comparison.right
+          )
+        )
+      }
+    }
+
+    def be(comparison: ResultOfGreaterThanOrEqualToComparison[T]) {
+      if (comparison(left) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotGreaterThanOrEqualTo" else "wasGreaterThanOrEqualTo",
+            left,
+            comparison.right
+          )
+        )
+      }
+    }
+
+    def be(comparison: ResultOfLessThanComparison[T]) {
+      if (comparison(left) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotLessThan" else "wasLessThan",
+            left,
+            comparison.right
+          )
+        )
+      }
+    }
+
+    def be(comparison: ResultOfGreaterThanComparison[T]) {
+      if (comparison(left) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotGreaterThan" else "wasGreaterThan",
+            left,
+            comparison.right
+          )
+        )
+      }
+    }
   }
 
   protected class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
@@ -1345,5 +1393,33 @@ trait Matchers extends Assertions { matchers =>
         )
     }
   }
+
+  protected class ResultOfLessThanComparison[T <% Ordered[T]](val right: T) {
+    def apply(left: T): Boolean = left < right
+  }
+
+  protected class ResultOfGreaterThanComparison[T <% Ordered[T]](val right: T) {
+    def apply(left: T): Boolean = left > right
+  }
+
+  protected class ResultOfLessThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+    def apply(left: T): Boolean = left <= right
+  }
+
+  protected class ResultOfGreaterThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+    def apply(left: T): Boolean = left >= right
+  }
+
+  protected def <[T <% Ordered[T]] (right: T): ResultOfLessThanComparison[T] =
+    new ResultOfLessThanComparison(right)
+
+  protected def >[T <% Ordered[T]] (right: T): ResultOfGreaterThanComparison[T] =
+    new ResultOfGreaterThanComparison(right)
+
+  protected def <=[T <% Ordered[T]] (right: T): ResultOfLessThanOrEqualToComparison[T] =
+    new ResultOfLessThanOrEqualToComparison(right)
+
+  protected def >=[T <% Ordered[T]] (right: T): ResultOfGreaterThanOrEqualToComparison[T] =
+    new ResultOfGreaterThanOrEqualToComparison(right)
 }
 

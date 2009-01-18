@@ -200,11 +200,14 @@
         <zip zipfile="scalatest-${release}.zip" basedir="${zipper}" />
     </target>
 
-    <target name="test" depends="compile">
+    <target name="copyprops">
         <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
         <copy todir="${jar.contents}/images">
             <fileset dir="${src}/images" />
         </copy>
+    </target>
+
+    <target name="test" depends="compile,copyprops">
         <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
 
             <arg value="-p" />
@@ -227,7 +230,7 @@
         </java>
     </target>
 
-    <target name="bvtest" depends="dist">
+    <target name="bvtest" depends="compile,copyprops">
         <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
 
             <arg value="-p" />
@@ -237,21 +240,10 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.StackSpec" />
+            <arg value="org.scalatest.ShouldOrderedSpec" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.SpecSuite" />
-
-<!--
-            <arg value="-s" />
-            <arg value="org.scalatest.SpecSuite" />
-
-            <arg value="-s" />
-            <arg value="org.scalatest.StackSpec" />
-
-            <arg value="-s" />
-            <arg value="org.scalatest.PrintReporterSpec" />
--->
+            <arg value="org.scalatest.ShouldEqualSpec" />
         </java>
     </target>
 
