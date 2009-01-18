@@ -57,6 +57,18 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
         check((left: String, right: String) => left >= right ==> returnsNormally(left should be >= (right)))
       }
 
+      it("should do nothing if the comparison fails and used with not") {
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should not be < (right)))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should not be <= (right)))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should not be > (right)))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should not be >= (right)))
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should not (be < (right))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should not (be <= (right))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should not (be > (right))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should not (be >= (right))))
+      }
 /*
       it("should do nothing if array size does not match and used with should not") {
         Array(1, 2) should not { have size (3) }
