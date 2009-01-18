@@ -27,9 +27,34 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
 
     describe("on Int") {
 
-      it("should do nothing if array size matches specified size") {
-        1 should be < (2)
+      it("should do nothing if the comparison holds true") {
         check((left: Int, right: Int) => left < right ==> returnsNormally(left should be < (right)))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should be <= (right)))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should be > (right)))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should be >= (right)))
+      }
+
+      it("should do nothing if the comparison fails and used with not") {
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should not be < (right)))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should not be <= (right)))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should not be > (right)))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should not be >= (right)))
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should not (be < (right))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should not (be <= (right))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should not (be > (right))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should not (be >= (right))))
+      }
+    }
+
+    describe("on String") {
+
+      it("should do nothing if the comparison holds true") {
+        check((left: String, right: String) => left < right ==> returnsNormally(left should be < (right)))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should be <= (right)))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should be > (right)))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should be >= (right)))
       }
 
 /*
