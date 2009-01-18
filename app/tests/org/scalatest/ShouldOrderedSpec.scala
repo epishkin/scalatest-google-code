@@ -46,6 +46,26 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
         check((left: Int, right: Int) => left <= right ==> returnsNormally(left should not (be > (right))))
         check((left: Int, right: Int) => left < right ==> returnsNormally(left should not (be >= (right))))
       }
+
+      it("should do nothing when comparison succeeds and used in a logical-and expression") {
+
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((be < (right)) and (be < (right + 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and (be < (right + 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and be < (right + 1))))
+
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should ((be <= (right)) and (be <= (right + 1)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right) and (be <= (right + 1)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right) and be <= (right + 1))))
+
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((be > (right)) and (be > (right - 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right) and (be > (right - 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right) and be > (right - 1))))
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should ((be >= (right)) and (be >= (right - 1)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right) and (be >= (right - 1)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right) and be >= (right - 1))))
+      }
+
     }
 
     describe("on String") {
@@ -70,19 +90,6 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
         check((left: String, right: String) => left < right ==> returnsNormally(left should not (be >= (right))))
       }
 /*
-      it("should do nothing if array size does not match and used with should not") {
-        Array(1, 2) should not { have size (3) }
-        Array(1, 2) should not have size (3)
-        check((arr: Array[Int], i: Int) => i != arr.size ==> returnsNormally(arr should not { have size (i) }))
-        check((arr: Array[Int], i: Int) => i != arr.size ==> returnsNormally(arr should not have size (i)))
-      }
-
-      it("should do nothing when array size matches and used in a logical-and expression") {
-        Array(1, 2) should { have size (2) and (have size (3 - 1)) }
-        Array(1, 2) should ((have size (2)) and (have size (3 - 1)))
-        Array(1, 2) should (have size (2) and have size (3 - 1))
-      }
-
       it("should do nothing when array size matches and used in a logical-or expression") { Array(1, 2) should { have size (77) or (have size (3 - 1)) }
         Array(1, 2) should ((have size (77)) or (have size (3 - 1)))
         Array(1, 2) should (have size (77) or have size (3 - 1))
