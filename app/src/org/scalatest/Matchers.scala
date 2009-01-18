@@ -259,6 +259,19 @@ trait Matchers extends Assertions { matchers =>
             }
           )
         )
+
+      def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
+        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanComparison)))
+
+      def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
+        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
+
+      def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
+        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
+
+      def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
+        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
+
 /*
       // By-name parameter is to get this to short circuit:
       // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})

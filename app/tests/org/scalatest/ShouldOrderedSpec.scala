@@ -106,6 +106,25 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
         check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((not be >= (right)) and (not be >= (right)))))
         check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not be >= (right) and not be >= (right))))
       }
+
+      it("should do nothing when comparison fails and used in a logical-or expression with not") {
+
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not (be >= (right)) or not (be < (right)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((not be >= (right)) or (not be < (right)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not be >= (right) or not be < (right))))
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (not (be > (right)) or not (be <= (right)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should ((not be > (right)) or (not be <= (right)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (not be > (right) or not be <= (right))))
+
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not (be <= (right)) or not (be > (right)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((not be <= (right)) or (not be > (right)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not be <= (right) or not be > (right))))
+
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (not (be < (right)) or not (be >= (right)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should ((not be < (right)) or (not be >= (right)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (not be < (right) or not be >= (right))))
+      }
     }
 
     describe("on String") {
@@ -189,13 +208,26 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
         check((left: String, right: String) => left < right ==> returnsNormally(left should ((not be >= (right)) and (not be >= (right)))))
         check((left: String, right: String) => left < right ==> returnsNormally(left should (not be >= (right) and not be >= (right))))
       }
-/*
-      it("should do nothing when array size doesn't match and used in a logical-or expression with not") {
-        Array(1, 2) should { not { have size (2) } or not { have size (3) }}
-        Array(1, 2) should ((not have size (2)) or (not have size (3)))
-        Array(1, 2) should (not have size (2) or not have size (3))
-      }
 
+      it("should do nothing when comparison fails and used in a logical-or expression with not") {
+
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (not (be >= (right)) or not (be < (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should ((not be >= (right)) or (not be < (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (not be >= (right) or not be < (right))))
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not (be > (right)) or not (be <= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should ((not be > (right)) or (not be <= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not be > (right) or not be <= (right))))
+
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (not (be <= (right)) or not (be > (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should ((not be <= (right)) or (not be > (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (not be <= (right) or not be > (right))))
+
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (not (be < (right)) or not (be >= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should ((not be < (right)) or (not be >= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (not be < (right) or not be >= (right))))
+      }
+/*
       it("should throw AssertionError if array size does not match specified size") {
         val caught1 = intercept[AssertionError] {
           Array(1, 2) should have size (3)
