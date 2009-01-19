@@ -180,6 +180,7 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
         check((left: Int, right: Int) => left >= right ==> throwsAssertionError(left should not be >= (right)))
       }
 
+      // Comparison with and
       it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-and expression") {
 
         val caught1 = intercept[AssertionError] {
@@ -250,6 +251,79 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
           7 should (be >= (7) and be >= (8))
         }
         assert(caught3.getMessage === "7 was greater than or equal to 7, but 7 was not greater than or equal to 8")
+      }
+
+      // Comparison with or
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          2 should { be < (2) or (be < (1)) }
+        }
+        assert(caught1.getMessage === "2 was not less than 2, and 2 was not less than 1")
+
+        val caught2 = intercept[AssertionError] {
+          2 should ((be < (2)) or (be < (1)))
+        }
+        assert(caught2.getMessage === "2 was not less than 2, and 2 was not less than 1")
+
+        val caught3 = intercept[AssertionError] {
+          2 should (be < (2) or be < (1))
+        }
+        assert(caught3.getMessage === "2 was not less than 2, and 2 was not less than 1")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          1 should { be > (5) or (be > (12)) }
+        }
+        assert(caught1.getMessage === "1 was not greater than 5, and 1 was not greater than 12")
+
+        val caught2 = intercept[AssertionError] {
+          1 should ((be > (5)) or (be > (12)))
+        }
+        assert(caught2.getMessage === "1 was not greater than 5, and 1 was not greater than 12")
+
+        val caught3 = intercept[AssertionError] {
+          1 should (be > (5) or be > (12))
+        }
+        assert(caught3.getMessage === "1 was not greater than 5, and 1 was not greater than 12")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          3 should { be <= (2) or (be <= (1)) }
+        }
+        assert(caught1.getMessage === "3 was not less than or equal to 2, and 3 was not less than or equal to 1")
+
+        val caught2 = intercept[AssertionError] {
+          3 should ((be <= (2)) or (be <= (1)))
+        }
+        assert(caught2.getMessage === "3 was not less than or equal to 2, and 3 was not less than or equal to 1")
+
+        val caught3 = intercept[AssertionError] {
+          3 should (be <= (2) or be <= (1))
+        }
+        assert(caught3.getMessage === "3 was not less than or equal to 2, and 3 was not less than or equal to 1")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          6 should { be >= (7) or (be >= (8)) }
+        }
+        assert(caught1.getMessage === "6 was not greater than or equal to 7, and 6 was not greater than or equal to 8")
+
+        val caught2 = intercept[AssertionError] {
+          6 should ((be >= (7)) or (be >= (8)))
+        }
+        assert(caught2.getMessage === "6 was not greater than or equal to 7, and 6 was not greater than or equal to 8")
+
+        val caught3 = intercept[AssertionError] {
+          6 should (be >= (7) or be >= (8))
+        }
+        assert(caught3.getMessage === "6 was not greater than or equal to 7, and 6 was not greater than or equal to 8")
       }
     }
 
