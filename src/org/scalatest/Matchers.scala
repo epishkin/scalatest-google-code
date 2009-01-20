@@ -264,17 +264,22 @@ trait Matchers extends Assertions { matchers =>
           )
         )
 
+// I don't believe this is working right, even though the tests pass. Why would it be different from the and ones?
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
-        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanComparison)))
+        matchersWrapper.or(matchers.not.be(resultOfLessThanComparison))
+        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanComparison)))
 
       def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
-        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
+        matchersWrapper.or(matchers.not.be(resultOfGreaterThanComparison))
+        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
 
       def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
-        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
+        matchersWrapper.or(matchers.not.be(resultOfLessThanOrEqualToComparison))
+        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
-        matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
+        matchersWrapper.or(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
+        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
 
 /*
       // By-name parameter is to get this to short circuit:
