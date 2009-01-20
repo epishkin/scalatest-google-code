@@ -156,19 +156,15 @@ trait Matchers extends Assertions { matchers =>
         )
 
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
- //       matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanComparison))) TODO: DELETE these if the other one works
         matchersWrapper.and(matchers.not.be(resultOfLessThanComparison))
 
       def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
-        // matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
         matchersWrapper.and(matchers.not.be(resultOfGreaterThanComparison))
 
       def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
-        // matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
         matchersWrapper.and(matchers.not.be(resultOfLessThanOrEqualToComparison))
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
-        // matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
         matchersWrapper.and(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
 
 /*
@@ -264,22 +260,17 @@ trait Matchers extends Assertions { matchers =>
           )
         )
 
-// I don't believe this is working right, even though the tests pass. Why would it be different from the and ones?
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfLessThanComparison))
-        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanComparison)))
 
       def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanComparison))
-        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
 
       def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfLessThanOrEqualToComparison))
-        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
-        // matchersWrapper.or(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
 
 /*
       // By-name parameter is to get this to short circuit:
