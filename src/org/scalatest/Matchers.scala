@@ -156,16 +156,20 @@ trait Matchers extends Assertions { matchers =>
         )
 
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
-        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanComparison)))
+ //       matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanComparison))) TODO: DELETE these if the other one works
+        matchersWrapper.and(matchers.not.be(resultOfLessThanComparison))
 
       def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
-        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
+        // matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanComparison)))
+        matchersWrapper.and(matchers.not.be(resultOfGreaterThanComparison))
 
       def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
-        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
+        // matchersWrapper.and(matchers.not.apply(matchers.be(resultOfLessThanOrEqualToComparison)))
+        matchersWrapper.and(matchers.not.be(resultOfLessThanOrEqualToComparison))
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
-        matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
+        // matchersWrapper.and(matchers.not.apply(matchers.be(resultOfGreaterThanOrEqualToComparison)))
+        matchersWrapper.and(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
 
 /*
       This won't override because the types are the same after erasure. See note on definition of ResultOfLengthOrSizeWordApplication
@@ -597,7 +601,7 @@ trait Matchers extends Assertions { matchers =>
               val methodArray =
                 for (method <- left.getClass.getMethods; if isMethodToInvoke(method))
                  yield method
-              //YYY
+
               val fieldArray =
                 for (field <- left.getClass.getFields; if isFieldToAccess(field))
                  yield field // rhymes: code as poetry
@@ -668,7 +672,7 @@ trait Matchers extends Assertions { matchers =>
               val methodArray =
                 for (method <- left.getClass.getMethods; if isMethodToInvoke(method))
                  yield method
-              //YYY
+
               val fieldArray =
                 for (field <- left.getClass.getFields; if isFieldToAccess(field))
                  yield field // rhymes: code as poetry
@@ -1291,17 +1295,53 @@ trait Matchers extends Assertions { matchers =>
     // These next four are for things like not be </>/<=/>=:
     // left should ((not be < (right)) and (not be < (right + 1)))
     //               ^
-    def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]): Matcher[T] =
-      apply(matchers.be(resultOfLessThanComparison))
+    def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            !resultOfLessThanComparison(left),
+            FailureMessages("wasLessThan", left, resultOfLessThanComparison.right),
+            FailureMessages("wasNotLessThan", left, resultOfLessThanComparison.right)
+          )
+      }
+    }
 
-    def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]): Matcher[T] =
-      apply(matchers.be(resultOfGreaterThanComparison))
+    /// XXX must do the same for these as above
+    def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]): Matcher[T] = {
+      // apply(matchers.be(resultOfGreaterThanComparison))
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            !resultOfGreaterThanComparison(left),
+            FailureMessages("wasGreaterThan", left, resultOfGreaterThanComparison.right),
+            FailureMessages("wasNotGreaterThan", left, resultOfGreaterThanComparison.right)
+          )
+      }
+    }
 
-    def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]): Matcher[T] =
-      apply(matchers.be(resultOfLessThanOrEqualToComparison))
+    def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]): Matcher[T] = {
+      // apply(matchers.be(resultOfLessThanOrEqualToComparison))
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            !resultOfLessThanOrEqualToComparison(left),
+            FailureMessages("wasLessThanOrEqualTo", left, resultOfLessThanOrEqualToComparison.right),
+            FailureMessages("wasNotLessThanOrEqualTo", left, resultOfLessThanOrEqualToComparison.right)
+          )
+      }
+    }
 
-    def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]): Matcher[T] =
-      apply(matchers.be(resultOfGreaterThanOrEqualToComparison))
+    def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]): Matcher[T] = {
+      // apply(matchers.be(resultOfGreaterThanOrEqualToComparison)) TODO drop these if it works.
+      new Matcher[T] {
+        def apply(left: T) =
+          MatcherResult(
+            !resultOfGreaterThanOrEqualToComparison(left),
+            FailureMessages("wasGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right),
+            FailureMessages("wasNotGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right)
+          )
+      }
+    }
   }
 
   val not = new NotWord
