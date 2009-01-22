@@ -94,10 +94,11 @@ trait Matchers extends Assertions { matchers =>
      * @param the matcher to logical-and with this matcher
      * @return a matcher that performs the logical-and of this and the passed matcher
      */
-    def and[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+    def and[U <: T](rightMatcher: Matcher[U]): Matcher[U] =
       new Matcher[U] {
         def apply(left: U) = {
           val leftMatcherResult = leftMatcher(left)
+          val rightMatcherResult = rightMatcher(left) // Not short circuiting anymore
           if (!leftMatcherResult.matches)
             MatcherResult(
               false,
@@ -105,7 +106,6 @@ trait Matchers extends Assertions { matchers =>
               leftMatcherResult.negativeFailureMessage
             )
           else {
-            val rightMatcherResult = rightMatcher(left)
             MatcherResult(
               rightMatcherResult.matches,
               Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.failureMessage),
@@ -116,12 +116,10 @@ trait Matchers extends Assertions { matchers =>
       }
 
     class AndHaveWord {
-      // the by-name is to make it short circuit.
-      def length(expectedLength: => Long) = and(have.length(expectedLength))
+      def length(expectedLength: Long) = and(have.length(expectedLength))
       // Array(1, 2) should (have size (2) and have size (3 - 1))
       //                                       ^
-      // the by-name is to make it short circuit.
-      def size(expectedSize: => Long) = and(have.size(expectedSize))
+      def size(expectedSize: Long) = and(have.size(expectedSize))
     }
 
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
@@ -129,8 +127,7 @@ trait Matchers extends Assertions { matchers =>
     class AndNotWord {
 
       // 1 should (not equal (2) and not equal (3 - 1)) The second half, after "not"
-      // the by-name parametere is to get this to short circuit
-      def equal(any: => Any) =
+      def equal(any: Any) =
         matchersWrapper.and(matchers.not.apply(matchers.equal(any)))
 
       // By-name parameter is to get this to short circuit:
@@ -142,8 +139,8 @@ trait Matchers extends Assertions { matchers =>
       // of the superclass type, ResultOfLengthOrSizeWordApplication, and then do a pattern match. At first I tried
       // to do it the OO way and have an rather ugly expectedLengthOrSize val set by each subclass, but I needed to
       // konw whether it was length or size to be able to call length or size to get the appropriate error message on
-      // a failure.
-      def have(resultOfLengthOrSizeWordApplication: => ResultOfLengthOrSizeWordApplication) =
+      // a failure. TODO: Since I'm not short circuiting anymore, can I simplify this?
+      def have(resultOfLengthOrSizeWordApplication: ResultOfLengthOrSizeWordApplication) =
         matchersWrapper.and(
           matchers.not.apply(
             resultOfLengthOrSizeWordApplication match {
@@ -168,6 +165,7 @@ trait Matchers extends Assertions { matchers =>
         matchersWrapper.and(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
 
 /*
+TODO: Ah, maybe this was the simplification
       This won't override because the types are the same after erasure. See note on definition of ResultOfLengthOrSizeWordApplication
       // By-name parameter is to get this to short circuit:
       // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
@@ -207,10 +205,11 @@ trait Matchers extends Assertions { matchers =>
      * @param the matcher to logical-or with this matcher
      * @return a matcher that performs the logical-or of this and the passed matcher
      */
-    def or[U <: T](rightMatcher: => Matcher[U]): Matcher[U] =
+    def or[U <: T](rightMatcher: Matcher[U]): Matcher[U] =
       new Matcher[U] {
         def apply(left: U) = {
           val leftMatcherResult = leftMatcher(left)
+          val rightMatcherResult = rightMatcher(left) // Not short circuiting anymore
           if (leftMatcherResult.matches)
             MatcherResult(
               true,
@@ -218,7 +217,6 @@ trait Matchers extends Assertions { matchers =>
               leftMatcherResult.failureMessage
             )
           else {
-            val rightMatcherResult = rightMatcher(left)
             MatcherResult(
               rightMatcherResult.matches,
               Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.failureMessage),
@@ -229,13 +227,11 @@ trait Matchers extends Assertions { matchers =>
       }
 
     class OrHaveWord {
-      // the by-name is to make it short circuit.
-      def length(expectedLength: => Long) = or(have.length(expectedLength))
+      def length(expectedLength: Long) = or(have.length(expectedLength))
 
       // Array(1, 2) should (have size (2) and have size (3 - 1))
       //                                       ^
-      // the by-name is to make it short circuit.
-      def size(expectedSize: => Long) = or(have.size(expectedSize))
+      def size(expectedSize: Long) = or(have.size(expectedSize))
     }
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
@@ -243,12 +239,11 @@ trait Matchers extends Assertions { matchers =>
     // This is not yet short-circuiting. Need by-name params for things passed here.
     class OrNotWord {
 
-      // The by-name parameter is to get this to short circuit
-      def equal(any: => Any) =
+      def equal(any: Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
 
       // See explanation in have for AndNotWord
-      def have(resultOfLengthOrSizeWordApplication: => ResultOfLengthOrSizeWordApplication) =
+      def have(resultOfLengthOrSizeWordApplication: ResultOfLengthOrSizeWordApplication) =
         matchersWrapper.or(
           matchers.not.apply(
             resultOfLengthOrSizeWordApplication match {
@@ -273,6 +268,7 @@ trait Matchers extends Assertions { matchers =>
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
 
 /*
+TODO: Do the same simplification as above
       // By-name parameter is to get this to short circuit:
       // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
       def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =

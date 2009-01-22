@@ -240,10 +240,15 @@
             <arg value="-o" />
 
             <arg value="-s" />
+            <arg value="org.scalatest.LogicalMatcherExprSpec" />
+
+<!--
+            <arg value="-s" />
             <arg value="org.scalatest.ShouldOrderedSpec" />
 
             <arg value="-s" />
             <arg value="org.scalatest.ShouldEqualSpec" />
+-->
         </java>
     </target>
 
