@@ -1,0 +1,1094 @@
+/*
+ * Copyright 2001-2008 Artima, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.scalatest
+
+import prop.Checkers
+import org.scalacheck._
+import Arbitrary._
+import Prop._
+
+class FullyMatchSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+
+/*
+s should include substring t
+s should include regex t
+s should startWith substring t
+s should startWith regex t
+s should endWith substring t
+s should endWith regex t
+s should fullyMatch regex t
+*/
+
+  describe("The fullyMatch regex syntax") {
+
+    val decimal = """(-)?(\d+)(\.\d*)?"""
+    val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
+
+    it("should do nothing if the string fully matches the regular expression specified as a string") {
+      "1.7" should fullyMatch regex ("1.7")
+      "1.7" should fullyMatch regex (decimal)
+      "-1.8" should fullyMatch regex (decimal)
+      "8" should fullyMatch regex (decimal)
+      "1." should fullyMatch regex (decimal)
+    }
+
+    it("should do nothing if the string does not fully match the regular expression specified as a string when used with not") {
+      "eight" should not { fullyMatch regex (decimal) }
+      "1.eight" should not { fullyMatch regex (decimal) }
+      "one.8" should not { fullyMatch regex (decimal) }
+      "1.8-" should not { fullyMatch regex (decimal) }
+    }
+
+    it("should do nothing if the string does not fully match the regular expression specified as a string when used in a logical-and expression") {
+      "1.7" should (fullyMatch regex (decimal) and (fullyMatch regex (decimal)))
+      "1.7" should ((fullyMatch regex (decimal)) and (fullyMatch regex (decimal)))
+      "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
+    }
+  }
+
+/* For later
+      "1.7" should { fullyMatch regex (decimal) and equal ("1.7") }
+      "1.7++" should not { fullyMatch regex (decimal) and equal ("1.7") }
+*/
+
+/*
+    it("should do nothing if the string matches the regular expression specified as a Regex") {
+      "1.7" should fullyMatch regex (decimalRegex)
+      "-1.8" should fullyMatch regex (decimalRegex)
+      "8" should fullyMatch regex (decimalRegex)
+      "1." should fullyMatch regex (decimalRegex)
+    }
+
+    it("should do nothing if the string does not match the regular expression specified as a Regex when used with not") {
+      "eight" should not { fullyMatch regex (decimalRegex) }
+      "1.eight" should not { fullyMatch regex (decimalRegex) }
+      "one.8" should not { fullyMatch regex (decimalRegex) }
+      "1.8-" should not { fullyMatch regex (decimalRegex) }
+      "1.7" should { fullyMatch regex (decimalRegex) and equal ("1.7") }
+      "1.7++" should not { fullyMatch regex (decimalRegex) and equal ("1.7") }
+    }
+
+    it("should throw AssertionError if the string does not match the regular expression specified as a string") {
+      val caught1 = intercept[AssertionError] {
+        "1.7" should not { fullyMatch regex ("1.7") }
+      }
+      assert(caught1.getMessage === "\"1.7\" fully matched the regular expression 1.7")
+
+      val caught2 = intercept[AssertionError] {
+        "1.7" should not { fullyMatch regex (decimal) }
+      }
+      assert(caught2.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught3 = intercept[AssertionError] {
+        "-1.8" should not { fullyMatch regex (decimal) }
+      }
+      assert(caught3.getMessage === "\"-1.8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught4 = intercept[AssertionError] {
+        "8" should not { fullyMatch regex (decimal) }
+      }
+      assert(caught4.getMessage === "\"8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught5 = intercept[AssertionError] {
+        "1." should not { fullyMatch regex (decimal) }
+      }
+      assert(caught5.getMessage === "\"1.\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught6 = intercept[AssertionError] {
+        "eight" should fullyMatch regex (decimal)
+      }
+      assert(caught6.getMessage === "\"eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught7 = intercept[AssertionError] {
+        "1.eight" should fullyMatch regex (decimal)
+      }
+      assert(caught7.getMessage === "\"1.eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught8 = intercept[AssertionError] {
+        "one.8" should fullyMatch regex (decimal)
+      }
+      assert(caught8.getMessage === "\"one.8\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught9 = intercept[AssertionError] {
+        "1.8-" should fullyMatch regex (decimal)
+      }
+      assert(caught9.getMessage === "\"1.8-\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught10 = intercept[AssertionError] {
+        "1.7" should not { fullyMatch regex (decimal) and equal ("1.7") }
+      }
+      assert(caught10.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" equaled \"1.7\"")
+
+      val caught11 = intercept[AssertionError] {
+        "1.7++" should { fullyMatch regex (decimal) and equal ("1.7") }
+      }
+      assert(caught11.getMessage === "\"1.7++\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+    }
+
+    it("should throw AssertionError if the string does not match the regular expression specified as a Regex") {
+      val caught2 = intercept[AssertionError] {
+        "1.7" should not { fullyMatch regex (decimalRegex) }
+      }
+      assert(caught2.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught3 = intercept[AssertionError] {
+        "-1.8" should not { fullyMatch regex (decimalRegex) }
+      }
+      assert(caught3.getMessage === "\"-1.8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught4 = intercept[AssertionError] {
+        "8" should not { fullyMatch regex (decimalRegex) }
+      }
+      assert(caught4.getMessage === "\"8\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught5 = intercept[AssertionError] {
+        "1." should not { fullyMatch regex (decimalRegex) }
+      }
+      assert(caught5.getMessage === "\"1.\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught6 = intercept[AssertionError] {
+        "eight" should fullyMatch regex (decimalRegex)
+      }
+      assert(caught6.getMessage === "\"eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught7 = intercept[AssertionError] {
+        "1.eight" should fullyMatch regex (decimalRegex)
+      }
+      assert(caught7.getMessage === "\"1.eight\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught8 = intercept[AssertionError] {
+        "one.8" should fullyMatch regex (decimalRegex)
+      }
+      assert(caught8.getMessage === "\"one.8\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught9 = intercept[AssertionError] {
+        "1.8-" should fullyMatch regex (decimalRegex)
+      }
+      assert(caught9.getMessage === "\"1.8-\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+
+      val caught10 = intercept[AssertionError] {
+        "1.7" should not { fullyMatch regex (decimalRegex) and equal ("1.7") }
+      }
+      assert(caught10.getMessage === "\"1.7\" fully matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" equaled \"1.7\"")
+
+      val caught11 = intercept[AssertionError] {
+        "1.7++" should { fullyMatch regex (decimalRegex) and equal ("1.7") }
+      }
+      assert(caught11.getMessage === "\"1.7++\" did not fully match the regular expression (-)?(\\d+)(\\.\\d*)?")
+    }
+*/
+/*
+  // Checking for a specific size
+  describe("The 'be >/</>=/<= (x)' syntax") {
+
+    describe("on Int") {
+
+      it("should do nothing if the comparison holds true") {
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should be < (right)))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should be <= (right)))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should be > (right)))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should be >= (right)))
+      }
+
+      it("should do nothing if the comparison fails and used with not") {
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should not be < (right)))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should not be <= (right)))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should not be > (right)))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should not be >= (right)))
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should not (be < (right))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should not (be <= (right))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should not (be > (right))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should not (be >= (right))))
+      }
+
+      it("should do nothing when comparison succeeds and used in a logical-and expression") {
+
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((be < (right)) and (be < (right + 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and (be < (right + 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and be < (right + 1))))
+
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should ((be <= (right)) and (be <= (right + 1)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right) and (be <= (right + 1)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right) and be <= (right + 1))))
+
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((be > (right)) and (be > (right - 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right) and (be > (right - 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right) and be > (right - 1))))
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should ((be >= (right)) and (be >= (right - 1)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right) and (be >= (right - 1)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right) and be >= (right - 1))))
+      }
+
+      it("should do nothing when array size matches and used in a logical-or expression") {
+
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((be < (right - 1)) or (be < (right + 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right - 1) or (be < (right + 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right - 1) or be < (right + 1))))
+
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should ((be <= (right - 1)) or (be <= (right + 1)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right - 1) or (be <= (right + 1)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right - 1) or be <= (right + 1))))
+
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((be > (right + 1)) or (be > (right - 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right + 1) or (be > (right - 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right + 1) or be > (right - 1))))
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should ((be >= (right + 1)) or (be >= (right - 1)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right + 1) or (be >= (right - 1)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right + 1) or be >= (right - 1))))
+
+        check((left: Int, right: Int) => returnsNormally(left should (be >= (right) or be < (right))))
+        check((left: Int, right: Int) => returnsNormally(left should (be > (right) or be <= (right))))
+      }
+
+      it("should do nothing when comparison fails and used in a logical-and expression with not") {
+
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not (be < (right)) and not (be < (right + 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((not be < (right)) and (not be < (right + 1)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not be < (right) and not be < (right + 1))))
+
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not (be <= (right)) and not (be <= (right)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((not be <= (right)) and (not be <= (right)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not be <= (right) and not be <= (right))))
+
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not (be > (right)) and not (be > (right - 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((not be > (right)) and (not be > (right - 1)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not be > (right) and not be > (right - 1))))
+
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not (be >= (right)) and not (be >= (right)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((not be >= (right)) and (not be >= (right)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not be >= (right) and not be >= (right))))
+      }
+
+      it("should do nothing when comparison fails and used in a logical-or expression with not") {
+
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not (be >= (right)) or not (be < (right)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((not be >= (right)) or (not be < (right)))))
+        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not be >= (right) or not be < (right))))
+
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (not (be > (right)) or not (be <= (right)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should ((not be > (right)) or (not be <= (right)))))
+        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (not be > (right) or not be <= (right))))
+
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not (be <= (right)) or not (be > (right)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((not be <= (right)) or (not be > (right)))))
+        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (not be <= (right) or not be > (right))))
+
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (not (be < (right)) or not (be >= (right)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should ((not be < (right)) or (not be >= (right)))))
+        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (not be < (right) or not be >= (right))))
+      }
+
+      it("should throw AssertionError if comparison does not succeed") {
+
+        val caught1 = intercept[AssertionError] {
+          1 should be < (1)
+        }
+        assert(caught1.getMessage === "1 was not less than 1")
+        check((left: Int, right: Int) => left >= right ==> throwsAssertionError(left should be < (right)))
+
+        val caught2 = intercept[AssertionError] {
+          2 should be <= (1)
+        }
+        assert(caught2.getMessage === "2 was not less than or equal to 1")
+        check((left: Int, right: Int) => left > right ==> throwsAssertionError(left should be <= (right)))
+
+        val caught3 = intercept[AssertionError] {
+          1 should be > (1)
+        }
+        assert(caught3.getMessage === "1 was not greater than 1")
+        check((left: Int, right: Int) => left <= right ==> throwsAssertionError(left should be > (right)))
+
+        val caught4 = intercept[AssertionError] {
+          1 should be >= (2)
+        }
+        assert(caught4.getMessage === "1 was not greater than or equal to 2")
+        check((left: Int, right: Int) => left < right ==> throwsAssertionError(left should be >= (right)))
+      }
+
+      it("should throw AssertionError if comparison succeeds but used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          1 should not be < (2)
+        }
+        assert(caught1.getMessage === "1 was less than 2")
+        check((left: Int, right: Int) => left < right ==> throwsAssertionError(left should not be < (right)))
+
+        val caught2 = intercept[AssertionError] {
+          1 should not be <= (1)
+        }
+        assert(caught2.getMessage === "1 was less than or equal to 1")
+        check((left: Int, right: Int) => left <= right ==> throwsAssertionError(left should not be <= (right)))
+
+        val caught3 = intercept[AssertionError] {
+          2 should not be > (1)
+        }
+        assert(caught3.getMessage === "2 was greater than 1")
+        check((left: Int, right: Int) => left > right ==> throwsAssertionError(left should not be > (right)))
+
+        val caught4 = intercept[AssertionError] {
+          1 should not be >= (1)
+        }
+        assert(caught4.getMessage === "1 was greater than or equal to 1")
+        check((left: Int, right: Int) => left >= right ==> throwsAssertionError(left should not be >= (right)))
+      }
+
+      // Comparison with and
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          2 should { be < (5) and (be < (2)) }
+        }
+        assert(caught1.getMessage === "2 was less than 5, but 2 was not less than 2")
+
+        val caught2 = intercept[AssertionError] {
+          2 should ((be < (5)) and (be < (2)))
+        }
+        assert(caught2.getMessage === "2 was less than 5, but 2 was not less than 2")
+
+        val caught3 = intercept[AssertionError] {
+          2 should (be < (5) and be < (2))
+        }
+        assert(caught3.getMessage === "2 was less than 5, but 2 was not less than 2")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          7 should { be > (5) and (be > (12)) }
+        }
+        assert(caught1.getMessage === "7 was greater than 5, but 7 was not greater than 12")
+
+        val caught2 = intercept[AssertionError] {
+          7 should ((be > (5)) and (be > (12)))
+        }
+        assert(caught2.getMessage === "7 was greater than 5, but 7 was not greater than 12")
+
+        val caught3 = intercept[AssertionError] {
+          7 should (be > (5) and be > (12))
+        }
+        assert(caught3.getMessage === "7 was greater than 5, but 7 was not greater than 12")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          2 should { be <= (2) and (be <= (1)) }
+        }
+        assert(caught1.getMessage === "2 was less than or equal to 2, but 2 was not less than or equal to 1")
+
+        val caught2 = intercept[AssertionError] {
+          2 should ((be <= (2)) and (be <= (1)))
+        }
+        assert(caught2.getMessage === "2 was less than or equal to 2, but 2 was not less than or equal to 1")
+
+        val caught3 = intercept[AssertionError] {
+          2 should (be <= (2) and be <= (1))
+        }
+        assert(caught3.getMessage === "2 was less than or equal to 2, but 2 was not less than or equal to 1")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          7 should { be >= (7) and (be >= (8)) }
+        }
+        assert(caught1.getMessage === "7 was greater than or equal to 7, but 7 was not greater than or equal to 8")
+
+        val caught2 = intercept[AssertionError] {
+          7 should ((be >= (7)) and (be >= (8)))
+        }
+        assert(caught2.getMessage === "7 was greater than or equal to 7, but 7 was not greater than or equal to 8")
+
+        val caught3 = intercept[AssertionError] {
+          7 should (be >= (7) and be >= (8))
+        }
+        assert(caught3.getMessage === "7 was greater than or equal to 7, but 7 was not greater than or equal to 8")
+      }
+
+      // Comparison with or
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          2 should { be < (2) or (be < (1)) }
+        }
+        assert(caught1.getMessage === "2 was not less than 2, and 2 was not less than 1")
+
+        val caught2 = intercept[AssertionError] {
+          2 should ((be < (2)) or (be < (1)))
+        }
+        assert(caught2.getMessage === "2 was not less than 2, and 2 was not less than 1")
+
+        val caught3 = intercept[AssertionError] {
+          2 should (be < (2) or be < (1))
+        }
+        assert(caught3.getMessage === "2 was not less than 2, and 2 was not less than 1")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          1 should { be > (5) or (be > (12)) }
+        }
+        assert(caught1.getMessage === "1 was not greater than 5, and 1 was not greater than 12")
+
+        val caught2 = intercept[AssertionError] {
+          1 should ((be > (5)) or (be > (12)))
+        }
+        assert(caught2.getMessage === "1 was not greater than 5, and 1 was not greater than 12")
+
+        val caught3 = intercept[AssertionError] {
+          1 should (be > (5) or be > (12))
+        }
+        assert(caught3.getMessage === "1 was not greater than 5, and 1 was not greater than 12")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          3 should { be <= (2) or (be <= (1)) }
+        }
+        assert(caught1.getMessage === "3 was not less than or equal to 2, and 3 was not less than or equal to 1")
+
+        val caught2 = intercept[AssertionError] {
+          3 should ((be <= (2)) or (be <= (1)))
+        }
+        assert(caught2.getMessage === "3 was not less than or equal to 2, and 3 was not less than or equal to 1")
+
+        val caught3 = intercept[AssertionError] {
+          3 should (be <= (2) or be <= (1))
+        }
+        assert(caught3.getMessage === "3 was not less than or equal to 2, and 3 was not less than or equal to 1")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          6 should { be >= (7) or (be >= (8)) }
+        }
+        assert(caught1.getMessage === "6 was not greater than or equal to 7, and 6 was not greater than or equal to 8")
+
+        val caught2 = intercept[AssertionError] {
+          6 should ((be >= (7)) or (be >= (8)))
+        }
+        assert(caught2.getMessage === "6 was not greater than or equal to 7, and 6 was not greater than or equal to 8")
+
+        val caught3 = intercept[AssertionError] {
+          6 should (be >= (7) or be >= (8))
+        }
+        assert(caught3.getMessage === "6 was not greater than or equal to 7, and 6 was not greater than or equal to 8")
+      }
+
+      // Comparison with and not
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          5 should { not { be < (2) } and not { be < (6) }}
+        }
+        assert(caught1.getMessage === "5 was not less than 2, but 5 was less than 6")
+
+        val caught2 = intercept[AssertionError] {
+          5 should ((not be < (2)) and (not be < (6)))
+        }
+        assert(caught2.getMessage === "5 was not less than 2, but 5 was less than 6")
+
+        val caught3 = intercept[AssertionError] {
+          5 should (not be < (2) and not be < (6))
+        }
+        assert(caught3.getMessage === "5 was not less than 2, but 5 was less than 6")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          7 should { not { be > (8) } and not (be > (6)) }
+        }
+        assert(caught1.getMessage === "7 was not greater than 8, but 7 was greater than 6")
+
+        val caught2 = intercept[AssertionError] {
+          7 should ((not be > (8)) and (not be > (6)))
+        }
+        assert(caught2.getMessage === "7 was not greater than 8, but 7 was greater than 6")
+
+        val caught3 = intercept[AssertionError] {
+          7 should (not be > (8) and not be > (6))
+        }
+        assert(caught3.getMessage === "7 was not greater than 8, but 7 was greater than 6")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          2 should { not { be <= (1) } and (not be <= (2)) }
+        }
+        assert(caught1.getMessage === "2 was not less than or equal to 1, but 2 was less than or equal to 2")
+
+        val caught2 = intercept[AssertionError] {
+          2 should ((not be <= (1)) and (not be <= (2)))
+        }
+        assert(caught2.getMessage === "2 was not less than or equal to 1, but 2 was less than or equal to 2")
+
+        val caught3 = intercept[AssertionError] {
+          2 should (not be <= (1) and not be <= (2))
+        }
+        assert(caught3.getMessage === "2 was not less than or equal to 1, but 2 was less than or equal to 2")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          7 should { not { be >= (8) } and not (be >= (6)) }
+        }
+        assert(caught1.getMessage === "7 was not greater than or equal to 8, but 7 was greater than or equal to 6")
+
+        val caught2 = intercept[AssertionError] {
+          7 should ((not be >= (8)) and (not be >= (6)))
+        }
+        assert(caught2.getMessage === "7 was not greater than or equal to 8, but 7 was greater than or equal to 6")
+
+        val caught3 = intercept[AssertionError] {
+          7 should (not be >= (8) and not be >= (6))
+        }
+        assert(caught3.getMessage === "7 was not greater than or equal to 8, but 7 was greater than or equal to 6")
+      }
+
+      // Comparison with or not
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          5 should { not { be < (7) } or not { be < (8) }}
+        }
+        assert(caught1.getMessage === "5 was less than 7, and 5 was less than 8")
+
+        val caught2 = intercept[AssertionError] {
+          5 should ((not be < (7)) or (not be < (8)))
+        }
+        assert(caught2.getMessage === "5 was less than 7, and 5 was less than 8")
+
+        val caught3 = intercept[AssertionError] {
+          5 should (not be < (7) or not be < (8))
+        }
+        assert(caught3.getMessage === "5 was less than 7, and 5 was less than 8")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          7 should { not { be > (5) } or not (be > (6)) }
+        }
+        assert(caught1.getMessage === "7 was greater than 5, and 7 was greater than 6")
+
+        val caught2 = intercept[AssertionError] {
+          7 should ((not be > (5)) or (not be > (6)))
+        }
+        assert(caught2.getMessage === "7 was greater than 5, and 7 was greater than 6")
+
+        val caught3 = intercept[AssertionError] {
+          7 should (not be > (5) or not be > (6))
+        }
+        assert(caught3.getMessage === "7 was greater than 5, and 7 was greater than 6")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          2 should { not { be <= (3) } or (not be <= (2)) }
+        }
+        assert(caught1.getMessage === "2 was less than or equal to 3, and 2 was less than or equal to 2")
+
+        val caught2 = intercept[AssertionError] {
+          2 should ((not be <= (3)) or (not be <= (2)))
+        }
+        assert(caught2.getMessage === "2 was less than or equal to 3, and 2 was less than or equal to 2")
+
+        val caught3 = intercept[AssertionError] {
+          2 should (not be <= (3) or not be <= (2))
+        }
+        assert(caught3.getMessage === "2 was less than or equal to 3, and 2 was less than or equal to 2")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          8 should { not { be >= (7) } or not (be >= (6)) }
+        }
+        assert(caught1.getMessage === "8 was greater than or equal to 7, and 8 was greater than or equal to 6")
+
+        val caught2 = intercept[AssertionError] {
+          8 should ((not be >= (7)) or (not be >= (6)))
+        }
+        assert(caught2.getMessage === "8 was greater than or equal to 7, and 8 was greater than or equal to 6")
+
+        val caught3 = intercept[AssertionError] {
+          8 should (not be >= (7) or not be >= (6))
+        }
+        assert(caught3.getMessage === "8 was greater than or equal to 7, and 8 was greater than or equal to 6")
+      }
+    }
+
+    describe("on String") {
+
+      it("should do nothing if the comparison holds true") {
+        check((left: String, right: String) => left < right ==> returnsNormally(left should be < (right)))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should be <= (right)))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should be > (right)))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should be >= (right)))
+      }
+
+      it("should do nothing if the comparison fails and used with not") {
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should not be < (right)))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should not be <= (right)))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should not be > (right)))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should not be >= (right)))
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should not (be < (right))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should not (be <= (right))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should not (be > (right))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should not (be >= (right))))
+      }
+
+      it("should do nothing when comparison succeeds and used in a logical-and expression") {
+
+        check((left: String, right: String) => left < right ==> returnsNormally(left should ((be < (right)) and (be < (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) and (be < (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) and be < (right))))
+
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should ((be <= (right)) and (be <= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (be <= (right) and (be <= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (be <= (right) and be <= (right))))
+
+        check((left: String, right: String) => left > right ==> returnsNormally(left should ((be > (right)) and (be > (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (be > (right) and (be > (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (be > (right) and be > (right))))
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should ((be >= (right)) and (be >= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (be >= (right) and (be >= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (be >= (right) and be >= (right))))
+      }
+
+      it("should do nothing when array size matches and used in a logical-or expression") {
+
+        check((left: String, right: String) => left < right ==> returnsNormally(left should ((be < (right)) or (be < (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) or (be < (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) or be < (right))))
+
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should ((be <= (right)) or (be <= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (be <= (right) or (be <= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (be <= (right) or be <= (right))))
+
+        check((left: String, right: String) => left > right ==> returnsNormally(left should ((be > (right)) or (be > (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (be > (right) or (be > (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (be > (right) or be > (right))))
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should ((be >= (right)) or (be >= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (be >= (right) or (be >= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (be >= (right) or be >= (right))))
+
+        check((left: String, right: String) => returnsNormally(left should (be >= (right) or be < (right))))
+        check((left: String, right: String) => returnsNormally(left should (be > (right) or be <= (right))))
+      }
+
+      it("should do nothing when comparison fails and used in a logical-and expression with not") {
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not (be < (right)) and not (be < (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should ((not be < (right)) and (not be < (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not be < (right) and not be < (right))))
+
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (not (be <= (right)) and not (be <= (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should ((not be <= (right)) and (not be <= (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (not be <= (right) and not be <= (right))))
+
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (not (be > (right)) and not (be > (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should ((not be > (right)) and (not be > (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (not be > (right) and not be > (right))))
+
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (not (be >= (right)) and not (be >= (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should ((not be >= (right)) and (not be >= (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (not be >= (right) and not be >= (right))))
+      }
+
+      it("should do nothing when comparison fails and used in a logical-or expression with not") {
+
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (not (be >= (right)) or not (be < (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should ((not be >= (right)) or (not be < (right)))))
+        check((left: String, right: String) => left > right ==> returnsNormally(left should (not be >= (right) or not be < (right))))
+
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not (be > (right)) or not (be <= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should ((not be > (right)) or (not be <= (right)))))
+        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not be > (right) or not be <= (right))))
+
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (not (be <= (right)) or not (be > (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should ((not be <= (right)) or (not be > (right)))))
+        check((left: String, right: String) => left < right ==> returnsNormally(left should (not be <= (right) or not be > (right))))
+
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (not (be < (right)) or not (be >= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should ((not be < (right)) or (not be >= (right)))))
+        check((left: String, right: String) => left <= right ==> returnsNormally(left should (not be < (right) or not be >= (right))))
+      }
+
+      it("should throw AssertionError if comparison does not succeed") {
+
+        val caught1 = intercept[AssertionError] {
+          "aaa" should be < ("aaa")
+        }
+        assert(caught1.getMessage === "\"aaa\" was not less than \"aaa\"")
+        check((left: String, right: String) => left >= right ==> throwsAssertionError(left should be < (right)))
+
+        val caught2 = intercept[AssertionError] {
+          "bbb" should be <= ("aaa")
+        }
+        assert(caught2.getMessage === "\"bbb\" was not less than or equal to \"aaa\"")
+        check((left: String, right: String) => left > right ==> throwsAssertionError(left should be <= (right)))
+
+        val caught3 = intercept[AssertionError] {
+          "aaa" should be > ("aaa")
+        }
+        assert(caught3.getMessage === "\"aaa\" was not greater than \"aaa\"")
+        check((left: String, right: String) => left <= right ==> throwsAssertionError(left should be > (right)))
+
+        val caught4 = intercept[AssertionError] {
+          "aaa" should be >= ("bbb")
+        }
+        assert(caught4.getMessage === "\"aaa\" was not greater than or equal to \"bbb\"")
+        check((left: String, right: String) => left < right ==> throwsAssertionError(left should be >= (right)))
+      }
+
+      it("should throw AssertionError if comparison succeeds but used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "aaa" should not be < ("bbb")
+        }
+        assert(caught1.getMessage === "\"aaa\" was less than \"bbb\"")
+        check((left: String, right: String) => left < right ==> throwsAssertionError(left should not be < (right)))
+
+        val caught2 = intercept[AssertionError] {
+          "aaa" should not be <= ("aaa")
+        }
+        assert(caught2.getMessage === "\"aaa\" was less than or equal to \"aaa\"")
+        check((left: String, right: String) => left <= right ==> throwsAssertionError(left should not be <= (right)))
+
+        val caught3 = intercept[AssertionError] {
+          "bbb" should not be > ("aaa")
+        }
+        assert(caught3.getMessage === "\"bbb\" was greater than \"aaa\"")
+        check((left: String, right: String) => left > right ==> throwsAssertionError(left should not be > (right)))
+
+        val caught4 = intercept[AssertionError] {
+          "aaa" should not be >= ("aaa")
+        }
+        assert(caught4.getMessage === "\"aaa\" was greater than or equal to \"aaa\"")
+        check((left: String, right: String) => left >= right ==> throwsAssertionError(left should not be >= (right)))
+      }
+
+      // Comparison with and
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "2" should { be < ("5") and (be < ("2")) }
+        }
+        assert(caught1.getMessage === "\"2\" was less than \"5\", but \"2\" was not less than \"2\"")
+
+        val caught2 = intercept[AssertionError] {
+          "2" should ((be < ("5")) and (be < ("2")))
+        }
+        assert(caught2.getMessage === "\"2\" was less than \"5\", but \"2\" was not less than \"2\"")
+
+        val caught3 = intercept[AssertionError] {
+          "2" should (be < ("5") and be < ("2"))
+        }
+        assert(caught3.getMessage === "\"2\" was less than \"5\", but \"2\" was not less than \"2\"")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "7" should { be > ("5") and (be > ("9")) }
+        }
+        assert(caught1.getMessage === "\"7\" was greater than \"5\", but \"7\" was not greater than \"9\"")
+
+        val caught2 = intercept[AssertionError] {
+          "7" should ((be > ("5")) and (be > ("9")))
+        }
+        assert(caught2.getMessage === "\"7\" was greater than \"5\", but \"7\" was not greater than \"9\"")
+
+        val caught3 = intercept[AssertionError] {
+          "7" should (be > ("5") and be > ("9"))
+        }
+        assert(caught3.getMessage === "\"7\" was greater than \"5\", but \"7\" was not greater than \"9\"")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "2" should { be <= ("2") and (be <= ("1")) }
+        }
+        assert(caught1.getMessage === "\"2\" was less than or equal to \"2\", but \"2\" was not less than or equal to \"1\"")
+
+        val caught2 = intercept[AssertionError] {
+          "2" should ((be <= ("2")) and (be <= ("1")))
+        }
+        assert(caught2.getMessage === "\"2\" was less than or equal to \"2\", but \"2\" was not less than or equal to \"1\"")
+
+        val caught3 = intercept[AssertionError] {
+          "2" should (be <= ("2") and be <= ("1"))
+        }
+        assert(caught3.getMessage === "\"2\" was less than or equal to \"2\", but \"2\" was not less than or equal to \"1\"")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-and expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "7" should { be >= ("7") and (be >= ("8")) }
+        }
+        assert(caught1.getMessage === "\"7\" was greater than or equal to \"7\", but \"7\" was not greater than or equal to \"8\"")
+
+        val caught2 = intercept[AssertionError] {
+          "7" should ((be >= ("7")) and (be >= ("8")))
+        }
+        assert(caught2.getMessage === "\"7\" was greater than or equal to \"7\", but \"7\" was not greater than or equal to \"8\"")
+
+        val caught3 = intercept[AssertionError] {
+          "7" should (be >= ("7") and be >= ("8"))
+        }
+        assert(caught3.getMessage === "\"7\" was greater than or equal to \"7\", but \"7\" was not greater than or equal to \"8\"")
+      }
+
+      // Comparison with or
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "2" should { be < ("2") or (be < ("1")) }
+        }
+        assert(caught1.getMessage === "\"2\" was not less than \"2\", and \"2\" was not less than \"1\"")
+
+        val caught2 = intercept[AssertionError] {
+          "2" should ((be < ("2")) or (be < ("1")))
+        }
+        assert(caught2.getMessage === "\"2\" was not less than \"2\", and \"2\" was not less than \"1\"")
+
+        val caught3 = intercept[AssertionError] {
+          "2" should (be < ("2") or be < ("1"))
+        }
+        assert(caught3.getMessage === "\"2\" was not less than \"2\", and \"2\" was not less than \"1\"")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "1" should { be > ("5") or (be > ("9")) }
+        }
+        assert(caught1.getMessage === "\"1\" was not greater than \"5\", and \"1\" was not greater than \"9\"")
+
+        val caught2 = intercept[AssertionError] {
+          "1" should ((be > ("5")) or (be > ("9")))
+        }
+        assert(caught2.getMessage === "\"1\" was not greater than \"5\", and \"1\" was not greater than \"9\"")
+
+        val caught3 = intercept[AssertionError] {
+          "1" should (be > ("5") or be > ("9"))
+        }
+        assert(caught3.getMessage === "\"1\" was not greater than \"5\", and \"1\" was not greater than \"9\"")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "3" should { be <= ("2") or (be <= ("1")) }
+        }
+        assert(caught1.getMessage === "\"3\" was not less than or equal to \"2\", and \"3\" was not less than or equal to \"1\"")
+
+        val caught2 = intercept[AssertionError] {
+          "3" should ((be <= ("2")) or (be <= ("1")))
+        }
+        assert(caught2.getMessage === "\"3\" was not less than or equal to \"2\", and \"3\" was not less than or equal to \"1\"")
+
+        val caught3 = intercept[AssertionError] {
+          "3" should (be <= ("2") or be <= ("1"))
+        }
+        assert(caught3.getMessage === "\"3\" was not less than or equal to \"2\", and \"3\" was not less than or equal to \"1\"")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-or expression") {
+
+        val caught1 = intercept[AssertionError] {
+          "6" should { be >= ("7") or (be >= ("8")) }
+        }
+        assert(caught1.getMessage === "\"6\" was not greater than or equal to \"7\", and \"6\" was not greater than or equal to \"8\"")
+
+        val caught2 = intercept[AssertionError] {
+          "6" should ((be >= ("7")) or (be >= ("8")))
+        }
+        assert(caught2.getMessage === "\"6\" was not greater than or equal to \"7\", and \"6\" was not greater than or equal to \"8\"")
+
+        val caught3 = intercept[AssertionError] {
+          "6" should (be >= ("7") or be >= ("8"))
+        }
+        assert(caught3.getMessage === "\"6\" was not greater than or equal to \"7\", and \"6\" was not greater than or equal to \"8\"")
+      }
+
+      // Comparison with and not
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "5" should { not { be < ("2") } and not { be < ("6") }}
+        }
+        assert(caught1.getMessage === "\"5\" was not less than \"2\", but \"5\" was less than \"6\"")
+
+        val caught2 = intercept[AssertionError] {
+          "5" should ((not be < ("2")) and (not be < ("6")))
+        }
+        assert(caught2.getMessage === "\"5\" was not less than \"2\", but \"5\" was less than \"6\"")
+
+        val caught3 = intercept[AssertionError] {
+          "5" should (not be < ("2") and not be < ("6"))
+        }
+        assert(caught3.getMessage === "\"5\" was not less than \"2\", but \"5\" was less than \"6\"")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "7" should { not { be > ("8") } and not (be > ("6")) }
+        }
+        assert(caught1.getMessage === "\"7\" was not greater than \"8\", but \"7\" was greater than \"6\"")
+
+        val caught2 = intercept[AssertionError] {
+          "7" should ((not be > ("8")) and (not be > ("6")))
+        }
+        assert(caught2.getMessage === "\"7\" was not greater than \"8\", but \"7\" was greater than \"6\"")
+
+        val caught3 = intercept[AssertionError] {
+          "7" should (not be > ("8") and not be > ("6"))
+        }
+        assert(caught3.getMessage === "\"7\" was not greater than \"8\", but \"7\" was greater than \"6\"")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "2" should { not { be <= ("1") } and (not be <= ("2")) }
+        }
+        assert(caught1.getMessage === "\"2\" was not less than or equal to \"1\", but \"2\" was less than or equal to \"2\"")
+
+        val caught2 = intercept[AssertionError] {
+          "2" should ((not be <= ("1")) and (not be <= ("2")))
+        }
+        assert(caught2.getMessage === "\"2\" was not less than or equal to \"1\", but \"2\" was less than or equal to \"2\"")
+
+        val caught3 = intercept[AssertionError] {
+          "2" should (not be <= ("1") and not be <= ("2"))
+        }
+        assert(caught3.getMessage === "\"2\" was not less than or equal to \"1\", but \"2\" was less than or equal to \"2\"")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-and expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "7" should { not { be >= ("8") } and not (be >= ("6")) }
+        }
+        assert(caught1.getMessage === "\"7\" was not greater than or equal to \"8\", but \"7\" was greater than or equal to \"6\"")
+
+        val caught2 = intercept[AssertionError] {
+          "7" should ((not be >= ("8")) and (not be >= ("6")))
+        }
+        assert(caught2.getMessage === "\"7\" was not greater than or equal to \"8\", but \"7\" was greater than or equal to \"6\"")
+
+        val caught3 = intercept[AssertionError] {
+          "7" should (not be >= ("8") and not be >= ("6"))
+        }
+        assert(caught3.getMessage === "\"7\" was not greater than or equal to \"8\", but \"7\" was greater than or equal to \"6\"")
+      }
+
+      // Comparison with or not
+      it("should throw an assertion error when less than comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "5" should { not { be < ("7") } or not { be < ("8") }}
+        }
+        assert(caught1.getMessage === "\"5\" was less than \"7\", and \"5\" was less than \"8\"")
+
+        val caught2 = intercept[AssertionError] {
+          "5" should ((not be < ("7")) or (not be < ("8")))
+        }
+        assert(caught2.getMessage === "\"5\" was less than \"7\", and \"5\" was less than \"8\"")
+
+        val caught3 = intercept[AssertionError] {
+          "5" should (not be < ("7") or not be < ("8"))
+        }
+        assert(caught3.getMessage === "\"5\" was less than \"7\", and \"5\" was less than \"8\"")
+      }
+
+      it("should throw an assertion error when greater than comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "7" should { not { be > ("5") } or not (be > ("6")) }
+        }
+        assert(caught1.getMessage === "\"7\" was greater than \"5\", and \"7\" was greater than \"6\"")
+
+        val caught2 = intercept[AssertionError] {
+          "7" should ((not be > ("5")) or (not be > ("6")))
+        }
+        assert(caught2.getMessage === "\"7\" was greater than \"5\", and \"7\" was greater than \"6\"")
+
+        val caught3 = intercept[AssertionError] {
+          "7" should (not be > ("5") or not be > ("6"))
+        }
+        assert(caught3.getMessage === "\"7\" was greater than \"5\", and \"7\" was greater than \"6\"")
+      }
+
+      it("should throw an assertion error when less than or equal to comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "2" should { not { be <= ("3") } or (not be <= ("2")) }
+        }
+        assert(caught1.getMessage === "\"2\" was less than or equal to \"3\", and \"2\" was less than or equal to \"2\"")
+
+        val caught2 = intercept[AssertionError] {
+          "2" should ((not be <= ("3")) or (not be <= ("2")))
+        }
+        assert(caught2.getMessage === "\"2\" was less than or equal to \"3\", and \"2\" was less than or equal to \"2\"")
+
+        val caught3 = intercept[AssertionError] {
+          "2" should (not be <= ("3") or not be <= ("2"))
+        }
+        assert(caught3.getMessage === "\"2\" was less than or equal to \"3\", and \"2\" was less than or equal to \"2\"")
+      }
+
+      it("should throw an assertion error when greater than or equal to comparison doesn't succeed and used in a logical-or expression used with not") {
+
+        val caught1 = intercept[AssertionError] {
+          "8" should { not { be >= ("7") } or not (be >= ("6")) }
+        }
+        assert(caught1.getMessage === "\"8\" was greater than or equal to \"7\", and \"8\" was greater than or equal to \"6\"")
+
+        val caught2 = intercept[AssertionError] {
+          "8" should ((not be >= ("7")) or (not be >= ("6")))
+        }
+        assert(caught2.getMessage === "\"8\" was greater than or equal to \"7\", and \"8\" was greater than or equal to \"6\"")
+
+        val caught3 = intercept[AssertionError] {
+          "8" should (not be >= ("7") or not be >= ("6"))
+        }
+        assert(caught3.getMessage === "\"8\" was greater than or equal to \"7\", and \"8\" was greater than or equal to \"6\"")
+      }
+    }
+  }
+*/
+}
