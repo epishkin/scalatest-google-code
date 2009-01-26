@@ -240,7 +240,7 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.LogicalMatcherExprSpec" />
+            <arg value="org.scalatest.IncludeSubstringSpec" />
 
 <!--
             <arg value="-s" />
