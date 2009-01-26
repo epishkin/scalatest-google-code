@@ -124,6 +124,58 @@ trait Matchers extends Assertions { matchers =>
 
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
 
+    class AndFullyMatchWord {
+      // "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
+      //                                                         ^
+      def regex(regexString: String) = and(fullyMatch.regex(regexString))
+
+      // "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
+      //                                                              ^
+      def regex(regex: Regex) = and(fullyMatch.regex(regex))
+    }
+
+    def and(fullyMatchWord: FullyMatchWord): AndFullyMatchWord = new AndFullyMatchWord
+
+    class AndIncludeWord {
+      // "1.7" should (include regex (decimal) and include regex (decimal))
+      //                                                   ^
+      def regex(regexString: String) = and(include.regex(regexString))
+
+      // "1.7" should (include regex (decimalRegex) and include regex (decimalRegex))
+      //                                                        ^
+      def regex(regex: Regex) = and(include.regex(regex))
+
+      // "a1.7b" should (include substring ("1.7") and include substring ("1.7"))
+      //                                                       ^
+      def substring(expectedSubstring: String) = and(include.substring(expectedSubstring))
+    }
+
+    def and(includeWord: IncludeWord): AndIncludeWord = new AndIncludeWord
+
+    class AndStartWithWord {
+      // "1.7" should (startWith regex (decimal) and startWith regex (decimal))
+      //                                                        ^
+      def regex(regexString: String) = and(startWith.regex(regexString))
+
+      // "1.7" should (startWith regex (decimalRegex) and startWith regex (decimalRegex))
+      //                                                            ^
+      def regex(regex: Regex) = and(startWith.regex(regex))
+    }
+
+    def and(startWithWord: StartWithWord): AndStartWithWord = new AndStartWithWord
+
+    class AndEndWithWord {
+      // "1.7" should (endWith regex (decimal) and endWith regex (decimal))
+      //                                                   ^
+      def regex(regexString: String) = and(endWith.regex(regexString))
+
+      // "1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
+      //                                                        ^
+      def regex(regex: Regex) = and(endWith.regex(regex))
+    }
+
+    def and(endWithWord: EndWithWord): AndEndWithWord = new AndEndWithWord
+
     class AndNotWord {
 
       // 1 should (not equal (2) and not equal (3 - 1)) The second half, after "not"
@@ -163,6 +215,31 @@ trait Matchers extends Assertions { matchers =>
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.and(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
+
+      // "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
+      //                                                     ^
+      def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.and(matchers.not.fullyMatch(resultOfRegexWordApplication))
+
+      // "fred" should (not include regex ("bob") and not include regex (decimal))
+      //                                                     ^
+      def include(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.and(matchers.not.include(resultOfRegexWordApplication))
+
+      // "fred" should (not include substring ("bob") and not include substring ("1.7"))
+      //                                                      ^
+      def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
+        matchersWrapper.and(matchers.not.include(resultOfSubstringWordApplication))
+
+      // "fred" should (not startWith regex ("bob") and not startWith regex (decimal))
+      //                                                    ^
+      def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.and(matchers.not.startWith(resultOfRegexWordApplication))
+
+      // "fred" should (not endWith regex ("bob") and not endWith regex (decimal))
+      //                                                  ^
+      def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.and(matchers.not.endWith(resultOfRegexWordApplication))
 
 /*
 TODO: Ah, maybe this was the simplification
@@ -236,6 +313,58 @@ TODO: Ah, maybe this was the simplification
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
 
+    class OrFullyMatchWord {
+      // "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
+      //                                                        ^
+      def regex(regexString: String) = or(fullyMatch.regex(regexString))
+
+      // "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
+      //                                                        ^
+      def regex(regex: Regex) = or(fullyMatch.regex(regex))
+    }
+
+    def or(fullyMatchWord: FullyMatchWord): OrFullyMatchWord = new OrFullyMatchWord
+
+    class OrIncludeWord {
+      // "1.7" should (include regex ("hello") or include regex (decimal))
+      //                                                  ^
+      def regex(regexString: String) = or(include.regex(regexString))
+
+      // "1.7" should (include regex ("hello") or include regex (decimal))
+      //                                                  ^
+      def regex(regex: Regex) = or(include.regex(regex))
+
+      // "a1.7b" should (include substring ("1.7") or include substring ("1.7"))
+      //                                                      ^
+      def substring(expectedSubstring: String) = or(include.substring(expectedSubstring))
+    }
+
+    def or(includeWord: IncludeWord): OrIncludeWord = new OrIncludeWord
+
+    class OrStartWithWord {
+      // "1.7" should (startWith regex ("hello") or startWith regex (decimal))
+      //                                                      ^
+      def regex(regexString: String) = or(startWith.regex(regexString))
+
+      // "1.7" should (startWith regex ("hello") or startWith regex (decimal))
+      //                                                      ^
+      def regex(regex: Regex) = or(startWith.regex(regex))
+    }
+
+    def or(startWithWord: StartWithWord): OrStartWithWord = new OrStartWithWord
+
+    class OrEndWithWord {
+      // "1.7" should (endWith regex ("hello") or endWith regex (decimal))
+      //                                                  ^
+      def regex(regexString: String) = or(endWith.regex(regexString))
+
+      // "1.7" should (endWith regex ("hello") or endWith regex (decimal))
+      //                                                  ^
+      def regex(regex: Regex) = or(endWith.regex(regex))
+    }
+
+    def or(endWithWord: EndWithWord): OrEndWithWord = new OrEndWithWord
+
     // This is not yet short-circuiting. Need by-name params for things passed here.
     class OrNotWord {
 
@@ -266,6 +395,31 @@ TODO: Ah, maybe this was the simplification
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
+
+      // "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
+      //                                                     ^
+      def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.or(matchers.not.fullyMatch(resultOfRegexWordApplication))
+
+      // "fred" should (not include regex ("fred") or not include regex (decimal))
+      //                                                  ^
+      def include(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.or(matchers.not.include(resultOfRegexWordApplication))
+
+      // "fred" should (not include substring ("bob") or not include substring ("1.7"))
+      //                                                     ^
+      def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
+        matchersWrapper.or(matchers.not.include(resultOfSubstringWordApplication))
+
+      // "fred" should (not startWith regex ("bob") or not startWith regex (decimal))
+      //                                                   ^
+      def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.or(matchers.not.startWith(resultOfRegexWordApplication))
+
+      // "fred" should (not endWith regex ("bob") or not endWith regex (decimal))
+      //                                                 ^
+      def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
+        matchersWrapper.or(matchers.not.endWith(resultOfRegexWordApplication))
 
 /*
 TODO: Do the same simplification as above
@@ -950,8 +1104,91 @@ TODO: Do the same simplification as above
           )
       }
     }
+
+    def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
+      val rightRegex = resultOfRegexWordApplication.regex
+      if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotFullyMatchRegex" else "fullyMatchedRegex",
+            left,
+            rightRegex
+          )
+        )
+    }
+
+    def include(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
+      val rightRegex = resultOfRegexWordApplication.regex
+      if (rightRegex.findFirstIn(left).isDefined != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotIncludeRegex" else "includedRegex",
+            left,
+            rightRegex
+          )
+        )
+    }
+
+    def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
+      val expectedSubstring = resultOfSubstringWordApplication.substring
+      if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
+            left,
+            expectedSubstring
+          )
+        )
+    }
+
+    def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
+      val rightRegex = resultOfRegexWordApplication.regex
+      if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotStartWithRegex" else "startedWithRegex",
+            left,
+            rightRegex
+          )
+        )
+    }
+
+    def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
+      val rightRegex = resultOfRegexWordApplication.regex
+      val allMatches = rightRegex.findAllIn(left)
+      if (allMatches.hasNext && (allMatches.end == left.length) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotEndWithRegex" else "endedWithRegex",
+            left,
+            rightRegex
+          )
+        )
+    }
   }
 
+  class RegexWord {
+
+    def apply(regexString: String) = new ResultOfRegexWordApplication(regexString)
+
+    // "eight" should not fullyMatch regex (decimalRegex)
+    //                               ^
+    def apply(regex: Regex) = new ResultOfRegexWordApplication(regex)
+  }
+
+  class ResultOfRegexWordApplication(val regex: Regex) {
+    def this(regexString: String) = this(new Regex(regexString))
+  }
+
+  class SubstringWord {
+
+    // "eight" should not fullyMatch regex (decimalRegex)
+    //                               ^
+    def apply(substring: String) = new ResultOfSubstringWordApplication(substring)
+  }
+
+  class ResultOfSubstringWordApplication(val substring: String)
+ 
   protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -1334,6 +1571,76 @@ TODO: Do the same simplification as above
           )
       }
     }
+
+    def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
+      val rightRegexString = resultOfRegexWordApplication.regex.toString
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            !java.util.regex.Pattern.matches(rightRegexString, left),
+            FailureMessages("fullyMatchedRegex", left, UnquotedString(rightRegexString)),
+            FailureMessages("didNotFullyMatchRegex", left, UnquotedString(rightRegexString))
+          )
+      }
+    }
+
+    // "fred" should (not include regex ("bob") and not include regex (decimal))
+    //                    ^
+    def include(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
+      val rightRegex = resultOfRegexWordApplication.regex
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            !rightRegex.findFirstIn(left).isDefined,
+            FailureMessages("includedRegex", left, rightRegex),
+            FailureMessages("didNotIncludeRegex", left, rightRegex)
+          )
+      }
+    }
+
+    // "fred" should (not include substring ("bob") and not include substring ("1.7"))
+    //                    ^
+    def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
+      val expectedSubstring = resultOfSubstringWordApplication.substring
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            !(left.indexOf(expectedSubstring) >= 0), 
+            FailureMessages("includedSubstring", left, expectedSubstring),
+            FailureMessages("didNotIncludeSubstring", left, expectedSubstring)
+          )
+      }
+    }
+
+    // "fred" should (not startWith regex ("bob") and not startWith regex (decimal))
+    //                    ^
+    def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
+      val rightRegex = resultOfRegexWordApplication.regex
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            !rightRegex.pattern.matcher(left).lookingAt,
+            FailureMessages("startedWithRegex", left, rightRegex),
+            FailureMessages("didNotStartWithRegex", left, rightRegex)
+          )
+      }
+    }
+
+    // "fred" should (not endWith regex ("bob") and not endWith regex (decimal))
+    //                    ^
+    def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
+      val rightRegex = resultOfRegexWordApplication.regex
+      new Matcher[String] {
+        def apply(left: String) = {
+          val allMatches = rightRegex.findAllIn(left)
+          MatcherResult(
+            !(allMatches.hasNext && (allMatches.end == left.length)),
+            FailureMessages("endedWithRegex", left, rightRegex),
+            FailureMessages("didNotEndWithRegex", left, rightRegex)
+          )
+        }
+      }
+    }
   }
 
   val not = new NotWord
@@ -1398,6 +1705,10 @@ TODO: Do the same simplification as above
   }
 
   val size = new SizeWord
+
+  val regex = new RegexWord
+
+  val substring = new SubstringWord
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 

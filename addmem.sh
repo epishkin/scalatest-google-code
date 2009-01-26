@@ -1,2 +1,2 @@
-JAVA_OPTS="-Xmx512M"
+JAVA_OPTS="-Xmx1024M"
 export JAVA_OPTS
