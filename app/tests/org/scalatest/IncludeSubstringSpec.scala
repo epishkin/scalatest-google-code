@@ -34,7 +34,7 @@ s should fullyMatch substring t
 
 describe("The include substring syntax") {
 
-    it("should do nothing if the string includes substring specified as a string") {
+    it("should do nothing if the string includes the specified substring") {
 
       "1.78" should include substring ("1.7")
       "21.7" should include substring ("1.7")
@@ -43,7 +43,7 @@ describe("The include substring syntax") {
       check((s: String, t: String, u: String) => returnsNormally(s + t + u should include substring (t)))
     }
 
-    it("should do nothing if the string does not include substring specified as a string when used with not") {
+    it("should do nothing if the string does not include the specified substring when used with not") {
 
       "eight" should not { include substring ("1.7") }
       "eight" should not include substring ("1.7")
@@ -51,7 +51,7 @@ describe("The include substring syntax") {
       check((s: String, t: String, u: String) => (s + u).indexOf(t) == -1 ==> returnsNormally(s + u should not include substring (t)))
     }
 
-    it("should do nothing if the string does not include substring specified as a string when used in a logical-and expression") {
+    it("should do nothing if the string does not include the specified substring when used in a logical-and expression") {
 
       "a1.7" should (include substring ("1.7") and (include substring ("1.7")))
       "a1.7" should (include substring ("1.7") and (include substring ("1.7")))
@@ -68,9 +68,11 @@ describe("The include substring syntax") {
       "1.7" should (include substring ("1.7") and (include substring ("1.7")))
       "1.7" should ((include substring ("1.7")) and (include substring ("1.7")))
       "1.7" should (include substring ("1.7") and include substring ("1.7"))
+
+      check((s: String, t: String, u: String) => returnsNormally(s + t + u should (include substring (s) and include substring (t) and include substring (u))))
     }
 
-    it("should do nothing if the string does not include substring specified as a string when used in a logical-or expression") {
+    it("should do nothing if the string does not include the specified substring when used in a logical-or expression") {
 
       "a1.7" should (include substring ("hello") or (include substring ("1.7")))
       "a1.7" should (include substring ("hello") or (include substring ("1.7")))
@@ -87,21 +89,25 @@ describe("The include substring syntax") {
       "1.7" should (include substring ("hello") or (include substring ("1.7")))
       "1.7" should ((include substring ("hello")) or (include substring ("1.7")))
       "1.7" should (include substring ("hello") or include substring ("1.7"))
+
+      check((s: String, t: String, u: String) => returnsNormally(s + t + u should (include substring ("hi") or include substring ("ho") or include substring (t))))
     }
 
-    it("should do nothing if the string does not include substring specified as a string when used in a logical-and expression with not") {
+    it("should do nothing if the string does not include the specified substring when used in a logical-and expression with not") {
       "fred" should (not (include substring ("bob")) and not (include substring ("1.7")))
       "fred" should ((not include substring ("bob")) and (not include substring ("1.7")))
       "fred" should (not include substring ("bob") and not include substring ("1.7"))
+      check((s: String) => s.indexOf("bob") == -1 && s.indexOf("1.7") == -1 ==> returnsNormally(s should (not include substring ("bob") and not include substring ("1.7"))))
     }
 
-    it("should do nothing if the string does not include substring specified as a string when used in a logical-or expression with not") {
+    it("should do nothing if the string does not include the specified substring when used in a logical-or expression with not") {
       "fred" should (not (include substring ("fred")) or not (include substring ("1.7")))
       "fred" should ((not include substring ("fred")) or (not include substring ("1.7")))
       "fred" should (not include substring ("fred") or not include substring ("1.7"))
+      check((s: String) => s.indexOf("a") == -1 || s.indexOf("b") == -1 ==> returnsNormally(s should (not include substring ("a") or not include substring ("b"))))
     }
 
-    it("should throw AssertionError if the string does not match substring specified as a string") {
+    it("should throw AssertionError if the string does not match the specified substring") {
 
       val caught1 = intercept[AssertionError] {
         "1.7" should include substring ("1.78")
@@ -137,9 +143,11 @@ describe("The include substring syntax") {
         "***" should include substring ("1.7")
       }
       assert(caught9.getMessage === "\"***\" did not include substring \"1.7\"")
+
+      check((s: String) => s.indexOf("1.7") == -1 ==> throwsAssertionError(s should include substring ("1.7")))
     }
 
-    it("should throw AssertionError if the string does matches substring specified as a string when used with not") {
+    it("should throw AssertionError if the string does matches the specified substring when used with not") {
 
       val caught1 = intercept[AssertionError] {
         "1.7" should not { include substring ("1.7") }
@@ -200,9 +208,16 @@ describe("The include substring syntax") {
         "a-1.8b" should not { include substring ("1.8") }
       }
       assert(caught23.getMessage === "\"a-1.8b\" included substring \"1.8\"")
+
+      // substring at the beginning
+      check((s: String) => s.length != 0 ==> throwsAssertionError(s should not include substring (s.substring(0, 1))))
+      // substring at the end
+      check((s: String) => s.length != 0 ==> throwsAssertionError(s should not include substring (s.substring(s.length - 1, s.length))))
+      // substring in the middle
+      check((s: String) => s.length > 1 ==> throwsAssertionError(s should not include substring (s.substring(1, 2))))
     }
 
-    it("should throw AssertionError if the string includes substring specified as a string when used in a logical-and expression") {
+    it("should throw AssertionError if the string includes the specified substring when used in a logical-and expression") {
 
       val caught1 = intercept[AssertionError] {
         "1.7" should (include substring ("1.7") and (include substring ("1.8")))
@@ -234,9 +249,11 @@ describe("The include substring syntax") {
         "one.eight" should (include substring ("1.7") and include substring ("1.8"))
       }
       assert(caught6.getMessage === "\"one.eight\" did not include substring \"1.7\"")
+
+      check((s: String, t: String, u: String) => (s + u).indexOf(t) == -1 ==> throwsAssertionError(s + u should (include substring (s) and include substring (t))))
     }
 
-    it("should throw AssertionError if the string includes substring specified as a string when used in a logical-or expression") {
+    it("should throw AssertionError if the string includes the specified substring when used in a logical-or expression") {
 
       val caught1 = intercept[AssertionError] {
         "one.seven" should (include substring ("1.7") or (include substring ("1.8")))
@@ -252,9 +269,16 @@ describe("The include substring syntax") {
         "one.seven" should (include substring ("1.7") or include substring ("1.8"))
       }
       assert(caught3.getMessage === "\"one.seven\" did not include substring \"1.7\", and \"one.seven\" did not include substring \"1.8\"")
+
+      check(
+        (s: String, t: String, u: String, v: String) => {
+          (t.length != 0 && v.length != 0 && (s + u).indexOf(t) == -1 && (s + u).indexOf(v) == -1) ==>
+            throwsAssertionError(s + u should (include substring (t) or include substring (v)))
+        }
+      )
     }
 
-    it("should throw AssertionError if the string includes substring specified as a string when used in a logical-and expression used with not") {
+    it("should throw AssertionError if the string includes the specified substring when used in a logical-and expression used with not") {
 
       val caught1 = intercept[AssertionError] {
         "1.7" should (not include substring ("1.8") and (not include substring ("1.7")))
@@ -285,9 +309,15 @@ describe("The include substring syntax") {
         "a1.7b" should (not include substring ("1.8") and not include substring ("1.7"))
       }
       assert(caught6.getMessage === "\"a1.7b\" did not include substring \"1.8\", but \"a1.7b\" included substring \"1.7\"")
+
+      check(
+        (s: String, t: String, u: String) =>
+          (s + t + u).indexOf("hi") == -1 ==>
+            throwsAssertionError(s + t + u should (not include substring ("hi") and not include substring (t)))
+      )
     }
 
-    it("should throw AssertionError if the string includes substring specified as a string when used in a logical-or expression used with not") {
+    it("should throw AssertionError if the string includes the specified substring when used in a logical-or expression used with not") {
 
       val caught1 = intercept[AssertionError] {
         "1.7" should (not include substring ("1.7") or (not include substring ("1.7")))
@@ -328,6 +358,11 @@ describe("The include substring syntax") {
         "a1.7b" should (not (include substring ("1.7")) or not (include substring ("1.7")))
       }
       assert(caught8.getMessage === "\"a1.7b\" included substring \"1.7\", and \"a1.7b\" included substring \"1.7\"")
+
+      check(
+        (s: String, t: String, u: String) =>
+          throwsAssertionError(s + t + u should (not include substring (s) or not include substring (t) or not include substring (u)))
+      )
     }
   }
 }
