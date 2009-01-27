@@ -429,6 +429,11 @@ TODO: Ah, maybe this was the simplification
       def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.or(matchers.not.startWith(resultOfRegexWordApplication))
 
+      // "fred" should (not startWith substring ("fred") or not startWith substring ("1.7"))
+      //                                                        ^
+      def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
+        matchersWrapper.or(matchers.not.startWith(resultOfSubstringWordApplication))
+
       // "fred" should (not endWith regex ("bob") or not endWith regex (decimal))
       //                                                 ^
       def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
@@ -1168,16 +1173,16 @@ TODO: Do the same simplification as above
 
     // "eight" should not startWith substring ("1.7")
     //                    ^
-    def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
+    def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
       val expectedSubstring = resultOfSubstringWordApplication.substring
-      new Matcher[String] {
-        def apply(left: String) =
-          MatcherResult(
-            left.indexOf(expectedSubstring) == 0,
-            FailureMessages("startedWith", left, expectedSubstring),
-            FailureMessages("didNotStartWith", left, expectedSubstring)
+      if ((left.indexOf(expectedSubstring) == 0) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotStartWith" else "startedWith",
+            left,
+            expectedSubstring
           )
-      }
+        )
     }
 
     def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
@@ -1653,8 +1658,6 @@ TODO: Do the same simplification as above
       }
     }
 
-    // TODO: This seems to be the same code as in ResultOfNotWordForString, except the first arg to MatcherResult's constructor
-    // is reversed. How can this be, because the failure messages are in the same order?
     // "fred" should ((not startWith substring ("red")) and (not startWith substring ("1.7")))
     //                     ^
     def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
