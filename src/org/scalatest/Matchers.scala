@@ -160,6 +160,10 @@ trait Matchers extends Assertions { matchers =>
       // "1.7" should (startWith regex (decimalRegex) and startWith regex (decimalRegex))
       //                                                            ^
       def regex(regex: Regex) = and(startWith.regex(regex))
+
+      // "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
+      //                                                         ^
+      def substring(expectedSubstring: String) = and(startWith.substring(expectedSubstring))
     }
 
     def and(startWithWord: StartWithWord): AndStartWithWord = new AndStartWithWord
@@ -235,6 +239,11 @@ trait Matchers extends Assertions { matchers =>
       //                                                    ^
       def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.and(matchers.not.startWith(resultOfRegexWordApplication))
+
+      // "fred" should (not startWith substring ("red") and not startWith substring ("1.7"))
+      //                                                        ^
+      def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
+        matchersWrapper.and(matchers.not.startWith(resultOfSubstringWordApplication))
 
       // "fred" should (not endWith regex ("bob") and not endWith regex (decimal))
       //                                                  ^
@@ -349,6 +358,10 @@ TODO: Ah, maybe this was the simplification
       // "1.7" should (startWith regex ("hello") or startWith regex (decimal))
       //                                                      ^
       def regex(regex: Regex) = or(startWith.regex(regex))
+
+      // "1.7" should (startWith substring ("hello") or startWith substring ("1.7"))
+      //                                                          ^
+      def substring(expectedSubstring: String) = or(startWith.substring(expectedSubstring))
     }
 
     def or(startWithWord: StartWithWord): OrStartWithWord = new OrStartWithWord
@@ -1153,6 +1166,20 @@ TODO: Do the same simplification as above
         )
     }
 
+    // "eight" should not startWith substring ("1.7")
+    //                    ^
+    def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
+      val expectedSubstring = resultOfSubstringWordApplication.substring
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            left.indexOf(expectedSubstring) == 0,
+            FailureMessages("startedWith", left, expectedSubstring),
+            FailureMessages("didNotStartWith", left, expectedSubstring)
+          )
+      }
+    }
+
     def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       val allMatches = rightRegex.findAllIn(left)
@@ -1182,7 +1209,7 @@ TODO: Do the same simplification as above
 
   class SubstringWord {
 
-    // "eight" should not fullyMatch regex (decimalRegex)
+    // "eight" should not fullyMatch substring ("seven")
     //                               ^
     def apply(substring: String) = new ResultOfSubstringWordApplication(substring)
   }
@@ -1622,6 +1649,22 @@ TODO: Do the same simplification as above
             !rightRegex.pattern.matcher(left).lookingAt,
             FailureMessages("startedWithRegex", left, rightRegex),
             FailureMessages("didNotStartWithRegex", left, rightRegex)
+          )
+      }
+    }
+
+    // TODO: This seems to be the same code as in ResultOfNotWordForString, except the first arg to MatcherResult's constructor
+    // is reversed. How can this be, because the failure messages are in the same order?
+    // "fred" should ((not startWith substring ("red")) and (not startWith substring ("1.7")))
+    //                     ^
+    def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
+      val expectedSubstring = resultOfSubstringWordApplication.substring
+      new Matcher[String] {
+        def apply(left: String) =
+          MatcherResult(
+            left.indexOf(expectedSubstring) != 0,
+            FailureMessages("startedWith", left, expectedSubstring),
+            FailureMessages("didNotStartWith", left, expectedSubstring)
           )
       }
     }
