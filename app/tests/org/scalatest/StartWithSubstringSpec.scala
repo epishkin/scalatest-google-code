@@ -22,17 +22,7 @@ import Prop._
 
 class StartWithSubstringSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
-/*
-s should startWith substring t
-s should startWith substring t
-s should startWith substring t
-s should startWith substring t
-s should endWith substring t
-s should endWith substring t
-s should fullyMatch substring t
-*/
-
-describe("The startWith substring syntax") {
+  describe("The startWith substring syntax") {
 
     it("should do nothing if the string starts with the specified substring") {
 
@@ -52,22 +42,18 @@ describe("The startWith substring syntax") {
 
     it("should do nothing if the string does not start with the specified substring when used in a logical-and expression") {
 
-      "1.7b" should ((startWith substring ("1.7")) and (startWith substring ("1.7")))
-      "1.7b" should ((startWith substring ("1.7")) and (startWith substring ("1.7")))
-      "1.7b" should ((startWith substring ("1.7")) and (startWith substring ("1.7")))
-
-      "1.7" should (startWith substring ("1.7") and (startWith substring ("1.7")))
-      "1.7" should ((startWith substring ("1.7")) and (startWith substring ("1.7")))
-      "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
+      "1.7b" should (startWith substring ("1.7") and (startWith substring ("1.7b")))
+      "1.7b" should ((startWith substring ("1.7")) and (startWith substring ("1.7b")))
+      "1.7b" should (startWith substring ("1.7") and startWith substring ("1.7b"))
 
       check((s: String, t: String) => returnsNormally(s + t should (startWith substring (s) and startWith substring (s))))
     }
 
     it("should do nothing if the string does not start with the specified substring when used in a logical-or expression") {
 
-      "1.7b" should ((startWith substring ("hello")) or (startWith substring ("1.7")))
-      "1.7b" should ((startWith substring ("hello")) or (startWith substring ("1.7")))
-      "1.7b" should ((startWith substring ("hello")) or (startWith substring ("1.7")))
+      "1.7" should (startWith substring ("hello") or (startWith substring ("1")))
+      "1.7" should ((startWith substring ("hello")) or (startWith substring ("1")))
+      "1.7" should (startWith substring ("hello") or startWith substring ("1"))
 
       "1.7" should (startWith substring ("hello") or (startWith substring ("1.7")))
       "1.7" should ((startWith substring ("hello")) or (startWith substring ("1.7")))

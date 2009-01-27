@@ -176,6 +176,10 @@ trait Matchers extends Assertions { matchers =>
       // "1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
       //                                                        ^
       def regex(regex: Regex) = and(endWith.regex(regex))
+
+      // "1.7b" should ((endWith substring ("1.7b")) and (endWith substring ("7b")))
+      //                                
+      def substring(expectedSubstring: String) = and(endWith.substring(expectedSubstring))
     }
 
     def and(endWithWord: EndWithWord): AndEndWithWord = new AndEndWithWord
@@ -249,6 +253,11 @@ trait Matchers extends Assertions { matchers =>
       //                                                  ^
       def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.and(matchers.not.endWith(resultOfRegexWordApplication))
+
+      // "fred" should (not endWith substring ("fre") and not endWith substring ("1.7"))
+      //                                                      ^
+      def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
+        matchersWrapper.and(matchers.not.endWith(resultOfSubstringWordApplication))
 
 /*
 TODO: Ah, maybe this was the simplification
@@ -374,6 +383,10 @@ TODO: Ah, maybe this was the simplification
       // "1.7" should (endWith regex ("hello") or endWith regex (decimal))
       //                                                  ^
       def regex(regex: Regex) = or(endWith.regex(regex))
+
+      // "1.7b" should (endWith substring ("hello") or endWith substring ("7b"))
+      //                                                       ^
+      def substring(expectedSubstring: String) = or(endWith.substring(expectedSubstring))
     }
 
     def or(endWithWord: EndWithWord): OrEndWithWord = new OrEndWithWord
@@ -438,6 +451,11 @@ TODO: Ah, maybe this was the simplification
       //                                                 ^
       def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.or(matchers.not.endWith(resultOfRegexWordApplication))
+
+      // "fred" should (not endWith substring ("fred") or not endWith substring ("1.7"))
+      //                                                      ^
+      def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
+        matchersWrapper.or(matchers.not.endWith(resultOfSubstringWordApplication))
 
 /*
 TODO: Do the same simplification as above
@@ -1197,6 +1215,20 @@ TODO: Do the same simplification as above
           )
         )
     }
+
+    // "eight" should not endWith substring ("1.7")
+    //                    ^
+    def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
+      val expectedSubstring = resultOfSubstringWordApplication.substring
+      if ((left endsWith expectedSubstring) != shouldBeTrue)
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "didNotEndWith" else "endedWith",
+            left,
+            expectedSubstring
+          )
+        )
+    }
   }
 
   class RegexWord {
@@ -1683,6 +1715,21 @@ TODO: Do the same simplification as above
             !(allMatches.hasNext && (allMatches.end == left.length)),
             FailureMessages("endedWithRegex", left, rightRegex),
             FailureMessages("didNotEndWithRegex", left, rightRegex)
+          )
+        }
+      }
+    }
+
+    // "fred" should (not endWith substring ("fre") and not endWith substring ("1.7"))
+    //                    ^
+    def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
+      val expectedSubstring = resultOfSubstringWordApplication.substring
+      new Matcher[String] {
+        def apply(left: String) = {
+          MatcherResult(
+            !(left endsWith expectedSubstring),
+            FailureMessages("endedWith", left, expectedSubstring),
+            FailureMessages("didNotEndWith", left, expectedSubstring)
           )
         }
       }
