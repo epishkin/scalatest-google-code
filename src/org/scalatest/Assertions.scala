@@ -382,21 +382,19 @@ trait Assertions {
 
 
   /**
-   * Expect that the value passed as <code>expected</code> equals the value resulting from the passed function <code>f</code>.
-   * The <code>expect</code> method invokes the passed function. If the function results in a value that equals <code>expected</code>
+   * Expect that the value passed as <code>expected</code> equals the value passed as <code>actual</code>.
+   * If the <code>actual</code> equals the <code>expected</code>
    * (as determined by <code>==</code>), <code>expect</code> returns
-   * normally. Else, if the function results in a value that is not equal to <code>expected</code>, <code>expect</code> throws an
+   * normally. Else, if <code>actual</code> is not equal to <code>expected</code>, <code>expect</code> throws an
    * <code>AssertionError</code> whose detail message includes the expected and actual values, as well as the <code>String</code>
    * obtained by invoking <code>toString</code> on the passed <code>message</code>.
-   * If the function, completes abruptly an exception, the <code>expect</code> method will complete abruptly with that same exception.
    *
-   * @param expected the expected result of the passed function 
-   * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
-   * @param f the function value whose result when invoked should equal the passed <code>expected</code> value
-   * @throws AssertionError if the passed function does not complete abruptly with an exception that is assignable to the 
-   *     passed <code>Class</code>.
+   * @param expected the expected value
+   * @param message An object whose <code>toString</code> method returns a message to include in a failure report.
+   * @param actual the actual value, which should equal the passed <code>expected</code> value
+   * @throws AssertionError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
-  def expect(expected: Any, message: Any)(actual: => Any) {
+  def expect(expected: Any, message: Any)(actual: Any) {
     val actualResult = actual // only execute by name once, in case there are side effects
     if (actualResult != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actualResult, expected)
@@ -405,24 +403,22 @@ trait Assertions {
     }
   }
 
-  /**
-   * Expect that the value passed as <code>expected</code> equals the value resulting from the passed function <code>f</code>.
-   * The <code>expect</code> method invokes the passed function. If the function results in a value that equals <code>expected</code>
+  /** 
+   * Expect that the value passed as <code>expected</code> equals the value passed as <code>actual</code>.
+   * If the <code>actual</code> value equals the <code>expected</code> value
    * (as determined by <code>==</code>), <code>expect</code> returns
-   * normally. Else, if the function results in a value that is not equal to <code>expected</code>, <code>expect</code> throws an
+   * normally. Else, <code>expect</code> throws an
    * <code>AssertionError</code> whose detail message includes the expected and actual values.
-   * If the function, completes abruptly an exception, the <code>expect</code> method will complete abruptly with that same exception.
    *
-   * @param expected the expected result of the passed function 
-   * @param f the function value whose result when invoked should equal the passed <code>expected</code> value
-   * @throws AssertionError if the passed function does not complete abruptly with an exception that is assignable to the 
-   *     passed <code>Class</code>.
+   * @param expected the expected value
+   * @param actual the actual value, which should equal the passed <code>expected</code> value
+   * @throws AssertionError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
-  def expect(expected: Any)(actual: => Any) {
+  def expect(expected: Any)(actual: Any) {
     expect(expected, "")(actual)
   }
   
-    /**
+  /**
    * Throws <code>AssertionError</code> to indicate a test failed.
    */
   def fail() = throw new AssertionError
