@@ -221,8 +221,11 @@ trait Assertions {
    */
   implicit def convertToEqualizer(left: Any) = new Equalizer(left)
 
-/**
-   * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
+  /**
+   * <b>Deprecated: use the more concise version of <code>intercept</code>, which uses an implicit manifest. Note: there is currently
+no version of the "implicit manifest" form of <code>intercept</code> that takes a string message. The reason is it won't overload while
+these older forms are still in the API. Once these deprecated forms are removed, an overloaded version of <code>intercept</code> that takes a string
+message and implicit manifest will be added.</b> Intercept and return an instance of the passed exception class (or an instance of a subclass of the
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
    * subclasses, this method returns that exception. Else, whether the passed function returns normally
@@ -243,6 +246,7 @@ trait Assertions {
    * @throws AssertionError if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
    */
+  @deprecated
   def intercept[T <: AnyRef](clazz: java.lang.Class[T], message: Any)(f: => Any): T = {
     val messagePrefix = if (message.toString.trim.isEmpty) "" else (message +"\n")
     val caught = try {
@@ -269,7 +273,7 @@ trait Assertions {
   }
 
   /**
-   * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
+   * <b>Deprecated: use the more concise version of <code>intercept</code>, which uses an implicit manifest.</b> Intercept and return an instance of the passed exception class (or an instance of a subclass of the
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
    * subclasses, this method returns that exception. Else, whether the passed function returns normally
@@ -290,6 +294,7 @@ trait Assertions {
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
    */
+  @deprecated
   def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Any): T = {
     intercept(clazz, "")(f)
   }
