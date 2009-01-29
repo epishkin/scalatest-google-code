@@ -26,7 +26,7 @@ import org.scalacheck.Test
 import org.scalacheck.Test._
 
 /**
- * <strong>Deprecated: mix in Checkers and make explicit calls to check instead</strong> A <code>FunSuite</code> subtrait that provides methods that perform
+ * <strong>Deprecated: mix in <code>Checkers</code> and make explicit calls to <code>check</code> instead. This trait will be removed in a future version of ScalaTest.</strong> A <code>FunSuite</code> subtrait that provides methods that perform
  * ScalaCheck property checks.
  * If ScalaCheck, when invoked via one of the methods provided by <cod>FunSuite</code>, finds a test case for which a property doesn't hold, the problem will be reported as a ScalaTest test failure.
  * 
