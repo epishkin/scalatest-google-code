@@ -240,7 +240,7 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.EndWithSubstringSpec" />
+            <arg value="org.scalatest.BeSymbolSpec" />
 
 <!--
             <arg value="-s" />
