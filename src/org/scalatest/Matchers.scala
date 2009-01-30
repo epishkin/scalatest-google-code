@@ -69,6 +69,93 @@ private[scalatest] object Helper {
 
 trait Matchers extends Assertions { matchers =>
 
+  // Used as the result of be ('empty) for example
+  // trait BeSymbolMatcher // TODO Matcher self type
+
+  private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol): MatcherResult = {
+
+    def transformOperatorChars(s: String) = {
+      s.replace("!", "$bang").
+        replace("#", "$hash").
+        replace("~", "$tilde").
+        replace("|", "$bar").
+        replace("^", "$up").
+        replace("\\", "$bslash").
+        replace("@", "$at").
+        replace("?", "$qmark").
+        replace(">", "$greater").
+        replace("=", "$eq").
+        replace("<", "$less").
+        replace(":", "$colon").
+        replace("/", "$div").
+        replace("-", "$minus").
+        replace("+", "$plus").
+        replace("*", "$times").
+        replace("&", "$amp").
+        replace("%", "$percent")
+    }
+
+    // If 'empty passed, rightNoTick would be "empty"
+    val rightNoTick = right.toString.substring(1)
+
+    // methodNameToInvoke would also be "empty"
+    val methodNameToInvoke = transformOperatorChars(rightNoTick)
+
+    // methodNameToInvokeWithIs would be "isEmpty"
+    val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+
+    val firstChar = rightNoTick(0).toLowerCase
+    val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+      firstChar == 'o' || firstChar == 'u'
+
+    def isMethodToInvoke(m: Method) = {
+
+      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+      val simpleName = m.getName
+      val paramTypes = m.getParameterTypes
+      val hasNoParams = paramTypes.length == 0
+      val resultType = m.getReturnType
+
+      isInstanceMethod && hasNoParams &&
+      (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
+      resultType == classOf[Boolean]
+    }
+
+    // Store in an array, because may have both isEmpty and empty, in which case I
+    // will throw an exception.
+    val methodArray =
+      for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
+        yield m
+
+    methodArray.length match {
+      case 0 =>
+        throw new IllegalArgumentException(
+          FailureMessages(
+            if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
+            left,
+            UnquotedString(methodNameToInvoke),
+            UnquotedString(methodNameToInvokeWithIs)
+          )
+        )
+      case 1 =>
+        val result = methodArray(0).invoke(left, Array[AnyRef](): _*).asInstanceOf[Boolean]
+        MatcherResult(
+          result,
+          FailureMessages("wasNot", left, UnquotedString(rightNoTick)),
+          FailureMessages("was", left, UnquotedString(rightNoTick))
+        )
+      case _ => // Should only ever be 2, but just in case
+        throw new IllegalArgumentException(
+          FailureMessages(
+            if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
+            left,
+            UnquotedString(methodNameToInvoke),
+            UnquotedString(methodNameToInvokeWithIs)
+          )
+        )
+    }
+  }
+
   class MatcherWrapper[T](leftMatcher: Matcher[T]) { matchersWrapper =>
 
     /**
@@ -223,6 +310,10 @@ trait Matchers extends Assertions { matchers =>
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.and(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
+
+      // notEmptyMock should (not be ('empty) and not be ('empty))
+      //                                              ^
+      def be[T](symbol: Symbol) = matchersWrapper.and(matchers.not.be(symbol))
 
       // "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
       //                                                     ^
@@ -421,6 +512,10 @@ TODO: Ah, maybe this was the simplification
 
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
+
+      // notEmptyMock should (not be ('full) or not be ('empty))
+      //                                            ^
+      def be[T](symbol: Symbol) = matchersWrapper.or(matchers.not.be(symbol))
 
       // "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
       //                                                     ^
@@ -946,7 +1041,7 @@ TODO: Do the same simplification as above
   }
   
   protected class ResultOfNotWordForCollection[T <: Collection[_]](left: T, shouldBeTrue: Boolean)
-      extends ResultOfNotWord(left, shouldBeTrue) {
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
@@ -963,7 +1058,7 @@ TODO: Do the same simplification as above
   }
 
   protected class ResultOfNotWordForJavaCollection[T <: java.util.Collection[_]](left: T, shouldBeTrue: Boolean)
-      extends ResultOfNotWord(left, shouldBeTrue) {
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
@@ -1012,7 +1107,7 @@ TODO: Do the same simplification as above
   }
 
   protected class ResultOfNotWordForJavaList[T <: java.util.List[_]](left: T, shouldBeTrue: Boolean)
-      extends ResultOfNotWord(left, shouldBeTrue) {
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
@@ -1125,8 +1220,23 @@ TODO: Do the same simplification as above
     }
   }
 
+  protected class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[T](left, shouldBeTrue) {
+
+    // emptyMock should not be ('empty)
+    //                      ^
+    def be(symbol: Symbol) {
+      val matcherResult = matchSymbolToPredicateMethod(left, symbol)
+      if (matcherResult.matches != shouldBeTrue) {
+        throw new AssertionError(
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage,
+        )
+      }
+    }
+  }
+
   protected class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
-      extends ResultOfNotWord[String](left, shouldBeTrue) {
+      extends ResultOfNotWordForAnyRef[String](left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
@@ -1470,75 +1580,22 @@ TODO: Do the same simplification as above
         }
       }
   
-    def apply[S <: AnyRef](right: Symbol): Matcher[S] = {
-
-      def matcherUsingReflection(left: S): MatcherResult = {
-
-        // If 'empty passed, rightNoTick would be "empty"
-        val rightNoTick = right.toString.substring(1)
-
-        // methodNameToInvoke would also be "empty"
-        val methodNameToInvoke = rightNoTick
-
-        // methodNameToInvokeWithIs would be "isEmpty"
-        val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
-
-        val firstChar = rightNoTick(0).toLowerCase
-        val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
-          firstChar == 'o' || firstChar == 'u'
-
-        def isMethodToInvoke(m: Method) = {
-
-          val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
-          val simpleName = m.getName
-          val paramTypes = m.getParameterTypes
-          val hasNoParams = paramTypes.length == 0
-          val resultType = m.getReturnType
-
-          isInstanceMethod && hasNoParams &&
-          (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
-          resultType == classOf[Boolean]
-        }
-
-        // Store in an array, because may have both isEmpty and empty, in which case I
-        // will throw an exception.
-        val methodArray =
-          for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
-            yield m
-
-        methodArray.length match {
-          case 0 =>
-            throw new IllegalArgumentException(
-              FailureMessages(
-                if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
-                left,
-                UnquotedString(methodNameToInvoke),
-                UnquotedString(methodNameToInvokeWithIs)
-              )
-            )
-          case 1 =>
-            val result = methodArray(0).invoke(left, Array[AnyRef](): _*).asInstanceOf[Boolean]
-            MatcherResult(
-              result,
-              FailureMessages("wasNot", left, UnquotedString(rightNoTick)),
-              FailureMessages("was", left, UnquotedString(rightNoTick))
-            )
-          case _ => // Should only ever be 2, but just in case
-            throw new IllegalArgumentException(
-              FailureMessages(
-                if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
-                left,
-                UnquotedString(methodNameToInvoke),
-                UnquotedString(methodNameToInvokeWithIs)
-              )
-            )
-        }
-      }
-
+    def apply[S <: AnyRef](right: Symbol): Matcher[S] =
       new Matcher[S] {
-        def apply(left: S) = matcherUsingReflection(left)
+        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right)
       }
-    }
+
+/*
+    def apply[S <: AnyRef](right: Symbol): Matcher[S] with BeSymbolMatcher =
+      new Matcher[S] with BeSymbolMatcher {
+        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right)
+      }
+
+    def apply[S <: AnyRef](right: Symbol): BeSymbolMatcher[S] =
+      new BeSymbolMatcher[S] {
+        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right)
+      }
+*/
 
     def apply(right: Nil.type): Matcher[List[_]] =
       new Matcher[List[_]] {
@@ -1633,6 +1690,19 @@ TODO: Do the same simplification as above
             FailureMessages("wasGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right),
             FailureMessages("wasNotGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right)
           )
+      }
+    }
+
+    def be[T <: AnyRef](symbol: Symbol): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) = {
+          val positiveMatcherResult = matchSymbolToPredicateMethod(left, symbol)
+          MatcherResult(
+            !positiveMatcherResult.matches,
+            positiveMatcherResult.negativeFailureMessage,
+            positiveMatcherResult.failureMessage
+          )
+        }
       }
     }
 
