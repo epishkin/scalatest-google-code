@@ -75,6 +75,39 @@ trait Matchers extends Assertions { matchers =>
   private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol): MatcherResult = {
 
     def transformOperatorChars(s: String) = {
+      val builder = new StringBuilder
+      for (i <- 0 until s.length) {
+        val ch = s.charAt(i)
+        val replacement =
+          ch match {
+            case '!' => "$bang"
+            case '#' => "$hash"
+            case '~' => "$tilde"
+            case '|' => "$bar"
+            case '^' => "$up"
+            case '\\' => "$bslash"
+            case '@' => "$at"
+            case '?' => "$qmark"
+            case '>' => "$greater"
+            case '=' => "$eq"
+            case '<' => "$less"
+            case ':' => "$colon"
+            case '/' => "$div"
+            case '-' => "$minus"
+            case '+' => "$plus"
+            case '*' => "$times"
+            case '&' => "$amp"
+            case '%' => "$percent"
+            case _ => ""
+          }
+
+        if (replacement.length > 0)
+          builder.append(replacement)
+        else
+          builder.append(ch)
+      }
+      builder.toString
+/*
       s.replace("!", "$bang").
         replace("#", "$hash").
         replace("~", "$tilde").
@@ -93,10 +126,11 @@ trait Matchers extends Assertions { matchers =>
         replace("*", "$times").
         replace("&", "$amp").
         replace("%", "$percent")
+*/
     }
 
     // If 'empty passed, rightNoTick would be "empty"
-    val rightNoTick = right.toString.substring(1)
+    val rightNoTick = right.name
 
     // methodNameToInvoke would also be "empty"
     val methodNameToInvoke = transformOperatorChars(rightNoTick)
