@@ -37,7 +37,9 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
     }
 
     it("should do nothing if the object has an appropriately named method, which returns true, even if the method contains operator characters") {
+
       val opNames = new OperatorNames
+
       opNames should be ('op_21_!)
       opNames should be ('op_23_#)
       opNames should be ('op_25_%)
@@ -57,26 +59,24 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       opNames should be ('op_7c_|)
       opNames should be ('op_7e_~)
 
-/*
-      opNames should be ('!!!)
-      opNames should be ('###)
-      opNames should be ('%%%)
-      opNames should be ('&&&)
-      opNames should be ('***)
-      opNames should be ('+++)
-      opNames should be ('---)
-      opNames should be ('/)
-      opNames should be (':::)
-      opNames should be ('<<<)
-      opNames should be ('===)
-      opNames should be ('>>>)
-      opNames should be ('???)
-      opNames should be ('@@@)
-      opNames should be ('\\\)
-      opNames should be ('^^^)
-      opNames should be ('|||)
-      opNames should be ('~~~)
-*/
+      opNames should be (Symbol("!!!"))
+      opNames should be (Symbol("###"))
+      opNames should be (Symbol("%%%"))
+      opNames should be (Symbol("&&&"))
+      opNames should be (Symbol("***"))
+      opNames should be (Symbol("+++"))
+      opNames should be (Symbol("---"))
+      opNames should be (Symbol("/"))
+      opNames should be (Symbol(":::"))
+      opNames should be (Symbol("<<<"))
+      opNames should be (Symbol("==="))
+      opNames should be (Symbol(">>>"))
+      opNames should be (Symbol("???"))
+      opNames should be (Symbol("@@@"))
+      opNames should be (Symbol("\\\\\\"))
+      opNames should be (Symbol("^^^"))
+      opNames should be (Symbol("|||"))
+      opNames should be (Symbol("~~~"))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns false when used with not") {
