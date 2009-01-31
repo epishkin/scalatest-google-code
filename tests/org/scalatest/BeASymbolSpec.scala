@@ -35,41 +35,41 @@ class BeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
       }
       ex2.getMessage should equal ("NoPredicateMock has neither a file nor an isFile method")
     }
-/*
 
     it("should do nothing if the object has an appropriately named method, which returns false when used with not") {
-      notFileMock should not { be ('file) }
-      notFileMock should not be ('file)
-      isNotFileMock should not { be ('file) }
-      isNotFileMock should not be ('file)
+      notFileMock should not { be a ('file) }
+      notFileMock should not be a ('file)
+      isNotFileMock should not { be a ('file) }
+      isNotFileMock should not be a ('file)
     }
 
     it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists, when used with not") {
       val ex1 = intercept[IllegalArgumentException] {
-        noPredicateMock should not { be ('file) }
+        noPredicateMock should not { be a ('apple) }
       }
-      ex1.getMessage should equal ("NoPredicateMock has neither an file nor an isFile method")
+      ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
       val ex2 = intercept[IllegalArgumentException] {
-        noPredicateMock should not (be ('directory))
+        noPredicateMock should not (be a ('directory))
       }
       ex2.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
       val ex3 = intercept[IllegalArgumentException] {
-        noPredicateMock should not be ('file)
+        noPredicateMock should not be a ('apple)
       }
-      ex3.getMessage should equal ("NoPredicateMock has neither an file nor an isFile method")
+      ex3.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
       val ex4 = intercept[IllegalArgumentException] {
-        noPredicateMock should not be ('directory)
+        noPredicateMock should not be a ('directory)
       }
       ex4.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
     }
 
+/*
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-and expression") {
-      fileMock should ((be ('file)) and (be ('file)))
-      fileMock should (be ('file) and (be ('file)))
-      fileMock should (be ('file) and be ('file))
-      isFileMock should ((be ('file)) and (be ('file)))
-      isFileMock should (be ('file) and (be ('file)))
-      isFileMock should (be ('file) and be ('file))
+      fileMock should ((be a ('file)) and (be a ('file)))
+      fileMock should (be a ('file) and (be a ('file)))
+      fileMock should (be a ('file) and be a ('file))
+      isFileMock should ((be a ('file)) and (be a ('file)))
+      isFileMock should (be a ('file) and (be a ('file)))
+      isFileMock should (be a ('file) and be a ('file))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-or expression") {

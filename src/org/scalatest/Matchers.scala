@@ -1270,6 +1270,17 @@ TODO: Do the same simplification as above
         )
       }
     }
+
+    // notFileMock should not be a ('file)
+    //                        ^
+    def be(resultOfAWordApplication: ResultOfAWordApplication) {
+      val matcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol)
+      if (matcherResult.matches != shouldBeTrue) {
+        throw new AssertionError(
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+        )
+      }
+    }
   }
 
   protected class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
@@ -1893,6 +1904,14 @@ TODO: Do the same simplification as above
   }
 
   val size = new SizeWord
+
+  class ResultOfAWordApplication(val symbol: Symbol)
+
+  class AWord {
+    def apply(symbol: Symbol) = new ResultOfAWordApplication(symbol)
+  }
+
+  val a = new AWord
 
   val regex = new RegexWord
 
