@@ -15,254 +15,254 @@
  */
 package org.scalatest
 
-class BeASymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
+class BeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
 
   describe("The be a ('symbol) syntax") {
-/*
 
     it("should do nothing if the object has an appropriately named method, which returns true") {
-      emptyMock should be ('empty)
-      isEmptyMock should be ('empty)
+      fileMock should be a ('file)
+      isFileMock should be a ('file)
     }
 
     it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists") {
       val ex1 = intercept[IllegalArgumentException] {
-        noPredicateMock should be ('empty)
+        noPredicateMock should be a ('apple)
       }
-      ex1.getMessage should equal ("NoPredicateMock has neither an empty nor an isEmpty method")
+      ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
       // Check message for name that starts with a consonant (should use a instead of an)
       val ex2 = intercept[IllegalArgumentException] {
-        noPredicateMock should be ('full)
+        noPredicateMock should be a ('file)
       }
-      ex2.getMessage should equal ("NoPredicateMock has neither a full nor an isFull method")
+      ex2.getMessage should equal ("NoPredicateMock has neither a file nor an isFile method")
     }
+/*
 
     it("should do nothing if the object has an appropriately named method, which returns false when used with not") {
-      notEmptyMock should not { be ('empty) }
-      notEmptyMock should not be ('empty)
-      isNotEmptyMock should not { be ('empty) }
-      isNotEmptyMock should not be ('empty)
+      notFileMock should not { be ('file) }
+      notFileMock should not be ('file)
+      isNotFileMock should not { be ('file) }
+      isNotFileMock should not be ('file)
     }
 
     it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists, when used with not") {
       val ex1 = intercept[IllegalArgumentException] {
-        noPredicateMock should not { be ('empty) }
+        noPredicateMock should not { be ('file) }
       }
-      ex1.getMessage should equal ("NoPredicateMock has neither an empty nor an isEmpty method")
+      ex1.getMessage should equal ("NoPredicateMock has neither an file nor an isFile method")
       val ex2 = intercept[IllegalArgumentException] {
-        noPredicateMock should not (be ('full))
+        noPredicateMock should not (be ('directory))
       }
-      ex2.getMessage should equal ("NoPredicateMock has neither a full nor an isFull method")
+      ex2.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
       val ex3 = intercept[IllegalArgumentException] {
-        noPredicateMock should not be ('empty)
+        noPredicateMock should not be ('file)
       }
-      ex3.getMessage should equal ("NoPredicateMock has neither an empty nor an isEmpty method")
+      ex3.getMessage should equal ("NoPredicateMock has neither an file nor an isFile method")
       val ex4 = intercept[IllegalArgumentException] {
-        noPredicateMock should not be ('full)
+        noPredicateMock should not be ('directory)
       }
-      ex4.getMessage should equal ("NoPredicateMock has neither a full nor an isFull method")
+      ex4.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
     }
 
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-and expression") {
-      emptyMock should ((be ('empty)) and (be ('empty)))
-      emptyMock should (be ('empty) and (be ('empty)))
-      emptyMock should (be ('empty) and be ('empty))
-      isEmptyMock should ((be ('empty)) and (be ('empty)))
-      isEmptyMock should (be ('empty) and (be ('empty)))
-      isEmptyMock should (be ('empty) and be ('empty))
+      fileMock should ((be ('file)) and (be ('file)))
+      fileMock should (be ('file) and (be ('file)))
+      fileMock should (be ('file) and be ('file))
+      isFileMock should ((be ('file)) and (be ('file)))
+      isFileMock should (be ('file) and (be ('file)))
+      isFileMock should (be ('file) and be ('file))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-or expression") {
 
-      emptyMock should ((be ('full)) or (be ('empty)))
-      emptyMock should (be ('full) or (be ('empty)))
-      emptyMock should (be ('full) or be ('empty))
-      isEmptyMock should ((be ('full)) or (be ('empty)))
-      isEmptyMock should (be ('full) or (be ('empty)))
-      isEmptyMock should (be ('full) or be ('empty))
+      fileMock should ((be ('directory)) or (be ('file)))
+      fileMock should (be ('directory) or (be ('file)))
+      fileMock should (be ('directory) or be ('file))
+      isFileMock should ((be ('directory)) or (be ('file)))
+      isFileMock should (be ('directory) or (be ('file)))
+      isFileMock should (be ('directory) or be ('file))
 
-      emptyMock should ((be ('empty)) or (be ('full)))
-      emptyMock should (be ('empty) or (be ('full)))
-      emptyMock should (be ('empty) or be ('full))
-      isEmptyMock should ((be ('empty)) or (be ('full)))
-      isEmptyMock should (be ('empty) or (be ('full)))
-      isEmptyMock should (be ('empty) or be ('full))
+      fileMock should ((be ('file)) or (be ('directory)))
+      fileMock should (be ('file) or (be ('directory)))
+      fileMock should (be ('file) or be ('directory))
+      isFileMock should ((be ('file)) or (be ('directory)))
+      isFileMock should (be ('file) or (be ('directory)))
+      isFileMock should (be ('file) or be ('directory))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns false, when used in a logical-and expression with not") {
 
-      notEmptyMock should (not (be ('empty)) and not (be ('empty)))
-      notEmptyMock should ((not be ('empty)) and (not be ('empty)))
-      notEmptyMock should (not be ('empty) and not be ('empty))
+      notFileMock should (not (be ('file)) and not (be ('file)))
+      notFileMock should ((not be ('file)) and (not be ('file)))
+      notFileMock should (not be ('file) and not be ('file))
 
-      isNotEmptyMock should (not (be ('empty)) and not (be ('empty)))
-      isNotEmptyMock should ((not be ('empty)) and (not be ('empty)))
-      isNotEmptyMock should (not be ('empty) and not be ('empty))
+      isNotFileMock should (not (be ('file)) and not (be ('file)))
+      isNotFileMock should ((not be ('file)) and (not be ('file)))
+      isNotFileMock should (not be ('file) and not be ('file))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns false, when used in a logical-or expression with not") {
 
-      notEmptyMock should (not (be ('empty)) or not (be ('empty)))
-      notEmptyMock should ((not be ('empty)) or (not be ('empty)))
-      notEmptyMock should (not be ('empty) or not be ('empty))
+      notFileMock should (not (be ('file)) or not (be ('file)))
+      notFileMock should ((not be ('file)) or (not be ('file)))
+      notFileMock should (not be ('file) or not be ('file))
 
-      isNotEmptyMock should (not (be ('empty)) or not (be ('empty)))
-      isNotEmptyMock should ((not be ('empty)) or (not be ('empty)))
-      isNotEmptyMock should (not be ('empty) or not be ('empty))
+      isNotFileMock should (not (be ('file)) or not (be ('file)))
+      isNotFileMock should ((not be ('file)) or (not be ('file)))
+      isNotFileMock should (not be ('file) or not be ('file))
 
-      notEmptyMock should (not (be ('full)) or not (be ('empty)))
-      notEmptyMock should ((not be ('full)) or (not be ('empty)))
-      notEmptyMock should (not be ('full) or not be ('empty))
+      notFileMock should (not (be ('directory)) or not (be ('file)))
+      notFileMock should ((not be ('directory)) or (not be ('file)))
+      notFileMock should (not be ('directory) or not be ('file))
 
-      isNotEmptyMock should (not (be ('full)) or not (be ('empty)))
-      isNotEmptyMock should ((not be ('full)) or (not be ('empty)))
-      isNotEmptyMock should (not be ('full) or not be ('empty))
+      isNotFileMock should (not (be ('directory)) or not (be ('file)))
+      isNotFileMock should ((not be ('directory)) or (not be ('file)))
+      isNotFileMock should (not be ('directory) or not be ('file))
     }
 
     it("should throw AssertionError if the object has an appropriately named method, which returns false") {
       val caught1 = intercept[AssertionError] {
-        notEmptyMock should be ('empty)
+        notFileMock should be ('file)
       }
-      assert(caught1.getMessage === "NotEmptyMock was not empty")
+      assert(caught1.getMessage === "NotFileMock was not file")
       val caught2 = intercept[AssertionError] {
-        isNotEmptyMock should be ('empty)
+        isNotFileMock should be ('file)
       }
-      assert(caught2.getMessage === "IsNotEmptyMock was not empty")
+      assert(caught2.getMessage === "IsNotFileMock was not file")
     }
 
     it("should throw AssertionError if the object has an appropriately named method, which returns true when used with not") {
       val caught1 = intercept[AssertionError] {
-        emptyMock should not { be ('empty) }
+        fileMock should not { be ('file) }
       }
-      assert(caught1.getMessage === "EmptyMock was empty")
+      assert(caught1.getMessage === "FileMock was file")
       val caught2 = intercept[AssertionError] {
-        emptyMock should not be ('empty)
+        fileMock should not be ('file)
       }
-      assert(caught2.getMessage === "EmptyMock was empty")
+      assert(caught2.getMessage === "FileMock was file")
       val caught3 = intercept[AssertionError] {
-        isEmptyMock should not { be ('empty) }
+        isFileMock should not { be ('file) }
       }
-      assert(caught3.getMessage === "IsEmptyMock was empty")
+      assert(caught3.getMessage === "IsFileMock was file")
       val caught4 = intercept[AssertionError] {
-        isEmptyMock should not be ('empty)
+        isFileMock should not be ('file)
       }
-      assert(caught4.getMessage === "IsEmptyMock was empty")
+      assert(caught4.getMessage === "IsFileMock was file")
     }
 
     it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-and expression") {
       val caught1 = intercept[AssertionError] {
-        emptyMock should ((be ('empty)) and (be ('full)))
+        fileMock should ((be ('file)) and (be ('directory)))
       }
-      assert(caught1.getMessage === "EmptyMock was empty, but EmptyMock was not full")
+      assert(caught1.getMessage === "FileMock was file, but FileMock was not directory")
       val caught2 = intercept[AssertionError] {
-        emptyMock should (be ('empty) and (be ('full)))
+        fileMock should (be ('file) and (be ('directory)))
       }
-      assert(caught2.getMessage === "EmptyMock was empty, but EmptyMock was not full")
+      assert(caught2.getMessage === "FileMock was file, but FileMock was not directory")
       val caught3 = intercept[AssertionError] {
-        emptyMock should (be ('empty) and be ('full))
+        fileMock should (be ('file) and be ('directory))
       }
-      assert(caught3.getMessage === "EmptyMock was empty, but EmptyMock was not full")
+      assert(caught3.getMessage === "FileMock was file, but FileMock was not directory")
       val caught4 = intercept[AssertionError] {
-        isEmptyMock should ((be ('empty)) and (be ('full)))
+        isFileMock should ((be ('file)) and (be ('directory)))
       }
-      assert(caught4.getMessage === "IsEmptyMock was empty, but IsEmptyMock was not full")
+      assert(caught4.getMessage === "IsFileMock was file, but IsFileMock was not directory")
       val caught5 = intercept[AssertionError] {
-        isEmptyMock should (be ('empty) and (be ('full)))
+        isFileMock should (be ('file) and (be ('directory)))
       }
-      assert(caught5.getMessage === "IsEmptyMock was empty, but IsEmptyMock was not full")
+      assert(caught5.getMessage === "IsFileMock was file, but IsFileMock was not directory")
       val caught6 = intercept[AssertionError] {
-        isEmptyMock should (be ('empty) and be ('full))
+        isFileMock should (be ('file) and be ('directory))
       }
-      assert(caught6.getMessage === "IsEmptyMock was empty, but IsEmptyMock was not full")
+      assert(caught6.getMessage === "IsFileMock was file, but IsFileMock was not directory")
     }
 
     it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-or expression") {
 
       val caught1 = intercept[AssertionError] {
-        notEmptyMock should ((be ('empty)) or (be ('empty)))
+        notFileMock should ((be ('file)) or (be ('file)))
       }
-      assert(caught1.getMessage === "NotEmptyMock was not empty, and NotEmptyMock was not empty")
+      assert(caught1.getMessage === "NotFileMock was not file, and NotFileMock was not file")
       val caught2 = intercept[AssertionError] {
-        notEmptyMock should (be ('empty) or (be ('empty)))
+        notFileMock should (be ('file) or (be ('file)))
       }
-      assert(caught2.getMessage === "NotEmptyMock was not empty, and NotEmptyMock was not empty")
+      assert(caught2.getMessage === "NotFileMock was not file, and NotFileMock was not file")
       val caught3 = intercept[AssertionError] {
-        notEmptyMock should (be ('empty) or be ('empty))
+        notFileMock should (be ('file) or be ('file))
       }
-      assert(caught3.getMessage === "NotEmptyMock was not empty, and NotEmptyMock was not empty")
+      assert(caught3.getMessage === "NotFileMock was not file, and NotFileMock was not file")
       val caught4 = intercept[AssertionError] {
-        isNotEmptyMock should ((be ('empty)) or (be ('empty)))
+        isNotFileMock should ((be ('file)) or (be ('file)))
       }
-      assert(caught4.getMessage === "IsNotEmptyMock was not empty, and IsNotEmptyMock was not empty")
+      assert(caught4.getMessage === "IsNotFileMock was not file, and IsNotFileMock was not file")
       val caught5 = intercept[AssertionError] {
-        isNotEmptyMock should (be ('empty) or (be ('empty)))
+        isNotFileMock should (be ('file) or (be ('file)))
       }
-      assert(caught5.getMessage === "IsNotEmptyMock was not empty, and IsNotEmptyMock was not empty")
+      assert(caught5.getMessage === "IsNotFileMock was not file, and IsNotFileMock was not file")
       val caught6 = intercept[AssertionError] {
-        isNotEmptyMock should (be ('empty) or be ('empty))
+        isNotFileMock should (be ('file) or be ('file))
       }
-      assert(caught6.getMessage === "IsNotEmptyMock was not empty, and IsNotEmptyMock was not empty")
+      assert(caught6.getMessage === "IsNotFileMock was not file, and IsNotFileMock was not file")
     }
 
     it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-and expression with not") {
 
       val caught1 = intercept[AssertionError] {
-        emptyMock should (not (be ('full)) and not (be ('empty)))
+        fileMock should (not (be ('directory)) and not (be ('file)))
       }
-      assert(caught1.getMessage === "EmptyMock was not full, but EmptyMock was empty")
+      assert(caught1.getMessage === "FileMock was not directory, but FileMock was file")
       val caught2 = intercept[AssertionError] {
-        emptyMock should ((not be ('full)) and (not be ('empty)))
+        fileMock should ((not be ('directory)) and (not be ('file)))
       }
-      assert(caught2.getMessage === "EmptyMock was not full, but EmptyMock was empty")
+      assert(caught2.getMessage === "FileMock was not directory, but FileMock was file")
       val caught3 = intercept[AssertionError] {
-        emptyMock should (not be ('full) and not be ('empty))
+        fileMock should (not be ('directory) and not be ('file))
       }
-      assert(caught3.getMessage === "EmptyMock was not full, but EmptyMock was empty")
+      assert(caught3.getMessage === "FileMock was not directory, but FileMock was file")
       val caught4 = intercept[AssertionError] {
-        isEmptyMock should (not (be ('full)) and not (be ('empty)))
+        isFileMock should (not (be ('directory)) and not (be ('file)))
       }
-      assert(caught4.getMessage === "IsEmptyMock was not full, but IsEmptyMock was empty")
+      assert(caught4.getMessage === "IsFileMock was not directory, but IsFileMock was file")
       val caught5 = intercept[AssertionError] {
-        isEmptyMock should ((not be ('full)) and (not be ('empty)))
+        isFileMock should ((not be ('directory)) and (not be ('file)))
       }
-      assert(caught5.getMessage === "IsEmptyMock was not full, but IsEmptyMock was empty")
+      assert(caught5.getMessage === "IsFileMock was not directory, but IsFileMock was file")
       val caught6 = intercept[AssertionError] {
-        isEmptyMock should (not be ('full) and not be ('empty))
+        isFileMock should (not be ('directory) and not be ('file))
       }
-      assert(caught6.getMessage === "IsEmptyMock was not full, but IsEmptyMock was empty")
+      assert(caught6.getMessage === "IsFileMock was not directory, but IsFileMock was file")
       // Check that the error message "short circuits"
       val caught7 = intercept[AssertionError] {
-        emptyMock should (not (be ('empty)) and not (be ('full)))
+        fileMock should (not (be ('file)) and not (be ('directory)))
       }
-      assert(caught7.getMessage === "EmptyMock was empty")
+      assert(caught7.getMessage === "FileMock was file")
     }
 
     it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
 
       val caught1 = intercept[AssertionError] {
-        emptyMock should (not (be ('empty)) or not (be ('empty)))
+        fileMock should (not (be ('file)) or not (be ('file)))
       }
-      assert(caught1.getMessage === "EmptyMock was empty, and EmptyMock was empty")
+      assert(caught1.getMessage === "FileMock was file, and FileMock was file")
       val caught2 = intercept[AssertionError] {
-        emptyMock should ((not be ('empty)) or (not be ('empty)))
+        fileMock should ((not be ('file)) or (not be ('file)))
       }
-      assert(caught2.getMessage === "EmptyMock was empty, and EmptyMock was empty")
+      assert(caught2.getMessage === "FileMock was file, and FileMock was file")
       val caught3 = intercept[AssertionError] {
-        emptyMock should (not be ('empty) or not be ('empty))
+        fileMock should (not be ('file) or not be ('file))
       }
-      assert(caught3.getMessage === "EmptyMock was empty, and EmptyMock was empty")
+      assert(caught3.getMessage === "FileMock was file, and FileMock was file")
       val caught4 = intercept[AssertionError] {
-        isEmptyMock should (not (be ('empty)) or not (be ('empty)))
+        isFileMock should (not (be ('file)) or not (be ('file)))
       }
-      assert(caught4.getMessage === "IsEmptyMock was empty, and IsEmptyMock was empty")
+      assert(caught4.getMessage === "IsFileMock was file, and IsFileMock was file")
       val caught5 = intercept[AssertionError] {
-        isEmptyMock should ((not be ('empty)) or (not be ('empty)))
+        isFileMock should ((not be ('file)) or (not be ('file)))
       }
-      assert(caught5.getMessage === "IsEmptyMock was empty, and IsEmptyMock was empty")
+      assert(caught5.getMessage === "IsFileMock was file, and IsFileMock was file")
       val caught6 = intercept[AssertionError] {
-        isEmptyMock should (not be ('empty) or not be ('empty))
+        isFileMock should (not be ('file) or not be ('file))
       }
-      assert(caught6.getMessage === "IsEmptyMock was empty, and IsEmptyMock was empty")
+      assert(caught6.getMessage === "IsFileMock was file, and IsFileMock was file")
     }
 */
   }
