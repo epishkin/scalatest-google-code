@@ -222,6 +222,16 @@ trait Matchers extends Assertions { matchers =>
 
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
 
+    class AndBeWord {
+      // isFileMock should (be a ('file) and be a ('file))
+      //                                        ^
+      def a(symbol: Symbol) = and(be.a(symbol))
+    }
+
+    // isFileMock should (be a ('file) and be a ('file))
+    //                                 ^
+    def and(beWord: BeWord): AndBeWord = new AndBeWord
+
     class AndFullyMatchWord {
       // "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
       //                                                         ^
@@ -325,6 +335,10 @@ trait Matchers extends Assertions { matchers =>
       // notEmptyMock should (not be ('empty) and not be ('empty))
       //                                              ^
       def be[T](symbol: Symbol) = matchersWrapper.and(matchers.not.be(symbol))
+
+      // isNotFileMock should (not be a ('file) and not be a ('file))
+      //                                                ^
+      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication.symbol))
 
       // "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
       //                                                     ^
@@ -433,6 +447,16 @@ TODO: Ah, maybe this was the simplification
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
 
+    class OrBeWord {
+      // isFileMock should (be a ('file) or be a ('directory))
+      //                                       ^
+      def a(symbol: Symbol) = or(be.a(symbol))
+    }
+
+    // isFileMock should (be a ('file) or be a ('directory))
+    //                                 ^
+    def or(beWord: BeWord): OrBeWord = new OrBeWord
+
     class OrFullyMatchWord {
       // "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
       //                                                        ^
@@ -527,6 +551,10 @@ TODO: Ah, maybe this was the simplification
       // notEmptyMock should (not be ('full) or not be ('empty))
       //                                            ^
       def be[T](symbol: Symbol) = matchersWrapper.or(matchers.not.be(symbol))
+
+      // isNotFileMock should (not be a ('directory) or not be a ('file))
+      //                                                    ^
+      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication.symbol))
 
       // "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
       //                                                     ^
@@ -1733,6 +1761,21 @@ TODO: Do the same simplification as above
       new Matcher[T] {
         def apply(left: T) = {
           val positiveMatcherResult = matchSymbolToPredicateMethod(left, symbol)
+          MatcherResult(
+            !positiveMatcherResult.matches,
+            positiveMatcherResult.negativeFailureMessage,
+            positiveMatcherResult.failureMessage
+          )
+        }
+      }
+    }
+
+    // isNotFileMock should (not be a ('file) and not be a ('file))
+    //                           ^
+    def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordApplication): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) = {
+          val positiveMatcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol)
           MatcherResult(
             !positiveMatcherResult.matches,
             positiveMatcherResult.negativeFailureMessage,

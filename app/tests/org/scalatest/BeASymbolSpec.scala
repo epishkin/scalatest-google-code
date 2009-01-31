@@ -62,7 +62,6 @@ class BeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
       ex4.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
     }
 
-/*
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-and expression") {
       fileMock should ((be a ('file)) and (be a ('file)))
       fileMock should (be a ('file) and (be a ('file)))
@@ -74,51 +73,52 @@ class BeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
 
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-or expression") {
 
-      fileMock should ((be ('directory)) or (be ('file)))
-      fileMock should (be ('directory) or (be ('file)))
-      fileMock should (be ('directory) or be ('file))
-      isFileMock should ((be ('directory)) or (be ('file)))
-      isFileMock should (be ('directory) or (be ('file)))
-      isFileMock should (be ('directory) or be ('file))
+      fileMock should ((be a ('directory)) or (be ('file)))
+      fileMock should (be a ('directory) or (be ('file)))
+      fileMock should (be a ('directory) or be ('file))
+      isFileMock should ((be a ('directory)) or (be ('file)))
+      isFileMock should (be a ('directory) or (be ('file)))
+      isFileMock should (be a ('directory) or be ('file))
 
-      fileMock should ((be ('file)) or (be ('directory)))
-      fileMock should (be ('file) or (be ('directory)))
-      fileMock should (be ('file) or be ('directory))
-      isFileMock should ((be ('file)) or (be ('directory)))
-      isFileMock should (be ('file) or (be ('directory)))
-      isFileMock should (be ('file) or be ('directory))
+      fileMock should ((be a ('file)) or (be a ('directory)))
+      fileMock should (be a ('file) or (be a ('directory)))
+      fileMock should (be a ('file) or be a ('directory))
+      isFileMock should ((be a ('file)) or (be a ('directory)))
+      isFileMock should (be a ('file) or (be a ('directory)))
+      isFileMock should (be a ('file) or be a ('directory))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns false, when used in a logical-and expression with not") {
 
-      notFileMock should (not (be ('file)) and not (be ('file)))
-      notFileMock should ((not be ('file)) and (not be ('file)))
-      notFileMock should (not be ('file) and not be ('file))
+      notFileMock should (not (be a ('file)) and not (be a ('file)))
+      notFileMock should ((not be a ('file)) and (not be a ('file)))
+      notFileMock should (not be a ('file) and not be a ('file))
 
-      isNotFileMock should (not (be ('file)) and not (be ('file)))
-      isNotFileMock should ((not be ('file)) and (not be ('file)))
-      isNotFileMock should (not be ('file) and not be ('file))
+      isNotFileMock should (not (be a ('file)) and not (be a ('file)))
+      isNotFileMock should ((not be a ('file)) and (not be a ('file)))
+      isNotFileMock should (not be a ('file) and not be a ('file))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns false, when used in a logical-or expression with not") {
 
-      notFileMock should (not (be ('file)) or not (be ('file)))
-      notFileMock should ((not be ('file)) or (not be ('file)))
-      notFileMock should (not be ('file) or not be ('file))
+      notFileMock should (not (be a ('file)) or not (be a ('file)))
+      notFileMock should ((not be a ('file)) or (not be a ('file)))
+      notFileMock should (not be a ('file) or not be a ('file))
 
-      isNotFileMock should (not (be ('file)) or not (be ('file)))
-      isNotFileMock should ((not be ('file)) or (not be ('file)))
-      isNotFileMock should (not be ('file) or not be ('file))
+      isNotFileMock should (not (be a ('file)) or not (be a ('file)))
+      isNotFileMock should ((not be a ('file)) or (not be a ('file)))
+      isNotFileMock should (not be a ('file) or not be a ('file))
 
-      notFileMock should (not (be ('directory)) or not (be ('file)))
-      notFileMock should ((not be ('directory)) or (not be ('file)))
-      notFileMock should (not be ('directory) or not be ('file))
+      notFileMock should (not (be a ('directory)) or not (be a ('file)))
+      notFileMock should ((not be a ('directory)) or (not be a ('file)))
+      notFileMock should (not be a ('directory) or not be a ('file))
 
-      isNotFileMock should (not (be ('directory)) or not (be ('file)))
-      isNotFileMock should ((not be ('directory)) or (not be ('file)))
-      isNotFileMock should (not be ('directory) or not be ('file))
+      isNotFileMock should (not (be a ('directory)) or not (be a ('file)))
+      isNotFileMock should ((not be a ('directory)) or (not be a ('file)))
+      isNotFileMock should (not be a ('directory) or not be a ('file))
     }
 
+/*
     it("should throw AssertionError if the object has an appropriately named method, which returns false") {
       val caught1 = intercept[AssertionError] {
         notFileMock should be ('file)
