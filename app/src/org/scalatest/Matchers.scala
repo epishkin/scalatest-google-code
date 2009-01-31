@@ -69,9 +69,6 @@ private[scalatest] object Helper {
 
 trait Matchers extends Assertions { matchers =>
 
-  // Used as the result of be ('empty) for example
-  // trait BeSymbolMatcher // TODO Matcher self type
-
   private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol): MatcherResult = {
 
     def transformOperatorChars(s: String) = {
@@ -107,26 +104,6 @@ trait Matchers extends Assertions { matchers =>
           builder.append(ch)
       }
       builder.toString
-/*
-      s.replace("!", "$bang").
-        replace("#", "$hash").
-        replace("~", "$tilde").
-        replace("|", "$bar").
-        replace("^", "$up").
-        replace("\\", "$bslash").
-        replace("@", "$at").
-        replace("?", "$qmark").
-        replace(">", "$greater").
-        replace("=", "$eq").
-        replace("<", "$less").
-        replace(":", "$colon").
-        replace("/", "$div").
-        replace("-", "$minus").
-        replace("+", "$plus").
-        replace("*", "$times").
-        replace("&", "$amp").
-        replace("%", "$percent")
-*/
     }
 
     // If 'empty passed, rightNoTick would be "empty"
@@ -1172,6 +1149,7 @@ TODO: Do the same simplification as above
   }
 
   protected class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
+
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
         throw new AssertionError(
@@ -1182,8 +1160,32 @@ TODO: Do the same simplification as above
           )
         )
     }
+
+    // fileMock should be a ('file)
+    //                    ^
+    def a(symbol: Symbol) {
+      val matcherResult = matchSymbolToPredicateMethod(left, symbol)
+      if (matcherResult.matches != shouldBeTrue) {
+        throw new AssertionError(
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+        )
+      }
+    }
+
+    // fruit should be an ('orange)
+    //                    ^
+    // TODO, in both of these, the failure message doesn't have a/an
+    def an(symbol: Symbol) {
+      val matcherResult = matchSymbolToPredicateMethod(left, symbol)
+      if (matcherResult.matches != shouldBeTrue) {
+        throw new AssertionError(
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+        )
+      }
+    }
   }
 
+/*
   // What's this one for again?
   implicit def resultOfBeWordToForAnyRef[T <: AnyRef](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForAnyRef =
     new ResultOfBeWordForAnyRef(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
@@ -1192,6 +1194,7 @@ TODO: Do the same simplification as above
     def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
     def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
   }
+*/
 
   protected class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
     def equal(right: Any) {
@@ -1263,7 +1266,7 @@ TODO: Do the same simplification as above
       val matcherResult = matchSymbolToPredicateMethod(left, symbol)
       if (matcherResult.matches != shouldBeTrue) {
         throw new AssertionError(
-          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage,
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
         )
       }
     }
@@ -1618,18 +1621,6 @@ TODO: Do the same simplification as above
       new Matcher[S] {
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right)
       }
-
-/*
-    def apply[S <: AnyRef](right: Symbol): Matcher[S] with BeSymbolMatcher =
-      new Matcher[S] with BeSymbolMatcher {
-        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right)
-      }
-
-    def apply[S <: AnyRef](right: Symbol): BeSymbolMatcher[S] =
-      new BeSymbolMatcher[S] {
-        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right)
-      }
-*/
 
     def apply(right: Nil.type): Matcher[List[_]] =
       new Matcher[List[_]] {

@@ -327,8 +327,31 @@ trait ShouldMatchers extends Matchers {
 
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
-    def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
+    // I don't think there's a be on Any, because a (symbol) and an (symbol), pluse
+    // theSameInstanceAs only work on AnyRefs
+    // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
+  }
+
+  protected trait ShouldMethodsForAnyRef[T <: AnyRef] {
+
+    protected val leftOperand: T
+
+    def should(rightMatcher: Matcher[T]) { // First step, duplicate code. TODO: Eliminate the duplication
+      rightMatcher(leftOperand) match {
+        case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+        case _ => ()
+      }
+    }
+
+    // This one supports it should behave like
+    def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
+
+    def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
+      new ResultOfNotWordForAnyRef(leftOperand, false)
+    }
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef = new ResultOfBeWordForAnyRef(leftOperand, true)
   }
 
   protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
@@ -353,7 +376,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethods[String] {
+  protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethodsForAnyRef[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
@@ -433,13 +456,17 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  protected class AnyRefShouldWrapper[T <: AnyRef](left: T) extends { val leftOperand = left } with ShouldMethodsForAnyRef[T]
+/*
   protected class AnyRefShouldWrapper[T <: AnyRef](left: T) extends { val leftOperand = left } with ShouldMethods[T] {
     override def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
       new ResultOfNotWordForAnyRef(leftOperand, false)
     }
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef = new ResultOfBeWordForAnyRef(leftOperand, true)
   }
-  
-  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethods[Collection[T]]
+*/
+
+  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
 
     override def should(notWord: NotWord): ResultOfNotWordForCollection[Collection[T]] = {
@@ -564,3 +591,46 @@ res6: SizeWrapper = SizeWrapper@660ff1
 scala> set.prove
 SetWrapper
  */
+/*
+THIS DOESN'T WORK BECAUSE...
+  protected trait ShouldMethods[T] {
+    protected val leftOperand: T
+    def should(rightMatcher: Matcher[T]) {
+      rightMatcher(leftOperand) match {
+        case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+        case _ => ()
+      }
+    }
+
+    // This one supports it should behave like
+    def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
+    // I don't think there's a be on Any, because a (symbol) and an (symbol), pluse
+    // theSameInstanceAs only work on AnyRefs
+    // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
+    def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
+  }
+  protected trait ShouldMethodsForAnyRef[T <: AnyRef] extends ShouldMethods[T] {
+    val leftOperand: T
+    override def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
+      new ResultOfNotWordForAnyRef(leftOperand, false)
+    }
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef = new ResultOfBeWordForAnyRef(leftOperand, true)
+  }
+  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
+      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
+
+    override def should(notWord: NotWord): ResultOfNotWordForCollection[Collection[T]] = {
+      new ResultOfNotWordForCollection(leftOperand, false)
+    }
+  }
+When you mix in the latter, the result type of should(BeWord) is still the more generic ResultOfNotWord, not ResultOfNotWordForAnyRef.
+As a result it doesn't have an "a (Symbol)" method on it. This triggers another implicit conversion in this case:
+
+emptySet should be a ('empty)
+
+Turns into:
+
+BeSymbolSpec.this.convertToAnyRefShouldWrapper[BeSymbolSpec.this.CollectionShouldWrapper[T]](BeSymbolSpec.this.convertToCollectionShouldWrapper[T](emptySet)).should(BeSymbolSpec.this.be).a(scala.Symbol.apply("empty"));
+
+So the problem with having these "methods" traits extend each other is the covariant result types don't get more specific visibly enough.
+*/

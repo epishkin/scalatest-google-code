@@ -335,6 +335,8 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         assert(caught4.getMessage === "\"unhappy\" has neither a happy nor an isHappy method")
       }
 
+      // TODO: Make sure to write a test for each conversion, because some are using ShouldMethodsForAny instead
+      // of ShouldMethodsForAnyRef.
       it("should be invokable from be a Symbol and be an Symbol") {
         val emptySet = Set()
         emptySet should be a ('empty)
