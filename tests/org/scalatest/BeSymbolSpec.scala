@@ -306,13 +306,11 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       }
       assert(caught6.getMessage === "IsEmptyMock was empty, and IsEmptyMock was empty")
     }
-  }
 
-  describe("The be matcher") {
+    describe("(for the different types that have implicit conversions for should methods)") {
 
-    describe("(for symbols)") {
-
-      it("should call isEmpty when passed 'empty") {
+      // FOR: implicit def convertToCollectionShouldWrapper[T](o: Collection[T])...
+      it("should work on a scala.Collection") {
         val emptySet = Set[Int]()
         emptySet should be ('empty)
         val nonEmptySet = Set(1, 2, 3)
@@ -329,11 +327,102 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptySet should not { be ('happy) }
         }
         assert(caught3.getMessage === "Set(1, 2, 3) has neither a happy nor an isHappy method")
-        val caught4 = intercept[IllegalArgumentException] {
-          "unhappy" should not { be ('happy) }
-        }
-        assert(caught4.getMessage === "\"unhappy\" has neither a happy nor an isHappy method")
       }
+
+      // FOR: implicit def convertToSeqShouldWrapper[T](o: Seq[T])...
+      it("should work on a scala.Seq") {
+        import scala.collection.mutable.ListBuffer
+        val emptyListBuffer = new ListBuffer[Int]
+        emptyListBuffer should be ('empty)
+        val nonEmptyListBuffer = new ListBuffer[Int]
+        nonEmptyListBuffer += 1
+        nonEmptyListBuffer += 2
+        nonEmptyListBuffer += 3
+        nonEmptyListBuffer should not { be ('empty) }
+        val caught1 = intercept[AssertionError] {
+          nonEmptyListBuffer should be ('empty)
+        }
+        assert(caught1.getMessage === "ListBuffer(1, 2, 3) was not empty")
+        val caught2 = intercept[AssertionError] {
+          nonEmptyListBuffer should not { be ('hasDefiniteSize) }
+        }
+        assert(caught2.getMessage === "ListBuffer(1, 2, 3) was hasDefiniteSize")
+        val caught3 = intercept[IllegalArgumentException] {
+          nonEmptyListBuffer should not { be ('happy) }
+        }
+        assert(caught3.getMessage === "ListBuffer(1, 2, 3) has neither a happy nor an isHappy method")
+      }
+
+      // implicit def convertToArrayShouldWrapper[T](o: Array[T]): ArrayShouldWrapper[T] = new ArrayShouldWrapper[T](o)
+      it("should work on a scala.Array") {
+        val emptyArray = new Array[Int](0)
+        emptyArray should be ('empty)
+        val nonEmptyArray = Array(1, 2, 3)
+        nonEmptyArray should not be ('empty)
+        val caught1 = intercept[AssertionError] {
+          nonEmptyArray should be ('empty)
+        }
+        assert(caught1.getMessage === "Array(1, 2, 3) was not empty")
+        val caught2 = intercept[AssertionError] {
+          nonEmptyArray should not { be ('hasDefiniteSize) }
+        }
+        assert(caught2.getMessage === "Array(1, 2, 3) was hasDefiniteSize")
+        val caught3 = intercept[IllegalArgumentException] {
+          nonEmptyArray should not { be ('happy) }
+        }
+        assert(caught3.getMessage === "Array(1, 2, 3) has neither a happy nor an isHappy method")
+      }
+
+      // FOR: implicit def convertToListShouldWrapper[T](o: List[T])...
+      it("should work on a scala.List") {
+        val emptyList = List[Int]()
+        emptyList should be ('empty)
+        val nonEmptyList = List(1, 2, 3)
+        nonEmptyList should not { be ('empty) }
+        val caught1 = intercept[AssertionError] {
+          nonEmptyList should be ('empty)
+        }
+        assert(caught1.getMessage === "List(1, 2, 3) was not empty")
+        val caught2 = intercept[AssertionError] {
+          nonEmptyList should not { be ('hasDefiniteSize) }
+        }
+        assert(caught2.getMessage === "List(1, 2, 3) was hasDefiniteSize")
+        val caught3 = intercept[IllegalArgumentException] {
+          nonEmptyList should not { be ('happy) }
+        }
+        assert(caught3.getMessage === "List(1, 2, 3) has neither a happy nor an isHappy method")
+      }
+
+      // implicit def convertToMapShouldWrapper[K, V](o: scala.collection.Map[K, V])...
+      it("should work on a scala.Map") {
+        val emptyMap = Map[Int, String]()
+        emptyMap should be ('empty)
+        val nonEmptyMap = Map("one" -> 1, "two" -> 2, "three" -> 3)
+        nonEmptyMap should not { be ('empty) }
+        val caught1 = intercept[AssertionError] {
+          nonEmptyMap should be ('empty)
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2, three -> 3) was not empty")
+        val caught2 = intercept[AssertionError] {
+          nonEmptyMap should not { be ('hasDefiniteSize) }
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2, three -> 3) was hasDefiniteSize")
+        val caught3 = intercept[IllegalArgumentException] {
+          nonEmptyMap should not { be ('happy) }
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2, three -> 3) has neither a happy nor an isHappy method")
+      }
+
+      // implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
+      // implicit def convertToJavaCollectionShouldWrapper[T](o: java.util.Collection[T]): JavaCollectionShouldWrapper[T] = new JavaCollectionShouldWrapper[T](o)
+      // implicit def convertToJavaListShouldWrapper[T](o: java.util.List[T]): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
+    }
+  }
+
+  describe("The be matcher") {
+
+    describe("(for symbols)") {
+
 
       // TODO: Make sure to write a test for each conversion, because some are using ShouldMethodsForAny instead
       // of ShouldMethodsForAnyRef.
