@@ -69,7 +69,7 @@ private[scalatest] object Helper {
 
 trait Matchers extends Assertions { matchers =>
 
-  private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol): MatcherResult = {
+  private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatcherResult = {
 
     def transformOperatorChars(s: String) = {
       val builder = new StringBuilder
@@ -150,10 +150,15 @@ trait Matchers extends Assertions { matchers =>
         )
       case 1 =>
         val result = methodArray(0).invoke(left, Array[AnyRef](): _*).asInstanceOf[Boolean]
+        val (wasNot, was) =
+          if (hasArticle) {
+            if (articleIsA) ("wasNotA", "wasA") else ("wasNotAn", "wasAn")
+          }
+          else ("wasNot", "was")
         MatcherResult(
           result,
-          FailureMessages("wasNot", left, UnquotedString(rightNoTick)),
-          FailureMessages("was", left, UnquotedString(rightNoTick))
+          FailureMessages(wasNot, left, UnquotedString(rightNoTick)),
+          FailureMessages(was, left, UnquotedString(rightNoTick))
         )
       case _ => // Should only ever be 2, but just in case
         throw new IllegalArgumentException(
@@ -223,9 +228,14 @@ trait Matchers extends Assertions { matchers =>
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
 
     class AndBeWord {
+
       // isFileMock should (be a ('file) and be a ('file))
       //                                        ^
       def a(symbol: Symbol) = and(be.a(symbol))
+
+      // isAppleMock should (be an ('apple) and be an ('apple))
+      //                                           ^
+      def an(symbol: Symbol) = and(be.an(symbol))
     }
 
     // isFileMock should (be a ('file) and be a ('file))
@@ -338,7 +348,11 @@ trait Matchers extends Assertions { matchers =>
 
       // isNotFileMock should (not be a ('file) and not be a ('file))
       //                                                ^
-      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication.symbol))
+      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
+
+      // isNotAppleMock should (not be an ('apple) and not be an ('apple)) 
+      //                                                   ^
+      def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication))
 
       // "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
       //                                                     ^
@@ -448,9 +462,14 @@ TODO: Ah, maybe this was the simplification
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
 
     class OrBeWord {
+
       // isFileMock should (be a ('file) or be a ('directory))
       //                                       ^
       def a(symbol: Symbol) = or(be.a(symbol))
+
+      // appleMock should (be an ('orange) or be an ('apple))
+      //                                         ^
+      def an(symbol: Symbol) = or(be.an(symbol))
     }
 
     // isFileMock should (be a ('file) or be a ('directory))
@@ -554,7 +573,11 @@ TODO: Ah, maybe this was the simplification
 
       // isNotFileMock should (not be a ('directory) or not be a ('file))
       //                                                    ^
-      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication.symbol))
+      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication))
+
+      // notAppleMock should (not be an ('apple) or not be an ('apple))
+      //                                                ^
+      def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication))
 
       // "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
       //                                                     ^
@@ -1192,7 +1215,7 @@ TODO: Do the same simplification as above
     // fileMock should be a ('file)
     //                    ^
     def a(symbol: Symbol) {
-      val matcherResult = matchSymbolToPredicateMethod(left, symbol)
+      val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
         throw new AssertionError(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
@@ -1204,7 +1227,7 @@ TODO: Do the same simplification as above
     //                    ^
     // TODO, in both of these, the failure message doesn't have a/an
     def an(symbol: Symbol) {
-      val matcherResult = matchSymbolToPredicateMethod(left, symbol)
+      val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw new AssertionError(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
@@ -1291,7 +1314,7 @@ TODO: Do the same simplification as above
     // emptyMock should not be ('empty)
     //                      ^
     def be(symbol: Symbol) {
-      val matcherResult = matchSymbolToPredicateMethod(left, symbol)
+      val matcherResult = matchSymbolToPredicateMethod(left, symbol, false, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw new AssertionError(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
@@ -1302,7 +1325,18 @@ TODO: Do the same simplification as above
     // notFileMock should not be a ('file)
     //                        ^
     def be(resultOfAWordApplication: ResultOfAWordApplication) {
-      val matcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol)
+      val matcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
+      if (matcherResult.matches != shouldBeTrue) {
+        throw new AssertionError(
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+        )
+      }
+    }
+
+    // notAppleMock should not be an ('apple)
+    //                         ^
+    def be(resultOfAnWordApplication: ResultOfAnWordApplication) {
+      val matcherResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw new AssertionError(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
@@ -1598,9 +1632,20 @@ TODO: Do the same simplification as above
 
   protected class BeWord {
 
-    // These two are used if this shows up in a "x should { be a 'file and ..." type clause
-    def a[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
-    def an[S <: AnyRef](right: Symbol): Matcher[S] = apply(right)
+    // fileMock should not { be a ('file) }
+    //                          ^
+    def a[S <: AnyRef](right: Symbol): Matcher[S] =
+      new Matcher[S] {
+        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, true, true)
+      }
+
+    // animal should not { be an ('elephant) }
+    //                        ^
+    def an[S <: AnyRef](right: Symbol): Matcher[S] =
+      new Matcher[S] {
+        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, true, false)
+      }
+
 
     def apply(doubleTolerance: DoubleTolerance): Matcher[Double] =
       new Matcher[Double] {
@@ -1658,7 +1703,7 @@ TODO: Do the same simplification as above
   
     def apply[S <: AnyRef](right: Symbol): Matcher[S] =
       new Matcher[S] {
-        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right)
+        def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, false, false)
       }
 
     def apply(right: Nil.type): Matcher[List[_]] =
@@ -1760,7 +1805,7 @@ TODO: Do the same simplification as above
     def be[T <: AnyRef](symbol: Symbol): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
-          val positiveMatcherResult = matchSymbolToPredicateMethod(left, symbol)
+          val positiveMatcherResult = matchSymbolToPredicateMethod(left, symbol, false, false)
           MatcherResult(
             !positiveMatcherResult.matches,
             positiveMatcherResult.negativeFailureMessage,
@@ -1775,7 +1820,22 @@ TODO: Do the same simplification as above
     def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
-          val positiveMatcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol)
+          val positiveMatcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
+          MatcherResult(
+            !positiveMatcherResult.matches,
+            positiveMatcherResult.negativeFailureMessage,
+            positiveMatcherResult.failureMessage
+          )
+        }
+      }
+    }
+
+    // isNotAppleMock should (not be an ('apple) and not be an ('apple))
+    //                            ^
+    def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordApplication): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) = {
+          val positiveMatcherResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
           MatcherResult(
             !positiveMatcherResult.matches,
             positiveMatcherResult.negativeFailureMessage,
@@ -1955,6 +2015,14 @@ TODO: Do the same simplification as above
   }
 
   val a = new AWord
+
+  class ResultOfAnWordApplication(val symbol: Symbol)
+
+  class AnWord {
+    def apply(symbol: Symbol) = new ResultOfAnWordApplication(symbol)
+  }
+
+  val an = new AnWord
 
   val regex = new RegexWord
 
