@@ -414,8 +414,50 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       }
 
       // implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
-      // implicit def convertToJavaCollectionShouldWrapper[T](o: java.util.Collection[T]): JavaCollectionShouldWrapper[T] = new JavaCollectionShouldWrapper[T](o)
-      // implicit def convertToJavaListShouldWrapper[T](o: java.util.List[T]): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
+      it("should work on a String") {
+        val caught3 = intercept[IllegalArgumentException] {
+          "howdy" should not be ('happy)
+        }
+        assert(caught3.getMessage === "\"howdy\" has neither a happy nor an isHappy method")
+      }
+
+      // FOR: implicit def convertToJavaCollectionShouldWrapper[T](o: java.util.Collection[T])...
+      it("should work on a java.util.Collection") {
+        val emptySet = new java.util.HashSet[Int]
+        emptySet should be ('empty)
+        val nonEmptySet = new java.util.HashSet[Int]
+        nonEmptySet.add(1)
+        nonEmptySet.add(2)
+        nonEmptySet.add(3)
+        nonEmptySet should not { be ('empty) }
+        val caught1 = intercept[AssertionError] {
+          nonEmptySet should be ('empty)
+        }
+        assert(caught1.getMessage === "[2, 1, 3] was not empty")
+        val caught3 = intercept[IllegalArgumentException] {
+          nonEmptySet should not { be ('happy) }
+        }
+        assert(caught3.getMessage === "[2, 1, 3] has neither a happy nor an isHappy method")
+      }
+
+      // FOR: implicit def convertToJavaListShouldWrapper[T](o: java.util.List[T])...
+      it("should work on a java.util.List") {
+        val emptyList = new java.util.ArrayList[Int]
+        emptyList should be ('empty)
+        val nonEmptyList = new java.util.ArrayList[Int]
+        nonEmptyList.add(1)
+        nonEmptyList.add(2)
+        nonEmptyList.add(3)
+        nonEmptyList should not { be ('empty) }
+        val caught1 = intercept[AssertionError] {
+          nonEmptyList should be ('empty)
+        }
+        assert(caught1.getMessage === "[1, 2, 3] was not empty")
+        val caught3 = intercept[IllegalArgumentException] {
+          nonEmptyList should not { be ('happy) }
+        }
+        assert(caught3.getMessage === "[1, 2, 3] has neither a happy nor an isHappy method")
+      }
     }
   }
 
