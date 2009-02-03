@@ -51,37 +51,25 @@ class SameInstanceAsSpec extends Spec with ShouldMatchers {
       obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
     }
 
-/*
     it("should do nothing if the object has an appropriately named method, which returns false, when used in a logical-and expression with not") {
 
-      notFileMock should (not (be a ('file)) and not (be a ('file)))
-      notFileMock should ((not be a ('file)) and (not be a ('file)))
-      notFileMock should (not be a ('file) and not be a ('file))
-
-      isNotFileMock should (not (be a ('file)) and not (be a ('file)))
-      isNotFileMock should ((not be a ('file)) and (not be a ('file)))
-      isNotFileMock should (not be a ('file) and not be a ('file))
+      obj should (not (be theSameInstanceAs (otherString)) and not (be theSameInstanceAs (otherString)))
+      obj should ((not be theSameInstanceAs (otherString)) and (not be theSameInstanceAs (otherString)))
+      obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns false, when used in a logical-or expression with not") {
 
-      notFileMock should (not (be a ('file)) or not (be a ('file)))
-      notFileMock should ((not be a ('file)) or (not be a ('file)))
-      notFileMock should (not be a ('file) or not be a ('file))
+      obj should (not (be theSameInstanceAs (string)) or not (be theSameInstanceAs (otherString)))
+      obj should ((not be theSameInstanceAs (string)) or (not be theSameInstanceAs (otherString)))
+      obj should (not be theSameInstanceAs (string) or not be theSameInstanceAs (otherString))
 
-      isNotFileMock should (not (be a ('file)) or not (be a ('file)))
-      isNotFileMock should ((not be a ('file)) or (not be a ('file)))
-      isNotFileMock should (not be a ('file) or not be a ('file))
-
-      notFileMock should (not (be a ('directory)) or not (be a ('file)))
-      notFileMock should ((not be a ('directory)) or (not be a ('file)))
-      notFileMock should (not be a ('directory) or not be a ('file))
-
-      isNotFileMock should (not (be a ('directory)) or not (be a ('file)))
-      isNotFileMock should ((not be a ('directory)) or (not be a ('file)))
-      isNotFileMock should (not be a ('directory) or not be a ('file))
+      obj should (not (be theSameInstanceAs (otherString)) or not (be theSameInstanceAs (string)))
+      obj should ((not be theSameInstanceAs (otherString)) or (not be theSameInstanceAs (string)))
+      obj should (not be theSameInstanceAs (otherString) or not be theSameInstanceAs (string))
     }
 
+/*
     it("should throw AssertionError if the object has an appropriately named method, which returns false") {
       val caught1 = intercept[AssertionError] {
         notFileMock should be a ('file)
