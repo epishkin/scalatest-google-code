@@ -27,75 +27,31 @@ class SameInstanceAsSpec extends Spec with ShouldMatchers {
       string should be theSameInstanceAs (string)
       obj should be theSameInstanceAs (string)
       string should be theSameInstanceAs (obj)
+    }
+
+    it("should do nothing if the object has an appropriately named method, which returns false when used with not") {
       otherString should not { be theSameInstanceAs (string) }
       otherString should not be theSameInstanceAs (string)
     }
 
-/*
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists") {
-      val ex1 = intercept[IllegalArgumentException] {
-        noPredicateMock should be a ('apple)
-      }
-      ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
-      // Check message for name that starts with a consonant (should use a instead of an)
-      val ex2 = intercept[IllegalArgumentException] {
-        noPredicateMock should be a ('file)
-      }
-      ex2.getMessage should equal ("NoPredicateMock has neither a file nor an isFile method")
-    }
-
-    it("should do nothing if the object has an appropriately named method, which returns false when used with not") {
-      notFileMock should not { be a ('file) }
-      notFileMock should not be a ('file)
-      isNotFileMock should not { be a ('file) }
-      isNotFileMock should not be a ('file)
-    }
-
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists, when used with not") {
-      val ex1 = intercept[IllegalArgumentException] {
-        noPredicateMock should not { be a ('apple) }
-      }
-      ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
-      val ex2 = intercept[IllegalArgumentException] {
-        noPredicateMock should not (be a ('directory))
-      }
-      ex2.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
-      val ex3 = intercept[IllegalArgumentException] {
-        noPredicateMock should not be a ('apple)
-      }
-      ex3.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
-      val ex4 = intercept[IllegalArgumentException] {
-        noPredicateMock should not be a ('directory)
-      }
-      ex4.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
-    }
-
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-and expression") {
-      fileMock should ((be a ('file)) and (be a ('file)))
-      fileMock should (be a ('file) and (be a ('file)))
-      fileMock should (be a ('file) and be a ('file))
-      isFileMock should ((be a ('file)) and (be a ('file)))
-      isFileMock should (be a ('file) and (be a ('file)))
-      isFileMock should (be a ('file) and be a ('file))
+      obj should ((be theSameInstanceAs (string)) and (be theSameInstanceAs (string)))
+      obj should (be theSameInstanceAs (string) and (be theSameInstanceAs (string)))
+      obj should (be theSameInstanceAs (string) and be theSameInstanceAs (string))
     }
 
     it("should do nothing if the object has an appropriately named method, which returns true, when used in a logical-or expression") {
 
-      fileMock should ((be a ('directory)) or (be a ('file)))
-      fileMock should (be a ('directory) or (be a ('file)))
-      fileMock should (be a ('directory) or be a ('file))
-      isFileMock should ((be a ('directory)) or (be a ('file)))
-      isFileMock should (be a ('directory) or (be a ('file)))
-      isFileMock should (be a ('directory) or be a ('file))
+      obj should ((be theSameInstanceAs (otherString)) or (be theSameInstanceAs (string)))
+      obj should (be theSameInstanceAs (otherString) or (be theSameInstanceAs (string)))
+      obj should (be theSameInstanceAs (otherString) or be theSameInstanceAs (string))
 
-      fileMock should ((be a ('file)) or (be a ('directory)))
-      fileMock should (be a ('file) or (be a ('directory)))
-      fileMock should (be a ('file) or be a ('directory))
-      isFileMock should ((be a ('file)) or (be a ('directory)))
-      isFileMock should (be a ('file) or (be a ('directory)))
-      isFileMock should (be a ('file) or be a ('directory))
+      obj should ((be theSameInstanceAs (string)) or (be theSameInstanceAs (otherString)))
+      obj should (be theSameInstanceAs (string) or (be theSameInstanceAs (otherString)))
+      obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
     }
 
+/*
     it("should do nothing if the object has an appropriately named method, which returns false, when used in a logical-and expression with not") {
 
       notFileMock should (not (be a ('file)) and not (be a ('file)))
