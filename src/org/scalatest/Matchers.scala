@@ -1343,6 +1343,20 @@ TODO: Do the same simplification as above
         )
       }
     }
+
+    // otherString should not be theSameInstanceAs (string)
+    //                        ^
+    def be(resultOfSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) {
+      if ((resultOfSameInstanceAsApplication.right eq left) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
+            left,
+            resultOfSameInstanceAsApplication.right
+          )
+        )
+      }
+    }
   }
 
   protected class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
@@ -2023,6 +2037,18 @@ TODO: Do the same simplification as above
   }
 
   val an = new AnWord
+
+  class ResultOfTheSameInstanceAsApplication(val right: AnyRef)
+
+  class TheSameInstanceAsPhrase {
+    // otherString should not be theSameInstanceAs (string)
+    //                                             ^
+    def apply(anyRef: AnyRef) = new ResultOfTheSameInstanceAsApplication(anyRef)
+  }
+
+  // otherString should not be theSameInstanceAs (string)
+  //                           ^
+  val theSameInstanceAs = new TheSameInstanceAsPhrase
 
   val regex = new RegexWord
 
