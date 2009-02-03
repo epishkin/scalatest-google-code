@@ -358,6 +358,10 @@ trait Matchers extends Assertions { matchers =>
       //                                                   ^
       def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication))
 
+      // obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
+      //                                                            ^
+      def be[T](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) = matchersWrapper.and(matchers.not.be(resultOfTheSameInstanceAsApplication))
+
       // "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
       //                                                     ^
       def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
@@ -586,6 +590,10 @@ TODO: Ah, maybe this was the simplification
       // notAppleMock should (not be an ('apple) or not be an ('apple))
       //                                                ^
       def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication))
+
+      // obj should (not be theSameInstanceAs (otherString) or not be theSameInstanceAs (string))
+      //                                                           ^
+      def be[T](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) = matchersWrapper.or(matchers.not.be(resultOfTheSameInstanceAsApplication))
 
       // "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
       //                                                     ^
@@ -1787,9 +1795,7 @@ TODO: Do the same simplification as above
       }
     }
 
-    /// XXX must do the same for these as above
     def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]): Matcher[T] = {
-      // apply(matchers.be(resultOfGreaterThanComparison))
       new Matcher[T] {
         def apply(left: T) =
           MatcherResult(
@@ -1801,7 +1807,6 @@ TODO: Do the same simplification as above
     }
 
     def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]): Matcher[T] = {
-      // apply(matchers.be(resultOfLessThanOrEqualToComparison))
       new Matcher[T] {
         def apply(left: T) =
           MatcherResult(
@@ -1813,7 +1818,6 @@ TODO: Do the same simplification as above
     }
 
     def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]): Matcher[T] = {
-      // apply(matchers.be(resultOfGreaterThanOrEqualToComparison)) TODO drop these if it works.
       new Matcher[T] {
         def apply(left: T) =
           MatcherResult(
@@ -1862,6 +1866,20 @@ TODO: Do the same simplification as above
             !positiveMatcherResult.matches,
             positiveMatcherResult.negativeFailureMessage,
             positiveMatcherResult.failureMessage
+          )
+        }
+      }
+    }
+
+    // obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
+    //                 ^
+    def be[T <: AnyRef](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) = {
+          MatcherResult(
+            resultOfTheSameInstanceAsApplication.right ne left,
+            FailureMessages("wasSameInstanceAs", left, resultOfTheSameInstanceAsApplication.right),
+            FailureMessages("wasNotSameInstanceAs", left, resultOfTheSameInstanceAsApplication.right)
           )
         }
       }
