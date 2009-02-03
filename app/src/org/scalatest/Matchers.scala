@@ -236,6 +236,10 @@ trait Matchers extends Assertions { matchers =>
       // isAppleMock should (be an ('apple) and be an ('apple))
       //                                           ^
       def an(symbol: Symbol) = and(be.an(symbol))
+
+      // obj should (be theSameInstanceAs (string) and be theSameInstanceAs (string))
+      //                                                  ^
+      def theSameInstanceAs(anyRef: AnyRef) = and(be.theSameInstanceAs(anyRef))
     }
 
     // isFileMock should (be a ('file) and be a ('file))
@@ -470,6 +474,10 @@ TODO: Ah, maybe this was the simplification
       // appleMock should (be an ('orange) or be an ('apple))
       //                                         ^
       def an(symbol: Symbol) = or(be.an(symbol))
+
+      // obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
+      //                                                 ^
+      def theSameInstanceAs(anyRef: AnyRef) = or(be.theSameInstanceAs(anyRef))
     }
 
     // isFileMock should (be a ('file) or be a ('directory))
