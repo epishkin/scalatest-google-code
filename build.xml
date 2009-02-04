@@ -240,7 +240,7 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.SameInstanceAsSpec" />
+            <arg value="org.scalatest.PlusOrMinusSpec" />
 
 <!--
             <arg value="-s" />
