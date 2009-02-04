@@ -21,8 +21,11 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
 
     val sevenDotOh = 7.0
     val minusSevenDotOh = -7.0
+    val sevenDotOhFloat = 7.0f
+    val minusSevenDotOhFloat = -7.0f
 
     it("should do nothing if the floating point number is within the specified range") {
+
       sevenDotOh should be (7.1 plusOrMinus 0.2)
       sevenDotOh should be (6.9 plusOrMinus 0.2)
       sevenDotOh should be (7.0 plusOrMinus 0.2)
@@ -33,12 +36,27 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       minusSevenDotOh should be (-7.0 plusOrMinus 0.2)
       minusSevenDotOh should be (-7.2 plusOrMinus 0.2)
       minusSevenDotOh should be (-6.8 plusOrMinus 0.2)
+
+      sevenDotOhFloat should be (7.1f plusOrMinus 0.2f)
+      sevenDotOhFloat should be (6.9f plusOrMinus 0.2f)
+      sevenDotOhFloat should be (7.0f plusOrMinus 0.2f)
+      sevenDotOhFloat should be (7.2f plusOrMinus 0.2f)
+      sevenDotOhFloat should be (6.8f plusOrMinus 0.2f)
+      minusSevenDotOhFloat should be (-7.1f plusOrMinus 0.2f)
+      minusSevenDotOhFloat should be (-6.9f plusOrMinus 0.2f)
+      minusSevenDotOhFloat should be (-7.0f plusOrMinus 0.2f)
+      minusSevenDotOhFloat should be (-7.2f plusOrMinus 0.2f)
+      minusSevenDotOhFloat should be (-6.8f plusOrMinus 0.2f)
     }
 
 /*
-    it("should do nothing if the object is not the same instance as another object, when used with not") {
-      otherString should not { be theSameInstanceAs (string) }
-      otherString should not be theSameInstanceAs (string)
+    it("should do nothing if the floating point number is within the specified range, when used with not") {
+      sevenDotOh should not { be (7.5 plusOrMinus 0.2) }
+      sevenDotOh should not be (7.5 plusOrMinus 0.2)
+      sevenDotOh should not be (6.5 plusOrMinus 0.2)
+      minusSevenDotOh should not { be (-7.5 plusOrMinus 0.2) }
+      minusSevenDotOh should not be (-7.5 plusOrMinus 0.2)
+      minusSevenDotOh should not be (-6.5 plusOrMinus 0.2)
     }
 
     it("should do nothing if the object is the same instnace as another object, when used in a logical-and expression") {

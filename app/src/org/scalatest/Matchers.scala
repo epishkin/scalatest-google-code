@@ -1200,7 +1200,7 @@ TODO: Do the same simplification as above
       }
     }
 
-      //UUU I think I should inherit this from one used by Java collections
+    // UUU I think I should inherit this from one used by Java collections
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
       if ((left.size == right) != shouldBeTrue) {
@@ -1322,6 +1322,24 @@ TODO: Do the same simplification as above
         )
       }
     }
+
+/* This needs to be moved to a ResultOfNotWordForDouble and Float
+    // sevenDotOh should not be (6.5 plusOrMinus 0.2)
+    //                       ^
+    def be(doubleTolerance: DoubleTolerance) {
+      import doubleTolerance._
+      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
+            left,
+            right,
+            tolerance
+          )
+        )
+      }
+    }
+*/
   }
 
   protected class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
@@ -1676,11 +1694,26 @@ TODO: Do the same simplification as above
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, true, false)
       }
 
-
+    // sevenDotOh should be (7.1 plusOrMinus 0.2)
+    //                      ^
     def apply(doubleTolerance: DoubleTolerance): Matcher[Double] =
       new Matcher[Double] {
         def apply(left: Double) = {
           import doubleTolerance._
+          MatcherResult(
+            left <= right + tolerance && left >= right - tolerance,
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+
+    // sevenDotOhFloat should be (7.1f plusOrMinus 0.2f)
+    //                           ^
+    def apply(floatTolerance: FloatTolerance): Matcher[Float] =
+      new Matcher[Float] {
+        def apply(left: Float) = {
+          import floatTolerance._
           MatcherResult(
             left <= right + tolerance && left >= right - tolerance,
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
@@ -2082,11 +2115,19 @@ TODO: Do the same simplification as above
 
   case class DoubleTolerance(right: Double, tolerance: Double)
 
-  class PlusOrMinusWrapper(right: Double) {
+  class DoublePlusOrMinusWrapper(right: Double) {
     def plusOrMinus(tolerance: Double): DoubleTolerance = DoubleTolerance(right, tolerance)
   }
 
-  implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new PlusOrMinusWrapper(right)
+  implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new DoublePlusOrMinusWrapper(right)
+
+  case class FloatTolerance(right: Float, tolerance: Float)
+
+  class FloatPlusOrMinusWrapper(right: Float) {
+    def plusOrMinus(tolerance: Float): FloatTolerance = FloatTolerance(right, tolerance)
+  }
+
+  implicit def convertFloatToPlusOrMinusWrapper(right: Float) = new FloatPlusOrMinusWrapper(right)
 
   class ResultOfNotWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean)
       extends ResultOfNotWord(left, shouldBeTrue) {
