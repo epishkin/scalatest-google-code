@@ -2076,6 +2076,96 @@ TODO: Do the same simplification as above
       }
     }
 
+    // sevenDotOh should ((not be (17.1 plusOrMinus 0.2)) and (not be (17.1 plusOrMinus 0.2)))
+    //                         ^
+    def be(doubleTolerance: DoubleTolerance): Matcher[Double] = {
+      import doubleTolerance._
+      new Matcher[Double] {
+        def apply(left: Double) = {
+          MatcherResult(
+            !(left <= right + tolerance && left >= right - tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+    }
+
+    // sevenDotOhFloat should ((not be (17.1f plusOrMinus 0.2f)) and (not be (17.1f plusOrMinus 0.2f)))
+    //                         ^
+    def be(floatTolerance: FloatTolerance): Matcher[Float] = {
+      import floatTolerance._
+      new Matcher[Float] {
+        def apply(left: Float) = {
+          MatcherResult(
+            !(left <= right + tolerance && left >= right - tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+    }
+
+    // sevenLong should ((not be (19L plusOrMinus 2L)) and (not be (19L plusOrMinus 2L)))
+    //                        ^
+    def be(longTolerance: LongTolerance): Matcher[Long] = {
+      import longTolerance._
+      new Matcher[Long] {
+        def apply(left: Long) = {
+          MatcherResult(
+            !(left <= right + tolerance && left >= right - tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+    }
+
+    // sevenInt should ((not be (19 plusOrMinus 2)) and (not be (19 plusOrMinus 2)))
+    //                       ^
+    def be(intTolerance: IntTolerance): Matcher[Int] = {
+      import intTolerance._
+      new Matcher[Int] {
+        def apply(left: Int) = {
+          MatcherResult(
+            !(left <= right + tolerance && left >= right - tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+    }
+
+    // sevenShort should ((not be (19.toShort plusOrMinus 2.toShort)) and (not be (19.toShort plusOrMinus 2.toShort)))
+    //                         ^
+    def be(shortTolerance: ShortTolerance): Matcher[Short] = {
+      import shortTolerance._
+      new Matcher[Short] {
+        def apply(left: Short) = {
+          MatcherResult(
+            !(left <= right + tolerance && left >= right - tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+    }
+
+    // sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (19.toByte plusOrMinus 2.toByte)))
+    //                        ^
+    def be(byteTolerance: ByteTolerance): Matcher[Byte] = {
+      import byteTolerance._
+      new Matcher[Byte] {
+        def apply(left: Byte) = {
+          MatcherResult(
+            !(left <= right + tolerance && left >= right - tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+    }
+
     def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
       val rightRegexString = resultOfRegexWordApplication.regex.toString
       new Matcher[String] {
