@@ -17,15 +17,31 @@ package org.scalatest
 
 class PlusOrMinusSpec extends Spec with ShouldMatchers {
 
-  describe("The be (x.x plusOrMinus y.y) syntax") {
+  describe("The be (X plusOrMinus Y) syntax") {
 
     val sevenDotOh = 7.0
     val minusSevenDotOh = -7.0
     val sevenDotOhFloat = 7.0f
     val minusSevenDotOhFloat = -7.0f
+    val sevenLong = 7L
+    val minusSevenLong = -7L
+    val sevenInt = 7
+    val minusSevenInt = -7
+    val sevenShort: Short = 7
+    val minusSevenShort: Short = -7
+    val sevenByte: Byte = 7
+    val minusSevenByte: Byte = -7
 
-    it("should do nothing if the floating point number is within the specified range") {
+    /*
+      I decided that for X plusOrMinus Y, Y can be any numeric type that's implicitly
+      convertible to X. So if X is Double, Y could be Double, Float, Long, Int, Short, Byte.
+      If X is Long, Y could be Long, Int, Short, Byte. If X is Short, Y could be Short or Byte.
+      And if X is Byte, Y must be Byte.
+      minusSevenDotOhFloat should be (-6.8f plusOrMinus 0.2d)
+    */
+    it("should do nothing if the number is within the specified range") {
 
+      // Double plusOrMinus Double
       sevenDotOh should be (7.1 plusOrMinus 0.2)
       sevenDotOh should be (6.9 plusOrMinus 0.2)
       sevenDotOh should be (7.0 plusOrMinus 0.2)
@@ -37,6 +53,67 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       minusSevenDotOh should be (-7.2 plusOrMinus 0.2)
       minusSevenDotOh should be (-6.8 plusOrMinus 0.2)
 
+      // Double plusOrMinus Float
+      sevenDotOh should be (7.1 plusOrMinus 0.2f)
+      sevenDotOh should be (6.9 plusOrMinus 0.2f)
+      sevenDotOh should be (7.0 plusOrMinus 0.2f)
+      sevenDotOh should be (7.2 plusOrMinus 0.2f)
+      sevenDotOh should be (6.8 plusOrMinus 0.2f)
+      minusSevenDotOh should be (-7.1 plusOrMinus 0.2f)
+      minusSevenDotOh should be (-6.9 plusOrMinus 0.2f)
+      minusSevenDotOh should be (-7.0 plusOrMinus 0.2f)
+      minusSevenDotOh should be (-7.2 plusOrMinus 0.2f)
+      minusSevenDotOh should be (-6.8 plusOrMinus 0.2f)
+
+      // Double plusOrMinus Long
+      sevenDotOh should be (7.1 plusOrMinus 2L)
+      sevenDotOh should be (6.9 plusOrMinus 2L)
+      sevenDotOh should be (7.0 plusOrMinus 2L)
+      sevenDotOh should be (7.2 plusOrMinus 2L)
+      sevenDotOh should be (6.8 plusOrMinus 2L)
+      minusSevenDotOh should be (-7.1 plusOrMinus 2L)
+      minusSevenDotOh should be (-6.9 plusOrMinus 2L)
+      minusSevenDotOh should be (-7.0 plusOrMinus 2L)
+      minusSevenDotOh should be (-7.2 plusOrMinus 2L)
+      minusSevenDotOh should be (-6.8 plusOrMinus 2L)
+
+      // Double plusOrMinus Int
+      sevenDotOh should be (7.1 plusOrMinus 2)
+      sevenDotOh should be (6.9 plusOrMinus 2)
+      sevenDotOh should be (7.0 plusOrMinus 2)
+      sevenDotOh should be (7.2 plusOrMinus 2)
+      sevenDotOh should be (6.8 plusOrMinus 2)
+      minusSevenDotOh should be (-7.1 plusOrMinus 2)
+      minusSevenDotOh should be (-6.9 plusOrMinus 2)
+      minusSevenDotOh should be (-7.0 plusOrMinus 2)
+      minusSevenDotOh should be (-7.2 plusOrMinus 2)
+      minusSevenDotOh should be (-6.8 plusOrMinus 2)
+
+      // Double plusOrMinus Short
+      sevenDotOh should be (7.1 plusOrMinus 2.toShort)
+      sevenDotOh should be (6.9 plusOrMinus 2.toShort)
+      sevenDotOh should be (7.0 plusOrMinus 2.toShort)
+      sevenDotOh should be (7.2 plusOrMinus 2.toShort)
+      sevenDotOh should be (6.8 plusOrMinus 2.toShort)
+      minusSevenDotOh should be (-7.1 plusOrMinus 2.toShort)
+      minusSevenDotOh should be (-6.9 plusOrMinus 2.toShort)
+      minusSevenDotOh should be (-7.0 plusOrMinus 2.toShort)
+      minusSevenDotOh should be (-7.2 plusOrMinus 2.toShort)
+      minusSevenDotOh should be (-6.8 plusOrMinus 2.toShort)
+
+      // Double plusOrMinus Byte
+      sevenDotOh should be (7.1 plusOrMinus 2.toByte)
+      sevenDotOh should be (6.9 plusOrMinus 2.toByte)
+      sevenDotOh should be (7.0 plusOrMinus 2.toByte)
+      sevenDotOh should be (7.2 plusOrMinus 2.toByte)
+      sevenDotOh should be (6.8 plusOrMinus 2.toByte)
+      minusSevenDotOh should be (-7.1 plusOrMinus 2.toByte)
+      minusSevenDotOh should be (-6.9 plusOrMinus 2.toByte)
+      minusSevenDotOh should be (-7.0 plusOrMinus 2.toByte)
+      minusSevenDotOh should be (-7.2 plusOrMinus 2.toByte)
+      minusSevenDotOh should be (-6.8 plusOrMinus 2.toByte)
+
+      // Float plusOrMinus Float
       sevenDotOhFloat should be (7.1f plusOrMinus 0.2f)
       sevenDotOhFloat should be (6.9f plusOrMinus 0.2f)
       sevenDotOhFloat should be (7.0f plusOrMinus 0.2f)
@@ -47,6 +124,175 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       minusSevenDotOhFloat should be (-7.0f plusOrMinus 0.2f)
       minusSevenDotOhFloat should be (-7.2f plusOrMinus 0.2f)
       minusSevenDotOhFloat should be (-6.8f plusOrMinus 0.2f)
+
+      // Float plusOrMinus Long
+      sevenDotOhFloat should be (7.1f plusOrMinus 2L)
+      sevenDotOhFloat should be (6.9f plusOrMinus 2L)
+      sevenDotOhFloat should be (7.0f plusOrMinus 2L)
+      sevenDotOhFloat should be (7.2f plusOrMinus 2L)
+      sevenDotOhFloat should be (6.8f plusOrMinus 2L)
+      minusSevenDotOhFloat should be (-7.1f plusOrMinus 2L)
+      minusSevenDotOhFloat should be (-6.9f plusOrMinus 2L)
+      minusSevenDotOhFloat should be (-7.0f plusOrMinus 2L)
+      minusSevenDotOhFloat should be (-7.2f plusOrMinus 2L)
+      minusSevenDotOhFloat should be (-6.8f plusOrMinus 2L)
+
+      // Float plusOrMinus Int
+      sevenDotOhFloat should be (7.1f plusOrMinus 2)
+      sevenDotOhFloat should be (6.9f plusOrMinus 2)
+      sevenDotOhFloat should be (7.0f plusOrMinus 2)
+      sevenDotOhFloat should be (7.2f plusOrMinus 2)
+      sevenDotOhFloat should be (6.8f plusOrMinus 2)
+      minusSevenDotOhFloat should be (-7.1f plusOrMinus 2)
+      minusSevenDotOhFloat should be (-6.9f plusOrMinus 2)
+      minusSevenDotOhFloat should be (-7.0f plusOrMinus 2)
+      minusSevenDotOhFloat should be (-7.2f plusOrMinus 2)
+      minusSevenDotOhFloat should be (-6.8f plusOrMinus 2)
+
+      // Float plusOrMinus Short
+      sevenDotOhFloat should be (7.1f plusOrMinus 2.toShort)
+      sevenDotOhFloat should be (6.9f plusOrMinus 2.toShort)
+      sevenDotOhFloat should be (7.0f plusOrMinus 2.toShort)
+      sevenDotOhFloat should be (7.2f plusOrMinus 2.toShort)
+      sevenDotOhFloat should be (6.8f plusOrMinus 2.toShort)
+      minusSevenDotOhFloat should be (-7.1f plusOrMinus 2.toShort)
+      minusSevenDotOhFloat should be (-6.9f plusOrMinus 2.toShort)
+      minusSevenDotOhFloat should be (-7.0f plusOrMinus 2.toShort)
+      minusSevenDotOhFloat should be (-7.2f plusOrMinus 2.toShort)
+      minusSevenDotOhFloat should be (-6.8f plusOrMinus 2.toShort)
+
+      // Float plusOrMinus Byte
+      sevenDotOhFloat should be (7.1f plusOrMinus 2.toByte)
+      sevenDotOhFloat should be (6.9f plusOrMinus 2.toByte)
+      sevenDotOhFloat should be (7.0f plusOrMinus 2.toByte)
+      sevenDotOhFloat should be (7.2f plusOrMinus 2.toByte)
+      sevenDotOhFloat should be (6.8f plusOrMinus 2.toByte)
+      minusSevenDotOhFloat should be (-7.1f plusOrMinus 2.toByte)
+      minusSevenDotOhFloat should be (-6.9f plusOrMinus 2.toByte)
+      minusSevenDotOhFloat should be (-7.0f plusOrMinus 2.toByte)
+      minusSevenDotOhFloat should be (-7.2f plusOrMinus 2.toByte)
+      minusSevenDotOhFloat should be (-6.8f plusOrMinus 2.toByte)
+
+      // Long plusOrMinus Long
+      sevenLong should be (convertLongToPlusOrMinusWrapper(9L).plusOrMinus(2L))
+      sevenLong should be (9L plusOrMinus 2L)
+      sevenLong should be (8L plusOrMinus 2L)
+      sevenLong should be (7L plusOrMinus 2L)
+      sevenLong should be (6L plusOrMinus 2L)
+      sevenLong should be (5L plusOrMinus 2L)
+      minusSevenLong should be (-9L plusOrMinus 2L)
+      minusSevenLong should be (-8L plusOrMinus 2L)
+      minusSevenLong should be (-7L plusOrMinus 2L)
+      minusSevenLong should be (-6L plusOrMinus 2L)
+      minusSevenLong should be (-5L plusOrMinus 2L)
+
+      // Long plusOrMinus Int
+      sevenLong should be (9L plusOrMinus 2)
+      sevenLong should be (8L plusOrMinus 2)
+      sevenLong should be (7L plusOrMinus 2)
+      sevenLong should be (6L plusOrMinus 2)
+      sevenLong should be (5L plusOrMinus 2)
+      minusSevenLong should be (-9L plusOrMinus 2)
+      minusSevenLong should be (-8L plusOrMinus 2)
+      minusSevenLong should be (-7L plusOrMinus 2)
+      minusSevenLong should be (-6L plusOrMinus 2)
+      minusSevenLong should be (-5L plusOrMinus 2)
+
+      // Long plusOrMinus Short
+      sevenLong should be (9L plusOrMinus 2.toShort)
+      sevenLong should be (8L plusOrMinus 2.toShort)
+      sevenLong should be (7L plusOrMinus 2.toShort)
+      sevenLong should be (6L plusOrMinus 2.toShort)
+      sevenLong should be (5L plusOrMinus 2.toShort)
+      minusSevenLong should be (-9L plusOrMinus 2.toShort)
+      minusSevenLong should be (-8L plusOrMinus 2.toShort)
+      minusSevenLong should be (-7L plusOrMinus 2.toShort)
+      minusSevenLong should be (-6L plusOrMinus 2.toShort)
+      minusSevenLong should be (-5L plusOrMinus 2.toShort)
+
+      // Long plusOrMinus Byte
+      sevenLong should be (9L plusOrMinus 2.toByte)
+      sevenLong should be (8L plusOrMinus 2.toByte)
+      sevenLong should be (7L plusOrMinus 2.toByte)
+      sevenLong should be (6L plusOrMinus 2.toByte)
+      sevenLong should be (5L plusOrMinus 2.toByte)
+      minusSevenLong should be (-9L plusOrMinus 2.toByte)
+      minusSevenLong should be (-8L plusOrMinus 2.toByte)
+      minusSevenLong should be (-7L plusOrMinus 2.toByte)
+      minusSevenLong should be (-6L plusOrMinus 2.toByte)
+      minusSevenLong should be (-5L plusOrMinus 2.toByte)
+
+      // Int plusOrMinus Int
+      sevenInt should be (9 plusOrMinus 2)
+      sevenInt should be (8 plusOrMinus 2)
+      sevenInt should be (7 plusOrMinus 2)
+      sevenInt should be (6 plusOrMinus 2)
+      sevenInt should be (5 plusOrMinus 2)
+      minusSevenInt should be (-9 plusOrMinus 2)
+      minusSevenInt should be (-8 plusOrMinus 2)
+      minusSevenInt should be (-7 plusOrMinus 2)
+      minusSevenInt should be (-6 plusOrMinus 2)
+      minusSevenInt should be (-5 plusOrMinus 2)
+
+      // Int plusOrMinus Short
+      sevenInt should be (9 plusOrMinus 2.toShort)
+      sevenInt should be (8 plusOrMinus 2.toShort)
+      sevenInt should be (7 plusOrMinus 2.toShort)
+      sevenInt should be (6 plusOrMinus 2.toShort)
+      sevenInt should be (5 plusOrMinus 2.toShort)
+      minusSevenInt should be (-9 plusOrMinus 2.toShort)
+      minusSevenInt should be (-8 plusOrMinus 2.toShort)
+      minusSevenInt should be (-7 plusOrMinus 2.toShort)
+      minusSevenInt should be (-6 plusOrMinus 2.toShort)
+      minusSevenInt should be (-5 plusOrMinus 2.toShort)
+
+      // Int plusOrMinus Byte
+      sevenInt should be (9 plusOrMinus 2.toByte)
+      sevenInt should be (8 plusOrMinus 2.toByte)
+      sevenInt should be (7 plusOrMinus 2.toByte)
+      sevenInt should be (6 plusOrMinus 2.toByte)
+      sevenInt should be (5 plusOrMinus 2.toByte)
+      minusSevenInt should be (-9 plusOrMinus 2.toByte)
+      minusSevenInt should be (-8 plusOrMinus 2.toByte)
+      minusSevenInt should be (-7 plusOrMinus 2.toByte)
+      minusSevenInt should be (-6 plusOrMinus 2.toByte)
+      minusSevenInt should be (-5 plusOrMinus 2.toByte)
+
+      // Short plusOrMinus Short
+      sevenShort should be (9.toShort plusOrMinus 2.toShort)
+      sevenShort should be (8.toShort plusOrMinus 2.toShort)
+      sevenShort should be (7.toShort plusOrMinus 2.toShort)
+      sevenShort should be (6.toShort plusOrMinus 2.toShort)
+      sevenShort should be (5.toShort plusOrMinus 2.toShort)
+      minusSevenShort should be ((-9).toShort plusOrMinus 2.toShort)
+      minusSevenShort should be ((-8).toShort plusOrMinus 2.toShort)
+      minusSevenShort should be ((-7).toShort plusOrMinus 2.toShort)
+      minusSevenShort should be ((-6).toShort plusOrMinus 2.toShort)
+      minusSevenShort should be ((-5).toShort plusOrMinus 2.toShort)
+
+      // Short plusOrMinus Byte
+      sevenShort should be (9.toShort plusOrMinus 2.toByte)
+      sevenShort should be (8.toShort plusOrMinus 2.toByte)
+      sevenShort should be (7.toShort plusOrMinus 2.toByte)
+      sevenShort should be (6.toShort plusOrMinus 2.toByte)
+      sevenShort should be (5.toShort plusOrMinus 2.toByte)
+      minusSevenShort should be ((-9).toShort plusOrMinus 2.toByte)
+      minusSevenShort should be ((-8).toShort plusOrMinus 2.toByte)
+      minusSevenShort should be ((-7).toShort plusOrMinus 2.toByte)
+      minusSevenShort should be ((-6).toShort plusOrMinus 2.toByte)
+      minusSevenShort should be ((-5).toShort plusOrMinus 2.toByte)
+
+      // Byte plusOrMinus Byte
+      sevenByte should be (9.toByte plusOrMinus 2.toByte)
+      sevenByte should be (8.toByte plusOrMinus 2.toByte)
+      sevenByte should be (7.toByte plusOrMinus 2.toByte)
+      sevenByte should be (6.toByte plusOrMinus 2.toByte)
+      sevenByte should be (5.toByte plusOrMinus 2.toByte)
+      minusSevenByte should be ((-9).toByte plusOrMinus 2.toByte)
+      minusSevenByte should be ((-8).toByte plusOrMinus 2.toByte)
+      minusSevenByte should be ((-7).toByte plusOrMinus 2.toByte)
+      minusSevenByte should be ((-6).toByte plusOrMinus 2.toByte)
+      minusSevenByte should be ((-5).toByte plusOrMinus 2.toByte)
     }
 
 /*
