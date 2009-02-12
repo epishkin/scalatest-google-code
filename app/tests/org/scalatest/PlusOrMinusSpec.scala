@@ -384,6 +384,38 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       minusSevenDotOhFloat should not { be (-10.0f plusOrMinus 2.toByte) }
       minusSevenDotOhFloat should not be (-4.0f plusOrMinus 2.toByte)
       minusSevenDotOhFloat should not be (-9.1f plusOrMinus 2.toByte)
+
+      // Long plusOrMinus Long
+      sevenLong should not { be (10L plusOrMinus 2L) }
+      sevenLong should not be (4L plusOrMinus 2L)
+      sevenLong should not be (10L plusOrMinus 2L)
+      minusSevenLong should not { be (-10L plusOrMinus 2L) }
+      minusSevenLong should not be (-4L plusOrMinus 2L)
+      minusSevenLong should not be (-10L plusOrMinus 2L)
+
+      // Long plusOrMinus Int
+      sevenLong should not { be (10L plusOrMinus 2) }
+      sevenLong should not be (4L plusOrMinus 2)
+      sevenLong should not be (10L plusOrMinus 2)
+      minusSevenLong should not { be (-10L plusOrMinus 2) }
+      minusSevenLong should not be (-4L plusOrMinus 2)
+      minusSevenLong should not be (-10L plusOrMinus 2)
+
+      // Long plusOrMinus Short
+      sevenLong should not { be (10L plusOrMinus 2.toShort) }
+      sevenLong should not be (4L plusOrMinus 2.toShort)
+      sevenLong should not be (10L plusOrMinus 2.toShort)
+      minusSevenLong should not { be (-10L plusOrMinus 2.toShort) }
+      minusSevenLong should not be (-4L plusOrMinus 2.toShort)
+      minusSevenLong should not be (-10L plusOrMinus 2.toShort)
+
+      // Long plusOrMinus Byte
+      sevenLong should not { be (10L plusOrMinus 2.toByte) }
+      sevenLong should not be (4L plusOrMinus 2.toByte)
+      sevenLong should not be (10L plusOrMinus 2.toByte)
+      minusSevenLong should not { be (-10L plusOrMinus 2.toByte) }
+      minusSevenLong should not be (-4L plusOrMinus 2.toByte)
+      minusSevenLong should not be (-10L plusOrMinus 2.toByte)
     }
 
 /*
