@@ -237,7 +237,7 @@ class EndWithSubstringSpec extends Spec with ShouldMatchers with Checkers with R
 
       check(
         (s: String, t: String, u: String, v: String) => {
-          (t.length != 0 && v.length != 0 && (s + u).indexOf(t) != 0 && (s + u).indexOf(v) != 0) ==>
+          (t.length != 0 && v.length != 0 && !(s + u).endsWith(t) && !(s + u).endsWith(v)) ==>
             throwsAssertionError(s + u should (endWith substring (t) or endWith substring (v)))
         }
       )
