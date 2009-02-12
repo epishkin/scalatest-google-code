@@ -397,6 +397,18 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  protected class DoubleShouldWrapper(left: Double) extends { val leftOperand = left } with ShouldMethods[Double] {
+    override def should(notWord: NotWord): ResultOfNotWordForDouble = {
+      new ResultOfNotWordForDouble(left, false)
+    }
+  }
+
+  protected class FloatShouldWrapper(left: Float) extends { val leftOperand = left } with ShouldMethods[Float] {
+    override def should(notWord: NotWord): ResultOfNotWordForFloat = {
+      new ResultOfNotWordForFloat(left, false)
+    }
+  }
+
   protected class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
       with ShouldHaveWordForCollectionMethods[(K, V)] {
 
@@ -473,7 +485,7 @@ trait ShouldMatchers extends Matchers {
       new ResultOfNotWordForCollection(leftOperand, false)
     }
   }
-  
+
   protected class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
       with ShouldHaveWordForJavaCollectionMethods[T] {
 
@@ -509,15 +521,16 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  // TODO:  Test some java.util.maps, etc.
   implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
+  implicit def convertToDoubleShouldWrapper(o: Double): DoubleShouldWrapper = new DoubleShouldWrapper(o)
+  implicit def convertToFloatShouldWrapper(o: Float): FloatShouldWrapper = new FloatShouldWrapper(o)
   implicit def convertToAnyRefShouldWrapper[T <: AnyRef](o: T): AnyRefShouldWrapper[T] = new AnyRefShouldWrapper[T](o)
   implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
   implicit def convertToSeqShouldWrapper[T](o: Seq[T]): SeqShouldWrapper[T] = new SeqShouldWrapper[T](o)
   implicit def convertToArrayShouldWrapper[T](o: Array[T]): ArrayShouldWrapper[T] = new ArrayShouldWrapper[T](o)
   implicit def convertToListShouldWrapper[T](o: List[T]): ListShouldWrapper[T] = new ListShouldWrapper[T](o)
   implicit def convertToMapShouldWrapper[K, V](o: scala.collection.Map[K, V]): MapShouldWrapper[K, V] = new MapShouldWrapper[K, V](o)
-  implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
+  implicit def convertToStringShouldWrapper(o: String): StringShouldWrapper = new StringShouldWrapper(o)
 
   // One problem, though, is java.List doesn't have a length field, method, or getLength method, but I'd kind
   // of like to have it work with should have length too, so I have to do one for it explicitly here.
