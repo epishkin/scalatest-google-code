@@ -362,6 +362,30 @@ trait Matchers extends Assertions { matchers =>
       //                                                            ^
       def be[T](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) = matchersWrapper.and(matchers.not.be(resultOfTheSameInstanceAsApplication))
 
+      // sevenDotOh should (not be (17.0 plusOrMinus 0.2) and not be (17.0 plusOrMinus 0.2))
+      //                                                          ^
+      def be(doubleTolerance: DoubleTolerance) = matchersWrapper.and(matchers.not.be(doubleTolerance))
+
+      // sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) and not be (17.0f plusOrMinus 0.2f))
+      //                                                                 ^
+      def be(floatTolerance: FloatTolerance) = matchersWrapper.and(matchers.not.be(floatTolerance))
+
+      // sevenLong should (not be (17L plusOrMinus 2L) and not be (17L plusOrMinus 2L))
+      //                                                       ^
+      def be(longTolerance: LongTolerance) = matchersWrapper.and(matchers.not.be(longTolerance))
+
+      // sevenInt should (not be (17 plusOrMinus 2) and not be (17 plusOrMinus 2))
+      //                                                    ^
+      def be(intTolerance: IntTolerance) = matchersWrapper.and(matchers.not.be(intTolerance))
+
+      // sevenShort should (not be (17.toShort plusOrMinus 2.toShort) and not be (17.toShort plusOrMinus 2.toShort))
+      //                                                                      ^
+      def be(shortTolerance: ShortTolerance) = matchersWrapper.and(matchers.not.be(shortTolerance))
+
+      // sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (19.toByte plusOrMinus 2.toByte)))
+      //                                                                      ^
+      def be(byteTolerance: ByteTolerance) = matchersWrapper.and(matchers.not.be(byteTolerance))
+
       // "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
       //                                                     ^
       def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) =

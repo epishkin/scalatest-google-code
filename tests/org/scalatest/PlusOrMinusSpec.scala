@@ -39,6 +39,7 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       And if X is Byte, Y must be Byte.
       minusSevenDotOhFloat should be (-6.8f plusOrMinus 0.2d)
     */
+/*
     it("should do nothing if the number is within the specified range") {
 
       // Double plusOrMinus Double
@@ -680,113 +681,114 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       sevenByte should (be (8.toByte plusOrMinus 2.toByte) or (be (9.toByte plusOrMinus 2.toByte)))
       sevenByte should (be (7.toByte plusOrMinus 2.toByte) or be (7.toByte plusOrMinus 2.toByte))
     }
+*/
 
     it("should do nothing if the number is not within the specified range, when used in a logical-and expression with not") {
 
       // Double plusOrMinus Double
       sevenDotOh should ((not be (17.1 plusOrMinus 0.2)) and (not be (17.1 plusOrMinus 0.2)))
       sevenDotOh should (not (be (16.9 plusOrMinus 0.2)) and not (be (17.1 plusOrMinus 0.2)))
-      // sevenDotOh should (not be (17.0 plusOrMinus 0.2) and not be (17.0 plusOrMinus 0.2))
+      sevenDotOh should (not be (17.0 plusOrMinus 0.2) and not be (17.0 plusOrMinus 0.2))
 
       // Double plusOrMinus Float
       sevenDotOh should ((not be (17.1 plusOrMinus 0.2f)) and (not be (17.1 plusOrMinus 0.2f)))
       sevenDotOh should (not (be (16.9 plusOrMinus 0.2f)) and not (be (17.1 plusOrMinus 0.2f)))
-      // sevenDotOh should (not be (17.0 plusOrMinus 0.2f) and not be (17.0 plusOrMinus 0.2f))
+      sevenDotOh should (not be (17.0 plusOrMinus 0.2f) and not be (17.0 plusOrMinus 0.2f))
 
       // Double plusOrMinus Long
       sevenDotOh should ((not be (17.1 plusOrMinus 2L)) and (not be (17.1 plusOrMinus 2L)))
       sevenDotOh should (not (be (16.9 plusOrMinus 2L)) and not (be (17.1 plusOrMinus 2L)))
-      // sevenDotOh should (not be (17.0 plusOrMinus 2L) and not be (17.0 plusOrMinus 2L))
+      sevenDotOh should (not be (17.0 plusOrMinus 2L) and not be (17.0 plusOrMinus 2L))
 
       // Double plusOrMinus Int
       sevenDotOh should ((not be (17.1 plusOrMinus 2)) and (not be (17.1 plusOrMinus 2)))
       sevenDotOh should (not (be (16.9 plusOrMinus 2)) and not (be (17.1 plusOrMinus 2)))
-      // sevenDotOh should (not be (17.0 plusOrMinus 2) and not be (17.0 plusOrMinus 2))
+      sevenDotOh should (not be (17.0 plusOrMinus 2) and not be (17.0 plusOrMinus 2))
 
       // Double plusOrMinus Short
       sevenDotOh should ((not be (17.1 plusOrMinus 2.toShort)) and (not be (17.1 plusOrMinus 2.toShort)))
       sevenDotOh should (not (be (16.9 plusOrMinus 2.toShort)) and not (be (17.1 plusOrMinus 2.toShort)))
-      // sevenDotOh should (not be (17.0 plusOrMinus 2.toShort) and not be (17.0 plusOrMinus 2.toShort))
+      sevenDotOh should (not be (17.0 plusOrMinus 2.toShort) and not be (17.0 plusOrMinus 2.toShort))
 
       // Double plusOrMinus Byte
       sevenDotOh should ((not be (17.1 plusOrMinus 2.toByte)) and (not be (17.1 plusOrMinus 2.toByte)))
       sevenDotOh should (not (be (16.9 plusOrMinus 2.toByte)) and not (be (17.1 plusOrMinus 2.toByte)))
-      // sevenDotOh should (not be (17.0 plusOrMinus 2.toByte) and not be (17.0 plusOrMinus 2.toByte))
+      sevenDotOh should (not be (17.0 plusOrMinus 2.toByte) and not be (17.0 plusOrMinus 2.toByte))
 
       // Float plusOrMinus Float
       sevenDotOhFloat should ((not be (17.1f plusOrMinus 0.2f)) and (not be (17.1f plusOrMinus 0.2f)))
       sevenDotOhFloat should (not (be (16.9f plusOrMinus 0.2f)) and not (be (17.1f plusOrMinus 0.2f)))
-      // sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) and not be (17.0f plusOrMinus 0.2f))
+      sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) and not be (17.0f plusOrMinus 0.2f))
 
       // Float plusOrMinus Long
       sevenDotOhFloat should ((not be (17.1f plusOrMinus 2L)) and (not be (17.1f plusOrMinus 2L)))
       sevenDotOhFloat should (not (be (16.9f plusOrMinus 2L)) and not (be (17.1f plusOrMinus 2L)))
-      // sevenDotOhFloat should (not be (17.0f plusOrMinus 2L) and not be (17.0f plusOrMinus 2L))
+      sevenDotOhFloat should (not be (17.0f plusOrMinus 2L) and not be (17.0f plusOrMinus 2L))
 
       // Float plusOrMinus Int
       sevenDotOhFloat should ((not be (17.1f plusOrMinus 2)) and (not be (17.1f plusOrMinus 2)))
       sevenDotOhFloat should (not (be (16.9f plusOrMinus 2)) and not (be (17.1f plusOrMinus 2)))
-      // sevenDotOhFloat should (not be (17.0f plusOrMinus 2) and not be (17.0f plusOrMinus 2))
+      sevenDotOhFloat should (not be (17.0f plusOrMinus 2) and not be (17.0f plusOrMinus 2))
 
       // Float plusOrMinus Short
       sevenDotOhFloat should ((not be (17.1f plusOrMinus 2.toShort)) and (not be (17.1f plusOrMinus 2.toShort)))
       sevenDotOhFloat should (not (be (16.9f plusOrMinus 2.toShort)) and not (be (17.1f plusOrMinus 2.toShort)))
-      // sevenDotOhFloat should (not be (17.0f plusOrMinus 2.toShort) and not be (17.0f plusOrMinus 2.toShort))
+      sevenDotOhFloat should (not be (17.0f plusOrMinus 2.toShort) and not be (17.0f plusOrMinus 2.toShort))
 
       // Float plusOrMinus Byte
       sevenDotOhFloat should ((not be (17.1f plusOrMinus 2.toByte)) and (not be (17.1f plusOrMinus 2.toByte)))
       sevenDotOhFloat should (not (be (16.9f plusOrMinus 2.toByte)) and not (be (17.1f plusOrMinus 2.toByte)))
-      // sevenDotOhFloat should (not be (17.0f plusOrMinus 2.toByte) and not be (17.0f plusOrMinus 2.toByte))
+      sevenDotOhFloat should (not be (17.0f plusOrMinus 2.toByte) and not be (17.0f plusOrMinus 2.toByte))
 
       // Long plusOrMinus Long
       sevenLong should ((not be (19L plusOrMinus 2L)) and (not be (19L plusOrMinus 2L)))
       sevenLong should (not (be (18L plusOrMinus 2L)) and not (be (19L plusOrMinus 2L)))
-      // sevenLong should (not be (17L plusOrMinus 2L) and not be (17L plusOrMinus 2L))
+      sevenLong should (not be (17L plusOrMinus 2L) and not be (17L plusOrMinus 2L))
 
       // Long plusOrMinus Int
       sevenLong should ((not be (19L plusOrMinus 2)) and (not be (19L plusOrMinus 2)))
       sevenLong should (not (be (18L plusOrMinus 2)) and not (be (19L plusOrMinus 2)))
-      // sevenLong should (not be (17L plusOrMinus 2) and not be (17L plusOrMinus 2))
+      sevenLong should (not be (17L plusOrMinus 2) and not be (17L plusOrMinus 2))
 
       // Long plusOrMinus Short
       sevenLong should ((not be (19L plusOrMinus 2.toShort)) and (not be (19L plusOrMinus 2.toShort)))
       sevenLong should (not (be (18L plusOrMinus 2.toShort)) and not (be (19L plusOrMinus 2.toShort)))
-      // sevenLong should (not be (17L plusOrMinus 2.toShort) and not be (17L plusOrMinus 2.toShort))
+      sevenLong should (not be (17L plusOrMinus 2.toShort) and not be (17L plusOrMinus 2.toShort))
 
       // Long plusOrMinus Byte
       sevenLong should ((not be (19L plusOrMinus 2.toByte)) and (not be (19L plusOrMinus 2.toByte)))
       sevenLong should (not (be (18L plusOrMinus 2.toByte)) and not (be (19L plusOrMinus 2.toByte)))
-      // sevenLong should (not be (17L plusOrMinus 2.toByte) and not be (17L plusOrMinus 2.toByte))
+      sevenLong should (not be (17L plusOrMinus 2.toByte) and not be (17L plusOrMinus 2.toByte))
 
       // Int plusOrMinus Int
       sevenInt should ((not be (19 plusOrMinus 2)) and (not be (19 plusOrMinus 2)))
       sevenInt should (not (be (18 plusOrMinus 2)) and not (be (19 plusOrMinus 2)))
-      // sevenInt should (not be (17 plusOrMinus 2) and not be (17 plusOrMinus 2))
+      sevenInt should (not be (17 plusOrMinus 2) and not be (17 plusOrMinus 2))
 
       // Int plusOrMinus Short
       sevenInt should ((not be (19 plusOrMinus 2.toShort)) and (not be (19 plusOrMinus 2.toShort)))
       sevenInt should (not (be (18 plusOrMinus 2.toShort)) and not (be (19 plusOrMinus 2.toShort)))
-      // sevenInt should (not be (17 plusOrMinus 2.toShort) and not be (17 plusOrMinus 2.toShort))
+      sevenInt should (not be (17 plusOrMinus 2.toShort) and not be (17 plusOrMinus 2.toShort))
 
       // Int plusOrMinus Byte
       sevenInt should ((not be (19 plusOrMinus 2.toByte)) and (not be (19 plusOrMinus 2.toByte)))
       sevenInt should (not (be (18 plusOrMinus 2.toByte)) and not (be (19 plusOrMinus 2.toByte)))
-      // sevenInt should (not be (17 plusOrMinus 2.toByte) and not be (17 plusOrMinus 2.toByte))
+      sevenInt should (not be (17 plusOrMinus 2.toByte) and not be (17 plusOrMinus 2.toByte))
 
       // Short plusOrMinus Short
       sevenShort should ((not be (19.toShort plusOrMinus 2.toShort)) and (not be (19.toShort plusOrMinus 2.toShort)))
       sevenShort should (not (be (18.toShort plusOrMinus 2.toShort)) and not (be (19.toShort plusOrMinus 2.toShort)))
-      // sevenShort should (not be (17.toShort plusOrMinus 2.toShort) and not be (17.toShort plusOrMinus 2.toShort))
+      sevenShort should (not be (17.toShort plusOrMinus 2.toShort) and not be (17.toShort plusOrMinus 2.toShort))
 
       // Short plusOrMinus Byte
       sevenShort should ((not be (19.toShort plusOrMinus 2.toByte)) and (not be (19.toShort plusOrMinus 2.toByte)))
       sevenShort should (not (be (18.toShort plusOrMinus 2.toByte)) and not (be (19.toShort plusOrMinus 2.toByte)))
-      // sevenShort should (not be (17.toShort plusOrMinus 2.toByte) and not be (17.toShort plusOrMinus 2.toByte))
+      sevenShort should (not be (17.toShort plusOrMinus 2.toByte) and not be (17.toShort plusOrMinus 2.toByte))
 
       // Byte plusOrMinus Byte
       sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (19.toByte plusOrMinus 2.toByte)))
       sevenByte should (not (be (18.toByte plusOrMinus 2.toByte)) and not (be (19.toByte plusOrMinus 2.toByte)))
-      // sevenByte should (not be (17.toByte plusOrMinus 2.toByte) and not be (17.toByte plusOrMinus 2.toByte))
+      sevenByte should (not be (17.toByte plusOrMinus 2.toByte) and not be (17.toByte plusOrMinus 2.toByte))
     }
 
 /*
