@@ -409,6 +409,12 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  protected class LongShouldWrapper(left: Long) extends { val leftOperand = left } with ShouldMethods[Long] {
+    override def should(notWord: NotWord): ResultOfNotWordForLong = {
+      new ResultOfNotWordForLong(left, false)
+    }
+  }
+
   protected class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
       with ShouldHaveWordForCollectionMethods[(K, V)] {
 
@@ -524,6 +530,7 @@ trait ShouldMatchers extends Matchers {
   implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
   implicit def convertToDoubleShouldWrapper(o: Double): DoubleShouldWrapper = new DoubleShouldWrapper(o)
   implicit def convertToFloatShouldWrapper(o: Float): FloatShouldWrapper = new FloatShouldWrapper(o)
+  implicit def convertToLongShouldWrapper(o: Long): LongShouldWrapper = new LongShouldWrapper(o)
   implicit def convertToAnyRefShouldWrapper[T <: AnyRef](o: T): AnyRefShouldWrapper[T] = new AnyRefShouldWrapper[T](o)
   implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
   implicit def convertToSeqShouldWrapper[T](o: Seq[T]): SeqShouldWrapper[T] = new SeqShouldWrapper[T](o)

@@ -1521,6 +1521,26 @@ TODO: Do the same simplification as above
     }
   }
 
+  protected class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[Long](left, shouldBeTrue) {
+
+    // sevenDotOhLong should not be (6.5f plusOrMinus 0.2f)
+    //                       ^
+    def be(longTolerance: LongTolerance) {
+      import longTolerance._
+      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
+            left,
+            right,
+            tolerance
+          )
+        )
+      }
+    }
+  }
+
   class RegexWord {
 
     def apply(regexString: String) = new ResultOfRegexWordApplication(regexString)
