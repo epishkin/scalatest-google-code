@@ -415,6 +415,24 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  protected class IntShouldWrapper(left: Int) extends { val leftOperand = left } with ShouldMethods[Int] {
+    override def should(notWord: NotWord): ResultOfNotWordForInt = {
+      new ResultOfNotWordForInt(left, false)
+    }
+  }
+
+  protected class ShortShouldWrapper(left: Short) extends { val leftOperand = left } with ShouldMethods[Short] {
+    override def should(notWord: NotWord): ResultOfNotWordForShort = {
+      new ResultOfNotWordForShort(left, false)
+    }
+  }
+
+  protected class ByteShouldWrapper(left: Byte) extends { val leftOperand = left } with ShouldMethods[Byte] {
+    override def should(notWord: NotWord): ResultOfNotWordForByte = {
+      new ResultOfNotWordForByte(left, false)
+    }
+  }
+
   protected class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
       with ShouldHaveWordForCollectionMethods[(K, V)] {
 
@@ -531,6 +549,9 @@ trait ShouldMatchers extends Matchers {
   implicit def convertToDoubleShouldWrapper(o: Double): DoubleShouldWrapper = new DoubleShouldWrapper(o)
   implicit def convertToFloatShouldWrapper(o: Float): FloatShouldWrapper = new FloatShouldWrapper(o)
   implicit def convertToLongShouldWrapper(o: Long): LongShouldWrapper = new LongShouldWrapper(o)
+  implicit def convertToIntShouldWrapper(o: Int): IntShouldWrapper = new IntShouldWrapper(o)
+  implicit def convertToShortShouldWrapper(o: Short): ShortShouldWrapper = new ShortShouldWrapper(o)
+  implicit def convertToByteShouldWrapper(o: Byte): ByteShouldWrapper = new ByteShouldWrapper(o)
   implicit def convertToAnyRefShouldWrapper[T <: AnyRef](o: T): AnyRefShouldWrapper[T] = new AnyRefShouldWrapper[T](o)
   implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
   implicit def convertToSeqShouldWrapper[T](o: Seq[T]): SeqShouldWrapper[T] = new SeqShouldWrapper[T](o)

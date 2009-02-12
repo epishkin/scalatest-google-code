@@ -1505,7 +1505,7 @@ TODO: Do the same simplification as above
       extends ResultOfNotWord[Float](left, shouldBeTrue) {
 
     // sevenDotOhFloat should not be (6.5f plusOrMinus 0.2f)
-    //                       ^
+    //                            ^
     def be(floatTolerance: FloatTolerance) {
       import floatTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
@@ -1524,10 +1524,70 @@ TODO: Do the same simplification as above
   protected class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Long](left, shouldBeTrue) {
 
-    // sevenDotOhLong should not be (6.5f plusOrMinus 0.2f)
-    //                       ^
+    // sevenDotOhLong should not be (4L plusOrMinus 2L)
+    //                           ^
     def be(longTolerance: LongTolerance) {
       import longTolerance._
+      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
+            left,
+            right,
+            tolerance
+          )
+        )
+      }
+    }
+  }
+
+  protected class ResultOfNotWordForInt(left: Int, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[Int](left, shouldBeTrue) {
+
+    // sevenDotOhInt should not be (4 plusOrMinus 2)
+    //                          ^
+    def be(intTolerance: IntTolerance) {
+      import intTolerance._
+      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
+            left,
+            right,
+            tolerance
+          )
+        )
+      }
+    }
+  }
+
+  protected class ResultOfNotWordForShort(left: Short, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[Short](left, shouldBeTrue) {
+
+    // sevenDotOhShort should not be (4.toShort plusOrMinus 2.toShort)
+    //                            ^
+    def be(shortTolerance: ShortTolerance) {
+      import shortTolerance._
+      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
+            left,
+            right,
+            tolerance
+          )
+        )
+      }
+    }
+  }
+
+  protected class ResultOfNotWordForByte(left: Byte, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[Byte](left, shouldBeTrue) {
+
+    // sevenDotOhByte should not be (4.toByte plusOrMinus 2.toByte)
+    //                            ^
+    def be(byteTolerance: ByteTolerance) {
+      import byteTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
         throw new AssertionError(
           FailureMessages(

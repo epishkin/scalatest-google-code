@@ -416,6 +416,54 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       minusSevenLong should not { be (-10L plusOrMinus 2.toByte) }
       minusSevenLong should not be (-4L plusOrMinus 2.toByte)
       minusSevenLong should not be (-10L plusOrMinus 2.toByte)
+
+      // Int plusOrMinus Int
+      sevenInt should not { be (10 plusOrMinus 2) }
+      sevenInt should not be (4 plusOrMinus 2)
+      sevenInt should not be (10 plusOrMinus 2)
+      minusSevenInt should not { be (-10 plusOrMinus 2) }
+      minusSevenInt should not be (-4 plusOrMinus 2)
+      minusSevenInt should not be (-10 plusOrMinus 2)
+
+      // Int plusOrMinus Short
+      sevenInt should not { be (10 plusOrMinus 2.toShort) }
+      sevenInt should not be (4 plusOrMinus 2.toShort)
+      sevenInt should not be (10 plusOrMinus 2.toShort)
+      minusSevenInt should not { be (-10 plusOrMinus 2.toShort) }
+      minusSevenInt should not be (-4 plusOrMinus 2.toShort)
+      minusSevenInt should not be (-10 plusOrMinus 2.toShort)
+
+      // Int plusOrMinus Byte
+      sevenInt should not { be (10 plusOrMinus 2.toByte) }
+      sevenInt should not be (4 plusOrMinus 2.toByte)
+      sevenInt should not be (10 plusOrMinus 2.toByte)
+      minusSevenInt should not { be (-10 plusOrMinus 2.toByte) }
+      minusSevenInt should not be (-4 plusOrMinus 2.toByte)
+      minusSevenInt should not be (-10 plusOrMinus 2.toByte)
+
+      // Short plusOrMinus Short
+      sevenShort should not { be (10.toShort plusOrMinus 2.toShort) }
+      sevenShort should not be (4.toShort plusOrMinus 2.toShort)
+      sevenShort should not be (10.toShort plusOrMinus 2.toShort)
+      minusSevenShort should not { be ((-10).toShort plusOrMinus 2.toShort) }
+      minusSevenShort should not be ((-4).toShort plusOrMinus 2.toShort)
+      minusSevenShort should not be ((-10).toShort plusOrMinus 2.toShort)
+
+      // Short plusOrMinus Byte
+      sevenShort should not { be (10.toShort plusOrMinus 2.toByte) }
+      sevenShort should not be (4.toShort plusOrMinus 2.toByte)
+      sevenShort should not be (10.toShort plusOrMinus 2.toByte)
+      minusSevenShort should not { be ((-10).toShort plusOrMinus 2.toByte) }
+      minusSevenShort should not be ((-4).toShort plusOrMinus 2.toByte)
+      minusSevenShort should not be ((-10).toShort plusOrMinus 2.toByte)
+
+      // Byte plusOrMinus Byte
+      sevenByte should not { be (10.toByte plusOrMinus 2.toByte) }
+      sevenByte should not be (4.toByte plusOrMinus 2.toByte)
+      sevenByte should not be (10.toByte plusOrMinus 2.toByte)
+      minusSevenByte should not { be ((-10).toByte plusOrMinus 2.toByte) }
+      minusSevenByte should not be ((-4).toByte plusOrMinus 2.toByte)
+      minusSevenByte should not be ((-10).toByte plusOrMinus 2.toByte)
     }
 
 /*
