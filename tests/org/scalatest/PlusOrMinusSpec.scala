@@ -573,18 +573,115 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       sevenByte should (be (7.toByte plusOrMinus 2.toByte) and be (7.toByte plusOrMinus 2.toByte))
     }
 
-/*
-    it("should do nothing if the object is the same instance as another object, when used in a logical-or expression") {
+    it("should do nothing if the number is within the specified range, when used in a logical-or expression") {
 
-      obj should ((be theSameInstanceAs (otherString)) or (be theSameInstanceAs (string)))
-      obj should (be theSameInstanceAs (otherString) or (be theSameInstanceAs (string)))
-      obj should (be theSameInstanceAs (otherString) or be theSameInstanceAs (string))
+      // Double plusOrMinus Double
+      sevenDotOh should ((be (7.1 plusOrMinus 0.2)) or (be (7.1 plusOrMinus 0.2)))
+      sevenDotOh should (be (6.9 plusOrMinus 0.2) or (be (7.1 plusOrMinus 0.2)))
+      sevenDotOh should (be (7.0 plusOrMinus 0.2) or be (7.0 plusOrMinus 0.2))
 
-      obj should ((be theSameInstanceAs (string)) or (be theSameInstanceAs (otherString)))
-      obj should (be theSameInstanceAs (string) or (be theSameInstanceAs (otherString)))
-      obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
+      // Double plusOrMinus Float
+      sevenDotOh should ((be (7.1 plusOrMinus 0.2f)) or (be (7.1 plusOrMinus 0.2f)))
+      sevenDotOh should (be (6.9 plusOrMinus 0.2f) or (be (7.1 plusOrMinus 0.2f)))
+      sevenDotOh should (be (7.0 plusOrMinus 0.2f) or be (7.0 plusOrMinus 0.2f))
+
+      // Double plusOrMinus Long
+      sevenDotOh should ((be (7.1 plusOrMinus 2L)) or (be (7.1 plusOrMinus 2L)))
+      sevenDotOh should (be (6.9 plusOrMinus 2L) or (be (7.1 plusOrMinus 2L)))
+      sevenDotOh should (be (7.0 plusOrMinus 2L) or be (7.0 plusOrMinus 2L))
+
+      // Double plusOrMinus Int
+      sevenDotOh should ((be (7.1 plusOrMinus 2)) or (be (7.1 plusOrMinus 2)))
+      sevenDotOh should (be (6.9 plusOrMinus 2) or (be (7.1 plusOrMinus 2)))
+      sevenDotOh should (be (7.0 plusOrMinus 2) or be (7.0 plusOrMinus 2))
+
+      // Double plusOrMinus Short
+      sevenDotOh should ((be (7.1 plusOrMinus 2.toShort)) or (be (7.1 plusOrMinus 2.toShort)))
+      sevenDotOh should (be (6.9 plusOrMinus 2.toShort) or (be (7.1 plusOrMinus 2.toShort)))
+      sevenDotOh should (be (7.0 plusOrMinus 2.toShort) or be (7.0 plusOrMinus 2.toShort))
+
+      // Double plusOrMinus Byte
+      sevenDotOh should ((be (7.1 plusOrMinus 2.toByte)) or (be (7.1 plusOrMinus 2.toByte)))
+      sevenDotOh should (be (6.9 plusOrMinus 2.toByte) or (be (7.1 plusOrMinus 2.toByte)))
+      sevenDotOh should (be (7.0 plusOrMinus 2.toByte) or be (7.0 plusOrMinus 2.toByte))
+
+      // Float plusOrMinus Float
+      sevenDotOhFloat should ((be (7.1f plusOrMinus 0.2f)) or (be (7.1f plusOrMinus 0.2f)))
+      sevenDotOhFloat should (be (6.9f plusOrMinus 0.2f) or (be (7.1f plusOrMinus 0.2f)))
+      sevenDotOhFloat should (be (7.0f plusOrMinus 0.2f) or be (7.0f plusOrMinus 0.2f))
+
+      // Float plusOrMinus Long
+      sevenDotOhFloat should ((be (7.1f plusOrMinus 2L)) or (be (7.1f plusOrMinus 2L)))
+      sevenDotOhFloat should (be (6.9f plusOrMinus 2L) or (be (7.1f plusOrMinus 2L)))
+      sevenDotOhFloat should (be (7.0f plusOrMinus 2L) or be (7.0f plusOrMinus 2L))
+
+      // Float plusOrMinus Int
+      sevenDotOhFloat should ((be (7.1f plusOrMinus 2)) or (be (7.1f plusOrMinus 2)))
+      sevenDotOhFloat should (be (6.9f plusOrMinus 2) or (be (7.1f plusOrMinus 2)))
+      sevenDotOhFloat should (be (7.0f plusOrMinus 2) or be (7.0f plusOrMinus 2))
+
+      // Float plusOrMinus Short
+      sevenDotOhFloat should ((be (7.1f plusOrMinus 2.toShort)) or (be (7.1f plusOrMinus 2.toShort)))
+      sevenDotOhFloat should (be (6.9f plusOrMinus 2.toShort) or (be (7.1f plusOrMinus 2.toShort)))
+      sevenDotOhFloat should (be (7.0f plusOrMinus 2.toShort) or be (7.0f plusOrMinus 2.toShort))
+
+      // Float plusOrMinus Byte
+      sevenDotOhFloat should ((be (7.1f plusOrMinus 2.toByte)) or (be (7.1f plusOrMinus 2.toByte)))
+      sevenDotOhFloat should (be (6.9f plusOrMinus 2.toByte) or (be (7.1f plusOrMinus 2.toByte)))
+      sevenDotOhFloat should (be (7.0f plusOrMinus 2.toByte) or be (7.0f plusOrMinus 2.toByte))
+
+      // Long plusOrMinus Long
+      sevenLong should ((be (9L plusOrMinus 2L)) or (be (9L plusOrMinus 2L)))
+      sevenLong should (be (8L plusOrMinus 2L) or (be (9L plusOrMinus 2L)))
+      sevenLong should (be (7L plusOrMinus 2L) or be (7L plusOrMinus 2L))
+
+      // Long plusOrMinus Int
+      sevenLong should ((be (9L plusOrMinus 2)) or (be (9L plusOrMinus 2)))
+      sevenLong should (be (8L plusOrMinus 2) or (be (9L plusOrMinus 2)))
+      sevenLong should (be (7L plusOrMinus 2) or be (7L plusOrMinus 2))
+
+      // Long plusOrMinus Short
+      sevenLong should ((be (9L plusOrMinus 2.toShort)) or (be (9L plusOrMinus 2.toShort)))
+      sevenLong should (be (8L plusOrMinus 2.toShort) or (be (9L plusOrMinus 2.toShort)))
+      sevenLong should (be (7L plusOrMinus 2.toShort) or be (7L plusOrMinus 2.toShort))
+
+      // Long plusOrMinus Byte
+      sevenLong should ((be (9L plusOrMinus 2.toByte)) or (be (9L plusOrMinus 2.toByte)))
+      sevenLong should (be (8L plusOrMinus 2.toByte) or (be (9L plusOrMinus 2.toByte)))
+      sevenLong should (be (7L plusOrMinus 2.toByte) or be (7L plusOrMinus 2.toByte))
+
+      // Int plusOrMinus Int
+      sevenInt should ((be (9 plusOrMinus 2)) or (be (9 plusOrMinus 2)))
+      sevenInt should (be (8 plusOrMinus 2) or (be (9 plusOrMinus 2)))
+      sevenInt should (be (7 plusOrMinus 2) or be (7 plusOrMinus 2))
+
+      // Int plusOrMinus Short
+      sevenInt should ((be (9 plusOrMinus 2.toShort)) or (be (9 plusOrMinus 2.toShort)))
+      sevenInt should (be (8 plusOrMinus 2.toShort) or (be (9 plusOrMinus 2.toShort)))
+      sevenInt should (be (7 plusOrMinus 2.toShort) or be (7 plusOrMinus 2.toShort))
+
+      // Int plusOrMinus Byte
+      sevenInt should ((be (9 plusOrMinus 2.toByte)) or (be (9 plusOrMinus 2.toByte)))
+      sevenInt should (be (8 plusOrMinus 2.toByte) or (be (9 plusOrMinus 2.toByte)))
+      sevenInt should (be (7 plusOrMinus 2.toByte) or be (7 plusOrMinus 2.toByte))
+
+      // Short plusOrMinus Short
+      sevenShort should ((be (9.toShort plusOrMinus 2.toShort)) or (be (9.toShort plusOrMinus 2.toShort)))
+      sevenShort should (be (8.toShort plusOrMinus 2.toShort) or (be (9.toShort plusOrMinus 2.toShort)))
+      sevenShort should (be (7.toShort plusOrMinus 2.toShort) or be (7.toShort plusOrMinus 2.toShort))
+
+      // Short plusOrMinus Byte
+      sevenShort should ((be (9.toShort plusOrMinus 2.toByte)) or (be (9.toShort plusOrMinus 2.toByte)))
+      sevenShort should (be (8.toShort plusOrMinus 2.toByte) or (be (9.toShort plusOrMinus 2.toByte)))
+      sevenShort should (be (7.toShort plusOrMinus 2.toByte) or be (7.toShort plusOrMinus 2.toByte))
+
+      // Byte plusOrMinus Byte
+      sevenByte should ((be (9.toByte plusOrMinus 2.toByte)) or (be (9.toByte plusOrMinus 2.toByte)))
+      sevenByte should (be (8.toByte plusOrMinus 2.toByte) or (be (9.toByte plusOrMinus 2.toByte)))
+      sevenByte should (be (7.toByte plusOrMinus 2.toByte) or be (7.toByte plusOrMinus 2.toByte))
     }
 
+/*
     it("should do nothing if the object is the same instance as another object, when used in a logical-and expression with not") {
 
       obj should (not (be theSameInstanceAs (otherString)) and not (be theSameInstanceAs (otherString)))
