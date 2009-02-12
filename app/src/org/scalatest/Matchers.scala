@@ -1722,6 +1722,62 @@ TODO: Do the same simplification as above
         }
       }
 
+    // sevenLong should be (7L plusOrMinus 2L)
+    //                     ^
+    def apply(longTolerance: LongTolerance): Matcher[Long] =
+      new Matcher[Long] {
+        def apply(left: Long) = {
+          import longTolerance._
+          MatcherResult(
+            left <= right + tolerance && left >= right - tolerance,
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+
+    // sevenInt should be (7 plusOrMinus 2)
+    //                     ^
+    def apply(intTolerance: IntTolerance): Matcher[Int] =
+      new Matcher[Int] {
+        def apply(left: Int) = {
+          import intTolerance._
+          MatcherResult(
+            left <= right + tolerance && left >= right - tolerance,
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+
+    // sevenShort should be (7.toShort plusOrMinus 2.toShort)
+    //                     ^
+    def apply(shortTolerance: ShortTolerance): Matcher[Short] =
+      new Matcher[Short] {
+        def apply(left: Short) = {
+          import shortTolerance._
+          MatcherResult(
+            left <= right + tolerance && left >= right - tolerance,
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+
+    // sevenByte should be (7.toByte plusOrMinus 2.toByte)
+    //                     ^
+    def apply(byteTolerance: ByteTolerance): Matcher[Byte] =
+      new Matcher[Byte] {
+        def apply(left: Byte) = {
+          import byteTolerance._
+          MatcherResult(
+            left <= right + tolerance && left >= right - tolerance,
+            FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
+            FailureMessages("wasPlusOrMinus", left, right, tolerance)
+          )
+        }
+      }
+
     def theSameInstanceAs(right: AnyRef): Matcher[AnyRef] =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
@@ -2128,6 +2184,38 @@ TODO: Do the same simplification as above
   }
 
   implicit def convertFloatToPlusOrMinusWrapper(right: Float) = new FloatPlusOrMinusWrapper(right)
+
+  case class LongTolerance(right: Long, tolerance: Long)
+
+  class LongPlusOrMinusWrapper(right: Long) {
+    def plusOrMinus(tolerance: Long): LongTolerance = LongTolerance(right, tolerance)
+  }
+
+  implicit def convertLongToPlusOrMinusWrapper(right: Long) = new LongPlusOrMinusWrapper(right)
+
+  case class IntTolerance(right: Int, tolerance: Int)
+
+  class IntPlusOrMinusWrapper(right: Int) {
+    def plusOrMinus(tolerance: Int): IntTolerance = IntTolerance(right, tolerance)
+  }
+
+  implicit def convertIntToPlusOrMinusWrapper(right: Int) = new IntPlusOrMinusWrapper(right)
+
+  case class ShortTolerance(right: Short, tolerance: Short)
+
+  class ShortPlusOrMinusWrapper(right: Short) {
+    def plusOrMinus(tolerance: Short): ShortTolerance = ShortTolerance(right, tolerance)
+  }
+
+  implicit def convertShortToPlusOrMinusWrapper(right: Short) = new ShortPlusOrMinusWrapper(right)
+
+  case class ByteTolerance(right: Byte, tolerance: Byte)
+
+  class BytePlusOrMinusWrapper(right: Byte) {
+    def plusOrMinus(tolerance: Byte): ByteTolerance = ByteTolerance(right, tolerance)
+  }
+
+  implicit def convertByteToPlusOrMinusWrapper(right: Byte) = new BytePlusOrMinusWrapper(right)
 
   class ResultOfNotWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean)
       extends ResultOfNotWord(left, shouldBeTrue) {
