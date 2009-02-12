@@ -51,14 +51,14 @@ class SameInstanceAsSpec extends Spec with ShouldMatchers {
       obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
     }
 
-    it("should do nothing if the object is the same instance as another object, when used in a logical-and expression with not") {
+    it("should do nothing if the object is not the same instance as another object, when used in a logical-and expression with not") {
 
       obj should (not (be theSameInstanceAs (otherString)) and not (be theSameInstanceAs (otherString)))
       obj should ((not be theSameInstanceAs (otherString)) and (not be theSameInstanceAs (otherString)))
       obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
     }
 
-    it("should do nothing if the object is the same instance as another object, when used in a logical-or expression with not") {
+    it("should do nothing if the object is not the same instance as another object, when used in a logical-or expression with not") {
 
       obj should (not (be theSameInstanceAs (string)) or not (be theSameInstanceAs (otherString)))
       obj should ((not be theSameInstanceAs (string)) or (not be theSameInstanceAs (otherString)))
