@@ -295,16 +295,98 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       minusSevenByte should be ((-5).toByte plusOrMinus 2.toByte)
     }
 
-/*
-    it("should do nothing if the floating point number is within the specified range, when used with not") {
+    it("should do nothing if the number is within the specified range, when used with not") {
+
+      // Double plusOrMinus Double
       sevenDotOh should not { be (7.5 plusOrMinus 0.2) }
       sevenDotOh should not be (7.5 plusOrMinus 0.2)
       sevenDotOh should not be (6.5 plusOrMinus 0.2)
       minusSevenDotOh should not { be (-7.5 plusOrMinus 0.2) }
       minusSevenDotOh should not be (-7.5 plusOrMinus 0.2)
       minusSevenDotOh should not be (-6.5 plusOrMinus 0.2)
+
+      // Double plusOrMinus Float
+      sevenDotOh should not { be (7.5 plusOrMinus 0.2f) }
+      sevenDotOh should not be (7.5 plusOrMinus 0.2f)
+      sevenDotOh should not be (6.5 plusOrMinus 0.2f)
+      minusSevenDotOh should not { be (-7.5 plusOrMinus 0.2f) }
+      minusSevenDotOh should not be (-7.5 plusOrMinus 0.2f)
+      minusSevenDotOh should not be (-6.5 plusOrMinus 0.2f)
+
+      // Double plusOrMinus Long
+      sevenDotOh should not { be (10.0 plusOrMinus 2L) }
+      sevenDotOh should not be (4.0 plusOrMinus 2L)
+      sevenDotOh should not be (9.1 plusOrMinus 2L)
+      minusSevenDotOh should not { be (-10.0 plusOrMinus 2L) }
+      minusSevenDotOh should not be (-4.0 plusOrMinus 2L)
+      minusSevenDotOh should not be (-9.1 plusOrMinus 2L)
+
+      // Double plusOrMinus Int
+      sevenDotOh should not { be (10.0 plusOrMinus 2) }
+      sevenDotOh should not be (4.0 plusOrMinus 2)
+      sevenDotOh should not be (9.1 plusOrMinus 2)
+      minusSevenDotOh should not { be (-10.0 plusOrMinus 2) }
+      minusSevenDotOh should not be (-4.0 plusOrMinus 2)
+      minusSevenDotOh should not be (-9.1 plusOrMinus 2)
+
+      // Double plusOrMinus Short
+      sevenDotOh should not { be (10.0 plusOrMinus 2.toShort) }
+      sevenDotOh should not be (4.0 plusOrMinus 2.toShort)
+      sevenDotOh should not be (9.1 plusOrMinus 2.toShort)
+      minusSevenDotOh should not { be (-10.0 plusOrMinus 2.toShort) }
+      minusSevenDotOh should not be (-4.0 plusOrMinus 2.toShort)
+      minusSevenDotOh should not be (-9.1 plusOrMinus 2.toShort)
+
+      // Double plusOrMinus Byte
+      sevenDotOh should not { be (10.0 plusOrMinus 2.toByte) }
+      sevenDotOh should not be (4.0 plusOrMinus 2.toByte)
+      sevenDotOh should not be (9.1 plusOrMinus 2.toByte)
+      minusSevenDotOh should not { be (-10.0 plusOrMinus 2.toByte) }
+      minusSevenDotOh should not be (-4.0 plusOrMinus 2.toByte)
+      minusSevenDotOh should not be (-9.1 plusOrMinus 2.toByte)
+
+      // Float plusOrMinus Float
+      sevenDotOhFloat should not { be (7.5f plusOrMinus 0.2f) }
+      sevenDotOhFloat should not be (7.5f plusOrMinus 0.2f)
+      sevenDotOhFloat should not be (6.5f plusOrMinus 0.2f)
+      minusSevenDotOhFloat should not { be (-7.5f plusOrMinus 0.2f) }
+      minusSevenDotOhFloat should not be (-7.5f plusOrMinus 0.2f)
+      minusSevenDotOhFloat should not be (-6.5f plusOrMinus 0.2f)
+
+      // Float plusOrMinus Long
+      sevenDotOhFloat should not { be (10.0f plusOrMinus 2L) }
+      sevenDotOhFloat should not be (4.0f plusOrMinus 2L)
+      sevenDotOhFloat should not be (9.1f plusOrMinus 2L)
+      minusSevenDotOhFloat should not { be (-10.0f plusOrMinus 2L) }
+      minusSevenDotOhFloat should not be (-4.0f plusOrMinus 2L)
+      minusSevenDotOhFloat should not be (-9.1f plusOrMinus 2L)
+
+      // Float plusOrMinus Int
+      sevenDotOhFloat should not { be (10.0f plusOrMinus 2) }
+      sevenDotOhFloat should not be (4.0f plusOrMinus 2)
+      sevenDotOhFloat should not be (9.1f plusOrMinus 2)
+      minusSevenDotOhFloat should not { be (-10.0f plusOrMinus 2) }
+      minusSevenDotOhFloat should not be (-4.0f plusOrMinus 2)
+      minusSevenDotOhFloat should not be (-9.1f plusOrMinus 2)
+
+      // Float plusOrMinus Short
+      sevenDotOhFloat should not { be (10.0f plusOrMinus 2.toShort) }
+      sevenDotOhFloat should not be (4.0f plusOrMinus 2.toShort)
+      sevenDotOhFloat should not be (9.1f plusOrMinus 2.toShort)
+      minusSevenDotOhFloat should not { be (-10.0f plusOrMinus 2.toShort) }
+      minusSevenDotOhFloat should not be (-4.0f plusOrMinus 2.toShort)
+      minusSevenDotOhFloat should not be (-9.1f plusOrMinus 2.toShort)
+
+      // Float plusOrMinus Byte
+      sevenDotOhFloat should not { be (10.0f plusOrMinus 2.toByte) }
+      sevenDotOhFloat should not be (4.0f plusOrMinus 2.toByte)
+      sevenDotOhFloat should not be (9.1f plusOrMinus 2.toByte)
+      minusSevenDotOhFloat should not { be (-10.0f plusOrMinus 2.toByte) }
+      minusSevenDotOhFloat should not be (-4.0f plusOrMinus 2.toByte)
+      minusSevenDotOhFloat should not be (-9.1f plusOrMinus 2.toByte)
     }
 
+/*
     it("should do nothing if the object is the same instnace as another object, when used in a logical-and expression") {
       obj should ((be theSameInstanceAs (string)) and (be theSameInstanceAs (string)))
       obj should (be theSameInstanceAs (string) and (be theSameInstanceAs (string)))

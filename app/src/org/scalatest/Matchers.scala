@@ -1322,24 +1322,6 @@ TODO: Do the same simplification as above
         )
       }
     }
-
-/* This needs to be moved to a ResultOfNotWordForDouble and Float
-    // sevenDotOh should not be (6.5 plusOrMinus 0.2)
-    //                       ^
-    def be(doubleTolerance: DoubleTolerance) {
-      import doubleTolerance._
-      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
-        throw new AssertionError(
-          FailureMessages(
-            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
-            left,
-            right,
-            tolerance
-          )
-        )
-      }
-    }
-*/
   }
 
   protected class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
@@ -1496,6 +1478,46 @@ TODO: Do the same simplification as above
             expectedSubstring
           )
         )
+    }
+  }
+
+  protected class ResultOfNotWordForDouble(left: Double, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[Double](left, shouldBeTrue) {
+
+    // sevenDotOh should not be (6.5 plusOrMinus 0.2)
+    //                       ^
+    def be(doubleTolerance: DoubleTolerance) {
+      import doubleTolerance._
+      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
+            left,
+            right,
+            tolerance
+          )
+        )
+      }
+    }
+  }
+
+  protected class ResultOfNotWordForFloat(left: Float, shouldBeTrue: Boolean)
+      extends ResultOfNotWord[Float](left, shouldBeTrue) {
+
+    // sevenDotOhFloat should not be (6.5f plusOrMinus 0.2f)
+    //                       ^
+    def be(floatTolerance: FloatTolerance) {
+      import floatTolerance._
+      if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
+        throw new AssertionError(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
+            left,
+            right,
+            tolerance
+          )
+        )
+      }
     }
   }
 
