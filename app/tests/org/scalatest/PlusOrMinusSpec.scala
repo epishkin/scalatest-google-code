@@ -1155,8 +1155,8 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       assert(caught21.getMessage === "7 was 9 plus or minus 2")
     }
 
+    it("should throw AssertionError if the number is not within the specified range, when used in a logical-and expression") {
 /*
-    it("should throw AssertionError if the object is not the same instance as another object, when used in a logical-and expression") {
       val caught1 = intercept[AssertionError] {
         obj should ((be theSameInstanceAs (string)) and (be theSameInstanceAs (otherString)))
       }
@@ -1169,8 +1169,241 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
         obj should (be theSameInstanceAs (string) and be theSameInstanceAs (otherString))
       }
       assert(caught3.getMessage === "\"Hi\" was the same instance as \"Hi\", but \"Hi\" was not the same instance as \"Hi\"")
+*/
+      // Double plusOrMinus Double
+      val caught1 = intercept[AssertionError] {
+        sevenDotOh should ((be (17.1 plusOrMinus 0.2)) and (be (17.1 plusOrMinus 0.2)))
+      }
+      val caught2 = intercept[AssertionError] {
+        sevenDotOh should (be (6.9 plusOrMinus 0.2) and (be (17.1 plusOrMinus 0.2)))
+      }
+      val caught3 = intercept[AssertionError] {
+        sevenDotOh should (be (17.0 plusOrMinus 0.2) and be (7.0 plusOrMinus 0.2))
+      }
+
+      // Double plusOrMinus Float
+      val caught4 = intercept[AssertionError] {
+        sevenDotOh should ((be (17.1 plusOrMinus 0.2f)) and (be (17.1 plusOrMinus 0.2f)))
+      }
+      val caught5 = intercept[AssertionError] {
+        sevenDotOh should (be (6.9 plusOrMinus 0.2f) and (be (17.1 plusOrMinus 0.2f)))
+      }
+      val caught6 = intercept[AssertionError] {
+        sevenDotOh should (be (17.0 plusOrMinus 0.2f) and be (7.0 plusOrMinus 0.2f))
+      }
+
+      // Double plusOrMinus Long
+      val caught7 = intercept[AssertionError] {
+        sevenDotOh should ((be (17.1 plusOrMinus 2L)) and (be (17.1 plusOrMinus 2L)))
+      }
+      val caught8 = intercept[AssertionError] {
+        sevenDotOh should (be (6.9 plusOrMinus 2L) and (be (17.1 plusOrMinus 2L)))
+      }
+      val caught9 = intercept[AssertionError] {
+        sevenDotOh should (be (17.0 plusOrMinus 2L) and be (7.0 plusOrMinus 2L))
+      }
+
+      // Double plusOrMinus Int
+      val caught10 = intercept[AssertionError] {
+        sevenDotOh should ((be (17.1 plusOrMinus 2)) and (be (17.1 plusOrMinus 2)))
+      }
+      val caught11 = intercept[AssertionError] {
+        sevenDotOh should (be (6.9 plusOrMinus 2) and (be (17.1 plusOrMinus 2)))
+      }
+      val caught12 = intercept[AssertionError] {
+        sevenDotOh should (be (17.0 plusOrMinus 2) and be (7.0 plusOrMinus 2))
+      }
+
+      // Double plusOrMinus Short
+      val caught13 = intercept[AssertionError] {
+        sevenDotOh should ((be (17.1 plusOrMinus 2.toShort)) and (be (17.1 plusOrMinus 2.toShort)))
+      }
+      val caught14 = intercept[AssertionError] {
+        sevenDotOh should (be (6.9 plusOrMinus 2.toShort) and (be (17.1 plusOrMinus 2.toShort)))
+      }
+      val caught15 = intercept[AssertionError] {
+        sevenDotOh should (be (17.0 plusOrMinus 2.toShort) and be (7.0 plusOrMinus 2.toShort))
+      }
+
+      // Double plusOrMinus Byte
+      val caught16 = intercept[AssertionError] {
+        sevenDotOh should ((be (17.1 plusOrMinus 2.toByte)) and (be (17.1 plusOrMinus 2.toByte)))
+      }
+      val caught17 = intercept[AssertionError] {
+        sevenDotOh should (be (6.9 plusOrMinus 2.toByte) and (be (17.1 plusOrMinus 2.toByte)))
+      }
+      val caught18 = intercept[AssertionError] {
+        sevenDotOh should (be (17.0 plusOrMinus 2.toByte) and be (7.0 plusOrMinus 2.toByte))
+      }
+
+      // Float plusOrMinus Float
+      val caught19 = intercept[AssertionError] {
+        sevenDotOhFloat should ((be (17.1f plusOrMinus 0.2f)) and (be (17.1f plusOrMinus 0.2f)))
+      }
+      val caught20 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (6.9f plusOrMinus 0.2f) and (be (17.1f plusOrMinus 0.2f)))
+      }
+      val caught21 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (17.0f plusOrMinus 0.2f) and be (7.0f plusOrMinus 0.2f))
+      }
+
+      // Float plusOrMinus Long
+      val caught22 = intercept[AssertionError] {
+        sevenDotOhFloat should ((be (17.1f plusOrMinus 2L)) and (be (17.1f plusOrMinus 2L)))
+      }
+      val caught23 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (6.9f plusOrMinus 2L) and (be (17.1f plusOrMinus 2L)))
+      }
+      val caught24 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (17.0f plusOrMinus 2L) and be (7.0f plusOrMinus 2L))
+      }
+
+      // Float plusOrMinus Int
+      val caught25 = intercept[AssertionError] {
+        sevenDotOhFloat should ((be (17.1f plusOrMinus 2)) and (be (17.1f plusOrMinus 2)))
+      }
+      val caught26 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (6.9f plusOrMinus 2) and (be (17.1f plusOrMinus 2)))
+      }
+      val caught27 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (17.0f plusOrMinus 2) and be (7.0f plusOrMinus 2))
+      }
+
+      // Float plusOrMinus Short
+      val caught28 = intercept[AssertionError] {
+        sevenDotOhFloat should ((be (17.1f plusOrMinus 2.toShort)) and (be (17.1f plusOrMinus 2.toShort)))
+      }
+      val caught29 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (6.9f plusOrMinus 2.toShort) and (be (17.1f plusOrMinus 2.toShort)))
+      }
+      val caught30 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (17.0f plusOrMinus 2.toShort) and be (7.0f plusOrMinus 2.toShort))
+      }
+
+      // Float plusOrMinus Byte
+      val caught31 = intercept[AssertionError] {
+        sevenDotOhFloat should ((be (17.1f plusOrMinus 2.toByte)) and (be (17.1f plusOrMinus 2.toByte)))
+      }
+      val caught32 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (6.9f plusOrMinus 2.toByte) and (be (17.1f plusOrMinus 2.toByte)))
+      }
+      val caught33 = intercept[AssertionError] {
+        sevenDotOhFloat should (be (17.0f plusOrMinus 2.toByte) and be (7.0f plusOrMinus 2.toByte))
+      }
+
+      // Long plusOrMinus Long
+      val caught34 = intercept[AssertionError] {
+        sevenLong should ((be (19L plusOrMinus 2L)) and (be (9L plusOrMinus 2L)))
+      }
+      val caught35 = intercept[AssertionError] {
+        sevenLong should (be (8L plusOrMinus 2L) and (be (19L plusOrMinus 2L)))
+      }
+      val caught36 = intercept[AssertionError] {
+        sevenLong should (be (17L plusOrMinus 2L) and be (7L plusOrMinus 2L))
+      }
+
+      // Long plusOrMinus Int
+      val caught37 = intercept[AssertionError] {
+        sevenLong should ((be (19L plusOrMinus 2)) and (be (9L plusOrMinus 2)))
+      }
+      val caught38 = intercept[AssertionError] {
+        sevenLong should (be (8L plusOrMinus 2) and (be (19L plusOrMinus 2)))
+      }
+      val caught319 = intercept[AssertionError] {
+        sevenLong should (be (17L plusOrMinus 2) and be (7L plusOrMinus 2))
+      }
+
+      // Long plusOrMinus Short
+      val caught40 = intercept[AssertionError] {
+        sevenLong should ((be (19L plusOrMinus 2.toShort)) and (be (9L plusOrMinus 2.toShort)))
+      }
+      val caught41 = intercept[AssertionError] {
+        sevenLong should (be (8L plusOrMinus 2.toShort) and (be (19L plusOrMinus 2.toShort)))
+      }
+      val caught42 = intercept[AssertionError] {
+        sevenLong should (be (17L plusOrMinus 2.toShort) and be (7L plusOrMinus 2.toShort))
+      }
+
+      // Long plusOrMinus Byte
+      val caught43 = intercept[AssertionError] {
+        sevenLong should ((be (19L plusOrMinus 2.toByte)) and (be (9L plusOrMinus 2.toByte)))
+      }
+      val caught44 = intercept[AssertionError] {
+        sevenLong should (be (8L plusOrMinus 2.toByte) and (be (19L plusOrMinus 2.toByte)))
+      }
+      val caught45 = intercept[AssertionError] {
+        sevenLong should (be (17L plusOrMinus 2.toByte) and be (7L plusOrMinus 2.toByte))
+      }
+
+      // Int plusOrMinus Int
+      val caught46 = intercept[AssertionError] {
+        sevenInt should ((be (19 plusOrMinus 2)) and (be (9 plusOrMinus 2)))
+      }
+      val caught47 = intercept[AssertionError] {
+        sevenInt should (be (8 plusOrMinus 2) and (be (19 plusOrMinus 2)))
+      }
+      val caught48 = intercept[AssertionError] {
+        sevenInt should (be (17 plusOrMinus 2) and be (7 plusOrMinus 2))
+      }
+
+      // Int plusOrMinus Short
+      val caught419 = intercept[AssertionError] {
+        sevenInt should ((be (19 plusOrMinus 2.toShort)) and (be (9 plusOrMinus 2.toShort)))
+      }
+      val caught50 = intercept[AssertionError] {
+        sevenInt should (be (8 plusOrMinus 2.toShort) and (be (19 plusOrMinus 2.toShort)))
+      }
+      val caught51 = intercept[AssertionError] {
+        sevenInt should (be (17 plusOrMinus 2.toShort) and be (7 plusOrMinus 2.toShort))
+      }
+
+      // Int plusOrMinus Byte
+      val caught52 = intercept[AssertionError] {
+        sevenInt should ((be (19 plusOrMinus 2.toByte)) and (be (9 plusOrMinus 2.toByte)))
+      }
+      val caught53 = intercept[AssertionError] {
+        sevenInt should (be (8 plusOrMinus 2.toByte) and (be (19 plusOrMinus 2.toByte)))
+      }
+      val caught54 = intercept[AssertionError] {
+        sevenInt should (be (17 plusOrMinus 2.toByte) and be (7 plusOrMinus 2.toByte))
+      }
+
+      // Short plusOrMinus Short
+      val caught55 = intercept[AssertionError] {
+        sevenShort should ((be (19.toShort plusOrMinus 2.toShort)) and (be (9.toShort plusOrMinus 2.toShort)))
+      }
+      val caught56 = intercept[AssertionError] {
+        sevenShort should (be (8.toShort plusOrMinus 2.toShort) and (be (19.toShort plusOrMinus 2.toShort)))
+      }
+      val caught57 = intercept[AssertionError] {
+        sevenShort should (be (17.toShort plusOrMinus 2.toShort) and be (7.toShort plusOrMinus 2.toShort))
+      }
+
+      // Short plusOrMinus Byte
+      val caught58 = intercept[AssertionError] {
+        sevenShort should ((be (19.toShort plusOrMinus 2.toByte)) and (be (9.toShort plusOrMinus 2.toByte)))
+      }
+      val caught519 = intercept[AssertionError] {
+        sevenShort should (be (8.toShort plusOrMinus 2.toByte) and (be (19.toShort plusOrMinus 2.toByte)))
+      }
+      val caught60 = intercept[AssertionError] {
+        sevenShort should (be (17.toShort plusOrMinus 2.toByte) and be (7.toShort plusOrMinus 2.toByte))
+      }
+
+      // Byte plusOrMinus Byte
+      val caught61 = intercept[AssertionError] {
+        sevenByte should ((be (19.toByte plusOrMinus 2.toByte)) and (be (9.toByte plusOrMinus 2.toByte)))
+      }
+      val caught62 = intercept[AssertionError] {
+        sevenByte should (be (8.toByte plusOrMinus 2.toByte) and (be (19.toByte plusOrMinus 2.toByte)))
+      }
+      val caught63 = intercept[AssertionError] {
+        sevenByte should (be (17.toByte plusOrMinus 2.toByte) and be (7.toByte plusOrMinus 2.toByte))
+      }
+      assert(true)
     }
 
+/*
     it("should throw AssertionError if the object is not the same instance as another object, when used in a logical-or expression") {
 
       val caught1 = intercept[AssertionError] {
