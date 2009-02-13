@@ -248,16 +248,16 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
               detailsJTextArea.setText(Resources("RERUN_" + ReporterOpts.getUpperCaseName(reportType)))
             else
               detailsJTextArea.setText(Resources(ReporterOpts.getUpperCaseName(reportType)))
-  
+
             // The only return value from a report that can be null is getThrowable's.
-  
+
             detailsJTextArea.append("\n" + Resources("DetailsName") + ": " + report.name)
             detailsJTextArea.append("\n" + Resources("DetailsMessage") + ": " + report.message)
             detailsJTextArea.append("\n" + Resources("DetailsDate") + ": " + report.date)
             detailsJTextArea.append("\n" + Resources("DetailsThread") + ": " + report.threadName)
   
             detailsJTextArea.append("\n" + Resources("DetailsThrowable"))
-  
+
             report.throwable match {
               case Some(t) => {
                 val bytestream: ByteArrayOutputStream = new ByteArrayOutputStream()
@@ -519,14 +519,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     registerRunOrRerunReport(report, reportType, true)
   }
 
-  private def registerRunOrRerunReport(report: Report, reportType: ReporterOpts.Value, isRerun: Boolean): Unit = {
+  private def registerRunOrRerunReport(report: Report, reportType: ReporterOpts.Value, isRerun: Boolean) {
+
     val reportHolder: ReportHolder = new ReportHolder(report, reportType, isRerun)
 
-      if (reportTypesToCollect.contains(reportType)) {
-        collectedReports = reportHolder :: collectedReports
-        if (viewOptions.contains(reportType))
-          reportsListModel.addElement(reportHolder)
-      }
+    if (reportTypesToCollect.contains(reportType)) {
+      collectedReports = reportHolder :: collectedReports
+      if (viewOptions.contains(reportType))
+        reportsListModel.addElement(reportHolder)
+    }
   }
 
   private class GraphicRunReporter extends Reporter {
@@ -754,6 +755,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     rerunJButton.setEnabled(rh != null && rh.report.rerunnable.isDefined)
   }
 
+  // This must be called by the event handler thread
   def prepUIForStopping() {
     val stopText: String = Resources("Stop")
     val rerunText: String = Resources("Rerun")
@@ -763,6 +765,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     rerunJButton.setEnabled(false)
   }
 
+  // This must be called by the event handler thread
   def prepUIForReStopping() {
     val runText: String = Resources("Run")
     val stopText: String = Resources("Stop")
@@ -770,6 +773,29 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     rerunJButton.setText(stopText)
     runJButton.setEnabled(false)
     rerunJButton.setEnabled(false)
+  }
+
+  // This must be called by the event handler thread
+  def selectFirstFailureIfExists() {
+    val rh: ReportHolder = reportsJList.getSelectedValue.asInstanceOf[ReportHolder] 
+    if (rh == null) { // Only do this if something isn't already selected
+      val model = reportsJList.getModel
+      // the imperative methods on model push strongly to an imperative style
+      var indexToSelect = -1
+      var i = 0
+      var done = false
+      while (i < model.getSize && !done) {
+        val rh = model.getElementAt(i).asInstanceOf[ReportHolder]
+        val reportType = rh.reportType
+        if (reportType == ReporterOpts.PresentTestFailed || reportType == ReporterOpts.PresentRunAborted || 
+            reportType == ReporterOpts.PresentSuiteAborted) {
+
+          reportsJList.setSelectedValue(rh, true)
+          done = true
+        }
+        i += 1
+      }
+    }
   }
 
   def getSelectedRerunnable(): Option[Rerunnable] = {

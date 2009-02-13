@@ -1218,11 +1218,11 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
         sevenDotOh should ((be (17.1 plusOrMinus 2)) and (be (17.1 plusOrMinus 2)))
       }
       assert(caught10.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-/*
       val caught11 = intercept[AssertionError] {
         sevenDotOh should (be (6.9 plusOrMinus 2) and (be (17.1 plusOrMinus 2)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught2.getMessage === "7.0 was 6.9 plus or minus 0.2, but 7.0 was not 17.1 plus or minus 0.2")
+/*
       val caught12 = intercept[AssertionError] {
         sevenDotOh should (be (17.0 plusOrMinus 2) and be (7.0 plusOrMinus 2))
       }

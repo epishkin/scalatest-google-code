@@ -35,4 +35,5 @@ private[scalatest] trait RunnerGUI {
   def runFromGUI(): Unit
   def rerunFromGUI(rerunnable: Rerunnable): Unit
   def requestStop(): Unit
+  def selectFirstFailureIfExists(): Unit
 }

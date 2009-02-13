@@ -242,10 +242,10 @@
             <arg value="-s" />
             <arg value="org.scalatest.PlusOrMinusSpec" />
 
-<!--
             <arg value="-s" />
             <arg value="org.scalatest.ShouldOrderedSpec" />
 
+<!--
             <arg value="-s" />
             <arg value="org.scalatest.ShouldEqualSpec" />
 -->
