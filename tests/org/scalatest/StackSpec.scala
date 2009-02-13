@@ -17,7 +17,7 @@ package org.scalatest
 
 import scala.collection.mutable.ListBuffer
 
-trait StackItBehaviors { this: Spec =>
+trait StackBehaviors { this: Spec =>
 
   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
 
@@ -56,7 +56,8 @@ trait StackItBehaviors { this: Spec =>
     }
   }
 }
-class StackItSpec extends Spec with StackFixtureCreationMethods with StackItBehaviors {
+
+class StackSpec extends Spec with StackFixtureCreationMethods with StackBehaviors {
 
   describe("A Stack") {
 
