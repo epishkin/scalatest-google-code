@@ -54,6 +54,7 @@ import Runner.withClassLoaderAndDispatchReporter
 import java.util.concurrent.Semaphore
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
+import java.awt.EventQueue
 
 /**
  * The main class for Runner's GUI.
@@ -697,11 +698,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // Must be called from event handler thread
   override def rerunFromGUI(rerunnable: Rerunnable) {
+    assert(EventQueue.isDispatchThread)
     (new RerunnerThread(rerunnable)).start()
   }
 
   // This must be called by the event handler thread
   def prepUIForRunning() {
+    assert(EventQueue.isDispatchThread)
     val stopText: String = Resources("Stop")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(stopText)
@@ -719,6 +722,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIWhileRunning() {
+    assert(EventQueue.isDispatchThread)
     val stopText: String = Resources("Stop")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(stopText)
@@ -730,6 +734,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIForRerunning() {
+    assert(EventQueue.isDispatchThread)
     val runText: String = Resources("Run")
     val stopText: String = Resources("Stop")
     runJButton.setText(runText)
@@ -741,6 +746,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIWhileRerunning() {
+    assert(EventQueue.isDispatchThread)
     val runText: String = Resources("Run")
     val stopText: String = Resources("Stop")
     runJButton.setText(runText)
@@ -751,6 +757,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIForReady() {
+    assert(EventQueue.isDispatchThread)
     val runText: String = Resources("Run")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(runText)
@@ -762,6 +769,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIForStopping() {
+    assert(EventQueue.isDispatchThread)
     val stopText: String = Resources("Stop")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(stopText)
@@ -772,6 +780,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIForReStopping() {
+    assert(EventQueue.isDispatchThread)
     val runText: String = Resources("Run")
     val stopText: String = Resources("Stop")
     runJButton.setText(runText)
@@ -782,6 +791,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def selectFirstFailureIfExists() {
+    assert(EventQueue.isDispatchThread)
     val rh: ReportHolder = reportsJList.getSelectedValue.asInstanceOf[ReportHolder] 
     if (rh == null) { // Only do this if something isn't already selected
       val model = reportsJList.getModel

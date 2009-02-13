@@ -1467,10 +1467,15 @@ trait Suite extends Assertions with ExecuteAndRun {
         val rawString = Resources("suiteExecutionStarting")
 
         val report =
-          if (hasPublicNoArgConstructor) 
-            new Report(nestedSuite.suiteName, rawString, None, rerunnable)
-          else 
-            new Report(nestedSuite.suiteName, rawString)
+          nestedSuite match {
+            case spec: Spec =>
+              new SpecReport(nestedSuite.suiteName, rawString, nestedSuite.suiteName, nestedSuite.suiteName, true, None, rerunnable)
+            case _ =>
+              if (hasPublicNoArgConstructor) 
+                new Report(nestedSuite.suiteName, rawString, None, rerunnable)
+              else 
+                new Report(nestedSuite.suiteName, rawString)
+          }
         
         wrappedReporter.suiteStarting(report)
 
@@ -1480,10 +1485,15 @@ trait Suite extends Assertions with ExecuteAndRun {
           val rawString = Resources("suiteCompletedNormally")
 
           val report =
-            if (hasPublicNoArgConstructor)
-              new Report(nestedSuite.suiteName, rawString, None, rerunnable)
-            else
-              new Report(nestedSuite.suiteName, rawString)
+            nestedSuite match {
+              case spec: Spec =>
+                new SpecReport(nestedSuite.suiteName, rawString, nestedSuite.suiteName, nestedSuite.suiteName, false, None, rerunnable)
+              case _ =>
+                if (hasPublicNoArgConstructor)
+                  new Report(nestedSuite.suiteName, rawString, None, rerunnable)
+                else
+                  new Report(nestedSuite.suiteName, rawString)
+            }
 
           wrappedReporter.suiteCompleted(report)
         }
@@ -1493,10 +1503,15 @@ trait Suite extends Assertions with ExecuteAndRun {
             val rawString = Resources("executeException")
 
             val report =
-              if (hasPublicNoArgConstructor)
-                new Report(nestedSuite.suiteName, rawString, Some(e), rerunnable)
-              else
-                new Report(nestedSuite.suiteName, rawString, Some(e), None)
+              nestedSuite match {
+                case spec: Spec =>
+                  new SpecReport(nestedSuite.suiteName, rawString, nestedSuite.suiteName, nestedSuite.suiteName, true, None, rerunnable)
+                case _ =>
+                  if (hasPublicNoArgConstructor)
+                    new Report(nestedSuite.suiteName, rawString, Some(e), rerunnable)
+                  else
+                    new Report(nestedSuite.suiteName, rawString, Some(e), None)
+              }
 
             wrappedReporter.suiteAborted(report)
 
