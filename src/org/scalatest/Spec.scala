@@ -888,24 +888,34 @@ trait Spec extends Suite {
         val exampleSucceededIcon = Resources("exampleSucceededIconChar")
         val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
 
+        // Create a Rerunnable if the Spec has a no-arg constructor
+        val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
+
+        val rerunnable =
+          if (hasPublicNoArgConstructor)
+            Some(new TestRerunner(getClass.getName, testName))
+          else
+            None
+     
         // A testStarting report won't normally show up in a specification-style output, but
         // will show up in a test-style output.
-        val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false)
+        val report =
+          new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false, None, rerunnable)
 
         wrappedReporter.testStarting(report)
 
         try {
           example.f()
 
-          val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true)
+          val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true, None, rerunnable)
 
           wrappedReporter.testSucceeded(report)
         }
         catch { 
           case e: Exception => 
-            handleFailedTest(e, false, example.testName, example.specText, None, wrappedReporter)
+            handleFailedTest(e, false, example.testName, example.specText, rerunnable, wrappedReporter)
           case ae: AssertionError =>
-            handleFailedTest(ae, false, example.testName, example.specText, None, wrappedReporter)
+            handleFailedTest(ae, false, example.testName, example.specText, rerunnable, wrappedReporter)
         }
       }
     }
@@ -928,7 +938,7 @@ trait Spec extends Suite {
       else
         t.toString
 
-    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(t), rerunnable)
 
     reporter.testFailed(report)
   }
