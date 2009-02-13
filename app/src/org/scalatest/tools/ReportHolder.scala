@@ -46,11 +46,17 @@ private[scalatest] class ReportHolder(val report: Report, val reportType: Report
           else
             Resources(ReporterOpts.getUpperCaseName(reportType))
 
-        if (reportType != ReporterOpts.PresentRunStarting && reportType != ReporterOpts.PresentRunStopped &&
-            reportType != ReporterOpts.PresentRunAborted && reportType != ReporterOpts.PresentRunCompleted) {
+        if (reportType == ReporterOpts.PresentRunStarting || reportType == ReporterOpts.PresentRunStopped ||
+            reportType == ReporterOpts.PresentRunAborted || reportType == ReporterOpts.PresentRunCompleted) {
+
+          firstString 
+        }
+        else if (reportType == ReporterOpts.PresentInfoProvided) {
+          firstString + " - " + report.message
+        }
+        else {
           firstString + " - " + report.name
         }
-        else firstString 
     }
   }
 }
