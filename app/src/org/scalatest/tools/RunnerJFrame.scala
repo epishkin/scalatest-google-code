@@ -502,8 +502,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     reportsListModel.clear()
     detailsJTextArea.setText("")
 
-    for (rh <- collectedReports.reverse; if viewOptions.contains(rh.reportType))
-      reportsListModel.addElement(rh)
+    for (rh <- collectedReports.reverse; if viewOptions.contains(rh.reportType)) {
+      val shouldAddElement = rh.report match {
+        case sr: SpecReport => sr.includeInSpecOutput
+        case _ => true
+      }
+      if (shouldAddElement) reportsListModel.addElement(rh)
+    }
 
     // Isn't there a risk that the formerly selected item will no longer exist in the list?
     // Does this result in an exception? Of course the stupid JavaDoc API docs is silent on this.
