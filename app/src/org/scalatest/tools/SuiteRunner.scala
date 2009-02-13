@@ -42,37 +42,43 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
   
       val rawString = Resources("suiteExecutionStarting")
       val report =
-        if (hasPublicNoArgConstructor)
-          new Report(suite.suiteName, rawString, None, rerunnable)
-        else
-          new Report(suite.suiteName, rawString)
+        suite match {
+          case spec: Spec =>
+            new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
+          case _ =>
+            new Report(suite.suiteName, rawString, None, rerunnable)
+        }
   
       dispatchReporter.suiteStarting(report)
   
       try {
         suite.execute(None, dispatchReporter, stopper, includes, excludes, propertiesMap, distributor)
   
-        val rawString = Resources("suiteCompletedNormally")
+        val rawString2 = Resources("suiteCompletedNormally")
   
-        val report =
-        if (hasPublicNoArgConstructor)
-          new Report(suite.suiteName, rawString, None, rerunnable)
-        else
-          new Report(suite.suiteName, rawString)
+        val report2 =
+          suite match {
+            case spec: Spec =>
+              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, None, rerunnable)
+            case _ =>
+              new Report(suite.suiteName, rawString2, None, rerunnable)
+          }
   
-        dispatchReporter.suiteCompleted(report)
+        dispatchReporter.suiteCompleted(report2)
       }
       catch {
         case e: RuntimeException => {
-          val rawString = Resources("executeException")
+          val rawString3 = Resources("executeException")
   
-          val report =
-          if (hasPublicNoArgConstructor)
-            new Report(suite.suiteName, rawString, Some(e), rerunnable)
-          else
-            new Report(suite.suiteName, rawString, Some(e), None)
+          val report3 =
+            suite match {
+              case spec: Spec =>
+                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
+              case _ =>
+                new Report(suite.suiteName, rawString3, Some(e), rerunnable)
+            }
   
-          dispatchReporter.suiteAborted(report)
+          dispatchReporter.suiteAborted(report3)
         }
       }
     }

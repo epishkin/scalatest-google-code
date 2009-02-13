@@ -28,13 +28,17 @@ private[scalatest] class ReportHolder(val report: Report, val reportType: Report
 
   if (report == null || reportType == null)
     throw new NullPointerException()
-    
+ 
   def this(report: Report, reportType: ReporterOpts.Value) = this(report, reportType, false)
 
   override def toString(): String = {
 
     report match {
-      case sr: SpecReport => sr.formattedSpecText
+      case sr: SpecReport =>
+        if (reportType == ReporterOpts.PresentSuiteStarting)
+          sr.plainSpecText + ":"
+        else 
+          sr.plainSpecText
       case _ => 
         val firstString: String =
           if (isRerun)

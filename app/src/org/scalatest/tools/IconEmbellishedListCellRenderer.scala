@@ -18,6 +18,7 @@ package org.scalatest.tools
 import javax.swing._
 import java.awt._
 import java.net.URL
+import javax.swing.border.EmptyBorder
 
 /**
  * A ListCellRenderer for the report List in the GUI.
@@ -142,28 +143,28 @@ private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRendere
           renderer.setIcon(Icons.testIgnoredSelIcon)
         else
           renderer.setIcon(Icons.testIgnoredIcon)
-        setRendererFont(  renderer, UNCOMFORTABLE_GRAY)
+        setRendererFont(renderer, UNCOMFORTABLE_GRAY)
       }
       case ReporterOpts.PresentTestFailed => {
         if (isSelected)
           renderer.setIcon(Icons.testFailedSelIcon)
         else
           renderer.setIcon(Icons.testFailedIcon)
-        setRendererFont(  renderer, DEEP_RED)
+        setRendererFont(renderer, DEEP_RED)
       }
       case ReporterOpts.PresentRunAborted => {
         if (isSelected)
           renderer.setIcon(Icons.runAbortedSelIcon)
         else
           renderer.setIcon(Icons.runAbortedIcon)
-        setRendererFont(  renderer, DEEP_RED)
+        setRendererFont(renderer, DEEP_RED)
       }
       case ReporterOpts.PresentSuiteAborted => {
         if (isSelected)
           renderer.setIcon(Icons.suiteAbortedSelIcon)
         else
           renderer.setIcon(Icons.suiteAbortedIcon)
-        setRendererFont(  renderer, DEEP_RED)
+        setRendererFont(renderer, DEEP_RED)
       }
       case ReporterOpts.PresentSuiteStarting => {
         if (isSelected)
@@ -196,7 +197,42 @@ private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRendere
           renderer.setIcon(Icons.runStoppedIcon)
       }
     }
-    renderer
+
+    val report = value.asInstanceOf[ReportHolder].report
+ 
+    report match {
+
+      case sr: SpecReport =>
+        val indentationLevel =
+          reportType match {
+            case ReporterOpts.PresentRunStarting => 0
+            case ReporterOpts.PresentTestStarting => 2
+            case ReporterOpts.PresentTestSucceeded => 2
+            case ReporterOpts.PresentTestIgnored => 2
+            case ReporterOpts.PresentTestFailed => 2
+            case ReporterOpts.PresentRunAborted => 0
+            case ReporterOpts.PresentSuiteAborted => 0
+            case ReporterOpts.PresentSuiteStarting => 0
+            case ReporterOpts.PresentSuiteCompleted => 0
+            case ReporterOpts.PresentInfoProvided => 1
+            case ReporterOpts.PresentRunCompleted => 0
+            case ReporterOpts.PresentRunStopped => 0
+          }
+
+        if (indentationLevel > 0) {
+          val panel = new JPanel(new BorderLayout)
+          panel.setBackground(renderer.getBackground)
+          val WidthOfIconInPixels = 12
+          panel.setBorder(new EmptyBorder(0, WidthOfIconInPixels * indentationLevel, 0, 0))
+          renderer.setBorder(new EmptyBorder(0, 0, 0, 0))
+          panel.add(renderer, BorderLayout.CENTER)
+          panel
+        }
+        else renderer
+
+      case _ =>
+        renderer
+    }
   }
 }
 

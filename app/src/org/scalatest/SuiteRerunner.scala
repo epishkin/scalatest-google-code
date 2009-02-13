@@ -69,13 +69,13 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
       }
       catch {
         case e: RuntimeException => {
-          val rawString = Resources("executeException")
+          val rawString3 = Resources("executeException")
           val report3 =
             suite match {
               case spec: Spec =>
-                new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
+                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
               case _ =>
-                new Report(suite.suiteName, rawString, Some(e), rerunnable)
+                new Report(suite.suiteName, rawString3, Some(e), rerunnable)
             }
           reporter.suiteAborted(report3)
         }
