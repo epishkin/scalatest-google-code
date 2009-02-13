@@ -46,17 +46,38 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
       try {
 
         val rawString = Resources("suiteExecutionStarting")
-        reporter.suiteStarting(new Report(suite.suiteName, rawString, None, rerunnable))
+        val report =
+          suite match {
+            case spec: Spec =>
+              new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
+            case _ =>
+              new Report(suite.suiteName, rawString, None, rerunnable)
+          }
+        reporter.suiteStarting(report)
 
         suite.execute(None, reporter, stopper, includes, excludes, properties, distributor)
 
         val rawString2 = Resources("suiteCompletedNormally")
-        reporter.suiteCompleted(new Report(suite.suiteName, rawString2, None, rerunnable))
+        val report2 =
+          suite match {
+            case spec: Spec =>
+              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, None, rerunnable)
+            case _ =>
+              new Report(suite.suiteName, rawString2, None, rerunnable)
+          }
+        reporter.suiteCompleted(report2)
       }
       catch {
         case e: RuntimeException => {
           val rawString = Resources("executeException")
-          reporter.suiteAborted(new Report(suite.suiteName, rawString, Some(e), rerunnable))
+          val report3 =
+            suite match {
+              case spec: Spec =>
+                new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
+              case _ =>
+                new Report(suite.suiteName, rawString, Some(e), rerunnable)
+            }
+          reporter.suiteAborted(report3)
         }
       }
       

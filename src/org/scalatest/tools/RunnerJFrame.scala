@@ -531,8 +531,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
     if (reportTypesToCollect.contains(reportType)) {
       collectedReports = reportHolder :: collectedReports
-      if (viewOptions.contains(reportType))
-        reportsListModel.addElement(reportHolder)
+      if (viewOptions.contains(reportType)) {
+        val shouldAddElement = report match {
+          case sr: SpecReport => sr.includeInSpecOutput
+          case _ => true
+        }
+        if (shouldAddElement) reportsListModel.addElement(reportHolder)
+      }
     }
   }
 
