@@ -39,7 +39,6 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       And if X is Byte, Y must be Byte.
       minusSevenDotOhFloat should be (-6.8f plusOrMinus 0.2d)
     */
-/*
     it("should do nothing if the number is within the specified range") {
 
       // Double plusOrMinus Double
@@ -1155,22 +1154,9 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       }
       assert(caught21.getMessage === "7 was 9 plus or minus 2")
     }
-*/
+
     it("should throw AssertionError if the number is not within the specified range, when used in a logical-and expression") {
-/*
-      val caught1 = intercept[AssertionError] {
-        obj should ((be theSameInstanceAs (string)) and (be theSameInstanceAs (otherString)))
-      }
-      assert(caught1.getMessage === "\"Hi\" was the same instance as \"Hi\", but \"Hi\" was not the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
-        obj should (be theSameInstanceAs (string) and (be theSameInstanceAs (otherString)))
-      }
-      assert(caught2.getMessage === "\"Hi\" was the same instance as \"Hi\", but \"Hi\" was not the same instance as \"Hi\"")
-      val caught3 = intercept[AssertionError] {
-        obj should (be theSameInstanceAs (string) and be theSameInstanceAs (otherString))
-      }
-      assert(caught3.getMessage === "\"Hi\" was the same instance as \"Hi\", but \"Hi\" was not the same instance as \"Hi\"")
-*/
+
       // Double plusOrMinus Double
       val caught1 = intercept[AssertionError] {
         sevenDotOh should ((be (17.1 plusOrMinus 0.2)) and (be (17.1 plusOrMinus 0.2)))
@@ -1222,250 +1208,248 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
         sevenDotOh should (be (6.9 plusOrMinus 2) and (be (17.1 plusOrMinus 2)))
       }
       assert(caught2.getMessage === "7.0 was 6.9 plus or minus 0.2, but 7.0 was not 17.1 plus or minus 0.2")
-/*
       val caught12 = intercept[AssertionError] {
-        sevenDotOh should (be (17.0 plusOrMinus 2) and be (7.0 plusOrMinus 2))
+        sevenDotOh should (be (7.0 plusOrMinus 2) and be (17.0 plusOrMinus 2))
       }
-      assert(caught2.getMessage === "")
+      assert(caught12.getMessage === "7.0 was 7.0 plus or minus 2.0, but 7.0 was not 17.0 plus or minus 2.0")
 
       // Double plusOrMinus Short
       val caught13 = intercept[AssertionError] {
         sevenDotOh should ((be (17.1 plusOrMinus 2.toShort)) and (be (17.1 plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught13.getMessage === "7.0 was not 17.1 plus or minus 2.0")
       val caught14 = intercept[AssertionError] {
         sevenDotOh should (be (6.9 plusOrMinus 2.toShort) and (be (17.1 plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught14.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
       val caught15 = intercept[AssertionError] {
         sevenDotOh should (be (17.0 plusOrMinus 2.toShort) and be (7.0 plusOrMinus 2.toShort))
       }
-      assert(caught2.getMessage === "")
+      assert(caught15.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Double plusOrMinus Byte
       val caught16 = intercept[AssertionError] {
         sevenDotOh should ((be (17.1 plusOrMinus 2.toByte)) and (be (17.1 plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught16.getMessage === "7.0 was not 17.1 plus or minus 2.0")
       val caught17 = intercept[AssertionError] {
         sevenDotOh should (be (6.9 plusOrMinus 2.toByte) and (be (17.1 plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught17.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
       val caught18 = intercept[AssertionError] {
         sevenDotOh should (be (17.0 plusOrMinus 2.toByte) and be (7.0 plusOrMinus 2.toByte))
       }
-      assert(caught2.getMessage === "")
+      assert(caught18.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Float
       val caught19 = intercept[AssertionError] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 0.2f)) and (be (17.1f plusOrMinus 0.2f)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught19.getMessage === "7.0 was not 17.1 plus or minus 0.2")
       val caught20 = intercept[AssertionError] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 0.2f) and (be (17.1f plusOrMinus 0.2f)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught20.getMessage === "7.0 was 6.9 plus or minus 0.2, but 7.0 was not 17.1 plus or minus 0.2")
       val caught21 = intercept[AssertionError] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 0.2f) and be (7.0f plusOrMinus 0.2f))
       }
-      assert(caught2.getMessage === "")
+      assert(caught21.getMessage === "7.0 was not 17.0 plus or minus 0.2")
 
       // Float plusOrMinus Long
       val caught22 = intercept[AssertionError] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2L)) and (be (17.1f plusOrMinus 2L)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught22.getMessage === "7.0 was not 17.1 plus or minus 2.0")
       val caught23 = intercept[AssertionError] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2L) and (be (17.1f plusOrMinus 2L)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught23.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
       val caught24 = intercept[AssertionError] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2L) and be (7.0f plusOrMinus 2L))
       }
-      assert(caught2.getMessage === "")
+      assert(caught24.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Int
       val caught25 = intercept[AssertionError] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2)) and (be (17.1f plusOrMinus 2)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught25.getMessage === "7.0 was not 17.1 plus or minus 2.0")
       val caught26 = intercept[AssertionError] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2) and (be (17.1f plusOrMinus 2)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught26.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
       val caught27 = intercept[AssertionError] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2) and be (7.0f plusOrMinus 2))
       }
-      assert(caught2.getMessage === "")
+      assert(caught27.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Short
       val caught28 = intercept[AssertionError] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2.toShort)) and (be (17.1f plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught28.getMessage === "7.0 was not 17.1 plus or minus 2.0")
       val caught29 = intercept[AssertionError] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2.toShort) and (be (17.1f plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught29.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
       val caught30 = intercept[AssertionError] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2.toShort) and be (7.0f plusOrMinus 2.toShort))
       }
-      assert(caught2.getMessage === "")
+      assert(caught30.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Byte
       val caught31 = intercept[AssertionError] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2.toByte)) and (be (17.1f plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught31.getMessage === "7.0 was not 17.1 plus or minus 2.0")
       val caught32 = intercept[AssertionError] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2.toByte) and (be (17.1f plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught32.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
       val caught33 = intercept[AssertionError] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2.toByte) and be (7.0f plusOrMinus 2.toByte))
       }
-      assert(caught2.getMessage === "")
+      assert(caught33.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Long plusOrMinus Long
       val caught34 = intercept[AssertionError] {
         sevenLong should ((be (19L plusOrMinus 2L)) and (be (9L plusOrMinus 2L)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught34.getMessage === "7 was not 19 plus or minus 2")
       val caught35 = intercept[AssertionError] {
-        sevenLong should (be (8L plusOrMinus 2L) and (be (19L plusOrMinus 2L)))
+        sevenLong should (be (18L plusOrMinus 2L) and (be (19L plusOrMinus 2L)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught35.getMessage === "7 was not 18 plus or minus 2")
       val caught36 = intercept[AssertionError] {
         sevenLong should (be (17L plusOrMinus 2L) and be (7L plusOrMinus 2L))
       }
-      assert(caught2.getMessage === "")
+      assert(caught36.getMessage === "7 was not 17 plus or minus 2")
 
       // Long plusOrMinus Int
       val caught37 = intercept[AssertionError] {
         sevenLong should ((be (19L plusOrMinus 2)) and (be (9L plusOrMinus 2)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught37.getMessage === "7 was not 19 plus or minus 2")
       val caught38 = intercept[AssertionError] {
         sevenLong should (be (8L plusOrMinus 2) and (be (19L plusOrMinus 2)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught38.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught39 = intercept[AssertionError] {
         sevenLong should (be (17L plusOrMinus 2) and be (7L plusOrMinus 2))
       }
-      assert(caught2.getMessage === "")
+      assert(caught39.getMessage === "7 was not 17 plus or minus 2")
 
       // Long plusOrMinus Short
       val caught40 = intercept[AssertionError] {
         sevenLong should ((be (19L plusOrMinus 2.toShort)) and (be (9L plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught40.getMessage === "7 was not 19 plus or minus 2")
       val caught41 = intercept[AssertionError] {
         sevenLong should (be (8L plusOrMinus 2.toShort) and (be (19L plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught41.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught42 = intercept[AssertionError] {
         sevenLong should (be (17L plusOrMinus 2.toShort) and be (7L plusOrMinus 2.toShort))
       }
-      assert(caught2.getMessage === "")
+      assert(caught42.getMessage === "7 was not 17 plus or minus 2")
 
       // Long plusOrMinus Byte
       val caught43 = intercept[AssertionError] {
         sevenLong should ((be (19L plusOrMinus 2.toByte)) and (be (9L plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught43.getMessage === "7 was not 19 plus or minus 2")
       val caught44 = intercept[AssertionError] {
         sevenLong should (be (8L plusOrMinus 2.toByte) and (be (19L plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught44.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught45 = intercept[AssertionError] {
         sevenLong should (be (17L plusOrMinus 2.toByte) and be (7L plusOrMinus 2.toByte))
       }
-      assert(caught2.getMessage === "")
+      assert(caught45.getMessage === "7 was not 17 plus or minus 2")
 
       // Int plusOrMinus Int
       val caught46 = intercept[AssertionError] {
         sevenInt should ((be (19 plusOrMinus 2)) and (be (9 plusOrMinus 2)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught46.getMessage === "7 was not 19 plus or minus 2")
       val caught47 = intercept[AssertionError] {
         sevenInt should (be (8 plusOrMinus 2) and (be (19 plusOrMinus 2)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught47.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught48 = intercept[AssertionError] {
         sevenInt should (be (17 plusOrMinus 2) and be (7 plusOrMinus 2))
       }
-      assert(caught2.getMessage === "")
+      assert(caught48.getMessage === "7 was not 17 plus or minus 2")
 
       // Int plusOrMinus Short
       val caught49 = intercept[AssertionError] {
-        sevenInt should ((be (19 plusOrMinus 2.toShort)) and (be (9 plusOrMinus 2.toShort)))
+        sevenInt should ((be (9 plusOrMinus 2.toShort)) and (be (19 plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught49.getMessage === "7 was 9 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught50 = intercept[AssertionError] {
         sevenInt should (be (8 plusOrMinus 2.toShort) and (be (19 plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught50.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught51 = intercept[AssertionError] {
         sevenInt should (be (17 plusOrMinus 2.toShort) and be (7 plusOrMinus 2.toShort))
       }
-      assert(caught2.getMessage === "")
+      assert(caught51.getMessage === "7 was not 17 plus or minus 2")
 
       // Int plusOrMinus Byte
       val caught52 = intercept[AssertionError] {
         sevenInt should ((be (19 plusOrMinus 2.toByte)) and (be (9 plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught52.getMessage === "7 was not 19 plus or minus 2")
       val caught53 = intercept[AssertionError] {
         sevenInt should (be (8 plusOrMinus 2.toByte) and (be (19 plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught53.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught54 = intercept[AssertionError] {
         sevenInt should (be (17 plusOrMinus 2.toByte) and be (7 plusOrMinus 2.toByte))
       }
-      assert(caught2.getMessage === "")
+      assert(caught54.getMessage === "7 was not 17 plus or minus 2")
 
       // Short plusOrMinus Short
       val caught55 = intercept[AssertionError] {
         sevenShort should ((be (19.toShort plusOrMinus 2.toShort)) and (be (9.toShort plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught55.getMessage === "7 was not 19 plus or minus 2")
       val caught56 = intercept[AssertionError] {
         sevenShort should (be (8.toShort plusOrMinus 2.toShort) and (be (19.toShort plusOrMinus 2.toShort)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught56.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught57 = intercept[AssertionError] {
         sevenShort should (be (17.toShort plusOrMinus 2.toShort) and be (7.toShort plusOrMinus 2.toShort))
       }
-      assert(caught2.getMessage === "")
+      assert(caught57.getMessage === "7 was not 17 plus or minus 2")
 
       // Short plusOrMinus Byte
       val caught58 = intercept[AssertionError] {
         sevenShort should ((be (19.toShort plusOrMinus 2.toByte)) and (be (9.toShort plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught58.getMessage === "7 was not 19 plus or minus 2")
       val caught59 = intercept[AssertionError] {
         sevenShort should (be (8.toShort plusOrMinus 2.toByte) and (be (19.toShort plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught59.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught60 = intercept[AssertionError] {
         sevenShort should (be (17.toShort plusOrMinus 2.toByte) and be (7.toShort plusOrMinus 2.toByte))
       }
-      assert(caught2.getMessage === "")
+      assert(caught60.getMessage === "7 was not 17 plus or minus 2")
 
       // Byte plusOrMinus Byte
       val caught61 = intercept[AssertionError] {
         sevenByte should ((be (19.toByte plusOrMinus 2.toByte)) and (be (9.toByte plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught61.getMessage === "7 was not 19 plus or minus 2")
       val caught62 = intercept[AssertionError] {
         sevenByte should (be (8.toByte plusOrMinus 2.toByte) and (be (19.toByte plusOrMinus 2.toByte)))
       }
-      assert(caught2.getMessage === "")
+      assert(caught62.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
       val caught63 = intercept[AssertionError] {
         sevenByte should (be (17.toByte plusOrMinus 2.toByte) and be (7.toByte plusOrMinus 2.toByte))
       }
-      assert(caught2.getMessage === "")
-*/
+      assert(caught63.getMessage === "7 was not 17 plus or minus 2")
     }
 
 /*
