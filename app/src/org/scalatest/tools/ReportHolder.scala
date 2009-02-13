@@ -33,16 +33,20 @@ private[scalatest] class ReportHolder(val report: Report, val reportType: Report
 
   override def toString(): String = {
 
-    val firstString: String =
-      if (isRerun)
-        Resources("RERUN_" + ReporterOpts.getUpperCaseName(reportType))
-      else
-        Resources(ReporterOpts.getUpperCaseName(reportType))
+    report match {
+      case sr: SpecReport => sr.formattedSpecText
+      case _ => 
+        val firstString: String =
+          if (isRerun)
+            Resources("RERUN_" + ReporterOpts.getUpperCaseName(reportType))
+          else
+            Resources(ReporterOpts.getUpperCaseName(reportType))
 
-    if (reportType != ReporterOpts.PresentRunStarting && reportType != ReporterOpts.PresentRunStopped &&
-        reportType != ReporterOpts.PresentRunAborted && reportType != ReporterOpts.PresentRunCompleted) {
-      firstString + " - " + report.name
+        if (reportType != ReporterOpts.PresentRunStarting && reportType != ReporterOpts.PresentRunStopped &&
+            reportType != ReporterOpts.PresentRunAborted && reportType != ReporterOpts.PresentRunCompleted) {
+          firstString + " - " + report.name
+        }
+        else firstString 
     }
-    else firstString 
   }
 }
