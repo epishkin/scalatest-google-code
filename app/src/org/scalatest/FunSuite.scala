@@ -656,7 +656,20 @@ trait FunSuite extends Suite {
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val report = new Report(getTestNameForReport(testName), "")
+    // Create a Rerunnable if the Spec has a no-arg constructor
+    val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
+
+    val rerunnable =
+      if (hasPublicNoArgConstructor)
+        Some(new TestRerunner(getClass.getName, testName))
+      else
+        None
+     
+    val report =
+      if (hasPublicNoArgConstructor)
+        new Report(getTestNameForReport(testName), "", None, rerunnable)
+      else
+        new Report(getTestNameForReport(testName), "")
 
     wrappedReporter.testStarting(report)
 
@@ -687,16 +700,20 @@ trait FunSuite extends Suite {
         currentInformer = oldInformer
       }
 
-      val report = new Report(getTestNameForReport(testName), "")
+      val report =
+        if (hasPublicNoArgConstructor)
+          new Report(getTestNameForReport(testName), "", None, rerunnable)
+        else 
+          new Report(getTestNameForReport(testName), "")
 
       wrappedReporter.testSucceeded(report)
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, testName, None, wrappedReporter)
+        handleFailedTest(e, false, testName, rerunnable, wrappedReporter)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, testName, None, wrappedReporter)
+        handleFailedTest(ae, false, testName, rerunnable, wrappedReporter)
       }
     }
   }
@@ -710,7 +727,7 @@ trait FunSuite extends Suite {
       else
         t.toString
 
-    val report = new Report(getTestNameForReport(testName), msg, Some(t), None)
+    val report = new Report(getTestNameForReport(testName), msg, Some(t), rerunnable)
 
     reporter.testFailed(report)
   }
