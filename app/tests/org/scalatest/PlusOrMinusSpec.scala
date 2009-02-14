@@ -39,6 +39,7 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       And if X is Byte, Y must be Byte.
       minusSevenDotOhFloat should be (-6.8f plusOrMinus 0.2d)
     */
+/*
     it("should do nothing if the number is within the specified range") {
 
       // Double plusOrMinus Double
@@ -1451,24 +1452,25 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       }
       assert(caught63.getMessage === "7 was not 17 plus or minus 2")
     }
+*/
+    it("should throw AssertionError if the number is not within the specified range, when used in a logical-or expression") {
 
-/*
-    it("should throw AssertionError if the object is not the same instance as another object, when used in a logical-or expression") {
-
+      // Double plusOrMinus Double
       val caught1 = intercept[AssertionError] {
-        obj should ((be theSameInstanceAs (otherString)) or (be theSameInstanceAs (otherString)))
+        sevenDotOh should ((be (17.1 plusOrMinus 0.2)) or (be (17.1 plusOrMinus 0.2)))
       }
-      assert(caught1.getMessage === "\"Hi\" was not the same instance as \"Hi\", and \"Hi\" was not the same instance as \"Hi\"")
+      assert(caught1.getMessage === "7.0 was not 17.1 plus or minus 0.2, and 7.0 was not 17.1 plus or minus 0.2")
       val caught2 = intercept[AssertionError] {
-        obj should (be theSameInstanceAs (otherString) or (be theSameInstanceAs (otherString)))
+        sevenDotOh should (be (16.9 plusOrMinus 0.2) or (be (17.1 plusOrMinus 0.2)))
       }
-      assert(caught2.getMessage === "\"Hi\" was not the same instance as \"Hi\", and \"Hi\" was not the same instance as \"Hi\"")
+      assert(caught2.getMessage === "7.0 was not 16.9 plus or minus 0.2, and 7.0 was not 17.1 plus or minus 0.2")
       val caught3 = intercept[AssertionError] {
-        obj should (be theSameInstanceAs (otherString) or be theSameInstanceAs (otherString))
+        sevenDotOh should (be (17.0 plusOrMinus 0.2) or be (97.0 plusOrMinus -0.2))
       }
-      assert(caught3.getMessage === "\"Hi\" was not the same instance as \"Hi\", and \"Hi\" was not the same instance as \"Hi\"")
+      assert(caught3.getMessage === "7.0 was not 17.0 plus or minus 0.2, and 7.0 was not 97.0 plus or minus -0.2")
     }
 
+/*
     it("should throw AssertionError if the object is the same instance as another object, when used in a logical-and expression with not") {
 
       val caught1 = intercept[AssertionError] {
