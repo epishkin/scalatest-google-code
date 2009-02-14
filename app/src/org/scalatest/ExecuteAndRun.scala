@@ -22,12 +22,13 @@ package org.scalatest
  * <code>super.runTest</code> in calls to <code>beforeEach</code> and <code>afterEach</code>. Similarly, the
  * <code>BeforeAndAfter</code> trait's implementation of <code>execute</code> surrounds an invocation of
  * <code>super.execute</code> in calls to <code>beforeAll</code> and <code>afterAll</code>. This enables trait
- * <code>BeforeAndAfter</code> to be mixed into any <code>Suite</code>, but not into an <code>Examples</code>.
+ * <code>BeforeAndAfter</code> to be mixed into any <code>Suite</code>, but not into a trait that contains shared examples
+ * for a <code>Spec<code>.
  *
  * <p>
  * The main purpose of <code>ExecuteAndRun</code> is to render a compiler error the mistake of attempting
- * to mix <code>BeforeAndAfter</code> into an <code>Examples</code>. If <code>BeforeAndAfter</code> extended
- * </code>Suite</code> itself, then it would compile if mixed into an <code>Examples</code>, but wouldn't work
+ * to mix <code>BeforeAndAfter</code> into a trait containing shared examples for a <code>Spec</code>. If <code>BeforeAndAfter</code> extended
+ * </code>Suite</code> itself, then it would compile if mixed into such a trait, but wouldn't work
  * as expected (i.e., the <code>beforeEach</code> and <code>afterEach</code> methods would never be called).
  * This goal can't be achieved by making the self type of <code>BeforeAndAfter</code> <code>Suite</code>, because
  * in that case <code>BeforeAndAfter</code> couldn't wrap calls to the mixed into <code>Suite</code>,
