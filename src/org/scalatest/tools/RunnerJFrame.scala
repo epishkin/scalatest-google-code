@@ -638,6 +638,11 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       val report: Report = new Report("", stringToReport)
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentRunCompleted)
+        // Must do this here, not in RunningState.runFinished, because the runFinished
+        // invocation can happen before this runCompleted invocation, which means that 
+        // the first error in the run may not be in the JList model yet. So must wait until
+        // a run completes.
+        selectFirstFailureIfExistsAndNothingElseAlreadySelected()
       }
     }
   
@@ -703,13 +708,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // Must be called from event handler thread
   override def rerunFromGUI(rerunnable: Rerunnable) {
-    assert(EventQueue.isDispatchThread)
+    if (!EventQueue.isDispatchThread) println("*&*&*&*&* rerunFromGUI")
     (new RerunnerThread(rerunnable)).start()
   }
 
   // This must be called by the event handler thread
   def prepUIForRunning() {
-    assert(EventQueue.isDispatchThread)
+    if (!EventQueue.isDispatchThread) println("*&*&*&*&* prepUIForRunning")
     val stopText: String = Resources("Stop")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(stopText)
@@ -727,7 +732,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIWhileRunning() {
-    assert(EventQueue.isDispatchThread)
+    if (!EventQueue.isDispatchThread) println("*&*&*&*&* prepUIWhileRunning")
     val stopText: String = Resources("Stop")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(stopText)
@@ -739,7 +744,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIForRerunning() {
-    assert(EventQueue.isDispatchThread)
     val runText: String = Resources("Run")
     val stopText: String = Resources("Stop")
     runJButton.setText(runText)
@@ -747,11 +751,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     runJButton.setEnabled(false)
     rerunJButton.setEnabled(true)
     rerunColorBox.setGray()
+
+    // Clear the selection, so it can scroll to an error
+    reportsJList.clearSelection() 
   }
 
   // This must be called by the event handler thread
   def prepUIWhileRerunning() {
-    assert(EventQueue.isDispatchThread)
     val runText: String = Resources("Run")
     val stopText: String = Resources("Stop")
     runJButton.setText(runText)
@@ -762,19 +768,19 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIForReady() {
-    assert(EventQueue.isDispatchThread)
+    selectFirstFailureIfExistsAndNothingElseAlreadySelected()
     val runText: String = Resources("Run")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(runText)
     rerunJButton.setText(rerunText)
     runJButton.setEnabled(true)
-    val rh: ReportHolder = reportsJList.getSelectedValue().asInstanceOf[ReportHolder] 
+    val rh: ReportHolder = reportsJList.getSelectedValue.asInstanceOf[ReportHolder] 
     rerunJButton.setEnabled(rh != null && rh.report.rerunnable.isDefined)
   }
 
   // This must be called by the event handler thread
   def prepUIForStopping() {
-    assert(EventQueue.isDispatchThread)
+    if (!EventQueue.isDispatchThread) println("*&*&*&*&* prepUIForStopping")
     val stopText: String = Resources("Stop")
     val rerunText: String = Resources("Rerun")
     runJButton.setText(stopText)
@@ -785,7 +791,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   // This must be called by the event handler thread
   def prepUIForReStopping() {
-    assert(EventQueue.isDispatchThread)
+    if (!EventQueue.isDispatchThread) println("*&*&*&*&* prepUIForReStopping")
     val runText: String = Resources("Run")
     val stopText: String = Resources("Stop")
     runJButton.setText(runText)
@@ -794,26 +800,61 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     rerunJButton.setEnabled(false)
   }
 
-  // This must be called by the event handler thread
-  def selectFirstFailureIfExists() {
-    assert(EventQueue.isDispatchThread)
-    val rh: ReportHolder = reportsJList.getSelectedValue.asInstanceOf[ReportHolder] 
-    if (rh == null) { // Only do this if something isn't already selected
-      val model = reportsJList.getModel
-      // the imperative methods on model push strongly to an imperative style
-      var indexToSelect = -1
-      var i = 0
-      var done = false
-      while (i < model.getSize && !done) {
-        val rh = model.getElementAt(i).asInstanceOf[ReportHolder]
-        val reportType = rh.reportType
-        if (reportType == ReporterOpts.PresentTestFailed || reportType == ReporterOpts.PresentRunAborted || 
-            reportType == ReporterOpts.PresentSuiteAborted) {
+  private def getModelAsList: List[ReportHolder] = {
+    val model = reportsJList.getModel
+    val listBuf = new scala.collection.mutable.ListBuffer[ReportHolder]
+    for (i <- 0 until model.getSize) {
+      listBuf += model.getElementAt(i).asInstanceOf[ReportHolder]
+    }
+    listBuf.toList
+  }
 
-          reportsJList.setSelectedValue(rh, true)
-          done = true
-        }
-        i += 1
+  private def isFailureReport(reportHolder: ReportHolder) = {
+    val reportType = reportHolder.reportType
+    reportType == ReporterOpts.PresentTestFailed || reportType == ReporterOpts.PresentRunAborted || 
+        reportType == ReporterOpts.PresentSuiteAborted
+  }
+
+  // This must be called by the event handler thread
+  /*
+  After a rerun, there will usually always be a selected item,
+  which is what was selected to rerun. If the rerun resulted in
+  an error, it would be nice to select that first error and scroll down.
+  So this will do that, which means it doesn't care if something is
+  already selected. It will always select the first error in the
+  last rerun if one exists.
+  */
+  private def selectFirstErrorInLastRerunIfExists() {
+
+    // First get the model into a List
+    val modelList = getModelAsList
+
+    if (modelList.exists(_.isRerun)) {
+      val listOfReportsForLastRerunExcludingRunStarting =
+        modelList.reverse.takeWhile(reportHolder => reportHolder.isRerun && (reportHolder.reportType != ReporterOpts.PresentRunStarting))
+      val firstTestFailedReportInLastRerun =
+        listOfReportsForLastRerunExcludingRunStarting.reverse.find(isFailureReport(_))
+      firstTestFailedReportInLastRerun match {
+        case Some(reportHolder) => reportsJList.setSelectedValue(reportHolder, true)
+        case None => // do nothing if no failure reports in last rerun
+      }
+    }
+  }
+
+  // This must be called by the event handler thread
+  private def selectFirstFailureIfExistsAndNothingElseAlreadySelected() {
+
+    val rh: ReportHolder = reportsJList.getSelectedValue.asInstanceOf[ReportHolder] 
+
+    if (rh == null) { // Only do this if something isn't already selected
+
+      // First get the model into a List
+      val modelList = getModelAsList
+
+      val firstFailureReport = modelList.find(isFailureReport(_))
+      firstFailureReport match {
+        case Some(reportHolder) => reportsJList.setSelectedValue(reportHolder, true)
+        case None => // do nothing if no failure reports in the run
       }
     }
   }
@@ -948,6 +989,11 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
       usingEventDispatchThread {
         registerRerunReport(report, ReporterOpts.PresentRunCompleted)
+        // Must do this here, not in RerunningState.runFinished, because the runFinished
+        // invocation can happen before this runCompleted invocation, which means that 
+        // the last error in rerun may not be in the JList model yet. So must wait until
+        // a rerun completes.
+        selectFirstErrorInLastRerunIfExists()
       }
     }
   }
