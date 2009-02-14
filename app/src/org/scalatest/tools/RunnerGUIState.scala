@@ -123,7 +123,6 @@ private[scalatest] object RerunningState extends RunnerGUIState {
 
   def runFinished(runnerGUI: RunnerGUI): RunnerGUIState = {
     runnerGUI.prepUIForReady()
-    runnerGUI.selectFirstFailureIfExists()
     ReadyState
   }
 }
@@ -148,7 +147,6 @@ private[scalatest] object RunningState extends RunnerGUIState {
 
   def runFinished(runnerGUI: RunnerGUI): RunnerGUIState = {
     runnerGUI.prepUIForReady()
-    runnerGUI.selectFirstFailureIfExists()
     ReadyState
   }
 }
