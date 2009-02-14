@@ -18,6 +18,12 @@ package org.scalatest
 import NodeFamily._
 import scala.collection.immutable.ListSet
 
+/*
+Note: the info in this class will when the test is running, put it into cold storage, and send it after the test completes. This
+will be a bit odd though when a test fails. In the print report, the given when then things will show up after the stack trace. Perhaps
+when a test fails, it doesn't print them? No, I know, it .... No
+*/
+
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
