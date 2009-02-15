@@ -863,6 +863,151 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     }
   }
 
+  private def scrollTheRerunStartingReportToTheTopOfVisibleReports() {
+
+    def indexOfRunStartingReportForLastRerunOption: Option[Int] = {
+      var i = reportsListModel.getSize - 1
+      var found = false
+      while (i >= 0 && !found) {
+        val rh = reportsListModel.getElementAt(i).asInstanceOf[ReportHolder]
+        if (rh.reportType == ReporterOpts.PresentRunStarting) {
+          found = true
+        }
+        if (!found) i -= 1
+      }
+      if (found) Some(i) else None
+    }
+
+    val selectedReportHandler = reportsJList.getSelectedValue.asInstanceOf[ReportHolder]
+
+    if (selectedReportHandler == null || selectedReportHandler.reportType == ReporterOpts.PresentRunStarting) { // only scroll if there's no selection, which means no error happened
+
+      val firstVisibleIndex = reportsJList.getFirstVisibleIndex
+      val lastVisibleIndex = reportsJList.getLastVisibleIndex
+
+      if (lastVisibleIndex > firstVisibleIndex) { // should always be true, but this is better than an assert because things will keep going
+
+        val numCellsVisible = lastVisibleIndex - firstVisibleIndex
+
+        val indexOfLastReport = reportsListModel.getSize - 1
+
+        indexOfRunStartingReportForLastRerunOption match {
+          case Some(indexOfRunStartingReportForLastRerun) =>
+
+            val indexToEnsureIsVisible =
+              if (indexOfRunStartingReportForLastRerun + numCellsVisible < indexOfLastReport) 
+                indexOfRunStartingReportForLastRerun + numCellsVisible
+              else
+                indexOfLastReport
+
+            reportsJList.ensureIndexIsVisible(indexToEnsureIsVisible)
+          case None =>
+        }
+      }
+    }
+  }
+
+  private def ensureLastRerunReportIsVisibleIfFirstRerunReportStaysVisibleToo(lastRerunReportHolder: ReportHolder) {
+
+/*
+    def indexOfRunStartingReportForLastRerun: Option[Int] = {
+      var i = reportsListModel.getSize - 1
+      var found = false
+      while (i >= 0 && !found) {
+        val rh = reportsListModel.getElementAt(i).asInstanceOf[ReportHolder]
+        if (rh.reportType == ReporterOpts.PresentRunStarting) {
+          found = true
+        }
+        if (!found) i -= 1
+      }
+      if (found) Some(i) else None
+    }
+
+    val firstVisibleIndex = reportsJList.getFirstVisibleIndex
+    val lastVisibleIndex = reportsJList.getLastVisibleIndex
+
+    if (lastVisibleIndex > firstVisibleIndex) { // should always be true, but this is better than an assert because things will keep going
+      // Make this one less than what's actually visible, maybe change this after testing
+      val numCellsVisible = lastVisibleIndex - firstVisibleIndex
+
+      val indexOfLastReport = reportsListModel.getSize - 1
+
+      val indexOfFirstVisibleReportIfLastReportAlsoVisible = indexOfLastReport - numCellsVisible // not sure about the math yet
+
+      if (lastRerunReportHolder == reportsListModel.get(indexOfLastReport)) { // Should always be true
+        indexOfRunStartingReportForLastRerun match {
+          case Some(index) =>
+            if (index >= indexOfFirstVisibleReportIfLastReportAlsoVisible)
+              reportsJList.ensureIndexIsVisible(indexOfLastReport)
+          case None =>
+        }
+      }
+    }
+*/
+  }
+
+
+/* TODO: Delete this code
+  // This must be called by the event handler thread
+  private def scrollRerunReportsIfNeedBe() {
+
+    def rerunStartingOrFirstRerunErrorReportIsSelected: Boolean = {
+
+      val selectedReportHolder: ReportHolder = reportsJList.getSelectedValue.asInstanceOf[ReportHolder] 
+
+      if (selectedReportHolder != null) {
+
+        val modelList = getModelAsList // First get the model into a List
+
+        if (modelList.exists(_.isRerun)) {
+
+          val reversedModelList = modelList.reverse
+
+          // Check to see if the run starting report for the last rerun is currently selected
+          val lastRunStartingReportHolderOption = 
+            reversedModelList.find(reportHolder => reportHolder.isRerun && (reportHolder.reportType == ReporterOpts.PresentRunStarting))
+
+          lastRunStartingReportHolderOption match {
+
+            case Some(lastRunStartingReportHolder) => selectedReportHolder == lastRunStartingReportHolder
+
+            case None => // Check to see if the first error in the last rerun is currently selected
+
+              val listOfReportsForLastRerunExcludingRunStarting =
+                reversedModelList.takeWhile(reportHolder => reportHolder.isRerun && (reportHolder.reportType != ReporterOpts.PresentRunStarting))
+
+              val firstFailureReportInLastRerun =
+                listOfReportsForLastRerunExcludingRunStarting.reverse.find(isFailureReport(_))
+
+              firstFailureReportInLastRerun match {
+                case Some(failureReportHolder) => selectedReportHolder == failureReportHolder
+                case None => false
+              }
+          }
+        }
+        else false // no rerun reports at all
+      }
+      else false // nothing is selected at all
+    }
+
+    /*
+    the scrollIfNeedBe would only work if the first error in the rerun, or rerun starting of the last rerun is selected.
+    If so, then it will check to make sure rerun starting of the last rerun is visible. If not, it does nothing, because
+    that means the user has gone in and scrolled or selected something. But if not, then it will scroll to see the last
+    report that has just come in, so long as that doesn't scroll the rerun starting or first selected error off the top.
+    Oh, and all this stuff should probably be disabled for now if running in concurrent mode, because things come
+    in out of order.
+    */
+    val firstVisibleIndex = reportsJList.getFirstVisibleIndex
+    val lastVisibleIndex = reportsJList.getLastVisibleIndex
+    if (lastVisibleIndex > firstVisibleIndex) { // should always be true, but this is better than an assert because things will keep going
+      // Make this one less than what's actually visible
+      val numCellsVisible = lastVisibleIndex - firstVisibleIndex
+      val indexOfCurrentSelection = reportsJList.getSelectedIndex
+    }
+  }
+*/
+
   // This must be called by the event handler thread
   private def selectFirstFailureIfExistsAndNothingElseAlreadySelected() {
 
@@ -891,6 +1036,12 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   private class GraphicRerunReporter extends Reporter {
 
+    // This is written by the event handler thread to avoid having the event handler thread spend time
+    // determining if an error has previously occurred by looking through the reports. This way if a
+    // rerun has a lot of errors, you don't hang up the GUI giving the event handler thread too much
+    // work to do.
+    var anErrorHasOccurredAlready = false
+
     override def runStarting(testCount: Int) {
       if (testCount < 0)
         throw new IllegalArgumentException()
@@ -907,11 +1058,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         rerunColorBox.setValue(0)
         rerunColorBox.setGreen()
   
-        // Select the first report in the rerun so that in case there's no error, at least
-        // it will have scrolled down to the rerun. If there's an error, it will select and scroll down
-        // to the first error.
-        val reportHolder = registerRerunReport(report, ReporterOpts.PresentRunStarting)
-        reportsJList.setSelectedValue(reportHolder, true)
+        registerRerunReport(report, ReporterOpts.PresentRunStarting)
+        anErrorHasOccurredAlready = false;
+/*
+        val indexOfLastReport = reportsListModel.getSize - 1
+        if (reportHolder == reportsListModel.get(indexOfLastReport)) // Should always be true
+          reportsJList.setSelectedValue(reportHolder, true)
+*/
       }
     }
   
@@ -950,7 +1103,10 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         rerunColorBox.setValue(rerunTestsCompletedCount)
         rerunColorBox.setRed()
         val reportHolder = registerRerunReport(report, ReporterOpts.PresentTestFailed)
-        selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+        if (!anErrorHasOccurredAlready) {
+          selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+          anErrorHasOccurredAlready = true
+        }
       }
     }
   
@@ -984,7 +1140,10 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       usingEventDispatchThread {
         rerunColorBox.setRed()
         val reportHolder = registerRerunReport(report, ReporterOpts.PresentSuiteAborted)
-        selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+        if (!anErrorHasOccurredAlready) {
+          selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+          anErrorHasOccurredAlready = true
+        }
       }
     }
   
@@ -996,6 +1155,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
       usingEventDispatchThread {
         registerRerunReport(report, ReporterOpts.PresentRunStopped)
+        scrollTheRerunStartingReportToTheTopOfVisibleReports()
       }
     }
   
@@ -1005,7 +1165,10 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       usingEventDispatchThread {
         rerunColorBox.setRed()
         val reportHolder = registerRerunReport(report, ReporterOpts.PresentRunAborted)
-        selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+        if (!anErrorHasOccurredAlready) {
+          selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+          anErrorHasOccurredAlready = true
+        }
       }
     }
   
@@ -1018,6 +1181,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
       usingEventDispatchThread {
         registerRerunReport(report, ReporterOpts.PresentRunCompleted)
+        scrollTheRerunStartingReportToTheTopOfVisibleReports()
       }
     }
   }
