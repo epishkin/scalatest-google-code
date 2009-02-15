@@ -901,6 +901,21 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                 indexOfLastReport
 
             reportsJList.ensureIndexIsVisible(indexToEnsureIsVisible)
+
+            // Select one report after the rerun starting report, if it is a test starting, test succeeded, or suite starting report,
+            // because this should be the one they requested was rerun. So that's the most intuitive one to select
+            // after a run if there was no error. (Test succeeded is possible because Spec's will send SpecReports that
+            // say not to display test starting reports.)
+            val indexOfSecondReportInRerun = indexOfRunStartingReportForLastRerun + 1
+            if (indexOfSecondReportInRerun <= indexOfLastReport) { // Should always be true, but an if is better than an assert
+
+              val firstReportAfterRerunStarting = reportsListModel.getElementAt(indexOfSecondReportInRerun).asInstanceOf[ReportHolder]
+              if (firstReportAfterRerunStarting.reportType == ReporterOpts.PresentTestStarting ||
+                  firstReportAfterRerunStarting.reportType == ReporterOpts.PresentSuiteStarting ||
+                  firstReportAfterRerunStarting.reportType == ReporterOpts.PresentTestSucceeded) {
+                reportsJList.setSelectedIndex(indexOfSecondReportInRerun)
+              }
+            }
           case None =>
         }
       }
