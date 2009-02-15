@@ -915,6 +915,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                   firstReportAfterRerunStarting.reportType == ReporterOpts.PresentTestSucceeded) {
                 reportsJList.setSelectedIndex(indexOfSecondReportInRerun)
               }
+              // If they have display only Runs and Failures selected, it won't show successful tests. In that case
+              // just select the run starting report.
+              else reportsJList.setSelectedIndex(indexOfRunStartingReportForLastRerun)
             }
           case None =>
         }
