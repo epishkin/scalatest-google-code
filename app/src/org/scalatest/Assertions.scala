@@ -426,7 +426,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
   /**
    * Throws <code>AssertionError</code> to indicate a test failed.
    */
-  def fail() = throw new AssertionError
+  def fail() = throw new TestFailedError(2)
 
   /**
    * Throws <code>AssertionError</code>, with the passed
