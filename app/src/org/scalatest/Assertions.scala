@@ -129,7 +129,7 @@ trait Assertions {
    */
   def assert(condition: Boolean) {
     if (!condition)
-      throw new AssertionError with TestFailedError { val failedTestCodeStackDepth = 2 }
+      throw new TestFailedException(2)
   }
 
   /**
@@ -147,7 +147,7 @@ trait Assertions {
    */
   def assert(condition: Boolean, message: Any) {
     if (!condition)
-      throw new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
+      throw new TestFailedException(message.toString, 2)
   }
 
   /**
@@ -180,7 +180,7 @@ trait Assertions {
    */
   def assert(o: Option[String], message: Any) {
     o match {
-      case Some(s) => throw new AssertionError(message + "\n" + s) with TestFailedError { val failedTestCodeStackDepth = 2 }
+      case Some(s) => throw new TestFailedException(message + "\n" + s, 2)
       case None =>
     }
   }
@@ -211,7 +211,7 @@ trait Assertions {
    */
   def assert(o: Option[String]) {
     o match {
-      case Some(s) => throw new AssertionError(s) with TestFailedError { val failedTestCodeStackDepth = 2 }
+      case Some(s) => throw new TestFailedException(s, 2)
       case None =>
     }
   }
@@ -262,7 +262,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          val ae = new AssertionError(messagePrefix + s)
+          val ae = new AssertionError(messagePrefix + s, u)
           ae.initCause(u)
           throw ae
         }
@@ -340,9 +340,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          val ae = new AssertionError(s) with TestFailedError { val failedTestCodeStackDepth = 2 }
-          ae.initCause(u)
-          throw ae
+          throw new TestFailedException(s, u, 2)
         }
         else {
           Some(u)
@@ -352,7 +350,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     caught match {
       case None =>
         val message = Resources("exceptionExpected", clazz.getName)
-        throw new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
+        throw new TestFailedException(message, 2)
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
@@ -410,7 +408,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (actual != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw new AssertionError(message + "\n" + s) with TestFailedError { val failedTestCodeStackDepth = 2 }
+      throw new TestFailedException(message + "\n" + s, 2)
     }
   }
 
@@ -429,14 +427,14 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (actual != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw new AssertionError(s) with TestFailedError { val failedTestCodeStackDepth = 2 }
+      throw new TestFailedException(s, 2)
     }
   }
   
   /**
    * Throws <code>AssertionError</code> to indicate a test failed.
    */
-  def fail() = throw new AssertionError with TestFailedError { val failedTestCodeStackDepth = 2 }
+  def fail() = throw new TestFailedException(2)
 
   /**
    * Throws <code>AssertionError</code>, with the passed
@@ -451,7 +449,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (message == null)
         throw new NullPointerException("message is null")
      
-    throw new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
+    throw new TestFailedException(message, 2)
   }
 
   /**
@@ -471,9 +469,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (cause == null)
       throw new NullPointerException("cause is null")
 
-    val ae = new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
-    ae.initCause(cause)
-    throw ae
+    throw new TestFailedException(message, cause, 2)
   }
 
   /**
@@ -490,6 +486,6 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (cause == null)
       throw new NullPointerException("cause is null")
         
-    throw new AssertionError(cause) with TestFailedError { val failedTestCodeStackDepth = 2 }
+    throw new TestFailedException(cause, 2)
   }
 }
