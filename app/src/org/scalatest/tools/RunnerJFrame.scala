@@ -295,7 +295,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             def getHTMLForCause(throwable: Throwable) = {
               val cause = throwable.getCause
               if (cause != null) {
-                  List(
                     <table>
                     <tr valign="top">
                     <td align="right"><span class="label">{ Resources("DetailsCause") + ":" }</span></td>
@@ -308,7 +307,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                     </table>
                   <table><tr valign="top"><td align="left" colspan="2">
                   { getHTMLForStackTrace(cause.getStackTrace.toList) }
-                  </td></tr></table>)
+                  </td></tr></table>
               }
               else ()
             }
