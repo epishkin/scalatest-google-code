@@ -15,16 +15,124 @@
  */
 package org.scalatest
 
-// Idea is if you don't know the information, don't throw a TestFailedError. Throw
-// something else, such as a plain old AssertionError
-trait TestFailedError { this: AssertionError =>
+/**
+ * Exception that indicates a test failed. The purpose of this exception is to encapsulate information about
+ * the stack depth at which the line of test code that failed resides, so that information can be presented to
+ * the user that makes it quick to find the failing line of test code. (I.e., the user need not scan through the
+ * stack trace to find the correct filename and line number of the failing test.)
+ *
+ * @param message an optional detail message for this <code>TestFailedException</code>.
+ * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
+ * @param failedTestCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+ *
+ * @throws NullPointerException if <code>message</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ *
+ * @author Bill Venners
+ */
+class TestFailedException(val message: Option[String], val cause: Option[Throwable], val failedTestCodeStackDepth: Int)
+    extends RuntimeException(if (message.isDefined) message.get else "", if (cause.isDefined) cause.get else null) {
+  
+  if (message == null) throw new NullPointerException("message was null")
+  message match {
+    case Some(null) => throw new NullPointerException("message was a Some(null)")
+    case _ =>
+  }
 
-  val failedTestCodeStackDepth: Int
+  if (cause == null) throw new NullPointerException("cause was null")
+  cause match {
+    case Some(null) => throw new NullPointerException("cause was a Some(null)")
+    case _ =>
+  }
 
-  // An option because getFileName on the StackTraceElement may return null
-  // Only provide a method for that which I am using. Other info can be grabbed
-  // with the failedTestCodeStackDepth information.
-  lazy val failedTestCodeFileNameAndLineNumberString: Option[String] = {
+  /**
+   * Create a <code>TestFailedException</code> with specified stack depth and no detail message or cause.
+   *
+   * @param failedTestCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   */
+  def this(failedTestCodeStackDepth: Int) = this(None, None, failedTestCodeStackDepth)
+
+  /**
+   * Create a <code>TestFailedException</code> with a specified stack depth and detail message.
+   *
+   * @param message A detail message for this <code>TestFailedException</code>.
+   * @param failedTestCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if <code>message</code> is <code>null</code>.
+   */
+  def this(message: String, failedTestCodeStackDepth: Int) =
+    this(
+      {
+        if (message == null) throw new NullPointerException("message was null")
+        Some(message)
+      },
+      None,
+      failedTestCodeStackDepth
+    )
+
+  /**
+   * Create a <code>TestFailedException</code> with the specified stack depth and cause.  The
+   * <code>message</code> field of this exception object will be initialized to
+   * <code>if (cause.getMessage == null) "" else cause.getMessage</code>.
+   *
+   * @param cause the cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
+   * @param failedTestCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if <code>cause</code> is <code>null</code>.
+   */
+  def this(cause: Throwable, failedTestCodeStackDepth: Int) =
+    this(
+      {
+        if (cause == null) throw new NullPointerException("cause was null")
+        Some(if (cause.getMessage == null) "" else cause.getMessage)
+      },
+      Some(cause),
+      failedTestCodeStackDepth
+    )
+
+  /**
+   * Create a <code>TestFailedException</code> with the specified stack depth, detail
+   * message, and cause.
+   *
+   * <p>Note that the detail message associated with cause is
+   * <em>not</em> automatically incorporated in this throwable's detail
+   * message.
+   *
+   * @param message A detail message for this <code>TestFailedException</code>.
+   * @param cause the cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
+   * @param failedTestCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if <code>message</code> is <code>null</code>.
+   * @throws NullPointerException if <code>cause</code> is <code>null</code>.
+   */
+  def this(message: String, cause: Throwable, failedTestCodeStackDepth: Int) =
+    this(
+      {
+        if (message == null) throw new NullPointerException("message was null")
+        Some(message)
+      },
+      {
+        if (cause == null) throw new NullPointerException("cause was null")
+        Some(cause)
+      },
+      failedTestCodeStackDepth
+    )
+
+  /*
+  * Throws <code>IllegalStateException</code>, because <code>TestFailedException</code>s are
+  * always initialized with a cause passed to the constructor of superclass <code>
+  */
+  override def initCause(throwable: Throwable): Throwable = { throw new IllegalStateException }
+
+  /**
+   * A string that provides the filename and line number of the line of test code that failed, suitable
+   * for presenting to a user, which is taken from this exception's <code>StackTraceElement</code> at the depth specified
+   * by <code>failedTestCodeStackDepth</code>.
+   *
+   * @return a user-presentable string containing the filename and line number that caused the failed test
+   */
+  val failedTestCodeFileNameAndLineNumberString: Option[String] = {
     val stackTraceElement = getStackTrace()(failedTestCodeStackDepth)
     val fileName = stackTraceElement.getFileName
     if (fileName != null) {
