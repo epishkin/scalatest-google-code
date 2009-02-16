@@ -99,216 +99,216 @@ s should fullyMatch regex t
         "fred" should (not endWith regex ("fred") or not endWith regex (decimal))
       }
   
-      it("should throw AssertionError if the string does not match substring that matched the regular expression specified as a string") {
+      it("should throw TestFailedException if the string does not match substring that matched the regular expression specified as a string") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should endWith regex ("1.78")
         }
         assert(caught1.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.78")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should endWith regex ("21.7")
         }
         assert(caught2.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 21.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-one.eight" should endWith regex (decimal)
         }
         assert(caught3.getMessage === "\"-one.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "eight" should endWith regex (decimal)
         }
         assert(caught6.getMessage === "\"eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught7 = intercept[AssertionError] {
+        val caught7 = intercept[TestFailedException] {
           "1.eight" should endWith regex (decimal)
         }
         assert(caught7.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught8 = intercept[AssertionError] {
+        val caught8 = intercept[TestFailedException] {
           "onedoteight" should endWith regex (decimal)
         }
         assert(caught8.getMessage === "\"onedoteight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught9 = intercept[AssertionError] {
+        val caught9 = intercept[TestFailedException] {
           "***" should endWith regex (decimal)
         }
         assert(caught9.getMessage === "\"***\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string does matches substring that matched the regular expression specified as a string when used with not") {
+      it("should throw TestFailedException if the string does matches substring that matched the regular expression specified as a string when used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should not { endWith regex ("1.7") }
         }
         assert(caught1.getMessage === "\"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should not { endWith regex (decimal) }
         }
         assert(caught2.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-1.8" should not { endWith regex (decimal) }
         }
         assert(caught3.getMessage === "\"-1.8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "8" should not { endWith regex (decimal) }
         }
         assert(caught4.getMessage === "\"8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1." should not { endWith regex (decimal) }
         }
         assert(caught5.getMessage === "\"1.\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught11 = intercept[AssertionError] {
+        val caught11 = intercept[TestFailedException] {
           "1.7" should not endWith regex ("1.7")
         }
         assert(caught11.getMessage === "\"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught12 = intercept[AssertionError] {
+        val caught12 = intercept[TestFailedException] {
           "1.7" should not endWith regex (decimal)
         }
         assert(caught12.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught13 = intercept[AssertionError] {
+        val caught13 = intercept[TestFailedException] {
           "-1.8" should not endWith regex (decimal)
         }
         assert(caught13.getMessage === "\"-1.8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught14 = intercept[AssertionError] {
+        val caught14 = intercept[TestFailedException] {
           "8" should not endWith regex (decimal)
         }
         assert(caught14.getMessage === "\"8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught15 = intercept[AssertionError] {
+        val caught15 = intercept[TestFailedException] {
           "1." should not endWith regex (decimal)
         }
         assert(caught15.getMessage === "\"1.\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
         // The rest are non-exact matches
-        val caught21 = intercept[AssertionError] {
+        val caught21 = intercept[TestFailedException] {
           "a1.7" should not { endWith regex ("1.7") }
         }
         assert(caught21.getMessage === "\"a1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught22 = intercept[AssertionError] {
+        val caught22 = intercept[TestFailedException] {
           "b1.7" should not { endWith regex (decimal) }
         }
         assert(caught22.getMessage === "\"b1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught23 = intercept[AssertionError] {
+        val caught23 = intercept[TestFailedException] {
           "b-1.8" should not { endWith regex (decimal) }
         }
         assert(caught23.getMessage === "\"b-1.8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (endWith regex (decimal) and (endWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((endWith regex (decimal)) and (endWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (endWith regex (decimal) and endWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not end with a substring that matched the regular expression 1.8")
   
         // Check to make sure the error message "short circuits" (i.e., just reports the left side's failure)
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.eight" should (endWith regex (decimal) and (endWith regex ("1.8")))
         }
         assert(caught4.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.eight" should ((endWith regex (decimal)) and (endWith regex ("1.8")))
         }
         assert(caught5.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "1.eight" should (endWith regex (decimal) and endWith regex ("1.8"))
         }
         assert(caught6.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.seven" should (endWith regex (decimal) or (endWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"1.seven\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.seven\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.seven" should ((endWith regex (decimal)) or (endWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"1.seven\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.seven\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.seven" should (endWith regex (decimal) or endWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"1.seven\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.seven\" did not end with a substring that matched the regular expression 1.8")
       }
   
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
 
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not endWith regex ("1.8") and (not endWith regex (decimal)))
         }
         assert(caught1.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not endWith regex ("1.8")) and (not endWith regex (decimal)))
         }
         assert(caught2.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not endWith regex ("1.8") and not endWith regex (decimal))
         }
         assert(caught3.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "a1.7" should (not endWith regex ("1.8") and (not endWith regex (decimal)))
         }
         assert(caught4.getMessage === "\"a1.7\" did not end with a substring that matched the regular expression 1.8, but \"a1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.7" should ((not endWith regex ("1.8")) and (not endWith regex (decimal)))
         }
         assert(caught5.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not endWith regex (decimal) or (not endWith regex ("1.7")))
         }
         assert(caught1.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not endWith regex (decimal)) or (not endWith regex ("1.7")))
         }
         assert(caught2.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not endWith regex (decimal) or not endWith regex ("1.7"))
         }
         assert(caught3.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.7" should (not (endWith regex (decimal)) or not (endWith regex ("1.7")))
         }
         assert(caught4.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "a1.7" should (not endWith regex (decimal) or (not endWith regex ("1.7")))
         }
         assert(caught5.getMessage === "\"a1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"a1.7\" ended with a substring that matched the regular expression 1.7")
@@ -377,216 +377,216 @@ s should fullyMatch regex t
         "fred" should (not endWith regex ("fred") or not endWith regex (decimalRegex))
       }
   
-      it("should throw AssertionError if the string does not match substring that matched the regular expression specified as a string") {
+      it("should throw TestFailedException if the string does not match substring that matched the regular expression specified as a string") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should endWith regex ("1.78")
         }
         assert(caught1.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.78")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should endWith regex ("21.7")
         }
         assert(caught2.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 21.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-one.eight" should endWith regex (decimalRegex)
         }
         assert(caught3.getMessage === "\"-one.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "eight" should endWith regex (decimalRegex)
         }
         assert(caught6.getMessage === "\"eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught7 = intercept[AssertionError] {
+        val caught7 = intercept[TestFailedException] {
           "1.eight" should endWith regex (decimalRegex)
         }
         assert(caught7.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught8 = intercept[AssertionError] {
+        val caught8 = intercept[TestFailedException] {
           "onedoteight" should endWith regex (decimalRegex)
         }
         assert(caught8.getMessage === "\"onedoteight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught9 = intercept[AssertionError] {
+        val caught9 = intercept[TestFailedException] {
           "***" should endWith regex (decimalRegex)
         }
         assert(caught9.getMessage === "\"***\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string does matches substring that matched the regular expression specified as a string when used with not") {
+      it("should throw TestFailedException if the string does matches substring that matched the regular expression specified as a string when used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should not { endWith regex ("1.7") }
         }
         assert(caught1.getMessage === "\"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should not { endWith regex (decimalRegex) }
         }
         assert(caught2.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-1.8" should not { endWith regex (decimalRegex) }
         }
         assert(caught3.getMessage === "\"-1.8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "8" should not { endWith regex (decimalRegex) }
         }
         assert(caught4.getMessage === "\"8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1." should not { endWith regex (decimalRegex) }
         }
         assert(caught5.getMessage === "\"1.\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught11 = intercept[AssertionError] {
+        val caught11 = intercept[TestFailedException] {
           "1.7" should not endWith regex ("1.7")
         }
         assert(caught11.getMessage === "\"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught12 = intercept[AssertionError] {
+        val caught12 = intercept[TestFailedException] {
           "1.7" should not endWith regex (decimalRegex)
         }
         assert(caught12.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught13 = intercept[AssertionError] {
+        val caught13 = intercept[TestFailedException] {
           "-1.8" should not endWith regex (decimalRegex)
         }
         assert(caught13.getMessage === "\"-1.8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught14 = intercept[AssertionError] {
+        val caught14 = intercept[TestFailedException] {
           "8" should not endWith regex (decimalRegex)
         }
         assert(caught14.getMessage === "\"8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught15 = intercept[AssertionError] {
+        val caught15 = intercept[TestFailedException] {
           "1." should not endWith regex (decimalRegex)
         }
         assert(caught15.getMessage === "\"1.\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
         // The rest are non-exact matches
-        val caught21 = intercept[AssertionError] {
+        val caught21 = intercept[TestFailedException] {
           "a1.7" should not { endWith regex ("1.7") }
         }
         assert(caught21.getMessage === "\"a1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught22 = intercept[AssertionError] {
+        val caught22 = intercept[TestFailedException] {
           "b1.7" should not { endWith regex (decimalRegex) }
         }
         assert(caught22.getMessage === "\"b1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught23 = intercept[AssertionError] {
+        val caught23 = intercept[TestFailedException] {
           "b-1.8" should not { endWith regex (decimalRegex) }
         }
         assert(caught23.getMessage === "\"b-1.8\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (endWith regex (decimalRegex) and (endWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((endWith regex (decimalRegex)) and (endWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (endWith regex (decimalRegex) and endWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not end with a substring that matched the regular expression 1.8")
   
         // Check to make sure the error message "short circuits" (i.e., just reports the left side's failure)
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.eight" should (endWith regex (decimalRegex) and (endWith regex ("1.8")))
         }
         assert(caught4.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.eight" should ((endWith regex (decimalRegex)) and (endWith regex ("1.8")))
         }
         assert(caught5.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "1.eight" should (endWith regex (decimalRegex) and endWith regex ("1.8"))
         }
         assert(caught6.getMessage === "\"1.eight\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.seven" should (endWith regex (decimalRegex) or (endWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"1.seven\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.seven\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.seven" should ((endWith regex (decimalRegex)) or (endWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"1.seven\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.seven\" did not end with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.seven" should (endWith regex (decimalRegex) or endWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"1.seven\" did not end with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.seven\" did not end with a substring that matched the regular expression 1.8")
       }
   
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
 
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not endWith regex ("1.8") and (not endWith regex (decimalRegex)))
         }
         assert(caught1.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not endWith regex ("1.8")) and (not endWith regex (decimalRegex)))
         }
         assert(caught2.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not endWith regex ("1.8") and not endWith regex (decimalRegex))
         }
         assert(caught3.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "a1.7" should (not endWith regex ("1.8") and (not endWith regex (decimalRegex)))
         }
         assert(caught4.getMessage === "\"a1.7\" did not end with a substring that matched the regular expression 1.8, but \"a1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.7" should ((not endWith regex ("1.8")) and (not endWith regex (decimalRegex)))
         }
         assert(caught5.getMessage === "\"1.7\" did not end with a substring that matched the regular expression 1.8, but \"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
+      it("should throw TestFailedException if the string ends with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not endWith regex (decimalRegex) or (not endWith regex ("1.7")))
         }
         assert(caught1.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not endWith regex (decimalRegex)) or (not endWith regex ("1.7")))
         }
         assert(caught2.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not endWith regex (decimalRegex) or not endWith regex ("1.7"))
         }
         assert(caught3.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.7" should (not (endWith regex (decimalRegex)) or not (endWith regex ("1.7")))
         }
         assert(caught4.getMessage === "\"1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" ended with a substring that matched the regular expression 1.7")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "a1.7" should (not endWith regex (decimalRegex) or (not endWith regex ("1.7")))
         }
         assert(caught5.getMessage === "\"a1.7\" ended with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"a1.7\" ended with a substring that matched the regular expression 1.7")

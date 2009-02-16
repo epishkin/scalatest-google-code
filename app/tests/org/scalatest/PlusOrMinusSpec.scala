@@ -898,611 +898,611 @@ class PlusOrMinusSpec extends Spec with ShouldMatchers {
       sevenByte should (not be (17.toByte plusOrMinus 2.toByte) or not be (17.toByte plusOrMinus 2.toByte))
     }
 
-    it("should throw AssertionError if the number is not within the specified range") {
+    it("should throw TestFailedException if the number is not within the specified range") {
 
       // Double plusOrMinus Double
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         sevenDotOh should be (17.1 plusOrMinus 0.2)
       }
       assert(caught1.getMessage === "7.0 was not 17.1 plus or minus 0.2")
 
       // Double plusOrMinus Float
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         sevenDotOh should be (17.1 plusOrMinus 0.2f)
       }
       assert(caught2.getMessage === "7.0 was not 17.1 plus or minus 0.20000000298023224")
 
       // Double plusOrMinus Long
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         sevenDotOh should be (17.1 plusOrMinus 2L)
       }
       assert(caught3.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Double plusOrMinus Int
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         sevenDotOh should be (17.1 plusOrMinus 2)
       }
       assert(caught4.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Double plusOrMinus Short
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         sevenDotOh should be (17.1 plusOrMinus 2.toShort)
       }
       assert(caught5.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Double plusOrMinus Byte
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         sevenDotOh should be (17.1 plusOrMinus 2.toByte)
       }
       assert(caught6.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Float plusOrMinus Float
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         sevenDotOhFloat should be (17.1f plusOrMinus 0.2f)
       }
       assert(caught7.getMessage === "7.0 was not 17.1 plus or minus 0.2")
 
       // Float plusOrMinus Long
-      val caught8 = intercept[AssertionError] {
+      val caught8 = intercept[TestFailedException] {
         sevenDotOhFloat should be (17.1f plusOrMinus 2L)
       }
       assert(caught8.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Float plusOrMinus Int
-      val caught9 = intercept[AssertionError] {
+      val caught9 = intercept[TestFailedException] {
         sevenDotOhFloat should be (17.1f plusOrMinus 2)
       }
       assert(caught9.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Float plusOrMinus Short
-      val caught10 = intercept[AssertionError] {
+      val caught10 = intercept[TestFailedException] {
         sevenDotOhFloat should be (17.1f plusOrMinus 2.toShort)
       }
       assert(caught10.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Float plusOrMinus Byte
-      val caught11 = intercept[AssertionError] {
+      val caught11 = intercept[TestFailedException] {
         sevenDotOhFloat should be (17.1f plusOrMinus 2.toByte)
       }
       assert(caught11.getMessage === "7.0 was not 17.1 plus or minus 2.0")
 
       // Long plusOrMinus Long
-      val caught12 = intercept[AssertionError] {
+      val caught12 = intercept[TestFailedException] {
         sevenLong should be (19L plusOrMinus 2L)
       }
       assert(caught12.getMessage === "7 was not 19 plus or minus 2")
 
       // Long plusOrMinus Int
-      val caught13 = intercept[AssertionError] {
+      val caught13 = intercept[TestFailedException] {
         sevenLong should be (19L plusOrMinus 2)
       }
       assert(caught13.getMessage === "7 was not 19 plus or minus 2")
 
       // Long plusOrMinus Short
-      val caught14 = intercept[AssertionError] {
+      val caught14 = intercept[TestFailedException] {
         sevenLong should be (19L plusOrMinus 2.toShort)
       }
       assert(caught14.getMessage === "7 was not 19 plus or minus 2")
 
       // Long plusOrMinus Byte
-      val caught15 = intercept[AssertionError] {
+      val caught15 = intercept[TestFailedException] {
         sevenLong should be (19L plusOrMinus 2.toByte)
       }
       assert(caught15.getMessage === "7 was not 19 plus or minus 2")
 
       // Int plusOrMinus Int
-      val caught16 = intercept[AssertionError] {
+      val caught16 = intercept[TestFailedException] {
         sevenInt should be (19 plusOrMinus 2)
       }
       assert(caught16.getMessage === "7 was not 19 plus or minus 2")
 
       // Int plusOrMinus Short
-      val caught17 = intercept[AssertionError] {
+      val caught17 = intercept[TestFailedException] {
         sevenInt should be (19 plusOrMinus 2.toShort)
       }
       assert(caught17.getMessage === "7 was not 19 plus or minus 2")
 
       // Int plusOrMinus Byte
-      val caught18 = intercept[AssertionError] {
+      val caught18 = intercept[TestFailedException] {
         sevenInt should be (19 plusOrMinus 2.toByte)
       }
       assert(caught18.getMessage === "7 was not 19 plus or minus 2")
 
       // Short plusOrMinus Short
-      val caught19 = intercept[AssertionError] {
+      val caught19 = intercept[TestFailedException] {
         sevenShort should be (19.toShort plusOrMinus 2.toShort)
       }
       assert(caught19.getMessage === "7 was not 19 plus or minus 2")
 
       // Short plusOrMinus Byte
-      val caught20 = intercept[AssertionError] {
+      val caught20 = intercept[TestFailedException] {
         sevenShort should be (19.toShort plusOrMinus 2.toByte)
       }
       assert(caught20.getMessage === "7 was not 19 plus or minus 2")
 
       // Byte plusOrMinus Byte
-      val caught21 = intercept[AssertionError] {
+      val caught21 = intercept[TestFailedException] {
         sevenByte should be (19.toByte plusOrMinus 2.toByte)
       }
       assert(caught21.getMessage === "7 was not 19 plus or minus 2")
     }
 
-    it("should throw AssertionError if the number is within the specified range, when used with not") {
+    it("should throw TestFailedException if the number is within the specified range, when used with not") {
 
       // Double plusOrMinus Double
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         sevenDotOh should not be (7.1 plusOrMinus 0.2)
       }
       assert(caught1.getMessage === "7.0 was 7.1 plus or minus 0.2")
 
       // Double plusOrMinus Float
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         sevenDotOh should not be (7.1 plusOrMinus 0.2f)
       }
       assert(caught2.getMessage === "7.0 was 7.1 plus or minus 0.20000000298023224")
 
       // Double plusOrMinus Long
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         sevenDotOh should not be (7.1 plusOrMinus 2L)
       }
       assert(caught3.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Double plusOrMinus Int
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         sevenDotOh should not be (7.1 plusOrMinus 2)
       }
       assert(caught4.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Double plusOrMinus Short
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         sevenDotOh should not be (7.1 plusOrMinus 2.toShort)
       }
       assert(caught5.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Double plusOrMinus Byte
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         sevenDotOh should not be (7.1 plusOrMinus 2.toByte)
       }
       assert(caught6.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Float plusOrMinus Float
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         sevenDotOhFloat should not be (7.1f plusOrMinus 0.2f)
       }
       assert(caught7.getMessage === "7.0 was 7.1 plus or minus 0.2")
 
       // Float plusOrMinus Long
-      val caught8 = intercept[AssertionError] {
+      val caught8 = intercept[TestFailedException] {
         sevenDotOhFloat should not be (7.1f plusOrMinus 2L)
       }
       assert(caught8.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Float plusOrMinus Int
-      val caught9 = intercept[AssertionError] {
+      val caught9 = intercept[TestFailedException] {
         sevenDotOhFloat should not be (7.1f plusOrMinus 2)
       }
       assert(caught9.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Float plusOrMinus Short
-      val caught10 = intercept[AssertionError] {
+      val caught10 = intercept[TestFailedException] {
         sevenDotOhFloat should not be (7.1f plusOrMinus 2.toShort)
       }
       assert(caught10.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Float plusOrMinus Byte
-      val caught11 = intercept[AssertionError] {
+      val caught11 = intercept[TestFailedException] {
         sevenDotOhFloat should not be (7.1f plusOrMinus 2.toByte)
       }
       assert(caught11.getMessage === "7.0 was 7.1 plus or minus 2.0")
 
       // Long plusOrMinus Long
-      val caught12 = intercept[AssertionError] {
+      val caught12 = intercept[TestFailedException] {
         sevenLong should not be (9L plusOrMinus 2L)
       }
       assert(caught12.getMessage === "7 was 9 plus or minus 2")
 
       // Long plusOrMinus Int
-      val caught13 = intercept[AssertionError] {
+      val caught13 = intercept[TestFailedException] {
         sevenLong should not be (9L plusOrMinus 2)
       }
       assert(caught13.getMessage === "7 was 9 plus or minus 2")
 
       // Long plusOrMinus Short
-      val caught14 = intercept[AssertionError] {
+      val caught14 = intercept[TestFailedException] {
         sevenLong should not be (9L plusOrMinus 2.toShort)
       }
       assert(caught14.getMessage === "7 was 9 plus or minus 2")
 
       // Long plusOrMinus Byte
-      val caught15 = intercept[AssertionError] {
+      val caught15 = intercept[TestFailedException] {
         sevenLong should not be (9L plusOrMinus 2.toByte)
       }
       assert(caught15.getMessage === "7 was 9 plus or minus 2")
 
       // Int plusOrMinus Int
-      val caught16 = intercept[AssertionError] {
+      val caught16 = intercept[TestFailedException] {
         sevenInt should not be (9 plusOrMinus 2)
       }
       assert(caught16.getMessage === "7 was 9 plus or minus 2")
 
       // Int plusOrMinus Short
-      val caught17 = intercept[AssertionError] {
+      val caught17 = intercept[TestFailedException] {
         sevenInt should not be (9 plusOrMinus 2.toShort)
       }
       assert(caught17.getMessage === "7 was 9 plus or minus 2")
 
       // Int plusOrMinus Byte
-      val caught18 = intercept[AssertionError] {
+      val caught18 = intercept[TestFailedException] {
         sevenInt should not be (9 plusOrMinus 2.toByte)
       }
       assert(caught18.getMessage === "7 was 9 plus or minus 2")
 
       // Short plusOrMinus Short
-      val caught19 = intercept[AssertionError] {
+      val caught19 = intercept[TestFailedException] {
         sevenShort should not be (9.toShort plusOrMinus 2.toShort)
       }
       assert(caught19.getMessage === "7 was 9 plus or minus 2")
 
       // Short plusOrMinus Byte
-      val caught20 = intercept[AssertionError] {
+      val caught20 = intercept[TestFailedException] {
         sevenShort should not be (9.toShort plusOrMinus 2.toByte)
       }
       assert(caught20.getMessage === "7 was 9 plus or minus 2")
 
       // Byte plusOrMinus Byte
-      val caught21 = intercept[AssertionError] {
+      val caught21 = intercept[TestFailedException] {
         sevenByte should not be (9.toByte plusOrMinus 2.toByte)
       }
       assert(caught21.getMessage === "7 was 9 plus or minus 2")
     }
 
-    it("should throw AssertionError if the number is not within the specified range, when used in a logical-and expression") {
+    it("should throw TestFailedException if the number is not within the specified range, when used in a logical-and expression") {
 
       // Double plusOrMinus Double
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         sevenDotOh should ((be (17.1 plusOrMinus 0.2)) and (be (17.1 plusOrMinus 0.2)))
       }
       assert(caught1.getMessage === "7.0 was not 17.1 plus or minus 0.2")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         sevenDotOh should (be (6.9 plusOrMinus 0.2) and (be (17.1 plusOrMinus 0.2)))
       }
       assert(caught2.getMessage === "7.0 was 6.9 plus or minus 0.2, but 7.0 was not 17.1 plus or minus 0.2")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         sevenDotOh should (be (17.0 plusOrMinus 0.2) and be (7.0 plusOrMinus 0.2))
       }
       assert(caught3.getMessage === "7.0 was not 17.0 plus or minus 0.2")
 
       // Double plusOrMinus Float
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         sevenDotOh should ((be (17.1 plusOrMinus 0.2f)) and (be (17.1 plusOrMinus 0.2f)))
       }
       assert(caught4.getMessage === "7.0 was not 17.1 plus or minus 0.20000000298023224")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         sevenDotOh should (be (6.9 plusOrMinus 0.2f) and (be (17.1 plusOrMinus 0.2f)))
       }
       assert(caught5.getMessage === "7.0 was 6.9 plus or minus 0.20000000298023224, but 7.0 was not 17.1 plus or minus 0.20000000298023224")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         sevenDotOh should (be (17.0 plusOrMinus 0.2f) and be (7.0 plusOrMinus 0.2f))
       }
       assert(caught6.getMessage === "7.0 was not 17.0 plus or minus 0.20000000298023224")
 
       // Double plusOrMinus Long
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         sevenDotOh should ((be (17.1 plusOrMinus 2L)) and (be (17.1 plusOrMinus 2L)))
       }
       assert(caught7.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught8 = intercept[AssertionError] {
+      val caught8 = intercept[TestFailedException] {
         sevenDotOh should (be (6.9 plusOrMinus 2L) and (be (17.1 plusOrMinus 2L)))
       }
       assert(caught8.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
-      val caught9 = intercept[AssertionError] {
+      val caught9 = intercept[TestFailedException] {
         sevenDotOh should (be (17.0 plusOrMinus 2L) and be (7.0 plusOrMinus 2L))
       }
       assert(caught9.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Double plusOrMinus Int
-      val caught10 = intercept[AssertionError] {
+      val caught10 = intercept[TestFailedException] {
         sevenDotOh should ((be (17.1 plusOrMinus 2)) and (be (17.1 plusOrMinus 2)))
       }
       assert(caught10.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught11 = intercept[AssertionError] {
+      val caught11 = intercept[TestFailedException] {
         sevenDotOh should (be (6.9 plusOrMinus 2) and (be (17.1 plusOrMinus 2)))
       }
       assert(caught2.getMessage === "7.0 was 6.9 plus or minus 0.2, but 7.0 was not 17.1 plus or minus 0.2")
-      val caught12 = intercept[AssertionError] {
+      val caught12 = intercept[TestFailedException] {
         sevenDotOh should (be (7.0 plusOrMinus 2) and be (17.0 plusOrMinus 2))
       }
       assert(caught12.getMessage === "7.0 was 7.0 plus or minus 2.0, but 7.0 was not 17.0 plus or minus 2.0")
 
       // Double plusOrMinus Short
-      val caught13 = intercept[AssertionError] {
+      val caught13 = intercept[TestFailedException] {
         sevenDotOh should ((be (17.1 plusOrMinus 2.toShort)) and (be (17.1 plusOrMinus 2.toShort)))
       }
       assert(caught13.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught14 = intercept[AssertionError] {
+      val caught14 = intercept[TestFailedException] {
         sevenDotOh should (be (6.9 plusOrMinus 2.toShort) and (be (17.1 plusOrMinus 2.toShort)))
       }
       assert(caught14.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
-      val caught15 = intercept[AssertionError] {
+      val caught15 = intercept[TestFailedException] {
         sevenDotOh should (be (17.0 plusOrMinus 2.toShort) and be (7.0 plusOrMinus 2.toShort))
       }
       assert(caught15.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Double plusOrMinus Byte
-      val caught16 = intercept[AssertionError] {
+      val caught16 = intercept[TestFailedException] {
         sevenDotOh should ((be (17.1 plusOrMinus 2.toByte)) and (be (17.1 plusOrMinus 2.toByte)))
       }
       assert(caught16.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught17 = intercept[AssertionError] {
+      val caught17 = intercept[TestFailedException] {
         sevenDotOh should (be (6.9 plusOrMinus 2.toByte) and (be (17.1 plusOrMinus 2.toByte)))
       }
       assert(caught17.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
-      val caught18 = intercept[AssertionError] {
+      val caught18 = intercept[TestFailedException] {
         sevenDotOh should (be (17.0 plusOrMinus 2.toByte) and be (7.0 plusOrMinus 2.toByte))
       }
       assert(caught18.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Float
-      val caught19 = intercept[AssertionError] {
+      val caught19 = intercept[TestFailedException] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 0.2f)) and (be (17.1f plusOrMinus 0.2f)))
       }
       assert(caught19.getMessage === "7.0 was not 17.1 plus or minus 0.2")
-      val caught20 = intercept[AssertionError] {
+      val caught20 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 0.2f) and (be (17.1f plusOrMinus 0.2f)))
       }
       assert(caught20.getMessage === "7.0 was 6.9 plus or minus 0.2, but 7.0 was not 17.1 plus or minus 0.2")
-      val caught21 = intercept[AssertionError] {
+      val caught21 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 0.2f) and be (7.0f plusOrMinus 0.2f))
       }
       assert(caught21.getMessage === "7.0 was not 17.0 plus or minus 0.2")
 
       // Float plusOrMinus Long
-      val caught22 = intercept[AssertionError] {
+      val caught22 = intercept[TestFailedException] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2L)) and (be (17.1f plusOrMinus 2L)))
       }
       assert(caught22.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught23 = intercept[AssertionError] {
+      val caught23 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2L) and (be (17.1f plusOrMinus 2L)))
       }
       assert(caught23.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
-      val caught24 = intercept[AssertionError] {
+      val caught24 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2L) and be (7.0f plusOrMinus 2L))
       }
       assert(caught24.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Int
-      val caught25 = intercept[AssertionError] {
+      val caught25 = intercept[TestFailedException] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2)) and (be (17.1f plusOrMinus 2)))
       }
       assert(caught25.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught26 = intercept[AssertionError] {
+      val caught26 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2) and (be (17.1f plusOrMinus 2)))
       }
       assert(caught26.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
-      val caught27 = intercept[AssertionError] {
+      val caught27 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2) and be (7.0f plusOrMinus 2))
       }
       assert(caught27.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Short
-      val caught28 = intercept[AssertionError] {
+      val caught28 = intercept[TestFailedException] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2.toShort)) and (be (17.1f plusOrMinus 2.toShort)))
       }
       assert(caught28.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught29 = intercept[AssertionError] {
+      val caught29 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2.toShort) and (be (17.1f plusOrMinus 2.toShort)))
       }
       assert(caught29.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
-      val caught30 = intercept[AssertionError] {
+      val caught30 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2.toShort) and be (7.0f plusOrMinus 2.toShort))
       }
       assert(caught30.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Float plusOrMinus Byte
-      val caught31 = intercept[AssertionError] {
+      val caught31 = intercept[TestFailedException] {
         sevenDotOhFloat should ((be (17.1f plusOrMinus 2.toByte)) and (be (17.1f plusOrMinus 2.toByte)))
       }
       assert(caught31.getMessage === "7.0 was not 17.1 plus or minus 2.0")
-      val caught32 = intercept[AssertionError] {
+      val caught32 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (6.9f plusOrMinus 2.toByte) and (be (17.1f plusOrMinus 2.toByte)))
       }
       assert(caught32.getMessage === "7.0 was 6.9 plus or minus 2.0, but 7.0 was not 17.1 plus or minus 2.0")
-      val caught33 = intercept[AssertionError] {
+      val caught33 = intercept[TestFailedException] {
         sevenDotOhFloat should (be (17.0f plusOrMinus 2.toByte) and be (7.0f plusOrMinus 2.toByte))
       }
       assert(caught33.getMessage === "7.0 was not 17.0 plus or minus 2.0")
 
       // Long plusOrMinus Long
-      val caught34 = intercept[AssertionError] {
+      val caught34 = intercept[TestFailedException] {
         sevenLong should ((be (19L plusOrMinus 2L)) and (be (9L plusOrMinus 2L)))
       }
       assert(caught34.getMessage === "7 was not 19 plus or minus 2")
-      val caught35 = intercept[AssertionError] {
+      val caught35 = intercept[TestFailedException] {
         sevenLong should (be (18L plusOrMinus 2L) and (be (19L plusOrMinus 2L)))
       }
       assert(caught35.getMessage === "7 was not 18 plus or minus 2")
-      val caught36 = intercept[AssertionError] {
+      val caught36 = intercept[TestFailedException] {
         sevenLong should (be (17L plusOrMinus 2L) and be (7L plusOrMinus 2L))
       }
       assert(caught36.getMessage === "7 was not 17 plus or minus 2")
 
       // Long plusOrMinus Int
-      val caught37 = intercept[AssertionError] {
+      val caught37 = intercept[TestFailedException] {
         sevenLong should ((be (19L plusOrMinus 2)) and (be (9L plusOrMinus 2)))
       }
       assert(caught37.getMessage === "7 was not 19 plus or minus 2")
-      val caught38 = intercept[AssertionError] {
+      val caught38 = intercept[TestFailedException] {
         sevenLong should (be (8L plusOrMinus 2) and (be (19L plusOrMinus 2)))
       }
       assert(caught38.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught39 = intercept[AssertionError] {
+      val caught39 = intercept[TestFailedException] {
         sevenLong should (be (17L plusOrMinus 2) and be (7L plusOrMinus 2))
       }
       assert(caught39.getMessage === "7 was not 17 plus or minus 2")
 
       // Long plusOrMinus Short
-      val caught40 = intercept[AssertionError] {
+      val caught40 = intercept[TestFailedException] {
         sevenLong should ((be (19L plusOrMinus 2.toShort)) and (be (9L plusOrMinus 2.toShort)))
       }
       assert(caught40.getMessage === "7 was not 19 plus or minus 2")
-      val caught41 = intercept[AssertionError] {
+      val caught41 = intercept[TestFailedException] {
         sevenLong should (be (8L plusOrMinus 2.toShort) and (be (19L plusOrMinus 2.toShort)))
       }
       assert(caught41.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught42 = intercept[AssertionError] {
+      val caught42 = intercept[TestFailedException] {
         sevenLong should (be (17L plusOrMinus 2.toShort) and be (7L plusOrMinus 2.toShort))
       }
       assert(caught42.getMessage === "7 was not 17 plus or minus 2")
 
       // Long plusOrMinus Byte
-      val caught43 = intercept[AssertionError] {
+      val caught43 = intercept[TestFailedException] {
         sevenLong should ((be (19L plusOrMinus 2.toByte)) and (be (9L plusOrMinus 2.toByte)))
       }
       assert(caught43.getMessage === "7 was not 19 plus or minus 2")
-      val caught44 = intercept[AssertionError] {
+      val caught44 = intercept[TestFailedException] {
         sevenLong should (be (8L plusOrMinus 2.toByte) and (be (19L plusOrMinus 2.toByte)))
       }
       assert(caught44.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught45 = intercept[AssertionError] {
+      val caught45 = intercept[TestFailedException] {
         sevenLong should (be (17L plusOrMinus 2.toByte) and be (7L plusOrMinus 2.toByte))
       }
       assert(caught45.getMessage === "7 was not 17 plus or minus 2")
 
       // Int plusOrMinus Int
-      val caught46 = intercept[AssertionError] {
+      val caught46 = intercept[TestFailedException] {
         sevenInt should ((be (19 plusOrMinus 2)) and (be (9 plusOrMinus 2)))
       }
       assert(caught46.getMessage === "7 was not 19 plus or minus 2")
-      val caught47 = intercept[AssertionError] {
+      val caught47 = intercept[TestFailedException] {
         sevenInt should (be (8 plusOrMinus 2) and (be (19 plusOrMinus 2)))
       }
       assert(caught47.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught48 = intercept[AssertionError] {
+      val caught48 = intercept[TestFailedException] {
         sevenInt should (be (17 plusOrMinus 2) and be (7 plusOrMinus 2))
       }
       assert(caught48.getMessage === "7 was not 17 plus or minus 2")
 
       // Int plusOrMinus Short
-      val caught49 = intercept[AssertionError] {
+      val caught49 = intercept[TestFailedException] {
         sevenInt should ((be (9 plusOrMinus 2.toShort)) and (be (19 plusOrMinus 2.toShort)))
       }
       assert(caught49.getMessage === "7 was 9 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught50 = intercept[AssertionError] {
+      val caught50 = intercept[TestFailedException] {
         sevenInt should (be (8 plusOrMinus 2.toShort) and (be (19 plusOrMinus 2.toShort)))
       }
       assert(caught50.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught51 = intercept[AssertionError] {
+      val caught51 = intercept[TestFailedException] {
         sevenInt should (be (17 plusOrMinus 2.toShort) and be (7 plusOrMinus 2.toShort))
       }
       assert(caught51.getMessage === "7 was not 17 plus or minus 2")
 
       // Int plusOrMinus Byte
-      val caught52 = intercept[AssertionError] {
+      val caught52 = intercept[TestFailedException] {
         sevenInt should ((be (19 plusOrMinus 2.toByte)) and (be (9 plusOrMinus 2.toByte)))
       }
       assert(caught52.getMessage === "7 was not 19 plus or minus 2")
-      val caught53 = intercept[AssertionError] {
+      val caught53 = intercept[TestFailedException] {
         sevenInt should (be (8 plusOrMinus 2.toByte) and (be (19 plusOrMinus 2.toByte)))
       }
       assert(caught53.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught54 = intercept[AssertionError] {
+      val caught54 = intercept[TestFailedException] {
         sevenInt should (be (17 plusOrMinus 2.toByte) and be (7 plusOrMinus 2.toByte))
       }
       assert(caught54.getMessage === "7 was not 17 plus or minus 2")
 
       // Short plusOrMinus Short
-      val caught55 = intercept[AssertionError] {
+      val caught55 = intercept[TestFailedException] {
         sevenShort should ((be (19.toShort plusOrMinus 2.toShort)) and (be (9.toShort plusOrMinus 2.toShort)))
       }
       assert(caught55.getMessage === "7 was not 19 plus or minus 2")
-      val caught56 = intercept[AssertionError] {
+      val caught56 = intercept[TestFailedException] {
         sevenShort should (be (8.toShort plusOrMinus 2.toShort) and (be (19.toShort plusOrMinus 2.toShort)))
       }
       assert(caught56.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught57 = intercept[AssertionError] {
+      val caught57 = intercept[TestFailedException] {
         sevenShort should (be (17.toShort plusOrMinus 2.toShort) and be (7.toShort plusOrMinus 2.toShort))
       }
       assert(caught57.getMessage === "7 was not 17 plus or minus 2")
 
       // Short plusOrMinus Byte
-      val caught58 = intercept[AssertionError] {
+      val caught58 = intercept[TestFailedException] {
         sevenShort should ((be (19.toShort plusOrMinus 2.toByte)) and (be (9.toShort plusOrMinus 2.toByte)))
       }
       assert(caught58.getMessage === "7 was not 19 plus or minus 2")
-      val caught59 = intercept[AssertionError] {
+      val caught59 = intercept[TestFailedException] {
         sevenShort should (be (8.toShort plusOrMinus 2.toByte) and (be (19.toShort plusOrMinus 2.toByte)))
       }
       assert(caught59.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught60 = intercept[AssertionError] {
+      val caught60 = intercept[TestFailedException] {
         sevenShort should (be (17.toShort plusOrMinus 2.toByte) and be (7.toShort plusOrMinus 2.toByte))
       }
       assert(caught60.getMessage === "7 was not 17 plus or minus 2")
 
       // Byte plusOrMinus Byte
-      val caught61 = intercept[AssertionError] {
+      val caught61 = intercept[TestFailedException] {
         sevenByte should ((be (19.toByte plusOrMinus 2.toByte)) and (be (9.toByte plusOrMinus 2.toByte)))
       }
       assert(caught61.getMessage === "7 was not 19 plus or minus 2")
-      val caught62 = intercept[AssertionError] {
+      val caught62 = intercept[TestFailedException] {
         sevenByte should (be (8.toByte plusOrMinus 2.toByte) and (be (19.toByte plusOrMinus 2.toByte)))
       }
       assert(caught62.getMessage === "7 was 8 plus or minus 2, but 7 was not 19 plus or minus 2")
-      val caught63 = intercept[AssertionError] {
+      val caught63 = intercept[TestFailedException] {
         sevenByte should (be (17.toByte plusOrMinus 2.toByte) and be (7.toByte plusOrMinus 2.toByte))
       }
       assert(caught63.getMessage === "7 was not 17 plus or minus 2")
     }
 */
-    it("should throw AssertionError if the number is not within the specified range, when used in a logical-or expression") {
+    it("should throw TestFailedException if the number is not within the specified range, when used in a logical-or expression") {
 
       // Double plusOrMinus Double
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         sevenDotOh should ((be (17.1 plusOrMinus 0.2)) or (be (17.1 plusOrMinus 0.2)))
       }
       assert(caught1.getMessage === "7.0 was not 17.1 plus or minus 0.2, and 7.0 was not 17.1 plus or minus 0.2")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         sevenDotOh should (be (16.9 plusOrMinus 0.2) or (be (17.1 plusOrMinus 0.2)))
       }
       assert(caught2.getMessage === "7.0 was not 16.9 plus or minus 0.2, and 7.0 was not 17.1 plus or minus 0.2")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         sevenDotOh should (be (17.0 plusOrMinus 0.2) or be (97.0 plusOrMinus -0.2))
       }
       assert(caught3.getMessage === "7.0 was not 17.0 plus or minus 0.2, and 7.0 was not 97.0 plus or minus -0.2")
     }
 
 /*
-    it("should throw AssertionError if the object is the same instance as another object, when used in a logical-and expression with not") {
+    it("should throw TestFailedException if the object is the same instance as another object, when used in a logical-and expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         obj should (not (be theSameInstanceAs (otherString)) and not (be theSameInstanceAs (string)))
       }
       assert(caught1.getMessage === "\"Hi\" was not the same instance as \"Hi\", but \"Hi\" was the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         obj should ((not be theSameInstanceAs (otherString)) and (not be theSameInstanceAs (string)))
       }
       assert(caught2.getMessage === "\"Hi\" was not the same instance as \"Hi\", but \"Hi\" was the same instance as \"Hi\"")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (string))
       }
       assert(caught3.getMessage === "\"Hi\" was not the same instance as \"Hi\", but \"Hi\" was the same instance as \"Hi\"")
       // Check that the error message "short circuits"
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         obj should (not (be theSameInstanceAs (string)) and not (be theSameInstanceAs (otherString)))
       }
       assert(caught7.getMessage === "\"Hi\" was the same instance as \"Hi\"")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         obj should (not (be theSameInstanceAs (string)) or not (be theSameInstanceAs (string)))
       }
       assert(caught1.getMessage === "\"Hi\" was the same instance as \"Hi\", and \"Hi\" was the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         obj should ((not be theSameInstanceAs (string)) or (not be theSameInstanceAs (string)))
       }
       assert(caught2.getMessage === "\"Hi\" was the same instance as \"Hi\", and \"Hi\" was the same instance as \"Hi\"")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         obj should (not be theSameInstanceAs (string) or not be theSameInstanceAs (string))
       }
       assert(caught3.getMessage === "\"Hi\" was the same instance as \"Hi\", and \"Hi\" was the same instance as \"Hi\"")

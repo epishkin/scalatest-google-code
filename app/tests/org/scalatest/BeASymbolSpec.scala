@@ -118,147 +118,147 @@ class BeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
       isNotFileMock should (not be a ('directory) or not be a ('file))
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false") {
+      val caught1 = intercept[TestFailedException] {
         notFileMock should be a ('file)
       }
       assert(caught1.getMessage === "NotFileMock was not a file")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         isNotFileMock should be a ('file)
       }
       assert(caught2.getMessage === "IsNotFileMock was not a file")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true when used with not") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true when used with not") {
+      val caught1 = intercept[TestFailedException] {
         fileMock should not { be a ('file) }
       }
       assert(caught1.getMessage === "FileMock was a file")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         fileMock should not be a ('file)
       }
       assert(caught2.getMessage === "FileMock was a file")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         isFileMock should not { be a ('file) }
       }
       assert(caught3.getMessage === "IsFileMock was a file")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isFileMock should not be a ('file)
       }
       assert(caught4.getMessage === "IsFileMock was a file")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-and expression") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false, when used in a logical-and expression") {
+      val caught1 = intercept[TestFailedException] {
         fileMock should ((be a ('file)) and (be a ('directory)))
       }
       assert(caught1.getMessage === "FileMock was a file, but FileMock was not a directory")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         fileMock should (be a ('file) and (be a ('directory)))
       }
       assert(caught2.getMessage === "FileMock was a file, but FileMock was not a directory")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         fileMock should (be a ('file) and be a ('directory))
       }
       assert(caught3.getMessage === "FileMock was a file, but FileMock was not a directory")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isFileMock should ((be a ('file)) and (be a ('directory)))
       }
       assert(caught4.getMessage === "IsFileMock was a file, but IsFileMock was not a directory")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isFileMock should (be a ('file) and (be a ('directory)))
       }
       assert(caught5.getMessage === "IsFileMock was a file, but IsFileMock was not a directory")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isFileMock should (be a ('file) and be a ('directory))
       }
       assert(caught6.getMessage === "IsFileMock was a file, but IsFileMock was not a directory")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-or expression") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false, when used in a logical-or expression") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         notFileMock should ((be a ('file)) or (be a ('file)))
       }
       assert(caught1.getMessage === "NotFileMock was not a file, and NotFileMock was not a file")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         notFileMock should (be a ('file) or (be a ('file)))
       }
       assert(caught2.getMessage === "NotFileMock was not a file, and NotFileMock was not a file")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         notFileMock should (be a ('file) or be a ('file))
       }
       assert(caught3.getMessage === "NotFileMock was not a file, and NotFileMock was not a file")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isNotFileMock should ((be a ('file)) or (be a ('file)))
       }
       assert(caught4.getMessage === "IsNotFileMock was not a file, and IsNotFileMock was not a file")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isNotFileMock should (be a ('file) or (be a ('file)))
       }
       assert(caught5.getMessage === "IsNotFileMock was not a file, and IsNotFileMock was not a file")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isNotFileMock should (be a ('file) or be a ('file))
       }
       assert(caught6.getMessage === "IsNotFileMock was not a file, and IsNotFileMock was not a file")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-and expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-and expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         fileMock should (not (be a ('directory)) and not (be a ('file)))
       }
       assert(caught1.getMessage === "FileMock was not a directory, but FileMock was a file")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         fileMock should ((not be a ('directory)) and (not be a ('file)))
       }
       assert(caught2.getMessage === "FileMock was not a directory, but FileMock was a file")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         fileMock should (not be a ('directory) and not be a ('file))
       }
       assert(caught3.getMessage === "FileMock was not a directory, but FileMock was a file")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isFileMock should (not (be a ('directory)) and not (be a ('file)))
       }
       assert(caught4.getMessage === "IsFileMock was not a directory, but IsFileMock was a file")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isFileMock should ((not be a ('directory)) and (not be a ('file)))
       }
       assert(caught5.getMessage === "IsFileMock was not a directory, but IsFileMock was a file")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isFileMock should (not be a ('directory) and not be a ('file))
       }
       assert(caught6.getMessage === "IsFileMock was not a directory, but IsFileMock was a file")
       // Check that the error message "short circuits"
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         fileMock should (not (be a ('file)) and not (be a ('directory)))
       }
       assert(caught7.getMessage === "FileMock was a file")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         fileMock should (not (be a ('file)) or not (be a ('file)))
       }
       assert(caught1.getMessage === "FileMock was a file, and FileMock was a file")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         fileMock should ((not be a ('file)) or (not be a ('file)))
       }
       assert(caught2.getMessage === "FileMock was a file, and FileMock was a file")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         fileMock should (not be a ('file) or not be a ('file))
       }
       assert(caught3.getMessage === "FileMock was a file, and FileMock was a file")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isFileMock should (not (be a ('file)) or not (be a ('file)))
       }
       assert(caught4.getMessage === "IsFileMock was a file, and IsFileMock was a file")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isFileMock should ((not be a ('file)) or (not be a ('file)))
       }
       assert(caught5.getMessage === "IsFileMock was a file, and IsFileMock was a file")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isFileMock should (not be a ('file) or not be a ('file))
       }
       assert(caught6.getMessage === "IsFileMock was a file, and IsFileMock was a file")

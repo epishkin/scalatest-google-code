@@ -30,7 +30,7 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
         val mockClown = mock(classOf[Clown])
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (have length (1) and { mockClown.hasBigRedNose; have length (2) })
         }
  
@@ -43,13 +43,13 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
         val mockClown = mock(classOf[Clown])
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (have length (1) and have length {mockClown.hasBigRedNose; 2})
         }
 
         verify(mockClown, times(1)).hasBigRedNose
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (have length (1) and {mockClown.hasBigRedNose; have length 2})
         }
 
@@ -62,19 +62,19 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
         val mockClown = mock(classOf[Clown])
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
         }
 
         verify(mockClown, times(1)).hasBigRedNose
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (have length (1) and not {mockClown.hasBigRedNose; have length (1)})
         }
 
         verify(mockClown, times(2)).hasBigRedNose
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (have length (1) and {mockClown.hasBigRedNose; not have length (1)})
         }
 
@@ -87,13 +87,13 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
         val mockClown = mock(classOf[Clown])
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           Array(1, 2) should (have size (1) and have size {mockClown.hasBigRedNose; 2})
         }
 
         verify(mockClown, times(1)).hasBigRedNose
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (have size (1) and {mockClown.hasBigRedNose; have size 2})
         }
 
@@ -106,19 +106,19 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
         val mockClown = mock(classOf[Clown])
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           Array(1, 2) should (have size (1) and not have size {mockClown.hasBigRedNose; 1})
         }
 
         verify(mockClown, times(1)).hasBigRedNose
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           Array(1, 2) should (have size (1) and not {mockClown.hasBigRedNose; have size (1)})
         }
 
         verify(mockClown, times(2)).hasBigRedNose
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           Array(1, 2) should (have size (1) and {mockClown.hasBigRedNose; not have size (1)})
         }
 
@@ -131,13 +131,13 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
         val mockClown = mock(classOf[Clown])
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (equal ("ho") and equal {mockClown.hasBigRedNose; "ho"})
         }
 
         verify(mockClown, times(1)).hasBigRedNose
 
-        intercept[AssertionError] {
+        intercept[TestFailedException] {
           "hi" should (equal ("ho") and {mockClown.hasBigRedNose; equal ("ho")})
         }
 
@@ -151,13 +151,13 @@ class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with
 
       val mockClown = mock(classOf[Clown])
 
-      intercept[AssertionError] {
+      intercept[TestFailedException] {
         "hi" should (equal ("ho") and not equal {mockClown.hasBigRedNose; "ho"})
       }
 
       verify(mockClown, times(1)).hasBigRedNose
 
-      intercept[AssertionError] {
+      intercept[TestFailedException] {
         "hi" should (equal ("ho") and {mockClown.hasBigRedNose; not equal ("ho")})
       }
 

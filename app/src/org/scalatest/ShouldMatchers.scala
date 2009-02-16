@@ -16,6 +16,7 @@
 package org.scalatest
 
 import scala.reflect.Manifest
+import Helper.newTestFailedException
 
 /**
  * <p>
@@ -320,7 +321,7 @@ trait ShouldMatchers extends Matchers {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
       rightMatcher(leftOperand) match {
-        case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+        case MatcherResult(false, failureMessage, _) => throw newTestFailedException(failureMessage)
         case _ => ()
       }
     }
@@ -339,7 +340,7 @@ trait ShouldMatchers extends Matchers {
 
     def should(rightMatcher: Matcher[T]) { // First step, duplicate code. TODO: Eliminate the duplication
       rightMatcher(leftOperand) match {
-        case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+        case MatcherResult(false, failureMessage, _) => throw newTestFailedException(failureMessage)
         case _ => ()
       }
     }
@@ -638,7 +639,7 @@ THIS DOESN'T WORK BECAUSE...
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
       rightMatcher(leftOperand) match {
-        case MatcherResult(false, failureMessage, _) => throw new AssertionError(failureMessage)
+        case MatcherResult(false, failureMessage, _) => throw newTestFailedException(failureMessage)
         case _ => ()
       }
     }

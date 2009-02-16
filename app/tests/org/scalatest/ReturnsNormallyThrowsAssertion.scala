@@ -27,13 +27,13 @@ trait ReturnsNormallyThrowsAssertion {
     }
   }
 
-  def throwsAssertionError(f: => Unit): Boolean = {
+  def throwsTestFailedException(f: => Unit): Boolean = {
     try {
       f
       false
     }
     catch {
-      case e: AssertionError => true
+      case e: TestFailedException => true
     }
   }
 }
