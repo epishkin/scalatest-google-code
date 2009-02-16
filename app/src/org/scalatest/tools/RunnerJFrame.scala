@@ -295,19 +295,21 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             def getHTMLForCause(throwable: Throwable) = {
               val cause = throwable.getCause
               if (cause != null) {
-                    <table>
-                    <tr valign="top">
-                    <td align="right"><span class="label">{ Resources("DetailsCause") + ":" }</span></td>
-                    <td align="left">{ cause.getClass.getName }</td>
-                    </tr>
-                    <tr valign="top">
-                    <td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td>
-                    <td align="left"><span>{ if (cause.getMessage != null) cause.getMessage else Resources("None") }</span></td>
-                    </tr>
-                    </table>
-                  <table><tr valign="top"><td align="left" colspan="2">
-                  { getHTMLForStackTrace(cause.getStackTrace.toList) }
-                  </td></tr></table>
+                <table>
+                <tr valign="top">
+                <td align="right"><span class="label">{ Resources("DetailsCause") + ":" }</span></td>
+                <td align="left">{ cause.getClass.getName }</td>
+                </tr>
+                <tr valign="top">
+                <td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td>
+                <td align="left"><span>{ if (cause.getMessage != null) cause.getMessage else Resources("None") }</span></td>
+                </tr>
+                </table>
+                <table>
+                <tr valign="top">
+                <td align="left" colspan="2">{ getHTMLForStackTrace(cause.getStackTrace.toList) }</td>
+                </tr>
+                </table>
               }
               else ()
             }
