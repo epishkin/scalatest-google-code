@@ -118,147 +118,147 @@ class BeAnSymbolSpec extends Spec with ShouldMatchers with FruitMocks {
       isNotAppleMock should (not be an ('orange) or not be an ('apple))
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false") {
+      val caught1 = intercept[TestFailedException] {
         notAppleMock should be an ('apple)
       }
       assert(caught1.getMessage === "NotAppleMock was not an apple")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         isNotAppleMock should be an ('apple)
       }
       assert(caught2.getMessage === "IsNotAppleMock was not an apple")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true when used with not") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true when used with not") {
+      val caught1 = intercept[TestFailedException] {
         appleMock should not { be an ('apple) }
       }
       assert(caught1.getMessage === "AppleMock was an apple")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         appleMock should not be an ('apple)
       }
       assert(caught2.getMessage === "AppleMock was an apple")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         isAppleMock should not { be an ('apple) }
       }
       assert(caught3.getMessage === "IsAppleMock was an apple")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isAppleMock should not be an ('apple)
       }
       assert(caught4.getMessage === "IsAppleMock was an apple")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-and expression") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false, when used in a logical-and expression") {
+      val caught1 = intercept[TestFailedException] {
         appleMock should ((be an ('apple)) and (be an ('orange)))
       }
       assert(caught1.getMessage === "AppleMock was an apple, but AppleMock was not an orange")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         appleMock should (be an ('apple) and (be an ('orange)))
       }
       assert(caught2.getMessage === "AppleMock was an apple, but AppleMock was not an orange")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         appleMock should (be an ('apple) and be an ('orange))
       }
       assert(caught3.getMessage === "AppleMock was an apple, but AppleMock was not an orange")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isAppleMock should ((be an ('apple)) and (be an ('orange)))
       }
       assert(caught4.getMessage === "IsAppleMock was an apple, but IsAppleMock was not an orange")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isAppleMock should (be an ('apple) and (be an ('orange)))
       }
       assert(caught5.getMessage === "IsAppleMock was an apple, but IsAppleMock was not an orange")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isAppleMock should (be an ('apple) and be an ('orange))
       }
       assert(caught6.getMessage === "IsAppleMock was an apple, but IsAppleMock was not an orange")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-or expression") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false, when used in a logical-or expression") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         notAppleMock should ((be an ('apple)) or (be an ('apple)))
       }
       assert(caught1.getMessage === "NotAppleMock was not an apple, and NotAppleMock was not an apple")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         notAppleMock should (be an ('apple) or (be an ('apple)))
       }
       assert(caught2.getMessage === "NotAppleMock was not an apple, and NotAppleMock was not an apple")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         notAppleMock should (be an ('apple) or be an ('apple))
       }
       assert(caught3.getMessage === "NotAppleMock was not an apple, and NotAppleMock was not an apple")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isNotAppleMock should ((be an ('apple)) or (be an ('apple)))
       }
       assert(caught4.getMessage === "IsNotAppleMock was not an apple, and IsNotAppleMock was not an apple")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isNotAppleMock should (be an ('apple) or (be an ('apple)))
       }
       assert(caught5.getMessage === "IsNotAppleMock was not an apple, and IsNotAppleMock was not an apple")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isNotAppleMock should (be an ('apple) or be an ('apple))
       }
       assert(caught6.getMessage === "IsNotAppleMock was not an apple, and IsNotAppleMock was not an apple")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-and expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-and expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         appleMock should (not (be an ('orange)) and not (be an ('apple)))
       }
       assert(caught1.getMessage === "AppleMock was not an orange, but AppleMock was an apple")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         appleMock should ((not be an ('orange)) and (not be an ('apple)))
       }
       assert(caught2.getMessage === "AppleMock was not an orange, but AppleMock was an apple")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         appleMock should (not be an ('orange) and not be an ('apple))
       }
       assert(caught3.getMessage === "AppleMock was not an orange, but AppleMock was an apple")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isAppleMock should (not (be an ('orange)) and not (be an ('apple)))
       }
       assert(caught4.getMessage === "IsAppleMock was not an orange, but IsAppleMock was an apple")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isAppleMock should ((not be an ('orange)) and (not be an ('apple)))
       }
       assert(caught5.getMessage === "IsAppleMock was not an orange, but IsAppleMock was an apple")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isAppleMock should (not be an ('orange) and not be an ('apple))
       }
       assert(caught6.getMessage === "IsAppleMock was not an orange, but IsAppleMock was an apple")
       // Check that the error message "short circuits"
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         appleMock should (not (be an ('apple)) and not (be an ('orange)))
       }
       assert(caught7.getMessage === "AppleMock was an apple")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         appleMock should (not (be an ('apple)) or not (be an ('apple)))
       }
       assert(caught1.getMessage === "AppleMock was an apple, and AppleMock was an apple")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         appleMock should ((not be an ('apple)) or (not be an ('apple)))
       }
       assert(caught2.getMessage === "AppleMock was an apple, and AppleMock was an apple")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         appleMock should (not be an ('apple) or not be an ('apple))
       }
       assert(caught3.getMessage === "AppleMock was an apple, and AppleMock was an apple")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isAppleMock should (not (be an ('apple)) or not (be an ('apple)))
       }
       assert(caught4.getMessage === "IsAppleMock was an apple, and IsAppleMock was an apple")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isAppleMock should ((not be an ('apple)) or (not be an ('apple)))
       }
       assert(caught5.getMessage === "IsAppleMock was an apple, and IsAppleMock was an apple")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isAppleMock should (not be an ('apple) or not be an ('apple))
       }
       assert(caught6.getMessage === "IsAppleMock was an apple, and IsAppleMock was an apple")

@@ -65,7 +65,15 @@ private[scalatest] object Helper {
         }
       }
   }
+  def newTestFailedException(message: String): TestFailedException = {
+    val fileNames = List("Matchers.scala", "ShouldMatchers.scala", "MustMatchers.scala")
+    val temp = new RuntimeException
+    val stackDepth = temp.getStackTrace.takeWhile(stackTraceElement => fileNames.exists(_ == stackTraceElement.getFileName)).length
+    new TestFailedException(message, stackDepth)
+  }
 }
+
+import Helper.newTestFailedException
 
 trait Matchers extends Assertions { matchers =>
 
@@ -715,7 +723,7 @@ TODO: Do the same simplification as above
   protected class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
     def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveKey" else "hadKey",
             left,
@@ -724,7 +732,7 @@ TODO: Do the same simplification as above
     }
     def value(expectedValue: V) {
       if (left.values.contains(expectedValue) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveValue" else "hadValue",
             left,
@@ -1012,7 +1020,7 @@ TODO: Do the same simplification as above
               (methodArray.length, fieldArray.length) match {
 
                 case (0, 0) =>
-                  throw new AssertionError(Resources("noLengthStructure", expectedLength.toString))
+                  throw newTestFailedException(Resources("noLengthStructure", expectedLength.toString))
 
                 case (0, 1) => // Has either a length or getLength field
                   val field = fieldArray(0)
@@ -1083,7 +1091,7 @@ TODO: Do the same simplification as above
               (methodArray.size, fieldArray.size) match {
 
                 case (0, 0) =>
-                  throw new AssertionError(Resources("noSizeStructure", expectedSize.toString))
+                  throw newTestFailedException(Resources("noSizeStructure", expectedSize.toString))
 
                 case (0, 1) => // Has either a size or getSize field
                   val field = fieldArray(0)
@@ -1133,7 +1141,7 @@ TODO: Do the same simplification as above
   protected class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
             left,
@@ -1145,7 +1153,7 @@ TODO: Do the same simplification as above
   protected class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
             left,
@@ -1157,7 +1165,7 @@ TODO: Do the same simplification as above
   protected class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left,
@@ -1172,7 +1180,7 @@ TODO: Do the same simplification as above
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
       if ((left.size == right) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
               left,
@@ -1189,7 +1197,7 @@ TODO: Do the same simplification as above
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
       if ((left.size == right) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
               left,
@@ -1209,7 +1217,7 @@ TODO: Do the same simplification as above
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.length == right) != shouldBeTrue) {
-          throw new AssertionError(
+          throw newTestFailedException(
             FailureMessages(
              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
               left,
@@ -1223,7 +1231,7 @@ TODO: Do the same simplification as above
   protected class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.size == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left,
@@ -1238,7 +1246,7 @@ TODO: Do the same simplification as above
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.size == right) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
               left,
@@ -1252,7 +1260,7 @@ TODO: Do the same simplification as above
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
       if ((left.size == right) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
               left,
@@ -1267,7 +1275,7 @@ TODO: Do the same simplification as above
 
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
             left,
@@ -1281,7 +1289,7 @@ TODO: Do the same simplification as above
     def a(symbol: Symbol) {
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
         )
       }
@@ -1293,7 +1301,7 @@ TODO: Do the same simplification as above
     def an(symbol: Symbol) {
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
         )
       }
@@ -1314,7 +1322,7 @@ TODO: Do the same simplification as above
   protected class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
     def equal(right: Any) {
       if ((left == right) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
            if (shouldBeTrue) "didNotEqual" else "equaled",
             left,
@@ -1325,7 +1333,7 @@ TODO: Do the same simplification as above
 
     def be(comparison: ResultOfLessThanOrEqualToComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotLessThanOrEqualTo" else "wasLessThanOrEqualTo",
             left,
@@ -1337,7 +1345,7 @@ TODO: Do the same simplification as above
 
     def be(comparison: ResultOfGreaterThanOrEqualToComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotGreaterThanOrEqualTo" else "wasGreaterThanOrEqualTo",
             left,
@@ -1349,7 +1357,7 @@ TODO: Do the same simplification as above
 
     def be(comparison: ResultOfLessThanComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotLessThan" else "wasLessThan",
             left,
@@ -1361,7 +1369,7 @@ TODO: Do the same simplification as above
 
     def be(comparison: ResultOfGreaterThanComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotGreaterThan" else "wasGreaterThan",
             left,
@@ -1380,7 +1388,7 @@ TODO: Do the same simplification as above
     def be(symbol: Symbol) {
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, false, false)
       if (matcherResult.matches != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
         )
       }
@@ -1391,7 +1399,7 @@ TODO: Do the same simplification as above
     def be(resultOfAWordApplication: ResultOfAWordApplication) {
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
         )
       }
@@ -1402,7 +1410,7 @@ TODO: Do the same simplification as above
     def be(resultOfAnWordApplication: ResultOfAnWordApplication) {
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
         )
       }
@@ -1412,7 +1420,7 @@ TODO: Do the same simplification as above
     //                        ^
     def be(resultOfSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) {
       if ((resultOfSameInstanceAsApplication.right eq left) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotSameInstanceAs" else "wasSameInstanceAs",
             left,
@@ -1429,7 +1437,7 @@ TODO: Do the same simplification as above
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.length == right) != shouldBeTrue) {
-          throw new AssertionError(
+          throw newTestFailedException(
             FailureMessages(
              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
               left,
@@ -1442,7 +1450,7 @@ TODO: Do the same simplification as above
     def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotFullyMatchRegex" else "fullyMatchedRegex",
             left,
@@ -1454,7 +1462,7 @@ TODO: Do the same simplification as above
     def include(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       if (rightRegex.findFirstIn(left).isDefined != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotIncludeRegex" else "includedRegex",
             left,
@@ -1466,7 +1474,7 @@ TODO: Do the same simplification as above
     def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
             left,
@@ -1478,7 +1486,7 @@ TODO: Do the same simplification as above
     def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotStartWithRegex" else "startedWithRegex",
             left,
@@ -1492,7 +1500,7 @@ TODO: Do the same simplification as above
     def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       if ((left.indexOf(expectedSubstring) == 0) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotStartWith" else "startedWith",
             left,
@@ -1505,7 +1513,7 @@ TODO: Do the same simplification as above
       val rightRegex = resultOfRegexWordApplication.regex
       val allMatches = rightRegex.findAllIn(left)
       if (allMatches.hasNext && (allMatches.end == left.length) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotEndWithRegex" else "endedWithRegex",
             left,
@@ -1519,7 +1527,7 @@ TODO: Do the same simplification as above
     def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       if ((left endsWith expectedSubstring) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotEndWith" else "endedWith",
             left,
@@ -1537,7 +1545,7 @@ TODO: Do the same simplification as above
     def be(doubleTolerance: DoubleTolerance) {
       import doubleTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
             left,
@@ -1557,7 +1565,7 @@ TODO: Do the same simplification as above
     def be(floatTolerance: FloatTolerance) {
       import floatTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
             left,
@@ -1577,7 +1585,7 @@ TODO: Do the same simplification as above
     def be(longTolerance: LongTolerance) {
       import longTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
             left,
@@ -1597,7 +1605,7 @@ TODO: Do the same simplification as above
     def be(intTolerance: IntTolerance) {
       import intTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
             left,
@@ -1617,7 +1625,7 @@ TODO: Do the same simplification as above
     def be(shortTolerance: ShortTolerance) {
       import shortTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
             left,
@@ -1637,7 +1645,7 @@ TODO: Do the same simplification as above
     def be(byteTolerance: ByteTolerance) {
       import byteTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "wasNotPlusOrMinus" else "wasPlusOrMinus",
             left,
@@ -1674,7 +1682,7 @@ TODO: Do the same simplification as above
   protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left,
@@ -1687,7 +1695,7 @@ TODO: Do the same simplification as above
   protected class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
             left,
@@ -1698,7 +1706,7 @@ TODO: Do the same simplification as above
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
     def regex(rightRegex: Regex) {
       if (rightRegex.findFirstIn(left).isDefined != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotIncludeRegex" else "includedRegex",
             left,
@@ -1711,7 +1719,7 @@ TODO: Do the same simplification as above
   protected class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotStartWith" else "startedWith",
             left,
@@ -1722,7 +1730,7 @@ TODO: Do the same simplification as above
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotStartWithRegex" else "startedWithRegex",
             left,
@@ -1735,7 +1743,7 @@ TODO: Do the same simplification as above
   protected class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotEndWith" else "endedWith",
             left,
@@ -1747,7 +1755,7 @@ TODO: Do the same simplification as above
     def regex(rightRegex: Regex) {
       val allMatches = rightRegex.findAllIn(left)
       if ((allMatches.hasNext && (allMatches.end == left.length)) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotEndWithRegex" else "endedWithRegex",
             left,
@@ -1761,7 +1769,7 @@ TODO: Do the same simplification as above
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotFullyMatchRegex" else "fullyMatchedRegex",
             left,
@@ -1774,7 +1782,7 @@ TODO: Do the same simplification as above
   protected class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
     def element(expectedElement: T) {
       if ((left.elements.contains(expectedElement)) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
             left,
@@ -2463,7 +2471,7 @@ TODO: Do the same simplification as above
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.length == right) != shouldBeTrue) {
-          throw new AssertionError(
+          throw newTestFailedException(
             FailureMessages(
              if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
               left,
@@ -2477,7 +2485,7 @@ TODO: Do the same simplification as above
   class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left,
@@ -2486,7 +2494,7 @@ TODO: Do the same simplification as above
     }
     def length(expectedLength: Long) {
       if ((left.length == expectedLength) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left,
@@ -2498,7 +2506,7 @@ TODO: Do the same simplification as above
   class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
             left,
@@ -2507,7 +2515,7 @@ TODO: Do the same simplification as above
     }
     def size(expectedSize: Long) {
       if ((left.size == expectedSize) != shouldBeTrue)
-        throw new AssertionError(
+        throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
             left,

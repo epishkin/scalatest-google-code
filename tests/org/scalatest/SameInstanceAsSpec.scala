@@ -69,87 +69,87 @@ class SameInstanceAsSpec extends Spec with ShouldMatchers {
       obj should (not be theSameInstanceAs (otherString) or not be theSameInstanceAs (string))
     }
 
-    it("should throw AssertionError if the object is not the same instance as another object") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object is not the same instance as another object") {
+      val caught1 = intercept[TestFailedException] {
         otherString should be theSameInstanceAs (string)
       }
       assert(caught1.getMessage === "\"Hi\" was not the same instance as \"Hi\"")
     }
 
-    it("should throw AssertionError if the object is the same instance as another object, when used with not") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object is the same instance as another object, when used with not") {
+      val caught1 = intercept[TestFailedException] {
         obj should not { be theSameInstanceAs (string) }
       }
       assert(caught1.getMessage === "\"Hi\" was the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         obj should not be theSameInstanceAs (string)
       }
       assert(caught2.getMessage === "\"Hi\" was the same instance as \"Hi\"")
     }
 
-    it("should throw AssertionError if the object is not the same instance as another object, when used in a logical-and expression") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object is not the same instance as another object, when used in a logical-and expression") {
+      val caught1 = intercept[TestFailedException] {
         obj should ((be theSameInstanceAs (string)) and (be theSameInstanceAs (otherString)))
       }
       assert(caught1.getMessage === "\"Hi\" was the same instance as \"Hi\", but \"Hi\" was not the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         obj should (be theSameInstanceAs (string) and (be theSameInstanceAs (otherString)))
       }
       assert(caught2.getMessage === "\"Hi\" was the same instance as \"Hi\", but \"Hi\" was not the same instance as \"Hi\"")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         obj should (be theSameInstanceAs (string) and be theSameInstanceAs (otherString))
       }
       assert(caught3.getMessage === "\"Hi\" was the same instance as \"Hi\", but \"Hi\" was not the same instance as \"Hi\"")
     }
 
-    it("should throw AssertionError if the object is not the same instance as another object, when used in a logical-or expression") {
+    it("should throw TestFailedException if the object is not the same instance as another object, when used in a logical-or expression") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         obj should ((be theSameInstanceAs (otherString)) or (be theSameInstanceAs (otherString)))
       }
       assert(caught1.getMessage === "\"Hi\" was not the same instance as \"Hi\", and \"Hi\" was not the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         obj should (be theSameInstanceAs (otherString) or (be theSameInstanceAs (otherString)))
       }
       assert(caught2.getMessage === "\"Hi\" was not the same instance as \"Hi\", and \"Hi\" was not the same instance as \"Hi\"")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         obj should (be theSameInstanceAs (otherString) or be theSameInstanceAs (otherString))
       }
       assert(caught3.getMessage === "\"Hi\" was not the same instance as \"Hi\", and \"Hi\" was not the same instance as \"Hi\"")
     }
 
-    it("should throw AssertionError if the object is the same instance as another object, when used in a logical-and expression with not") {
+    it("should throw TestFailedException if the object is the same instance as another object, when used in a logical-and expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         obj should (not (be theSameInstanceAs (otherString)) and not (be theSameInstanceAs (string)))
       }
       assert(caught1.getMessage === "\"Hi\" was not the same instance as \"Hi\", but \"Hi\" was the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         obj should ((not be theSameInstanceAs (otherString)) and (not be theSameInstanceAs (string)))
       }
       assert(caught2.getMessage === "\"Hi\" was not the same instance as \"Hi\", but \"Hi\" was the same instance as \"Hi\"")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (string))
       }
       assert(caught3.getMessage === "\"Hi\" was not the same instance as \"Hi\", but \"Hi\" was the same instance as \"Hi\"")
       // Check that the error message "short circuits"
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         obj should (not (be theSameInstanceAs (string)) and not (be theSameInstanceAs (otherString)))
       }
       assert(caught7.getMessage === "\"Hi\" was the same instance as \"Hi\"")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         obj should (not (be theSameInstanceAs (string)) or not (be theSameInstanceAs (string)))
       }
       assert(caught1.getMessage === "\"Hi\" was the same instance as \"Hi\", and \"Hi\" was the same instance as \"Hi\"")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         obj should ((not be theSameInstanceAs (string)) or (not be theSameInstanceAs (string)))
       }
       assert(caught2.getMessage === "\"Hi\" was the same instance as \"Hi\", and \"Hi\" was the same instance as \"Hi\"")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         obj should (not be theSameInstanceAs (string) or not be theSameInstanceAs (string))
       }
       assert(caught3.getMessage === "\"Hi\" was the same instance as \"Hi\", and \"Hi\" was the same instance as \"Hi\"")

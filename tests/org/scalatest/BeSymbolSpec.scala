@@ -161,147 +161,147 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       isNotEmptyMock should (not be ('full) or not be ('empty))
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false") {
+      val caught1 = intercept[TestFailedException] {
         notEmptyMock should be ('empty)
       }
       assert(caught1.getMessage === "NotEmptyMock was not empty")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         isNotEmptyMock should be ('empty)
       }
       assert(caught2.getMessage === "IsNotEmptyMock was not empty")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true when used with not") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true when used with not") {
+      val caught1 = intercept[TestFailedException] {
         emptyMock should not { be ('empty) }
       }
       assert(caught1.getMessage === "EmptyMock was empty")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         emptyMock should not be ('empty)
       }
       assert(caught2.getMessage === "EmptyMock was empty")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         isEmptyMock should not { be ('empty) }
       }
       assert(caught3.getMessage === "IsEmptyMock was empty")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isEmptyMock should not be ('empty)
       }
       assert(caught4.getMessage === "IsEmptyMock was empty")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-and expression") {
-      val caught1 = intercept[AssertionError] {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false, when used in a logical-and expression") {
+      val caught1 = intercept[TestFailedException] {
         emptyMock should ((be ('empty)) and (be ('full)))
       }
       assert(caught1.getMessage === "EmptyMock was empty, but EmptyMock was not full")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         emptyMock should (be ('empty) and (be ('full)))
       }
       assert(caught2.getMessage === "EmptyMock was empty, but EmptyMock was not full")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         emptyMock should (be ('empty) and be ('full))
       }
       assert(caught3.getMessage === "EmptyMock was empty, but EmptyMock was not full")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isEmptyMock should ((be ('empty)) and (be ('full)))
       }
       assert(caught4.getMessage === "IsEmptyMock was empty, but IsEmptyMock was not full")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isEmptyMock should (be ('empty) and (be ('full)))
       }
       assert(caught5.getMessage === "IsEmptyMock was empty, but IsEmptyMock was not full")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isEmptyMock should (be ('empty) and be ('full))
       }
       assert(caught6.getMessage === "IsEmptyMock was empty, but IsEmptyMock was not full")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns false, when used in a logical-or expression") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns false, when used in a logical-or expression") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         notEmptyMock should ((be ('empty)) or (be ('empty)))
       }
       assert(caught1.getMessage === "NotEmptyMock was not empty, and NotEmptyMock was not empty")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         notEmptyMock should (be ('empty) or (be ('empty)))
       }
       assert(caught2.getMessage === "NotEmptyMock was not empty, and NotEmptyMock was not empty")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         notEmptyMock should (be ('empty) or be ('empty))
       }
       assert(caught3.getMessage === "NotEmptyMock was not empty, and NotEmptyMock was not empty")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isNotEmptyMock should ((be ('empty)) or (be ('empty)))
       }
       assert(caught4.getMessage === "IsNotEmptyMock was not empty, and IsNotEmptyMock was not empty")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isNotEmptyMock should (be ('empty) or (be ('empty)))
       }
       assert(caught5.getMessage === "IsNotEmptyMock was not empty, and IsNotEmptyMock was not empty")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isNotEmptyMock should (be ('empty) or be ('empty))
       }
       assert(caught6.getMessage === "IsNotEmptyMock was not empty, and IsNotEmptyMock was not empty")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-and expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-and expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         emptyMock should (not (be ('full)) and not (be ('empty)))
       }
       assert(caught1.getMessage === "EmptyMock was not full, but EmptyMock was empty")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         emptyMock should ((not be ('full)) and (not be ('empty)))
       }
       assert(caught2.getMessage === "EmptyMock was not full, but EmptyMock was empty")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         emptyMock should (not be ('full) and not be ('empty))
       }
       assert(caught3.getMessage === "EmptyMock was not full, but EmptyMock was empty")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isEmptyMock should (not (be ('full)) and not (be ('empty)))
       }
       assert(caught4.getMessage === "IsEmptyMock was not full, but IsEmptyMock was empty")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isEmptyMock should ((not be ('full)) and (not be ('empty)))
       }
       assert(caught5.getMessage === "IsEmptyMock was not full, but IsEmptyMock was empty")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isEmptyMock should (not be ('full) and not be ('empty))
       }
       assert(caught6.getMessage === "IsEmptyMock was not full, but IsEmptyMock was empty")
       // Check that the error message "short circuits"
-      val caught7 = intercept[AssertionError] {
+      val caught7 = intercept[TestFailedException] {
         emptyMock should (not (be ('empty)) and not (be ('full)))
       }
       assert(caught7.getMessage === "EmptyMock was empty")
     }
 
-    it("should throw AssertionError if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
+    it("should throw TestFailedException if the object has an appropriately named method, which returns true, when used in a logical-or expression with not") {
 
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         emptyMock should (not (be ('empty)) or not (be ('empty)))
       }
       assert(caught1.getMessage === "EmptyMock was empty, and EmptyMock was empty")
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         emptyMock should ((not be ('empty)) or (not be ('empty)))
       }
       assert(caught2.getMessage === "EmptyMock was empty, and EmptyMock was empty")
-      val caught3 = intercept[AssertionError] {
+      val caught3 = intercept[TestFailedException] {
         emptyMock should (not be ('empty) or not be ('empty))
       }
       assert(caught3.getMessage === "EmptyMock was empty, and EmptyMock was empty")
-      val caught4 = intercept[AssertionError] {
+      val caught4 = intercept[TestFailedException] {
         isEmptyMock should (not (be ('empty)) or not (be ('empty)))
       }
       assert(caught4.getMessage === "IsEmptyMock was empty, and IsEmptyMock was empty")
-      val caught5 = intercept[AssertionError] {
+      val caught5 = intercept[TestFailedException] {
         isEmptyMock should ((not be ('empty)) or (not be ('empty)))
       }
       assert(caught5.getMessage === "IsEmptyMock was empty, and IsEmptyMock was empty")
-      val caught6 = intercept[AssertionError] {
+      val caught6 = intercept[TestFailedException] {
         isEmptyMock should (not be ('empty) or not be ('empty))
       }
       assert(caught6.getMessage === "IsEmptyMock was empty, and IsEmptyMock was empty")
@@ -315,11 +315,11 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         emptySet should be ('empty)
         val nonEmptySet = Set(1, 2, 3)
         nonEmptySet should not { be ('empty) }
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           nonEmptySet should be ('empty)
         }
         assert(caught1.getMessage === "Set(1, 2, 3) was not empty")
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           nonEmptySet should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "Set(1, 2, 3) was hasDefiniteSize")
@@ -339,11 +339,11 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         nonEmptyListBuffer += 2
         nonEmptyListBuffer += 3
         nonEmptyListBuffer should not { be ('empty) }
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           nonEmptyListBuffer should be ('empty)
         }
         assert(caught1.getMessage === "ListBuffer(1, 2, 3) was not empty")
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           nonEmptyListBuffer should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "ListBuffer(1, 2, 3) was hasDefiniteSize")
@@ -359,11 +359,11 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         emptyArray should be ('empty)
         val nonEmptyArray = Array(1, 2, 3)
         nonEmptyArray should not be ('empty)
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           nonEmptyArray should be ('empty)
         }
         assert(caught1.getMessage === "Array(1, 2, 3) was not empty")
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           nonEmptyArray should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "Array(1, 2, 3) was hasDefiniteSize")
@@ -379,11 +379,11 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         emptyList should be ('empty)
         val nonEmptyList = List(1, 2, 3)
         nonEmptyList should not { be ('empty) }
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           nonEmptyList should be ('empty)
         }
         assert(caught1.getMessage === "List(1, 2, 3) was not empty")
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           nonEmptyList should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "List(1, 2, 3) was hasDefiniteSize")
@@ -399,11 +399,11 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         emptyMap should be ('empty)
         val nonEmptyMap = Map("one" -> 1, "two" -> 2, "three" -> 3)
         nonEmptyMap should not { be ('empty) }
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           nonEmptyMap should be ('empty)
         }
         assert(caught1.getMessage === "Map(one -> 1, two -> 2, three -> 3) was not empty")
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           nonEmptyMap should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "Map(one -> 1, two -> 2, three -> 3) was hasDefiniteSize")
@@ -430,7 +430,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         nonEmptySet.add(2)
         nonEmptySet.add(3)
         nonEmptySet should not { be ('empty) }
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           nonEmptySet should be ('empty)
         }
         assert(caught1.getMessage === "[2, 1, 3] was not empty")
@@ -449,7 +449,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         nonEmptyList.add(2)
         nonEmptyList.add(3)
         nonEmptyList should not { be ('empty) }
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           nonEmptyList should be ('empty)
         }
         assert(caught1.getMessage === "[1, 2, 3] was not empty")
@@ -606,14 +606,14 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       optionString should be ('defined)
     }
 
-    it("should throw AssertionError when used with a None") {
+    it("should throw TestFailedException when used with a None") {
       val none: None.type = None
-      val caught1 = intercept[AssertionError] {
+      val caught1 = intercept[TestFailedException] {
         none should be ('defined)
       }
       assert(caught1.getMessage === "None was not defined")
       val option: Option[Int] = None
-      val caught2 = intercept[AssertionError] {
+      val caught2 = intercept[TestFailedException] {
         option should be ('defined)
       }
       assert(caught2.getMessage === "None was not defined")

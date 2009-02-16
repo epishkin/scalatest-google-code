@@ -99,216 +99,216 @@ s should fullyMatch regex t
         "fred" should (not startWith regex ("fred") or not startWith regex (decimal))
       }
   
-      it("should throw AssertionError if the string does not match substring that matched the regular expression specified as a string") {
+      it("should throw TestFailedException if the string does not match substring that matched the regular expression specified as a string") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should startWith regex ("1.78")
         }
         assert(caught1.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.78")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should startWith regex ("21.7")
         }
         assert(caught2.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 21.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-one.eight" should startWith regex (decimal)
         }
         assert(caught3.getMessage === "\"-one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "eight" should startWith regex (decimal)
         }
         assert(caught6.getMessage === "\"eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught7 = intercept[AssertionError] {
+        val caught7 = intercept[TestFailedException] {
           "one.8" should startWith regex (decimal)
         }
         assert(caught7.getMessage === "\"one.8\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught8 = intercept[AssertionError] {
+        val caught8 = intercept[TestFailedException] {
           "onedoteight" should startWith regex (decimal)
         }
         assert(caught8.getMessage === "\"onedoteight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught9 = intercept[AssertionError] {
+        val caught9 = intercept[TestFailedException] {
           "***" should startWith regex (decimal)
         }
         assert(caught9.getMessage === "\"***\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string does matches substring that matched the regular expression specified as a string when used with not") {
+      it("should throw TestFailedException if the string does matches substring that matched the regular expression specified as a string when used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should not { startWith regex ("1.7") }
         }
         assert(caught1.getMessage === "\"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should not { startWith regex (decimal) }
         }
         assert(caught2.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-1.8" should not { startWith regex (decimal) }
         }
         assert(caught3.getMessage === "\"-1.8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "8" should not { startWith regex (decimal) }
         }
         assert(caught4.getMessage === "\"8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1." should not { startWith regex (decimal) }
         }
         assert(caught5.getMessage === "\"1.\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught11 = intercept[AssertionError] {
+        val caught11 = intercept[TestFailedException] {
           "1.7" should not startWith regex ("1.7")
         }
         assert(caught11.getMessage === "\"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught12 = intercept[AssertionError] {
+        val caught12 = intercept[TestFailedException] {
           "1.7" should not startWith regex (decimal)
         }
         assert(caught12.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught13 = intercept[AssertionError] {
+        val caught13 = intercept[TestFailedException] {
           "-1.8" should not startWith regex (decimal)
         }
         assert(caught13.getMessage === "\"-1.8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught14 = intercept[AssertionError] {
+        val caught14 = intercept[TestFailedException] {
           "8" should not startWith regex (decimal)
         }
         assert(caught14.getMessage === "\"8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught15 = intercept[AssertionError] {
+        val caught15 = intercept[TestFailedException] {
           "1." should not startWith regex (decimal)
         }
         assert(caught15.getMessage === "\"1.\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
         // The rest are non-exact matches
-        val caught21 = intercept[AssertionError] {
+        val caught21 = intercept[TestFailedException] {
           "1.7a" should not { startWith regex ("1.7") }
         }
         assert(caught21.getMessage === "\"1.7a\" started with a substring that matched the regular expression 1.7")
   
-        val caught22 = intercept[AssertionError] {
+        val caught22 = intercept[TestFailedException] {
           "1.7b" should not { startWith regex (decimal) }
         }
         assert(caught22.getMessage === "\"1.7b\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught23 = intercept[AssertionError] {
+        val caught23 = intercept[TestFailedException] {
           "-1.8b" should not { startWith regex (decimal) }
         }
         assert(caught23.getMessage === "\"-1.8b\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (startWith regex (decimal) and (startWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((startWith regex (decimal)) and (startWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (startWith regex (decimal) and startWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not start with a substring that matched the regular expression 1.8")
   
         // Check to make sure the error message "short circuits" (i.e., just reports the left side's failure)
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "one.eight" should (startWith regex (decimal) and (startWith regex ("1.8")))
         }
         assert(caught4.getMessage === "\"one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "one.eight" should ((startWith regex (decimal)) and (startWith regex ("1.8")))
         }
         assert(caught5.getMessage === "\"one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "one.eight" should (startWith regex (decimal) and startWith regex ("1.8"))
         }
         assert(caught6.getMessage === "\"one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "one.seven" should (startWith regex (decimal) or (startWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"one.seven\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"one.seven\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "one.seven" should ((startWith regex (decimal)) or (startWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"one.seven\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"one.seven\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "one.seven" should (startWith regex (decimal) or startWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"one.seven\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"one.seven\" did not start with a substring that matched the regular expression 1.8")
       }
   
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
 
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not startWith regex ("1.8") and (not startWith regex (decimal)))
         }
         assert(caught1.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not startWith regex ("1.8")) and (not startWith regex (decimal)))
         }
         assert(caught2.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not startWith regex ("1.8") and not startWith regex (decimal))
         }
         assert(caught3.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.7a" should (not startWith regex ("1.8") and (not startWith regex (decimal)))
         }
         assert(caught4.getMessage === "\"1.7a\" did not start with a substring that matched the regular expression 1.8, but \"1.7a\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.7" should ((not startWith regex ("1.8")) and (not startWith regex (decimal)))
         }
         assert(caught5.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not startWith regex (decimal) or (not startWith regex ("1.7")))
         }
         assert(caught1.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not startWith regex (decimal)) or (not startWith regex ("1.7")))
         }
         assert(caught2.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not startWith regex (decimal) or not startWith regex ("1.7"))
         }
         assert(caught3.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.7" should (not (startWith regex (decimal)) or not (startWith regex ("1.7")))
         }
         assert(caught4.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.7a" should (not startWith regex (decimal) or (not startWith regex ("1.7")))
         }
         assert(caught5.getMessage === "\"1.7a\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7a\" started with a substring that matched the regular expression 1.7")
@@ -375,216 +375,216 @@ s should fullyMatch regex t
         "fred" should (not startWith regex ("fred") or not startWith regex (decimalRegex))
       }
   
-      it("should throw AssertionError if the string does not match substring that matched the regular expression specified as a string") {
+      it("should throw TestFailedException if the string does not match substring that matched the regular expression specified as a string") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should startWith regex ("1.78")
         }
         assert(caught1.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.78")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should startWith regex ("21.7")
         }
         assert(caught2.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 21.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-one.eight" should startWith regex (decimalRegex)
         }
         assert(caught3.getMessage === "\"-one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "eight" should startWith regex (decimalRegex)
         }
         assert(caught6.getMessage === "\"eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught7 = intercept[AssertionError] {
+        val caught7 = intercept[TestFailedException] {
           "one.8" should startWith regex (decimalRegex)
         }
         assert(caught7.getMessage === "\"one.8\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught8 = intercept[AssertionError] {
+        val caught8 = intercept[TestFailedException] {
           "onedoteight" should startWith regex (decimalRegex)
         }
         assert(caught8.getMessage === "\"onedoteight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught9 = intercept[AssertionError] {
+        val caught9 = intercept[TestFailedException] {
           "***" should startWith regex (decimalRegex)
         }
         assert(caught9.getMessage === "\"***\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string does matches substring that matched the regular expression specified as a string when used with not") {
+      it("should throw TestFailedException if the string does matches substring that matched the regular expression specified as a string when used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should not { startWith regex ("1.7") }
         }
         assert(caught1.getMessage === "\"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should not { startWith regex (decimalRegex) }
         }
         assert(caught2.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "-1.8" should not { startWith regex (decimalRegex) }
         }
         assert(caught3.getMessage === "\"-1.8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "8" should not { startWith regex (decimalRegex) }
         }
         assert(caught4.getMessage === "\"8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1." should not { startWith regex (decimalRegex) }
         }
         assert(caught5.getMessage === "\"1.\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught11 = intercept[AssertionError] {
+        val caught11 = intercept[TestFailedException] {
           "1.7" should not startWith regex ("1.7")
         }
         assert(caught11.getMessage === "\"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught12 = intercept[AssertionError] {
+        val caught12 = intercept[TestFailedException] {
           "1.7" should not startWith regex (decimalRegex)
         }
         assert(caught12.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught13 = intercept[AssertionError] {
+        val caught13 = intercept[TestFailedException] {
           "-1.8" should not startWith regex (decimalRegex)
         }
         assert(caught13.getMessage === "\"-1.8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught14 = intercept[AssertionError] {
+        val caught14 = intercept[TestFailedException] {
           "8" should not startWith regex (decimalRegex)
         }
         assert(caught14.getMessage === "\"8\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught15 = intercept[AssertionError] {
+        val caught15 = intercept[TestFailedException] {
           "1." should not startWith regex (decimalRegex)
         }
         assert(caught15.getMessage === "\"1.\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
         // The rest are non-exact matches
-        val caught21 = intercept[AssertionError] {
+        val caught21 = intercept[TestFailedException] {
           "1.7a" should not { startWith regex ("1.7") }
         }
         assert(caught21.getMessage === "\"1.7a\" started with a substring that matched the regular expression 1.7")
   
-        val caught22 = intercept[AssertionError] {
+        val caught22 = intercept[TestFailedException] {
           "1.7b" should not { startWith regex (decimalRegex) }
         }
         assert(caught22.getMessage === "\"1.7b\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught23 = intercept[AssertionError] {
+        val caught23 = intercept[TestFailedException] {
           "-1.8b" should not { startWith regex (decimalRegex) }
         }
         assert(caught23.getMessage === "\"-1.8b\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (startWith regex (decimalRegex) and (startWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((startWith regex (decimalRegex)) and (startWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (startWith regex (decimalRegex) and startWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, but \"1.7\" did not start with a substring that matched the regular expression 1.8")
   
         // Check to make sure the error message "short circuits" (i.e., just reports the left side's failure)
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "one.eight" should (startWith regex (decimalRegex) and (startWith regex ("1.8")))
         }
         assert(caught4.getMessage === "\"one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "one.eight" should ((startWith regex (decimalRegex)) and (startWith regex ("1.8")))
         }
         assert(caught5.getMessage === "\"one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught6 = intercept[AssertionError] {
+        val caught6 = intercept[TestFailedException] {
           "one.eight" should (startWith regex (decimalRegex) and startWith regex ("1.8"))
         }
         assert(caught6.getMessage === "\"one.eight\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
   
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "one.seven" should (startWith regex (decimalRegex) or (startWith regex ("1.8")))
         }
         assert(caught1.getMessage === "\"one.seven\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"one.seven\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "one.seven" should ((startWith regex (decimalRegex)) or (startWith regex ("1.8")))
         }
         assert(caught2.getMessage === "\"one.seven\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"one.seven\" did not start with a substring that matched the regular expression 1.8")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "one.seven" should (startWith regex (decimalRegex) or startWith regex ("1.8"))
         }
         assert(caught3.getMessage === "\"one.seven\" did not start with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"one.seven\" did not start with a substring that matched the regular expression 1.8")
       }
   
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-and expression used with not") {
 
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not startWith regex ("1.8") and (not startWith regex (decimalRegex)))
         }
         assert(caught1.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not startWith regex ("1.8")) and (not startWith regex (decimalRegex)))
         }
         assert(caught2.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not startWith regex ("1.8") and not startWith regex (decimalRegex))
         }
         assert(caught3.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.7a" should (not startWith regex ("1.8") and (not startWith regex (decimalRegex)))
         }
         assert(caught4.getMessage === "\"1.7a\" did not start with a substring that matched the regular expression 1.8, but \"1.7a\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
 
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.7" should ((not startWith regex ("1.8")) and (not startWith regex (decimalRegex)))
         }
         assert(caught5.getMessage === "\"1.7\" did not start with a substring that matched the regular expression 1.8, but \"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?")
       }
 
-      it("should throw AssertionError if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
+      it("should throw TestFailedException if the string starts with substring that matched the regular expression specified as a string when used in a logical-or expression used with not") {
   
-        val caught1 = intercept[AssertionError] {
+        val caught1 = intercept[TestFailedException] {
           "1.7" should (not startWith regex (decimalRegex) or (not startWith regex ("1.7")))
         }
         assert(caught1.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught2 = intercept[AssertionError] {
+        val caught2 = intercept[TestFailedException] {
           "1.7" should ((not startWith regex (decimalRegex)) or (not startWith regex ("1.7")))
         }
         assert(caught2.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught3 = intercept[AssertionError] {
+        val caught3 = intercept[TestFailedException] {
           "1.7" should (not startWith regex (decimalRegex) or not startWith regex ("1.7"))
         }
         assert(caught3.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught4 = intercept[AssertionError] {
+        val caught4 = intercept[TestFailedException] {
           "1.7" should (not (startWith regex (decimalRegex)) or not (startWith regex ("1.7")))
         }
         assert(caught4.getMessage === "\"1.7\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7\" started with a substring that matched the regular expression 1.7")
   
-        val caught5 = intercept[AssertionError] {
+        val caught5 = intercept[TestFailedException] {
           "1.7a" should (not startWith regex (decimalRegex) or (not startWith regex ("1.7")))
         }
         assert(caught5.getMessage === "\"1.7a\" started with a substring that matched the regular expression (-)?(\\d+)(\\.\\d*)?, and \"1.7a\" started with a substring that matched the regular expression 1.7")
