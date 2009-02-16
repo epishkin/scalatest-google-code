@@ -207,7 +207,9 @@ class TestFailedErrorSpec extends Spec with ShouldMatchers {
       // fail("message", new Throwable)
       // assert(1 === 2, "some message")
       // assert(1 === 2)
-      intercept[IllegalArgumentException] { if (false) 1 else throw new RuntimeException }
+      val cause0 = new IllegalArgumentException("this is cause 0")
+      val cause1 = new IllegalStateException("this is cause 1", cause0)
+      intercept[IllegalArgumentException] { if (false) 1 else throw new RuntimeException(cause1) }
       // intercept[IllegalArgumentException] {}
     }
   }
