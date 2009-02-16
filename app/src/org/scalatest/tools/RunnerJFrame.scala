@@ -261,7 +261,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
               report.throwable match {
                 case Some(throwable) =>
                   throwable match {
-                    case tfe: TestFailedError =>
+                    case tfe: TestFailedException =>
                       tfe.failedTestCodeFileNameAndLineNumberString 
                     case _ => None
                   }
@@ -274,7 +274,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                   case None => "None"
                 }
 
-              // Any stack trace elements lower than a TestFailedError's failedTestCodeStackDepth
+              // Any stack trace elements lower than a TestFailedException's failedTestCodeStackDepth
               // will show up as gray in the displayed stack trace, because those are ScalaTest methods.
               // The rest will show up as black.
               val (grayStackTraceElements, blackStackTraceElements) =
@@ -282,12 +282,20 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                   case Some(throwable) =>
                     val stackTraceElements = throwable.getStackTrace.toList
                     throwable match {
-                      case tfe: TestFailedError =>
+                      case tfe: TestFailedException =>
                         (stackTraceElements.take(tfe.failedTestCodeStackDepth), stackTraceElements.drop(tfe.failedTestCodeStackDepth))
                       case _ => (List(), stackTraceElements)
                     } 
                   case None => (List(), List())
                 }
+
+            def getHTMLForCause(throwable: Throwable) = {
+              val cause = throwable.getCause
+              if (throwable.getCause != null) {
+                  cause.getStackTrace.toList.map((ste: StackTraceElement) => <span>{ ste.toString }</span><br />)
+              }
+              else ()
+            }
 
             val detailsHTML =
               <html>
@@ -330,6 +338,18 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                   <tr><td align="left" colspan="2">
                   { grayStackTraceElements.map((ste: StackTraceElement) => <span class="gray">{ ste.toString }</span><br />) }
                   { blackStackTraceElements.map((ste: StackTraceElement) => <span>{ ste.toString }</span><br />) }
+                  {
+                    report.throwable match {
+                      case Some(t) => <span>CAUSED BY:</span><br />
+                      case None =>
+                    }
+                  }
+                  {
+                    report.throwable match {
+                      case Some(t) => getHTMLForCause(t)
+                      case None =>
+                    }
+                  }
                   </td></tr>
                   </table>
                 </body>
