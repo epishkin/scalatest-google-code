@@ -240,15 +240,12 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.PlusOrMinusSpec" />
+            <arg value="org.scalatest.TestFailedErrorSpec" />
 
+<!--
             <arg value="-s" />
             <arg value="org.scalatest.ShouldOrderedSpec" />
 
-            <arg value="-s" />
-            <arg value="org.scalatest.SuiteSuite" />
-
-<!--
             <arg value="-s" />
             <arg value="org.scalatest.ShouldEqualSpec" />
 -->

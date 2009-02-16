@@ -340,7 +340,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          val ae = new AssertionError(s)
+          val ae = new AssertionError(s) with TestFailedError { val failedTestCodeStackDepth = 2 }
           ae.initCause(u)
           throw ae
         }
@@ -350,7 +350,9 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
       }
     }
     caught match {
-      case None => fail(Resources("exceptionExpected", clazz.getName))
+      case None =>
+        val message = Resources("exceptionExpected", clazz.getName)
+        throw new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
