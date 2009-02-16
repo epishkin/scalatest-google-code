@@ -292,7 +292,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             def getHTMLForStackTrace(stackTraceList: List[StackTraceElement]) =
               stackTraceList.map((ste: StackTraceElement) => <span>{ ste.toString }</span><br />)
 
-            def getHTMLForCause(throwable: Throwable) = {
+            def getHTMLForCause(throwable: Throwable): scala.xml.NodeBuffer = {
               val cause = throwable.getCause
               if (cause != null) {
                 <table>
@@ -309,9 +309,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                 <tr valign="top">
                 <td align="left" colspan="2">{ getHTMLForStackTrace(cause.getStackTrace.toList) }</td>
                 </tr>
-                </table>
+                </table> &+ getHTMLForCause(cause)
               }
-              else ()
+              else new scala.xml.NodeBuffer
             }
 
             val detailsHTML =
@@ -368,8 +368,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                 </body>
               </html>
 
-println(detailsHTML.toString)
-
             detailsJEditorPane.setText(detailsHTML.toString)
             detailsJEditorPane.setCaretPosition(0)
             currentState = currentState.listSelectionChanged(RunnerJFrame.this)
@@ -378,20 +376,6 @@ println(detailsHTML.toString)
       }
     )
 
-/*
-                          val grayHTML =
-                            for (grayElement <- grayElements) yield
-                              <span class="gray">grayElement.toString</span><br />
-                          val blackHTML = 
-                            for (blackElement <- blackElements) yield
-                              <span class="gray">blackElement.toString</span><br />
-                          grayHTML + blackHTML
-                        val bytestream: ByteArrayOutputStream = new ByteArrayOutputStream()
-                        val printwriter: PrintWriter = new PrintWriter(bytestream)
-                        throwable.printStackTrace(printwriter)
-                        printwriter.close()
-                        ":\n" + bytestream.toString()
-*/
     rerunJButton.addActionListener(
       new ActionListener() {
         def actionPerformed(ae: ActionEvent) {
