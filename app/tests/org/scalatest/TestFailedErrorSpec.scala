@@ -171,15 +171,44 @@ class TestFailedErrorSpec extends Spec with ShouldMatchers {
       }
     }
 
+    it("should give the proper line on intercept[IllegalArgumentException] {}") {
+      try {
+        intercept[IllegalArgumentException] {}
+      }
+      catch {
+        case e: TestFailedError =>
+          e.failedTestCodeFileNameAndLineNumberString match {
+            case Some(s) => s should equal ("TestFailedErrorSpec.scala:" + (baseLineNumber + 156))
+            case None => fail("intercept[IllegalArgumentException] {} didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("intercept[IllegalArgumentException] {} didn't produce a TestFailedError", e)
+      }
+    }
+
+    it("should give the proper line on intercept[IllegalArgumentException] { throw new RuntimeException }") {
+      try {
+        intercept[IllegalArgumentException] { if (false) 1 else throw new RuntimeException }
+      }
+      catch {
+        case e: TestFailedError =>
+          e.failedTestCodeFileNameAndLineNumberString match {
+            case Some(s) => s should equal ("TestFailedErrorSpec.scala:" + (baseLineNumber + 171))
+            case None => fail("intercept[IllegalArgumentException] { throw new RuntimeException } didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("intercept[IllegalArgumentException] { throw new RuntimeException } didn't produce a TestFailedError", e)
+      }
+    }
+
     it("bla bla bla") {
       // fail("message")
       // fail(new Throwable)
       // fail("message", new Throwable)
       // assert(1 === 2, "some message")
       // assert(1 === 2)
-      expect(1) {
-        2
-      }
+      intercept[IllegalArgumentException] { if (false) 1 else throw new RuntimeException }
+      // intercept[IllegalArgumentException] {}
     }
   }
 }
