@@ -17,12 +17,14 @@ package org.scalatest
 
 // Idea is if you don't know the information, don't throw a TestFailedError. Throw
 // something else, such as a plain old AssertionError
-class TestFailedError(val failedTestCodeStackDepth: Int) extends AssertionError {
+trait TestFailedError { this: AssertionError =>
+
+  val failedTestCodeStackDepth: Int
 
   // An option because getFileName on the StackTraceElement may return null
   // Only provide a method for that which I am using. Other info can be grabbed
   // with the failedTestCodeStackDepth information.
-  val failedTestCodeFileNameAndLineNumberString: Option[String] = {
+  lazy val failedTestCodeFileNameAndLineNumberString: Option[String] = {
     val stackTraceElement = getStackTrace()(failedTestCodeStackDepth)
     val fileName = stackTraceElement.getFileName
     if (fileName != null) {

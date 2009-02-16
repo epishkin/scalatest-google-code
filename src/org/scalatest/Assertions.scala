@@ -128,7 +128,8 @@ trait Assertions {
    * @throws AssertionError if the condition is <code>false</code>.
    */
   def assert(condition: Boolean) {
-    Predef.assert(condition)
+    if (!condition)
+      throw new AssertionError with TestFailedError { val failedTestCodeStackDepth = 2 }
   }
 
   /**
@@ -145,7 +146,8 @@ trait Assertions {
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
   def assert(condition: Boolean, message: Any) {
-    Predef.assert(condition, message)
+    if (!condition)
+      throw new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
   }
 
   /**
@@ -178,8 +180,8 @@ trait Assertions {
    */
   def assert(o: Option[String], message: Any) {
     o match {
-      case Some(s) => throw new AssertionError(message + "\n" + s)
-      case None => ()
+      case Some(s) => throw new AssertionError(message + "\n" + s) with TestFailedError { val failedTestCodeStackDepth = 2 }
+      case None =>
     }
   }
   
@@ -208,7 +210,10 @@ trait Assertions {
    * @throws AssertionError if the <code>Option[String]</code> is <code>Some</code>.
    */
   def assert(o: Option[String]) {
-    assert(o, "")
+    o match {
+      case Some(s) => throw new AssertionError(s) with TestFailedError { val failedTestCodeStackDepth = 2 }
+      case None =>
+    }
   }
 
   /**
@@ -400,11 +405,10 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * @throws AssertionError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
   def expect(expected: Any, message: Any)(actual: Any) {
-    val actualResult = actual // only execute by name once, in case there are side effects
-    if (actualResult != expected) {
-      val (act, exp) = Suite.getObjectsForFailureMessage(actualResult, expected)
+    if (actual != expected) {
+      val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw new AssertionError(message + "\n" + s)
+      throw new AssertionError(message + "\n" + s) with TestFailedError { val failedTestCodeStackDepth = 2 }
     }
   }
 
@@ -420,13 +424,17 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * @throws AssertionError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
   def expect(expected: Any)(actual: Any) {
-    expect(expected, "")(actual)
+    if (actual != expected) {
+      val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
+      val s = FailureMessages("expectedButGot", exp, act)
+      throw new AssertionError(s) with TestFailedError { val failedTestCodeStackDepth = 2 }
+    }
   }
   
   /**
    * Throws <code>AssertionError</code> to indicate a test failed.
    */
-  def fail() = throw new TestFailedError(2)
+  def fail() = throw new AssertionError with TestFailedError { val failedTestCodeStackDepth = 2 }
 
   /**
    * Throws <code>AssertionError</code>, with the passed
@@ -441,7 +449,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (message == null)
         throw new NullPointerException("message is null")
      
-    throw new AssertionError(message)
+    throw new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
   }
 
   /**
@@ -461,7 +469,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (cause == null)
       throw new NullPointerException("cause is null")
 
-    val ae = new AssertionError(message)
+    val ae = new AssertionError(message) with TestFailedError { val failedTestCodeStackDepth = 2 }
     ae.initCause(cause)
     throw ae
   }
@@ -480,6 +488,6 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     if (cause == null)
       throw new NullPointerException("cause is null")
         
-    throw new AssertionError(cause)
+    throw new AssertionError(cause) with TestFailedError { val failedTestCodeStackDepth = 2 }
   }
 }
