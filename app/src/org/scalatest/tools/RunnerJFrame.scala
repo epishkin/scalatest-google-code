@@ -254,6 +254,18 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
             detailsJTextArea.append("\n" + Resources("DetailsName") + ": " + report.name)
             detailsJTextArea.append("\n" + Resources("DetailsMessage") + ": " + report.message)
+            report.throwable match {
+              case Some(throwable) =>
+                throwable match {
+                  case tfe: TestFailedError =>
+                    tfe.failedTestCodeFileNameAndLineNumberString match {
+                      case Some(fileAndLine) => detailsJTextArea.append("\n" + Resources("LineNumber") + ": " + "(" + fileAndLine + ")")
+                      case None =>
+                    }
+                  case _ =>
+                }
+              case None =>
+            }
             detailsJTextArea.append("\n" + Resources("DetailsDate") + ": " + report.date)
             detailsJTextArea.append("\n" + Resources("DetailsThread") + ": " + report.threadName)
   
