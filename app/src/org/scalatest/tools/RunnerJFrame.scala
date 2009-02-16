@@ -271,7 +271,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
               val throwableTitle =
                 report.throwable match {
                   case Some(throwable) => throwable.getClass.getName
-                  case None => "None"
+                  case None => Resources("None")
                 }
 
               // Any stack trace elements lower than a TestFailedException's failedTestCodeStackDepth
@@ -289,16 +289,32 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                   case None => (List(), List())
                 }
 
+            def getHTMLForStackTrace(stackTraceList: List[StackTraceElement]) =
+              stackTraceList.map((ste: StackTraceElement) => <span>{ ste.toString }</span><br />)
+
             def getHTMLForCause(throwable: Throwable) = {
               val cause = throwable.getCause
-              if (throwable.getCause != null) {
-                  cause.getStackTrace.toList.map((ste: StackTraceElement) => <span>{ ste.toString }</span><br />)
+              if (cause != null) {
+                  List(
+                    <table>
+                    <tr valign="top">
+                    <td align="right"><span class="label">{ Resources("DetailsCause") + ":" }</span></td>
+                    <td align="left">{ cause.getClass.getName }</td>
+                    </tr>
+                    <tr valign="top">
+                    <td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td>
+                    <td align="left"><span>{ if (cause.getMessage != null) cause.getMessage else Resources("None") }</span></td>
+                    </tr>
+                    </table>) :::
+                  List(<table><tr valign="top"><td align="left" colspan="2">
+                  { getHTMLForStackTrace(cause.getStackTrace.toList) }
+                  </td></tr></table>)
               }
               else ()
             }
 
             val detailsHTML =
-              <html>
+              <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
                 <head>
                   <style type="text/css">
                     body {{ font-family: sans-serif; font-size: { fontSize }pt; }}
@@ -308,12 +324,12 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                   </style>
                 </head>
                 <body>
-                  <table valign="top">
-                  <tr><td align="right"><span class="label">{ Resources("DetailsReport") + ":" }</span></td><td align="left"><span>{ title }</span></td></tr>
-                  <tr><td align="right"><span class="label">{ Resources("DetailsName") + ":" }</span></td><td align="left">{ report.name }</td></tr>
+                  <table>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsReport") + ":" }</span></td><td align="left"><span>{ title }</span></td></tr>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsName") + ":" }</span></td><td align="left">{ report.name }</td></tr>
                   {
                     if (report.message.trim.length != 0) {
-                      <tr><td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td><td align="left">
+                      <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td><td align="left">
                       {
                         if (isFailureReport) {
                           <span class="dark">{ report.message }</span>
@@ -328,32 +344,30 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                   {
                     fileAndLineOption match {
                       case Some(fileAndLine) =>
-                        <tr><td align="right"><span class="label">{ Resources("LineNumber") + ":" }</span></td><td align="left"><span class="dark">{ "(" + fileAndLine + ")" }</span></td></tr>
+                        <tr valign="top"><td align="right"><span class="label">{ Resources("LineNumber") + ":" }</span></td><td align="left"><span class="dark">{ "(" + fileAndLine + ")" }</span></td></tr>
                       case None =>
                     }
                   }
-                  <tr><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.date }</td></tr>
-                  <tr><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ report.threadName }</td></tr>
-                  <tr><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
-                  <tr><td align="left" colspan="2">
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.date }</td></tr>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ report.threadName }</td></tr>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
+                  </table>
+                  <table>
+                  <tr valign="top"><td align="left" colspan="2">
                   { grayStackTraceElements.map((ste: StackTraceElement) => <span class="gray">{ ste.toString }</span><br />) }
                   { blackStackTraceElements.map((ste: StackTraceElement) => <span>{ ste.toString }</span><br />) }
-                  {
-                    report.throwable match {
-                      case Some(t) => <span>CAUSED BY:</span><br />
-                      case None =>
-                    }
-                  }
+                  </td></tr>
+                  </table>
                   {
                     report.throwable match {
                       case Some(t) => getHTMLForCause(t)
                       case None =>
                     }
                   }
-                  </td></tr>
-                  </table>
                 </body>
               </html>
+
+println(detailsHTML.toString)
 
             detailsJEditorPane.setText(detailsHTML.toString)
             detailsJEditorPane.setCaretPosition(0)
