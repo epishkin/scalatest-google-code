@@ -42,7 +42,7 @@ import javax.swing.JMenuItem
 import javax.swing.JOptionPane
 import javax.swing.JPanel
 import javax.swing.JScrollPane
-import javax.swing.JTextArea
+import javax.swing.JEditorPane
 import javax.swing.KeyStroke
 import javax.swing.ListSelectionModel
 import javax.swing.border.BevelBorder
@@ -107,8 +107,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   private val reportsListModel: DefaultListModel = new DefaultListModel()
   private val reportsJList: JList = new JList(reportsListModel)
 
-  // The detailsJTextArea displays the text details of a report.
-  private val detailsJTextArea: JTextArea = new JTextArea()
+  // The detailsJEditorPane displays the text details of a report.
+  private val detailsJEditorPane: JEditorPane = new JEditorPane("text/html", null)
 
   private val progressBar: ColorBar = new ColorBar()
   private val statusJPanel: StatusJPanel = new StatusJPanel()
@@ -207,10 +207,10 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     detailsNorthJPanel.add(BorderLayout.WEST, southHuggingDetailsLabelJPanel)
     detailsNorthJPanel.add(BorderLayout.EAST, rerunJPanel)
 
-    detailsJTextArea.setEditable(false)
-    detailsJTextArea.setLineWrap(true)
-    detailsJTextArea.setWrapStyleWord(true)
-    val detailsJScrollPane: JScrollPane = new JScrollPane(detailsJTextArea)
+    detailsJEditorPane.setEditable(false)
+    // detailsJEditorPane.setLineWrap(true) TODO: Delete this if staying with JEditorPane, was for JTextArea
+    // detailsJEditorPane.setWrapStyleWord(true)
+    val detailsJScrollPane: JScrollPane = new JScrollPane(detailsJEditorPane)
 
     val detailsJPanel: JPanel = new JPanel()
 
@@ -236,7 +236,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
           if (rh == null) {
 
             // This means nothing is currently selected
-            detailsJTextArea.setText("")
+            detailsJEditorPane.setText("")
             currentState = currentState.listSelectionChanged(RunnerJFrame.this)
           }
           else {
@@ -245,50 +245,118 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             val reportType: ReporterOpts.Value = rh.reportType
             val isRerun: Boolean = rh.isRerun
   
-            if (isRerun)
-              detailsJTextArea.setText(Resources("RERUN_" + ReporterOpts.getUpperCaseName(reportType)))
-            else
-              detailsJTextArea.setText(Resources(ReporterOpts.getUpperCaseName(reportType)))
+            val fontSize = reportsJList.getFont.getSize
 
-            // The only return value from a report that can be null is getThrowable's.
+            val title = 
+              if (isRerun)
+                Resources("RERUN_" + ReporterOpts.getUpperCaseName(reportType))
+              else
+                Resources(ReporterOpts.getUpperCaseName(reportType))
 
-            detailsJTextArea.append("\n" + Resources("DetailsName") + ": " + report.name)
-            detailsJTextArea.append("\n" + Resources("DetailsMessage") + ": " + report.message)
-            report.throwable match {
-              case Some(throwable) =>
-                throwable match {
-                  case tfe: TestFailedError =>
-                    tfe.failedTestCodeFileNameAndLineNumberString match {
-                      case Some(fileAndLine) => detailsJTextArea.append("\n" + Resources("LineNumber") + ": " + "(" + fileAndLine + ")")
+            val isFailureReport =
+              reportType == ReporterOpts.PresentTestFailed || reportType == ReporterOpts.PresentSuiteAborted ||
+                  reportType == ReporterOpts.PresentRunAborted
+
+            val fileAndLineOption: Option[String] =
+              report.throwable match {
+                case Some(throwable) =>
+                  throwable match {
+                    case tfe: TestFailedError =>
+                      tfe.failedTestCodeFileNameAndLineNumberString 
+                    case _ => None
+                  }
+                case None => None
+              }
+
+              val throwableTitle =
+                report.throwable match {
+                  case Some(throwable) => throwable.getClass.getName
+                  case None => "None"
+                }
+
+              // Any stack trace elements lower than a TestFailedError's failedTestCodeStackDepth
+              // will show up as gray in the displayed stack trace, because those are ScalaTest methods.
+              // The rest will show up as black.
+              val (grayStackTraceElements, blackStackTraceElements) =
+                report.throwable match {
+                  case Some(throwable) =>
+                    val stackTraceElements = throwable.getStackTrace.toList
+                    throwable match {
+                      case tfe: TestFailedError =>
+                        (stackTraceElements.take(tfe.failedTestCodeStackDepth), stackTraceElements.drop(tfe.failedTestCodeStackDepth))
+                      case _ => (List(), stackTraceElements)
+                    } 
+                  case None => (List(), List())
+                }
+
+            val detailsHTML =
+              <html>
+                <head>
+                  <style type="text/css">
+                    body {{ font-family: sans-serif; font-size: { fontSize }pt; }}
+                    .label {{ color: #444444; font-weight: bold; }}
+                    .gray {{ color: black; }}
+                    .dark {{ font-weight: bold; color: #111111; }}
+                  </style>
+                </head>
+                <body>
+                  <table valign="top">
+                  <tr><td align="right"><span class="label">{ Resources("DetailsReport") + ":" }</span></td><td align="left"><span>{ title }</span></td></tr>
+                  <tr><td align="right"><span class="label">{ Resources("DetailsName") + ":" }</span></td><td align="left">{ report.name }</td></tr>
+                  {
+                    if (report.message.trim.length != 0) {
+                      <tr><td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td><td align="left">
+                      {
+                        if (isFailureReport) {
+                          <span class="dark">{ report.message }</span>
+                        } else {
+                          <span>{ report.message }</span>
+                        }
+                      }
+                      </td></tr>
+                    }
+                    else <!-- -->
+                  }
+                  {
+                    fileAndLineOption match {
+                      case Some(fileAndLine) =>
+                        <tr><td align="right"><span class="label">{ Resources("LineNumber") + ":" }</span></td><td align="left"><span class="dark">{ "(" + fileAndLine + ")" }</span></td></tr>
                       case None =>
                     }
-                  case _ =>
-                }
-              case None =>
-            }
-            detailsJTextArea.append("\n" + Resources("DetailsDate") + ": " + report.date)
-            detailsJTextArea.append("\n" + Resources("DetailsThread") + ": " + report.threadName)
-  
-            detailsJTextArea.append("\n" + Resources("DetailsThrowable"))
+                  }
+                  <tr><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.date }</td></tr>
+                  <tr><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ report.threadName }</td></tr>
+                  <tr><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
+                  <tr><td align="left" colspan="2">
+                  { grayStackTraceElements.map((ste: StackTraceElement) => <span class="gray">{ ste.toString }</span><br />) }
+                  { blackStackTraceElements.map((ste: StackTraceElement) => <span>{ ste.toString }</span><br />) }
+                  </td></tr>
+                  </table>
+                </body>
+              </html>
 
-            report.throwable match {
-              case Some(t) => {
-                val bytestream: ByteArrayOutputStream = new ByteArrayOutputStream()
-                val printwriter: PrintWriter = new PrintWriter(bytestream)
-                t.printStackTrace(printwriter)
-                printwriter.close()
-                detailsJTextArea.append(":\n" + bytestream.toString())
-              }
-              case None => detailsJTextArea.append(": None")
-            }
-  
-            detailsJTextArea.setCaretPosition(0)
+            detailsJEditorPane.setText(detailsHTML.toString)
+            detailsJEditorPane.setCaretPosition(0)
             currentState = currentState.listSelectionChanged(RunnerJFrame.this)
           }
         }
       }
     )
 
+/*
+                          val grayHTML =
+                            for (grayElement <- grayElements) yield
+                              <span class="gray">grayElement.toString</span><br />
+                          val blackHTML = 
+                            for (blackElement <- blackElements) yield
+                              <span class="gray">blackElement.toString</span><br />
+                          grayHTML + blackHTML
+                        val bytestream: ByteArrayOutputStream = new ByteArrayOutputStream()
+                        val printwriter: PrintWriter = new PrintWriter(bytestream)
+                        throwable.printStackTrace(printwriter)
+                        printwriter.close()
+                        ":\n" + bytestream.toString()
+*/
     rerunJButton.addActionListener(
       new ActionListener() {
         def actionPerformed(ae: ActionEvent) {
@@ -513,7 +581,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
     // clear the list of reports and the detail area
     reportsListModel.clear()
-    detailsJTextArea.setText("")
+    detailsJEditorPane.setText("")
 
     for (rh <- collectedReports.reverse; if viewOptions.contains(rh.reportType)) {
       val shouldAddElement = rh.report match {
@@ -644,7 +712,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         collectedReports = reportHolder :: Nil
         reportsListModel.clear()
   
-        detailsJTextArea.setText("")
+        detailsJEditorPane.setText("")
   
         if (viewOptions.contains(ReporterOpts.PresentRunStarting))
           reportsListModel.addElement(reportHolder)
@@ -755,7 +823,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     statusJPanel.setTestsExpected(0)
     collectedReports = Nil
     reportsListModel.clear()
-    detailsJTextArea.setText("")
+    detailsJEditorPane.setText("")
   }
 
   // This must be called by the event handler thread
