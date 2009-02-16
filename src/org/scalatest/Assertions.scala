@@ -34,7 +34,7 @@ trait Assertions {
    *
    * <p>
    * The benefit of using <code>assert(a === b)</code> rather than <code>assert(a == b)</code> is
-   * that an <code>AssertionError</code> produced by the former will include the values of <code>a</code> and <code>b</code>
+   * that a <code>TestFailedException</code> produced by the former will include the values of <code>a</code> and <code>b</code>
    * in its detail message.
    * The implicit method that performs the conversion from <code>Any</code> to <code>Equalizer</code> is
    * <code>convertToEqualizer</code> in trait <code>Suite</code>.
@@ -94,9 +94,9 @@ trait Assertions {
      * In its typical usage, the <code>Option[String]</code> returned by <code>===</code> will be passed to one of two
      * of trait <code>Suite</code>'s overloaded <code>assert</code> methods. If <code>None</code>,
      * which indicates the assertion succeeded, <code>assert</code> will return normally. But if <code>Some</code> is passed,
-     * which indicates the assertion failed, <code>assert</code> will throw an <code>AssertionError</code> whose detail
+     * which indicates the assertion failed, <code>assert</code> will throw a <code>TestFailedException</code> whose detail
      * message will include the <code>String</code> contained inside the <code>Some</code>, which in turn includes the
-     * <code>left</code> and <code>right</code> values. This <code>AssertionError</code> is typically embedded in a 
+     * <code>left</code> and <code>right</code> values. This <code>TestFailedException</code> is typically embedded in a 
      * <code>Report</code> and passed to a <code>Reporter</code>, which can present the <code>left</code> and <code>right</code>
      * values to the user.
      * </p>
@@ -122,10 +122,10 @@ trait Assertions {
   /**
    * Assert that a boolean condition is true.
    * If the condition is <code>true</code>, this method returns normally.
-   * Else, it throws <code>AssertionError</code>.
+   * Else, it throws <code>TestFailedException</code>.
    *
    * @param condition the boolean condition to assert
-   * @throws AssertionError if the condition is <code>false</code>.
+   * @throws TestFailedException if the condition is <code>false</code>.
    */
   def assert(condition: Boolean) {
     if (!condition)
@@ -136,13 +136,13 @@ trait Assertions {
    * Assert that a boolean condition, described in <code>String</code>
    * <code>message</code>, is true.
    * If the condition is <code>true</code>, this method returns normally.
-   * Else, it throws <code>AssertionError</code> with the
+   * Else, it throws <code>TestFailedException</code> with the
    * <code>String</code> obtained by invoking <code>toString</code> on the
    * specified <code>message</code> as the exception's detail message.
    *
    * @param condition the boolean condition to assert
    * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
-   * @throws AssertionError if the condition is <code>false</code>.
+   * @throws TestFailedException if the condition is <code>false</code>.
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
   def assert(condition: Boolean, message: Any) {
@@ -153,11 +153,11 @@ trait Assertions {
   /**
    * Assert that an <code>Option[String]</code> is <code>None</code>. 
    * If the condition is <code>None</code>, this method returns normally.
-   * Else, it throws <code>AssertionError</code> with the <code>String</code>
+   * Else, it throws <code>TestFailedException</code> with the <code>String</code>
    * value of the <code>Some</code>, as well as the 
    * <code>String</code> obtained by invoking <code>toString</code> on the
    * specified <code>message</code>,
-   * included in the <code>AssertionError</code>'s detail message.
+   * included in the <code>TestFailedException</code>'s detail message.
    *
    * <p>
    * This form of <code>assert</code> is usually called in conjunction with an
@@ -175,7 +175,7 @@ trait Assertions {
    *
    * @param o the <code>Option[String]</code> to assert
    * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
-   * @throws AssertionError if the <code>Option[String]</code> is <code>Some</code>.
+   * @throws TestFailedException if the <code>Option[String]</code> is <code>Some</code>.
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
   def assert(o: Option[String], message: Any) {
@@ -188,8 +188,8 @@ trait Assertions {
   /**
    * Assert that an <code>Option[String]</code> is <code>None</code>.
    * If the condition is <code>None</code>, this method returns normally.
-   * Else, it throws <code>AssertionError</code> with the <code>String</code>
-   * value of the <code>Some</code> included in the <code>AssertionError</code>'s
+   * Else, it throws <code>TestFailedException</code> with the <code>String</code>
+   * value of the <code>Some</code> included in the <code>TestFailedException</code>'s
    * detail message.
    *
    * <p>
@@ -207,7 +207,7 @@ trait Assertions {
    * </p>
    *
    * @param o the <code>Option[String]</code> to assert
-   * @throws AssertionError if the <code>Option[String]</code> is <code>Some</code>.
+   * @throws TestFailedException if the <code>Option[String]</code> is <code>Some</code>.
    */
   def assert(o: Option[String]) {
     o match {
@@ -234,21 +234,21 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
    * subclasses, this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>
+   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>
    * whose detail message includes the <code>String</code> obtained by invoking <code>toString</code> on the passed <code>message</code>.
    *
    * <p>
    * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
    * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
    * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with an <code>AssertionError</code>.
+   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
    * </p>
    *
    * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
    * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
    * @param f the function value that should throw the expected exception
    * @return the intercepted exception, if
-   * @throws AssertionError if the passed function does not result in a value equal to the
+   * @throws TestFailedException if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
    */
   @deprecated
@@ -262,9 +262,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          val ae = new AssertionError(messagePrefix + s, u)
-          ae.initCause(u)
-          throw ae
+          throw new TestFailedException(messagePrefix + s, u, 2)
         }
         else {
           Some(u)
@@ -272,7 +270,9 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
       }
     }
     caught match {
-      case None => fail(messagePrefix + Resources("exceptionExpected", clazz.getName))
+      case None =>
+        val message = messagePrefix + Resources("exceptionExpected", clazz.getName)
+        throw new TestFailedException(message, 2)
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
@@ -282,26 +282,46 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
    * subclasses, this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>.
+   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>.
    *
    * <p>
    * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
    * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
    * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with an <code>AssertionError</code>.
+   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
    * </p>
    *
    * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
    * @param f the function value that should throw the expected exception
    * @return the intercepted exception, if
-   * @throws AssertionError if the passed function does not complete abruptly with an exception that is assignable to the
+   * @throws TestFailedException if the passed function does not complete abruptly with an exception that is assignable to the
    *     passed <code>Class</code>.
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
    */
   @deprecated
   def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Any): T = {
-    intercept(clazz, "")(f)
+    val caught = try {
+      f
+      None
+    }
+    catch {
+      case u: Throwable => {
+        if (!clazz.isAssignableFrom(u.getClass)) {
+          val s = Resources("wrongException", clazz.getName, u.getClass.getName)
+          throw new TestFailedException(s, u, 2)
+        }
+        else {
+          Some(u)
+        }
+      }
+    }
+    caught match {
+      case None =>
+        val message = Resources("exceptionExpected", clazz.getName)
+        throw new TestFailedException(message, 2)
+      case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
+    }
   }
 
 
@@ -311,7 +331,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * type specified by the type parameter of this method. This method invokes the passed
    * function. If the function throws an exception that's an instance of the specified type,
    * this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>.
+   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>.
    *
    * <p>
    * Note that the type specified as this method's type parameter may represent any subtype of
@@ -319,14 +339,14 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * Scala, exceptions can be caught based on traits they implement, so it may at times make sense
    * to specify a trait that the intercepted exception's class must mix in. If a class instance is
    * passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with an <code>AssertionError</code>.
+   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
    * </p>
    *
    * @param f the function value that should throw the expected exception
    * @param manifest an implicit <code>Manifest</code> representing the type of the specified
    * type parameter.
    * @return the intercepted exception, if it is of the expected type
-   * @throws AssertionError if the passed function does not complete abruptly with an exception
+   * @throws TestFailedException if the passed function does not complete abruptly with an exception
    *    that's an instance of the specified type
    *     passed <code>expected</code> value.
    */
@@ -360,19 +380,19 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
    * subclasses, this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>AssertionError</code>.
+   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>.
    *
    * <p>
    * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
    * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
    * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with an <code>AssertionError</code>.
+   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
    * </p>
    *
    * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
    * @param f the function value that should throw the expected exception
    * @return the intercepted exception, if 
-   * @throws AssertionError if the passed function does not complete abruptly with an exception that is assignable to the 
+   * @throws TestFailedException if the passed function does not complete abruptly with an exception that is assignable to the 
    *     passed <code>Class</code>.
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
@@ -396,13 +416,13 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * If the <code>actual</code> equals the <code>expected</code>
    * (as determined by <code>==</code>), <code>expect</code> returns
    * normally. Else, if <code>actual</code> is not equal to <code>expected</code>, <code>expect</code> throws an
-   * <code>AssertionError</code> whose detail message includes the expected and actual values, as well as the <code>String</code>
+   * <code>TestFailedException</code> whose detail message includes the expected and actual values, as well as the <code>String</code>
    * obtained by invoking <code>toString</code> on the passed <code>message</code>.
    *
    * @param expected the expected value
    * @param message An object whose <code>toString</code> method returns a message to include in a failure report.
    * @param actual the actual value, which should equal the passed <code>expected</code> value
-   * @throws AssertionError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
+   * @throws TestFailedException if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
   def expect(expected: Any, message: Any)(actual: Any) {
     if (actual != expected) {
@@ -417,11 +437,11 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * If the <code>actual</code> value equals the <code>expected</code> value
    * (as determined by <code>==</code>), <code>expect</code> returns
    * normally. Else, <code>expect</code> throws an
-   * <code>AssertionError</code> whose detail message includes the expected and actual values.
+   * <code>TestFailedException</code> whose detail message includes the expected and actual values.
    *
    * @param expected the expected value
    * @param actual the actual value, which should equal the passed <code>expected</code> value
-   * @throws AssertionError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
+   * @throws TestFailedException if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
   def expect(expected: Any)(actual: Any) {
     if (actual != expected) {
@@ -432,12 +452,12 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
   }
   
   /**
-   * Throws <code>AssertionError</code> to indicate a test failed.
+   * Throws <code>TestFailedException</code> to indicate a test failed.
    */
   def fail() = throw new TestFailedException(2)
 
   /**
-   * Throws <code>AssertionError</code>, with the passed
+   * Throws <code>TestFailedException</code>, with the passed
    * <code>String</code> <code>message</code> as the exception's detail
    * message, to indicate a test failed.
    *
@@ -453,7 +473,7 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
   }
 
   /**
-   * Throws <code>AssertionError</code>, with the passed
+   * Throws <code>TestFailedException</code>, with the passed
    * <code>String</code> <code>message</code> as the exception's detail
    * message and <code>Throwable</code> cause, to indicate a test failed.
    *
@@ -473,9 +493,9 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
   }
 
   /**
-   * Throws <code>AssertionError</code>, with the passed
+   * Throws <code>TestFailedException</code>, with the passed
    * <code>Throwable</code> cause, to indicate a test failed.
-   * The <code>getMessage</code> method of the thrown <code>AssertionError</code>
+   * The <code>getMessage</code> method of the thrown <code>TestFailedException</code>
    * will return <code>cause.toString()</code>.
    *
    * @param cause a <code>Throwable</code> that indicates the cause of the failure.
