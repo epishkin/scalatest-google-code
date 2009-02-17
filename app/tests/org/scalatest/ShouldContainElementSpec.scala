@@ -29,6 +29,7 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 
       it("should do nothing if array contains the specified element") {
         Array(1, 2) should contain element (2)
+        Array(1, 2) should (contain element (2))
         check((arr: Array[Int]) => arr.size != 0 ==> returnsNormally(arr should contain element (arr(arr.length - 1))))
       }
 
@@ -47,7 +48,8 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 
       it("should do nothing when array contains the specified element and used in a logical-or expression") {
         Array(1, 2) should { contain element (77) or (contain element (2)) }
-        // Array(1, 2) should either (contain element (77)) or (contain element (3 - 1))
+        Array(1, 2) should ((contain element (77)) or (contain element (2)))
+        Array(1, 2) should (contain element (77) or contain element (2))
       }
 
       it("should do nothing when array doesn't contain the specified element and used in a logical-and expression with not") {

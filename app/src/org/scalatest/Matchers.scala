@@ -239,7 +239,7 @@ trait Matchers extends Assertions { matchers =>
 
       // Array(1, 2) should (contain element (2) and contain element (3 - 1))
       //                                                     ^
-      def element(expectedElement: Long) = and(matchers.contain.element(expectedElement))
+      def element[T](expectedElement: T) = matchersWrapper.and(matchers.contain.element(expectedElement))
     }
 
     def and(containWord: ContainWord): AndContainWord = new AndContainWord
@@ -509,6 +509,15 @@ TODO: Ah, maybe this was the simplification
     }
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
+
+    class OrContainWord {
+
+      // Array(1, 2) should (contain element (2) or contain element (3 - 1))
+      //                                                     ^
+      def element[T](expectedElement: T) = matchersWrapper.or(matchers.contain.element(expectedElement))
+    }
+
+    def or(containWord: ContainWord): OrContainWord = new OrContainWord
 
     class OrBeWord {
 
