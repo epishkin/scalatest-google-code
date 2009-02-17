@@ -240,7 +240,7 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.TestFailedErrorSpec" />
+            <arg value="org.scalatest.PlusOrMinusSpec" />
 
 <!--
             <arg value="-s" />

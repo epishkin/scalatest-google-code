@@ -2420,7 +2420,11 @@ TODO: Do the same simplification as above
   case class DoubleTolerance(right: Double, tolerance: Double)
 
   class DoublePlusOrMinusWrapper(right: Double) {
-    def plusOrMinus(tolerance: Double): DoubleTolerance = DoubleTolerance(right, tolerance)
+    def plusOrMinus(tolerance: Double): DoubleTolerance = {
+      if (tolerance <= 0.0)
+        throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
+      DoubleTolerance(right, tolerance)
+    }
   }
 
   implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new DoublePlusOrMinusWrapper(right)
@@ -2428,7 +2432,11 @@ TODO: Do the same simplification as above
   case class FloatTolerance(right: Float, tolerance: Float)
 
   class FloatPlusOrMinusWrapper(right: Float) {
-    def plusOrMinus(tolerance: Float): FloatTolerance = FloatTolerance(right, tolerance)
+    def plusOrMinus(tolerance: Float): FloatTolerance = {
+      if (tolerance <= 0.0f)
+        throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
+      FloatTolerance(right, tolerance)
+    }
   }
 
   implicit def convertFloatToPlusOrMinusWrapper(right: Float) = new FloatPlusOrMinusWrapper(right)
@@ -2436,7 +2444,11 @@ TODO: Do the same simplification as above
   case class LongTolerance(right: Long, tolerance: Long)
 
   class LongPlusOrMinusWrapper(right: Long) {
-    def plusOrMinus(tolerance: Long): LongTolerance = LongTolerance(right, tolerance)
+    def plusOrMinus(tolerance: Long): LongTolerance = {
+      if (tolerance <= 0L)
+        throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
+      LongTolerance(right, tolerance)
+    }
   }
 
   implicit def convertLongToPlusOrMinusWrapper(right: Long) = new LongPlusOrMinusWrapper(right)
@@ -2444,7 +2456,11 @@ TODO: Do the same simplification as above
   case class IntTolerance(right: Int, tolerance: Int)
 
   class IntPlusOrMinusWrapper(right: Int) {
-    def plusOrMinus(tolerance: Int): IntTolerance = IntTolerance(right, tolerance)
+    def plusOrMinus(tolerance: Int): IntTolerance = {
+      if (tolerance <= 0)
+        throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
+      IntTolerance(right, tolerance)
+    }
   }
 
   implicit def convertIntToPlusOrMinusWrapper(right: Int) = new IntPlusOrMinusWrapper(right)
@@ -2452,7 +2468,11 @@ TODO: Do the same simplification as above
   case class ShortTolerance(right: Short, tolerance: Short)
 
   class ShortPlusOrMinusWrapper(right: Short) {
-    def plusOrMinus(tolerance: Short): ShortTolerance = ShortTolerance(right, tolerance)
+    def plusOrMinus(tolerance: Short): ShortTolerance = {
+      if (tolerance <= 0)
+        throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
+      ShortTolerance(right, tolerance)
+    }
   }
 
   implicit def convertShortToPlusOrMinusWrapper(right: Short) = new ShortPlusOrMinusWrapper(right)
@@ -2460,7 +2480,11 @@ TODO: Do the same simplification as above
   case class ByteTolerance(right: Byte, tolerance: Byte)
 
   class BytePlusOrMinusWrapper(right: Byte) {
-    def plusOrMinus(tolerance: Byte): ByteTolerance = ByteTolerance(right, tolerance)
+    def plusOrMinus(tolerance: Byte): ByteTolerance = {
+      if (tolerance <= 0)
+        throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
+      ByteTolerance(right, tolerance)
+    }
   }
 
   implicit def convertByteToPlusOrMinusWrapper(right: Byte) = new BytePlusOrMinusWrapper(right)
