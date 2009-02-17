@@ -506,7 +506,7 @@ trait ShouldMatchers extends Matchers {
   protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
 
-    override def should(notWord: NotWord): ResultOfNotWordForCollection[Collection[T]] = {
+    override def should(notWord: NotWord): ResultOfNotWordForCollection[T, Collection[T]] = {
       new ResultOfNotWordForCollection(leftOperand, false)
     }
   }
@@ -525,7 +525,7 @@ trait ShouldMatchers extends Matchers {
   protected class ArrayShouldWrapper[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
-    override def should(notWord: NotWord): ResultOfNotWordForSeq[Array[T]] = {
+    override def should(notWord: NotWord): ResultOfNotWordForSeq[T, Array[T]] = {
       new ResultOfNotWordForSeq(leftOperand, false)
     }
   }
@@ -533,7 +533,7 @@ trait ShouldMatchers extends Matchers {
   protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
-    override def should(notWord: NotWord): ResultOfNotWordForSeq[List[T]] = {
+    override def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] = {
       new ResultOfNotWordForSeq(leftOperand, false)
     }
   }

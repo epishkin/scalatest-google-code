@@ -34,6 +34,7 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 
       it("should do nothing if array does not contain the element and used with should not") {
         Array(1, 2) should not { contain element (3) }
+        Array(1, 2) should not contain element (3)
         check((arr: Array[Int], i: Int) => !arr.exists(_ == i) ==> returnsNormally(arr should not { contain element (i) }))
       }
 

@@ -1191,8 +1191,8 @@ TODO: Do the same simplification as above
     }
   }
   
-  protected class ResultOfNotWordForCollection[T <: Collection[_]](left: T, shouldBeTrue: Boolean)
-      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
+  protected class ResultOfNotWordForCollection[E, T <: Collection[E]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWordForIterable[E, T](left, shouldBeTrue) {
 
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
@@ -1226,10 +1226,10 @@ TODO: Do the same simplification as above
   }
 
   protected class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
-      extends ResultOfNotWordForCollection(left, shouldBeTrue)
+      extends ResultOfNotWordForCollection[(K, V), scala.collection.Map[K, V]](left, shouldBeTrue)
 
-  protected class ResultOfNotWordForSeq[T <: Seq[_]](left: T, shouldBeTrue: Boolean)
-      extends ResultOfNotWordForCollection(left, shouldBeTrue) {
+  protected class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWordForCollection[E, T](left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
