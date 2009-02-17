@@ -235,6 +235,15 @@ trait Matchers extends Assertions { matchers =>
 
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
 
+    class AndContainWord {
+
+      // Array(1, 2) should (contain element (2) and contain element (3 - 1))
+      //                                                     ^
+      def element(expectedElement: Long) = and(matchers.contain.element(expectedElement))
+    }
+
+    def and(containWord: ContainWord): AndContainWord = new AndContainWord
+
     class AndBeWord {
 
       // isFileMock should (be a ('file) and be a ('file))
