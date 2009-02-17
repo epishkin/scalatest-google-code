@@ -1174,6 +1174,23 @@ TODO: Do the same simplification as above
     }
   }
   
+  protected class ResultOfNotWordForIterable[E, T <: Iterable[E]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
+
+    def contain(resultOfElementWordApplication: ResultOfElementWordApplication[E]) {
+      val right = resultOfElementWordApplication.expectedElement
+      if ((left.exists(_ == right)) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+  
   protected class ResultOfNotWordForCollection[T <: Collection[_]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
@@ -2384,6 +2401,18 @@ TODO: Do the same simplification as above
   }
 
   val size = new SizeWord
+
+  class ResultOfElementWordApplication[T](val expectedElement: T)
+
+  class ElementWord {
+    // array should not contain element (10)
+    //                                  ^
+    def apply[T](expectedElement: T) = new ResultOfElementWordApplication(expectedElement)
+  }
+
+  // array should not contain element (10)
+  //                          ^
+  val element = new ElementWord
 
   class ResultOfAWordApplication(val symbol: Symbol)
 
