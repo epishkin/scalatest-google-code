@@ -529,7 +529,7 @@ trait ShouldMatchers extends Matchers {
       new ResultOfNotWordForSeq(leftOperand, false)
     }
   }
-  
+
   protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
