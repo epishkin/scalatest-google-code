@@ -769,8 +769,47 @@ TODO: Do the same simplification as above
     }
   }
   
+/*
+  protected class CollectionPlaceHolder[T]
+
+  protected implicit def convertCollectionMatcherToIterableMatcher[T](collectionPlaceHolderMatcher: Matcher[CollectionPlaceHolder[T]]) = 
+    new Matcher[Iterable[T]] {
+      def apply(left: Iterable[T]) =
+        MatcherResult(
+          left.elements.contains(collectionPlaceHolderMatcher.expectedElement), 
+          FailureMessages("didNotContainExpectedElement", left, collectionPlaceHolderMatcher.expectedElement),
+          FailureMessages("containedExpectedElement", left, collectionPlaceHolderMatcher.expectedElement)
+        )
+    }
+
+  protected implicit def convertCollectionMatcherToJavaCollectionMatcher[T](collectionPlaceHolderMatcher: Matcher[CollectionPlaceHolder[T]]) = 
+    new Matcher[java.util.Collection[T]] {
+      def apply(left: java.util.Collection[T]) =
+        MatcherResult(
+          left.contains(collectionPlaceHolderMatcher.expectedElement), 
+          FailureMessages("didNotContainExpectedElement", left, collectionPlaceHolderMatcher.expectedElement),
+          FailureMessages("containedExpectedElement", left, collectionPlaceHolderMatcher.expectedElement)
+        )
+    }
+*/
+
+  protected trait ElementContainerMatcher[T] extends Matcher[Iterable[T]] {
+    val expectedElement: T
+  }
+
+  protected implicit def convertElementContainerMatcherToJavaCollectionMatcher[T](elementContainerMatcher: ElementContainerMatcher[T]) = 
+    new Matcher[java.util.Collection[T]] {
+      def apply(left: java.util.Collection[T]) =
+        MatcherResult(
+          left.contains(elementContainerMatcher.expectedElement), 
+          FailureMessages("didNotContainExpectedElement", left, elementContainerMatcher.expectedElement),
+          FailureMessages("containedExpectedElement", left, elementContainerMatcher.expectedElement)
+        )
+    }
+
   protected class BehaveWord
   protected class ContainWord {
+/*
     def element[T](expectedElement: T): Matcher[Iterable[T]] =
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) =
@@ -778,6 +817,17 @@ TODO: Do the same simplification as above
             left.elements.contains(expectedElement), 
             FailureMessages("didNotContainExpectedElement", left, expectedElement),
             FailureMessages("containedExpectedElement", left, expectedElement)
+          )
+      }
+*/
+    def element[T](expectedElementParam: T): ElementContainerMatcher[T] =
+      new ElementContainerMatcher[T] {
+        val expectedElement = expectedElementParam
+        def apply(left: Iterable[T]) =
+          MatcherResult(
+            left.elements.contains(expectedElementParam), 
+            FailureMessages("didNotContainExpectedElement", left, expectedElementParam),
+            FailureMessages("containedExpectedElement", left, expectedElementParam)
           )
       }
 

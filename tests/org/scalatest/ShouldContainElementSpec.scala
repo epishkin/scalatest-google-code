@@ -923,7 +923,7 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
       
       it("should do nothing if list contains the specified element") {
         javaList should contain element (2)
-        // javaList should (contain element (2))
+        javaList should (contain element (2))
       }
 
 /*
