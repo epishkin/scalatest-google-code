@@ -926,14 +926,13 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         javaList should (contain element (2))
       }
 
-/*
       it("should do nothing if list does not contain the element and used with should not") {
-        javaList should not { contain element (3) }
-        javaList should not contain element (3)
-        check((list: javaList[Int], i: Int) => !list.exists(_ == i) ==> returnsNormally(list should not { contain element (i) }))
-        check((list: javaList[Int], i: Int) => !list.exists(_ == i) ==> returnsNormally(list should not contain element (i)))
+        javaList should (not contain element (3))
+        // javaList should not { contain element (3) }
+        // javaList should not contain element (3)
       }
 
+/*
       it("should do nothing when list contains the specified element and used in a logical-and expression") {
         javaList should { contain element (2) and (contain element (1)) }
         javaList should ((contain element (2)) and (contain element (1)))
