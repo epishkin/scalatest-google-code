@@ -438,6 +438,11 @@ trait Matchers extends Assertions { matchers =>
       def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.and(matchers.not.endWith(resultOfSubstringWordApplication))
 
+      // Array(1, 2) should (not contain element (5) and not contain element (3))
+      //                                                     ^
+      def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
+        matchersWrapper.and(matchers.not.contain(resultOfElementWordApplication))
+
 /*
 TODO: Ah, maybe this was the simplification
       This won't override because the types are the same after erasure. See note on definition of ResultOfLengthOrSizeWordApplication
@@ -2351,6 +2356,21 @@ TODO: Do the same simplification as above
             !(left endsWith expectedSubstring),
             FailureMessages("endedWith", left, expectedSubstring),
             FailureMessages("didNotEndWith", left, expectedSubstring)
+          )
+        }
+      }
+    }
+
+    // Array(1, 2) should (not contain element (5) and not contain element (3))
+    //                         ^
+    def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): Matcher[Iterable[T]] = {
+      val expectedElement = resultOfElementWordApplication.expectedElement
+      new Matcher[Iterable[T]] {
+        def apply(left: Iterable[T]) = {
+          MatcherResult(
+            !(left.exists(_ == expectedElement)),
+            FailureMessages("containedExpectedElement", left, expectedElement),
+            FailureMessages("didNotContainExpectedElement", left, expectedElement)
           )
         }
       }
