@@ -21,6 +21,7 @@ import org.scalacheck.Shrink
 import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
+import org.scalatest.prop.Helper._
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
@@ -61,7 +62,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * to the size of each individual list added together. With this small amount
  * of code, ScalaCheck will generate possibly hundreds of value pairs for <code>a</code> and <code>b</code> and test each pair, looking for
  * a pair of integers for which the property doesn't hold. If the property holds true for every value ScalaCheck tries,
- * <code>check</code> returns normally. Otherwise, <code>check</code> will complete abruptly with an <code>AssertionError</code> that
+ * <code>check</code> returns normally. Otherwise, <code>check</code> will complete abruptly with a <code>TestFailedException</code> that
  * contains information about the failure, including the values that cause the property to be false.
  * </p>
  *
@@ -86,7 +87,7 @@ trait Checkers {
    * Convert the passed 1-arg function into a property, and check it.
    *
    * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check[A1,P](f: A1 => P)
     (implicit
@@ -100,7 +101,7 @@ trait Checkers {
    * Convert the passed 2-arg function into a property, and check it.
    *
    * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check[A1,A2,P](f: (A1,A2) => P)
     (implicit
@@ -115,7 +116,7 @@ trait Checkers {
    * Convert the passed 3-arg function into a property, and check it.
    *
    * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check[A1,A2,A3,P](f: (A1,A2,A3) => P)
     (implicit
@@ -131,7 +132,7 @@ trait Checkers {
    * Convert the passed 4-arg function into a property, and check it.
    *
    * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check[A1,A2,A3,A4,P](f: (A1,A2,A3,A4) => P)
     (implicit
@@ -148,7 +149,7 @@ trait Checkers {
    * Convert the passed 5-arg function into a property, and check it.
    *
    * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check[A1,A2,A3,A4,A5,P](f: (A1,A2,A3,A4,A5) => P)
     (implicit
@@ -166,7 +167,7 @@ trait Checkers {
    * Convert the passed 6-arg function into a property, and check it.
    *
    * @param f the function to be converted into a property and checked
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check[A1,A2,A3,A4,A5,A6,P](f: (A1,A2,A3,A4,A5,A6) => P)
     (implicit
@@ -186,30 +187,20 @@ trait Checkers {
    *
    * @param p the property to check
    * @param prms the test parameters
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check(p: Prop, prms: Test.Params) {
-    //val stats = Test.check(prms, p, (r,s,d) => ())
     val result = Test.check(prms, p)
     if (!result.passed) {
-      fail(prettyTestStats(result))
+      throw newTestFailedException(prettyTestStats(result))
     }
-/*
-    val stats = Test.check(prms, p)
-    val result = stats.result
-    result match {
-      case Test.Proved(args) => 
-      case Test.Passed => 
-      case _ => fail(prettyTestStats(stats))
-    }
-*/
   }
 
   /**
    * Check a property.
    *
    * @param p the property to check
-   * @throws AssertionError if a test case is discovered for which the property doesn't hold.
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check(p: Prop) {
     check(p, Test.defaultParams)
@@ -240,5 +231,53 @@ trait Checkers {
       (if(a.shrinks > 0) "\" (" + a.shrinks + " shrinks)" else "\"")
     )
     strs.mkString("\n")
+  }
+}
+
+/*
+0 org.scalatest.prop.Checkers$class.check(Checkers.scala:194)
+1 org.scalatest.ShouldContainElementSpec.check(ShouldContainElementSpec.scala:23)
+2 org.scalatest.prop.Checkers$class.check(Checkers.scala:205)
+3 org.scalatest.ShouldContainElementSpec.check(ShouldContainElementSpec.scala:23)
+4 org.scalatest.prop.Checkers$class.check(Checkers.scala:96)
+5 org.scalatest.ShouldContainElementSpec.check(ShouldContainElementSpec.scala:23)
+6 org.scalatest.ShouldContainElementSpec$$anonfun$1$$anonfun$apply$1$$anonfun$apply$28.apply(ShouldContainElementSpec.scala:80)
+*/
+private[prop] object Helper {
+
+  def newTestFailedException(message: String): TestFailedException = {
+
+    val temp = new RuntimeException
+    val stackTraceList = temp.getStackTrace.toList
+
+    val fileNameIsCheckersDotScalaList: List[Boolean] =
+      for (element <- stackTraceList) yield
+        element.getFileName == "Checkers.scala"
+
+    val methodNameIsCheckList: List[Boolean] =
+      for (element <- stackTraceList) yield
+        element.getMethodName == "check"
+
+    // For element 0, the previous file name was not Checkers.scala, because there is no previous
+    // one, so you start with false. For element 1, it depends on whether element 0 of the stack trace
+    // had file name Checkers.scala, and so forth.
+    val previousFileNameIsCheckersDotScalaList: List[Boolean] = false :: (fileNameIsCheckersDotScalaList.dropRight(1))
+
+    // Zip these two related lists together. They now have two boolean values together, when both
+    // are true, that's a stack trace element that should be included in the stack depth. In the 
+    val zipped1 = methodNameIsCheckList zip previousFileNameIsCheckersDotScalaList
+    val methodNameIsCheckAndPreviousFileNameIsCheckersDotScalaList: List[Boolean] =
+      for ((methodNameIsCheck, previousFileNameIsCheckersDotScala) <- zipped1) yield
+        methodNameIsCheck && previousFileNameIsCheckersDotScala
+
+    // Zip the two lists together, that when one or the other is true is an include.
+    val zipped2 = fileNameIsCheckersDotScalaList zip methodNameIsCheckAndPreviousFileNameIsCheckersDotScalaList
+    val includeInStackDepthList: List[Boolean] =
+      for ((fileNameIsCheckersDotScala, methodNameIsCheckAndPreviousFileNameIsCheckersDotScala) <- zipped2) yield
+        fileNameIsCheckersDotScala || methodNameIsCheckAndPreviousFileNameIsCheckersDotScala
+
+    val stackDepth = includeInStackDepthList.takeWhile(include => include).length
+
+    new TestFailedException(message, stackDepth)
   }
 }
