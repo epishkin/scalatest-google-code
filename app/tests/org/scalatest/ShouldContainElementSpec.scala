@@ -93,32 +93,66 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         check((arr: Array[String]) => arr.length > 0 ==> throwsTestFailedException(arr should not (contain element (arr(0)))))
       }
 
-      it("should throw an assertion error when array doesn't contain the specified element and used in a logical-and expression") {
-        val caught = intercept[TestFailedException] {
+      it("should throw a TestFailedException when array doesn't contain the specified element and used in a logical-and expression") {
+
+        val caught1 = intercept[TestFailedException] {
           Array(1, 2) should { contain element (5) and (contain element (2 - 1)) }
         }
-        assert(caught.getMessage === "Array(1, 2) did not contain element 5")
+        assert(caught1.getMessage === "Array(1, 2) did not contain element 5")
+
+        val caught2 = intercept[TestFailedException] {
+          Array(1, 2) should (contain element (5) and contain element (2 - 1))
+        }
+        assert(caught2.getMessage === "Array(1, 2) did not contain element 5")
       }
 
-      it("should throw an assertion error when array doesn't contain the specified element and used in a logical-or expression") {
-        val caught = intercept[TestFailedException] {
+      it("should throw a TestFailedException when array doesn't contain the specified element and used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
           Array(1, 2) should { contain element (55) or (contain element (22)) }
         }
-        assert(caught.getMessage === "Array(1, 2) did not contain element 55, and Array(1, 2) did not contain element 22")
+        assert(caught1.getMessage === "Array(1, 2) did not contain element 55, and Array(1, 2) did not contain element 22")
+
+        val caught2 = intercept[TestFailedException] {
+          Array(1, 2) should (contain element (55) or contain element (22))
+        }
+        assert(caught2.getMessage === "Array(1, 2) did not contain element 55, and Array(1, 2) did not contain element 22")
       }
 
-      it("should throw an assertion error when array contains the specified element and used in a logical-and expression with not") {
-        val caught = intercept[TestFailedException] {
+      it("should throw a TestFailedException when array contains the specified element and used in a logical-and expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
           Array(1, 2) should { not { contain element (3) } and not { contain element (2) }}
         }
-        assert(caught.getMessage === "Array(1, 2) did not contain element 3, but Array(1, 2) contained element 2")
+        assert(caught1.getMessage === "Array(1, 2) did not contain element 3, but Array(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          Array(1, 2) should ((not contain element (3)) and (not contain element (2)))
+        }
+        assert(caught2.getMessage === "Array(1, 2) did not contain element 3, but Array(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          Array(1, 2) should (not contain element (3) and not contain element (2))
+        }
+        assert(caught3.getMessage === "Array(1, 2) did not contain element 3, but Array(1, 2) contained element 2")
       }
 
-      it("should throw an assertion error when array contains the specified element and used in a logical-or expression with not") {
-        val caught = intercept[TestFailedException] {
+      it("should throw a TestFailedException when array contains the specified element and used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
           Array(1, 2) should { not { contain element (2) } or not { contain element (2) }}
         }
-        assert(caught.getMessage === "Array(1, 2) contained element 2, and Array(1, 2) contained element 2")
+        assert(caught1.getMessage === "Array(1, 2) contained element 2, and Array(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          Array(1, 2) should ((not contain element (2)) or (not contain element (2)))
+        }
+        assert(caught2.getMessage === "Array(1, 2) contained element 2, and Array(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          Array(1, 2) should (not contain element (2) or not contain element (2))
+        }
+        assert(caught3.getMessage === "Array(1, 2) contained element 2, and Array(1, 2) contained element 2")
       }
     }
   }
