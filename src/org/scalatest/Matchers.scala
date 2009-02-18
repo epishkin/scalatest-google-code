@@ -768,40 +768,17 @@ TODO: Do the same simplification as above
         )
     }
   }
-  
-/*
-  protected class CollectionPlaceHolder[T]
-
-  protected implicit def convertCollectionMatcherToIterableMatcher[T](collectionPlaceHolderMatcher: Matcher[CollectionPlaceHolder[T]]) = 
-    new Matcher[Iterable[T]] {
-      def apply(left: Iterable[T]) =
-        MatcherResult(
-          left.elements.contains(collectionPlaceHolderMatcher.expectedElement), 
-          FailureMessages("didNotContainExpectedElement", left, collectionPlaceHolderMatcher.expectedElement),
-          FailureMessages("containedExpectedElement", left, collectionPlaceHolderMatcher.expectedElement)
-        )
-    }
-
-  protected implicit def convertCollectionMatcherToJavaCollectionMatcher[T](collectionPlaceHolderMatcher: Matcher[CollectionPlaceHolder[T]]) = 
-    new Matcher[java.util.Collection[T]] {
-      def apply(left: java.util.Collection[T]) =
-        MatcherResult(
-          left.contains(collectionPlaceHolderMatcher.expectedElement), 
-          FailureMessages("didNotContainExpectedElement", left, collectionPlaceHolderMatcher.expectedElement),
-          FailureMessages("containedExpectedElement", left, collectionPlaceHolderMatcher.expectedElement)
-        )
-    }
-*/
 
   protected trait ElementContainerMatcher[T] extends Matcher[Iterable[T]] {
     val expectedElement: T
+    val shouldBeTrue: Boolean
   }
 
   protected implicit def convertElementContainerMatcherToJavaCollectionMatcher[T](elementContainerMatcher: ElementContainerMatcher[T]) = 
     new Matcher[java.util.Collection[T]] {
       def apply(left: java.util.Collection[T]) =
         MatcherResult(
-          left.contains(elementContainerMatcher.expectedElement), 
+          left.contains(elementContainerMatcher.expectedElement) == elementContainerMatcher.shouldBeTrue, 
           FailureMessages("didNotContainExpectedElement", left, elementContainerMatcher.expectedElement),
           FailureMessages("containedExpectedElement", left, elementContainerMatcher.expectedElement)
         )
@@ -823,6 +800,7 @@ TODO: Do the same simplification as above
     def element[T](expectedElementParam: T): ElementContainerMatcher[T] =
       new ElementContainerMatcher[T] {
         val expectedElement = expectedElementParam
+        val shouldBeTrue = true
         def apply(left: Iterable[T]) =
           MatcherResult(
             left.elements.contains(expectedElementParam), 
@@ -2428,6 +2406,7 @@ TODO: Do the same simplification as above
       }
     }
 
+/*
     // Array(1, 2) should (not contain element (5) and not contain element (3))
     //                         ^
     def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): Matcher[Iterable[T]] = {
@@ -2442,6 +2421,21 @@ TODO: Do the same simplification as above
         }
       }
     }
+*/
+    // Array(1, 2) should (not contain element (5) and not contain element (3))
+    //                         ^
+    def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): ElementContainerMatcher[T] =
+      new ElementContainerMatcher[T] {
+        val expectedElement = resultOfElementWordApplication.expectedElement
+        val shouldBeTrue = false
+        def apply(left: Iterable[T]) = {
+          MatcherResult(
+            !(left.exists(_ == expectedElement)),
+            FailureMessages("containedExpectedElement", left, expectedElement),
+            FailureMessages("didNotContainExpectedElement", left, expectedElement)
+          )
+        }
+      }
   }
 
   val not = new NotWord
