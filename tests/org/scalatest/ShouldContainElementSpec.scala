@@ -54,7 +54,8 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 
       it("should do nothing when array doesn't contain the specified element and used in a logical-and expression with not") {
         Array(1, 2) should { not { contain element (5) } and not { contain element (3) }}
-        // Array(1, 2) should both (not contain element (5)) and (either (not contain element (3)) or (equal (2)))
+        Array(1, 2) should ((not contain element (5)) and (not contain element (3)))
+        Array(1, 2) should (not contain element (5) and not contain element (3))
       }
 
       it("should do nothing when array doesn't contain the specified element and used in a logical-or expression with not") {
