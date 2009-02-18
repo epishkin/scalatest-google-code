@@ -131,9 +131,9 @@
     </target>
 
     <target name="doc" depends="compile">
-        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpath="${classes}" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved." />
+        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpath="${classes}" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
-        <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved.">
+        <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
             <include name="**/*.scala" />
         </scaladoc>
         <!--
@@ -143,7 +143,7 @@
         classpath="${classes}:${lib}/junit-4.1.jar"
         windowtitle="ScalaTest Examples ${release}"
         doctitle="ScalaTest Examples ${release}"
-        bottom="Copyright (C) 2001-2008 Artima, Inc. All rights reserved."/>
+        bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved."/>
 -->
     </target>
 
