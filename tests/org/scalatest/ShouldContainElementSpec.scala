@@ -72,6 +72,27 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         check((arr: Array[String], s: String) => !arr.exists(_ == s) ==> throwsTestFailedException(arr should contain element (s)))
       }
 
+      it("should throw TestFailedException if array contains the specified element, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          Array(1, 2) should not contain element (2)
+        }
+        assert(caught1.getMessage === "Array(1, 2) contained element 2")
+        check((arr: Array[String]) => arr.length > 0 ==> throwsTestFailedException(arr should not contain element (arr(0))))
+
+        val caught2 = intercept[TestFailedException] {
+          Array(1, 2) should not (contain element (2))
+        }
+        assert(caught2.getMessage === "Array(1, 2) contained element 2")
+        check((arr: Array[String]) => arr.length > 0 ==> throwsTestFailedException(arr should not (contain element (arr(0)))))
+
+        val caught3 = intercept[TestFailedException] {
+          Array(1, 2) should (not contain element (2))
+        }
+        assert(caught3.getMessage === "Array(1, 2) contained element 2")
+        check((arr: Array[String]) => arr.length > 0 ==> throwsTestFailedException(arr should not (contain element (arr(0)))))
+      }
+
       it("should throw an assertion error when array doesn't contain the specified element and used in a logical-and expression") {
         val caught = intercept[TestFailedException] {
           Array(1, 2) should { contain element (5) and (contain element (2 - 1)) }
