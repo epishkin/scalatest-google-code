@@ -543,7 +543,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         
       it("should do nothing if set size matches specified size") {
         HashSet(1, 2) should have size (2)
-        Set("one", "two") should have size (2)
+        HashSet("one", "two") should have size (2)
         // check((set: Set[Int]) => returnsNormally(set should have size (set.size)))
       }
 
