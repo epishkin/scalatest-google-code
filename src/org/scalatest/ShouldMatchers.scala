@@ -445,7 +445,16 @@ trait ShouldMatchers extends Matchers {
       new ResultOfNotWordForMap(left, false)
     }
   }
-  
+
+  protected trait ShouldContainWordForJavaCollectionMethods[T] {
+    protected val leftOperand: java.util.Collection[T]
+    // javaList should contain element (2)
+    //          ^
+    def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] = {
+      new ResultOfContainWordForJavaCollection(leftOperand, true)
+    }
+  }
+
   protected trait ShouldContainWordForIterableMethods[T] {
     protected val leftOperand: Iterable[T]
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
@@ -539,7 +548,7 @@ trait ShouldMatchers extends Matchers {
   }
 
   protected class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
-      with ShouldHaveWordForJavaListMethods[T]  {
+      with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaListMethods[T]  {
 
     override def should(notWord: NotWord): ResultOfNotWordForJavaList[java.util.List[T]] = {
       new ResultOfNotWordForJavaList(leftOperand, false)

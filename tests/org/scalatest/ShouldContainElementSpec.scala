@@ -783,5 +783,272 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught3.getMessage === "Set(1, 2) contained element 2, and Set(1, 2) contained element 2")
       }
     }
+
+    describe("on List") {
+
+      it("should do nothing if list contains the specified element") {
+        List(1, 2) should contain element (2)
+        List(1, 2) should (contain element (2))
+        check((list: List[Int]) => list.size != 0 ==> returnsNormally(list should contain element (list(list.length - 1))))
+      }
+
+      it("should do nothing if list does not contain the element and used with should not") {
+        List(1, 2) should not { contain element (3) }
+        List(1, 2) should not contain element (3)
+        check((list: List[Int], i: Int) => !list.exists(_ == i) ==> returnsNormally(list should not { contain element (i) }))
+        check((list: List[Int], i: Int) => !list.exists(_ == i) ==> returnsNormally(list should not contain element (i)))
+      }
+
+      it("should do nothing when list contains the specified element and used in a logical-and expression") {
+        List(1, 2) should { contain element (2) and (contain element (1)) }
+        List(1, 2) should ((contain element (2)) and (contain element (1)))
+        List(1, 2) should (contain element (2) and contain element (1))
+       }
+
+      it("should do nothing when list contains the specified element and used in a logical-or expression") {
+        List(1, 2) should { contain element (77) or (contain element (2)) }
+        List(1, 2) should ((contain element (77)) or (contain element (2)))
+        List(1, 2) should (contain element (77) or contain element (2))
+      }
+
+      it("should do nothing when list doesn't contain the specified element and used in a logical-and expression with not") {
+        List(1, 2) should { not { contain element (5) } and not { contain element (3) }}
+        List(1, 2) should ((not contain element (5)) and (not contain element (3)))
+        List(1, 2) should (not contain element (5) and not contain element (3))
+      }
+
+      it("should do nothing when list doesn't contain the specified element and used in a logical-or expression with not") {
+        List(1, 2) should { not { contain element (1) } or not { contain element (3) }}
+        List(1, 2) should ((not contain element (1)) or (not contain element (3)))
+        List(1, 2) should (not contain element (3) or not contain element (2))
+      }
+
+      it("should throw TestFailedException if list does not contain the specified element") {
+        val caught = intercept[TestFailedException] {
+          List(1, 2) should contain element (3)
+        }
+        assert(caught.getMessage === "List(1, 2) did not contain element 3")
+        check((list: List[String], s: String) => !list.exists(_ == s) ==> throwsTestFailedException(list should contain element (s)))
+      }
+
+      it("should throw TestFailedException if list contains the specified element, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          List(1, 2) should not contain element (2)
+        }
+        assert(caught1.getMessage === "List(1, 2) contained element 2")
+        check((list: List[String]) => list.length > 0 ==> throwsTestFailedException(list should not contain element (list(0))))
+
+        val caught2 = intercept[TestFailedException] {
+          List(1, 2) should not (contain element (2))
+        }
+        assert(caught2.getMessage === "List(1, 2) contained element 2")
+        check((list: List[String]) => list.length > 0 ==> throwsTestFailedException(list should not (contain element (list(0)))))
+
+        val caught3 = intercept[TestFailedException] {
+          List(1, 2) should (not contain element (2))
+        }
+        assert(caught3.getMessage === "List(1, 2) contained element 2")
+        check((list: List[String]) => list.length > 0 ==> throwsTestFailedException(list should not (contain element (list(0)))))
+      }
+
+      it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-and expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          List(1, 2) should { contain element (5) and (contain element (2 - 1)) }
+        }
+        assert(caught1.getMessage === "List(1, 2) did not contain element 5")
+
+        val caught2 = intercept[TestFailedException] {
+          List(1, 2) should (contain element (5) and contain element (2 - 1))
+        }
+        assert(caught2.getMessage === "List(1, 2) did not contain element 5")
+      }
+
+      it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          List(1, 2) should { contain element (55) or (contain element (22)) }
+        }
+        assert(caught1.getMessage === "List(1, 2) did not contain element 55, and List(1, 2) did not contain element 22")
+
+        val caught2 = intercept[TestFailedException] {
+          List(1, 2) should (contain element (55) or contain element (22))
+        }
+        assert(caught2.getMessage === "List(1, 2) did not contain element 55, and List(1, 2) did not contain element 22")
+      }
+
+      it("should throw a TestFailedException when list contains the specified element and used in a logical-and expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          List(1, 2) should { not { contain element (3) } and not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "List(1, 2) did not contain element 3, but List(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          List(1, 2) should ((not contain element (3)) and (not contain element (2)))
+        }
+        assert(caught2.getMessage === "List(1, 2) did not contain element 3, but List(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          List(1, 2) should (not contain element (3) and not contain element (2))
+        }
+        assert(caught3.getMessage === "List(1, 2) did not contain element 3, but List(1, 2) contained element 2")
+      }
+
+      it("should throw a TestFailedException when list contains the specified element and used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          List(1, 2) should { not { contain element (2) } or not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "List(1, 2) contained element 2, and List(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          List(1, 2) should ((not contain element (2)) or (not contain element (2)))
+        }
+        assert(caught2.getMessage === "List(1, 2) contained element 2, and List(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          List(1, 2) should (not contain element (2) or not contain element (2))
+        }
+        assert(caught3.getMessage === "List(1, 2) contained element 2, and List(1, 2) contained element 2")
+      }
+    }
+
+    describe("on java.util.List") {
+
+      val javaList: java.util.List[Int] = new java.util.ArrayList
+      javaList.add(1)
+      javaList.add(2)
+      
+      it("should do nothing if list contains the specified element") {
+        javaList should contain element (2)
+        // javaList should (contain element (2))
+      }
+
+/*
+      it("should do nothing if list does not contain the element and used with should not") {
+        javaList should not { contain element (3) }
+        javaList should not contain element (3)
+        check((list: javaList[Int], i: Int) => !list.exists(_ == i) ==> returnsNormally(list should not { contain element (i) }))
+        check((list: javaList[Int], i: Int) => !list.exists(_ == i) ==> returnsNormally(list should not contain element (i)))
+      }
+
+      it("should do nothing when list contains the specified element and used in a logical-and expression") {
+        javaList should { contain element (2) and (contain element (1)) }
+        javaList should ((contain element (2)) and (contain element (1)))
+        javaList should (contain element (2) and contain element (1))
+       }
+
+      it("should do nothing when list contains the specified element and used in a logical-or expression") {
+        javaList should { contain element (77) or (contain element (2)) }
+        javaList should ((contain element (77)) or (contain element (2)))
+        javaList should (contain element (77) or contain element (2))
+      }
+
+      it("should do nothing when list doesn't contain the specified element and used in a logical-and expression with not") {
+        javaList should { not { contain element (5) } and not { contain element (3) }}
+        javaList should ((not contain element (5)) and (not contain element (3)))
+        javaList should (not contain element (5) and not contain element (3))
+      }
+
+      it("should do nothing when list doesn't contain the specified element and used in a logical-or expression with not") {
+        javaList should { not { contain element (1) } or not { contain element (3) }}
+        javaList should ((not contain element (1)) or (not contain element (3)))
+        javaList should (not contain element (3) or not contain element (2))
+      }
+
+      it("should throw TestFailedException if list does not contain the specified element") {
+        val caught = intercept[TestFailedException] {
+          javaList should contain element (3)
+        }
+        assert(caught.getMessage === "javaList did not contain element 3")
+        check((list: javaList[String], s: String) => !list.exists(_ == s) ==> throwsTestFailedException(list should contain element (s)))
+      }
+
+      it("should throw TestFailedException if list contains the specified element, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaList should not contain element (2)
+        }
+        assert(caught1.getMessage === "javaList contained element 2")
+        check((list: javaList[String]) => list.length > 0 ==> throwsTestFailedException(list should not contain element (list(0))))
+
+        val caught2 = intercept[TestFailedException] {
+          javaList should not (contain element (2))
+        }
+        assert(caught2.getMessage === "javaList contained element 2")
+        check((list: javaList[String]) => list.length > 0 ==> throwsTestFailedException(list should not (contain element (list(0)))))
+
+        val caught3 = intercept[TestFailedException] {
+          javaList should (not contain element (2))
+        }
+        assert(caught3.getMessage === "javaList contained element 2")
+        check((list: javaList[String]) => list.length > 0 ==> throwsTestFailedException(list should not (contain element (list(0)))))
+      }
+
+      it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-and expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaList should { contain element (5) and (contain element (2 - 1)) }
+        }
+        assert(caught1.getMessage === "javaList did not contain element 5")
+
+        val caught2 = intercept[TestFailedException] {
+          javaList should (contain element (5) and contain element (2 - 1))
+        }
+        assert(caught2.getMessage === "javaList did not contain element 5")
+      }
+
+      it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaList should { contain element (55) or (contain element (22)) }
+        }
+        assert(caught1.getMessage === "javaList did not contain element 55, and List(1, 2) did not contain element 22")
+
+        val caught2 = intercept[TestFailedException] {
+          javaList should (contain element (55) or contain element (22))
+        }
+        assert(caught2.getMessage === "javaList did not contain element 55, and List(1, 2) did not contain element 22")
+      }
+
+      it("should throw a TestFailedException when list contains the specified element and used in a logical-and expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaList should { not { contain element (3) } and not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "javaList did not contain element 3, but List(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          javaList should ((not contain element (3)) and (not contain element (2)))
+        }
+        assert(caught2.getMessage === "javaList did not contain element 3, but List(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          javaList should (not contain element (3) and not contain element (2))
+        }
+        assert(caught3.getMessage === "javaList did not contain element 3, but List(1, 2) contained element 2")
+      }
+
+      it("should throw a TestFailedException when list contains the specified element and used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaList should { not { contain element (2) } or not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "javaList contained element 2, and List(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          javaList should ((not contain element (2)) or (not contain element (2)))
+        }
+        assert(caught2.getMessage === "javaList contained element 2, and List(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          javaList should (not contain element (2) or not contain element (2))
+        }
+        assert(caught3.getMessage === "javaList contained element 2, and List(1, 2) contained element 2")
+      }
+*/
+    }
   }
 }

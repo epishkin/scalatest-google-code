@@ -1836,6 +1836,18 @@ TODO: Do the same simplification as above
     }
   }
   
+  protected class ResultOfContainWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
+    def element(expectedElement: T) {
+      if ((left.contains(expectedElement)) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
+            left,
+            expectedElement)
+        )
+    }
+  }
+  
   def equal(right: Any): Matcher[Any] =
     Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
 
