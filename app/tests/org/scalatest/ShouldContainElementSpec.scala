@@ -935,8 +935,8 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 /*
       it("should do nothing when list contains the specified element and used in a logical-and expression") {
         javaList should { contain element (2) and (contain element (1)) }
-        javaList should ((contain element (2)) and (contain element (1)))
-        javaList should (contain element (2) and contain element (1))
+        // javaList should ((contain element (2)) and (contain element (1)))
+        // javaList should (contain element (2) and contain element (1))
        }
 
       it("should do nothing when list contains the specified element and used in a logical-or expression") {
