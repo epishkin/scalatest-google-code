@@ -928,8 +928,8 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 
       it("should do nothing if list does not contain the element and used with should not") {
         javaList should (not contain element (3))
-        // javaList should not { contain element (3) }
-        // javaList should not contain element (3)
+        javaList should not { contain element (3) }
+        javaList should not contain element (3)
       }
 
 /*

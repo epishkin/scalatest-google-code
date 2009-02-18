@@ -1264,7 +1264,7 @@ TODO: Do the same simplification as above
     }
   }
 
-  protected class ResultOfNotWordForJavaCollection[T <: java.util.Collection[_]](left: T, shouldBeTrue: Boolean)
+  protected class ResultOfNotWordForJavaCollection[E, T <: java.util.Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
@@ -1273,6 +1273,19 @@ TODO: Do the same simplification as above
         throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              right
+            )
+          )
+      }
+    }
+
+    def contain(resultOfElementWordApplication: ResultOfElementWordApplication[E]) {
+      val right = resultOfElementWordApplication.expectedElement
+      if ((left.contains(right)) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
               left,
               right
             )
@@ -1313,8 +1326,8 @@ TODO: Do the same simplification as above
     }
   }
 
-  protected class ResultOfNotWordForJavaList[T <: java.util.List[_]](left: T, shouldBeTrue: Boolean)
-      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
+  protected class ResultOfNotWordForJavaList[E, T <: java.util.List[E]](left: T, shouldBeTrue: Boolean)
+      extends ResultOfNotWordForJavaCollection[E, T](left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
@@ -1329,7 +1342,8 @@ TODO: Do the same simplification as above
       }
     }
 
-    // UUU I think I should inherit this from one used by Java collections
+/*
+    // TODO Delete this if the inheritance from ResultOfNotWordForJavaCollection works
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
       if ((left.size == right) != shouldBeTrue) {
@@ -1342,6 +1356,7 @@ TODO: Do the same simplification as above
           )
       }
     }
+*/
   }
 
   protected class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
@@ -2098,6 +2113,16 @@ TODO: Do the same simplification as above
       new Matcher[S] {
         def apply(left: S) =
           matcher(left) match {
+            case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
+          }
+      }
+
+    def apply[S <: Any](elementContainerMatcher: ElementContainerMatcher[S]): ElementContainerMatcher[S] =
+      new ElementContainerMatcher[S] {
+        val expectedElement = elementContainerMatcher.expectedElement
+        val shouldBeTrue = !elementContainerMatcher.shouldBeTrue
+        def apply(left: Iterable[S]) =
+          elementContainerMatcher(left) match {
             case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
           }
       }
