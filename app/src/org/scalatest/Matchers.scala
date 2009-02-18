@@ -709,6 +709,10 @@ TODO: Ah, maybe this was the simplification
       def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.or(matchers.not.endWith(resultOfSubstringWordApplication))
 
+      // Array(1, 2) should (not contain element (1) or not contain element (3))
+      //                                                    ^
+      def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
+        matchersWrapper.or(matchers.not.contain(resultOfElementWordApplication))
 /*
 TODO: Do the same simplification as above
       // By-name parameter is to get this to short circuit:
