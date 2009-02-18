@@ -65,6 +65,7 @@ private[scalatest] object Helper {
         }
       }
   }
+
   def newTestFailedException(message: String): TestFailedException = {
     val fileNames = List("Matchers.scala", "ShouldMatchers.scala", "MustMatchers.scala")
     val temp = new RuntimeException
