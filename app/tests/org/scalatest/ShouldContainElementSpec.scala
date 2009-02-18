@@ -405,5 +405,131 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught3.getMessage === "Set(1, 2) contained element 2, and Set(1, 2) contained element 2")
       }
     }
+
+    describe("on scala.collection.Set") {
+
+      val set: scala.collection.Set[Int] = Set(1, 2)
+
+      it("should do nothing if set contains the specified element") {
+        set should contain element (2)
+        set should (contain element (2))
+      }
+
+      it("should do nothing if set does not contain the element and used with should not") {
+        set should not { contain element (3) }
+        set should not contain element (3)
+      }
+
+      it("should do nothing when set contains the specified element and used in a logical-and expression") {
+        set should { contain element (2) and (contain element (1)) }
+        set should ((contain element (2)) and (contain element (1)))
+        set should (contain element (2) and contain element (1))
+       }
+
+      it("should do nothing when set contains the specified element and used in a logical-or expression") {
+        set should { contain element (77) or (contain element (2)) }
+        set should ((contain element (77)) or (contain element (2)))
+        set should (contain element (77) or contain element (2))
+      }
+
+      it("should do nothing when set doesn't contain the specified element and used in a logical-and expression with not") {
+        set should { not { contain element (5) } and not { contain element (3) }}
+        set should ((not contain element (5)) and (not contain element (3)))
+        set should (not contain element (5) and not contain element (3))
+      }
+
+      it("should do nothing when set doesn't contain the specified element and used in a logical-or expression with not") {
+        set should { not { contain element (1) } or not { contain element (3) }}
+        set should ((not contain element (1)) or (not contain element (3)))
+        set should (not contain element (3) or not contain element (2))
+      }
+
+      it("should throw TestFailedException if set does not contain the specified element") {
+        val caught = intercept[TestFailedException] {
+          set should contain element (3)
+        }
+        assert(caught.getMessage === "Set(1, 2) did not contain element 3")
+      }
+
+      it("should throw TestFailedException if set contains the specified element, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          set should not contain element (2)
+        }
+        assert(caught1.getMessage === "Set(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          set should not (contain element (2))
+        }
+        assert(caught2.getMessage === "Set(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          set should (not contain element (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) contained element 2")
+      }
+
+      it("should throw a TestFailedException when set doesn't contain the specified element and used in a logical-and expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          set should { contain element (5) and (contain element (2 - 1)) }
+        }
+        assert(caught1.getMessage === "Set(1, 2) did not contain element 5")
+
+        val caught2 = intercept[TestFailedException] {
+          set should (contain element (5) and contain element (2 - 1))
+        }
+        assert(caught2.getMessage === "Set(1, 2) did not contain element 5")
+      }
+
+      it("should throw a TestFailedException when set doesn't contain the specified element and used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          set should { contain element (55) or (contain element (22)) }
+        }
+        assert(caught1.getMessage === "Set(1, 2) did not contain element 55, and Set(1, 2) did not contain element 22")
+
+        val caught2 = intercept[TestFailedException] {
+          set should (contain element (55) or contain element (22))
+        }
+        assert(caught2.getMessage === "Set(1, 2) did not contain element 55, and Set(1, 2) did not contain element 22")
+      }
+
+      it("should throw a TestFailedException when set contains the specified element and used in a logical-and expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          set should { not { contain element (3) } and not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "Set(1, 2) did not contain element 3, but Set(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          set should ((not contain element (3)) and (not contain element (2)))
+        }
+        assert(caught2.getMessage === "Set(1, 2) did not contain element 3, but Set(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          set should (not contain element (3) and not contain element (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) did not contain element 3, but Set(1, 2) contained element 2")
+      }
+
+      it("should throw a TestFailedException when set contains the specified element and used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          set should { not { contain element (2) } or not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "Set(1, 2) contained element 2, and Set(1, 2) contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          set should ((not contain element (2)) or (not contain element (2)))
+        }
+        assert(caught2.getMessage === "Set(1, 2) contained element 2, and Set(1, 2) contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          set should (not contain element (2) or not contain element (2))
+        }
+        assert(caught3.getMessage === "Set(1, 2) contained element 2, and Set(1, 2) contained element 2")
+      }
+    }
   }
 }
