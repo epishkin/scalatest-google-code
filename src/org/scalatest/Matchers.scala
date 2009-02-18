@@ -1341,22 +1341,6 @@ TODO: Do the same simplification as above
           )
       }
     }
-
-/*
-    // TODO Delete this if the inheritance from ResultOfNotWordForJavaCollection works
-    def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
-      val right = resultOfSizeWordApplication.expectedSize
-      if ((left.size == right) != shouldBeTrue) {
-        throw newTestFailedException(
-          FailureMessages(
-            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
-              left,
-              right
-            )
-          )
-      }
-    }
-*/
   }
 
   protected class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
