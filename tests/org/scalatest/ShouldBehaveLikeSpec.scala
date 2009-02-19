@@ -22,6 +22,18 @@ import Prop._
 
 class ShouldBehaveLikeSpec extends Spec with ShouldMatchers with ShouldStackBehaviors with StackFixtureCreationMethods {
 
+  def myFirstBehavior(i: Int) {
+    it("This one is should blow up") {}
+  }
+
+  describe("The 'should behave like' syntax should throw an exception inside an it clause") {
+    it("the code in here should fail with an exception") {
+      intercept[TestFailedException] {
+        1 should behave like myFirstBehavior
+      }
+    }
+  }
+
   // Checking for a specific size
   describe("The 'should behave like' syntax should work in a describe") {
 

@@ -678,6 +678,10 @@ trait Spec extends Suite {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
+  // Used to detect at runtime that they've stuck a describe or an it inside an it,
+  // which should result in a TestFailedException
+  private var runningATest = false
+
   // TODO: update documentation to indicate a TestFailedException will be thrown on
   // duplicate test name, not an IllegalArgumentException.
   private def registerExample(specText: String, f: => Unit) = {
@@ -737,6 +741,8 @@ trait Spec extends Suite {
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String)(testFun: => Unit) {
+    if (runningATest)
+      throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     it(specText, Array[Group](): _*)(testFun)
   }
 
@@ -793,6 +799,9 @@ trait Spec extends Suite {
    * description string and immediately invoke the passed function.
    */
   protected def describe(description: String)(f: => Unit) {
+
+    if (runningATest)
+      throw new TestFailedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
 
     def insertBranch(newBranch: Branch, f: () => Unit) {
       val oldBranch = currentBranch
@@ -891,44 +900,50 @@ trait Spec extends Suite {
     if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
-    examplesList.find(_.testName == testName) match {
-      case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
-      case Some(example) => {
-        val wrappedReporter = wrapReporterIfNecessary(reporter)
-
-        val exampleSucceededIcon = Resources("exampleSucceededIconChar")
-        val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
-
-        // Create a Rerunnable if the Spec has a no-arg constructor
-        val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
-
-        val rerunnable =
-          if (hasPublicNoArgConstructor)
-            Some(new TestRerunner(getClass.getName, testName))
-          else
-            None
-     
-        // A testStarting report won't normally show up in a specification-style output, but
-        // will show up in a test-style output.
-        val report =
-          new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false, None, rerunnable)
-
-        wrappedReporter.testStarting(report)
-
-        try {
-          example.f()
-
-          val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true, None, rerunnable)
-
-          wrappedReporter.testSucceeded(report)
-        }
-        catch { 
-          case e: Exception => 
-            handleFailedTest(e, false, example.testName, example.specText, rerunnable, wrappedReporter)
-          case ae: AssertionError =>
-            handleFailedTest(ae, false, example.testName, example.specText, rerunnable, wrappedReporter)
+    runningATest = true
+    try {
+      examplesList.find(_.testName == testName) match {
+        case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
+        case Some(example) => {
+          val wrappedReporter = wrapReporterIfNecessary(reporter)
+  
+          val exampleSucceededIcon = Resources("exampleSucceededIconChar")
+          val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
+  
+          // Create a Rerunnable if the Spec has a no-arg constructor
+          val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
+  
+          val rerunnable =
+            if (hasPublicNoArgConstructor)
+              Some(new TestRerunner(getClass.getName, testName))
+            else
+              None
+       
+          // A testStarting report won't normally show up in a specification-style output, but
+          // will show up in a test-style output.
+          val report =
+            new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false, None, rerunnable)
+  
+          wrappedReporter.testStarting(report)
+  
+          try {
+            example.f()
+  
+            val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true, None, rerunnable)
+  
+            wrappedReporter.testSucceeded(report)
+          }
+          catch { 
+            case e: Exception => 
+              handleFailedTest(e, false, example.testName, example.specText, rerunnable, wrappedReporter)
+            case ae: AssertionError =>
+              handleFailedTest(ae, false, example.testName, example.specText, rerunnable, wrappedReporter)
+          }
         }
       }
+    }
+    finally {
+      runningATest = false
     }
   }
   

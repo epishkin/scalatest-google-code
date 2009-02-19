@@ -17,6 +17,76 @@ package org.scalatest
 
 class SpecSuite extends FunSuite {
 
+  test("calling a describe from within an it clause results in a TestFailedError at runtime") {
+    
+    var testFailedAdExpected = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("this test should blow up") != -1)
+          testFailedAdExpected = true
+      }
+    }
+
+    class MySpec extends Spec {
+      it("this test should blow up") {
+        describe("in the wrong place, at the wrong time") {
+        }
+      }
+    }
+
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedAdExpected)
+  }
+
+  test("calling a describe with a nested it from within an it clause results in a TestFailedError at runtime") {
+    
+    var testFailedAdExpected = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("this test should blow up") != -1)
+          testFailedAdExpected = true
+      }
+    }
+
+    class MySpec extends Spec {
+      it("this test should blow up") {
+        describe("in the wrong place, at the wrong time") {
+          it("is in the wrong place also") {
+            assert(1 === 1)
+          }
+        }
+      }
+    }
+
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedAdExpected)
+  }
+
+  test("calling an it from within an it clause results in a TestFailedError at runtime") {
+    
+    var testFailedAdExpected = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("this test should blow up") != -1)
+          testFailedAdExpected = true
+      }
+    }
+
+    class MySpec extends Spec {
+      it("this test should blow up") {
+        it("is in the wrong place also") {
+          assert(1 === 1)
+        }
+      }
+    }
+
+    val a = new MySpec
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedAdExpected)
+  }
+
   test("groups work correctly in Spec") {
     
     val d = new Spec {

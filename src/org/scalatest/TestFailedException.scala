@@ -164,7 +164,26 @@ passed methodName will be "it":
 4 org.scalatest.ShouldContainElementSpec.it(ShouldContainElementSpec.scala:23)
 5 org.scalatest.ShouldContainElementSpec$$anonfun$1$$anonfun$apply$167.apply(ShouldContainElementSpec.scala:1092) 
 
-TODO: do this for FunSuite too
+For detection of a duplicate test name in FunSuite, passed fileName will be "FunSuite.scala" and
+passed methodName will be "test":
+
+0 org.scalatest.FunSuite$class.test(FunSuite.scala:592)
+1 org.scalatest.SpecSuite.test(SpecSuite.scala:18)
+2 org.scalatest.SpecSuite.<init>(SpecSuite.scala:42) 
+
+For detection of an it inside an it in Spec, passed fileName will be "Spec.scala" and
+passed methodName will be "it":
+
+0 org.scalatest.Spec$class.it(Spec.scala:745)
+1 org.scalatest.ShouldBehaveLikeSpec.it(ShouldBehaveLikeSpec.scala:23)
+2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
+
+For detection of a describe inside an it in Spec, passed fileName will be "Spec.scala" and
+passed methodName will be "describe":
+
+0 org.scalatest.Spec$class.describe(Spec.scala:804)
+1 org.scalatest.ShouldBehaveLikeSpec.describe(ShouldBehaveLikeSpec.scala:23)
+2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
 */
 private[scalatest] object TestFailedExceptionHelper {
 

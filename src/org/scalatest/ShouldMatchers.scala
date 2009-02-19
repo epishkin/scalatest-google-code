@@ -311,7 +311,10 @@ import Helper.newTestFailedException
  * map should contain value "Howdy"
  * </pre>
  * 
- * 
+ * <p>
+ * should behave like works only as is, can't be used with not, and, or or. The shared
+ * thing can include it's or describes.
+ * </p>
  *
  */
 trait ShouldMatchers extends Matchers {
@@ -328,12 +331,13 @@ trait ShouldMatchers extends Matchers {
 
     // This one supports it should behave like
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
-    // I don't think there's a be on Any, because a (symbol) and an (symbol), pluse
-    // theSameInstanceAs only work on AnyRefs
+    // I don't think there's a be on Any, because a (symbol) and an (symbol), plus
+    // theSameInstanceAs only work on AnyRefs. And 1 should be (1) words because be (1) results in a matcher already
     // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
   }
 
+  // TODO: Shouldn't this one extend ShouldMethods? See the reminder at the end of this file.
   protected trait ShouldMethodsForAnyRef[T <: AnyRef] {
 
     protected val leftOperand: T
@@ -661,6 +665,7 @@ scala> set.prove
 SetWrapper
  */
 /*
+leave this explanation in. It is a useful reminder.
 THIS DOESN'T WORK BECAUSE...
   protected trait ShouldMethods[T] {
     protected val leftOperand: T
@@ -702,4 +707,6 @@ Turns into:
 BeSymbolSpec.this.convertToAnyRefShouldWrapper[BeSymbolSpec.this.CollectionShouldWrapper[T]](BeSymbolSpec.this.convertToCollectionShouldWrapper[T](emptySet)).should(BeSymbolSpec.this.be).a(scala.Symbol.apply("empty"));
 
 So the problem with having these "methods" traits extend each other is the covariant result types don't get more specific visibly enough.
+
+LATER: Well, I'm wondering if now that I've removed the be method in ShouldMethods if this will work. 
 */
