@@ -1442,6 +1442,40 @@ TODO: Do the same simplification as above
     }
   }
 
+  protected class ResultOfNotWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean)
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
+
+    // javaMap should not contain key ("three")
+    //                    ^
+    def contain(resultOfKeyWordApplication: ResultOfKeyWordApplication[K]) {
+      val right = resultOfKeyWordApplication.expectedKey
+      if ((left.containsKey(right)) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainKey" else "containedKey",
+              left,
+              right
+            )
+          )
+      }
+    }
+
+    // javaMap should not contain value (3)
+    //                            ^
+    def contain(resultOfValueWordApplication: ResultOfValueWordApplication[V]) {
+      val right = resultOfValueWordApplication.expectedValue
+      if ((left.containsValue(right)) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainValue" else "containedValue",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+
   protected class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[E, T](left, shouldBeTrue) {
 
