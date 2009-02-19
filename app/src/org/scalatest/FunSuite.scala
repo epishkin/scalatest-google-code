@@ -18,6 +18,7 @@ package org.scalatest
 import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
+import org.scalatest.TestFailedExceptionHelper.getStackDepth
 
 /**
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands for functional.
@@ -579,7 +580,7 @@ trait FunSuite extends Suite {
      * methods. The passed test name must not have been registered previously on
      * this <code>FunSuite</code> instance.
      *
-     * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+     * @throws TestFailedException if <code>testName</code> had been registered previously
      */
   protected def test(testName: String, testGroups: Group*)(f: => Unit) {
 
@@ -589,7 +590,9 @@ trait FunSuite extends Suite {
     if (executeHasBeenInvoked)
       throw new IllegalStateException("You cannot register a test  on a FunSuite after execute has been invoked.")
     
-    require(!testsMap.keySet.contains(testName), "Duplicate test name: " + testName)
+    if (testsMap.keySet.contains(testName)) {
+      throw new TestFailedException(Resources("duplicateTestName", testName), getStackDepth("FunSuite.scala", "test"))
+    }
 
     val testNode = Test(testName, f _)
     testsMap += (testName -> testNode)
@@ -610,7 +613,7 @@ trait FunSuite extends Suite {
    * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
    * this <code>FunSuite</code> instance.
    *
-   * @throws IllegalArgumentException if <code>testName</code> had been registered previously
+   * @throws TestFailedException if <code>testName</code> had been registered previously
    */
   protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
 

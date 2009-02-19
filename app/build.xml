@@ -240,10 +240,10 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.ShouldContainValueSpec" />
+            <arg value="org.scalatest.SpecSuite" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.ShouldContainKeySpec" />
+            <arg value="org.scalatest.ShouldBehaveLikeSpec" />
 
 <!--
             <arg value="-s" />
