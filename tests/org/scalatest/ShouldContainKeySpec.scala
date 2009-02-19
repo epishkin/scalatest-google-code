@@ -849,8 +849,6 @@ class ShouldContainKeySpec extends Spec with ShouldMatchers with Checkers with R
         }
         assert(caught3.getMessage === "{one=1, two=2} contained key \"two\", and {one=1, two=2} contained key \"two\"")
       }
-/*
-*/
     }
   }
 }
