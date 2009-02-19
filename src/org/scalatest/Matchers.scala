@@ -805,6 +805,33 @@ TODO: Do the same simplification as above
     }
   }
 
+  protected class ResultOfContainWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean) {
+
+    // javaMap should contain key ("two")
+    //                        ^
+    def key(expectedKey: K) {
+      if (left.containsKey(expectedKey) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainKey" else "containedKey",
+            left,
+            expectedKey)
+        )
+    }
+
+    // javaMap should contain value ("2")
+    //                        ^
+    def value(expectedValue: V) {
+      if (left.containsValue(expectedValue) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainValue" else "containedValue",
+            left,
+            expectedValue)
+        )
+    }
+  }
+
 /*
   protected trait ElementContainerMatcher[T] extends Matcher[Iterable[T]] {
     val expectedElement: T
@@ -835,6 +862,33 @@ TODO: Do the same simplification as above
           override def toString = left.toString
         }
         iterableMatcher.apply(iterable)
+      }
+    }
+
+  // javaMap should (contain key ("two"))
+  //                 ^
+  // contain key ("two") will result in a Matcher[scala.collection.Map[String, Any]], for example, and this converts that
+  // to a Matcher[java.util.Map[String, Any]], so it will work against the javaMap. Even though the java map is mutable
+  // I just convert it to a plain old map, because I have no intention of mutating it.
+  //
+  protected implicit def convertMapMatcherToJavaMapMatcher[K, V](mapMatcher: Matcher[scala.collection.Map[K, V]]) = 
+    new Matcher[java.util.Map[K, V]] {
+      def apply(left: java.util.Map[K, V]) = {
+        val scalaMap = new scala.collection.Map[K, V] {
+          def size: Int = left.size
+          def get(key: K): Option[V] =
+            if (left.containsKey(key)) Some(left.get(key)) else None
+          def elements = new Iterator[(K, V)] {
+            private val javaIterator = left.keySet.iterator
+            def next: (K, V) = {
+              val nextKey = javaIterator.next
+              (nextKey, left.get(nextKey))
+            }
+            def hasNext: Boolean = javaIterator.hasNext
+          }
+          override def toString = left.toString
+        }
+        mapMatcher.apply(scalaMap)
       }
     }
 

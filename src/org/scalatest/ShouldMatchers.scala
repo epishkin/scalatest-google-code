@@ -520,12 +520,27 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  // TODO: Shouldn't this mix in ShouldMethodsForAnyRef instead of ShouldMethods?
   protected class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
       with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaCollectionMethods[T] {
 
     override def should(notWord: NotWord): ResultOfNotWordForJavaCollection[T, java.util.Collection[T]] = {
       new ResultOfNotWordForJavaCollection(leftOperand, false)
     }
+  }
+
+  protected class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[java.util.Map[K, V]] {
+
+// RRRRR
+    def should(containWord: ContainWord): ResultOfContainWordForJavaMap[K, V] = {
+      new ResultOfContainWordForJavaMap(left, true)
+    }
+
+/*
+    override def should(notWord: NotWord): ResultOfNotWordForJavaMap[java.util.Map[K, V]] = {
+      new ResultOfNotWordForJavaMap(leftOperand, false)
+    }
+*/
   }
 
   protected class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
@@ -574,6 +589,8 @@ trait ShouldMatchers extends Matchers {
   // of like to have it work with should have length too, so I have to do one for it explicitly here.
   implicit def convertToJavaCollectionShouldWrapper[T](o: java.util.Collection[T]): JavaCollectionShouldWrapper[T] = new JavaCollectionShouldWrapper[T](o)
   implicit def convertToJavaListShouldWrapper[T](o: java.util.List[T]): JavaListShouldWrapper[T] = new JavaListShouldWrapper[T](o)
+
+  implicit def convertToJavaMapShouldWrapper[K, V](o: java.util.Map[K, V]): JavaMapShouldWrapper[K, V] = new JavaMapShouldWrapper[K, V](o)
 
   // This implicit conversion is just used to trigger the addition of the should method. The LengthShouldWrapper
   // doesn't actually convert them, just passes it through. The conversion that happens here is to LengthShouldWrapper,

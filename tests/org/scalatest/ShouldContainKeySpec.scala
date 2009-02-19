@@ -711,5 +711,146 @@ class ShouldContainKeySpec extends Spec with ShouldMatchers with Checkers with R
         assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
       }
     }
+
+    describe("on java.util.Map") {
+
+      val javaMap: java.util.Map[String, Int] = new java.util.HashMap
+      javaMap.put("one",1)
+      javaMap.put("two", 2)
+
+      it("should do nothing if map contains specified key") {
+        javaMap should contain key ("two")
+        javaMap should (contain key ("two"))
+      }
+
+/*
+      it("should do nothing if map does not contain the specified key and used with not") {
+        javaMap should not { contain key ("three") }
+        javaMap should not contain key ("three")
+        javaMap should (not contain key ("three"))
+      }
+
+      it("should do nothing when map contains specified key and used in a logical-and expression") {
+        javaMap should { contain key ("two") and (contain key ("one")) }
+        javaMap should ((contain key ("two")) and (contain key ("one")))
+        javaMap should (contain key ("two") and contain key ("one"))
+      }
+
+      it("should do nothing when map contains specified key and used in a logical-or expression") {
+        javaMap should { contain key ("cat") or (contain key ("one")) }
+        javaMap should ((contain key ("cat")) or (contain key ("one")))
+        javaMap should (contain key ("cat") or contain key ("one"))
+      }
+
+      it("should do nothing when map does not contain the specified key and used in a logical-and expression with not") {
+        javaMap should { not { contain key ("five") } and not { contain key ("three") }}
+        javaMap should ((not contain key ("five")) and (not contain key ("three")))
+        javaMap should (not contain key ("five") and not contain key ("three"))
+      }
+
+      it("should do nothing when map does not contain the specified key and used in a logical-or expression with not") {
+        javaMap should { not { contain key ("two") } or not { contain key ("three") }}
+        javaMap should ((not contain key ("two")) or (not contain key ("three")))
+        javaMap should (not contain key ("two") or not contain key ("three"))
+      }
+
+      it("should throw TestFailedException if map does not contain the specified key") {
+        val caught1 = intercept[TestFailedException] {
+          javaMap should contain key ("three")
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\"")
+      }
+
+      it("should throw TestFailedException if contains the specified key when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should (not contain key ("two"))
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should not (contain key ("two"))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should not contain key ("two")
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained key \"two\"")
+      }
+
+      it("should throw an TestFailedException when map doesn't contain specified key and used in a logical-and expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { contain key ("five") and (contain key ("two")) }
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should ((contain key ("five")) and (contain key ("two")))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should (contain key ("five") and contain key ("two"))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"five\"")
+      }
+
+      it("should throw an TestFailedException when map doesn't contain specified key and used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { contain key ("fifty five") or (contain key ("twenty two")) }
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should ((contain key ("fifty five")) or (contain key ("twenty two")))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should (contain key ("fifty five") or contain key ("twenty two"))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"fifty five\", and Map(one -> 1, two -> 2) did not contain key \"twenty two\"")
+      }
+
+      it("should throw an TestFailedException when map contains specified key and used in a logical-and expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { not { contain key ("three") } and not { contain key ("two") }}
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should ((not contain key ("three")) and (not contain key ("two")))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should (not contain key ("three") and not contain key ("two"))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain key \"three\", but Map(one -> 1, two -> 2) contained key \"two\"")
+      }
+
+      it("should throw an TestFailedException when map contains specified key and used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { not { contain key ("two") } or not { contain key ("two") }}
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should ((not contain key ("two")) or (not contain key ("two")))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should (not contain key ("two") or not contain key ("two"))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained key \"two\", and Map(one -> 1, two -> 2) contained key \"two\"")
+      }
+*/
+    }
   }
 }
