@@ -769,6 +769,7 @@ TODO: Do the same simplification as above
     }
   }
 
+/*
   protected trait ElementContainerMatcher[T] extends Matcher[Iterable[T]] {
     val expectedElement: T
     val shouldBeTrue: Boolean
@@ -783,10 +784,26 @@ TODO: Do the same simplification as above
           FailureMessages("containedExpectedElement", left, elementContainerMatcher.expectedElement)
         )
     }
+*/
+
+  // Neat.
+  protected implicit def convertIterableMatcherToJavaCollectionMatcher[T](iterableMatcher: Matcher[Iterable[T]]) = 
+    new Matcher[java.util.Collection[T]] {
+      def apply(left: java.util.Collection[T]) = {
+        val iterable = new Iterable[T] {
+          private val javaIterator = left.iterator
+          def elements = new Iterator[T] {
+            def next: T = javaIterator.next
+            def hasNext: Boolean = javaIterator.hasNext
+          }
+        }
+        iterableMatcher.apply(iterable)
+      }
+    }
 
   protected class BehaveWord
   protected class ContainWord {
-/*
+
     def element[T](expectedElement: T): Matcher[Iterable[T]] =
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) =
@@ -796,7 +813,7 @@ TODO: Do the same simplification as above
             FailureMessages("containedExpectedElement", left, expectedElement)
           )
       }
-*/
+/*
     def element[T](expectedElementParam: T): ElementContainerMatcher[T] =
       new ElementContainerMatcher[T] {
         val expectedElement = expectedElementParam
@@ -808,6 +825,7 @@ TODO: Do the same simplification as above
             FailureMessages("containedExpectedElement", left, expectedElementParam)
           )
       }
+*/
 
     //
     // This key method is called when "contain" is used in a logical expression, such as:
@@ -2101,6 +2119,7 @@ TODO: Do the same simplification as above
           }
       }
 
+/*
     def apply[S <: Any](elementContainerMatcher: ElementContainerMatcher[S]): ElementContainerMatcher[S] =
       new ElementContainerMatcher[S] {
         val expectedElement = elementContainerMatcher.expectedElement
@@ -2110,6 +2129,7 @@ TODO: Do the same simplification as above
             case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
           }
       }
+*/
 
     def equal(right: Any): Matcher[Any] = apply(matchers.equal(right))
 
@@ -2415,7 +2435,6 @@ TODO: Do the same simplification as above
       }
     }
 
-/*
     // Array(1, 2) should (not contain element (5) and not contain element (3))
     //                         ^
     def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): Matcher[Iterable[T]] = {
@@ -2430,7 +2449,7 @@ TODO: Do the same simplification as above
         }
       }
     }
-*/
+/*
     // Array(1, 2) should (not contain element (5) and not contain element (3))
     //                         ^
     def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): ElementContainerMatcher[T] =
@@ -2445,6 +2464,7 @@ TODO: Do the same simplification as above
           )
         }
       }
+*/
   }
 
   val not = new NotWord
