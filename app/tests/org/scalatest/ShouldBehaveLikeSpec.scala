@@ -32,4 +32,39 @@ class ShouldBehaveLikeSpec extends Spec with ShouldMatchers with ShouldStackBeha
       stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
     }
   }
+
+  def myBehavior(i: Int) {
+    it("This one is solo") {}
+  }
+  1 should behave like myBehavior
+
+  // TODO: Make these into real tests. I looked at it and heck they work. So I can indeed put describe clauses in
+  // the shared behaviors. Cool.
+  def myNestedBehavior(i: Int) {
+    describe("and this is the shared describe") {
+      it("This one is nested") {}
+    }
+  }
+
+  1 should behave like myNestedBehavior
+  describe("And outer describe...") {
+    1 should behave like myNestedBehavior
+  }
+
+/* Correct, none of these compiled
+  describe("'should not behave like' should not compile") {
+    
+    stackWithOneItem should not behave like (nonEmptyStack(lastValuePushed))
+  }
+  describe("The 'should behave like' syntax in an and or or clause, with or without not, should not compile") {
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) or behave like (nonFullStack))
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) or (behave like (nonFullStack)))
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) or not behave like (nonFullStack))
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) or (not behave like (nonFullStack)))
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) and behave like (nonFullStack))
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) and (behave like (nonFullStack)))
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) and not behave like (nonFullStack))
+    stackWithOneItem should (behave like (nonEmptyStack(lastValuePushed)) and (not behave like (nonFullStack)))
+  }
+*/
 }
