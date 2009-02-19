@@ -1442,7 +1442,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if set size matches specified size") {
         HashMap("one" -> 1, "two" -> 2) should have size (2)
-        Map(1 -> "one", 2 -> "two") should have size (2)
+        HashMap(1 -> "one", 2 -> "two") should have size (2)
         // check((set: Map[Int]) => returnsNormally(set should have size (set.size)))
       }
 
