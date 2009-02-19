@@ -111,7 +111,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
         reporter.runAborted(report)
       }
       case ex: Throwable => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("bigProblems"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), Some(ex), None)
         reporter.runAborted(report)
       }
     }

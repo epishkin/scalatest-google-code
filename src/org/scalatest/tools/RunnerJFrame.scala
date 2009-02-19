@@ -1347,7 +1347,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
           }
           catch {
             case ex: Throwable => {
-              val report: Report = new Report("org.scalatest.tools.Runner", Resources("bigProblems"), Some(ex), None)
+              val report: Report = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), Some(ex), None)
               dispatchReporter.runAborted(report)
             }
           }

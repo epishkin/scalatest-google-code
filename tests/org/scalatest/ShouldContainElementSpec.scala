@@ -934,11 +934,10 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 
       it("should do nothing when list contains the specified element and used in a logical-and expression") {
         javaList should { contain element (2) and (contain element (1)) }
-        // javaList should ((contain element (2)) and (contain element (1)))
-        // javaList should (contain element (2) and contain element (1))
+        javaList should ((contain element (2)) and (contain element (1)))
+        javaList should (contain element (2) and contain element (1))
        }
 
-/*
       it("should do nothing when list contains the specified element and used in a logical-or expression") {
         javaList should { contain element (77) or (contain element (2)) }
         javaList should ((contain element (77)) or (contain element (2)))
@@ -961,8 +960,7 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught = intercept[TestFailedException] {
           javaList should contain element (3)
         }
-        assert(caught.getMessage === "javaList did not contain element 3")
-        check((list: javaList[String], s: String) => !list.exists(_ == s) ==> throwsTestFailedException(list should contain element (s)))
+        assert(caught.getMessage === "[1, 2] did not contain element 3")
       }
 
       it("should throw TestFailedException if list contains the specified element, when used with not") {
@@ -970,20 +968,17 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           javaList should not contain element (2)
         }
-        assert(caught1.getMessage === "javaList contained element 2")
-        check((list: javaList[String]) => list.length > 0 ==> throwsTestFailedException(list should not contain element (list(0))))
+        assert(caught1.getMessage === "[1, 2] contained element 2")
 
         val caught2 = intercept[TestFailedException] {
           javaList should not (contain element (2))
         }
-        assert(caught2.getMessage === "javaList contained element 2")
-        check((list: javaList[String]) => list.length > 0 ==> throwsTestFailedException(list should not (contain element (list(0)))))
+        assert(caught2.getMessage === "[1, 2] contained element 2")
 
         val caught3 = intercept[TestFailedException] {
           javaList should (not contain element (2))
         }
-        assert(caught3.getMessage === "javaList contained element 2")
-        check((list: javaList[String]) => list.length > 0 ==> throwsTestFailedException(list should not (contain element (list(0)))))
+        assert(caught3.getMessage === "[1, 2] contained element 2")
       }
 
       it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-and expression") {
@@ -991,12 +986,12 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           javaList should { contain element (5) and (contain element (2 - 1)) }
         }
-        assert(caught1.getMessage === "javaList did not contain element 5")
+        assert(caught1.getMessage === "[1, 2] did not contain element 5")
 
         val caught2 = intercept[TestFailedException] {
           javaList should (contain element (5) and contain element (2 - 1))
         }
-        assert(caught2.getMessage === "javaList did not contain element 5")
+        assert(caught2.getMessage === "[1, 2] did not contain element 5")
       }
 
       it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-or expression") {
@@ -1004,12 +999,12 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           javaList should { contain element (55) or (contain element (22)) }
         }
-        assert(caught1.getMessage === "javaList did not contain element 55, and List(1, 2) did not contain element 22")
+        assert(caught1.getMessage === "[1, 2] did not contain element 55, and [1, 2] did not contain element 22")
 
         val caught2 = intercept[TestFailedException] {
           javaList should (contain element (55) or contain element (22))
         }
-        assert(caught2.getMessage === "javaList did not contain element 55, and List(1, 2) did not contain element 22")
+        assert(caught2.getMessage === "[1, 2] did not contain element 55, and [1, 2] did not contain element 22")
       }
 
       it("should throw a TestFailedException when list contains the specified element and used in a logical-and expression with not") {
@@ -1017,17 +1012,17 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           javaList should { not { contain element (3) } and not { contain element (2) }}
         }
-        assert(caught1.getMessage === "javaList did not contain element 3, but List(1, 2) contained element 2")
+        assert(caught1.getMessage === "[1, 2] did not contain element 3, but [1, 2] contained element 2")
 
         val caught2 = intercept[TestFailedException] {
           javaList should ((not contain element (3)) and (not contain element (2)))
         }
-        assert(caught2.getMessage === "javaList did not contain element 3, but List(1, 2) contained element 2")
+        assert(caught2.getMessage === "[1, 2] did not contain element 3, but [1, 2] contained element 2")
 
         val caught3 = intercept[TestFailedException] {
           javaList should (not contain element (3) and not contain element (2))
         }
-        assert(caught3.getMessage === "javaList did not contain element 3, but List(1, 2) contained element 2")
+        assert(caught3.getMessage === "[1, 2] did not contain element 3, but [1, 2] contained element 2")
       }
 
       it("should throw a TestFailedException when list contains the specified element and used in a logical-or expression with not") {
@@ -1035,17 +1030,154 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           javaList should { not { contain element (2) } or not { contain element (2) }}
         }
-        assert(caught1.getMessage === "javaList contained element 2, and List(1, 2) contained element 2")
+        assert(caught1.getMessage === "[1, 2] contained element 2, and [1, 2] contained element 2")
 
         val caught2 = intercept[TestFailedException] {
           javaList should ((not contain element (2)) or (not contain element (2)))
         }
-        assert(caught2.getMessage === "javaList contained element 2, and List(1, 2) contained element 2")
+        assert(caught2.getMessage === "[1, 2] contained element 2, and [1, 2] contained element 2")
 
         val caught3 = intercept[TestFailedException] {
           javaList should (not contain element (2) or not contain element (2))
         }
-        assert(caught3.getMessage === "javaList contained element 2, and List(1, 2) contained element 2")
+        assert(caught3.getMessage === "[1, 2] contained element 2, and [1, 2] contained element 2")
+      }
+    }
+
+    describe("on scala.collection.immutable.Map") {
+
+      it("should do nothing if map contains specified element") {
+        Map("one" -> 1, "two" -> 2) should contain element ("two" -> 2)
+        Map("one" -> 1, "two" -> 2) should (contain element ("two" -> 2))
+        Map(1 -> "one", 2 -> "two") should contain element (2 -> "two")
+      }
+
+      it("should do nothing if map does not contain the specified element and used with not") {
+        Map("one" -> 1, "two" -> 2) should not { contain element ("three" -> 3) }
+        Map("one" -> 1, "two" -> 2) should not contain element ("three" -> 3)
+        Map("one" -> 1, "two" -> 2) should (not contain element ("three" -> 3))
+      }
+
+      it("should do nothing when map contains specified element and used in a logical-and expression") {
+        Map("one" -> 1, "two" -> 2) should { contain element ("two" -> 2) and (contain element ("one" -> 1)) }
+        Map("one" -> 1, "two" -> 2) should ((contain element ("two" -> 2)) and (contain element ("one" -> 1)))
+        Map("one" -> 1, "two" -> 2) should (contain element ("two" -> 2) and contain element ("one" -> 1))
+      }
+
+      it("should do nothing when map contains specified element and used in a logical-or expression") {
+        Map("one" -> 1, "two" -> 2) should { contain element ("cat" -> 77) or (contain element ("one" -> 1)) }
+        Map("one" -> 1, "two" -> 2) should ((contain element ("cat" -> 77)) or (contain element ("one" -> 1)))
+        Map("one" -> 1, "two" -> 2) should (contain element ("cat" -> 77) or contain element ("one" -> 1))
+      }
+
+      it("should do nothing when map does not contain the specified element and used in a logical-and expression with not") {
+        Map("one" -> 1, "two" -> 2) should { not { contain element ("five" -> 5) } and not { contain element ("three" -> 3) }}
+        Map("one" -> 1, "two" -> 2) should ((not contain element ("five" -> 5)) and (not contain element ("three" -> 3)))
+        Map("one" -> 1, "two" -> 2) should (not contain element ("five" -> 5) and not contain element ("three" -> 3))
+      }
+
+      it("should do nothing when map does not contain the specified element and used in a logical-or expression with not") {
+        Map("one" -> 1, "two" -> 2) should { not { contain element ("two" -> 2) } or not { contain element ("three" -> 3) }}
+        Map("one" -> 1, "two" -> 2) should ((not contain element ("two" -> 2)) or (not contain element ("three" -> 3)))
+        Map("one" -> 1, "two" -> 2) should (not contain element ("two" -> 2) or not contain element ("three" -> 3))
+      }
+
+      it("should throw TestFailedException if map does not contain the specified element") {
+        val caught1 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should contain element ("three" -> 3)
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3)")
+      }
+
+      it("should throw TestFailedException if contains the specified element when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should (not contain element ("two" -> 2))
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained element (two,2)")
+
+        val caught2 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should not (contain element ("two" -> 2))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained element (two,2)")
+
+        val caught3 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should not contain element ("two" -> 2)
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained element (two,2)")
+      }
+
+/*
+      it("should throw an assertion error when set size doesn't match and used in a logical-and expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should { contain element ("five" -> 5) and (contain element (2 - 1)) }
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element 5")
+
+        val caught2 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should ((contain element ("five" -> 5)) and (contain element (2 - 1)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element 5")
+
+        val caught3 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should (contain element ("five" -> 5) and contain element (2 - 1))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element 5")
+      }
+
+      it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should { contain element (55) or (contain element (22)) }
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element 55, and Map(one -> 1, two -> 2) did not contain element 22")
+
+        val caught2 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should ((contain element (55)) or (contain element (22)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element 55, and Map(one -> 1, two -> 2) did not contain element 22")
+
+        val caught3 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should (contain element (55) or contain element (22))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element 55, and Map(one -> 1, two -> 2) did not contain element 22")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should { not { contain element ("three" -> 3) } and not { contain element ("two" -> 2) }}
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element 3, but Map(one -> 1, two -> 2) had size 2")
+
+        val caught2 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should ((not contain element ("three" -> 3)) and (not contain element ("two" -> 2)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element 3, but Map(one -> 1, two -> 2) had size 2")
+
+        val caught3 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should (not contain element ("three" -> 3) and not contain element ("two" -> 2))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element 3, but Map(one -> 1, two -> 2) had size 2")
+      }
+
+      it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should { not { contain element ("two" -> 2) } or not { contain element ("two" -> 2) }}
+        }
+        assert(caught1.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught2 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should ((not contain element ("two" -> 2)) or (not contain element ("two" -> 2)))
+        }
+        assert(caught2.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+
+        val caught3 = intercept[TestFailedException] {
+          Map("one" -> 1, "two" -> 2) should (not contain element ("two" -> 2) or not contain element ("two" -> 2))
+        }
+        assert(caught3.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
       }
 */
     }

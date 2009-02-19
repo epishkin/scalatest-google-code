@@ -21,7 +21,7 @@ import org.scalacheck.Shrink
 import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
-import org.scalatest.prop.Helper._
+import org.scalatest.TestFailedExceptionHelper.getStackDepth
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
@@ -192,7 +192,7 @@ trait Checkers {
   def check(p: Prop, prms: Test.Params) {
     val result = Test.check(prms, p)
     if (!result.passed) {
-      throw newTestFailedException(prettyTestStats(result))
+      throw new TestFailedException(prettyTestStats(result), getStackDepth("Checkers.scala", "check"))
     }
   }
 
@@ -234,50 +234,3 @@ trait Checkers {
   }
 }
 
-/*
-0 org.scalatest.prop.Checkers$class.check(Checkers.scala:194)
-1 org.scalatest.ShouldContainElementSpec.check(ShouldContainElementSpec.scala:23)
-2 org.scalatest.prop.Checkers$class.check(Checkers.scala:205)
-3 org.scalatest.ShouldContainElementSpec.check(ShouldContainElementSpec.scala:23)
-4 org.scalatest.prop.Checkers$class.check(Checkers.scala:96)
-5 org.scalatest.ShouldContainElementSpec.check(ShouldContainElementSpec.scala:23)
-6 org.scalatest.ShouldContainElementSpec$$anonfun$1$$anonfun$apply$1$$anonfun$apply$28.apply(ShouldContainElementSpec.scala:80)
-*/
-private[prop] object Helper {
-
-  def newTestFailedException(message: String): TestFailedException = {
-
-    val temp = new RuntimeException
-    val stackTraceList = temp.getStackTrace.toList
-
-    val fileNameIsCheckersDotScalaList: List[Boolean] =
-      for (element <- stackTraceList) yield
-        element.getFileName == "Checkers.scala"
-
-    val methodNameIsCheckList: List[Boolean] =
-      for (element <- stackTraceList) yield
-        element.getMethodName == "check"
-
-    // For element 0, the previous file name was not Checkers.scala, because there is no previous
-    // one, so you start with false. For element 1, it depends on whether element 0 of the stack trace
-    // had file name Checkers.scala, and so forth.
-    val previousFileNameIsCheckersDotScalaList: List[Boolean] = false :: (fileNameIsCheckersDotScalaList.dropRight(1))
-
-    // Zip these two related lists together. They now have two boolean values together, when both
-    // are true, that's a stack trace element that should be included in the stack depth. In the 
-    val zipped1 = methodNameIsCheckList zip previousFileNameIsCheckersDotScalaList
-    val methodNameIsCheckAndPreviousFileNameIsCheckersDotScalaList: List[Boolean] =
-      for ((methodNameIsCheck, previousFileNameIsCheckersDotScala) <- zipped1) yield
-        methodNameIsCheck && previousFileNameIsCheckersDotScala
-
-    // Zip the two lists together, that when one or the other is true is an include.
-    val zipped2 = fileNameIsCheckersDotScalaList zip methodNameIsCheckAndPreviousFileNameIsCheckersDotScalaList
-    val includeInStackDepthList: List[Boolean] =
-      for ((fileNameIsCheckersDotScala, methodNameIsCheckAndPreviousFileNameIsCheckersDotScala) <- zipped2) yield
-        fileNameIsCheckersDotScala || methodNameIsCheckAndPreviousFileNameIsCheckersDotScala
-
-    val stackDepth = includeInStackDepthList.takeWhile(include => include).length
-
-    new TestFailedException(message, stackDepth)
-  }
-}
