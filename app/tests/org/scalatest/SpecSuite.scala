@@ -43,25 +43,25 @@ class SpecSuite extends FunSuite {
 
   test("duplicate test names should generate an exception") {
 
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new Spec {
         it("test this") {}
         it("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new Spec {
         it("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new Spec {
         ignore("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new Spec {
         ignore("test this") {}
         it("test this") {}
