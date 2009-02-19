@@ -2504,6 +2504,21 @@ TODO: Do the same simplification as above
         }
       }
     }
+
+    // Map("one" -> 1, "two" -> 2) should (not contain value (3))
+    //                                         ^
+    def contain[K, V](resultOfValueWordApplication: ResultOfValueWordApplication[V]): Matcher[scala.collection.Map[K, V] forSome { type K }] = {
+      val expectedValue = resultOfValueWordApplication.expectedValue
+      new Matcher[scala.collection.Map[K, V] forSome { type K }] {
+        def apply(left: scala.collection.Map[K, V] forSome { type K }) = {
+          MatcherResult(
+            !(left.values.exists(_ == expectedValue)),
+            FailureMessages("containedValue", left, expectedValue),
+            FailureMessages("didNotContainValue", left, expectedValue)
+          )
+        }
+      }
+    }
 /*
     // Array(1, 2) should (not contain element (5) and not contain element (3))
     //                         ^
@@ -2608,6 +2623,18 @@ TODO: Do the same simplification as above
   // map should not contain key (10)
   //                        ^
   val key = new KeyWord
+
+  class ResultOfValueWordApplication[T](val expectedValue: T)
+
+  class ValueWord {
+    // map should not contain value (10)
+    //                              ^
+    def apply[T](expectedValue: T) = new ResultOfValueWordApplication(expectedValue)
+  }
+
+  // map should not contain value (10)
+  //                        ^
+  val value = new ValueWord
 
   class ResultOfAWordApplication(val symbol: Symbol)
 
