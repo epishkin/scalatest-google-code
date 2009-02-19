@@ -536,7 +536,7 @@ trait ShouldMatchers extends Matchers {
     }
 
     override def should(notWord: NotWord): ResultOfNotWordForJavaMap[K, V] = {
-      new ResultOfNotWordForJavaMap(leftOperand, false)
+      new ResultOfNotWordForJavaMap[K, V](leftOperand, false)
     }
   }
 
