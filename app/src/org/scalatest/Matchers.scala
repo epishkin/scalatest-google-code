@@ -791,11 +791,12 @@ TODO: Do the same simplification as above
     new Matcher[java.util.Collection[T]] {
       def apply(left: java.util.Collection[T]) = {
         val iterable = new Iterable[T] {
-          private val javaIterator = left.iterator
           def elements = new Iterator[T] {
+            private val javaIterator = left.iterator
             def next: T = javaIterator.next
             def hasNext: Boolean = javaIterator.hasNext
           }
+          override def toString = left.toString
         }
         iterableMatcher.apply(iterable)
       }
