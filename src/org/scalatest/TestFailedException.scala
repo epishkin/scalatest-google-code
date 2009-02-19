@@ -184,6 +184,13 @@ passed methodName will be "describe":
 0 org.scalatest.Spec$class.describe(Spec.scala:804)
 1 org.scalatest.ShouldBehaveLikeSpec.describe(ShouldBehaveLikeSpec.scala:23)
 2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
+
+For detection of an ignore inside an it in Spec, passed fileName will be "Spec.scala" and
+passed methodName will be "ignore":
+
+0 org.scalatest.Spec$class.ignore(Spec.scala:792)
+1 org.scalatest.ShouldBehaveLikeSpec.ignore(ShouldBehaveLikeSpec.scala:23)
+2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
 */
 private[scalatest] object TestFailedExceptionHelper {
 

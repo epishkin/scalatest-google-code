@@ -682,8 +682,6 @@ trait Spec extends Suite {
   // which should result in a TestFailedException
   private var runningATest = false
 
-  // TODO: update documentation to indicate a TestFailedException will be thrown on
-  // duplicate test name, not an IllegalArgumentException.
   private def registerExample(specText: String, f: => Unit) = {
     val testName = getTestName(specText, currentBranch)
     if (examplesList.exists(_.testName == testName)) {
@@ -710,10 +708,12 @@ trait Spec extends Suite {
    * to form the test name
    * @param testGroups the optional list of groups to which this test belongs
    * @param testFun the test function
-   * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws TestFailedException if a test with the same name has been registered previously
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String, testGroups: Group*)(testFun: => Unit) {
+    if (runningATest)
+      throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testGroups.exists(_ == null))
@@ -737,7 +737,7 @@ trait Spec extends Suite {
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
    * @param testFun the test function
-   * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws TestFailedException if a test with the same name has been registered previously
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String)(testFun: => Unit) {
@@ -760,10 +760,12 @@ trait Spec extends Suite {
    * to form the test name
    * @param testGroups the optional list of groups to which this test belongs
    * @param testFun the test function
-   * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws TestFailedException if a test with the same name has been registered previously
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def ignore(specText: String, testGroups: Group*)(testFun: => Unit) {
+    if (runningATest)
+      throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testGroups.exists(_ == null))
@@ -786,10 +788,12 @@ trait Spec extends Suite {
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
    * @param testFun the test function
-   * @throws IllegalArgumentException if a test with the same name has been registered previously
+   * @throws TestFailedException if a test with the same name has been registered previously
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def ignore(specText: String)(testFun: => Unit) {
+    if (runningATest)
+      throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Group](): _*)(testFun)
   }
   /**
