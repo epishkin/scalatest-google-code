@@ -24,7 +24,7 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
 
   // Checking for a specific size
   describe("The 'contain element (Int)' syntax") {
-/*
+
     describe("on Array") {
 
       it("should do nothing if array contains the specified element") {
@@ -1731,7 +1731,7 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained element (two,2), and Map(one -> 1, two -> 2) contained element (two,2)")
       }
     }
-*/
+
     describe("on java.util.Set") {
 
       val javaSet: java.util.Set[Int] = new java.util.HashSet

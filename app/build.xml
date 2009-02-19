@@ -242,6 +242,9 @@
             <arg value="-s" />
             <arg value="org.scalatest.ShouldContainElementSpec" />
 
+            <arg value="-s" />
+            <arg value="org.scalatest.ShouldContainKeySpec" />
+
 <!--
             <arg value="-s" />
             <arg value="org.scalatest.ShouldOrderedSpec" />
