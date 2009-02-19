@@ -534,6 +534,10 @@ trait ShouldMatchers extends Matchers {
     def should(containWord: ContainWord): ResultOfContainWordForJavaMap[K, V] = {
       new ResultOfContainWordForJavaMap(left, true)
     }
+ 
+    def should(haveWord: HaveWord): ResultOfHaveWordForJavaMap = {
+      new ResultOfHaveWordForJavaMap(leftOperand, true)
+    }
 
     override def should(notWord: NotWord): ResultOfNotWordForJavaMap[K, V] = {
       new ResultOfNotWordForJavaMap[K, V](leftOperand, false)
@@ -542,7 +546,7 @@ trait ShouldMatchers extends Matchers {
 
   protected class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
-  
+
   protected class ArrayShouldWrapper[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
