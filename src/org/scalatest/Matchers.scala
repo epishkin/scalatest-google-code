@@ -241,6 +241,10 @@ trait Matchers extends Assertions { matchers =>
       // Array(1, 2) should (contain element (2) and contain element (3 - 1))
       //                                                     ^
       def element[T](expectedElement: T) = matchersWrapper.and(matchers.contain.element(expectedElement))
+
+      // Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
+      //                                                             ^
+      def key[T](expectedElement: T) = matchersWrapper.and(matchers.contain.key(expectedElement))
     }
 
     def and(containWord: ContainWord): AndContainWord = new AndContainWord
@@ -444,6 +448,11 @@ trait Matchers extends Assertions { matchers =>
       def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
         matchersWrapper.and(matchers.not.contain(resultOfElementWordApplication))
 
+      // Map("one" -> 1, "two" -> 2) should (not contain key ("five") and not contain key ("three"))
+      //                                                                      ^
+      def contain[T](resultOfKeyWordApplication: ResultOfKeyWordApplication[T]) =
+        matchersWrapper.and(matchers.not.contain(resultOfKeyWordApplication))
+
 /*
 TODO: Ah, maybe this was the simplification
       This won't override because the types are the same after erasure. See note on definition of ResultOfLengthOrSizeWordApplication
@@ -521,6 +530,10 @@ TODO: Ah, maybe this was the simplification
       // Array(1, 2) should (contain element (2) or contain element (3 - 1))
       //                                                     ^
       def element[T](expectedElement: T) = matchersWrapper.or(matchers.contain.element(expectedElement))
+
+      // Map("one" -> 1, "two" -> 2) should (contain key ("cat") or contain key ("one"))
+      //                                                                    ^
+      def key[T](expectedElement: T) = matchersWrapper.or(matchers.contain.key(expectedElement))
     }
 
     def or(containWord: ContainWord): OrContainWord = new OrContainWord
@@ -714,6 +727,11 @@ TODO: Ah, maybe this was the simplification
       //                                                    ^
       def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
         matchersWrapper.or(matchers.not.contain(resultOfElementWordApplication))
+
+      // Map("one" -> 1, "two" -> 2) should (not contain key ("two") or not contain key ("three"))
+      //                                                                    ^
+      def contain[T](resultOfKeyWordApplication: ResultOfKeyWordApplication[T]) =
+        matchersWrapper.or(matchers.not.contain(resultOfKeyWordApplication))
 /*
 TODO: Do the same simplification as above
       // By-name parameter is to get this to short circuit:
@@ -753,7 +771,7 @@ TODO: Do the same simplification as above
       if (left.contains(expectedKey) != shouldBeTrue)
         throw newTestFailedException(
           FailureMessages(
-            if (shouldBeTrue) "didNotHaveKey" else "hadKey",
+            if (shouldBeTrue) "didNotContainKey" else "containedKey",
             left,
             expectedKey)
         )
@@ -762,7 +780,7 @@ TODO: Do the same simplification as above
       if (left.values.contains(expectedValue) != shouldBeTrue)
         throw newTestFailedException(
           FailureMessages(
-            if (shouldBeTrue) "didNotHaveValue" else "hadValue",
+            if (shouldBeTrue) "didNotContainValue" else "containedValue",
             left,
             expectedValue)
         )
@@ -851,8 +869,8 @@ TODO: Do the same simplification as above
         def apply(left: scala.collection.Map[K, Any]) =
           MatcherResult(
             left.contains(expectedKey),
-            FailureMessages("didNotHaveKey", left, expectedKey),
-            FailureMessages("hadKey", left, expectedKey)
+            FailureMessages("didNotContainKey", left, expectedKey),
+            FailureMessages("containedKey", left, expectedKey)
           )
       }
 
@@ -869,8 +887,8 @@ TODO: Do the same simplification as above
         def apply(left: scala.collection.Map[K, V] forSome { type K }) =
           MatcherResult(
             left.values.contains(expectedValue),
-            FailureMessages("didNotHaveValue", left, expectedValue),
-            FailureMessages("hadValue", left, expectedValue)
+            FailureMessages("didNotContainValue", left, expectedValue),
+            FailureMessages("containedValue", left, expectedValue)
           )
       }
   }
@@ -1321,7 +1339,21 @@ TODO: Do the same simplification as above
   }
 
   protected class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
-      extends ResultOfNotWordForCollection[(K, V), scala.collection.Map[K, V]](left, shouldBeTrue)
+      extends ResultOfNotWordForCollection[(K, V), scala.collection.Map[K, V]](left, shouldBeTrue) {
+
+    def contain(resultOfKeyWordApplication: ResultOfKeyWordApplication[K]) {
+      val right = resultOfKeyWordApplication.expectedKey
+      if ((left.contains(right)) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainKey" else "containedKey",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
 
   protected class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[E, T](left, shouldBeTrue) {
@@ -2457,6 +2489,21 @@ TODO: Do the same simplification as above
         }
       }
     }
+
+    // Map("one" -> 1, "two" -> 2) should (not contain key ("three"))
+    //                                         ^
+    def contain[K](resultOfKeyWordApplication: ResultOfKeyWordApplication[K]): Matcher[scala.collection.Map[K, Any]] = {
+      val expectedKey = resultOfKeyWordApplication.expectedKey
+      new Matcher[scala.collection.Map[K, Any]] {
+        def apply(left: scala.collection.Map[K, Any]) = {
+          MatcherResult(
+            !(left.contains(expectedKey)),
+            FailureMessages("containedKey", left, expectedKey),
+            FailureMessages("didNotContainKey", left, expectedKey)
+          )
+        }
+      }
+    }
 /*
     // Array(1, 2) should (not contain element (5) and not contain element (3))
     //                         ^
@@ -2549,6 +2596,18 @@ TODO: Do the same simplification as above
   // array should not contain element (10)
   //                          ^
   val element = new ElementWord
+
+  class ResultOfKeyWordApplication[T](val expectedKey: T)
+
+  class KeyWord {
+    // map should not contain key (10)
+    //                            ^
+    def apply[T](expectedKey: T) = new ResultOfKeyWordApplication(expectedKey)
+  }
+
+  // map should not contain key (10)
+  //                        ^
+  val key = new KeyWord
 
   class ResultOfAWordApplication(val symbol: Symbol)
 
