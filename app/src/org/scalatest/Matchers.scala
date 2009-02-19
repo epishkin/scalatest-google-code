@@ -802,6 +802,12 @@ TODO: Do the same simplification as above
       }
     }
 
+  // Ack. The above conversion doesn't apply to java.util.Maps, because java.util.Map is not a subinterface
+  // of java.util.Collection. But right now Matcher[Iterable] supports only "contain element" and "have size"
+  // syntax, and thus that should work on Java maps too, why not. Well I'll tell you why not. It is too complicated.
+  // Since java Map is not a java Collection, I'll say the contain syntax doesn't work on it. But you can say
+  // have key 
+
   protected class BehaveWord
   protected class ContainWord {
 
@@ -814,6 +820,7 @@ TODO: Do the same simplification as above
             FailureMessages("containedExpectedElement", left, expectedElement)
           )
       }
+
 /*
     def element[T](expectedElementParam: T): ElementContainerMatcher[T] =
       new ElementContainerMatcher[T] {

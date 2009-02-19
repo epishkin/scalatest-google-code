@@ -1860,5 +1860,141 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught3.getMessage === "[2, 1] contained element 2, and [2, 1] contained element 2")
       }
     }
+
+/*
+    I'm just not going to support this for now. Let them do whatever, and when someone
+    comes back with a good suggestion, then I can consider adding it.
+
+    describe("on java.util.Map") {
+
+      val javaMap: java.util.Map[String, Int] = new java.util.HashMap
+      javaMap.put("one",1)
+      javaMap.put("two", 2)
+
+      import java.util.Map.Entry
+
+      it("should do nothing if list contains the specified element") {
+        javaMap.entrySet should contain element ("one" -> 1)
+        javaMap.entrySet should (contain element ("two" -> 2))
+      }
+
+      it("should do nothing if list does not contain the element and used with should not") {
+        javaMap should (not contain element (3))
+        javaMap should not { contain element (3) }
+        javaMap should not contain element (3)
+      }
+
+      it("should do nothing when list contains the specified element and used in a logical-and expression") {
+        javaMap should { contain element (2) and (contain element (1)) }
+        javaMap should ((contain element (2)) and (contain element (1)))
+        javaMap should (contain element (2) and contain element (1))
+       }
+
+      it("should do nothing when list contains the specified element and used in a logical-or expression") {
+        javaMap should { contain element (77) or (contain element (2)) }
+        javaMap should ((contain element (77)) or (contain element (2)))
+        javaMap should (contain element (77) or contain element (2))
+      }
+
+      it("should do nothing when list doesn't contain the specified element and used in a logical-and expression with not") {
+        javaMap should { not { contain element (5) } and not { contain element (3) }}
+        javaMap should ((not contain element (5)) and (not contain element (3)))
+        javaMap should (not contain element (5) and not contain element (3))
+      }
+
+      it("should do nothing when list doesn't contain the specified element and used in a logical-or expression with not") {
+        javaMap should { not { contain element (1) } or not { contain element (3) }}
+        javaMap should ((not contain element (1)) or (not contain element (3)))
+        javaMap should (not contain element (3) or not contain element (2))
+      }
+
+      it("should throw TestFailedException if list does not contain the specified element") {
+        val caught = intercept[TestFailedException] {
+          javaMap should contain element (3)
+        }
+        assert(caught.getMessage === "{one=1, two=2} did not contain element 3")
+      }
+
+      it("should throw TestFailedException if list contains the specified element, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should not contain element (2)
+        }
+        assert(caught1.getMessage === "{one=1, two=2} contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should not (contain element (2))
+        }
+        assert(caught2.getMessage === "{one=1, two=2} contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should (not contain element (2))
+        }
+        assert(caught3.getMessage === "{one=1, two=2} contained element 2")
+      }
+
+      it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-and expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { contain element (5) and (contain element (2 - 1)) }
+        }
+        assert(caught1.getMessage === "{one=1, two=2} did not contain element 5")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should (contain element (5) and contain element (2 - 1))
+        }
+        assert(caught2.getMessage === "{one=1, two=2} did not contain element 5")
+      }
+
+      it("should throw a TestFailedException when list doesn't contain the specified element and used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { contain element (55) or (contain element (22)) }
+        }
+        assert(caught1.getMessage === "{one=1, two=2} did not contain element 55, and {one=1, two=2} did not contain element 22")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should (contain element (55) or contain element (22))
+        }
+        assert(caught2.getMessage === "{one=1, two=2} did not contain element 55, and {one=1, two=2} did not contain element 22")
+      }
+
+      it("should throw a TestFailedException when list contains the specified element and used in a logical-and expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { not { contain element (3) } and not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "{one=1, two=2} did not contain element 3, but {one=1, two=2} contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should ((not contain element (3)) and (not contain element (2)))
+        }
+        assert(caught2.getMessage === "{one=1, two=2} did not contain element 3, but {one=1, two=2} contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should (not contain element (3) and not contain element (2))
+        }
+        assert(caught3.getMessage === "{one=1, two=2} did not contain element 3, but {one=1, two=2} contained element 2")
+      }
+
+      it("should throw a TestFailedException when list contains the specified element and used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          javaMap should { not { contain element (2) } or not { contain element (2) }}
+        }
+        assert(caught1.getMessage === "{one=1, two=2} contained element 2, and {one=1, two=2} contained element 2")
+
+        val caught2 = intercept[TestFailedException] {
+          javaMap should ((not contain element (2)) or (not contain element (2)))
+        }
+        assert(caught2.getMessage === "{one=1, two=2} contained element 2, and {one=1, two=2} contained element 2")
+
+        val caught3 = intercept[TestFailedException] {
+          javaMap should (not contain element (2) or not contain element (2))
+        }
+        assert(caught3.getMessage === "{one=1, two=2} contained element 2, and {one=1, two=2} contained element 2")
+      }
+    }
+*/
   }
 }
