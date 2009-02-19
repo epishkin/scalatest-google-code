@@ -35,11 +35,10 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
 
       it("should do nothing if map does not contain the specified value and used with not") {
         Map("one" -> 1, "two" -> 2) should not { contain value (3) }
-        // Map("one" -> 1, "two" -> 2) should not contain value (3)
+        Map("one" -> 1, "two" -> 2) should not contain value (3)
         Map("one" -> 1, "two" -> 2) should (not contain value (3))
       }
 
-/*
       it("should do nothing when map contains specified value and used in a logical-and expression") {
         Map("one" -> 1, "two" -> 2) should { contain value (2) and (contain value (1)) }
         Map("one" -> 1, "two" -> 2) should ((contain value (2)) and (contain value (1)))
@@ -47,9 +46,9 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
       }
 
       it("should do nothing when map contains specified value and used in a logical-or expression") {
-        Map("one" -> 1, "two" -> 2) should { contain value ("cat") or (contain value (1)) }
-        Map("one" -> 1, "two" -> 2) should ((contain value ("cat")) or (contain value (1)))
-        Map("one" -> 1, "two" -> 2) should (contain value ("cat") or contain value (1))
+        Map("one" -> 1, "two" -> 2) should { contain value (7) or (contain value (1)) }
+        Map("one" -> 1, "two" -> 2) should ((contain value (7)) or (contain value (1)))
+        Map("one" -> 1, "two" -> 2) should (contain value (7) or contain value (1))
       }
 
       it("should do nothing when map does not contain the specified value and used in a logical-and expression with not") {
@@ -160,7 +159,6 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
         }
         assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained value 2, and Map(one -> 1, two -> 2) contained value 2")
       }
-*/
     }
   }
 }

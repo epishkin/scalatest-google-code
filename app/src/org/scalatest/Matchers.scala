@@ -243,8 +243,12 @@ trait Matchers extends Assertions { matchers =>
       def element[T](expectedElement: T) = matchersWrapper.and(matchers.contain.element(expectedElement))
 
       // Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
-      //                                                             ^
+      //                                                                     ^
       def key[T](expectedElement: T) = matchersWrapper.and(matchers.contain.key(expectedElement))
+
+      // Map("one" -> 1, "two" -> 2) should (contain value (2) and contain value (1))
+      //                                                                   ^
+      def value[T](expectedValue: T) = matchersWrapper.and(matchers.contain.value(expectedValue))
     }
 
     def and(containWord: ContainWord): AndContainWord = new AndContainWord
@@ -453,6 +457,11 @@ trait Matchers extends Assertions { matchers =>
       def contain[T](resultOfKeyWordApplication: ResultOfKeyWordApplication[T]) =
         matchersWrapper.and(matchers.not.contain(resultOfKeyWordApplication))
 
+      // Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
+      //                                                                   ^
+      def contain[T](resultOfValueWordApplication: ResultOfValueWordApplication[T]) =
+        matchersWrapper.and(matchers.not.contain(resultOfValueWordApplication))
+
 /*
 TODO: Ah, maybe this was the simplification
       This won't override because the types are the same after erasure. See note on definition of ResultOfLengthOrSizeWordApplication
@@ -533,7 +542,11 @@ TODO: Ah, maybe this was the simplification
 
       // Map("one" -> 1, "two" -> 2) should (contain key ("cat") or contain key ("one"))
       //                                                                    ^
-      def key[T](expectedElement: T) = matchersWrapper.or(matchers.contain.key(expectedElement))
+      def key[T](expectedKey: T) = matchersWrapper.or(matchers.contain.key(expectedKey))
+
+      // Map("one" -> 1, "two" -> 2) should (contain value (7) or contain value (1))
+      //                                                                  ^
+      def value[T](expectedValue: T) = matchersWrapper.or(matchers.contain.value(expectedValue))
     }
 
     def or(containWord: ContainWord): OrContainWord = new OrContainWord
@@ -732,6 +745,11 @@ TODO: Ah, maybe this was the simplification
       //                                                                    ^
       def contain[T](resultOfKeyWordApplication: ResultOfKeyWordApplication[T]) =
         matchersWrapper.or(matchers.not.contain(resultOfKeyWordApplication))
+
+      // Map("one" -> 1, "two" -> 2) should (not contain value (2) or not contain value (3))
+      //                                                                  ^
+      def contain[T](resultOfValueWordApplication: ResultOfValueWordApplication[T]) =
+        matchersWrapper.or(matchers.not.contain(resultOfValueWordApplication))
 /*
 TODO: Do the same simplification as above
       // By-name parameter is to get this to short circuit:
@@ -1347,6 +1365,21 @@ TODO: Do the same simplification as above
         throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotContainKey" else "containedKey",
+              left,
+              right
+            )
+          )
+      }
+    }
+
+    // Map("one" -> 1, "two" -> 2) should not contain value (3)
+    //                                        ^
+    def contain(resultOfValueWordApplication: ResultOfValueWordApplication[V]) {
+      val right = resultOfValueWordApplication.expectedValue
+      if ((left.values.exists(_ == right)) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainValue" else "containedValue",
               left,
               right
             )
