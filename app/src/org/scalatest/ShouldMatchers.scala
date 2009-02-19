@@ -531,16 +531,13 @@ trait ShouldMatchers extends Matchers {
 
   protected class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[java.util.Map[K, V]] {
 
-// RRRRR
     def should(containWord: ContainWord): ResultOfContainWordForJavaMap[K, V] = {
       new ResultOfContainWordForJavaMap(left, true)
     }
 
-/*
-    override def should(notWord: NotWord): ResultOfNotWordForJavaMap[java.util.Map[K, V]] = {
+    override def should(notWord: NotWord): ResultOfNotWordForJavaMap[K, V] = {
       new ResultOfNotWordForJavaMap(leftOperand, false)
     }
-*/
   }
 
   protected class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
