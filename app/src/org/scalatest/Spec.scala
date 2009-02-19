@@ -17,6 +17,7 @@ package org.scalatest
 
 import NodeFamily._
 import scala.collection.immutable.ListSet
+import org.scalatest.TestFailedExceptionHelper.getStackDepth
 
 /*
 Note: the info in this class will when the test is running, put it into cold storage, and send it after the test completes. This
@@ -677,9 +678,13 @@ trait Spec extends Suite {
   // All examples, in reverse order of registration
   private var examplesList = List[Example]()
 
+  // TODO: update documentation to indicate a TestFailedException will be thrown on
+  // duplicate test name, not an IllegalArgumentException.
   private def registerExample(specText: String, f: => Unit) = {
     val testName = getTestName(specText, currentBranch)
-    require(!examplesList.exists(_.testName == testName), "Duplicate test name: " + testName)
+    if (examplesList.exists(_.testName == testName)) {
+      throw new TestFailedException(Resources("duplicateTestName", testName), getStackDepth("Spec.scala", "it"))
+    }
     val exampleShortName = specText
     val example = Example(currentBranch, testName, specText, currentBranch.level + 1, f _)
     currentBranch.subNodes ::= example

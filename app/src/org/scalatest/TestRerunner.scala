@@ -67,7 +67,7 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
         reporter.runAborted(report)
       }
       case ex: Throwable => {
-        val report = new Report("org.scalatest.TestRerunner", Resources("bigProblems"), Some(ex), None)
+        val report = new Report("org.scalatest.TestRerunner", Resources.bigProblems(ex), Some(ex), None)
         reporter.runAborted(report)
       }
     }
