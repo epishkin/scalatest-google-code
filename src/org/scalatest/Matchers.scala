@@ -342,6 +342,7 @@ trait Matchers extends Assertions { matchers =>
       def equal(any: Any) =
         matchersWrapper.and(matchers.not.apply(matchers.equal(any)))
 
+/*
       // By-name parameter is to get this to short circuit:
       // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
       // I had to do it this way to support short-circuiting after and, because i need to use by-name parameters
@@ -363,6 +364,14 @@ trait Matchers extends Assertions { matchers =>
             }
           )
         )
+*/
+
+      def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
+        matchersWrapper.and(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
+
+      // Array(1, 2) should (not have size (5) and not have size (3))
+      def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) =
+        matchersWrapper.and(matchers.not.apply(matchers.have.size(resultOfSizeWordApplication.expectedSize)))
 
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
         matchersWrapper.and(matchers.not.be(resultOfLessThanComparison))
@@ -465,21 +474,6 @@ trait Matchers extends Assertions { matchers =>
       //                                                                   ^
       def contain[T](resultOfValueWordApplication: ResultOfValueWordApplication[T]) =
         matchersWrapper.and(matchers.not.contain(resultOfValueWordApplication))
-
-/*
-TODO: Ah, maybe this was the simplification
-      This won't override because the types are the same after erasure. See note on definition of ResultOfLengthOrSizeWordApplication
-      // By-name parameter is to get this to short circuit:
-      // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
-      def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
-        matchersWrapper.and(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
-
-      // Array(1, 2) should (not have size (5) and not have size (3))
-      // By-name parameter is to get this to short circuit:
-      // Array(1, 2) should (have size (1) and not have size {mockClown.hasBigRedNose; 1})
-      def have(resultOfSizeWordApplication: => ResultOfSizeWordApplication) =
-        matchersWrapper.and(matchers.not.apply(matchers.have.size(resultOfSizeWordApplication.expectedSize)))
-*/
     }
 
     def and(notWord: NotWord): AndNotWord = new AndNotWord
@@ -640,6 +634,7 @@ TODO: Ah, maybe this was the simplification
       def equal(any: Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
 
+/*
       // See explanation in have for AndNotWord
       def have(resultOfLengthOrSizeWordApplication: ResultOfLengthOrSizeWordApplication) =
         matchersWrapper.or(
@@ -652,6 +647,15 @@ TODO: Ah, maybe this was the simplification
             }
           )
         )
+*/
+
+      def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
+        matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
+
+      // Array(1, 2) should (not have size (2) or not have size (3))
+      //                                          ^
+      def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) =
+        matchersWrapper.or(matchers.not.apply(matchers.have.size(resultOfSizeWordApplication.expectedSize)))
 
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfLessThanComparison))
@@ -754,18 +758,6 @@ TODO: Ah, maybe this was the simplification
       //                                                                  ^
       def contain[T](resultOfValueWordApplication: ResultOfValueWordApplication[T]) =
         matchersWrapper.or(matchers.not.contain(resultOfValueWordApplication))
-/*
-TODO: Do the same simplification as above
-      // By-name parameter is to get this to short circuit:
-      // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
-      def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
-        matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
-
-      // Array(1, 2) should (not have size (2) or not have size (3))
-      //                                          ^
-      def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) =
-        matchersWrapper.or(matchers.not.apply(matchers.have.size(resultOfSizeWordApplication.expectedSize)))
-*/
     }
 
     def or(notWord: NotWord): OrNotWord = new OrNotWord
@@ -1390,11 +1382,11 @@ TODO: Do the same simplification as above
           }
       }
 
-      def apply[T](propertyVerifiers: PropertyVerifier[T, _]*): Matcher[T] =
+      def apply[T](firstPropertyVerifier: PropertyVerifier[T, _], propertyVerifiers: PropertyVerifier[T, _]*): Matcher[T] =
         new Matcher[T] {
           def apply(left: T) = {
             val results =
-              for (propertyVerifier <- propertyVerifiers) yield
+              for (propertyVerifier <- firstPropertyVerifier :: propertyVerifiers.toList) yield
                 propertyVerifier(left)
             val firstFailureOption = results.find(_.isDefined)
             firstFailureOption match {
@@ -2836,9 +2828,9 @@ TODO: Do the same simplification as above
   // to do it the OO way and have an rather ugly expectedLengthOrSize val set by each subclass, but I needed to
   // konw whether it was length or size to be able to call length or size to get the appropriate error message on
   // a failure.
-  abstract class ResultOfLengthOrSizeWordApplication
+  // abstract class ResultOfLengthOrSizeWordApplication
 
-  class ResultOfLengthWordApplication(val expectedLength: Long) extends ResultOfLengthOrSizeWordApplication
+  class ResultOfLengthWordApplication(val expectedLength: Long) // extends ResultOfLengthOrSizeWordApplication
 
   class LengthWord {
     def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
@@ -2846,7 +2838,7 @@ TODO: Do the same simplification as above
 
   val length = new LengthWord
     
-  class ResultOfSizeWordApplication(val expectedSize: Long) extends ResultOfLengthOrSizeWordApplication
+  class ResultOfSizeWordApplication(val expectedSize: Long) // extends ResultOfLengthOrSizeWordApplication
 
   class SizeWord {
     def apply(expectedSize: Long) = new ResultOfSizeWordApplication(expectedSize)
