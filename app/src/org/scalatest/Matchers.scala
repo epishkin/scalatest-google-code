@@ -1100,6 +1100,7 @@ trait Matchers extends Assertions { matchers =>
     }
  
   protected class PropertyVerificationResult[P](
+    val matches: Boolean,
     val propertyName: String,
     val expectedValue: P,
     val actualValue: P
@@ -1107,15 +1108,15 @@ trait Matchers extends Assertions { matchers =>
 
   // T is the type of the object that has a property to verify with an instance of this trait, P is the type of that particular property
   // Since I should be able to pass 
-  protected trait PropertyVerifier[-T, P] extends Function1[T, Option[PropertyVerificationResult[P]]] {
+  protected trait PropertyVerifier[-T, P] extends Function1[T, PropertyVerificationResult[P]] {
     // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: T): Option[PropertyVerificationResult[P]]
+    def apply(objectWithProperty: T): PropertyVerificationResult[P]
   }
 
   protected class AnyPropertyVerifierProducer(symbol: Symbol) {
     def apply(expectedValue: Any) =
       new PropertyVerifier[AnyRef, Any] {
-        def apply(objectWithProperty: AnyRef): Option[PropertyVerificationResult[Any]] = {
+        def apply(objectWithProperty: AnyRef): PropertyVerificationResult[Any] = {
 
           // TODO: rename rightNoTick to propertyName probably
           // If 'title passed, rightNoTick would be "title"
@@ -1157,30 +1158,23 @@ trait Matchers extends Assertions { matchers =>
             case (0, 1) => // Has a title field
               val field = fieldArray(0)
               val value: AnyRef = field.get(objectWithProperty)
-              if (value != expectedValue)
-                Some(
-                  new PropertyVerificationResult[Any](
-                    rightNoTick,
-                    expectedValue,
-                    value
-                  )
-                )
-             else None
+              new PropertyVerificationResult[Any](
+                value == expectedValue,
+                rightNoTick,
+                expectedValue,
+                value
+              )
 
             case (1, 0) => // Has either a length or getLength method
               val method = methodArray(0)
               val result: AnyRef =
                 method.invoke(objectWithProperty, Array[AnyRef](): _*)
-
-              if (result != expectedValue)
-                Some(
-                  new PropertyVerificationResult[Any](
-                    rightNoTick,
-                    expectedValue,
-                    result
-                  )
-                )
-             else None
+              new PropertyVerificationResult[Any](
+                result == expectedValue,
+                rightNoTick,
+                expectedValue,
+                result
+              )
 
             case _ => // too many
               throw new IllegalArgumentException("TODO: Fix this")
@@ -1349,10 +1343,10 @@ trait Matchers extends Assertions { matchers =>
             val results =
               for (propertyVerifier <- firstPropertyVerifier :: propertyVerifiers.toList) yield
                 propertyVerifier(left)
-            val firstFailureOption = results.find(_.isDefined)
+            val firstFailureOption = results.find(pv => !pv.matches)
             firstFailureOption match {
               case Some(firstFailure) =>
-                val failedVerification = firstFailure.get // I know this will succeed because _.isDefined was used to grab it above
+                val failedVerification = firstFailure
                 MatcherResult(
                   false,
                   FailureMessages("propertyDidNotHaveExpectedValue", failedVerification.propertyName, failedVerification.expectedValue, failedVerification.actualValue),
@@ -2782,14 +2776,26 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
-  class ResultOfLengthWordApplication(val expectedLength: Long)
+  class ResultOfLengthWordApplication(val expectedLength: Long) extends PropertyVerifier[Any, Long] {
+    // Returns None if it verifies, otherwise a Some with the failure message, like ===
+    def apply(objectWithProperty: Any): PropertyVerificationResult[Long] =
+      new PropertyVerificationResult[Long](false, "length", expectedLength, 12)
+  }
+
+// XXXXXXXX
+/*
+  class LengthWord extends PropertyVerifier[AnyRef, Long] {
+    def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
+    // def apply(objectWithProperty: T): Option[PropertyVerificationResult[P]]
+  }
+*/
 
   class LengthWord {
     def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
   }
 
   val length = new LengthWord
-    
+ 
   class ResultOfSizeWordApplication(val expectedSize: Long)
 
   class SizeWord {

@@ -31,10 +31,7 @@ trait BookPropertyVerifiers { this: Matchers =>
 
   class TitleVerifier(expectedValue: String) extends PropertyVerifier[Book, String] {
     def apply(book: Book) = {
-      if (book.title != expectedValue) {
-        Some(new PropertyVerificationResult("title", expectedValue, book.title))
-      }
-      else None
+      new PropertyVerificationResult(book.title == expectedValue, "title", expectedValue, book.title)
     }
   }
 
@@ -42,10 +39,7 @@ trait BookPropertyVerifiers { this: Matchers =>
 
   class AuthorVerifier(expectedValue: String) extends PropertyVerifier[Book, String] {
     def apply(book: Book) = {
-      if (book.author != expectedValue) {
-        Some(new PropertyVerificationResult("author", expectedValue, book.author))
-      }
-      else None
+      new PropertyVerificationResult(book.author == expectedValue, "author", expectedValue, book.author)
     }
   }
 
@@ -53,10 +47,7 @@ trait BookPropertyVerifiers { this: Matchers =>
 
   class PubYearVerifier(expectedValue: Int) extends PropertyVerifier[Book, Int] {
     def apply(book: Book) = {
-      if (book.pubYear != expectedValue) {
-        Some(new PropertyVerificationResult("pubYear", expectedValue, book.pubYear))
-      }
-      else None
+      new PropertyVerificationResult(book.pubYear == expectedValue, "pubYear", expectedValue, book.pubYear)
     }
   }
 
@@ -129,7 +120,6 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
-/*
       it ("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
 
         val caught1 = intercept[TestFailedException] {
@@ -137,7 +127,6 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         }
         assert(caught1.getMessage === "Expected property \"length\" to have value 43, but it had value 45.")
       }
-*/
 
       /*
       This does not compile, which is what I want
