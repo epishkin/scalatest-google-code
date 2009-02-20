@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-protected class BeTrueMatchResult(
+class BeTrueMatchResult(
   val matches: Boolean, // true if the Boolean property was true
   val propertyName: String
 )
