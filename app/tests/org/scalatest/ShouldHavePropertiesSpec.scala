@@ -20,7 +20,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-trait BookPropertyVerifiers { this: Matchers => 
+trait BookPropertyMatchers { this: Matchers => 
 
   class Book(
     var title: String,
@@ -29,32 +29,32 @@ trait BookPropertyVerifiers { this: Matchers =>
     val length: Int
   )
 
-  class TitleVerifier(expectedValue: String) extends PropertyVerifier[Book, String] {
+  class TitleMatcher(expectedValue: String) extends PropertyMatcher[Book, String] {
     def apply(book: Book) = {
-      new PropertyVerificationResult(book.title == expectedValue, "title", expectedValue, book.title)
+      new PropertyMatcherResult(book.title == expectedValue, "title", expectedValue, book.title)
     }
   }
 
-  def title(expectedValue: String) = new TitleVerifier(expectedValue)
+  def title(expectedValue: String) = new TitleMatcher(expectedValue)
 
-  class AuthorVerifier(expectedValue: String) extends PropertyVerifier[Book, String] {
+  class AuthorMatcher(expectedValue: String) extends PropertyMatcher[Book, String] {
     def apply(book: Book) = {
-      new PropertyVerificationResult(book.author == expectedValue, "author", expectedValue, book.author)
+      new PropertyMatcherResult(book.author == expectedValue, "author", expectedValue, book.author)
     }
   }
 
-  def author(expectedValue: String) = new AuthorVerifier(expectedValue)
+  def author(expectedValue: String) = new AuthorMatcher(expectedValue)
 
-  class PubYearVerifier(expectedValue: Int) extends PropertyVerifier[Book, Int] {
+  class PubYearMatcher(expectedValue: Int) extends PropertyMatcher[Book, Int] {
     def apply(book: Book) = {
-      new PropertyVerificationResult(book.pubYear == expectedValue, "pubYear", expectedValue, book.pubYear)
+      new PropertyMatcherResult(book.pubYear == expectedValue, "pubYear", expectedValue, book.pubYear)
     }
   }
 
-  def pubYear(expectedValue: Int) = new PubYearVerifier(expectedValue)
+  def pubYear(expectedValue: Int) = new PubYearMatcher(expectedValue)
 }
 
-class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyVerifiers {
+class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
   // Checking for a specific size
   describe("The 'have {' syntax") {
@@ -120,6 +120,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
+/*
       it ("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
 
         val caught1 = intercept[TestFailedException] {
@@ -127,6 +128,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         }
         assert(caught1.getMessage === "Expected property \"length\" to have value 43, but it had value 45.")
       }
+*/
 
       /*
       This does not compile, which is what I want
