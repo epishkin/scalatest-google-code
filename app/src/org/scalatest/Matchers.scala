@@ -1144,24 +1144,28 @@ TODO: Do the same simplification as above
       def size = o.getSize()
     }
  
-  class PropertyVerificationResult[P](
+  protected class PropertyVerificationResult[P](
     val propertyName: String,
     val expectedValue: P,
     val actualValue: P
   )
 
-  // T is the type with properties, P is the type of the particular property being verified here
-  trait PropertyVerifier[T, P] {
+  // T is the type of the object that has a property to verify with an instance of this trait, P is the type of that particular property
+  // Since I should be able to pass 
+  protected trait PropertyVerifier[-T, P] extends Function1[T, Option[PropertyVerificationResult[P]]] {
     // Returns None if it verifies, otherwise a Some with the failure message, like ===
     def apply(objectWithProperty: T): Option[PropertyVerificationResult[P]]
   }
 
-/*
-    protected implicit def convertSymbolToPropertyVerifier(symbol: Symbol) =
-      new PropertyVerifier[Any] {
-        
+  protected class AnyPropertyVerifierProducer(symbol: Symbol) {
+    def apply(expectedValue: Any) =
+      new PropertyVerifier[AnyRef, Any] {
+        def apply(objectWithProperty: AnyRef): Option[PropertyVerificationResult[Any]] = None // Always verifies
       }
-*/
+  }
+
+  protected implicit def convertSymbolToPropertyVerifier(symbol: Symbol) = new AnyPropertyVerifierProducer(symbol)
+
   protected class HaveWord {
 
     // I couldn't figure out how to combine view bounds with existential types. May or may not

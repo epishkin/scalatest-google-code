@@ -75,7 +75,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
 
         book should have (
           title ("A Tale of Two Cities"),
-          author ("Gibson"),
+          'author ("Gibson"),
           pubYear (1859)
         )
       }
