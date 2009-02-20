@@ -228,9 +228,11 @@ trait Matchers extends Assertions { matchers =>
       }
 
     class AndHaveWord {
+
       def length(expectedLength: Long) = and(have.length(expectedLength))
       // Array(1, 2) should (have size (2) and have size (3 - 1))
       //                                       ^
+
       def size(expectedSize: Long) = and(have.size(expectedSize))
     }
 
@@ -1141,7 +1143,25 @@ TODO: Do the same simplification as above
     new SizeWrapper {
       def size = o.getSize()
     }
+ 
+  class PropertyVerificationResult[P](
+    val propertyName: String,
+    val expectedValue: P,
+    val actualValue: P
+  )
 
+  // T is the type with properties, P is the type of the particular property being verified here
+  trait PropertyVerifier[T, P] {
+    // Returns None if it verifies, otherwise a Some with the failure message, like ===
+    def apply(objectWithProperty: T): Option[PropertyVerificationResult[P]]
+  }
+
+/*
+    protected implicit def convertSymbolToPropertyVerifier(symbol: Symbol) =
+      new PropertyVerifier[Any] {
+        
+      }
+*/
   protected class HaveWord {
 
     // I couldn't figure out how to combine view bounds with existential types. May or may not
@@ -1293,6 +1313,31 @@ TODO: Do the same simplification as above
               }
           }
       }
+
+      def apply[T](propertyVerifiers: PropertyVerifier[T, _]*): Matcher[T] =
+        new Matcher[T] {
+          def apply(left: T) = {
+            val results =
+              for (propertyVerifier <- propertyVerifiers) yield
+                propertyVerifier(left)
+            val firstFailureOption = results.find(_.isDefined)
+            firstFailureOption match {
+              case Some(firstFailure) =>
+                val failedVerification = firstFailure.get // I know this will succeed because _.isDefined was used to grab it above
+                MatcherResult(
+                  false,
+                  FailureMessages("propertyDidNotHaveExpectedValue", failedVerification.propertyName, failedVerification.expectedValue, failedVerification.actualValue),
+                  FailureMessages("propertyHadExpectedValue")
+                )
+              case None =>
+                MatcherResult(
+                  true,
+                  FailureMessages("propertyDidNotHaveExpectedValue", "NONE", "NONE", "NONE"), // This one doesn't make sense
+                  FailureMessages("propertyHadExpectedValue")
+                )
+            }
+          }
+        }
   }
   
   //
