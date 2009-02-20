@@ -60,15 +60,14 @@ trait BookPropertyMatchers { this: Matchers =>
     }
   }
 
-/*
-  class GoodReadBeMatcher extends BeMatcher[Book] {
+  class GoodReadBeTrueMatcher extends BeTrueMatcher[Book] {
     def apply(book: Book) = {
-      new BeMatchResult(book.isGoodRead, "goodRead")
+      new BeTrueMatchResult(book.isGoodRead, "goodRead")
     }
   }
-*/
+
   def goodRead(expectedValue: Boolean) = new GoodReadMatcher(expectedValue)
-  def goodRead = new GoodReadMatcher(true)
+  def goodRead = new GoodReadBeTrueMatcher
 }
 
 class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
