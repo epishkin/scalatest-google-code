@@ -789,23 +789,6 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
-/*
-  protected trait ElementContainerMatcher[T] extends Matcher[Iterable[T]] {
-    val expectedElement: T
-    val shouldBeTrue: Boolean
-  }
-
-  protected implicit def convertElementContainerMatcherToJavaCollectionMatcher[T](elementContainerMatcher: ElementContainerMatcher[T]) = 
-    new Matcher[java.util.Collection[T]] {
-      def apply(left: java.util.Collection[T]) =
-        MatcherResult(
-          left.contains(elementContainerMatcher.expectedElement) == elementContainerMatcher.shouldBeTrue, 
-          FailureMessages("didNotContainExpectedElement", left, elementContainerMatcher.expectedElement),
-          FailureMessages("containedExpectedElement", left, elementContainerMatcher.expectedElement)
-        )
-    }
-*/
-
   // Neat.
   protected implicit def convertIterableMatcherToJavaCollectionMatcher[T](iterableMatcher: Matcher[Iterable[T]]) = 
     new Matcher[java.util.Collection[T]] {
@@ -867,20 +850,6 @@ trait Matchers extends Assertions { matchers =>
             FailureMessages("containedExpectedElement", left, expectedElement)
           )
       }
-
-/*
-    def element[T](expectedElementParam: T): ElementContainerMatcher[T] =
-      new ElementContainerMatcher[T] {
-        val expectedElement = expectedElementParam
-        val shouldBeTrue = true
-        def apply(left: Iterable[T]) =
-          MatcherResult(
-            left.elements.contains(expectedElementParam), 
-            FailureMessages("didNotContainExpectedElement", left, expectedElementParam),
-            FailureMessages("containedExpectedElement", left, expectedElementParam)
-          )
-      }
-*/
 
     //
     // This key method is called when "contain" is used in a logical expression, such as:
@@ -1639,17 +1608,6 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
-/*
-  // What's this one for again?
-  implicit def resultOfBeWordToForAnyRef[T <: AnyRef](resultOfBeWord: ResultOfBeWord[T]): ResultOfBeWordForAnyRef =
-    new ResultOfBeWordForAnyRef(resultOfBeWord.left, resultOfBeWord.shouldBeTrue)
-
-  protected class ResultOfBeWord[T](val left: T, val shouldBeTrue: Boolean) {
-    def a[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-    def an[S <: AnyRef](right: Symbol): Matcher[S] = be(right)
-  }
-*/
-
   protected class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
     def equal(right: Any) {
       if ((left == right) != shouldBeTrue)
@@ -2341,15 +2299,6 @@ trait Matchers extends Assertions { matchers =>
       Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
   }
 
-
-/*  def not[S <: Any](matcher: Matcher[S]) =
-    new Matcher[S] {
-      def apply(left: S) =
-        matcher(left) match {
-          case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
-        }
-    }*/
-
   class NotWord {
 
     def apply[S <: Any](matcher: Matcher[S]) =
@@ -2359,18 +2308,6 @@ trait Matchers extends Assertions { matchers =>
             case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
           }
       }
-
-/*
-    def apply[S <: Any](elementContainerMatcher: ElementContainerMatcher[S]): ElementContainerMatcher[S] =
-      new ElementContainerMatcher[S] {
-        val expectedElement = elementContainerMatcher.expectedElement
-        val shouldBeTrue = !elementContainerMatcher.shouldBeTrue
-        def apply(left: Iterable[S]) =
-          elementContainerMatcher(left) match {
-            case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
-          }
-      }
-*/
 
     def equal(right: Any): Matcher[Any] = apply(matchers.equal(right))
 
@@ -2720,22 +2657,6 @@ trait Matchers extends Assertions { matchers =>
         }
       }
     }
-/*
-    // Array(1, 2) should (not contain element (5) and not contain element (3))
-    //                         ^
-    def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): ElementContainerMatcher[T] =
-      new ElementContainerMatcher[T] {
-        val expectedElement = resultOfElementWordApplication.expectedElement
-        val shouldBeTrue = false
-        def apply(left: Iterable[T]) = {
-          MatcherResult(
-            !(left.exists(_ == expectedElement)),
-            FailureMessages("containedExpectedElement", left, expectedElement),
-            FailureMessages("didNotContainExpectedElement", left, expectedElement)
-          )
-        }
-      }
-*/
   }
 
   val not = new NotWord
@@ -2781,14 +2702,6 @@ trait Matchers extends Assertions { matchers =>
     def apply(objectWithProperty: Any): PropertyVerificationResult[Long] =
       new PropertyVerificationResult[Long](false, "length", expectedLength, 12)
   }
-
-// XXXXXXXX
-/*
-  class LengthWord extends PropertyVerifier[AnyRef, Long] {
-    def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
-    // def apply(objectWithProperty: T): Option[PropertyVerificationResult[P]]
-  }
-*/
 
   class LengthWord {
     def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
