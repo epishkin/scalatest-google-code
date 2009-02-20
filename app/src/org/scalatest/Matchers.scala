@@ -1549,7 +1549,7 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
-  protected class ResultOfBeWordForAnyRef(left: AnyRef, shouldBeTrue: Boolean) {
+  protected class ResultOfBeWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean) {
 
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
@@ -1569,6 +1569,21 @@ trait Matchers extends Assertions { matchers =>
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+        )
+      }
+    }
+
+    // TODO: Check the shouldBeTrues, are they sometimes always false or true?
+    // badBook should be a (goodRead)
+    //                   ^
+    def a(beTrueMatcher: BeTrueMatcher[T]) {
+      val beTrueMatchResult = beTrueMatcher(left)
+      if (beTrueMatchResult.matches != shouldBeTrue) {
+        throw newTestFailedException(
+          if (shouldBeTrue)
+            FailureMessages("wasNotA", left, UnquotedString(beTrueMatchResult.propertyName))
+          else
+            FailureMessages("wasA", left, UnquotedString(beTrueMatchResult.propertyName))
         )
       }
     }
@@ -2732,9 +2747,11 @@ trait Matchers extends Assertions { matchers =>
   val value = new ValueWord
 
   class ResultOfAWordToSymbolApplication(val symbol: Symbol)
+  class ResultOfAWordToBeTrueMatcherApplication[T](val beTrueMatcher: BeTrueMatcher[T])
 
   class AWord {
     def apply(symbol: Symbol) = new ResultOfAWordToSymbolApplication(symbol)
+    def apply[T](beTrueMatcher: BeTrueMatcher[T]) = new ResultOfAWordToBeTrueMatcherApplication(beTrueMatcher)
   }
 
   val a = new AWord

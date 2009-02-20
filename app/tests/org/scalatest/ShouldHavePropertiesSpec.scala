@@ -22,7 +22,7 @@ import Prop._
 
 trait BookPropertyMatchers { this: Matchers => 
 
-  class Book(
+  case class Book(
     var title: String,
     val author: String,
     val pubYear: Int,
@@ -137,15 +137,15 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
-/*
       it("should throw TestFailedException if a Boolean property matcher is used with be and the property is false") {
 
         val caught1 = intercept[TestFailedException] {
-          badBook should be a (goodRead)
+          convertToAnyRefShouldWrapper(badBook) should be a (goodRead)
         }
-        assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
+        assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
       }
 
+/*
       it("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
 
         val caught1 = intercept[TestFailedException] {

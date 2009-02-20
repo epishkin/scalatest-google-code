@@ -356,7 +356,7 @@ trait ShouldMatchers extends Matchers {
       new ResultOfNotWordForAnyRef(leftOperand, false)
     }
 
-    def should(beWord: BeWord): ResultOfBeWordForAnyRef = new ResultOfBeWordForAnyRef(leftOperand, true)
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
 
   protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
@@ -668,7 +668,7 @@ THIS DOESN'T WORK BECAUSE...
     override def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
       new ResultOfNotWordForAnyRef(leftOperand, false)
     }
-    def should(beWord: BeWord): ResultOfBeWordForAnyRef = new ResultOfBeWordForAnyRef(leftOperand, true)
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
   protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
