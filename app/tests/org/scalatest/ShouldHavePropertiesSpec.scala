@@ -69,15 +69,38 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
 
     describe("on an object with Scala-style properties") {
 
-      it ("should work") {
+      val book = new Book("A Tale of Two Cities", "Dickens", 1859)
 
-        val book = new Book("A Tale of Two Cities", "Dickens", 1859)
-
+      it ("should do nothing if all the properties match") {
         book should have (
           title ("A Tale of Two Cities"),
-          'author ("Gibson"),
+          author ("Dickens"),
           pubYear (1859)
         )
+      }
+
+      it ("should throw TestFailedException if at least one of the properties don't match") {
+
+        val caught = intercept[TestFailedException] {
+          book should have (
+            title ("A Tale of Two Cities"),
+            author ("Gibson"),
+            pubYear (1859)
+          )
+        }
+        assert(caught.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
+      }
+
+      it ("should throw TestFailedException if at least one of the properties don't match, when using symbols") {
+
+        val caught1 = intercept[TestFailedException] {
+          book should have (
+            title ("A Tale of Two Cities"),
+            'author ("Gibson"),
+            pubYear (1859)
+          )
+        }
+        assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
     }
   }

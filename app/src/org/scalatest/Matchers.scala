@@ -78,42 +78,42 @@ import Helper.newTestFailedException
 
 trait Matchers extends Assertions { matchers =>
 
-  private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatcherResult = {
+  private def transformOperatorChars(s: String) = {
+    val builder = new StringBuilder
+    for (i <- 0 until s.length) {
+      val ch = s.charAt(i)
+      val replacement =
+        ch match {
+          case '!' => "$bang"
+          case '#' => "$hash"
+          case '~' => "$tilde"
+          case '|' => "$bar"
+          case '^' => "$up"
+          case '\\' => "$bslash"
+          case '@' => "$at"
+          case '?' => "$qmark"
+          case '>' => "$greater"
+          case '=' => "$eq"
+          case '<' => "$less"
+          case ':' => "$colon"
+          case '/' => "$div"
+          case '-' => "$minus"
+          case '+' => "$plus"
+          case '*' => "$times"
+          case '&' => "$amp"
+          case '%' => "$percent"
+          case _ => ""
+        }
 
-    def transformOperatorChars(s: String) = {
-      val builder = new StringBuilder
-      for (i <- 0 until s.length) {
-        val ch = s.charAt(i)
-        val replacement =
-          ch match {
-            case '!' => "$bang"
-            case '#' => "$hash"
-            case '~' => "$tilde"
-            case '|' => "$bar"
-            case '^' => "$up"
-            case '\\' => "$bslash"
-            case '@' => "$at"
-            case '?' => "$qmark"
-            case '>' => "$greater"
-            case '=' => "$eq"
-            case '<' => "$less"
-            case ':' => "$colon"
-            case '/' => "$div"
-            case '-' => "$minus"
-            case '+' => "$plus"
-            case '*' => "$times"
-            case '&' => "$amp"
-            case '%' => "$percent"
-            case _ => ""
-          }
-
-        if (replacement.length > 0)
-          builder.append(replacement)
-        else
-          builder.append(ch)
-      }
-      builder.toString
+      if (replacement.length > 0)
+        builder.append(replacement)
+      else
+        builder.append(ch)
     }
+    builder.toString
+  }
+
+  private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatcherResult = {
 
     // If 'empty passed, rightNoTick would be "empty"
     val rightNoTick = right.name
@@ -121,6 +121,7 @@ trait Matchers extends Assertions { matchers =>
     // methodNameToInvoke would also be "empty"
     val methodNameToInvoke = transformOperatorChars(rightNoTick)
 
+    // TODO: Isn't there an issue here with the operator chars being ignored?
     // methodNameToInvokeWithIs would be "isEmpty"
     val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
 
@@ -128,6 +129,7 @@ trait Matchers extends Assertions { matchers =>
     val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
       firstChar == 'o' || firstChar == 'u'
 
+    // TODO: I don't think I'm checking for fields here, and shouldn't I be?
     def isMethodToInvoke(m: Method) = {
 
       val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
@@ -1160,7 +1162,77 @@ TODO: Do the same simplification as above
   protected class AnyPropertyVerifierProducer(symbol: Symbol) {
     def apply(expectedValue: Any) =
       new PropertyVerifier[AnyRef, Any] {
-        def apply(objectWithProperty: AnyRef): Option[PropertyVerificationResult[Any]] = None // Always verifies
+        def apply(objectWithProperty: AnyRef): Option[PropertyVerificationResult[Any]] = {
+
+          // TODO: rename rightNoTick to propertyName probably
+          // If 'title passed, rightNoTick would be "title"
+          val rightNoTick = symbol.name
+
+          // methodNameToInvoke would also be "title"
+          val methodNameToInvoke = transformOperatorChars(rightNoTick)
+
+          // TODO: think about doing something with operator chars for the get case too
+          // methodNameToInvokeWithGet would be "getTitle"
+          val methodNameToInvokeWithGet = "get"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+
+          val firstChar = rightNoTick(0).toLowerCase
+          val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+            firstChar == 'o' || firstChar == 'u'
+
+// TODO: Here I'm not differentiating, man, between getTitle and title methods, oh, no, later I do throw an IAE, so this must change if
+// i'm going to change my strategy
+          def isMethodToInvoke(method: Method): Boolean =
+            (method.getName == methodNameToInvoke || method.getName == methodNameToInvokeWithGet) &&
+                method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers())
+
+          // Don't support calling a field named getSomething TODO: Drop this in the other cases too
+          def isFieldToAccess(field: Field): Boolean = (field.getName == methodNameToInvoke)
+
+          val methodArray =
+            for (method <- objectWithProperty.getClass.getMethods; if isMethodToInvoke(method))
+             yield method
+
+          val fieldArray =
+            for (field <- objectWithProperty.getClass.getFields; if isFieldToAccess(field))
+             yield field // rhymes: code as poetry
+
+          (methodArray.length, fieldArray.length) match {
+
+            case (0, 0) =>
+              throw newTestFailedException(Resources("propertyNotFound", rightNoTick, expectedValue.toString, methodNameToInvokeWithGet))
+
+            case (0, 1) => // Has a title field
+              val field = fieldArray(0)
+              val value: AnyRef = field.get(objectWithProperty)
+              if (value != expectedValue)
+                Some(
+                  new PropertyVerificationResult[Any](
+                    rightNoTick,
+                    expectedValue,
+                    value
+                  )
+                )
+             else None
+
+            case (1, 0) => // Has either a length or getLength method
+              val method = methodArray(0)
+              val result: AnyRef =
+                method.invoke(objectWithProperty, Array[AnyRef](): _*)
+
+              if (result != expectedValue)
+                Some(
+                  new PropertyVerificationResult[Any](
+                    rightNoTick,
+                    expectedValue,
+                    result
+                  )
+                )
+             else None
+
+            case _ => // too many
+              throw new IllegalArgumentException("TODO: Fix this")
+          }
+        }
       }
   }
 
