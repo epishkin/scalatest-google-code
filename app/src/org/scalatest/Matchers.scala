@@ -355,7 +355,7 @@ trait Matchers extends Assertions { matchers =>
 
       // isNotFileMock should (not be a ('file) and not be a ('file))
       //                                                ^
-      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
+      def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
 
       // isNotAppleMock should (not be an ('apple) and not be an ('apple)) 
       //                                                   ^
@@ -624,7 +624,7 @@ trait Matchers extends Assertions { matchers =>
 
       // isNotFileMock should (not be a ('directory) or not be a ('file))
       //                                                    ^
-      def be[T](resultOfAWordApplication: ResultOfAWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication))
+      def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication))
 
       // notAppleMock should (not be an ('apple) or not be an ('apple))
       //                                                ^
@@ -1663,7 +1663,7 @@ trait Matchers extends Assertions { matchers =>
 
     // notFileMock should not be a ('file)
     //                        ^
-    def be(resultOfAWordApplication: ResultOfAWordApplication) {
+    def be(resultOfAWordApplication: ResultOfAWordToSymbolApplication) {
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
@@ -2360,7 +2360,7 @@ trait Matchers extends Assertions { matchers =>
 
     // isNotFileMock should (not be a ('file) and not be a ('file))
     //                           ^
-    def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordApplication): Matcher[T] = {
+    def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordToSymbolApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
           val positiveMatchResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
@@ -2731,10 +2731,10 @@ trait Matchers extends Assertions { matchers =>
   //                        ^
   val value = new ValueWord
 
-  class ResultOfAWordApplication(val symbol: Symbol)
+  class ResultOfAWordToSymbolApplication(val symbol: Symbol)
 
   class AWord {
-    def apply(symbol: Symbol) = new ResultOfAWordApplication(symbol)
+    def apply(symbol: Symbol) = new ResultOfAWordToSymbolApplication(symbol)
   }
 
   val a = new AWord
