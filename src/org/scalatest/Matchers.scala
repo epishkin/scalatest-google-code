@@ -342,30 +342,6 @@ trait Matchers extends Assertions { matchers =>
       def equal(any: Any) =
         matchersWrapper.and(matchers.not.apply(matchers.equal(any)))
 
-/*
-      // By-name parameter is to get this to short circuit:
-      // "hi" should (have length (1) and not have length {mockClown.hasBigRedNose; 1})
-      // I had to do it this way to support short-circuiting after and, because i need to use by-name parameters
-      // that result in the two subclasses ResultOfLengthWordApplication and ResultOfSizeWordApplication. The by-name
-      // param ends up as a type Function0[Unit] I think, and so these two don't overload because the type is the
-      // same after erasure (they are both Function0). Darn. So I just make one
-      // of the superclass type, ResultOfLengthOrSizeWordApplication, and then do a pattern match. At first I tried
-      // to do it the OO way and have an rather ugly expectedLengthOrSize val set by each subclass, but I needed to
-      // konw whether it was length or size to be able to call length or size to get the appropriate error message on
-      // a failure. TODO: Since I'm not short circuiting anymore, can I simplify this?
-      def have(resultOfLengthOrSizeWordApplication: ResultOfLengthOrSizeWordApplication) =
-        matchersWrapper.and(
-          matchers.not.apply(
-            resultOfLengthOrSizeWordApplication match {
-              case resultOfLengthWordApplication: ResultOfLengthWordApplication =>
-                matchers.have.length(resultOfLengthWordApplication.expectedLength)
-              case resultOfSizeWordApplication: ResultOfSizeWordApplication =>
-                matchers.have.size(resultOfSizeWordApplication.expectedSize)
-            }
-          )
-        )
-*/
-
       def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
         matchersWrapper.and(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
 
@@ -633,21 +609,6 @@ trait Matchers extends Assertions { matchers =>
 
       def equal(any: Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
-
-/*
-      // See explanation in have for AndNotWord
-      def have(resultOfLengthOrSizeWordApplication: ResultOfLengthOrSizeWordApplication) =
-        matchersWrapper.or(
-          matchers.not.apply(
-            resultOfLengthOrSizeWordApplication match {
-              case resultOfLengthWordApplication: ResultOfLengthWordApplication =>
-                matchers.have.length(resultOfLengthWordApplication.expectedLength)
-              case resultOfSizeWordApplication: ResultOfSizeWordApplication =>
-                matchers.have.size(resultOfSizeWordApplication.expectedSize)
-            }
-          )
-        )
-*/
 
       def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
         matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
@@ -2821,16 +2782,7 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
-  // This guy is needed to support short-circuiting after and and or, because i need to use by-name parameters
-  // that result in the two subclasses ResultOfLengthWordApplication and ResultOfSizeWordApplication. The by-name
-  // param ends up as a type Function0[Unit] I think, and so these two don't overload. Darn. So I just make one
-  // of the superclass type, ResultOfLengthOrSizeWordApplication, and then do a pattern match. At first I tried
-  // to do it the OO way and have an rather ugly expectedLengthOrSize val set by each subclass, but I needed to
-  // konw whether it was length or size to be able to call length or size to get the appropriate error message on
-  // a failure.
-  // abstract class ResultOfLengthOrSizeWordApplication
-
-  class ResultOfLengthWordApplication(val expectedLength: Long) // extends ResultOfLengthOrSizeWordApplication
+  class ResultOfLengthWordApplication(val expectedLength: Long)
 
   class LengthWord {
     def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
@@ -2838,7 +2790,7 @@ trait Matchers extends Assertions { matchers =>
 
   val length = new LengthWord
     
-  class ResultOfSizeWordApplication(val expectedSize: Long) // extends ResultOfLengthOrSizeWordApplication
+  class ResultOfSizeWordApplication(val expectedSize: Long)
 
   class SizeWord {
     def apply(expectedSize: Long) = new ResultOfSizeWordApplication(expectedSize)
