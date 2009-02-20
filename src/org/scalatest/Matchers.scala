@@ -1056,7 +1056,11 @@ trait Matchers extends Assertions { matchers =>
       def size = o.getSize()
     }
  
-  protected class AnyPropertyMatcherProducer(symbol: Symbol) {
+  // This guy is generally done through an implicit conversion from a symbol. It takes that symbol, and 
+  // then represents an object with an apply method. So it gives an apply method to symbols.
+  // book should have ('author ("Gibson"))
+  //                   ^ // Basically this 'author symbol gets converted into this class, and its apply  method takes "Gibson"
+  protected class PropertyMatcherGenerator(symbol: Symbol) {
     def apply(expectedValue: Any) =
       new PropertyMatcher[AnyRef, Any] {
         def apply(objectWithProperty: AnyRef): PropertyMatchResult[Any] = {
@@ -1126,7 +1130,7 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
-  protected implicit def convertSymbolToPropertyMatcher(symbol: Symbol) = new AnyPropertyMatcherProducer(symbol)
+  protected implicit def convertSymbolToPropertyMatcherGenerator(symbol: Symbol) = new PropertyMatcherGenerator(symbol)
 
   protected class HaveWord {
 
