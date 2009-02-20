@@ -26,12 +26,13 @@ trait BookPropertyMatchers { this: Matchers =>
     var title: String,
     val author: String,
     val pubYear: Int,
-    val length: Int
+    val length: Int,
+    val isGoodRead: Boolean
   )
 
   class TitleMatcher(expectedValue: String) extends PropertyMatcher[Book, String] {
     def apply(book: Book) = {
-      new PropertyMatcherResult(book.title == expectedValue, "title", expectedValue, book.title)
+      new PropertyMatchResult(book.title == expectedValue, "title", expectedValue, book.title)
     }
   }
 
@@ -39,7 +40,7 @@ trait BookPropertyMatchers { this: Matchers =>
 
   class AuthorMatcher(expectedValue: String) extends PropertyMatcher[Book, String] {
     def apply(book: Book) = {
-      new PropertyMatcherResult(book.author == expectedValue, "author", expectedValue, book.author)
+      new PropertyMatchResult(book.author == expectedValue, "author", expectedValue, book.author)
     }
   }
 
@@ -47,11 +48,27 @@ trait BookPropertyMatchers { this: Matchers =>
 
   class PubYearMatcher(expectedValue: Int) extends PropertyMatcher[Book, Int] {
     def apply(book: Book) = {
-      new PropertyMatcherResult(book.pubYear == expectedValue, "pubYear", expectedValue, book.pubYear)
+      new PropertyMatchResult(book.pubYear == expectedValue, "pubYear", expectedValue, book.pubYear)
     }
   }
 
   def pubYear(expectedValue: Int) = new PubYearMatcher(expectedValue)
+
+  class GoodReadMatcher(expectedValue: Boolean) extends PropertyMatcher[Book, Boolean] {
+    def apply(book: Book) = {
+      new PropertyMatchResult(book.isGoodRead == expectedValue, "goodRead", expectedValue, book.isGoodRead)
+    }
+  }
+
+/*
+  class GoodReadBeMatcher extends BeMatcher[Book] {
+    def apply(book: Book) = {
+      new BeMatchResult(book.isGoodRead, "goodRead")
+    }
+  }
+*/
+  def goodRead(expectedValue: Boolean) = new GoodReadMatcher(expectedValue)
+  def goodRead = new GoodReadMatcher(true)
 }
 
 class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
@@ -61,9 +78,10 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
 
     describe("on an object with Scala-style properties") {
 
-      val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45)
+      val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
+      val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
 
-      it ("should do nothing if all the properties match") {
+      it("should do nothing if all the properties match") {
         book should have (
           title ("A Tale of Two Cities"),
           author ("Dickens"),
@@ -71,7 +89,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         )
       }
 
-      it ("should throw TestFailedException if at least one of the properties don't match") {
+      it("should throw TestFailedException if at least one of the properties don't match") {
 
         val caught = intercept[TestFailedException] {
           book should have (
@@ -83,7 +101,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
-      it ("should throw TestFailedException if at least one of the properties don't match, when using symbols") {
+      it("should throw TestFailedException if at least one of the properties don't match, when using symbols") {
 
         val caught1 = intercept[TestFailedException] {
           book should have (
@@ -104,7 +122,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught2.getMessage === "Expected property \"pubYear\" to have value 1959, but it had value 1859.")
       }
 
-      it ("should throw TestFailedException if there's just one property and it doesn't match") {
+      it("should throw TestFailedException if there's just one property and it doesn't match") {
 
         val caught1 = intercept[TestFailedException] {
           book should have (author ("Gibson"))
@@ -112,7 +130,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
-      it ("should throw TestFailedException if there's just one property and it doesn't match, when using a symbol") {
+      it("should throw TestFailedException if there's just one property and it doesn't match, when using a symbol") {
 
         val caught1 = intercept[TestFailedException] {
           book should have ('author ("Gibson"))
@@ -121,7 +139,15 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
       }
 
 /*
-      it ("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
+      it("should throw TestFailedException if a Boolean property matcher is used with be and the property is false") {
+
+        val caught1 = intercept[TestFailedException] {
+          badBook should be a (goodRead)
+        }
+        assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
+      }
+
+      it("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
 
         val caught1 = intercept[TestFailedException] {
           book should have (length (43))
@@ -132,7 +158,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
 
       /*
       This does not compile, which is what I want
-      it ("should not compile if you don't enter any verifiers") {
+      it("should not compile if you don't enter any verifiers") {
         book should have ()
       }
       */

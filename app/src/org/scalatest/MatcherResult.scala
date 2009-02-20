@@ -22,7 +22,7 @@ package org.scalatest
  * @param failureMessage if a match was intended (x should match), but did not match
  * @param negativeFailureMessage if a match was not indented (x should not { match }), but matched
  */
-case class MatcherResult(
+case class MatchResult(
   matches: Boolean,
   failureMessage: String,
   negativeFailureMessage: String

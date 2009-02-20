@@ -17,8 +17,8 @@ package org.scalatest
 
 /**
  * Trait extended by objects that can match a value of the specified type. The value to match is
- * passed to the matcher's <code>apply</code> method. The result is a <code>MatcherResult</code>.
- * A matcher is, therefore, a function from the specified type, <code>T</code>, to a <code>MatcherResult</code>.
+ * passed to the matcher's <code>apply</code> method. The result is a <code>MatchResult</code>.
+ * A matcher is, therefore, a function from the specified type, <code>T</code>, to a <code>MatchResult</code>.
  *
  * <p>
  * <code>Matcher</code> is contravariant in its type parameter, <code>T</code>, to make its use more flexible.
@@ -59,11 +59,11 @@ package org.scalatest
  * </p>
  *
  */
-trait Matcher[-T] extends Function1[T, MatcherResult] {
+trait Matcher[-T] extends Function1[T, MatchResult] {
 
   /**
    * Check to see if the specified object, <code>left</code>, matches, and report the result in
-   * the returned <code>MatcherResult</code>. The parameter is named <code>left</code>, because it is
+   * the returned <code>MatchResult</code>. The parameter is named <code>left</code>, because it is
    * usually the value to the left of a <code>should</code> or <code>must</code> invocation. For example,
    * in:
    *
@@ -75,11 +75,11 @@ trait Matcher[-T] extends Function1[T, MatcherResult] {
    * right value, <code>List(1, 2, 3)</code>. The <code>should</code> method invokes <code>apply</code>
    * on this matcher, passing in <code>list</code>, which is therefore the "<code>left</code>" value. The
    * matcher will compare the <code>list</code> (the <code>left</code> value) with <code>List(1, 2, 3)</code> (the right
-   * value), and report the result in the returned <code>MatcherResult</code>.
+   * value), and report the result in the returned <code>MatchResult</code>.
    *
    * @param left the value against which to match
-   * @return the <code>MatcherResult</code> that represents the result of the match
+   * @return the <code>MatchResult</code> that represents the result of the match
    */
-  def apply(left: T): MatcherResult
+  def apply(left: T): MatchResult
 }
 

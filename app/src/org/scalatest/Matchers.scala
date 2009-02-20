@@ -51,13 +51,13 @@ private[scalatest] object Helper {
         def apply(left: Any) =
           left match {
             case leftArray: Array[_] => 
-              MatcherResult(
+              MatchResult(
                 leftArray.deepEquals(right),
                 FailureMessages(didNotEqualResourceName, left, right),
                 FailureMessages(equaledResourceName, left, right)
               )
             case _ => 
-              MatcherResult(
+              MatchResult(
                 left == right,
                 FailureMessages(didNotEqualResourceName, left, right),
                 FailureMessages(equaledResourceName, left, right)
@@ -113,7 +113,7 @@ trait Matchers extends Assertions { matchers =>
     builder.toString
   }
 
-  private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatcherResult = {
+  private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatchResult = {
 
     // If 'empty passed, rightNoTick would be "empty"
     val rightNoTick = right.name
@@ -166,7 +166,7 @@ trait Matchers extends Assertions { matchers =>
             if (articleIsA) ("wasNotA", "wasA") else ("wasNotAn", "wasAn")
           }
           else ("wasNot", "was")
-        MatcherResult(
+        MatchResult(
           result,
           FailureMessages(wasNot, left, UnquotedString(rightNoTick)),
           FailureMessages(was, left, UnquotedString(rightNoTick))
@@ -186,7 +186,7 @@ trait Matchers extends Assertions { matchers =>
   class MatcherWrapper[T](leftMatcher: Matcher[T]) { matchersWrapper =>
 
     /**
-     * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
+     * Returns a matcher whose <code>apply</code> method returns a <code>MatchResult</code>
      * that represents the logical-and of the results of the wrapped and the passed matcher applied to
      * the same value.
      *
@@ -211,19 +211,19 @@ trait Matchers extends Assertions { matchers =>
     def and[U <: T](rightMatcher: Matcher[U]): Matcher[U] =
       new Matcher[U] {
         def apply(left: U) = {
-          val leftMatcherResult = leftMatcher(left)
-          val rightMatcherResult = rightMatcher(left) // Not short circuiting anymore
-          if (!leftMatcherResult.matches)
-            MatcherResult(
+          val leftMatchResult = leftMatcher(left)
+          val rightMatchResult = rightMatcher(left) // Not short circuiting anymore
+          if (!leftMatchResult.matches)
+            MatchResult(
               false,
-              leftMatcherResult.failureMessage,
-              leftMatcherResult.negativeFailureMessage
+              leftMatchResult.failureMessage,
+              leftMatchResult.negativeFailureMessage
             )
           else {
-            MatcherResult(
-              rightMatcherResult.matches,
-              Resources("commaBut", leftMatcherResult.negativeFailureMessage, rightMatcherResult.failureMessage),
-              Resources("commaAnd", leftMatcherResult.negativeFailureMessage, rightMatcherResult.negativeFailureMessage)
+            MatchResult(
+              rightMatchResult.matches,
+              Resources("commaBut", leftMatchResult.negativeFailureMessage, rightMatchResult.failureMessage),
+              Resources("commaAnd", leftMatchResult.negativeFailureMessage, rightMatchResult.negativeFailureMessage)
             )
           }
         }
@@ -455,7 +455,7 @@ trait Matchers extends Assertions { matchers =>
     def and(notWord: NotWord): AndNotWord = new AndNotWord
 
     /**
-     * Returns a matcher whose <code>apply</code> method returns a <code>MatcherResult</code>
+     * Returns a matcher whose <code>apply</code> method returns a <code>MatchResult</code>
      * that represents the logical-or of the results of this and the passed matcher applied to
      * the same value.
      *
@@ -480,19 +480,19 @@ trait Matchers extends Assertions { matchers =>
     def or[U <: T](rightMatcher: Matcher[U]): Matcher[U] =
       new Matcher[U] {
         def apply(left: U) = {
-          val leftMatcherResult = leftMatcher(left)
-          val rightMatcherResult = rightMatcher(left) // Not short circuiting anymore
-          if (leftMatcherResult.matches)
-            MatcherResult(
+          val leftMatchResult = leftMatcher(left)
+          val rightMatchResult = rightMatcher(left) // Not short circuiting anymore
+          if (leftMatchResult.matches)
+            MatchResult(
               true,
-              leftMatcherResult.negativeFailureMessage,
-              leftMatcherResult.failureMessage
+              leftMatchResult.negativeFailureMessage,
+              leftMatchResult.failureMessage
             )
           else {
-            MatcherResult(
-              rightMatcherResult.matches,
-              Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.failureMessage),
-              Resources("commaAnd", leftMatcherResult.failureMessage, rightMatcherResult.negativeFailureMessage)
+            MatchResult(
+              rightMatchResult.matches,
+              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.failureMessage),
+              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.negativeFailureMessage)
             )
           }
         }
@@ -844,7 +844,7 @@ trait Matchers extends Assertions { matchers =>
     def element[T](expectedElement: T): Matcher[Iterable[T]] =
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) =
-          MatcherResult(
+          MatchResult(
             left.elements.contains(expectedElement), 
             FailureMessages("didNotContainExpectedElement", left, expectedElement),
             FailureMessages("containedExpectedElement", left, expectedElement)
@@ -865,7 +865,7 @@ trait Matchers extends Assertions { matchers =>
     def key[K](expectedKey: K): Matcher[scala.collection.Map[K, Any]] =
       new Matcher[scala.collection.Map[K, Any]] {
         def apply(left: scala.collection.Map[K, Any]) =
-          MatcherResult(
+          MatchResult(
             left.contains(expectedKey),
             FailureMessages("didNotContainKey", left, expectedKey),
             FailureMessages("containedKey", left, expectedKey)
@@ -883,7 +883,7 @@ trait Matchers extends Assertions { matchers =>
     def value[V](expectedValue: V): Matcher[scala.collection.Map[K, V] forSome { type K }] =
       new Matcher[scala.collection.Map[K, V] forSome { type K }] {
         def apply(left: scala.collection.Map[K, V] forSome { type K }) =
-          MatcherResult(
+          MatchResult(
             left.values.contains(expectedValue),
             FailureMessages("didNotContainValue", left, expectedValue),
             FailureMessages("containedValue", left, expectedValue)
@@ -895,7 +895,7 @@ trait Matchers extends Assertions { matchers =>
     def substring(expectedSubstring: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             left.indexOf(expectedSubstring) >= 0, 
             FailureMessages("didNotIncludeSubstring", left, expectedSubstring),
             FailureMessages("includedSubstring", left, expectedSubstring)
@@ -905,7 +905,7 @@ trait Matchers extends Assertions { matchers =>
     def regex(expectedRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             expectedRegex.findFirstIn(left).isDefined,
             FailureMessages("didNotIncludeRegex", left, expectedRegex),
             FailureMessages("includedRegex", left, expectedRegex)
@@ -917,7 +917,7 @@ trait Matchers extends Assertions { matchers =>
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             left startsWith right,
             FailureMessages("didNotStartWith", left, right),
             FailureMessages("startedWith", left, right)
@@ -927,7 +927,7 @@ trait Matchers extends Assertions { matchers =>
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             rightRegex.pattern.matcher(left).lookingAt,
             FailureMessages("didNotStartWithRegex", left, rightRegex),
             FailureMessages("startedWithRegex", left, rightRegex)
@@ -939,7 +939,7 @@ trait Matchers extends Assertions { matchers =>
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             left endsWith right,
             FailureMessages("didNotEndWith", left, right),
             FailureMessages("endedWith", left, right)
@@ -950,7 +950,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[String] {
         def apply(left: String) = {
           val allMatches = rightRegex.findAllIn(left)
-          MatcherResult(
+          MatchResult(
             allMatches.hasNext && (allMatches.end == left.length),
             FailureMessages("didNotEndWithRegex", left, rightRegex),
             FailureMessages("endedWithRegex", left, rightRegex)
@@ -963,7 +963,7 @@ trait Matchers extends Assertions { matchers =>
     def regex(rightRegexString: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             java.util.regex.Pattern.matches(rightRegexString, left),
             FailureMessages("didNotFullyMatchRegex", left, UnquotedString(rightRegexString)),
             FailureMessages("fullyMatchedRegex", left, UnquotedString(rightRegexString))
@@ -972,7 +972,7 @@ trait Matchers extends Assertions { matchers =>
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             rightRegex.pattern.matcher(left).matches,
             FailureMessages("didNotFullyMatchRegex", left, rightRegex),
             FailureMessages("fullyMatchedRegex", left, rightRegex)
@@ -1068,7 +1068,7 @@ trait Matchers extends Assertions { matchers =>
       def size = o.getSize()
     }
  
-  protected class PropertyMatcherResult[P](
+  protected class PropertyMatchResult[P](
     val matches: Boolean,
     val propertyName: String,
     val expectedValue: P,
@@ -1077,15 +1077,15 @@ trait Matchers extends Assertions { matchers =>
 
   // T is the type of the object that has a property to verify with an instance of this trait, P is the type of that particular property
   // Since I should be able to pass 
-  protected trait PropertyMatcher[-T, P] extends Function1[T, PropertyMatcherResult[P]] {
+  protected trait PropertyMatcher[-T, P] extends Function1[T, PropertyMatchResult[P]] {
     // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: T): PropertyMatcherResult[P]
+    def apply(objectWithProperty: T): PropertyMatchResult[P]
   }
 
   protected class AnyPropertyMatcherProducer(symbol: Symbol) {
     def apply(expectedValue: Any) =
       new PropertyMatcher[AnyRef, Any] {
-        def apply(objectWithProperty: AnyRef): PropertyMatcherResult[Any] = {
+        def apply(objectWithProperty: AnyRef): PropertyMatchResult[Any] = {
 
           // TODO: rename rightNoTick to propertyName probably
           // If 'title passed, rightNoTick would be "title"
@@ -1127,7 +1127,7 @@ trait Matchers extends Assertions { matchers =>
             case (0, 1) => // Has a title field
               val field = fieldArray(0)
               val value: AnyRef = field.get(objectWithProperty)
-              new PropertyMatcherResult[Any](
+              new PropertyMatchResult[Any](
                 value == expectedValue,
                 rightNoTick,
                 expectedValue,
@@ -1138,7 +1138,7 @@ trait Matchers extends Assertions { matchers =>
               val method = methodArray(0)
               val result: AnyRef =
                 method.invoke(objectWithProperty, Array[AnyRef](): _*)
-              new PropertyMatcherResult[Any](
+              new PropertyMatchResult[Any](
                 result == expectedValue,
                 rightNoTick,
                 expectedValue,
@@ -1163,19 +1163,19 @@ trait Matchers extends Assertions { matchers =>
         def apply(left: AnyRef) =
           left match {
             case leftSeq: Seq[_] =>
-              MatcherResult(
+              MatchResult(
                 leftSeq.length == expectedLength, 
                 FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                 FailureMessages("hadExpectedLength", left, expectedLength)
               )
             case leftString: String =>
-              MatcherResult(
+              MatchResult(
                 leftString.length == expectedLength, 
                 FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                 FailureMessages("hadExpectedLength", left, expectedLength)
               )
             case leftJavaList: java.util.List[_] =>
-              MatcherResult(
+              MatchResult(
                 leftJavaList.size == expectedLength,
                 FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                 FailureMessages("hadExpectedLength", left, expectedLength)
@@ -1209,7 +1209,7 @@ trait Matchers extends Assertions { matchers =>
                 case (0, 1) => // Has either a length or getLength field
                   val field = fieldArray(0)
                   val value: Long = if (field.getType == classOf[Int]) field.getInt(left) else field.getLong(left)
-                  MatcherResult(
+                  MatchResult(
                     value == expectedLength,
                     FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                     FailureMessages("hadExpectedLength", left, expectedLength)
@@ -1223,7 +1223,7 @@ trait Matchers extends Assertions { matchers =>
                     else
                       method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Long]
 
-                  MatcherResult(
+                  MatchResult(
                     result == expectedLength,
                     FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                     FailureMessages("hadExpectedLength", left, expectedLength)
@@ -1240,13 +1240,13 @@ trait Matchers extends Assertions { matchers =>
         def apply(left: AnyRef) =
           left match {
             case leftSeq: Collection[_] =>
-              MatcherResult(
+              MatchResult(
                 leftSeq.size == expectedSize, 
                 FailureMessages("didNotHaveExpectedSize", left, expectedSize),
                 FailureMessages("hadExpectedSize", left, expectedSize)
               )
             case leftJavaList: java.util.List[_] =>
-              MatcherResult(
+              MatchResult(
                 leftJavaList.size == expectedSize,
                 FailureMessages("didNotHaveExpectedSize", left, expectedSize),
                 FailureMessages("hadExpectedSize", left, expectedSize)
@@ -1280,7 +1280,7 @@ trait Matchers extends Assertions { matchers =>
                 case (0, 1) => // Has either a size or getSize field
                   val field = fieldArray(0)
                   val value: Long = if (field.getType == classOf[Int]) field.getInt(left) else field.getLong(left)
-                  MatcherResult(
+                  MatchResult(
                     value == expectedSize,
                     FailureMessages("didNotHaveExpectedSize", left, expectedSize),
                     FailureMessages("hadExpectedSize", left, expectedSize)
@@ -1294,7 +1294,7 @@ trait Matchers extends Assertions { matchers =>
                     else
                       method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Long]
 
-                  MatcherResult(
+                  MatchResult(
                     result == expectedSize,
                     FailureMessages("didNotHaveExpectedSize", left, expectedSize),
                     FailureMessages("hadExpectedSize", left, expectedSize)
@@ -1316,13 +1316,13 @@ trait Matchers extends Assertions { matchers =>
             firstFailureOption match {
               case Some(firstFailure) =>
                 val failedVerification = firstFailure
-                MatcherResult(
+                MatchResult(
                   false,
                   FailureMessages("propertyDidNotHaveExpectedValue", failedVerification.propertyName, failedVerification.expectedValue, failedVerification.actualValue),
                   FailureMessages("propertyHadExpectedValue")
                 )
               case None =>
-                MatcherResult(
+                MatchResult(
                   true,
                   FailureMessages("propertyDidNotHaveExpectedValue", "NONE", "NONE", "NONE"), // This one doesn't make sense
                   FailureMessages("propertyHadExpectedValue")
@@ -2099,7 +2099,7 @@ trait Matchers extends Assertions { matchers =>
     def <[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             left < right,
             FailureMessages("wasNotLessThan", left, right),
             FailureMessages("wasLessThan", left, right)
@@ -2108,7 +2108,7 @@ trait Matchers extends Assertions { matchers =>
     def >[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             left > right,
             FailureMessages("wasNotGreaterThan", left, right),
             FailureMessages("wasGreaterThan", left, right)
@@ -2117,7 +2117,7 @@ trait Matchers extends Assertions { matchers =>
     def <=[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             left <= right,
             FailureMessages("wasNotLessThanOrEqualTo", left, right),
             FailureMessages("wasLessThanOrEqualTo", left, right)
@@ -2126,7 +2126,7 @@ trait Matchers extends Assertions { matchers =>
     def >=[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             left >= right,
             FailureMessages("wasNotGreaterThanOrEqualTo", left, right),
             FailureMessages("wasGreaterThanOrEqualTo", left, right)
@@ -2159,7 +2159,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[Double] {
         def apply(left: Double) = {
           import doubleTolerance._
-          MatcherResult(
+          MatchResult(
             left <= right + tolerance && left >= right - tolerance,
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance)
@@ -2173,7 +2173,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[Float] {
         def apply(left: Float) = {
           import floatTolerance._
-          MatcherResult(
+          MatchResult(
             left <= right + tolerance && left >= right - tolerance,
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance)
@@ -2187,7 +2187,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[Long] {
         def apply(left: Long) = {
           import longTolerance._
-          MatcherResult(
+          MatchResult(
             left <= right + tolerance && left >= right - tolerance,
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance)
@@ -2201,7 +2201,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[Int] {
         def apply(left: Int) = {
           import intTolerance._
-          MatcherResult(
+          MatchResult(
             left <= right + tolerance && left >= right - tolerance,
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance)
@@ -2215,7 +2215,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[Short] {
         def apply(left: Short) = {
           import shortTolerance._
-          MatcherResult(
+          MatchResult(
             left <= right + tolerance && left >= right - tolerance,
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance)
@@ -2229,7 +2229,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[Byte] {
         def apply(left: Byte) = {
           import byteTolerance._
-          MatcherResult(
+          MatchResult(
             left <= right + tolerance && left >= right - tolerance,
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance)
@@ -2240,7 +2240,7 @@ trait Matchers extends Assertions { matchers =>
     def theSameInstanceAs(right: AnyRef): Matcher[AnyRef] =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
-          MatcherResult(
+          MatchResult(
             left eq right,
             FailureMessages("wasNotSameInstanceAs", left, right),
             FailureMessages("wasSameInstanceAs", left, right)
@@ -2250,7 +2250,7 @@ trait Matchers extends Assertions { matchers =>
     def apply(right: Boolean) = 
       new Matcher[Boolean] {
         def apply(left: Boolean) =
-          MatcherResult(
+          MatchResult(
             left == right,
             FailureMessages("wasNot", left, right),
             FailureMessages("was", left, right)
@@ -2260,7 +2260,7 @@ trait Matchers extends Assertions { matchers =>
     def apply(o: Null) = 
       new Matcher[AnyRef] {
         def apply(left: AnyRef) = {
-          MatcherResult(
+          MatchResult(
             left == null,
             FailureMessages("wasNotNull", left),
             FailureMessages("wasNull", left)
@@ -2271,7 +2271,7 @@ trait Matchers extends Assertions { matchers =>
     def apply(o: None.type) = 
       new Matcher[Option[_]] {
         def apply(left: Option[_]) = {
-          MatcherResult(
+          MatchResult(
             left == None,
             FailureMessages("wasNotNone", left),
             FailureMessages("wasNone", left)
@@ -2287,7 +2287,7 @@ trait Matchers extends Assertions { matchers =>
     def apply(right: Nil.type): Matcher[List[_]] =
       new Matcher[List[_]] {
         def apply(left: List[_]) = {
-          MatcherResult(
+          MatchResult(
             left == Nil,
             FailureMessages("wasNotNil", left),
             FailureMessages("wasNil", left)
@@ -2305,7 +2305,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[S] {
         def apply(left: S) =
           matcher(left) match {
-            case MatcherResult(bool, s1, s2) => MatcherResult(!bool, s2, s1)
+            case MatchResult(bool, s1, s2) => MatchResult(!bool, s2, s1)
           }
       }
 
@@ -2326,7 +2326,7 @@ trait Matchers extends Assertions { matchers =>
     def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             !resultOfLessThanComparison(left),
             FailureMessages("wasLessThan", left, resultOfLessThanComparison.right),
             FailureMessages("wasNotLessThan", left, resultOfLessThanComparison.right)
@@ -2337,7 +2337,7 @@ trait Matchers extends Assertions { matchers =>
     def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             !resultOfGreaterThanComparison(left),
             FailureMessages("wasGreaterThan", left, resultOfGreaterThanComparison.right),
             FailureMessages("wasNotGreaterThan", left, resultOfGreaterThanComparison.right)
@@ -2348,7 +2348,7 @@ trait Matchers extends Assertions { matchers =>
     def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             !resultOfLessThanOrEqualToComparison(left),
             FailureMessages("wasLessThanOrEqualTo", left, resultOfLessThanOrEqualToComparison.right),
             FailureMessages("wasNotLessThanOrEqualTo", left, resultOfLessThanOrEqualToComparison.right)
@@ -2359,7 +2359,7 @@ trait Matchers extends Assertions { matchers =>
     def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
-          MatcherResult(
+          MatchResult(
             !resultOfGreaterThanOrEqualToComparison(left),
             FailureMessages("wasGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right),
             FailureMessages("wasNotGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right)
@@ -2370,11 +2370,11 @@ trait Matchers extends Assertions { matchers =>
     def be[T <: AnyRef](symbol: Symbol): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
-          val positiveMatcherResult = matchSymbolToPredicateMethod(left, symbol, false, false)
-          MatcherResult(
-            !positiveMatcherResult.matches,
-            positiveMatcherResult.negativeFailureMessage,
-            positiveMatcherResult.failureMessage
+          val positiveMatchResult = matchSymbolToPredicateMethod(left, symbol, false, false)
+          MatchResult(
+            !positiveMatchResult.matches,
+            positiveMatchResult.negativeFailureMessage,
+            positiveMatchResult.failureMessage
           )
         }
       }
@@ -2385,11 +2385,11 @@ trait Matchers extends Assertions { matchers =>
     def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
-          val positiveMatcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
-          MatcherResult(
-            !positiveMatcherResult.matches,
-            positiveMatcherResult.negativeFailureMessage,
-            positiveMatcherResult.failureMessage
+          val positiveMatchResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
+          MatchResult(
+            !positiveMatchResult.matches,
+            positiveMatchResult.negativeFailureMessage,
+            positiveMatchResult.failureMessage
           )
         }
       }
@@ -2400,11 +2400,11 @@ trait Matchers extends Assertions { matchers =>
     def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
-          val positiveMatcherResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
-          MatcherResult(
-            !positiveMatcherResult.matches,
-            positiveMatcherResult.negativeFailureMessage,
-            positiveMatcherResult.failureMessage
+          val positiveMatchResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
+          MatchResult(
+            !positiveMatchResult.matches,
+            positiveMatchResult.negativeFailureMessage,
+            positiveMatchResult.failureMessage
           )
         }
       }
@@ -2415,7 +2415,7 @@ trait Matchers extends Assertions { matchers =>
     def be[T <: AnyRef](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
-          MatcherResult(
+          MatchResult(
             resultOfTheSameInstanceAsApplication.right ne left,
             FailureMessages("wasSameInstanceAs", left, resultOfTheSameInstanceAsApplication.right),
             FailureMessages("wasNotSameInstanceAs", left, resultOfTheSameInstanceAsApplication.right)
@@ -2430,7 +2430,7 @@ trait Matchers extends Assertions { matchers =>
       import doubleTolerance._
       new Matcher[Double] {
         def apply(left: Double) = {
-          MatcherResult(
+          MatchResult(
             !(left <= right + tolerance && left >= right - tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance),
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
@@ -2445,7 +2445,7 @@ trait Matchers extends Assertions { matchers =>
       import floatTolerance._
       new Matcher[Float] {
         def apply(left: Float) = {
-          MatcherResult(
+          MatchResult(
             !(left <= right + tolerance && left >= right - tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance),
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
@@ -2460,7 +2460,7 @@ trait Matchers extends Assertions { matchers =>
       import longTolerance._
       new Matcher[Long] {
         def apply(left: Long) = {
-          MatcherResult(
+          MatchResult(
             !(left <= right + tolerance && left >= right - tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance),
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
@@ -2475,7 +2475,7 @@ trait Matchers extends Assertions { matchers =>
       import intTolerance._
       new Matcher[Int] {
         def apply(left: Int) = {
-          MatcherResult(
+          MatchResult(
             !(left <= right + tolerance && left >= right - tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance),
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
@@ -2490,7 +2490,7 @@ trait Matchers extends Assertions { matchers =>
       import shortTolerance._
       new Matcher[Short] {
         def apply(left: Short) = {
-          MatcherResult(
+          MatchResult(
             !(left <= right + tolerance && left >= right - tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance),
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
@@ -2505,7 +2505,7 @@ trait Matchers extends Assertions { matchers =>
       import byteTolerance._
       new Matcher[Byte] {
         def apply(left: Byte) = {
-          MatcherResult(
+          MatchResult(
             !(left <= right + tolerance && left >= right - tolerance),
             FailureMessages("wasPlusOrMinus", left, right, tolerance),
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
@@ -2518,7 +2518,7 @@ trait Matchers extends Assertions { matchers =>
       val rightRegexString = resultOfRegexWordApplication.regex.toString
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             !java.util.regex.Pattern.matches(rightRegexString, left),
             FailureMessages("fullyMatchedRegex", left, UnquotedString(rightRegexString)),
             FailureMessages("didNotFullyMatchRegex", left, UnquotedString(rightRegexString))
@@ -2532,7 +2532,7 @@ trait Matchers extends Assertions { matchers =>
       val rightRegex = resultOfRegexWordApplication.regex
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             !rightRegex.findFirstIn(left).isDefined,
             FailureMessages("includedRegex", left, rightRegex),
             FailureMessages("didNotIncludeRegex", left, rightRegex)
@@ -2546,7 +2546,7 @@ trait Matchers extends Assertions { matchers =>
       val expectedSubstring = resultOfSubstringWordApplication.substring
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             !(left.indexOf(expectedSubstring) >= 0), 
             FailureMessages("includedSubstring", left, expectedSubstring),
             FailureMessages("didNotIncludeSubstring", left, expectedSubstring)
@@ -2560,7 +2560,7 @@ trait Matchers extends Assertions { matchers =>
       val rightRegex = resultOfRegexWordApplication.regex
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             !rightRegex.pattern.matcher(left).lookingAt,
             FailureMessages("startedWithRegex", left, rightRegex),
             FailureMessages("didNotStartWithRegex", left, rightRegex)
@@ -2574,7 +2574,7 @@ trait Matchers extends Assertions { matchers =>
       val expectedSubstring = resultOfSubstringWordApplication.substring
       new Matcher[String] {
         def apply(left: String) =
-          MatcherResult(
+          MatchResult(
             left.indexOf(expectedSubstring) != 0,
             FailureMessages("startedWith", left, expectedSubstring),
             FailureMessages("didNotStartWith", left, expectedSubstring)
@@ -2589,7 +2589,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[String] {
         def apply(left: String) = {
           val allMatches = rightRegex.findAllIn(left)
-          MatcherResult(
+          MatchResult(
             !(allMatches.hasNext && (allMatches.end == left.length)),
             FailureMessages("endedWithRegex", left, rightRegex),
             FailureMessages("didNotEndWithRegex", left, rightRegex)
@@ -2604,7 +2604,7 @@ trait Matchers extends Assertions { matchers =>
       val expectedSubstring = resultOfSubstringWordApplication.substring
       new Matcher[String] {
         def apply(left: String) = {
-          MatcherResult(
+          MatchResult(
             !(left endsWith expectedSubstring),
             FailureMessages("endedWith", left, expectedSubstring),
             FailureMessages("didNotEndWith", left, expectedSubstring)
@@ -2619,7 +2619,7 @@ trait Matchers extends Assertions { matchers =>
       val expectedElement = resultOfElementWordApplication.expectedElement
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) = {
-          MatcherResult(
+          MatchResult(
             !(left.exists(_ == expectedElement)),
             FailureMessages("containedExpectedElement", left, expectedElement),
             FailureMessages("didNotContainExpectedElement", left, expectedElement)
@@ -2634,7 +2634,7 @@ trait Matchers extends Assertions { matchers =>
       val expectedKey = resultOfKeyWordApplication.expectedKey
       new Matcher[scala.collection.Map[K, Any]] {
         def apply(left: scala.collection.Map[K, Any]) = {
-          MatcherResult(
+          MatchResult(
             !(left.contains(expectedKey)),
             FailureMessages("containedKey", left, expectedKey),
             FailureMessages("didNotContainKey", left, expectedKey)
@@ -2649,7 +2649,7 @@ trait Matchers extends Assertions { matchers =>
       val expectedValue = resultOfValueWordApplication.expectedValue
       new Matcher[scala.collection.Map[K, V] forSome { type K }] {
         def apply(left: scala.collection.Map[K, V] forSome { type K }) = {
-          MatcherResult(
+          MatchResult(
             !(left.values.exists(_ == expectedValue)),
             FailureMessages("containedValue", left, expectedValue),
             FailureMessages("didNotContainValue", left, expectedValue)
@@ -2699,8 +2699,8 @@ trait Matchers extends Assertions { matchers =>
 
   class ResultOfLengthWordApplication(val expectedLength: Long) extends PropertyMatcher[Any, Long] {
     // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: Any): PropertyMatcherResult[Long] =
-      new PropertyMatcherResult[Long](false, "length", expectedLength, 12)
+    def apply(objectWithProperty: Any): PropertyMatchResult[Long] =
+      new PropertyMatchResult[Long](false, "length", expectedLength, 12)
   }
 
   class LengthWord {
