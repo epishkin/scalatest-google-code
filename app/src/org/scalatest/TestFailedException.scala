@@ -191,6 +191,20 @@ passed methodName will be "ignore":
 0 org.scalatest.Spec$class.ignore(Spec.scala:792)
 1 org.scalatest.ShouldBehaveLikeSpec.ignore(ShouldBehaveLikeSpec.scala:23)
 2 org.scalatest.ShouldBehaveLikeSpec$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:26) 
+
+For detection of a test inside a test in FunSuite, passed fileName will be "FunSuite.scala" and
+passed methodName will be "test":
+
+0 org.scalatest.FunSuite$class.test(FunSuite.scala:591)
+1 org.scalatest.Q36Suite.test(ShouldBehaveLikeSpec.scala:23)
+2 org.scalatest.Q36Suite$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:25)
+
+For detection of an ignore inside a test in FunSuite, passed fileName will be "FunSuite.scala" and
+passed methodName will be "ignore":
+
+0 org.scalatest.FunSuite$class.ignore(FunSuite.scala:624)
+1 org.scalatest.Q36Suite.ignore(ShouldBehaveLikeSpec.scala:23)
+2 org.scalatest.Q36Suite$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:25)
 */
 private[scalatest] object TestFailedExceptionHelper {
 

@@ -588,7 +588,7 @@ trait FunSuite extends Suite {
     var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
 
     if (executeHasBeenInvoked)
-      throw new IllegalStateException("You cannot register a test  on a FunSuite after execute has been invoked.")
+      throw new TestFailedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
     
     if (testsMap.keySet.contains(testName)) {
       throw new TestFailedException(Resources("duplicateTestName", testName), getStackDepth("FunSuite.scala", "test"))
@@ -617,15 +617,21 @@ trait FunSuite extends Suite {
    */
   protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
 
+    val oldBundle = atomic.get
+    val (_, _, _, _, executeHasBeenInvoked) = oldBundle.unpack
+
+    if (executeHasBeenInvoked)
+      throw new TestFailedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth("FunSuite.scala", "ignore"))
+
     test(testName)(f) // Call test without passing the groups
 
-    val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+    val oldBundle2 = atomic.get
+    var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvokedFlag) = oldBundle2.unpack
 
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
+    updateAtomic(oldBundle2, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvokedFlag))
   }
 
   /**

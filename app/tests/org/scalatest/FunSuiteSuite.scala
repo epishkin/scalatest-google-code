@@ -51,25 +51,25 @@ class FunSuiteSuite extends Suite {
     }
 
     // Test duplicate names
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         test("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         ignore("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         ignore("test this") {}
         test("test this") {}
@@ -451,25 +451,25 @@ class FunSuiteSuite extends Suite {
   }
 
   def testThatTestNameCantBeReused() {
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         ignore("test this") {}
         test("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         test("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[IllegalArgumentException] {
+    intercept[TestFailedException] {
       new FunSuite {
         ignore("test this") {}
         ignore("test this") {}
@@ -477,7 +477,7 @@ class FunSuiteSuite extends Suite {
     }
   }
   
-  def testThatIfYouCallTestAfterExecuteYouGetAnIllegalStateExceptionAndTheTestDoesntRun() {
+  def testThatIfYouCallTestAfterExecuteYouGetAnTestFailedExceptionAndTheTestDoesntRun() {
     class MySuite extends FunSuite {
       var fromMethodTestExecuted = false
       var fromConstructorTestExecuted = false
@@ -494,7 +494,7 @@ class FunSuiteSuite extends Suite {
     a.execute()
     assert(a.fromConstructorTestExecuted)
     assert(!a.fromMethodTestExecuted)
-    intercept[IllegalStateException] {
+    intercept[TestFailedException] {
       a.registerOne()
     }
     a.execute()
@@ -588,6 +588,98 @@ class FunSuiteSuite extends Suite {
     a.execute(None, myRep, new Stopper {}, Set(), Set(), Map(), None)
     assert(infoProvidedCalledAfterTest)
     assert(infoProvidedCalled)
+  }
+
+  def callingTestFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
+
+    var testFailedAdExpected = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("this test should blow up") != -1)
+          testFailedAdExpected = true
+      }
+    }
+
+    class MySuite extends FunSuite {
+      test("this test should blow up") {
+        test("is in the wrong place also") {
+          assert(1 === 1)
+        }
+      }
+    }
+
+    val a = new MySuite
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedAdExpected)
+  }
+
+  def callingTestFromWithinATestWithGroupsClauseResultsInATestFailedErrorAtRuntime() {
+    
+    var testFailedAdExpected = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("this test should blow up") != -1)
+          testFailedAdExpected = true
+      }
+    }
+
+    class MySuite extends FunSuite {
+      test("this test should blow up") {
+        test("is in the wrong place also", mygroups.SlowAsMolasses) {
+          assert(1 === 1)
+        }
+      }
+    }
+
+    val a = new MySuite
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedAdExpected)
+  }
+
+  def callingIgnoreFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
+    
+    var testFailedAdExpected = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("this test should blow up") != -1)
+          testFailedAdExpected = true
+      }
+    }
+
+    class MySuite extends FunSuite {
+      test("this test should blow up") {
+        ignore("is in the wrong place also") {
+          assert(1 === 1)
+        }
+      }
+    }
+
+    val a = new MySuite
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedAdExpected)
+  }
+
+  def callingIgnoreWithGroupsFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
+    
+    var testFailedAdExpected = false
+    class MyReporter extends Reporter {
+      override def testFailed(report: Report) {
+        if (report.name.indexOf("this test should blow up") != -1)
+          testFailedAdExpected = true
+      }
+    }
+
+    class MySuite extends FunSuite {
+      test("this test should blow up") {
+        ignore("is in the wrong place also", mygroups.SlowAsMolasses) {
+          assert(1 === 1)
+        }
+      }
+    }
+
+    val a = new MySuite
+    a.execute(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None)
+    assert(testFailedAdExpected)
   }
 }
 

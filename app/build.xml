@@ -240,7 +240,13 @@
             <arg value="-o" />
 
             <arg value="-s" />
+            <arg value="org.scalatest.Q36Suite" />
+
+            <arg value="-s" />
             <arg value="org.scalatest.SpecSuite" />
+
+            <arg value="-s" />
+            <arg value="org.scalatest.FunSuiteSuite" />
 
             <arg value="-s" />
             <arg value="org.scalatest.ShouldBehaveLikeSpec" />
