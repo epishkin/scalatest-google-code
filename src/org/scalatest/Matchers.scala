@@ -1068,7 +1068,7 @@ trait Matchers extends Assertions { matchers =>
       def size = o.getSize()
     }
  
-  protected class PropertyVerificationResult[P](
+  protected class PropertyMatcherResult[P](
     val matches: Boolean,
     val propertyName: String,
     val expectedValue: P,
@@ -1077,15 +1077,15 @@ trait Matchers extends Assertions { matchers =>
 
   // T is the type of the object that has a property to verify with an instance of this trait, P is the type of that particular property
   // Since I should be able to pass 
-  protected trait PropertyVerifier[-T, P] extends Function1[T, PropertyVerificationResult[P]] {
+  protected trait PropertyMatcher[-T, P] extends Function1[T, PropertyMatcherResult[P]] {
     // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: T): PropertyVerificationResult[P]
+    def apply(objectWithProperty: T): PropertyMatcherResult[P]
   }
 
-  protected class AnyPropertyVerifierProducer(symbol: Symbol) {
+  protected class AnyPropertyMatcherProducer(symbol: Symbol) {
     def apply(expectedValue: Any) =
-      new PropertyVerifier[AnyRef, Any] {
-        def apply(objectWithProperty: AnyRef): PropertyVerificationResult[Any] = {
+      new PropertyMatcher[AnyRef, Any] {
+        def apply(objectWithProperty: AnyRef): PropertyMatcherResult[Any] = {
 
           // TODO: rename rightNoTick to propertyName probably
           // If 'title passed, rightNoTick would be "title"
@@ -1127,7 +1127,7 @@ trait Matchers extends Assertions { matchers =>
             case (0, 1) => // Has a title field
               val field = fieldArray(0)
               val value: AnyRef = field.get(objectWithProperty)
-              new PropertyVerificationResult[Any](
+              new PropertyMatcherResult[Any](
                 value == expectedValue,
                 rightNoTick,
                 expectedValue,
@@ -1138,7 +1138,7 @@ trait Matchers extends Assertions { matchers =>
               val method = methodArray(0)
               val result: AnyRef =
                 method.invoke(objectWithProperty, Array[AnyRef](): _*)
-              new PropertyVerificationResult[Any](
+              new PropertyMatcherResult[Any](
                 result == expectedValue,
                 rightNoTick,
                 expectedValue,
@@ -1152,7 +1152,7 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
-  protected implicit def convertSymbolToPropertyVerifier(symbol: Symbol) = new AnyPropertyVerifierProducer(symbol)
+  protected implicit def convertSymbolToPropertyMatcher(symbol: Symbol) = new AnyPropertyMatcherProducer(symbol)
 
   protected class HaveWord {
 
@@ -1306,11 +1306,11 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
-      def apply[T](firstPropertyVerifier: PropertyVerifier[T, _], propertyVerifiers: PropertyVerifier[T, _]*): Matcher[T] =
+      def apply[T](firstPropertyMatcher: PropertyMatcher[T, _], propertyVerifiers: PropertyMatcher[T, _]*): Matcher[T] =
         new Matcher[T] {
           def apply(left: T) = {
             val results =
-              for (propertyVerifier <- firstPropertyVerifier :: propertyVerifiers.toList) yield
+              for (propertyVerifier <- firstPropertyMatcher :: propertyVerifiers.toList) yield
                 propertyVerifier(left)
             val firstFailureOption = results.find(pv => !pv.matches)
             firstFailureOption match {
@@ -2697,10 +2697,10 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
-  class ResultOfLengthWordApplication(val expectedLength: Long) extends PropertyVerifier[Any, Long] {
+  class ResultOfLengthWordApplication(val expectedLength: Long) extends PropertyMatcher[Any, Long] {
     // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: Any): PropertyVerificationResult[Long] =
-      new PropertyVerificationResult[Long](false, "length", expectedLength, 12)
+    def apply(objectWithProperty: Any): PropertyMatcherResult[Long] =
+      new PropertyMatcherResult[Long](false, "length", expectedLength, 12)
   }
 
   class LengthWord {
