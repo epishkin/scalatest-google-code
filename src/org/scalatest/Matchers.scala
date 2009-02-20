@@ -31,18 +31,6 @@ private[scalatest] object UnquotedString {
   def apply(s: String) = new UnquotedString(s)
 }
 
-/*
-There are a set of implicit conversions that take different static types to Shouldalizers.
-The one that gets applied will be the one that matches the static type of left. The result
-of the implicit conversion will be a ShouldWrapper.
-
-The should methods take different static types, so they are overloaded. These types don't all
-inherit from the same supertype. There's a plain-old Matcher for example, but there's also maybe
-a BeMatcher, and BeMatcher doesn't extend Matcher. This reduces the number of incorrect static
-matches, which can happen if a more specific type is held from a more general variable type.
-And reduces the chances for ambiguity, I suspect.
-*/
-
 private[scalatest] object Helper {
 
   def equalAndBeAnyMatcher(right: Any, equaledResourceName: String, didNotEqualResourceName: String) = {
@@ -1068,20 +1056,6 @@ trait Matchers extends Assertions { matchers =>
       def size = o.getSize()
     }
  
-  protected class PropertyMatchResult[P](
-    val matches: Boolean,
-    val propertyName: String,
-    val expectedValue: P,
-    val actualValue: P
-  )
-
-  // T is the type of the object that has a property to verify with an instance of this trait, P is the type of that particular property
-  // Since I should be able to pass 
-  protected trait PropertyMatcher[-T, P] extends Function1[T, PropertyMatchResult[P]] {
-    // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: T): PropertyMatchResult[P]
-  }
-
   protected class AnyPropertyMatcherProducer(symbol: Symbol) {
     def apply(expectedValue: Any) =
       new PropertyMatcher[AnyRef, Any] {
