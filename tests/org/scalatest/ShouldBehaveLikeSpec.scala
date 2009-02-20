@@ -22,12 +22,6 @@ import Prop._
 
 class ShouldBehaveLikeSpec extends Spec with ShouldMatchers with ShouldStackBehaviors with StackFixtureCreationMethods {
 
-/*
-  it("should blow up") {
-    it("bla", mygroups.SlowAsMolasses) {}
-  }
-*/
-
   def myFirstBehavior(i: Int) {
     it("This one is should blow up") {}
   }
