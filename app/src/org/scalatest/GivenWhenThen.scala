@@ -21,7 +21,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait GivenWhenThen {
+private[scalatest] trait GivenWhenThen {
 
   /**
    * Forwards a message to an implicit <code>Informer</code>, preceded by "given."
