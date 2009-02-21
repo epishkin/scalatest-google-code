@@ -19,6 +19,8 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
 import java.lang.reflect.Field
+import scala.reflect.Manifest
+import Helper.transformOperatorChars // TODO: Remove this when it is no longer needed inside Matchers
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
@@ -60,13 +62,63 @@ private[scalatest] object Helper {
     val stackDepth = temp.getStackTrace.takeWhile(stackTraceElement => fileNames.exists(_ == stackTraceElement.getFileName)).length
     new TestFailedException(message, stackDepth)
   }
-}
 
-import Helper.newTestFailedException
+  // If the symbol passed is 'title, this will look for a field named "title", a method named "title", or a
+  // method named "getTitle". The method must take no parameters.
+  //
+  // F (field) | M (method) | G (get or is method) | Result
+  // 0           0            0                      None
+  // 0           0            1                      Some(G)
+  // 0           1            0                      Some(M)
+  // 0           1            1                      Some(M) prefer a Scala style one of a Java style, such as when using BeanProperty annotation
+  // 1           0            0                      Some(F) ignore the field if there's a method. in Java often name a field and get method the same
+  // 1           0            1                      Some(G)
+  // 1           1            0                      Some(M)
+  // 1           1            1                      Some(M) prefer a Scala style one of a Java style, such as when using BeanProperty annotation
+  // 
+  def accessProperty(objectWithProperty: AnyRef, propertySymbol: Symbol, isBooleanProperty: Boolean): Option[Any] = {
 
-trait Matchers extends Assertions { matchers =>
+    // If 'title passed, propertyName would be "title"
+    val propertyName = propertySymbol.name
 
-  private def transformOperatorChars(s: String) = {
+    // methodNameToInvoke would also be "title", but if '> passed, methodNameToInvoke would be "$greater"
+    val methodNameToInvoke = transformOperatorChars(propertyName)
+
+    // methodNameToInvokeWithGet would be "getTitle"
+    val prefix = if (isBooleanProperty) "is" else "get"
+    val methodNameToInvokeWithGet = prefix + propertyName(0).toUpperCase + propertyName.substring(1)
+
+    val firstChar = propertyName(0).toLowerCase
+    val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+      firstChar == 'o' || firstChar == 'u'
+
+    def isFieldToAccess(field: Field): Boolean = field.getName == methodNameToInvoke
+
+    def isMethodToInvoke(method: Method): Boolean =
+      method.getName == methodNameToInvoke && method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers())
+
+    def isGetMethodToInvoke(method: Method): Boolean =
+      method.getName == methodNameToInvokeWithGet && method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers())
+
+    val fieldOption = objectWithProperty.getClass.getFields.find(isFieldToAccess)
+
+    val methodOption = objectWithProperty.getClass.getMethods.find(isMethodToInvoke)
+
+    val getMethodOption = objectWithProperty.getClass.getMethods.find(isGetMethodToInvoke)
+
+    (fieldOption, methodOption, getMethodOption) match {
+
+      case (_, Some(method), _) => Some(method.invoke(objectWithProperty, Array[AnyRef](): _*))
+
+      case (_, None, Some(getMethod)) => Some(getMethod.invoke(objectWithProperty, Array[AnyRef](): _*))
+
+      case (Some(field), None, None) => Some(field.get(objectWithProperty))
+
+      case (None, None, None) => None
+    }
+  }
+
+  def transformOperatorChars(s: String) = {
     val builder = new StringBuilder
     for (i <- 0 until s.length) {
       val ch = s.charAt(i)
@@ -100,6 +152,12 @@ trait Matchers extends Assertions { matchers =>
     }
     builder.toString
   }
+
+}
+
+import Helper.newTestFailedException
+
+trait Matchers extends Assertions { matchers =>
 
   private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatchResult = {
 
