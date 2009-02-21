@@ -364,7 +364,7 @@ trait ShouldMatchers extends Matchers {
   // I think the type hasn't been converted yet here. It is just a pass-through. It finally gets
   // converted in ResultOfHaveWordForLengthWrapper, at which point the actual implicit conversions
   // from String, Array, and the structural types get applied.
-  protected class LengthShouldWrapper[A <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  protected class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
 
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
       new ResultOfHaveWordForLengthWrapper(left, true)
@@ -375,7 +375,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class SizeShouldWrapper[A <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  protected class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] = {
       new ResultOfHaveWordForSizeWrapper(left, true)
     }
@@ -584,25 +584,25 @@ trait ShouldMatchers extends Matchers {
   // treated nominally by the implicit conversion from plain old String to StringLengthWrapper. So when length is
   // ultimately invoked up in ResultOfHaveWordForLengthWrapper, it is done directly, not with reflection. That's my
   // theory anyway.
-  implicit def convertHasIntGetLengthMethodToLengthShouldWrapper[T <:{ def getLength(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
-  implicit def convertHasIntGetLengthFieldToLengthShouldWrapper[T <:{ val getLength: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
-  implicit def convertHasIntLengthFieldToLengthShouldWrapper[T <:{ val length: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
-  implicit def convertHasIntLengthMethodToLengthShouldWrapper[T <:{ def length(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasIntGetLengthMethodToLengthShouldWrapper[T <: AnyRef { def getLength(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasIntGetLengthFieldToLengthShouldWrapper[T <: AnyRef { val getLength: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasIntLengthFieldToLengthShouldWrapper[T <: AnyRef { val length: Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasIntLengthMethodToLengthShouldWrapper[T <: AnyRef { def length(): Int}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
 
-  implicit def convertHasLongGetLengthMethodToLengthShouldWrapper[T <:{ def getLength(): Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
-  implicit def convertHasLongGetLengthFieldToLengthShouldWrapper[T <:{ val getLength: Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
-  implicit def convertHasLongLengthFieldToLengthShouldWrapper[T <:{ val length: Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
-  implicit def convertHasLongLengthMethodToLengthShouldWrapper[T <:{ def length(): Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasLongGetLengthMethodToLengthShouldWrapper[T <: AnyRef { def getLength(): Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasLongGetLengthFieldToLengthShouldWrapper[T <: AnyRef { val getLength: Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasLongLengthFieldToLengthShouldWrapper[T <: AnyRef { val length: Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
+  implicit def convertHasLongLengthMethodToLengthShouldWrapper[T <: AnyRef { def length(): Long}](o: T): LengthShouldWrapper[T] = new LengthShouldWrapper[T](o)
 
-  implicit def convertHasIntGetSizeMethodToSizeShouldWrapper[T <:{ def getSize(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
-  implicit def convertHasIntGetSizeFieldToSizeShouldWrapper[T <:{ val getSize: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
-  implicit def convertHasIntSizeFieldToSizeShouldWrapper[T <:{ val size: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
-  implicit def convertHasIntSizeMethodToSizeShouldWrapper[T <:{ def size(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasIntGetSizeMethodToSizeShouldWrapper[T <: AnyRef { def getSize(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasIntGetSizeFieldToSizeShouldWrapper[T <: AnyRef { val getSize: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasIntSizeFieldToSizeShouldWrapper[T <: AnyRef { val size: Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasIntSizeMethodToSizeShouldWrapper[T <: AnyRef { def size(): Int}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
 
-  implicit def convertHasLongGetSizeMethodToSizeShouldWrapper[T <:{ def getSize(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
-  implicit def convertHasLongGetSizeFieldToSizeShouldWrapper[T <:{ val getSize: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
-  implicit def convertHasLongSizeFieldToSizeShouldWrapper[T <:{ val size: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
-  implicit def convertHasLongSizeMethodToSizeShouldWrapper[T <:{ def size(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasLongGetSizeMethodToSizeShouldWrapper[T <: AnyRef { def getSize(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasLongGetSizeFieldToSizeShouldWrapper[T <: AnyRef { val getSize: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasLongSizeFieldToSizeShouldWrapper[T <: AnyRef { val size: Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
+  implicit def convertHasLongSizeMethodToSizeShouldWrapper[T <: AnyRef { def size(): Long}](o: T): SizeShouldWrapper[T] = new SizeShouldWrapper[T](o)
 }
 /*
 When Scala must chose between an implicit with a structural type and one with a nominal one,
