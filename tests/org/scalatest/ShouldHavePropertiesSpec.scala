@@ -224,6 +224,18 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"length\" to have value 43, but it had value 45.")
       }
 
+      it("should work with size not a symbol without anything special, in case someone forgets you don't need the parens with size") {
+
+        class Size7 {
+          def size = 7
+        }
+
+        val caught1 = intercept[TestFailedException] {
+          (new Size7) should have (size (43))
+        }
+        assert(caught1.getMessage === "Expected property \"size\" to have value 43, but it had value 7.")
+      }
+
 /*
 I decided not to support this syntax in 0.9.5, and maybe never. It is not clear to me that it is
 readable enough. I can't prevent someone from making HavePropertyMatchers to do this kind of thing,
