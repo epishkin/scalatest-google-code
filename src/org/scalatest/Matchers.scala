@@ -1108,66 +1108,38 @@ trait Matchers extends Assertions { matchers =>
       new HavePropertyMatcher[AnyRef, Any] {
         def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Any] = {
 
-          // TODO: rename rightNoTick to propertyName probably
-          // If 'title passed, rightNoTick would be "title"
-          val rightNoTick = symbol.name
+          // If 'empty passed, propertyName would be "empty"
+          val propertyName = symbol.name
 
-          // methodNameToInvoke would also be "title"
-          val methodNameToInvoke = transformOperatorChars(rightNoTick)
+          val isBooleanProperty =
+            expectedValue match {
+              case o: Boolean => true
+              case _ => false
+            }
 
-          // TODO: think about doing something with operator chars for the get case too
-          // methodNameToInvokeWithGet would be "getTitle"
-          val methodNameToInvokeWithGet = "get"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+          accessProperty(objectWithProperty, symbol, isBooleanProperty) match {
 
-          val firstChar = rightNoTick(0).toLowerCase
-          val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
-            firstChar == 'o' || firstChar == 'u'
+            case None =>
 
-// TODO: Here I'm not differentiating, man, between getTitle and title methods, oh, no, later I do throw an IAE, so this must change if
-// i'm going to change my strategy
-          def isMethodToInvoke(method: Method): Boolean =
-            (method.getName == methodNameToInvoke || method.getName == methodNameToInvokeWithGet) &&
-                method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers())
+              // if propertyName is '>, mangledPropertyName would be "$greater"
+              val mangledPropertyName = transformOperatorChars(propertyName)
 
-          // Don't support calling a field named getSomething TODO: Drop this in the other cases too
-          def isFieldToAccess(field: Field): Boolean = (field.getName == methodNameToInvoke)
+              // methodNameToInvoke would also be "title"
+              val methodNameToInvoke = mangledPropertyName
 
-          val methodArray =
-            for (method <- objectWithProperty.getClass.getMethods; if isMethodToInvoke(method))
-             yield method
+              // methodNameToInvokeWithGet would be "getTitle"
+              val methodNameToInvokeWithGet = "get"+ mangledPropertyName(0).toUpperCase + mangledPropertyName.substring(1)
 
-          val fieldArray =
-            for (field <- objectWithProperty.getClass.getFields; if isFieldToAccess(field))
-             yield field // rhymes: code as poetry
+              throw newTestFailedException(Resources("propertyNotFound", methodNameToInvoke, expectedValue.toString, methodNameToInvokeWithGet))
 
-          (methodArray.length, fieldArray.length) match {
+            case Some(result) =>
 
-            case (0, 0) =>
-              throw newTestFailedException(Resources("propertyNotFound", rightNoTick, expectedValue.toString, methodNameToInvokeWithGet))
-
-            case (0, 1) => // Has a title field
-              val field = fieldArray(0)
-              val value: AnyRef = field.get(objectWithProperty)
-              new HavePropertyMatchResult[Any](
-                value == expectedValue,
-                rightNoTick,
-                expectedValue,
-                value
-              )
-
-            case (1, 0) => // Has either a length or getLength method
-              val method = methodArray(0)
-              val result: AnyRef =
-                method.invoke(objectWithProperty, Array[AnyRef](): _*)
               new HavePropertyMatchResult[Any](
                 result == expectedValue,
-                rightNoTick,
+                propertyName,
                 expectedValue,
                 result
               )
-
-            case _ => // too many
-              throw new IllegalArgumentException("TODO: Fix this")
           }
         }
       }
