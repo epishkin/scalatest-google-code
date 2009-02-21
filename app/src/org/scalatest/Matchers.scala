@@ -1175,55 +1175,19 @@ trait Matchers extends Assertions { matchers =>
               )
             case _ =>
 
-              // I'm only checking for public methods here. Maybe it should also do package access, protected, etc.
-              // if it is accessible, it would work.
-              def isMethodToInvoke(method: Method): Boolean =
-                (method.getName == "length" || method.getName == "getLength") &&
-                    method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers()) &&
-                    (method.getReturnType == classOf[Int] || method.getReturnType == classOf[Long])
+              accessProperty(left, 'length, false) match {
 
-              def isFieldToAccess(field: Field): Boolean =
-                (field.getName == "length" || field.getName == "getLength") &&
-                (field.getType == classOf[Int] || field.getType == classOf[Long])
+                case None =>
 
-              val methodArray =
-                for (method <- left.getClass.getMethods; if isMethodToInvoke(method))
-                 yield method
-
-              val fieldArray =
-                for (field <- left.getClass.getFields; if isFieldToAccess(field))
-                 yield field // rhymes: code as poetry
-
-              (methodArray.length, fieldArray.length) match {
-
-                case (0, 0) =>
                   throw newTestFailedException(Resources("noLengthStructure", expectedLength.toString))
 
-                case (0, 1) => // Has either a length or getLength field
-                  val field = fieldArray(0)
-                  val value: Long = if (field.getType == classOf[Int]) field.getInt(left) else field.getLong(left)
-                  MatchResult(
-                    value == expectedLength,
-                    FailureMessages("didNotHaveExpectedLength", left, expectedLength),
-                    FailureMessages("hadExpectedLength", left, expectedLength)
-                  )
-
-                case (1, 0) => // Has either a length or getLength method
-                  val method = methodArray(0)
-                  val result: Long =
-                    if (method.getReturnType == classOf[Int])
-                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Int]
-                    else
-                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Long]
+                case Some(result) =>
 
                   MatchResult(
                     result == expectedLength,
                     FailureMessages("didNotHaveExpectedLength", left, expectedLength),
                     FailureMessages("hadExpectedLength", left, expectedLength)
                   )
-
-                case _ => // too many
-                  throw new IllegalArgumentException(Resources("lengthAndGetLength", expectedLength.toString))
               }
           }
       }
@@ -1246,55 +1210,19 @@ trait Matchers extends Assertions { matchers =>
               )
             case _ =>
 
-              // I'm only checking for public methods here. Maybe it should also do package access, protected, etc.
-              // if it is accessible, it would work.
-              def isMethodToInvoke(method: Method): Boolean =
-                (method.getName == "size" || method.getName == "getSize") &&
-                    method.getParameterTypes.size == 0 && !Modifier.isStatic(method.getModifiers()) &&
-                    (method.getReturnType == classOf[Int] || method.getReturnType == classOf[Long])
+              accessProperty(left, 'size, false) match {
 
-              def isFieldToAccess(field: Field): Boolean =
-                (field.getName == "size" || field.getName == "getSize") &&
-                (field.getType == classOf[Int] || field.getType == classOf[Long])
+                case None =>
 
-              val methodArray =
-                for (method <- left.getClass.getMethods; if isMethodToInvoke(method))
-                 yield method
-
-              val fieldArray =
-                for (field <- left.getClass.getFields; if isFieldToAccess(field))
-                 yield field // rhymes: code as poetry
-
-              (methodArray.size, fieldArray.size) match {
-
-                case (0, 0) =>
                   throw newTestFailedException(Resources("noSizeStructure", expectedSize.toString))
 
-                case (0, 1) => // Has either a size or getSize field
-                  val field = fieldArray(0)
-                  val value: Long = if (field.getType == classOf[Int]) field.getInt(left) else field.getLong(left)
-                  MatchResult(
-                    value == expectedSize,
-                    FailureMessages("didNotHaveExpectedSize", left, expectedSize),
-                    FailureMessages("hadExpectedSize", left, expectedSize)
-                  )
-
-                case (1, 0) => // Has either a size or getSize method
-                  val method = methodArray(0)
-                  val result: Long =
-                    if (method.getReturnType == classOf[Int])
-                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Int]
-                    else
-                      method.invoke(left, Array[AnyRef](): _*).asInstanceOf[Long]
+                case Some(result) =>
 
                   MatchResult(
                     result == expectedSize,
                     FailureMessages("didNotHaveExpectedSize", left, expectedSize),
                     FailureMessages("hadExpectedSize", left, expectedSize)
                   )
-
-                case _ => // too many
-                  throw new IllegalArgumentException(Resources("sizeAndGetSize", expectedSize.toString))
               }
           }
       }
