@@ -2648,7 +2648,6 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
-  // new HavePropertyMatchResult[Long](false, "length", expectedLength, 12)
   class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[AnyRef, Long] {
     def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Long] = {
 
@@ -2682,7 +2681,33 @@ trait Matchers extends Assertions { matchers =>
 
   val length = new LengthWord
  
-  class ResultOfSizeWordApplication(val expectedSize: Long)
+  class ResultOfSizeWordApplication(val expectedSize: Long) extends HavePropertyMatcher[AnyRef, Long] {
+    def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Long] = {
+
+      accessProperty(objectWithProperty, 'size, false) match {
+
+        case None =>
+
+          throw newTestFailedException(Resources("propertyNotFound", "size", expectedSize.toString, "getSize"))
+
+        case Some(result) =>
+
+          new HavePropertyMatchResult[Long](
+            result == expectedSize,
+            "size",
+            expectedSize,
+            result match {
+              case value: Byte => value.toLong
+              case value: Short => value.toLong
+              case value: Int => value.toLong
+              case value: Long => value
+              case _ => throw newTestFailedException(Resources("sizePropertyNotAnInteger"))
+            }
+          )
+      }
+    }
+  }
+
 
   class SizeWord {
     def apply(expectedSize: Long) = new ResultOfSizeWordApplication(expectedSize)
