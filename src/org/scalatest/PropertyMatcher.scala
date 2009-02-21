@@ -17,8 +17,7 @@ package org.scalatest
 
 // T is the type of the object that has a property to verify with an instance of this trait, P is the type of that particular property
 // Since I should be able to pass 
-trait PropertyMatcher[-T, P] extends Function1[T, PropertyMatchResult[P]] {
-  // Returns None if it verifies, otherwise a Some with the failure message, like ===
-  def apply(objectWithProperty: T): PropertyMatchResult[P]
+trait HavePropertyMatcher[-T, P] extends Function1[T, HavePropertyMatchResult[P]] {
+  def apply(objectWithProperty: T): HavePropertyMatchResult[P]
 }
 

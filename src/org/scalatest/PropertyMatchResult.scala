@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-protected class PropertyMatchResult[P](
+protected class HavePropertyMatchResult[P](
   val matches: Boolean,
   val propertyName: String,
   val expectedValue: P,

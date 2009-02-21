@@ -16,7 +16,7 @@
 package org.scalatest
 
 // T is the type of the object that has a Boolean property to verify with an instance of this trait
-trait BeTrueMatcher[-T] extends Function1[T, BeTrueMatchResult] {
-  def apply(objectWithProperty: T): BeTrueMatchResult
+trait BePropertyMatcher[-T] extends Function1[T, BePropertyMatchResult] {
+  def apply(objectWithProperty: T): BePropertyMatchResult
 }
 

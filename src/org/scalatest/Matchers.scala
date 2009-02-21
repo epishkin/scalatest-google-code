@@ -1060,10 +1060,10 @@ trait Matchers extends Assertions { matchers =>
   // then represents an object with an apply method. So it gives an apply method to symbols.
   // book should have ('author ("Gibson"))
   //                   ^ // Basically this 'author symbol gets converted into this class, and its apply  method takes "Gibson"
-  protected class PropertyMatcherGenerator(symbol: Symbol) {
+  protected class HavePropertyMatcherGenerator(symbol: Symbol) {
     def apply(expectedValue: Any) =
-      new PropertyMatcher[AnyRef, Any] {
-        def apply(objectWithProperty: AnyRef): PropertyMatchResult[Any] = {
+      new HavePropertyMatcher[AnyRef, Any] {
+        def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Any] = {
 
           // TODO: rename rightNoTick to propertyName probably
           // If 'title passed, rightNoTick would be "title"
@@ -1105,7 +1105,7 @@ trait Matchers extends Assertions { matchers =>
             case (0, 1) => // Has a title field
               val field = fieldArray(0)
               val value: AnyRef = field.get(objectWithProperty)
-              new PropertyMatchResult[Any](
+              new HavePropertyMatchResult[Any](
                 value == expectedValue,
                 rightNoTick,
                 expectedValue,
@@ -1116,7 +1116,7 @@ trait Matchers extends Assertions { matchers =>
               val method = methodArray(0)
               val result: AnyRef =
                 method.invoke(objectWithProperty, Array[AnyRef](): _*)
-              new PropertyMatchResult[Any](
+              new HavePropertyMatchResult[Any](
                 result == expectedValue,
                 rightNoTick,
                 expectedValue,
@@ -1130,7 +1130,7 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
-  protected implicit def convertSymbolToPropertyMatcherGenerator(symbol: Symbol) = new PropertyMatcherGenerator(symbol)
+  protected implicit def convertSymbolToHavePropertyMatcherGenerator(symbol: Symbol) = new HavePropertyMatcherGenerator(symbol)
 
   protected class HaveWord {
 
@@ -1284,7 +1284,7 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
-      def apply[T](firstPropertyMatcher: PropertyMatcher[T, _], propertyVerifiers: PropertyMatcher[T, _]*): Matcher[T] =
+      def apply[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyVerifiers: HavePropertyMatcher[T, _]*): Matcher[T] =
         new Matcher[T] {
           def apply(left: T) = {
             val results =
@@ -1576,7 +1576,7 @@ trait Matchers extends Assertions { matchers =>
     // TODO: Check the shouldBeTrues, are they sometimes always false or true?
     // badBook should be a (goodRead)
     //                   ^
-    def a(beTrueMatcher: BeTrueMatcher[T]) {
+    def a(beTrueMatcher: BePropertyMatcher[T]) {
       val beTrueMatchResult = beTrueMatcher(left)
       if (beTrueMatchResult.matches != shouldBeTrue) {
         throw newTestFailedException(
@@ -2705,10 +2705,10 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
-  class ResultOfLengthWordApplication(val expectedLength: Long) extends PropertyMatcher[Any, Long] {
+  class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[Any, Long] {
     // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: Any): PropertyMatchResult[Long] =
-      new PropertyMatchResult[Long](false, "length", expectedLength, 12)
+    def apply(objectWithProperty: Any): HavePropertyMatchResult[Long] =
+      new HavePropertyMatchResult[Long](false, "length", expectedLength, 12)
   }
 
   class LengthWord {
@@ -2762,11 +2762,11 @@ trait Matchers extends Assertions { matchers =>
   val value = new ValueWord
 
   class ResultOfAWordToSymbolApplication(val symbol: Symbol)
-  class ResultOfAWordToBeTrueMatcherApplication[T](val beTrueMatcher: BeTrueMatcher[T])
+  class ResultOfAWordToBePropertyMatcherApplication[T](val beTrueMatcher: BePropertyMatcher[T])
 
   class AWord {
     def apply(symbol: Symbol) = new ResultOfAWordToSymbolApplication(symbol)
-    def apply[T](beTrueMatcher: BeTrueMatcher[T]) = new ResultOfAWordToBeTrueMatcherApplication(beTrueMatcher)
+    def apply[T](beTrueMatcher: BePropertyMatcher[T]) = new ResultOfAWordToBePropertyMatcherApplication(beTrueMatcher)
   }
 
   val a = new AWord
