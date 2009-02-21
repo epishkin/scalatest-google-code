@@ -216,7 +216,6 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"book1.author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
-/*
       it("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
 
         val caught1 = intercept[TestFailedException] {
@@ -224,7 +223,6 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         }
         assert(caught1.getMessage === "Expected property \"length\" to have value 43, but it had value 45.")
       }
-*/
 
 /*
 I decided not to support this syntax in 0.9.5, and maybe never. It is not clear to me that it is

@@ -2648,10 +2648,32 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
-  class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[Any, Long] {
-    // Returns None if it verifies, otherwise a Some with the failure message, like ===
-    def apply(objectWithProperty: Any): HavePropertyMatchResult[Long] =
-      new HavePropertyMatchResult[Long](false, "length", expectedLength, 12)
+  // new HavePropertyMatchResult[Long](false, "length", expectedLength, 12)
+  class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[AnyRef, Long] {
+    def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Long] = {
+
+      accessProperty(objectWithProperty, 'length, false) match {
+
+        case None =>
+
+          throw newTestFailedException(Resources("propertyNotFound", "length", expectedLength.toString, "getLength"))
+
+        case Some(result) =>
+
+          new HavePropertyMatchResult[Long](
+            result == expectedLength,
+            "length",
+            expectedLength,
+            result match {
+              case value: Byte => value.toLong
+              case value: Short => value.toLong
+              case value: Int => value.toLong
+              case value: Long => value
+              case _ => throw newTestFailedException(Resources("lengthPropertyNotAnInteger"))
+            }
+          )
+      }
+    }
   }
 
   class LengthWord {
