@@ -2288,6 +2288,11 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
+    def apply[T](right: BeMatcher[T]): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) = right(left)
+      }
+
     def apply(right: Any): Matcher[Any] =
       Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
   }
@@ -2298,6 +2303,16 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[S] {
         def apply(left: S) =
           matcher(left) match {
+            case MatchResult(bool, s1, s2) => MatchResult(!bool, s2, s1)
+          }
+      }
+
+    // val even = not (odd)
+    //                ^
+    def apply[S <: Any](beMatcher: BeMatcher[S]) =
+      new BeMatcher[S] {
+        def apply(left: S) =
+          beMatcher(left) match {
             case MatchResult(bool, s1, s2) => MatchResult(!bool, s2, s1)
           }
       }
