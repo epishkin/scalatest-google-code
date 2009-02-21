@@ -30,6 +30,34 @@ trait BookPropertyMatchers { this: Matchers =>
     val isGoodRead: Boolean
   )
 
+  case class Bookshelf(
+    val book1: Book,
+    val book2: Book,
+    val book3: Book
+  )
+
+  class BookPropertiesMatcher(firstPropertyMatcher: PropertyMatcher[Book, _], propertyMatchers: PropertyMatcher[Book, _]*)
+      extends PropertyMatcher[Bookshelf, Book] {
+
+    def apply(bookshelf: Bookshelf) = {
+      val propertyMatcherList = firstPropertyMatcher :: propertyMatchers.toList
+      val propertyMatchResults = // This is the list of results
+        for (propertyMatcher <- propertyMatcherList) yield
+          propertyMatcher(bookshelf.book1)
+
+      val firstFailure = propertyMatchResults.find(_.matches == false)
+      firstFailure match {
+        case Some(failure) =>
+          new PropertyMatchResult(false, "book1." + failure.propertyName, failure.expectedValue, failure.actualValue)
+        case None =>
+          new PropertyMatchResult(true, "book1", null, null) // What to do here?
+      }
+    }
+  }
+
+  def book1(firstPropertyMatcher: PropertyMatcher[Book, _], propertyMatchers: PropertyMatcher[Book, _]*) =
+    new BookPropertiesMatcher(firstPropertyMatcher, propertyMatchers: _*)
+
   class TitleMatcher(expectedValue: String) extends PropertyMatcher[Book, String] {
     def apply(book: Book) = {
       new PropertyMatchResult(book.title == expectedValue, "title", expectedValue, book.title)
@@ -79,6 +107,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
 
       val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
       val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
+      val bookshelf = new Bookshelf(book, badBook, book)
 
       it("should do nothing if all the properties match") {
         book should have (
@@ -137,12 +166,28 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
-      it("should throw TestFailedException if a Boolean property matcher is used with be and the property is false") {
+      it("should throw TestFailedException if a \"be true\" matcher is used with be and the property is false") {
 
         val caught1 = intercept[TestFailedException] {
-          convertToAnyRefShouldWrapper(badBook) should be a (goodRead)
+          badBook should be a (goodRead)
         }
         assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
+      }
+
+      it("should throw TestFailedException if a nested property matcher expression is used and a nested property doesn't match") {
+
+        // I'm not too hot on this syntax, but can't prevent it and wouldn't want to. If people want do to nested property
+        // checks, they can do it this way.
+        val caught1 = intercept[TestFailedException] {
+          bookshelf should have (
+            book1 (
+              title ("A Tale of Two Cities"),
+              author ("Gibson"),
+              pubYear (1859)
+            )
+          )
+        }
+        assert(caught1.getMessage === "Expected property \"book1.author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 
 /*
@@ -152,6 +197,25 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
           book should have (length (43))
         }
         assert(caught1.getMessage === "Expected property \"length\" to have value 43, but it had value 45.")
+      }
+*/
+
+/*
+I decided not to support this syntax in 0.9.5, and maybe never. It is not clear to me that it is
+readable enough. I can't prevent someone from making HavePropertyMatchers to do this kind of thing,
+and that's fine. It actually gives them a way to do it if they want to do it.
+      it("should throw TestFailedException if a nested property matcher expression with a symbol is used and a nested property doesn't match") {
+
+        val caught1 = intercept[TestFailedException] {
+          bookshelf should have (
+            'book1 (
+              title ("A Tale of Two Cities"),
+              author ("Gibson"),
+              pubYear (1859)
+            )
+          )
+        }
+        assert(caught1.getMessage === "Expected property \"book1.author\" to have value \"Gibson\", but it had value \"Dickens\".")
       }
 */
 
