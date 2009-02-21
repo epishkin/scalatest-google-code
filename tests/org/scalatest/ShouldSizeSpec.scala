@@ -3567,30 +3567,24 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
       assert(caught2.getMessage === expectedMessage)
     }
 
-    it("should give an IllegalArgumentException with an arbitrary object that has multiple members with a valid sizes structure") {
+    it("should the Scala-style method on an arbitrary object that has multiple members with a valid sizes structure") {
       class Sizey(len: Int) {
-        def getSize: Int = len
+        def getSize: Int = len + 1
         def size: Int = len
         override def toString = "sizey"
       }
       val obj = new Sizey(2)
       val sizeMatcher = have size (2)
-      val caught1 = intercept[IllegalArgumentException] {
-        sizeMatcher.apply(obj)
-      }
-      assert(caught1.getMessage === "have size (2) used with an object that has multiple fields and/or methods named size and getSize")
+      sizeMatcher.apply(obj)
 
       class IntAndLong(intLen: Int, longLen: Long) {
         def getSize: Int = intLen
         def size: Long = longLen
         override def toString = "sizey"
       }
-      val obj2 = new Sizey(2)
+      val obj2 = new IntAndLong(3, 2)
       val sizeMatcher2 = have size (2)
-      val caught2 = intercept[IllegalArgumentException] {
-        sizeMatcher2.apply(obj)
-      }
-      assert(caught2.getMessage === "have size (2) used with an object that has multiple fields and/or methods named size and getSize")
+      sizeMatcher2.apply(obj)
     }
   }
 }
