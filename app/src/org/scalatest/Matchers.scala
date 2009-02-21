@@ -81,24 +81,31 @@ private[scalatest] object Helper {
     // If 'title passed, propertyName would be "title"
     val propertyName = propertySymbol.name
 
-    // methodNameToInvoke would also be "title", but if '> passed, methodNameToInvoke would be "$greater"
-    val methodNameToInvoke = transformOperatorChars(propertyName)
+    // if propertyName is '>, mangledPropertyName would be "$greater"
+    val mangledPropertyName = transformOperatorChars(propertyName)
+
+    // fieldNameToAccess and methodNameToInvoke would also be "title"
+    val fieldNameToAccess = mangledPropertyName
+    val methodNameToInvoke = mangledPropertyName
 
     // methodNameToInvokeWithGet would be "getTitle"
     val prefix = if (isBooleanProperty) "is" else "get"
-    val methodNameToInvokeWithGet = prefix + propertyName(0).toUpperCase + propertyName.substring(1)
+    val methodNameToInvokeWithGet = prefix + mangledPropertyName(0).toUpperCase + mangledPropertyName.substring(1)
 
     val firstChar = propertyName(0).toLowerCase
     val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
       firstChar == 'o' || firstChar == 'u'
 
-    def isFieldToAccess(field: Field): Boolean = field.getName == methodNameToInvoke
+    def isFieldToAccess(field: Field): Boolean = field.getName == fieldNameToAccess
 
+    // If it is a predicate, I check the result type, otherwise I don't. Maybe I should just do that. Could be a later enhancement.
     def isMethodToInvoke(method: Method): Boolean =
-      method.getName == methodNameToInvoke && method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers())
+      method.getName == methodNameToInvoke && method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers()) &&
+        (!isBooleanProperty || method.getReturnType == classOf[Boolean])
 
     def isGetMethodToInvoke(method: Method): Boolean =
-      method.getName == methodNameToInvokeWithGet && method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers())
+      method.getName == methodNameToInvokeWithGet && method.getParameterTypes.length == 0 && !Modifier.isStatic(method.getModifiers()) &&
+        (!isBooleanProperty || method.getReturnType == classOf[Boolean])
 
     val fieldOption = objectWithProperty.getClass.getFields.find(isFieldToAccess)
 
@@ -156,48 +163,33 @@ private[scalatest] object Helper {
 }
 
 import Helper.newTestFailedException
+import Helper.accessProperty
 
 trait Matchers extends Assertions { matchers =>
 
   private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatchResult = {
 
     // If 'empty passed, rightNoTick would be "empty"
-    val rightNoTick = right.name
+    val propertyName = right.name
 
-    // methodNameToInvoke would also be "empty"
-    val methodNameToInvoke = transformOperatorChars(rightNoTick)
+    accessProperty(left, right, true) match {
 
-    // TODO: Isn't there an issue here with the operator chars being ignored?
-    // methodNameToInvokeWithIs would be "isEmpty"
-    val methodNameToInvokeWithIs = "is"+ rightNoTick(0).toUpperCase + rightNoTick.substring(1)
+      case None =>
 
-    val firstChar = rightNoTick(0).toLowerCase
-    val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
-      firstChar == 'o' || firstChar == 'u'
+        // if propertyName is '>, mangledPropertyName would be "$greater"
+        val mangledPropertyName = transformOperatorChars(propertyName)
 
-    // TODO: I don't think I'm checking for fields here, and shouldn't I be?
-    def isMethodToInvoke(m: Method) = {
+        // methodNameToInvoke would also be "empty"
+        val methodNameToInvoke = mangledPropertyName
 
-      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
-      val simpleName = m.getName
-      val paramTypes = m.getParameterTypes
-      val hasNoParams = paramTypes.length == 0
-      val resultType = m.getReturnType
+        // methodNameToInvokeWithIs would be "isEmpty"
+        val methodNameToInvokeWithIs = "is"+ mangledPropertyName(0).toUpperCase + mangledPropertyName.substring(1)
 
-      isInstanceMethod && hasNoParams &&
-      (simpleName == methodNameToInvoke || simpleName == methodNameToInvokeWithIs) &&
-      resultType == classOf[Boolean]
-    }
+        val firstChar = propertyName(0).toLowerCase
+        val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
+          firstChar == 'o' || firstChar == 'u'
 
-    // Store in an array, because may have both isEmpty and empty, in which case I
-    // will throw an exception.
-    val methodArray =
-      for (m <- left.getClass.getMethods; if isMethodToInvoke(m))
-        yield m
-
-    methodArray.length match {
-      case 0 =>
-        throw new IllegalArgumentException(
+        throw new IllegalArgumentException( // TODO replace this IAE with a TFE
           FailureMessages(
             if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
             left,
@@ -205,26 +197,19 @@ trait Matchers extends Assertions { matchers =>
             UnquotedString(methodNameToInvokeWithIs)
           )
         )
-      case 1 =>
-        val result = methodArray(0).invoke(left, Array[AnyRef](): _*).asInstanceOf[Boolean]
+
+      case Some(result) =>
+
         val (wasNot, was) =
           if (hasArticle) {
             if (articleIsA) ("wasNotA", "wasA") else ("wasNotAn", "wasAn")
           }
           else ("wasNot", "was")
+
         MatchResult(
-          result,
-          FailureMessages(wasNot, left, UnquotedString(rightNoTick)),
-          FailureMessages(was, left, UnquotedString(rightNoTick))
-        )
-      case _ => // Should only ever be 2, but just in case
-        throw new IllegalArgumentException(
-          FailureMessages(
-            if (methodNameStartsWithVowel) "hasBothAnAndAnMethod" else "hasBothAAndAnMethod",
-            left,
-            UnquotedString(methodNameToInvoke),
-            UnquotedString(methodNameToInvokeWithIs)
-          )
+          result == true, // Right now I just leave the return value of accessProperty as Any
+          FailureMessages(wasNot, left, UnquotedString(propertyName)),
+          FailureMessages(was, left, UnquotedString(propertyName))
         )
     }
   }
