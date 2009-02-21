@@ -373,8 +373,11 @@ trait ShouldMatchers extends Matchers {
     override def should(notWord: NotWord): ResultOfNotWordForLengthWrapper[A] = {
       new ResultOfNotWordForLengthWrapper(leftOperand, false)
     }
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](leftOperand, true)
   }
 
+  // TODO, add should(BeWord) here, and investigate why there's no should(NotWord) here
   protected class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] = {
       new ResultOfHaveWordForSizeWrapper(left, true)
