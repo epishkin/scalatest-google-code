@@ -174,6 +174,32 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
       }
 
+      it("should throw TestFailedException if a \"be odd\" matcher is used with be and the Int isn't odd") {
+
+        class OddMatcher extends BeMatcher[Int] {
+          def apply(left: Int): MatchResult = {
+            MatchResult(
+              left % 2 == 1,
+              left.toString + " was even",
+              left.toString + " was odd"
+            )
+          }
+        }
+        val odd = new OddMatcher
+
+        val caught1 = intercept[TestFailedException] {
+          4 should be (odd)
+        }
+        assert(caught1.getMessage === "4 was even")
+
+        val even = not (odd)
+
+        val caught2 = intercept[TestFailedException] {
+          5 should be (even)
+        }
+        assert(caught2.getMessage === "5 was odd")
+      }
+
       it("should throw TestFailedException if a nested property matcher expression is used and a nested property doesn't match") {
 
         // I'm not too hot on this syntax, but can't prevent it and wouldn't want to. If people want do to nested property
