@@ -36,8 +36,8 @@ trait BookPropertyMatchers { this: Matchers =>
     val book3: Book
   )
 
-  class BookPropertiesMatcher(firstPropertyMatcher: PropertyMatcher[Book, _], propertyMatchers: PropertyMatcher[Book, _]*)
-      extends PropertyMatcher[Bookshelf, Book] {
+  class BookPropertiesMatcher(firstPropertyMatcher: HavePropertyMatcher[Book, _], propertyMatchers: HavePropertyMatcher[Book, _]*)
+      extends HavePropertyMatcher[Bookshelf, Book] {
 
     def apply(bookshelf: Bookshelf) = {
       val propertyMatcherList = firstPropertyMatcher :: propertyMatchers.toList
@@ -48,54 +48,54 @@ trait BookPropertyMatchers { this: Matchers =>
       val firstFailure = propertyMatchResults.find(_.matches == false)
       firstFailure match {
         case Some(failure) =>
-          new PropertyMatchResult(false, "book1." + failure.propertyName, failure.expectedValue, failure.actualValue)
+          new HavePropertyMatchResult(false, "book1." + failure.propertyName, failure.expectedValue, failure.actualValue)
         case None =>
-          new PropertyMatchResult(true, "book1", null, null) // What to do here?
+          new HavePropertyMatchResult(true, "book1", null, null) // What to do here?
       }
     }
   }
 
-  def book1(firstPropertyMatcher: PropertyMatcher[Book, _], propertyMatchers: PropertyMatcher[Book, _]*) =
+  def book1(firstPropertyMatcher: HavePropertyMatcher[Book, _], propertyMatchers: HavePropertyMatcher[Book, _]*) =
     new BookPropertiesMatcher(firstPropertyMatcher, propertyMatchers: _*)
 
-  class TitleMatcher(expectedValue: String) extends PropertyMatcher[Book, String] {
+  class TitleMatcher(expectedValue: String) extends HavePropertyMatcher[Book, String] {
     def apply(book: Book) = {
-      new PropertyMatchResult(book.title == expectedValue, "title", expectedValue, book.title)
+      new HavePropertyMatchResult(book.title == expectedValue, "title", expectedValue, book.title)
     }
   }
 
   def title(expectedValue: String) = new TitleMatcher(expectedValue)
 
-  class AuthorMatcher(expectedValue: String) extends PropertyMatcher[Book, String] {
+  class AuthorMatcher(expectedValue: String) extends HavePropertyMatcher[Book, String] {
     def apply(book: Book) = {
-      new PropertyMatchResult(book.author == expectedValue, "author", expectedValue, book.author)
+      new HavePropertyMatchResult(book.author == expectedValue, "author", expectedValue, book.author)
     }
   }
 
   def author(expectedValue: String) = new AuthorMatcher(expectedValue)
 
-  class PubYearMatcher(expectedValue: Int) extends PropertyMatcher[Book, Int] {
+  class PubYearMatcher(expectedValue: Int) extends HavePropertyMatcher[Book, Int] {
     def apply(book: Book) = {
-      new PropertyMatchResult(book.pubYear == expectedValue, "pubYear", expectedValue, book.pubYear)
+      new HavePropertyMatchResult(book.pubYear == expectedValue, "pubYear", expectedValue, book.pubYear)
     }
   }
 
   def pubYear(expectedValue: Int) = new PubYearMatcher(expectedValue)
 
-  class GoodReadMatcher(expectedValue: Boolean) extends PropertyMatcher[Book, Boolean] {
+  class GoodReadMatcher(expectedValue: Boolean) extends HavePropertyMatcher[Book, Boolean] {
     def apply(book: Book) = {
-      new PropertyMatchResult(book.isGoodRead == expectedValue, "goodRead", expectedValue, book.isGoodRead)
+      new HavePropertyMatchResult(book.isGoodRead == expectedValue, "goodRead", expectedValue, book.isGoodRead)
     }
   }
 
-  class GoodReadBeTrueMatcher extends BeTrueMatcher[Book] {
+  class GoodReadBePropertyMatcher extends BePropertyMatcher[Book] {
     def apply(book: Book) = {
-      new BeTrueMatchResult(book.isGoodRead, "goodRead")
+      new BePropertyMatchResult(book.isGoodRead, "goodRead")
     }
   }
 
   def goodRead(expectedValue: Boolean) = new GoodReadMatcher(expectedValue)
-  def goodRead = new GoodReadBeTrueMatcher
+  def goodRead = new GoodReadBePropertyMatcher
 }
 
 class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
