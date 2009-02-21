@@ -93,4 +93,11 @@ class PropertyFunSuite extends FunSuite with ShouldMatchers {
     val result = Helper.accessProperty(obj, 'cow, false)
     result should be (Some(1))
   }
+
+  test("works on set.empty") {
+    val result1 = Helper.accessProperty(Set(), 'empty, true)
+    result1 should be (Some(true))
+    val result2 = Helper.accessProperty(Set(1, 2, 3), 'empty, true)
+    result2 should be (Some(false))
+  }
 }

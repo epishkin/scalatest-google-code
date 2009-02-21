@@ -465,7 +465,6 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
 
     describe("(for symbols)") {
 
-
       // TODO: Make sure to write a test for each conversion, because some are using ShouldMethodsForAny instead
       // of ShouldMethodsForAnyRef.
       it("should be invokable from be a Symbol and be an Symbol") {
@@ -490,25 +489,19 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       }
 
 // STOLE FROM HERE
-      it("should throw IllegalArgumentException if both an empty and an isEmpty method exist") {
+      it("should call the Scala=style method if both an empty and an isEmpty method exist") {
         class EmptyMock {
           def empty: Boolean = true
-          def isEmpty: Boolean = true
+          def isEmpty: Boolean = false
           override def toString = "EmptyMock"
         }
         class NonEmptyMock {
-          def empty: Boolean = true
+          def empty: Boolean = false
           def isEmpty: Boolean = true
           override def toString = "NonEmptyMock"
         }
-        val ex1 = intercept[IllegalArgumentException] {
-          (new EmptyMock) should be ('empty)
-        }
-        ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method")
-        val ex2 = intercept[IllegalArgumentException] {
-          (new NonEmptyMock) should not { be ('empty) }
-        }
-        ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method")
+        (new EmptyMock) should be ('empty)
+        (new NonEmptyMock) should not { be ('empty) }
       }
 
       it("should access an 'empty' val when passed 'empty") {
@@ -520,7 +513,6 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         }
         (new EmptyMock) should be ('empty)
         (new NonEmptyMock) should not { be ('empty) }
-        // (new NonEmptyMock) shouldNot be ('empty)
       }
     }
   }
@@ -563,25 +555,19 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       ex2.getMessage should equal ("NonEmptyMock has neither an empty nor an isEmpty method")
     }
 
-    it("should throw IllegalArgumentException if both an empty and an isEmpty method exist") {
+    it("should call the Scala-style method if both an empty and an isEmpty method exist") {
       class EmptyMock {
         def empty: Boolean = true
-        def isEmpty: Boolean = true
+        def isEmpty: Boolean = false
         override def toString = "EmptyMock"
       }
       class NonEmptyMock {
-        def empty: Boolean = true
+        def empty: Boolean = false
         def isEmpty: Boolean = true
         override def toString = "NonEmptyMock"
       }
-      val ex1 = intercept[IllegalArgumentException] {
-        (new EmptyMock) should be ('empty)
-      }
-      ex1.getMessage should equal ("EmptyMock has both an empty and an isEmpty method")
-      val ex2 = intercept[IllegalArgumentException] {
-        (new NonEmptyMock) should not { be ('empty) }
-      }
-      ex2.getMessage should equal ("NonEmptyMock has both an empty and an isEmpty method")
+      (new EmptyMock) should be ('empty)
+      (new NonEmptyMock) should not { be ('empty) }
     }
 
     it("should access an 'empty' val when passed 'empty") {
@@ -648,25 +634,19 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       ex2.getMessage should equal ("NonDefinedMock has neither a defined nor an isDefined method")
     }
 
-    it("should throw IllegalArgumentException if both a defined and an isDefined method exist") {
+    it("should call the Scala-style method if both a defined and an isDefined method exist") {
       class DefinedMock {
         def defined: Boolean = true
-        def isDefined: Boolean = true
+        def isDefined: Boolean = false
         override def toString = "DefinedMock"
       }
       class NonDefinedMock {
-        def defined: Boolean = true
+        def defined: Boolean = false
         def isDefined: Boolean = true
         override def toString = "NonDefinedMock"
       }
-      val ex1 = intercept[IllegalArgumentException] {
-        (new DefinedMock) should be ('defined)
-      }
-      ex1.getMessage should equal ("DefinedMock has both a defined and an isDefined method")
-      val ex2 = intercept[IllegalArgumentException] {
-        (new NonDefinedMock) should not { be ('defined) }
-      }
-      ex2.getMessage should equal ("NonDefinedMock has both a defined and an isDefined method")
+      (new DefinedMock) should be ('defined)
+      (new NonDefinedMock) should not { be ('defined) }
     }
 
     it("should access an 'defined' val") {

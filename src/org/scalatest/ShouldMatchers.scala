@@ -383,8 +383,7 @@ trait ShouldMatchers extends Matchers {
         case _ => ()
       }
     }
-
-    // This one supports it should behave like
+// This one supports it should behave like
     def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     // I don't think there's a be on Any, because a (symbol) and an (symbol), plus
     // theSameInstanceAs only work on AnyRefs. And 1 should be (1) words because be (1) results in a matcher already
@@ -437,6 +436,9 @@ trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] = {
       new ResultOfHaveWordForSizeWrapper(left, true)
     }
+
+    // TODO I just added this. Didn't do a test for it.
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](leftOperand, true)
   }
 
   protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethodsForAnyRef[String] {
@@ -728,6 +730,7 @@ THIS DOESN'T WORK BECAUSE...
     }
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
+
   protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left }
   with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
