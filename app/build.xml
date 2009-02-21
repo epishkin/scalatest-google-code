@@ -240,7 +240,7 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.ShouldHavePropertiesSpec" />
+            <arg value="org.scalatest.PropertyFunSuite" />
 
 <!--
             <arg value="-s" />

@@ -20,11 +20,24 @@ import Helper.newTestFailedException
 
 /**
  * <p>
- * The next release of ScalaTest will include two new traits, <code>ShouldMatchers</code> and <code>MustMatchers</code>. These two traits are basically identical except where <code>ShouldMatchers</code> says <code>should</code>, <code>MustMatchers</code> says <code>must</code>. None of the suite traits will mix either of these in by default, for two reasons. One is that some people prefer "should," and others "must," and this way everyone can select the verb they prefer. Also, both matchers traits involve a lot of implicit conversions, and I prefer that people invite these conversion into their test code explicitly. In this blog post, I'll show <code>ShouldMatchers</code> examples.
+ * The next release of ScalaTest will include two new traits, <code>ShouldMatchers</code>
+ * and <code>MustMatchers</code>. These two traits are basically identical except where
+ * <code>ShouldMatchers</code> says <code>should</code>, <code>MustMatchers</code> says
+ * <code>must</code>. None of the suite traits will mix either of these in by default, for
+ * two reasons. One is that some people prefer "should," and others "must," and this way
+ * everyone can select the verb they prefer. Also, both matchers traits involve a lot of
+ * implicit conversions, and I prefer that people invite these conversion into their test
+ * code explicitly. In this blog post, I'll show <code>ShouldMatchers</code> examples.
  * </p>
  * 
  * <p>
- * Matchers represent a kind of domain specific language (DSL) for assertions, which read a bit more like natural language in the source code, and provide more detailed error messages in assertions when they fail. Some examples of matchers in other test frameworks are <a href="http://code.google.com/p/hamcrest/wiki/Tutorial">Hamcrest matchers</a> (Java), <a href="http://rspec.rubyforge.org/rspec/1.1.11/classes/Spec/Matchers.html">RSpec matchers</a> (Ruby), <a href="http://easyb.org/dsls.html">easyb's ensure syntax</a> (Groovy), and <a href="http://code.google.com/p/specs/wiki/MatchersGuide">specs matchers</a> (Scala).
+ * Matchers represent a kind of domain specific language (DSL) for assertions, which read
+ * a bit more like natural language in the source code, and provide more detailed error
+ * messages in assertions when they fail. Some examples of matchers in other test frameworks
+ * are <a href="http://code.google.com/p/hamcrest/wiki/Tutorial">Hamcrest matchers</a> (Java),
+ * <a href="http://rspec.rubyforge.org/rspec/1.1.11/classes/Spec/Matchers.html">RSpec matchers</a>
+ * (Ruby), <a href="http://easyb.org/dsls.html">easyb's ensure syntax</a> (Groovy),
+ * and <a href="http://code.google.com/p/specs/wiki/MatchersGuide">specs matchers</a> (Scala).
  * </p>
  * 
  * <p>
@@ -34,20 +47,25 @@ import Helper.newTestFailedException
  * object should equal (3)
  * </pre>
  * <p>
- * Here <code>object</code> is a variable, and can be of any type. If the object is an <code>Int</code> with the value 3, nothing will happen. Otherwise, an assertion error will be thrown with the detail message, such as <code>"7 did not equal 3"</code>.
+ * Here <code>object</code> is a variable, and can be of any type. If the object is an
+ * <code>Int</code> with the value 3, nothing will happen. Otherwise, an assertion error
+ * will be thrown with the detail message, such as <code>"7 did not equal 3"</code>.
  * </p>
  * 
  * <h2>Checking size and length</h2>
  * 
  * <p>
- * You can check for a size of length of just about any type of object for which it would make sense. Here's how checking for length looks:
+ * You can check for a size of length of just about any type of object for which it
+ * would make sense. Here's how checking for length looks:
  * </p>
  * <pre class="indent">
  * object should have length (3)
  * </pre>
  * 
  * <p>
- * This syntax can be used with any object that has a field or method named <code>length</code> or a method named <code>getLength</code>. (The Scala compiler will check for this at compile time.) Size is similar:
+ * This syntax can be used with any object that has a field or method named <code>length</code>
+ * or a method named <code>getLength</code>. (The Scala compiler will check for this at compile
+ * time.) Size is similar:
  * </p>
  * 
  * <pre class="indent">
@@ -57,7 +75,8 @@ import Helper.newTestFailedException
  * <h2>Checking strings</h2>
  * 
  * <p>
- * You can check for whether a string starts with, ends with, or includes a substring or regular expression, like this:
+ * You can check for whether a string starts with, ends with, or includes a substring
+ * or regular expression, like this:
  * </p>
  * 
  * <pre class="indent">
@@ -93,25 +112,41 @@ import Helper.newTestFailedException
  * <h2>Checking predicate methods</h2>
  * 
  * <p>
- * If an object has a method that takes no parameters and returns boolean, you can check it by placing a <code>Symbol</code> (after <code>be</code>) that specifies the name of the method (excluding an optional prefix of "<code>is</code>"). A symbol literal in Scala begins with a tick mark and ends at the first non-identifier character. Thus, <code>'empty</code> results in a <code>Symbol</code> object at runtime, as does <code>'defined</code> and <code>'file</code>. Here's an example:
+ * If an object has a method that takes no parameters and returns boolean, you can check
+ * it by placing a <code>Symbol</code> (after <code>be</code>) that specifies the name
+ * of the method (excluding an optional prefix of "<code>is</code>"). A symbol literal
+ * in Scala begins with a tick mark and ends at the first non-identifier character. Thus,
+ * <code>'empty</code> results in a <code>Symbol</code> object at runtime, as does
+ * <code>'defined</code> and <code>'file</code>. Here's an example:
  * </p>
  * 
  * <pre class="indent">
  * emptySet should be ('empty)
  * </pre>
  * 
- * Given this code, ScalaTest will use reflection to look on the object referenced from <code>emptySet</code> for a method that takes no parameters and results in <code>Boolean</code>, with either the name <code>empty</code> or <code>isEmpty</code>. If found, it invokes that method. If the method returns <code>true</code>, nothing happens. But if it returns <code>false</code>, an assertion error will be thrown that will contain a detail message like:
+ * Given this code, ScalaTest will use reflection to look on the object referenced from
+ * <code>emptySet</code> for a method that takes no parameters and results in <code>Boolean</code>,
+ * with either the name <code>empty</code> or <code>isEmpty</code>. If found, it invokes
+ * that method. If the method returns <code>true</code>, nothing happens. But if it returns
+ * <code>false</code>, an assertion error will be thrown that will contain a detail message like:
  * 
  * <pre class="indent">
  * Set(1, 2, 3) was not empty</code>
  * </pre>
  * 
  * <p>
- * This <code>be</code> syntax can be used with any type, as there's no way in Scala's type system to restrict it just to types that have an appropriate method. If the object does not have an appropriately named predicate method, you'll get an <code>IllegalArgumentException</code> at runtime with a detail message that explains the problem. (Such errors could be caught at compile time, however, with a compiler plug-in.)  
+ * This <code>be</code> syntax can be used with any type, as there's no way in Scala's type
+ * system to restrict it just to types that have an appropriate method. If the object does
+ * not have an appropriately named predicate method, you'll get an <code>IllegalArgumentException</code>
+ * at runtime with a detail message that explains the problem. (Such errors could be caught at
+ * compile time, however, with a compiler plug-in.)
  * </p>
  * 
  * <p>
- * If you think it reads better, you can optionally put <code>a</code> or <code>an</code> after <code>be</code>. For example, <code>java.util.File</code> has two predicate methods, <code>isFile</code> and <code>isDirectory</code>. Thus with a <code>File</code> object named <code>temp</code>, you could write:
+ * If you think it reads better, you can optionally put <code>a</code> or <code>an</code> after
+ * <code>be</code>. For example, <code>java.util.File</code> has two predicate methods,
+ * <code>isFile</code> and <code>isDirectory</code>. Thus with a <code>File</code> object
+ * named <code>temp</code>, you could write:
  * </p>
  * 
  * <pre class="indent">
@@ -131,7 +166,8 @@ import Helper.newTestFailedException
  * <h2>Working with floating point numbers</h2>
  * 
  * <p>
- * To check wether a floating point number has a value that exactly matches another, you can use <code>should equal</code>: 
+ * To check wether a floating point number has a value that exactly matches another, you
+ * can use <code>should equal</code>:
  * </p>
  * 
  * <pre class="indent">
@@ -139,7 +175,8 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * Sometimes, however, you may want to check whether a floating point number is within a range. You can do that using <code>be</code> and <code>plusOrMinus</code>, like this:
+ * Sometimes, however, you may want to check whether a floating point number is within a
+ * range. You can do that using <code>be</code> and <code>plusOrMinus</code>, like this:
  * </p>
  * 
  * <pre class="indent">
@@ -147,13 +184,16 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * This expression will cause an assertion error to be thrown if the floating point value, <code>sevenDotOh</code> is outside the range <code>6.7</code> to <code>7.1</code>.
+ * This expression will cause an assertion error to be thrown if the floating point
+ * value, <code>sevenDotOh</code> is outside the range <code>6.7</code> to <code>7.1</code>.
  * </p>
  * 
  * <h2>Iterables, collections, sequences, and maps</h2>
  * 
  * <p>
- * You can use some of the syntax shown previously with <code>Iterable</code> and its subtypes. For example, you can check whether an <code>Iterable</code> is <code>empty</code>, like this:
+ * You can use some of the syntax shown previously with <code>Iterable</code> and its
+ * subtypes. For example, you can check whether an <code>Iterable</code> is <code>empty</code>,
+ * like this:
  * </p>
  * 
  * <pre class="indent">
@@ -161,7 +201,8 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * You can check the length of an <code>Seq</code> (<code>Array</code>, <code>List</code>, etc.), like this:
+ * You can check the length of an <code>Seq</code> (<code>Array</code>, <code>List</code>, etc.),
+ * like this:
  * </p>
  * 
  * <pre class="indent">
@@ -199,7 +240,8 @@ import Helper.newTestFailedException
  * <h2>Be as an equality comparison</h2>
  * 
  * <p>
- * All uses of <code>be</code> other than those shown previously work the same as if <code>be</code> were replaced by <code>equals</code>. This will be the only redundancy
+ * All uses of <code>be</code> other than those shown previously work the same as if <code>be</code>
+ * were replaced by <code>equals</code>. This will be the only redundancy
  * in the first release of ScalaTest matchers. It is there because it enables syntax
  * that sounds more natural. For example, instead of writing: 
  * </p>
@@ -217,7 +259,9 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * (Hopefully you won't write that too much given <code>null</code> is error prone, and <code>Option</code> is usually a better, well, option.) Here are some other examples of <code>be</code> used for equality comparison:
+ * (Hopefully you won't write that too much given <code>null</code> is error prone, and <code>Option</code>
+ * is usually a better, well, option.) Here are some other examples of <code>be</code> used for
+ * equality comparison:
  * </p>
  * 
  * <pre class="indent">
@@ -230,7 +274,9 @@ import Helper.newTestFailedException
  * <h2>Being negative</h2>
  * 
  * <p>
- * If you wish to check the opposite of some condition, you can use <code>not</code>. However, when you use <code>not</code>, you must enclose the expression being negated in parentheses or curly braces. Here are a few examples:
+ * If you wish to check the opposite of some condition, you can use <code>not</code>. However,
+ * when you use <code>not</code>, you must enclose the expression being negated in parentheses
+ * or curly braces. Here are a few examples:
  * </p>
  * 
  * <pre class="indent">
@@ -243,7 +289,8 @@ import Helper.newTestFailedException
  * <h2>Combining matchers with <code>and</code> and/or <code>or</code></h2>
  * 
  * <p>
- * You can also combine matcher expressions with <code>and</code> and <code>or</code>, however, you must usually place parentheses or curly braces around the larger
+ * You can also combine matcher expressions with <code>and</code> and <code>or</code>, however,
+ * you must usually place parentheses or curly braces around the larger
  * (<code>and</code> or <code>or</code>) expression. Here are a few examples:
  * </p>
  * 
@@ -287,7 +334,15 @@ import Helper.newTestFailedException
  * <h2>Those pesky parens</h2>
  * 
  * <p>
- * You may have noticed that I always put parentheses on the last token in the expressions I've shown. This not always required, but the rule is a bit subtle. If the number of tokens in the expression is odd, the parentheses are not needed. But if the number of tokens is even, the parentheses are required. As a result, I usually include them, because then there's no subtle rule to remember. In addition, although ScalaTest matchers doesn't define which value is "actual" and which "expected," I usually put the expected value last and I think wrapping it in parentheses emphasizes the expected value nicely. Nevertheless, you're free to leave them off in many cases, and you may feel it makes the code more readable. Here are some expressions that work without parentheses:
+ * You may have noticed that I always put parentheses on the last token in the expressions I've
+ * shown. This not always required, but the rule is a bit subtle. If the number of tokens in
+ * the expression is odd, the parentheses are not needed. But if the number of tokens is even,
+ * the parentheses are required. As a result, I usually include them, because then there's no
+ * subtle rule to remember. In addition, although ScalaTest matchers doesn't define which
+ * value is "actual" and which "expected," I usually put the expected value last and I think
+ * wrapping it in parentheses emphasizes the expected value nicely. Nevertheless, you're
+ * free to leave them off in many cases, and you may feel it makes the code more readable.
+ * Here are some expressions that work without parentheses:
  * </p>
  * 
  * <pre class="indent">
@@ -673,7 +728,8 @@ THIS DOESN'T WORK BECAUSE...
     }
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
-  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
+  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left }
+  with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
 
     override def should(notWord: NotWord): ResultOfNotWordForCollection[Collection[T]] = {
@@ -687,9 +743,12 @@ emptySet should be a ('empty)
 
 Turns into:
 
-BeSymbolSpec.this.convertToAnyRefShouldWrapper[BeSymbolSpec.this.CollectionShouldWrapper[T]](BeSymbolSpec.this.convertToCollectionShouldWrapper[T](emptySet)).should(BeSymbolSpec.this.be).a(scala.Symbol.apply("empty"));
+BeSymbolSpec.this.convertToAnyRefShouldWrapper[BeSymbolSpec.this.CollectionShouldWrapper[T]]
+(BeSymbolSpec.this.convertToCollectionShouldWrapper[T](emptySet)).should(BeSymbolSpec.this.be).
+a(scala.Symbol.apply("empty"));
 
-So the problem with having these "methods" traits extend each other is the covariant result types don't get more specific visibly enough.
+So the problem with having these "methods" traits extend each other is the covariant result
+types don't get more specific visibly enough.
 
 LATER: Well, I'm wondering if now that I've removed the be method in ShouldMethods if this will work. 
 */
