@@ -306,7 +306,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * <pre>
      * Array(1, 2) should (have size (2) and have size (3 - 1))
-     *                                       ^ 
+     *                                   ^ 
      * </pre>
      */
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
@@ -355,7 +355,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * <pre>
      * Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
-     *                                                             ^ 
+     *                                                         ^ 
      * </pre>
      */
     def and(containWord: ContainWord): AndContainWord = new AndContainWord
@@ -368,21 +368,45 @@ trait Matchers extends Assertions { matchers =>
      */
     class AndBeWord {
 
-      // isFileMock should (be a ('file) and be a ('file))
-      //                                        ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * isFileMock should (be a ('file) and be a ('file))
+       *                                        ^
+       * </pre>
+       */
       def a(symbol: Symbol) = and(be.a(symbol))
 
-      // isAppleMock should (be an ('apple) and be an ('apple))
-      //                                           ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * isAppleMock should (be an ('apple) and be an ('apple))
+       *                                           ^
+       * </pre>
+       */
       def an(symbol: Symbol) = and(be.an(symbol))
 
-      // obj should (be theSameInstanceAs (string) and be theSameInstanceAs (string))
-      //                                                  ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * obj should (be theSameInstanceAs (string) and be theSameInstanceAs (string))
+       *                                                  ^
+       * </pre>
+       */
       def theSameInstanceAs(anyRef: AnyRef) = and(be.theSameInstanceAs(anyRef))
     }
 
-    // isFileMock should (be a ('file) and be a ('file))
-    //                                 ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * isFileMock should (be a ('file) and be a ('file))
+     *                                 ^
+     * </pre>
+     */
     def and(beWord: BeWord): AndBeWord = new AndBeWord
 
     /**
@@ -392,15 +416,36 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class AndFullyMatchWord {
-      // "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
-      //                                                         ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
+       *                                                         ^
+       * </pre>
+       */
       def regex(regexString: String) = and(fullyMatch.regex(regexString))
 
-      // "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
-      //                                                              ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
+       *                                                              ^
+       * </pre>
+       */
       def regex(regex: Regex) = and(fullyMatch.regex(regex))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
+     *                                               ^
+     * </pre>
+     */
     def and(fullyMatchWord: FullyMatchWord): AndFullyMatchWord = new AndFullyMatchWord
 
     /**
@@ -410,19 +455,46 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class AndIncludeWord {
-      // "1.7" should (include regex (decimal) and include regex (decimal))
-      //                                                   ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (include regex (decimal) and include regex (decimal))
+       *                                                   ^
+       * </pre>
+       */
       def regex(regexString: String) = and(include.regex(regexString))
 
-      // "1.7" should (include regex (decimalRegex) and include regex (decimalRegex))
-      //                                                        ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (include regex (decimalRegex) and include regex (decimalRegex))
+       *                                                        ^
+       * </pre>
+       */
       def regex(regex: Regex) = and(include.regex(regex))
 
-      // "a1.7b" should (include substring ("1.7") and include substring ("1.7"))
-      //                                                       ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "a1.7b" should (include substring ("1.7") and include substring ("1.7"))
+       *                                                       ^
+       * </pre>
+       */
       def substring(expectedSubstring: String) = and(include.substring(expectedSubstring))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "a1.7b" should (include substring ("1.7") and include substring ("1.7"))
+     *                                           ^
+     * </pre>
+     */
     def and(includeWord: IncludeWord): AndIncludeWord = new AndIncludeWord
 
     /**
@@ -432,19 +504,46 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class AndStartWithWord {
-      // "1.7" should (startWith regex (decimal) and startWith regex (decimal))
-      //                                                        ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (startWith regex (decimal) and startWith regex (decimal))
+       *                                                       ^
+       * </pre>
+       */
       def regex(regexString: String) = and(startWith.regex(regexString))
 
-      // "1.7" should (startWith regex (decimalRegex) and startWith regex (decimalRegex))
-      //                                                            ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (startWith regex (decimalRegex) and startWith regex (decimalRegex))
+       *                                                            ^
+       * </pre>
+       */
       def regex(regex: Regex) = and(startWith.regex(regex))
 
-      // "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
-      //                                                         ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
+       *                                                         ^
+       * </pre>
+       */
       def substring(expectedSubstring: String) = and(startWith.substring(expectedSubstring))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
+     *                                           ^
+     * </pre>
+     */
     def and(startWithWord: StartWithWord): AndStartWithWord = new AndStartWithWord
 
     /**
@@ -454,19 +553,46 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class AndEndWithWord {
-      // "1.7" should (endWith regex (decimal) and endWith regex (decimal))
-      //                                                   ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (endWith regex (decimal) and endWith regex (decimal))
+       *                                                   ^
+       * </pre>
+       */
       def regex(regexString: String) = and(endWith.regex(regexString))
 
-      // "1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
-      //                                                        ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
+       *                                                        ^
+       * </pre>
+       */
       def regex(regex: Regex) = and(endWith.regex(regex))
 
-      // "1.7b" should ((endWith substring ("1.7b")) and (endWith substring ("7b")))
-      //                                
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7b" should (endWith substring ("1.7b") and endWith substring ("7b"))
+       *                                                       ^
+       * </pre>
+       */
       def substring(expectedSubstring: String) = and(endWith.substring(expectedSubstring))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
+     *                                            ^
+     * </pre>
+     */
     def and(endWithWord: EndWithWord): AndEndWithWord = new AndEndWithWord
 
     /**
@@ -477,120 +603,302 @@ trait Matchers extends Assertions { matchers =>
      */
     class AndNotWord {
 
-      // 1 should (not equal (2) and not equal (3 - 1)) The second half, after "not"
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 1 should (not equal (2) and not equal (3 - 1))
+       *                                 ^
+       * </pre>
+       */
       def equal(any: Any) =
         matchersWrapper.and(matchers.not.apply(matchers.equal(any)))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (not have size (5) and not have length (3))
+       *                                               ^
+       * </pre>
+       */
       def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
         matchersWrapper.and(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
 
-      // Array(1, 2) should (not have size (5) and not have size (3))
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (not have size (5) and not have size (3))
+       *                                               ^
+       * </pre>
+       */
       def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) =
         matchersWrapper.and(matchers.not.apply(matchers.have.size(resultOfSizeWordApplication.expectedSize)))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 5 should (not be < (2) and not be < (6))
+       *                                ^
+       * </pre>
+       */
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
         matchersWrapper.and(matchers.not.be(resultOfLessThanComparison))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 7 should (not be > (8) and not be > (6))
+       *                                ^
+       * </pre>
+       */
       def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
         matchersWrapper.and(matchers.not.be(resultOfGreaterThanComparison))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 2 should (not be <= (1) and not be <= (2))
+       *                                 ^
+       * </pre>
+       */
       def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
         matchersWrapper.and(matchers.not.be(resultOfLessThanOrEqualToComparison))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 7 should (not be >= (8) and not be >= (6))
+       *                                 ^
+       * </pre>
+       */
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.and(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
 
-      // notEmptyMock should (not be ('empty) and not be ('empty))
-      //                                              ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * notEmptyMock should (not be ('empty) and not be ('empty))
+       *                                              ^
+       * </pre>
+       */
       def be[T](symbol: Symbol) = matchersWrapper.and(matchers.not.be(symbol))
 
-      // isNotFileMock should (not be a ('file) and not be a ('file))
-      //                                                ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * isNotFileMock should (not be a ('file) and not be a ('file))
+       *                                                ^
+       * </pre>
+       */
       def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
 
-      // isNotAppleMock should (not be an ('apple) and not be an ('apple)) 
-      //                                                   ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * isNotAppleMock should (not be an ('apple) and not be an ('apple)) 
+       *                                                   ^
+       * </pre>
+       */
       def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication))
 
-      // obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
-      //                                                            ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
+       *                                                            ^
+       * </pre>
+       */
       def be[T](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) = matchersWrapper.and(matchers.not.be(resultOfTheSameInstanceAsApplication))
 
-      // sevenDotOh should (not be (17.0 plusOrMinus 0.2) and not be (17.0 plusOrMinus 0.2))
-      //                                                          ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenDotOh should (not be (17.0 plusOrMinus 0.2) and not be (17.0 plusOrMinus 0.2))
+       *                                                          ^
+       * </pre>
+       */
       def be(doubleTolerance: DoubleTolerance) = matchersWrapper.and(matchers.not.be(doubleTolerance))
 
-      // sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) and not be (17.0f plusOrMinus 0.2f))
-      //                                                                 ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) and not be (17.0f plusOrMinus 0.2f))
+       *                                                                 ^
+       * </pre>
+       */
       def be(floatTolerance: FloatTolerance) = matchersWrapper.and(matchers.not.be(floatTolerance))
 
-      // sevenLong should (not be (17L plusOrMinus 2L) and not be (17L plusOrMinus 2L))
-      //                                                       ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenLong should (not be (17L plusOrMinus 2L) and not be (17L plusOrMinus 2L))
+       *                                                       ^
+       * </pre>
+       */
       def be(longTolerance: LongTolerance) = matchersWrapper.and(matchers.not.be(longTolerance))
 
-      // sevenInt should (not be (17 plusOrMinus 2) and not be (17 plusOrMinus 2))
-      //                                                    ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenInt should (not be (17 plusOrMinus 2) and not be (17 plusOrMinus 2))
+       *                                                    ^
+       * </pre>
+       */
       def be(intTolerance: IntTolerance) = matchersWrapper.and(matchers.not.be(intTolerance))
 
-      // sevenShort should (not be (17.toShort plusOrMinus 2.toShort) and not be (17.toShort plusOrMinus 2.toShort))
-      //                                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenShort should (not be (17.toShort plusOrMinus 2.toShort) and not be (17.toShort plusOrMinus 2.toShort))
+       *                                                                      ^
+       * </pre>
+       */
       def be(shortTolerance: ShortTolerance) = matchersWrapper.and(matchers.not.be(shortTolerance))
 
-      // sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (19.toByte plusOrMinus 2.toByte)))
-      //                                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (19.toByte plusOrMinus 2.toByte)))
+       *                                                                      ^
+       * </pre>
+       */
       def be(byteTolerance: ByteTolerance) = matchersWrapper.and(matchers.not.be(byteTolerance))
 
-      // "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
-      //                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not fullyMatch regex ("bob") and not fullyMatch regex (decimal))
+       *                                                     ^
+       * </pre>
+       */
       def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.and(matchers.not.fullyMatch(resultOfRegexWordApplication))
 
-      // "fred" should (not include regex ("bob") and not include regex (decimal))
-      //                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not include regex ("bob") and not include regex (decimal))
+       *                                                     ^
+       * </pre>
+       */
       def include(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.and(matchers.not.include(resultOfRegexWordApplication))
 
-      // "fred" should (not include substring ("bob") and not include substring ("1.7"))
-      //                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not include substring ("bob") and not include substring ("1.7"))
+       *                                                      ^
+       * </pre>
+       */
       def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.and(matchers.not.include(resultOfSubstringWordApplication))
 
-      // "fred" should (not startWith regex ("bob") and not startWith regex (decimal))
-      //                                                    ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not startWith regex ("bob") and not startWith regex (decimal))
+       *                                                    ^
+       * </pre>
+       */
       def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.and(matchers.not.startWith(resultOfRegexWordApplication))
 
-      // "fred" should (not startWith substring ("red") and not startWith substring ("1.7"))
-      //                                                        ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not startWith substring ("red") and not startWith substring ("1.7"))
+       *                                                        ^
+       * </pre>
+       */
       def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.and(matchers.not.startWith(resultOfSubstringWordApplication))
 
-      // "fred" should (not endWith regex ("bob") and not endWith regex (decimal))
-      //                                                  ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not endWith regex ("bob") and not endWith regex (decimal))
+       *                                                  ^
+       * </pre>
+       */
       def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.and(matchers.not.endWith(resultOfRegexWordApplication))
 
-      // "fred" should (not endWith substring ("fre") and not endWith substring ("1.7"))
-      //                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not endWith substring ("fre") and not endWith substring ("1.7"))
+       *                                                      ^
+       * </pre>
+       */
       def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.and(matchers.not.endWith(resultOfSubstringWordApplication))
 
-      // Array(1, 2) should (not contain element (5) and not contain element (3))
-      //                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (not contain element (5) and not contain element (3))
+       *                                                     ^
+       * </pre>
+       */
       def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
         matchersWrapper.and(matchers.not.contain(resultOfElementWordApplication))
 
-      // Map("one" -> 1, "two" -> 2) should (not contain key ("five") and not contain key ("three"))
-      //                                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (not contain key ("five") and not contain key ("three"))
+       *                                                                      ^
+       * </pre>
+       */
       def contain[T](resultOfKeyWordApplication: ResultOfKeyWordApplication[T]) =
         matchersWrapper.and(matchers.not.contain(resultOfKeyWordApplication))
 
-      // Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
-      //                                                                   ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
+       *                                                                   ^
+       * </pre>
+       */
       def contain[T](resultOfValueWordApplication: ResultOfValueWordApplication[T]) =
         matchersWrapper.and(matchers.not.contain(resultOfValueWordApplication))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
+     *                                                           ^
+     * </pre>
+     */
     def and(notWord: NotWord): AndNotWord = new AndNotWord
 
     /**
@@ -644,13 +952,36 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class OrHaveWord {
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (have length (2) and have length (3 - 1))
+       *                                              ^
+       * </pre>
+       */
       def length(expectedLength: Long) = or(have.length(expectedLength))
 
-      // Array(1, 2) should (have size (2) and have size (3 - 1))
-      //                                       ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (have size (2) and have size (3 - 1))
+       *                                       ^
+       * </pre>
+       */
       def size(expectedSize: Long) = or(have.size(expectedSize))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Array(1, 2) should (have size (2) and have size (3 - 1))
+     *                                   ^
+     * </pre>
+     */
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
 
     /**
@@ -661,19 +992,45 @@ trait Matchers extends Assertions { matchers =>
      */
     class OrContainWord {
 
-      // Array(1, 2) should (contain element (2) or contain element (3 - 1))
-      //                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (contain element (2) or contain element (3 - 1))
+       *                                                    ^
+       * </pre>
+       */
       def element[T](expectedElement: T) = matchersWrapper.or(matchers.contain.element(expectedElement))
 
-      // Map("one" -> 1, "two" -> 2) should (contain key ("cat") or contain key ("one"))
-      //                                                                    ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (contain key ("cat") or contain key ("one"))
+       *                                                                    ^
+       * </pre>
+       */
       def key[T](expectedKey: T) = matchersWrapper.or(matchers.contain.key(expectedKey))
 
-      // Map("one" -> 1, "two" -> 2) should (contain value (7) or contain value (1))
-      //                                                                  ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (contain value (7) or contain value (1))
+       *                                                                  ^
+       * </pre>
+       */
       def value[T](expectedValue: T) = matchersWrapper.or(matchers.contain.value(expectedValue))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should (contain value (7) or contain value (1))
+     *                                                       ^
+     * </pre>
+     */
     def or(containWord: ContainWord): OrContainWord = new OrContainWord
 
     /**
@@ -684,21 +1041,45 @@ trait Matchers extends Assertions { matchers =>
      */
     class OrBeWord {
 
-      // isFileMock should (be a ('file) or be a ('directory))
-      //                                       ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * isFileMock should (be a ('file) or be a ('directory))
+       *                                       ^
+       * </pre>
+       */
       def a(symbol: Symbol) = or(be.a(symbol))
 
-      // appleMock should (be an ('orange) or be an ('apple))
-      //                                         ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * appleMock should (be an ('orange) or be an ('apple))
+       *                                         ^
+       * </pre>
+       */
       def an(symbol: Symbol) = or(be.an(symbol))
 
-      // obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
-      //                                                 ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * obj should (be theSameInstanceAs (string) or be theSameInstanceAs (otherString))
+       *                                                 ^
+       * </pre>
+       */
       def theSameInstanceAs(anyRef: AnyRef) = or(be.theSameInstanceAs(anyRef))
     }
 
-    // isFileMock should (be a ('file) or be a ('directory))
-    //                                 ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * isFileMock should (be a ('file) or be a ('directory))
+     *                                 ^
+     * </pre>
+     */
     def or(beWord: BeWord): OrBeWord = new OrBeWord
 
     /**
@@ -708,15 +1089,36 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class OrFullyMatchWord {
-      // "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
-      //                                                        ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
+       *                                                        ^
+       * </pre>
+       */
       def regex(regexString: String) = or(fullyMatch.regex(regexString))
 
-      // "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
-      //                                                        ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
+       *                                                        ^
+       * </pre>
+       */
       def regex(regex: Regex) = or(fullyMatch.regex(regex))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
+     *                                          ^
+     * </pre>
+     */
     def or(fullyMatchWord: FullyMatchWord): OrFullyMatchWord = new OrFullyMatchWord
 
     /**
@@ -726,19 +1128,46 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class OrIncludeWord {
-      // "1.7" should (include regex ("hello") or include regex (decimal))
-      //                                                  ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (include regex ("hello") or include regex (decimal))
+       *                                                  ^
+       * </pre>
+       */
       def regex(regexString: String) = or(include.regex(regexString))
 
-      // "1.7" should (include regex ("hello") or include regex (decimal))
-      //                                                  ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (include regex ("hello") or include regex (decimal))
+       *                                                  ^
+       * </pre>
+       */
       def regex(regex: Regex) = or(include.regex(regex))
 
-      // "a1.7b" should (include substring ("1.7") or include substring ("1.7"))
-      //                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "a1.7b" should (include substring ("1.7") or include substring ("1.7"))
+       *                                                      ^
+       * </pre>
+       */
       def substring(expectedSubstring: String) = or(include.substring(expectedSubstring))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "a1.7b" should (include substring ("1.7") or include substring ("1.7"))
+     *                                           ^
+     * </pre>
+     */
     def or(includeWord: IncludeWord): OrIncludeWord = new OrIncludeWord
 
     /**
@@ -748,19 +1177,46 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class OrStartWithWord {
-      // "1.7" should (startWith regex ("hello") or startWith regex (decimal))
-      //                                                      ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (startWith regex ("hello") or startWith regex (decimal))
+       *                                                      ^
+       * </pre>
+       */
       def regex(regexString: String) = or(startWith.regex(regexString))
 
-      // "1.7" should (startWith regex ("hello") or startWith regex (decimal))
-      //                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (startWith regex ("hello") or startWith regex (decimal))
+       *                                                      ^
+       * </pre>
+       */
       def regex(regex: Regex) = or(startWith.regex(regex))
 
-      // "1.7" should (startWith substring ("hello") or startWith substring ("1.7"))
-      //                                                          ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (startWith substring ("hello") or startWith substring ("1.7"))
+       *                                                          ^
+       * </pre>
+       */
       def substring(expectedSubstring: String) = or(startWith.substring(expectedSubstring))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7" should (startWith substring ("hello") or startWith substring ("1.7"))
+     *                                             ^
+     * </pre>
+     */
     def or(startWithWord: StartWithWord): OrStartWithWord = new OrStartWithWord
 
     /**
@@ -770,19 +1226,46 @@ trait Matchers extends Assertions { matchers =>
      * @author Bill Venners
      */
     class OrEndWithWord {
-      // "1.7" should (endWith regex ("hello") or endWith regex (decimal))
-      //                                                  ^
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (endWith regex ("hello") or endWith regex (decimal))
+       *                                                  ^
+       * </pre>
+       */
       def regex(regexString: String) = or(endWith.regex(regexString))
 
-      // "1.7" should (endWith regex ("hello") or endWith regex (decimal))
-      //                                                  ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7" should (endWith regex ("hello") or endWith regex (decimal))
+       *                                                  ^
+       * </pre>
+       */
       def regex(regex: Regex) = or(endWith.regex(regex))
 
-      // "1.7b" should (endWith substring ("hello") or endWith substring ("7b"))
-      //                                                       ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "1.7b" should (endWith substring ("hello") or endWith substring ("7b"))
+       *                                                       ^
+       * </pre>
+       */
       def substring(expectedSubstring: String) = or(endWith.substring(expectedSubstring))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7b" should (endWith substring ("hello") or endWith substring ("7b"))
+     *                                            ^
+     * </pre>
+     */
     def or(endWithWord: EndWithWord): OrEndWithWord = new OrEndWithWord
 
     /**
