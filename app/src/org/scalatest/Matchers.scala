@@ -1688,10 +1688,10 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This implicit conversion method enables the following syntax (<code>javaSet</code> is a <code>java.util.Collection</code>):
+   * This implicit conversion method enables the following syntax (<code>javaColl</code> is a <code>java.util.Collection</code>):
    *
    * <pre>
-   * javaSet should (contain element ("two"))
+   * javaColl should (contain element ("two"))
    * </pre>
    *
    * The <code>(contain element ("two"))</code> expression will result in a <code>Matcher[scala.Iterable[String]]</code>. This
