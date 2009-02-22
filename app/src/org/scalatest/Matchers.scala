@@ -228,6 +228,8 @@ trait Matchers extends Assertions { matchers =>
    */
   class MatcherWrapper[T](leftMatcher: Matcher[T]) { matchersWrapper =>
 
+// TODO: mention not short circuited, and the precendence is even between and and or
+
     /**
      * Returns a matcher whose <code>apply</code> method returns a <code>MatchResult</code>
      * that represents the logical-and of the results of the wrapped and the passed matcher applied to
@@ -1276,123 +1278,308 @@ trait Matchers extends Assertions { matchers =>
      */
     class OrNotWord {
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 1 should (not equal (1) or not equal (2))
+       *                                ^
+       * </pre>
+       */
       def equal(any: Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (not have length (2) or not have length (3))
+       *                                                ^
+       * </pre>
+       */
       def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
         matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
 
-      // Array(1, 2) should (not have size (2) or not have size (3))
-      //                                          ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (not have size (2) or not have size (3))
+       *                                              ^
+       * </pre>
+       */
       def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) =
         matchersWrapper.or(matchers.not.apply(matchers.have.size(resultOfSizeWordApplication.expectedSize)))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 5 should (not be < (7) or not be < (8))
+       *                               ^
+       * </pre>
+       */
       def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfLessThanComparison))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 7 should (not be > (5) or not be > (6))
+       *                               ^
+       * </pre>
+       */
       def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanComparison))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 2 should (not be <= (3) or not be <= (2))
+       *                                ^
+       * </pre>
+       */
       def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfLessThanOrEqualToComparison))
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 8 should (not be >= (7) or not be >= (6))
+       *                                ^
+       * </pre>
+       */
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
 
-      // notEmptyMock should (not be ('full) or not be ('empty))
-      //                                            ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * notEmptyMock should (not be ('full) or not be ('empty))
+       *                                            ^
+       * </pre>
+       */
       def be[T](symbol: Symbol) = matchersWrapper.or(matchers.not.be(symbol))
 
-      // isNotFileMock should (not be a ('directory) or not be a ('file))
-      //                                                    ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * isNotFileMock should (not be a ('directory) or not be a ('file))
+       *                                                    ^
+       * </pre>
+       */
       def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication))
 
-      // notAppleMock should (not be an ('apple) or not be an ('apple))
-      //                                                ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * notAppleMock should (not be an ('apple) or not be an ('apple))
+       *                                                ^
+       * </pre>
+       */
       def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication))
 
-      // obj should (not be theSameInstanceAs (otherString) or not be theSameInstanceAs (string))
-      //                                                           ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * obj should (not be theSameInstanceAs (otherString) or not be theSameInstanceAs (string))
+       *                                                           ^
+       * </pre>
+       */
       def be[T](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) = matchersWrapper.or(matchers.not.be(resultOfTheSameInstanceAsApplication))
 
-      // sevenDotOh should (not be (17.0 plusOrMinus 0.2) or not be (17.0 plusOrMinus 0.2))
-      //                                                         ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenDotOh should (not be (17.0 plusOrMinus 0.2) or not be (17.0 plusOrMinus 0.2))
+       *                                                         ^
+       * </pre>
+       */
       def be(doubleTolerance: DoubleTolerance) = matchersWrapper.or(matchers.not.be(doubleTolerance))
 
-      // sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) or not be (17.0f plusOrMinus 0.2f))
-      //                                                                ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenDotOhFloat should (not be (17.0f plusOrMinus 0.2f) or not be (17.0f plusOrMinus 0.2f))
+       *                                                                ^
+       * </pre>
+       */
       def be(floatTolerance: FloatTolerance) = matchersWrapper.or(matchers.not.be(floatTolerance))
 
-      // sevenLong should (not be (17L plusOrMinus 2L) or not be (17L plusOrMinus 2L))
-      //                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenLong should (not be (17L plusOrMinus 2L) or not be (17L plusOrMinus 2L))
+       *                                                      ^
+       * </pre>
+       */
       def be(longTolerance: LongTolerance) = matchersWrapper.or(matchers.not.be(longTolerance))
 
-      // sevenInt should (not be (17 plusOrMinus 2) or not be (17 plusOrMinus 2))
-      //                                                   ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenInt should (not be (17 plusOrMinus 2) or not be (17 plusOrMinus 2))
+       *                                                   ^
+       * </pre>
+       */
       def be(intTolerance: IntTolerance) = matchersWrapper.or(matchers.not.be(intTolerance))
 
-      // sevenShort should (not be (17.toShort plusOrMinus 2.toShort) or not be (17.toShort plusOrMinus 2.toShort))
-      //                                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenShort should (not be (17.toShort plusOrMinus 2.toShort) or not be (17.toShort plusOrMinus 2.toShort))
+       *                                                                     ^
+       * </pre>
+       */
       def be(shortTolerance: ShortTolerance) = matchersWrapper.or(matchers.not.be(shortTolerance))
 
-      // sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) or (not be (19.toByte plusOrMinus 2.toByte)))
-      //                                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) or (not be (19.toByte plusOrMinus 2.toByte)))
+       *                                                                     ^
+       * </pre>
+       */
       def be(byteTolerance: ByteTolerance) = matchersWrapper.or(matchers.not.be(byteTolerance))
 
-      // "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
-      //                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not fullyMatch regex ("fred") or not fullyMatch regex (decimal))
+       *                                                     ^
+       * </pre>
+       */
       def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.or(matchers.not.fullyMatch(resultOfRegexWordApplication))
 
-      // "fred" should (not include regex ("fred") or not include regex (decimal))
-      //                                                  ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not include regex ("fred") or not include regex (decimal))
+       *                                                  ^
+       * </pre>
+       */
       def include(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.or(matchers.not.include(resultOfRegexWordApplication))
 
-      // "fred" should (not include substring ("bob") or not include substring ("1.7"))
-      //                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not include substring ("bob") or not include substring ("1.7"))
+       *                                                     ^
+       * </pre>
+       */
       def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.or(matchers.not.include(resultOfSubstringWordApplication))
 
-      // "fred" should (not startWith regex ("bob") or not startWith regex (decimal))
-      //                                                   ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not startWith regex ("bob") or not startWith regex (decimal))
+       *                                                   ^
+       * </pre>
+       */
       def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.or(matchers.not.startWith(resultOfRegexWordApplication))
 
-      // "fred" should (not startWith substring ("fred") or not startWith substring ("1.7"))
-      //                                                        ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not startWith substring ("fred") or not startWith substring ("1.7"))
+       *                                                        ^
+       * </pre>
+       */
       def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.or(matchers.not.startWith(resultOfSubstringWordApplication))
 
-      // "fred" should (not endWith regex ("bob") or not endWith regex (decimal))
-      //                                                 ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not endWith regex ("bob") or not endWith regex (decimal))
+       *                                                 ^
+       * </pre>
+       */
       def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) =
         matchersWrapper.or(matchers.not.endWith(resultOfRegexWordApplication))
 
-      // "fred" should (not endWith substring ("fred") or not endWith substring ("1.7"))
-      //                                                      ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * "fred" should (not endWith substring ("fred") or not endWith substring ("1.7"))
+       *                                                      ^
+       * </pre>
+       */
       def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
         matchersWrapper.or(matchers.not.endWith(resultOfSubstringWordApplication))
 
-      // Array(1, 2) should (not contain element (1) or not contain element (3))
-      //                                                    ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (not contain element (1) or not contain element (3))
+       *                                                    ^
+       * </pre>
+       */
       def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
         matchersWrapper.or(matchers.not.contain(resultOfElementWordApplication))
 
-      // Map("one" -> 1, "two" -> 2) should (not contain key ("two") or not contain key ("three"))
-      //                                                                    ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (not contain key ("two") or not contain key ("three"))
+       *                                                                    ^
+       * </pre>
+       */
       def contain[T](resultOfKeyWordApplication: ResultOfKeyWordApplication[T]) =
         matchersWrapper.or(matchers.not.contain(resultOfKeyWordApplication))
 
-      // Map("one" -> 1, "two" -> 2) should (not contain value (2) or not contain value (3))
-      //                                                                  ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (not contain value (2) or not contain value (3))
+       *                                                                  ^
+       * </pre>
+       */
       def contain[T](resultOfValueWordApplication: ResultOfValueWordApplication[T]) =
         matchersWrapper.or(matchers.not.contain(resultOfValueWordApplication))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should (not contain value (2) or not contain value (3))
+     *                                                           ^
+     * </pre>
+     */
     def or(notWord: NotWord): OrNotWord = new OrNotWord
   }
 
+  /**
+   * This implicit conversion method enables ScalaTest matchers expressions that involve <code>and</code> and <code>or</code>.
+   */
   implicit def convertToMatcherWrapper[T](leftMatcher: Matcher[T]): MatcherWrapper[T] = new MatcherWrapper(leftMatcher)
 
   //
