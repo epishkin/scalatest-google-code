@@ -20,7 +20,7 @@ import java.lang.reflect.Modifier
 import scala.util.matching.Regex
 import java.lang.reflect.Field
 import scala.reflect.Manifest
-import Helper.transformOperatorChars // TODO: Remove this when it is no longer needed inside Matchers
+import Helper.transformOperatorChars
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
@@ -165,6 +165,12 @@ private[scalatest] object Helper {
 import Helper.newTestFailedException
 import Helper.accessProperty
 
+/**
+ * This trait is part of the ScalaTest matchers DSL. Please see the documentation for ShouldMatchers for an overview of
+ * the matchers DSL.
+ *
+ * @author Bill Venners
+ */
 trait Matchers extends Assertions { matchers =>
 
   private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatchResult = {
@@ -214,6 +220,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class MatcherWrapper[T](leftMatcher: Matcher[T]) { matchersWrapper =>
 
     /**
@@ -260,6 +272,12 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndHaveWord {
 
       def length(expectedLength: Long) = and(have.length(expectedLength))
@@ -271,6 +289,12 @@ trait Matchers extends Assertions { matchers =>
 
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndContainWord {
 
       // Array(1, 2) should (contain element (2) and contain element (3 - 1))
@@ -288,6 +312,12 @@ trait Matchers extends Assertions { matchers =>
 
     def and(containWord: ContainWord): AndContainWord = new AndContainWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndBeWord {
 
       // isFileMock should (be a ('file) and be a ('file))
@@ -307,6 +337,12 @@ trait Matchers extends Assertions { matchers =>
     //                                 ^
     def and(beWord: BeWord): AndBeWord = new AndBeWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndFullyMatchWord {
       // "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
       //                                                         ^
@@ -319,6 +355,12 @@ trait Matchers extends Assertions { matchers =>
 
     def and(fullyMatchWord: FullyMatchWord): AndFullyMatchWord = new AndFullyMatchWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndIncludeWord {
       // "1.7" should (include regex (decimal) and include regex (decimal))
       //                                                   ^
@@ -335,6 +377,12 @@ trait Matchers extends Assertions { matchers =>
 
     def and(includeWord: IncludeWord): AndIncludeWord = new AndIncludeWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndStartWithWord {
       // "1.7" should (startWith regex (decimal) and startWith regex (decimal))
       //                                                        ^
@@ -351,6 +399,12 @@ trait Matchers extends Assertions { matchers =>
 
     def and(startWithWord: StartWithWord): AndStartWithWord = new AndStartWithWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndEndWithWord {
       // "1.7" should (endWith regex (decimal) and endWith regex (decimal))
       //                                                   ^
@@ -367,6 +421,12 @@ trait Matchers extends Assertions { matchers =>
 
     def and(endWithWord: EndWithWord): AndEndWithWord = new AndEndWithWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class AndNotWord {
 
       // 1 should (not equal (2) and not equal (3 - 1)) The second half, after "not"
@@ -529,6 +589,12 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrHaveWord {
       def length(expectedLength: Long) = or(have.length(expectedLength))
 
@@ -539,6 +605,12 @@ trait Matchers extends Assertions { matchers =>
 
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrContainWord {
 
       // Array(1, 2) should (contain element (2) or contain element (3 - 1))
@@ -556,6 +628,12 @@ trait Matchers extends Assertions { matchers =>
 
     def or(containWord: ContainWord): OrContainWord = new OrContainWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrBeWord {
 
       // isFileMock should (be a ('file) or be a ('directory))
@@ -575,6 +653,12 @@ trait Matchers extends Assertions { matchers =>
     //                                 ^
     def or(beWord: BeWord): OrBeWord = new OrBeWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrFullyMatchWord {
       // "1.7" should (fullyMatch regex ("hello") or fullyMatch regex (decimal))
       //                                                        ^
@@ -587,6 +671,12 @@ trait Matchers extends Assertions { matchers =>
 
     def or(fullyMatchWord: FullyMatchWord): OrFullyMatchWord = new OrFullyMatchWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrIncludeWord {
       // "1.7" should (include regex ("hello") or include regex (decimal))
       //                                                  ^
@@ -603,6 +693,12 @@ trait Matchers extends Assertions { matchers =>
 
     def or(includeWord: IncludeWord): OrIncludeWord = new OrIncludeWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrStartWithWord {
       // "1.7" should (startWith regex ("hello") or startWith regex (decimal))
       //                                                      ^
@@ -619,6 +715,12 @@ trait Matchers extends Assertions { matchers =>
 
     def or(startWithWord: StartWithWord): OrStartWithWord = new OrStartWithWord
 
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrEndWithWord {
       // "1.7" should (endWith regex ("hello") or endWith regex (decimal))
       //                                                  ^
@@ -635,7 +737,12 @@ trait Matchers extends Assertions { matchers =>
 
     def or(endWithWord: EndWithWord): OrEndWithWord = new OrEndWithWord
 
-    // This is not yet short-circuiting. Need by-name params for things passed here.
+    /**
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * the matchers DSL.
+     *
+     * @author Bill Venners
+     */
     class OrNotWord {
 
       def equal(any: Any) =
@@ -772,6 +879,12 @@ trait Matchers extends Assertions { matchers =>
   // ResultOfHaveWordPassedToShould that remembers the map to the left of should. Then this class
   // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
   // 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
     def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
@@ -793,6 +906,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfContainWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean) {
 
     // javaMap should contain key ("two")
@@ -869,7 +988,20 @@ trait Matchers extends Assertions { matchers =>
   // Since java Map is not a java Collection, I'll say the contain syntax doesn't work on it. But you can say
   // have key 
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class BehaveWord
+
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ContainWord {
 
     def element[T](expectedElement: T): Matcher[Iterable[T]] =
@@ -922,6 +1054,12 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class IncludeWord {
     def substring(expectedSubstring: String): Matcher[String] =
       new Matcher[String] {
@@ -944,6 +1082,12 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class StartWithWord {
     def substring[T <: String](right: T) =
       new Matcher[T] {
@@ -966,6 +1110,12 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class EndWithWord {
     def substring[T <: String](right: T) =
       new Matcher[T] {
@@ -990,6 +1140,12 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class FullyMatchWord {
     def regex(rightRegexString: String): Matcher[String] =
       new Matcher[String] {
@@ -1011,6 +1167,12 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
+  /**
+   * This trait is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   trait LengthWrapper {
     def length: Long
   }
@@ -1055,6 +1217,12 @@ trait Matchers extends Assertions { matchers =>
       def length = o.getLength()
     }
 
+  /**
+   * This trait is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   trait SizeWrapper {
     def size: Long
   }
@@ -1103,6 +1271,12 @@ trait Matchers extends Assertions { matchers =>
   // then represents an object with an apply method. So it gives an apply method to symbols.
   // book should have ('author ("Gibson"))
   //                   ^ // Basically this 'author symbol gets converted into this class, and its apply  method takes "Gibson"
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class HavePropertyMatcherGenerator(symbol: Symbol) {
     def apply(expectedValue: Any) =
       new HavePropertyMatcher[AnyRef, Any] {
@@ -1147,6 +1321,12 @@ trait Matchers extends Assertions { matchers =>
 
   protected implicit def convertSymbolToHavePropertyMatcherGenerator(symbol: Symbol) = new HavePropertyMatcherGenerator(symbol)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class HaveWord {
 
     // I couldn't figure out how to combine view bounds with existential types. May or may not
@@ -1268,6 +1448,12 @@ trait Matchers extends Assertions { matchers =>
   // ResultOfHaveWordForCollectionPassedToShould that remembers the map to the left of should. Then this class
   // has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
   // 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
@@ -1280,6 +1466,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
@@ -1292,6 +1484,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfHaveWordForJavaMap(left: java.util.Map[_, _], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
@@ -1304,6 +1502,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -1316,6 +1520,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForIterable[E, T <: Iterable[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
@@ -1333,6 +1543,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForCollection[E, T <: Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForIterable[E, T](left, shouldBeTrue) {
 
@@ -1350,6 +1566,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForJavaCollection[E, T <: java.util.Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
@@ -1380,6 +1602,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[(K, V), scala.collection.Map[K, V]](left, shouldBeTrue) {
 
@@ -1412,6 +1640,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
@@ -1446,6 +1680,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[E, T](left, shouldBeTrue) {
 
@@ -1463,6 +1703,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.size == expectedLength) != shouldBeTrue)
@@ -1475,6 +1721,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForJavaList[E, T <: java.util.List[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForJavaCollection[E, T](left, shouldBeTrue) {
 
@@ -1492,6 +1744,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfBeWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean) {
 
     def theSameInstanceAs(right: AnyRef) {
@@ -1544,6 +1802,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
     def equal(right: Any) {
       if ((left == right) != shouldBeTrue)
@@ -1605,6 +1869,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWord[T](left, shouldBeTrue) {
 
@@ -1656,6 +1926,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef[String](left, shouldBeTrue) {
 
@@ -1762,6 +2038,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForDouble(left: Double, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Double](left, shouldBeTrue) {
 
@@ -1782,6 +2064,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForFloat(left: Float, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Float](left, shouldBeTrue) {
 
@@ -1802,6 +2090,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Long](left, shouldBeTrue) {
 
@@ -1822,6 +2116,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForInt(left: Int, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Int](left, shouldBeTrue) {
 
@@ -1842,6 +2142,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForShort(left: Short, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Short](left, shouldBeTrue) {
 
@@ -1862,6 +2168,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfNotWordForByte(left: Byte, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Byte](left, shouldBeTrue) {
 
@@ -1882,6 +2194,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class RegexWord {
 
     def apply(regexString: String) = new ResultOfRegexWordApplication(regexString)
@@ -1891,10 +2209,22 @@ trait Matchers extends Assertions { matchers =>
     def apply(regex: Regex) = new ResultOfRegexWordApplication(regex)
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfRegexWordApplication(val regex: Regex) {
     def this(regexString: String) = this(new Regex(regexString))
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class SubstringWord {
 
     // "eight" should not fullyMatch substring ("seven")
@@ -1902,8 +2232,20 @@ trait Matchers extends Assertions { matchers =>
     def apply(substring: String) = new ResultOfSubstringWordApplication(substring)
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfSubstringWordApplication(val substring: String)
  
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -1917,6 +2259,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
@@ -1941,6 +2289,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
@@ -1965,6 +2319,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
@@ -1990,6 +2350,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
     def regex(rightRegex: Regex) {
@@ -2004,6 +2370,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
     def element(expectedElement: T) {
       if ((left.elements.contains(expectedElement)) != shouldBeTrue)
@@ -2016,6 +2388,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfContainWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
     def element(expectedElement: T) {
       if ((left.contains(expectedElement)) != shouldBeTrue)
@@ -2031,6 +2409,12 @@ trait Matchers extends Assertions { matchers =>
   def equal(right: Any): Matcher[Any] =
     Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class TreatedAsOrderedWrapper {
     def <[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
@@ -2073,6 +2457,12 @@ trait Matchers extends Assertions { matchers =>
   // This one is for one should be < (7)
   implicit def convertBeWordToForOrdered(beWord: BeWord): TreatedAsOrderedWrapper = new TreatedAsOrderedWrapper
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class BeWord {
 
     // fileMock should not { be a ('file) }
@@ -2240,6 +2630,12 @@ trait Matchers extends Assertions { matchers =>
       Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class NotWord {
 
     def apply[S <: Any](matcher: Matcher[S]) =
@@ -2614,6 +3010,12 @@ trait Matchers extends Assertions { matchers =>
   val behave = new BehaveWord
   val be = new BeWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfBehaveWord[T](left: T) {
     def like(fun: (T) => Unit) {
       fun(left)
@@ -2648,6 +3050,12 @@ trait Matchers extends Assertions { matchers =>
   val startWith = new StartWithWord
   val endWith = new EndWithWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[AnyRef, Long] {
     def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Long] = {
 
@@ -2675,12 +3083,24 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class LengthWord {
     def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
   }
 
   val length = new LengthWord
  
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfSizeWordApplication(val expectedSize: Long) extends HavePropertyMatcher[AnyRef, Long] {
     def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Long] = {
 
@@ -2709,14 +3129,32 @@ trait Matchers extends Assertions { matchers =>
   }
 
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class SizeWord {
     def apply(expectedSize: Long) = new ResultOfSizeWordApplication(expectedSize)
   }
 
   val size = new SizeWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfElementWordApplication[T](val expectedElement: T)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ElementWord {
     // array should not contain element (10)
     //                                  ^
@@ -2727,8 +3165,20 @@ trait Matchers extends Assertions { matchers =>
   //                          ^
   val element = new ElementWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfKeyWordApplication[T](val expectedKey: T)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class KeyWord {
     // map should not contain key (10)
     //                            ^
@@ -2739,8 +3189,20 @@ trait Matchers extends Assertions { matchers =>
   //                        ^
   val key = new KeyWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfValueWordApplication[T](val expectedValue: T)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ValueWord {
     // map should not contain value (10)
     //                              ^
@@ -2751,9 +3213,28 @@ trait Matchers extends Assertions { matchers =>
   //                        ^
   val value = new ValueWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfAWordToSymbolApplication(val symbol: Symbol)
+
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfAWordToBePropertyMatcherApplication[T](val beTrueMatcher: BePropertyMatcher[T])
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class AWord {
     def apply(symbol: Symbol) = new ResultOfAWordToSymbolApplication(symbol)
     def apply[T](beTrueMatcher: BePropertyMatcher[T]) = new ResultOfAWordToBePropertyMatcherApplication(beTrueMatcher)
@@ -2761,16 +3242,40 @@ trait Matchers extends Assertions { matchers =>
 
   val a = new AWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfAnWordApplication(val symbol: Symbol)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class AnWord {
     def apply(symbol: Symbol) = new ResultOfAnWordApplication(symbol)
   }
 
   val an = new AnWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfTheSameInstanceAsApplication(val right: AnyRef)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class TheSameInstanceAsPhrase {
     // otherString should not be theSameInstanceAs (string)
     //                                             ^
@@ -2785,8 +3290,20 @@ trait Matchers extends Assertions { matchers =>
 
   val substring = new SubstringWord
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   case class DoubleTolerance(right: Double, tolerance: Double)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class DoublePlusOrMinusWrapper(right: Double) {
     def plusOrMinus(tolerance: Double): DoubleTolerance = {
       if (tolerance <= 0.0)
@@ -2797,8 +3314,20 @@ trait Matchers extends Assertions { matchers =>
 
   implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new DoublePlusOrMinusWrapper(right)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   case class FloatTolerance(right: Float, tolerance: Float)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class FloatPlusOrMinusWrapper(right: Float) {
     def plusOrMinus(tolerance: Float): FloatTolerance = {
       if (tolerance <= 0.0f)
@@ -2809,8 +3338,20 @@ trait Matchers extends Assertions { matchers =>
 
   implicit def convertFloatToPlusOrMinusWrapper(right: Float) = new FloatPlusOrMinusWrapper(right)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   case class LongTolerance(right: Long, tolerance: Long)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class LongPlusOrMinusWrapper(right: Long) {
     def plusOrMinus(tolerance: Long): LongTolerance = {
       if (tolerance <= 0L)
@@ -2821,8 +3362,20 @@ trait Matchers extends Assertions { matchers =>
 
   implicit def convertLongToPlusOrMinusWrapper(right: Long) = new LongPlusOrMinusWrapper(right)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   case class IntTolerance(right: Int, tolerance: Int)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class IntPlusOrMinusWrapper(right: Int) {
     def plusOrMinus(tolerance: Int): IntTolerance = {
       if (tolerance <= 0)
@@ -2833,8 +3386,20 @@ trait Matchers extends Assertions { matchers =>
 
   implicit def convertIntToPlusOrMinusWrapper(right: Int) = new IntPlusOrMinusWrapper(right)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   case class ShortTolerance(right: Short, tolerance: Short)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ShortPlusOrMinusWrapper(right: Short) {
     def plusOrMinus(tolerance: Short): ShortTolerance = {
       if (tolerance <= 0)
@@ -2845,8 +3410,20 @@ trait Matchers extends Assertions { matchers =>
 
   implicit def convertShortToPlusOrMinusWrapper(right: Short) = new ShortPlusOrMinusWrapper(right)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   case class ByteTolerance(right: Byte, tolerance: Byte)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class BytePlusOrMinusWrapper(right: Byte) {
     def plusOrMinus(tolerance: Byte): ByteTolerance = {
       if (tolerance <= 0)
@@ -2857,6 +3434,12 @@ trait Matchers extends Assertions { matchers =>
 
   implicit def convertByteToPlusOrMinusWrapper(right: Byte) = new BytePlusOrMinusWrapper(right)
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfNotWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean)
       extends ResultOfNotWord(left, shouldBeTrue) {
 
@@ -2874,6 +3457,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
@@ -2895,6 +3484,12 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
@@ -2916,18 +3511,42 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfLessThanComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left < right
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfGreaterThanComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left > right
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfLessThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left <= right
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   protected class ResultOfGreaterThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left >= right
   }
