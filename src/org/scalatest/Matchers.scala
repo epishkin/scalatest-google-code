@@ -1604,6 +1604,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   protected class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * map should contain key ("one")
+     *                    ^
+     * </pre>
+     */
     def key(expectedKey: K) {
       if (left.contains(expectedKey) != shouldBeTrue)
         throw newTestFailedException(
@@ -1613,6 +1622,15 @@ trait Matchers extends Assertions { matchers =>
             expectedKey)
         )
     }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * map should contain value (1)
+     *                    ^
+     * </pre>
+     */
     def value(expectedValue: V) {
       if (left.values.contains(expectedValue) != shouldBeTrue)
         throw newTestFailedException(
@@ -1632,8 +1650,14 @@ trait Matchers extends Assertions { matchers =>
    */
   protected class ResultOfContainWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean) {
 
-    // javaMap should contain key ("two")
-    //                        ^
+    /**
+     * This method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
+     *
+     * <pre>
+     * javaMap should contain key ("two")
+     *                        ^
+     * </pre>
+     */
     def key(expectedKey: K) {
       if (left.containsKey(expectedKey) != shouldBeTrue)
         throw newTestFailedException(
@@ -1644,8 +1668,14 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
-    // javaMap should contain value ("2")
-    //                        ^
+    /**
+     * This method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
+     *
+     * <pre>
+     * javaMap should contain value ("2")
+     *                        ^
+     * </pre>
+     */
     def value(expectedValue: V) {
       if (left.containsValue(expectedValue) != shouldBeTrue)
         throw newTestFailedException(
@@ -1657,7 +1687,16 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
-  // Neat.
+  /**
+   * This implicit conversion method enables the following syntax (<code>javaSet</code> is a <code>java.util.Collection</code>):
+   *
+   * <pre>
+   * javaSet should (contain element ("two"))
+   * </pre>
+   *
+   * The <code>(contain element ("two"))</code> expression will result in a <code>Matcher[scala.Iterable[String]]</code>. This
+   * implicit conversion method will convert that matcher to a <code>Matcher[java.util.Collection[String]]</code>.
+   */
   protected implicit def convertIterableMatcherToJavaCollectionMatcher[T](iterableMatcher: Matcher[Iterable[T]]) = 
     new Matcher[java.util.Collection[T]] {
       def apply(left: java.util.Collection[T]) = {
@@ -1673,15 +1712,21 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-  // javaMap should (contain key ("two"))
-  //                 ^
-  // contain key ("two") will result in a Matcher[scala.collection.Map[String, Any]], for example, and this converts that
-  // to a Matcher[java.util.Map[String, Any]], so it will work against the javaMap. Even though the java map is mutable
-  // I just convert it to a plain old map, because I have no intention of mutating it.
-  //
+  /**
+   * This implicit conversion method enables the following syntax (<code>javaSet</code> is a <code>java.util.Collection</code>):
+   *
+   * <pre>
+   * javaMap should (contain key ("two"))
+   * </pre>
+   *
+   * The <code>(contain key ("two"))</code> expression will result in a <code>Matcher[scala.collection.Map[String, Any]]</code>. This
+   * implicit conversion method will convert that matcher to a <code>Matcher[java.util.Map[String, Any]]</code>.
+   */
   protected implicit def convertMapMatcherToJavaMapMatcher[K, V](mapMatcher: Matcher[scala.collection.Map[K, V]]) = 
     new Matcher[java.util.Map[K, V]] {
       def apply(left: java.util.Map[K, V]) = {
+        // Even though the java map is mutable I just wrap it it to a plain old Scala map, because
+        // I have no intention of mutating it.
         val scalaMap = new scala.collection.Map[K, V] {
           def size: Int = left.size
           def get(key: K): Option[V] =
@@ -1704,7 +1749,7 @@ trait Matchers extends Assertions { matchers =>
   // of java.util.Collection. But right now Matcher[Iterable] supports only "contain element" and "have size"
   // syntax, and thus that should work on Java maps too, why not. Well I'll tell you why not. It is too complicated.
   // Since java Map is not a java Collection, I'll say the contain syntax doesn't work on it. But you can say
-  // have key 
+  // have key.
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
@@ -1722,6 +1767,14 @@ trait Matchers extends Assertions { matchers =>
    */
   protected class ContainWord {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Array(1, 2) should (contain element (2) and contain element (1))
+     *                             ^
+     * </pre>
+     */
     def element[T](expectedElement: T): Matcher[Iterable[T]] =
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) =
@@ -1743,6 +1796,22 @@ trait Matchers extends Assertions { matchers =>
     // to the left of should. This means the should method that takes a map will be selected by Scala's
     // method overloading rules.
     //
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * map should (contain key ("fifty five") or contain key ("twenty two"))
+     *                     ^
+     * </pre>
+     *
+     * The map's value type parameter cannot be inferred because only a key type is provided in
+     * an expression like <code>(contain key ("fifty five"))</code>. The matcher returned
+     * by this method matches <code>scala.collection.Map</code>s with the inferred key type and value type <code>Any</code>. Given
+     * <code>Map</code> is covariant in its value type, and <code>Matcher</code> is contravariant in
+     * its type parameter, a <code>Matcher[Map[Int, Any]]<code>, for example, is a subtype of <code>Matcher[Map[Int, String]]</code>.
+     * This will enable the matcher returned by this method to be used against any <code>Map</code> that has
+     * the inferred key type.
+     */
     def key[K](expectedKey: K): Matcher[scala.collection.Map[K, Any]] =
       new Matcher[scala.collection.Map[K, Any]] {
         def apply(left: scala.collection.Map[K, Any]) =
@@ -1761,6 +1830,26 @@ trait Matchers extends Assertions { matchers =>
     // Maps are nonvariant in their key type parameter, whereas they are covariant in their value
     // type parameter, so the same trick wouldn't work. But this existential type trick seems to
     // work like a charm.
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should (not contain value (5) and not contain value (3))
+     *                                                 ^
+     * </pre>
+     *
+     * The map's key type parameter cannot be inferred because only a value type is provided in
+     * an expression like <code>(contain value (5))</code>. The matcher returned
+     * by this method matches <code>scala.collection.Map</code>s with the inferred value type and the existential key
+     * type <code>[K] forSome { type K }</code>. Even though <code>Matcher<code> is contravariant in its type parameter, because
+     * <code>Map</code> is nonvariant in its key type, 
+     * a <code>Matcher[Map[Any, Int]]<code>, for example, is <em>not</code> a subtype of <code>Matcher[Map[String, Int]]</code>,
+     * so the key type parameter of the <code>Map</code> returned by this method cannot be <code>Any</code>. By making it
+     * an existential type, the Scala compiler will not infer it to anything more specific.
+     * This will enable the matcher returned by this method to be used against any <code>Map</code> that has
+     * the inferred value type.
+     *
+     */
     def value[V](expectedValue: V): Matcher[scala.collection.Map[K, V] forSome { type K }] =
       new Matcher[scala.collection.Map[K, V] forSome { type K }] {
         def apply(left: scala.collection.Map[K, V] forSome { type K }) =
@@ -1779,6 +1868,7 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   protected class IncludeWord {
+
     def substring(expectedSubstring: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1788,7 +1878,9 @@ trait Matchers extends Assertions { matchers =>
             FailureMessages("includedSubstring", left, expectedSubstring)
           )
       }
+
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
+
     def regex(expectedRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1807,6 +1899,7 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   protected class StartWithWord {
+
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
@@ -1816,7 +1909,9 @@ trait Matchers extends Assertions { matchers =>
             FailureMessages("startedWith", left, right)
           )
       }
+
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
+
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1835,6 +1930,7 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   protected class EndWithWord {
+
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
@@ -1844,7 +1940,9 @@ trait Matchers extends Assertions { matchers =>
             FailureMessages("endedWith", left, right)
           )
       }
+
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
+
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) = {
@@ -1865,6 +1963,7 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   protected class FullyMatchWord {
+
     def regex(rightRegexString: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1874,6 +1973,7 @@ trait Matchers extends Assertions { matchers =>
             FailureMessages("fullyMatchedRegex", left, UnquotedString(rightRegexString))
           )
       }
+
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
