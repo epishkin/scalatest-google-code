@@ -19,6 +19,7 @@ import prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
+import scala.reflect.BeanProperty
 
 trait BookPropertyMatchers { this: Matchers => 
 
@@ -29,6 +30,21 @@ trait BookPropertyMatchers { this: Matchers =>
     val length: Int,
     val isGoodRead: Boolean
   )
+
+/*
+  case class JavaBook(
+    @BeanProperty var title: String,
+    private val author: String,
+    @BeanProperty val pubYear: Int,
+    private var length: Int,
+    private val goodRead: Boolean
+  ) {
+    def getAuthor: String = author
+    def getLength: Int = length
+    def setLength(len: Int) { length = len }
+    def isGoodRead: Boolean = goodRead
+  }
+*/
 
   case class Bookshelf(
     val book1: Book,
@@ -101,13 +117,17 @@ trait BookPropertyMatchers { this: Matchers =>
 class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
   // Checking for a specific size
-  describe("The 'have {' syntax") {
+  describe("The 'have (' syntax") {
 
-    describe("on an object with Scala-style properties") {
+    describe("on an object with properties") {
 
       val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
       val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
       val bookshelf = new Bookshelf(book, badBook, book)
+
+      it("should do nothing if there's just one property and it matches") {
+        book should have (title ("A Tale of Two Cities"))
+      }
 
       it("should do nothing if all the properties match") {
         book should have (
@@ -115,6 +135,10 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
           author ("Dickens"),
           pubYear (1859)
         )
+      }
+
+      it("should do nothing if there's just one property and it does not match, when used with not") {
+        book should not have (title ("One Hundred Years of Solitude"))
       }
 
       it("should throw TestFailedException if at least one of the properties don't match") {
@@ -164,40 +188,6 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
           book should have ('author ("Gibson"))
         }
         assert(caught1.getMessage === "Expected property \"author\" to have value \"Gibson\", but it had value \"Dickens\".")
-      }
-
-      it("should throw TestFailedException if a \"be true\" matcher is used with be and the property is false") {
-
-        val caught1 = intercept[TestFailedException] {
-          badBook should be a (goodRead)
-        }
-        assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
-      }
-
-      it("should throw TestFailedException if a \"be odd\" matcher is used with be and the Int isn't odd") {
-
-        class OddMatcher extends BeMatcher[Int] {
-          def apply(left: Int): MatchResult = {
-            MatchResult(
-              left % 2 == 1,
-              left.toString + " was even",
-              left.toString + " was odd"
-            )
-          }
-        }
-        val odd = new OddMatcher
-
-        val caught1 = intercept[TestFailedException] {
-          4 should be (odd)
-        }
-        assert(caught1.getMessage === "4 was even")
-
-        val even = not (odd)
-
-        val caught2 = intercept[TestFailedException] {
-          5 should be (even)
-        }
-        assert(caught2.getMessage === "5 was odd")
       }
 
       it("should throw TestFailedException if a nested property matcher expression is used and a nested property doesn't match") {
