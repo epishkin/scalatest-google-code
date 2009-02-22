@@ -148,16 +148,41 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         book should not have ('title ("One Hundred Years of Solitude"))
       }
 
-      it("should do nothing if none of the properties match, when used with not") {
+      // title/author matches | have | have not
+      // 0 0 | 0 | 1
+      // 0 1 | 0 | 1
+      // 1 0 | 0 | 1
+      // 1 1 | 1 | 0
+      it("should do nothing if at least one of the properties does not match, when used with not") {
+
+        // 0 0 
         book should not have (
           title ("Moby Dick"),
-          author ("Melville"),
-          pubYear (1851)
+          author ("Melville")
         )
         book should not have (
           'title ("Moby Dick"),
-          'author ("Melville"),
-          'pubYear (1851)
+          'author ("Melville")
+        )
+
+        // 0 1 
+        book should not have (
+          title ("Moby Dick"),
+          author ("Dickens")
+        )
+        book should not have (
+          'title ("Moby Dick"),
+          'author ("Dickens")
+        )
+
+        // 1 0 
+        book should not have (
+          title ("A Tale of Two Cities"),
+          author ("Melville")
+        )
+        book should not have (
+          'title ("A Tale of Two Cities"),
+          'author ("Melville")
         )
       }
 
@@ -218,7 +243,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
       }
 
 /*
-I've been doing this wrongly. not (matcher) needs to yield the opposite result as (matcher) itself, and
+Not (matcher) needs to yield the opposite result as (matcher) itself, and
 that means that not (matcher) will be true if at least one 
 
 title/author/pubYear matches | have | not have
