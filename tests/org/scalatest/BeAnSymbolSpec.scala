@@ -24,13 +24,13 @@ class BeAnSymbolSpec extends Spec with ShouldMatchers with FruitMocks {
       isAppleMock should be an ('apple)
     }
 
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists") {
-      val ex1 = intercept[IllegalArgumentException] {
+    it("should throw TestFailedException if no <symbol> or is<Symbol> method exists") {
+      val ex1 = intercept[TestFailedException] {
         noPredicateMock should be an ('apple)
       }
       ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
       // Check message for name that starts with a consonant (should use a instead of an)
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         noPredicateMock should be an ('crabApple)
       }
       ex2.getMessage should equal ("NoPredicateMock has neither a crabApple nor an isCrabApple method")
@@ -43,20 +43,20 @@ class BeAnSymbolSpec extends Spec with ShouldMatchers with FruitMocks {
       isNotAppleMock should not be an ('apple)
     }
 
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists, when used with not") {
-      val ex1 = intercept[IllegalArgumentException] {
+    it("should throw TestFailedException if no <symbol> or is<Symbol> method exists, when used with not") {
+      val ex1 = intercept[TestFailedException] {
         noPredicateMock should not { be an ('apple) }
       }
       ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         noPredicateMock should not (be an ('orange))
       }
       ex2.getMessage should equal ("NoPredicateMock has neither an orange nor an isOrange method")
-      val ex3 = intercept[IllegalArgumentException] {
+      val ex3 = intercept[TestFailedException] {
         noPredicateMock should not be an ('apple)
       }
       ex3.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
-      val ex4 = intercept[IllegalArgumentException] {
+      val ex4 = intercept[TestFailedException] {
         noPredicateMock should not be an ('orange)
       }
       ex4.getMessage should equal ("NoPredicateMock has neither an orange nor an isOrange method")

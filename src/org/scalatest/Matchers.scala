@@ -189,7 +189,7 @@ trait Matchers extends Assertions { matchers =>
         val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
           firstChar == 'o' || firstChar == 'u'
 
-        throw new IllegalArgumentException( // TODO replace this IAE with a TFE
+        throw newTestFailedException(
           FailureMessages(
             if (methodNameStartsWithVowel) "hasNeitherAnOrAnMethod" else "hasNeitherAOrAnMethod",
             left,

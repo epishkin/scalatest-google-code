@@ -24,13 +24,13 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       isEmptyMock should be ('empty)
     }
 
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists") {
-      val ex1 = intercept[IllegalArgumentException] {
+    it("should throw TestFailedException if no <symbol> or is<Symbol> method exists") {
+      val ex1 = intercept[TestFailedException] {
         noPredicateMock should be ('empty)
       }
       ex1.getMessage should equal ("NoPredicateMock has neither an empty nor an isEmpty method")
       // Check message for name that starts with a consonant (should use a instead of an)
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         noPredicateMock should be ('full)
       }
       ex2.getMessage should equal ("NoPredicateMock has neither a full nor an isFull method")
@@ -86,20 +86,20 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       isNotEmptyMock should not be ('empty)
     }
 
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists, when used with not") {
-      val ex1 = intercept[IllegalArgumentException] {
+    it("should throw TestFailedException if no <symbol> or is<Symbol> method exists, when used with not") {
+      val ex1 = intercept[TestFailedException] {
         noPredicateMock should not { be ('empty) }
       }
       ex1.getMessage should equal ("NoPredicateMock has neither an empty nor an isEmpty method")
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         noPredicateMock should not (be ('full))
       }
       ex2.getMessage should equal ("NoPredicateMock has neither a full nor an isFull method")
-      val ex3 = intercept[IllegalArgumentException] {
+      val ex3 = intercept[TestFailedException] {
         noPredicateMock should not be ('empty)
       }
       ex3.getMessage should equal ("NoPredicateMock has neither an empty nor an isEmpty method")
-      val ex4 = intercept[IllegalArgumentException] {
+      val ex4 = intercept[TestFailedException] {
         noPredicateMock should not be ('full)
       }
       ex4.getMessage should equal ("NoPredicateMock has neither a full nor an isFull method")
@@ -323,7 +323,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptySet should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "Set(1, 2, 3) was hasDefiniteSize")
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           nonEmptySet should not { be ('happy) }
         }
         assert(caught3.getMessage === "Set(1, 2, 3) has neither a happy nor an isHappy method")
@@ -347,7 +347,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptyListBuffer should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "ListBuffer(1, 2, 3) was hasDefiniteSize")
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           nonEmptyListBuffer should not { be ('happy) }
         }
         assert(caught3.getMessage === "ListBuffer(1, 2, 3) has neither a happy nor an isHappy method")
@@ -367,7 +367,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptyArray should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "Array(1, 2, 3) was hasDefiniteSize")
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           nonEmptyArray should not { be ('happy) }
         }
         assert(caught3.getMessage === "Array(1, 2, 3) has neither a happy nor an isHappy method")
@@ -387,7 +387,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptyList should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "List(1, 2, 3) was hasDefiniteSize")
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           nonEmptyList should not { be ('happy) }
         }
         assert(caught3.getMessage === "List(1, 2, 3) has neither a happy nor an isHappy method")
@@ -407,7 +407,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptyMap should not { be ('hasDefiniteSize) }
         }
         assert(caught2.getMessage === "Map(one -> 1, two -> 2, three -> 3) was hasDefiniteSize")
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           nonEmptyMap should not { be ('happy) }
         }
         assert(caught3.getMessage === "Map(one -> 1, two -> 2, three -> 3) has neither a happy nor an isHappy method")
@@ -415,7 +415,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
 
       // implicit def convertToStringShouldWrapper[K, V](o: String): StringShouldWrapper = new StringShouldWrapper(o)
       it("should work on a String") {
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           "howdy" should not be ('happy)
         }
         assert(caught3.getMessage === "\"howdy\" has neither a happy nor an isHappy method")
@@ -434,7 +434,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptySet should be ('empty)
         }
         assert(caught1.getMessage === "[2, 1, 3] was not empty")
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           nonEmptySet should not { be ('happy) }
         }
         assert(caught3.getMessage === "[2, 1, 3] has neither a happy nor an isHappy method")
@@ -453,7 +453,7 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
           nonEmptyList should be ('empty)
         }
         assert(caught1.getMessage === "[1, 2, 3] was not empty")
-        val caught3 = intercept[IllegalArgumentException] {
+        val caught3 = intercept[TestFailedException] {
           nonEmptyList should not { be ('happy) }
         }
         assert(caught3.getMessage === "[1, 2, 3] has neither a happy nor an isHappy method")
@@ -538,18 +538,18 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       // (new NonEmptyMock) shouldNot be ('empty)
     }
 
-    it("should throw IllegalArgumentException if no empty or isEmpty method") {
+    it("should throw TestFailedException if no empty or isEmpty method") {
       class EmptyMock {
         override def toString = "EmptyMock"
       }
       class NonEmptyMock {
         override def toString = "NonEmptyMock"
       }
-      val ex1 = intercept[IllegalArgumentException] {
+      val ex1 = intercept[TestFailedException] {
         (new EmptyMock) should be ('empty)
       }
       ex1.getMessage should equal ("EmptyMock has neither an empty nor an isEmpty method")
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         (new NonEmptyMock) should not { be ('empty) }
       }
       ex2.getMessage should equal ("NonEmptyMock has neither an empty nor an isEmpty method")
@@ -617,18 +617,18 @@ class BeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       // (new NonDefinedMock) shouldNot be ('defined)
     }
 
-    it("should throw IllegalArgumentException if no defined or isDefined method") {
+    it("should throw TestFailedException if no defined or isDefined method") {
       class DefinedMock {
         override def toString = "DefinedMock"
       }
       class NonDefinedMock {
         override def toString = "NonDefinedMock"
       }
-      val ex1 = intercept[IllegalArgumentException] {
+      val ex1 = intercept[TestFailedException] {
         (new DefinedMock) should be ('defined)
       }
       ex1.getMessage should equal ("DefinedMock has neither a defined nor an isDefined method")
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         (new NonDefinedMock) should not { be ('defined) }
       }
       ex2.getMessage should equal ("NonDefinedMock has neither a defined nor an isDefined method")
