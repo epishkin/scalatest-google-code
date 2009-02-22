@@ -280,13 +280,35 @@ trait Matchers extends Assertions { matchers =>
      */
     class AndHaveWord {
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (have length (2) and have length (3 - 1))
+       *                                              ^
+       * </pre>
+       */
       def length(expectedLength: Long) = and(have.length(expectedLength))
-      // Array(1, 2) should (have size (2) and have size (3 - 1))
-      //                                       ^
 
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (have size (2) and have size (3 - 1))
+       *                                            ^ 
+       * </pre>
+       */
       def size(expectedSize: Long) = and(have.size(expectedSize))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Array(1, 2) should (have size (2) and have size (3 - 1))
+     *                                       ^ 
+     * </pre>
+     */
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
 
     /**
@@ -297,19 +319,45 @@ trait Matchers extends Assertions { matchers =>
      */
     class AndContainWord {
 
-      // Array(1, 2) should (contain element (2) and contain element (3 - 1))
-      //                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Array(1, 2) should (contain element (2) and contain element (3 - 1))
+       *                                                     ^
+       * </pre>
+       */
       def element[T](expectedElement: T) = matchersWrapper.and(matchers.contain.element(expectedElement))
 
-      // Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
-      //                                                                     ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
+       *                                                                     ^
+       * </pre>
+       */
       def key[T](expectedElement: T) = matchersWrapper.and(matchers.contain.key(expectedElement))
 
-      // Map("one" -> 1, "two" -> 2) should (contain value (2) and contain value (1))
-      //                                                                   ^
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * Map("one" -> 1, "two" -> 2) should (contain value (2) and contain value (1))
+       *                                                                   ^
+       * </pre>
+       */
       def value[T](expectedValue: T) = matchersWrapper.and(matchers.contain.value(expectedValue))
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should (contain key ("two") and contain key ("one"))
+     *                                                             ^ 
+     * </pre>
+     */
     def and(containWord: ContainWord): AndContainWord = new AndContainWord
 
     /**
@@ -1168,12 +1216,12 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This trait is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
    */
-  trait LengthWrapper {
+  abstract class LengthWrapper {
     def length: Long
   }
 
@@ -1218,12 +1266,12 @@ trait Matchers extends Assertions { matchers =>
     }
 
   /**
-   * This trait is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
    */
-  trait SizeWrapper {
+  abstract class SizeWrapper {
     def size: Long
   }
 
