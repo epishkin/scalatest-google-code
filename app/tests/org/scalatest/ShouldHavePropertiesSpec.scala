@@ -224,6 +224,18 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught1.getMessage === "Expected property \"length\" to have value 43, but it had value 45.")
       }
 
+      it("should throw TestFailedException if length used in parens but the length property is not an integral type") {
+
+        class LengthSeven {
+          def length = "seven"
+        }
+
+        val caught1 = intercept[TestFailedException] {
+          (new LengthSeven) should have (length (43))
+        }
+        assert(caught1.getMessage === "The length property was none of Byte, Short, Int, or Long.")
+      }
+
       it("should work with size not a symbol without anything special, in case someone forgets you don't need the parens with size") {
 
         class Size7 {
@@ -234,6 +246,18 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
           (new Size7) should have (size (43))
         }
         assert(caught1.getMessage === "Expected property \"size\" to have value 43, but it had value 7.")
+      }
+
+      it("should throw TestFailedException if size used in parens but the size property is not an integral type") {
+
+        class SizeSeven {
+          def size = "seven"
+        }
+
+        val caught1 = intercept[TestFailedException] {
+          (new SizeSeven) should have (size (43))
+        }
+        assert(caught1.getMessage === "The size property was none of Byte, Short, Int, or Long.")
       }
 
 /*
