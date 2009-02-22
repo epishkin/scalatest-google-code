@@ -24,13 +24,13 @@ class BeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
       isFileMock should be a ('file)
     }
 
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists") {
-      val ex1 = intercept[IllegalArgumentException] {
+    it("should throw TestFailedException if no <symbol> or is<Symbol> method exists") {
+      val ex1 = intercept[TestFailedException] {
         noPredicateMock should be a ('apple)
       }
       ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
       // Check message for name that starts with a consonant (should use a instead of an)
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         noPredicateMock should be a ('file)
       }
       ex2.getMessage should equal ("NoPredicateMock has neither a file nor an isFile method")
@@ -43,20 +43,20 @@ class BeASymbolSpec extends Spec with ShouldMatchers with FileMocks {
       isNotFileMock should not be a ('file)
     }
 
-    it("should throw IllegalArgumentException if no <symbol> or is<Symbol> method exists, when used with not") {
-      val ex1 = intercept[IllegalArgumentException] {
+    it("should throw TestFailedException if no <symbol> or is<Symbol> method exists, when used with not") {
+      val ex1 = intercept[TestFailedException] {
         noPredicateMock should not { be a ('apple) }
       }
       ex1.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
-      val ex2 = intercept[IllegalArgumentException] {
+      val ex2 = intercept[TestFailedException] {
         noPredicateMock should not (be a ('directory))
       }
       ex2.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
-      val ex3 = intercept[IllegalArgumentException] {
+      val ex3 = intercept[TestFailedException] {
         noPredicateMock should not be a ('apple)
       }
       ex3.getMessage should equal ("NoPredicateMock has neither an apple nor an isApple method")
-      val ex4 = intercept[IllegalArgumentException] {
+      val ex4 = intercept[TestFailedException] {
         noPredicateMock should not be a ('directory)
       }
       ex4.getMessage should equal ("NoPredicateMock has neither a directory nor an isDirectory method")
