@@ -18,6 +18,7 @@ package org.scalatest
 import scala.reflect.Manifest
 import Helper.newTestFailedException
 
+// TODO: Mention JavaMaps don't support should contain element, as well as mentioning Java collection support.
 /**
  * <p>
  * The next release of ScalaTest will include two new traits, <code>ShouldMatchers</code>
@@ -166,7 +167,7 @@ import Helper.newTestFailedException
  * <h2>Working with floating point numbers</h2>
  * 
  * <p>
- * To check wether a floating point number has a value that exactly matches another, you
+ * To check whether a floating point number has a value that exactly matches another, you
  * can use <code>should equal</code>:
  * </p>
  * 
@@ -186,7 +187,12 @@ import Helper.newTestFailedException
  * <p>
  * This expression will cause an assertion error to be thrown if the floating point
  * value, <code>sevenDotOh</code> is outside the range <code>6.7</code> to <code>7.1</code>.
+ * You can also use <code>plusOrMinus</code> with integral types, for example:
  * </p>
+ * 
+ * <pre class="indent">
+ * seven should be (6 plusOrMinus 2)
+ * </pre>
  * 
  * <h2>Iterables, collections, sequences, and maps</h2>
  * 
@@ -274,16 +280,15 @@ import Helper.newTestFailedException
  * <h2>Being negative</h2>
  * 
  * <p>
- * If you wish to check the opposite of some condition, you can use <code>not</code>. However,
- * when you use <code>not</code>, you must enclose the expression being negated in parentheses
- * or curly braces. Here are a few examples:
+ * If you wish to check the opposite of some condition, you can use <code>not</code>.
+ * Here are a few examples:
  * </p>
  * 
  * <pre class="indent">
- * object should not (be (null))
- * sum should not { be <= 10 }
- * mylist should not (equal (yourList))
- * string should not { startWith substring ("Hello") }
+ * object should not be (null)
+ * sum should not be <= (10)
+ * mylist should not equal (yourList)
+ * string should not startWith substring ("Hello")
  * </pre>
  * 
  * <h2>Combining matchers with <code>and</code> and/or <code>or</code></h2>
@@ -295,9 +300,9 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * ten should { equal (2 * 5) and equal (12 - 2) }
- * one should { equal (999) or equal (2 - 1) }
- * one should { not (be >= 7) and equal (2 - 1) }
+ * ten should (equal (2 * 5) and equal (12 - 2))
+ * one should (equal (999) or equal (2 - 1))
+ * one should (not be >= (7) and equal (2 - 1))
  * </pre>
  * 
  * <h2>Working with <code>Option</code>s</h2>
@@ -311,7 +316,7 @@ import Helper.newTestFailedException
  * <pre class="indent">
  * option should equal (None)
  * option should be (None)
- * option should not { be ('defined) }
+ * option should not be ('defined)
  * </pre>
  * 
  * <p>
