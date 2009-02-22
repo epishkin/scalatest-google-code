@@ -174,7 +174,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught2.getMessage === "Expected property author to have value \"Gibson\", but it had value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
       }
 
-      it("should throw TestFailedException if at least one of the properties don't match") {
+      it("should throw TestFailedException if at least one of the properties doesn't match") {
 
         val caught1 = intercept[TestFailedException] {
           book should have (
@@ -209,13 +209,84 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           book should not have (author ("Dickens"))
         }
-        assert(caught1.getMessage === "Expected property author to NOT have value \"Dickens\", but it did have that value, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught1.getMessage === "Property author had its expected value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
 
         val caught2 = intercept[TestFailedException] {
           book should not have ('author ("Dickens"))
         }
-        assert(caught2.getMessage === "Expected property author to NOT have value \"Dickens\", but it did have that value, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught2.getMessage === "Property author had its expected value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
       }
+
+/*
+I've been doing this wrongly. not (matcher) needs to yield the opposite result as (matcher) itself, and
+that means that not (matcher) will be true if at least one 
+
+title/author/pubYear matches | have | not have
+0 0 0 | 0 | 1
+0 0 1 | 0 | 1
+0 1 0 | 0 | 1
+0 1 1 | 0 | 1
+1 0 0 | 0 | 1
+1 0 1 | 0 | 1
+1 1 0 | 0 | 1
+1 1 1 | 1 | 0
+
+So 'not have" means that at least one is false, not all are false.
+
+To reduce the number of tests cases just use two:
+
+title/author matches | have | have not
+0 0 | 0 | 1
+0 1 | 0 | 1
+1 0 | 0 | 1
+1 1 | 1 | 0
+
+
+have matches (1 1) All properties matched.
+have does not match (0 0, 0 1, 1 0) the (first property found that doesn't match) didn't match
+not have matches (0 0, 0 1, 1 0) the (first property found that doesn't match), as expected
+not have does not match (1, 1) All properties matched.
+*/
+      it("should throw TestFailedException if all of the properties match, when used with not") {
+        val caught1 = intercept[TestFailedException] {
+          book should not have (
+            title ("A Tale of Two Cities"),
+            author ("Dickens")
+          )
+        }
+        assert(caught1.getMessage === "All properties had their expected values, respectively, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+      }
+/*
+      it("should throw TestFailedException if at least one of the properties matches, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          book should not have (
+            title ("Moby Dick"),
+            author ("Dickens"),
+            pubYear (1851)
+          )
+        }
+        assert(caught1.getMessage === "Expected property author to NOT have value "Dickens", but it did have that value, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+
+        val caught2 = intercept[TestFailedException] {
+          book should not have (
+            title ("Moby Dick"),
+            'author ("Dickens"),
+            pubYear (1851)
+          )
+        }
+        assert(caught2.getMessage === "")
+
+        val caught3 = intercept[TestFailedException] {
+          book should not have (
+            'title ("Moby Dick"),
+            'author ("Gibson"),
+            'pubYear (1959)
+          )
+        }
+        assert(caught3.getMessage === "")
+      }
+*/
 
       it("should throw TestFailedException if a nested property matcher expression is used and a nested property doesn't match") {
 
