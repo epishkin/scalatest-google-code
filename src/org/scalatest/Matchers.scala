@@ -1713,7 +1713,7 @@ trait Matchers extends Assertions { matchers =>
     }
 
   /**
-   * This implicit conversion method enables the following syntax (<code>javaSet</code> is a <code>java.util.Collection</code>):
+   * This implicit conversion method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
    *
    * <pre>
    * javaMap should (contain key ("two"))
