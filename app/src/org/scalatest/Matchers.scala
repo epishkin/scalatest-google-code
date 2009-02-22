@@ -642,6 +642,17 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * book should (not have (title ("Moby Dick")) and not have (author ("Melville")))
+       *                                                     ^
+       * </pre>
+       */
+      def have[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*) =
+        matchersWrapper.and(matchers.not.apply(matchers.have(firstPropertyMatcher, propertyMatchers: _*)))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * 5 should (not be < (2) and not be < (6))
        *                                ^
        * </pre>
@@ -3821,7 +3832,6 @@ trait Matchers extends Assertions { matchers =>
 
     def equal(right: Any): Matcher[Any] = apply(matchers.equal(right))
 
-    // TODO: This now gets caught by the next one?
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication): Matcher[AnyRef] =
       apply(matchers.have.length(resultOfLengthWordApplication.expectedLength))
 
@@ -3830,6 +3840,11 @@ trait Matchers extends Assertions { matchers =>
     //                     ^
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication): Matcher[AnyRef] =
       apply(matchers.have.size(resultOfSizeWordApplication.expectedSize))
+
+    // book should (not have (title ("Moby Dick")) and (not have (author ("Melville"))))
+    //                  ^
+    def have[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
+      apply(matchers.have(firstPropertyMatcher, propertyMatchers: _*))
 
     // These next four are for things like not be </>/<=/>=:
     // left should ((not be < (right)) and (not be < (right + 1)))
