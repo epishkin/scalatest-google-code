@@ -186,6 +186,43 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         )
       }
 
+      it("should do nothing if all properties match, when used with and") {
+        book should (have (title ("A Tale of Two Cities")) and (have (author ("Dickens"))))
+        book should (have (title ("A Tale of Two Cities")) and have (author ("Dickens")))
+        book should (have ('title ("A Tale of Two Cities")) and (have ('author ("Dickens"))))
+        book should (have ('title ("A Tale of Two Cities")) and have ('author ("Dickens")))
+      }
+
+      it("should do nothing if at lesat one property matches, when used with or") {
+
+        // both true
+        book should (have (title ("A Tale of Two Cities")) or (have (author ("Dickens"))))
+        book should (have (title ("A Tale of Two Cities")) or have (author ("Dickens")))
+        book should (have ('title ("A Tale of Two Cities")) or (have ('author ("Dickens"))))
+        book should (have ('title ("A Tale of Two Cities")) or have ('author ("Dickens")))
+
+        // first true
+        book should (have (title ("A Tale of Two Cities")) or (have (author ("Melville"))))
+        book should (have (title ("A Tale of Two Cities")) or have (author ("Melville")))
+        book should (have ('title ("A Tale of Two Cities")) or (have ('author ("Melville"))))
+        book should (have ('title ("A Tale of Two Cities")) or have ('author ("Melville")))
+
+        // second true
+        book should (have (title ("Moby Dick")) or (have (author ("Dickens"))))
+        book should (have (title ("Moby Dick")) or have (author ("Dickens")))
+        book should (have ('title ("Moby Dick")) or (have ('author ("Dickens"))))
+        book should (have ('title ("Moby Dick")) or have ('author ("Dickens")))
+      }
+
+      it("should do nothing if no properties match, when used with and and not") {
+        book should (not have (title ("Moby Dick")) and (not have (author ("Melville"))))
+        book should (not have (title ("Moby Dick")) and not (have (author ("Melville"))))
+        book should (not have (title ("Moby Dick")) and not have (author ("Melville")))
+        book should (not have ('title ("Moby Dick")) and (not have ('author ("Melville"))))
+        book should (not have ('title ("Moby Dick")) and not (have ('author ("Melville"))))
+        book should (not have ('title ("Moby Dick")) and not have ('author ("Melville")))
+      }
+
       it("should throw TestFailedException if there's just one property and it doesn't match") {
 
         val caught1 = intercept[TestFailedException] {
