@@ -1869,6 +1869,14 @@ trait Matchers extends Assertions { matchers =>
    */
   protected class IncludeWord {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7" should (include substring ("1.7") and include substring ("1.8"))
+     *                       ^
+     * </pre>
+     */
     def substring(expectedSubstring: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1879,8 +1887,26 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimal = """(-)?(\d+)(\.\d*)?"""
+     * "a1.7b" should (include regex (decimal) and include regex (decimal))
+     *                         ^
+     * </pre>
+     */
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
+     * "a1.7" should (include regex (decimalRegex) and include regex (decimalRegex))
+     *                        ^
+     * </pre>
+     */
     def regex(expectedRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1900,6 +1926,14 @@ trait Matchers extends Assertions { matchers =>
    */
   protected class StartWithWord {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7b" should (startWith substring ("1.7") and startWith substring ("1.7b"))
+     *                          ^
+     * </pre>
+     */
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
@@ -1910,8 +1944,26 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimal = """(-)?(\d+)(\.\d*)?"""
+     * "1.7b" should (startWith regex (decimal) and startWith regex (decimal))
+     *                          ^
+     * </pre>
+     */
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
+     * "1.7" should (startWith regex (decimalRegex) and startWith regex (decimalRegex))
+     *                         ^
+     * </pre>
+     */
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1931,6 +1983,14 @@ trait Matchers extends Assertions { matchers =>
    */
   protected class EndWithWord {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * "1.7b" should (endWith substring ("1.7b") and endWith substring ("7b"))
+     *                        ^
+     * </pre>
+     */
     def substring[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
@@ -1941,8 +2001,26 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimal = """(-)?(\d+)(\.\d*)?"""
+     * "b1.7" should (endWith regex (decimal) and endWith regex (decimal))
+     *                        ^
+     * </pre>
+     */
     def regex[T <: String](right: T): Matcher[T] = regex(right.r)
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
+     * "b1.7" should (endWith regex (decimalRegex) and endWith regex (decimalRegex))
+     *                        ^
+     * </pre>
+     */
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) = {
@@ -1964,6 +2042,15 @@ trait Matchers extends Assertions { matchers =>
    */
   protected class FullyMatchWord {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimal = """(-)?(\d+)(\.\d*)?"""
+     * "1.7" should (fullyMatch regex (decimal) and fullyMatch regex (decimal))
+     *                          ^
+     * </pre>
+     */
     def regex(rightRegexString: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1974,6 +2061,15 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * val decimalRegex = """(-)?(\d+)(\.\d*)?""".r
+     * "1.7" should (fullyMatch regex (decimalRegex) and fullyMatch regex (decimalRegex))
+     *                          ^
+     * </pre>
+     */
     def regex(rightRegex: Regex): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
@@ -1989,47 +2085,97 @@ trait Matchers extends Assertions { matchers =>
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
    * the matchers DSL.
    *
+   * <p>
+   * Subclasses of this abstract class are used as the result of implicit conversions from the various structural types that
+   * are considered to represent length: <code>length</code> or <code>getLength</code> methods or fields that return <code>Int</code>
+   * or <code>Long</code>. This enables the <code>have length (7)</code> syntax to be used with any object that has a length.
+   * The implicit conversion methods that result in this type are:
+   * </p>
+   *
+   * <ul>
+   * <li><code>convertLengthFieldToIntLengthWrapper</code></li>
+   * <li><code>convertLengthMethodToIntLengthWrapper</code></li>
+   * <li><code>convertGetLengthFieldToIntLengthWrapper</code></li>
+   * <li><code>convertGetLengthMethodToIntLengthWrapper</code></li>
+   * <li><code>convertLengthFieldToLongLengthWrapper</code></li>
+   * <li><code>convertLengthFieldToLongLengthWrapper</code></li>
+   * <li><code>convertGetLengthFieldToLongLengthWrapper</code></li>
+   * <li><code>convertGetLengthMethodToLongLengthWrapper</code></li>
+   * </ul>
+   *
    * @author Bill Venners
    */
   abstract class LengthWrapper {
     def length: Long
   }
 
+  /**
+   * This implicit conversion method converts an object with a <code>length</code> field of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertLengthFieldToIntLengthWrapper(o: { val length: Int }) =
     new LengthWrapper {
       def length = o.length
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>length</code> method of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertLengthMethodToIntLengthWrapper(o: { def length(): Int }) =
     new LengthWrapper {
       def length = o.length()
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getLength</code> field of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertGetLengthFieldToIntLengthWrapper(o: { val getLength: Int }) =
     new LengthWrapper {
       def length = o.getLength
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getLength</code> method of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertGetLengthMethodToIntLengthWrapper(o: { def getLength(): Int }) =
     new LengthWrapper {
       def length = o.getLength()
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>length</code> field of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertLengthFieldToLongLengthWrapper(o: { val length: Long }) =
     new LengthWrapper {
       def length = o.length
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>length</code> method of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertLengthMethodToLongLengthWrapper(o: { def length(): Long }) =
     new LengthWrapper {
       def length = o.length()
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getLength</code> field of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertGetLengthFieldToLongLengthWrapper(o: { val getLength: Long }) =
     new LengthWrapper {
       def length = o.getLength
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getLength</code> method of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have length (7)</code> syntax.
+   */
   implicit def convertGetLengthMethodToLongLengthWrapper(o: { def getLength(): Long }) =
     new LengthWrapper {
       def length = o.getLength()
@@ -2039,47 +2185,97 @@ trait Matchers extends Assertions { matchers =>
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
    * the matchers DSL.
    *
+   * <p>
+   * Subclasses of this abstract class are used as the result of implicit conversions from the various structural types that
+   * are considered to represent size: <code>size</code> or <code>getSize</code> methods or fields that return <code>Int</code>
+   * or <code>Long</code>. This enables the <code>have size (7)</code> syntax to be used with any object that has a size.
+   * The implicit conversion methods that result in this type are:
+   * </p>
+   *
+   * <ul>
+   * <li><code>convertSizeFieldToIntSizeWrapper</code></li>
+   * <li><code>convertSizeMethodToIntSizeWrapper</code></li>
+   * <li><code>convertGetSizeFieldToIntSizeWrapper</code></li>
+   * <li><code>convertGetSizeMethodToIntSizeWrapper</code></li>
+   * <li><code>convertSizeFieldToLongSizeWrapper</code></li>
+   * <li><code>convertSizeFieldToLongSizeWrapper</code></li>
+   * <li><code>convertGetSizeFieldToLongSizeWrapper</code></li>
+   * <li><code>convertGetSizeMethodToLongSizeWrapper</code></li>
+   * </ul>
+   *
    * @author Bill Venners
    */
   abstract class SizeWrapper {
     def size: Long
   }
 
+  /**
+   * This implicit conversion method converts an object with a <code>size</code> field of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertSizeFieldToIntSizeWrapper(o: { val size: Int }) =
     new SizeWrapper {
       def size = o.size
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>size</code> method of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertSizeMethodToIntSizeWrapper(o: { def size(): Int }) =
     new SizeWrapper {
       def size = o.size()
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getSize</code> field of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertGetSizeFieldToIntSizeWrapper(o: { val getSize: Int }) =
     new SizeWrapper {
       def size = o.getSize
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getSize</code> method of type <code>Int</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertGetSizeMethodToIntSizeWrapper(o: { def getSize(): Int }) =
     new SizeWrapper {
       def size = o.getSize()
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>size</code> field of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertSizeFieldToLongSizeWrapper(o: { val size: Long }) =
     new SizeWrapper {
       def size = o.size
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>size</code> method of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertSizeMethodToLongSizeWrapper(o: { def size(): Long }) =
     new SizeWrapper {
       def size = o.size()
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getSize</code> field of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertGetSizeFieldToLongSizeWrapper(o: { val getSize: Long }) =
     new SizeWrapper {
       def size = o.getSize
     }
 
+  /**
+   * This implicit conversion method converts an object with a <code>getSize</code> method of type <code>Long</code> to a
+   * <code>LengthWrapper</code>, to enable that object to be used with the <code>have size (7)</code> syntax.
+   */
   implicit def convertGetSizeMethodToLongSizeWrapper(o: { def getSize(): Long }) =
     new SizeWrapper {
       def size = o.getSize()
@@ -2093,9 +2289,24 @@ trait Matchers extends Assertions { matchers =>
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
    * the matchers DSL.
    *
+   * <p>
+   * This class is used as the result of an implicit conversion from class <code>Symbol</code>, to enable symbols to be
+   * used in <code>have ('author ("Dickens"))</code> syntax. The name of the implicit conversion method is
+   * <code>convertSymbolToHavePropertyMatcherGenerator</code>.
+   * </p>
+   *
    * @author Bill Venners
    */
   protected class HavePropertyMatcherGenerator(symbol: Symbol) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * book should have ('title ("A Tale of Two Cities"))
+     *                          ^
+     * </pre>
+     */
     def apply(expectedValue: Any) =
       new HavePropertyMatcher[AnyRef, Any] {
         def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Any] = {
@@ -2137,6 +2348,10 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
+  /**
+   * This implicit conversion method converts a <code>Symbol</code> to a
+   * <code>HavePropertyMatcherGenerator</code>, to enable the symbol to be used with the <code>have ('author ("Dickens"))</code> syntax.
+   */
   protected implicit def convertSymbolToHavePropertyMatcherGenerator(symbol: Symbol) = new HavePropertyMatcherGenerator(symbol)
 
   /**
