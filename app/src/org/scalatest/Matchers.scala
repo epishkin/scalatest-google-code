@@ -2971,7 +2971,9 @@ trait Matchers extends Assertions { matchers =>
 
     // book should not have (title ("One Hundred Years of Solitude"))
     //                 ^
-    // TODO explain why this is an upper not a lower bound
+    // The type parameter U has T as its lower bound, which means that U must be T or a supertype of T. Left is T, oh, because
+    // HavePropertyMatcher is contravariant in its type parameter T, and that nmakes sense, because a HavePropertyMatcher of Any should
+    // be able to match on a String.
     def have[U >: T](firstPropertyMatcher: HavePropertyMatcher[U, _], propertyMatchers: HavePropertyMatcher[U, _]*) {
       val results =
         for (propertyVerifier <- firstPropertyMatcher :: propertyMatchers.toList) yield
