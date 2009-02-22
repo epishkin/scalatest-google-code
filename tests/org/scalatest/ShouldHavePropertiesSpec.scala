@@ -127,6 +127,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
 
       it("should do nothing if there's just one property and it matches") {
         book should have (title ("A Tale of Two Cities"))
+        book should have ('title ("A Tale of Two Cities"))
       }
 
       it("should do nothing if all the properties match") {
@@ -135,10 +136,29 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
           author ("Dickens"),
           pubYear (1859)
         )
+        book should have (
+          'title ("A Tale of Two Cities"),
+          'author ("Dickens"),
+          'pubYear (1859)
+        )
       }
 
       it("should do nothing if there's just one property and it does not match, when used with not") {
         book should not have (title ("One Hundred Years of Solitude"))
+        book should not have ('title ("One Hundred Years of Solitude"))
+      }
+
+      it("should do nothing if none of the properties match, when used with not") {
+        book should not have (
+          title ("Moby Dick"),
+          author ("Melville"),
+          pubYear (1851)
+        )
+        book should not have (
+          'title ("Moby Dick"),
+          'author ("Melville"),
+          'pubYear (1851)
+        )
       }
 
       it("should throw TestFailedException if at least one of the properties don't match") {
