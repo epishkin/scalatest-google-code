@@ -2463,14 +2463,14 @@ trait Matchers extends Assertions { matchers =>
                 val failedVerification = firstFailure
                 MatchResult(
                   false,
-                  FailureMessages("propertyDidNotHaveExpectedValue", failedVerification.propertyName, failedVerification.expectedValue, failedVerification.actualValue),
-                  FailureMessages("propertyHadExpectedValue")
+                  FailureMessages("propertyDidNotHaveExpectedValue", UnquotedString(failedVerification.propertyName), failedVerification.expectedValue, failedVerification.actualValue, left),
+                  FailureMessages("propertyHadExpectedValue", left)
                 )
               case None =>
                 MatchResult(
                   true,
-                  FailureMessages("propertyDidNotHaveExpectedValue", "NONE", "NONE", "NONE"), // This one doesn't make sense
-                  FailureMessages("propertyHadExpectedValue")
+                  FailureMessages("propertyDidNotHaveExpectedValue", "NONE", "NONE", "NONE", left), // TODO: This one doesn't make sense
+                  FailureMessages("propertyHadExpectedValue", left)
                 )
             }
           }
@@ -2983,7 +2983,7 @@ trait Matchers extends Assertions { matchers =>
         firstFailureOption match {
           case Some(firstFailure) => // This is the test failure, because all HavePropertyMatchers are supposed to match, and one didn't match
             throw newTestFailedException(
-              FailureMessages("propertyDidNotHaveExpectedValue", firstFailure.propertyName, firstFailure.expectedValue, firstFailure.actualValue)
+              FailureMessages("propertyDidNotHaveExpectedValue", UnquotedString(firstFailure.propertyName), firstFailure.expectedValue, firstFailure.actualValue, left)
             )
           case None => () // This is a successful test. None of the HavePropertyMatchers match, which is what they said should be the case
         } 
@@ -2993,7 +2993,7 @@ trait Matchers extends Assertions { matchers =>
         firstSuccessOption match {
           case Some(firstSuccess) => // This is the test failure, because all HavePropertyMatchers are supposed to fail, and one didn't fail
             throw newTestFailedException(
-              FailureMessages("propertyHadExpectedValueWhenItShouldNot", firstSuccess.propertyName, firstSuccess.expectedValue)
+              FailureMessages("propertyHadExpectedValueWhenItShouldNot", UnquotedString(firstSuccess.propertyName), firstSuccess.expectedValue, left)
             )
           case None => () // This is a successful test. None of the HavePropertyMatchers match, which is what they said should be the case
         } 
