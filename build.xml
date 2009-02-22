@@ -10,7 +10,9 @@
     <property name="generators" value="generators" />
     <property name="build.tests" value="${build}/tests" />
     <property name="build.generators" value="${build}/generators" />
+    <property name="build.coverage" value="${build}/coverage" />
     <property name="dist" value="${build}/dist" />
+    <property name="instrumented" value="${build}/instrumented" />
     <property name="doc" value="${build}/doc" />
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
@@ -54,6 +56,12 @@
             <path refid="lib.path"></path>
         </path>
         
+        <path id="coverage.class.path">
+            <pathelement location="${instrumented}" />
+            <pathelement location="${classes}" />
+            <path refid="lib.path"></path>
+        </path>
+     
         <path id="build.test.class.path">
             <pathelement location="${classes}" />
             <pathelement location="${build.tests}" />
@@ -81,6 +89,14 @@
 
         <path id="scaladoc.source.path">
             <pathelement location="${src}" />
+        </path>
+
+        <path id="cobertura.class.path">
+          <pathelement location="${lib}/cobertura.jar" />
+          <pathelement location="${lib}/asm-3.0.jar" />
+          <pathelement location="${lib}/asm-tree-3.0.jar" />
+          <pathelement location="${lib}/jakarta-oro-2.0.8.jar" />
+          <pathelement location="${lib}/log4j-1.2.9.jar" />
         </path>
 
     </target>
@@ -230,6 +246,30 @@
         </java>
     </target>
 
+    <target name="coverage" depends="compile,copyprops,instrument">
+        <java classname="org.scalatest.tools.Runner" classpathref="coverage.class.path" fork="true">
+
+            <arg value="-p" />
+            <arg value="${build.tests} ${classes}" />
+
+            <arg value="-g" />
+            <arg value="-o" />
+
+            <arg value="-m" />
+            <arg value="org.scalatest" />
+
+            <arg value="-m" />
+            <arg value="org.scalatest.testng" />
+
+            <arg value="-m" />
+            <arg value="org.scalatest.junit" />
+
+            <arg value="-m" />
+            <arg value="org.scalatest.prop" />
+        </java>
+        <cobertura-report srcdir="${src}" destdir="${build.coverage}"/>
+    </target>
+
     <target name="bvtest" depends="compile,copyprops">
         <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
 
@@ -269,7 +309,6 @@
         <run-example package="org.scalatest.junit.example" />
     </target>
 
-
     <macrodef name="run-example">
         <attribute name="package" />
         <sequential>
@@ -288,6 +327,32 @@
     </macrodef>
 
     <target name="allfiles" depends="dist, doc, demo" />
+
+    <target name="instrument" depends="compile">
+      <taskdef classpathref="cobertura.class.path" resource="tasks.properties"/>
+      <!--
+        Remove the coverage data file and any old instrumentation.
+      -->
+      <delete file="cobertura.ser"/>
+      <delete dir="${instrumented}" />
+
+      <!--
+        Instrument the application classes, writing the
+        instrumented classes into ${build.instrumented.dir}.
+      -->
+      <cobertura-instrument todir="${instrumented}">
+        <!--
+          The following line causes instrument to ignore any
+          source line containing a reference to log4j, for the
+          purposes of coverage reporting.
+        -->
+        <ignore regex="org.apache.log4j.*" />
+
+        <fileset dir="${jar.contents}">
+          <include name="**/*.class" />
+        </fileset>
+      </cobertura-instrument>
+    </target>
 
 
     <target name="ant-task-test" depends="compile">
