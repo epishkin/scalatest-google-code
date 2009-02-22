@@ -2081,6 +2081,10 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
+// TODO: Drop the getLength and getSize field conversions, so that this is consistent with
+// what I do in symbol HavePropertyMatchers. Actually, no, keep them, because a val geLength is a 
+// perfectly valid Scala way to get a JavaBean property in the bytecodes.
+
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
    * the matchers DSL.
@@ -2306,6 +2310,7 @@ trait Matchers extends Assertions { matchers =>
      * book should have ('title ("A Tale of Two Cities"))
      *                          ^
      * </pre>
+     * TODO: flesh out explanation of what it does
      */
     def apply(expectedValue: Any) =
       new HavePropertyMatcher[AnyRef, Any] {
@@ -2362,6 +2367,10 @@ trait Matchers extends Assertions { matchers =>
    */
   protected class HaveWord {
 
+    // TODO: How about returning a Matcher[Gazornimplatz] and then providing implicit conversion
+    // methods from Matcher[Gazornimplatz] to Matcher[Seq], Matcher[String], Matcher[java.util.List], and
+    // Matcher[the structural length methods]. This is similar to the technique I used with "contain element (7)"
+    // to get it to work with java.util.Collection.
     // I couldn't figure out how to combine view bounds with existential types. May or may not
     // be possible, but going dynamic for now at least.
     def length(expectedLength: Long) =
@@ -2440,11 +2449,13 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
-      def apply[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyVerifiers: HavePropertyMatcher[T, _]*): Matcher[T] =
+      // book should have (title ("A Tale of Two Cities"))
+      //                  ^
+      def apply[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
         new Matcher[T] {
           def apply(left: T) = {
             val results =
-              for (propertyVerifier <- firstPropertyMatcher :: propertyVerifiers.toList) yield
+              for (propertyVerifier <- firstPropertyMatcher :: propertyMatchers.toList) yield
                 propertyVerifier(left)
             val firstFailureOption = results.find(pv => !pv.matches)
             firstFailureOption match {
@@ -2955,6 +2966,35 @@ trait Matchers extends Assertions { matchers =>
             resultOfSameInstanceAsApplication.right
           )
         )
+      }
+    }
+
+    // book should not have (title ("One Hundred Years of Solitude"))
+    //                 ^
+    // TODO explain why this is an upper not a lower bound
+    def have[U >: T](firstPropertyMatcher: HavePropertyMatcher[U, _], propertyMatchers: HavePropertyMatcher[U, _]*) {
+      val results =
+        for (propertyVerifier <- firstPropertyMatcher :: propertyMatchers.toList) yield
+          propertyVerifier(left)
+      if (shouldBeTrue) {
+        val firstFailureOption = results.find(pv => !pv.matches)
+        firstFailureOption match {
+          case Some(firstFailure) => // This is the test failure, because all HavePropertyMatchers are supposed to match, and one didn't match
+            throw newTestFailedException(
+              FailureMessages("propertyDidNotHaveExpectedValue", firstFailure.propertyName, firstFailure.expectedValue, firstFailure.actualValue)
+            )
+          case None => () // This is a successful test. None of the HavePropertyMatchers match, which is what they said should be the case
+        } 
+      }
+      else {
+        val firstSuccessOption = results.find(pv => pv.matches)
+        firstSuccessOption match {
+          case Some(firstSuccess) => // This is the test failure, because all HavePropertyMatchers are supposed to fail, and one didn't fail
+            throw newTestFailedException(
+              FailureMessages("propertyHadExpectedValueWhenItShouldNot", firstSuccess.propertyName, firstSuccess.expectedValue)
+            )
+          case None => () // This is a successful test. None of the HavePropertyMatchers match, which is what they said should be the case
+        } 
       }
     }
   }
@@ -3691,8 +3731,17 @@ trait Matchers extends Assertions { matchers =>
 
     def equal(right: Any): Matcher[Any] = apply(matchers.equal(right))
 
+    // TODO: This now gets caught by the next one?
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication): Matcher[AnyRef] =
       apply(matchers.have.length(resultOfLengthWordApplication.expectedLength))
+
+    // TODO: I think this should be: book should not have title ("One Hundred Years of Solitude")
+    // but it doesn't currently seem to work. Maybe I disallow that syntax and force everyone
+    // to put parens after have, except in the case of length and size. Yes. Probably should delete this:
+/*
+    def have[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
+      apply(matchers.have(firstPropertyMatcher, propertyMatchers: _*))
+*/
 
     // This looks similar to the AndNotWord one, but not quite the same because no and
     // Array(1, 2) should (not have size (5) and not have size (3))
@@ -4473,8 +4522,8 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean)
-      extends ResultOfNotWord(left, shouldBeTrue) {
+  class ResultOfNotWordForLengthWrapper[A <: AnyRef <% LengthWrapper](left: A, shouldBeTrue: Boolean)
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
