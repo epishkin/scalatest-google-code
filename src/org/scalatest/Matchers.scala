@@ -2310,10 +2310,43 @@ trait Matchers extends Assertions { matchers =>
      * book should have ('title ("A Tale of Two Cities"))
      *                          ^
      * </pre>
-     * TODO: flesh out explanation of what it does
+     * 
+     * <p>
+     * This class has an <code>apply</code> method that will produce a <code>HavePropertyMatcher[AnyRef, Any]</code>.
+     * The implicit conversion method, <code>convertSymbolToHavePropertyMatcherGenerator</code>, will cause the 
+     * above line of code to be eventually transformed into:
+     * </p>
+     * 
+     * <pre>
+     * book should have (convertSymbolToHavePropertyMatcherGenerator('title).apply("A Tale of Two Cities"))
+     * </pre>
      */
     def apply(expectedValue: Any) =
       new HavePropertyMatcher[AnyRef, Any] {
+
+        /**
+         * This method enables the following syntax:
+         *
+         * <pre>
+         * book should have ('title ("A Tale of Two Cities"))
+         * </pre>
+         * 
+         * <p>
+         * This method uses reflection to discover a field or method with a name that indicates it represents
+         * the value of the property with the name contained in the <code>Symbol</code> passed to the 
+         * <code>HavePropertyMatcherGenerator</code>'s constructor. The field or method must be public. To be a
+         * candidate, a field must have the name <code>symbol.name</code>, so if <code>symbol</code> is <code>'title</code>,
+         * the field name sought will be <code>"title"</code>. To be a candidate, a method must either have the name
+         * <code>symbol.name</code>, or have a JavaBean-style <code>get</code> or <code>is</code>. If the type of the
+         * passed <code>expectedValue</code> is <code>Boolean</code>, <code>"is"</code> is prepended, else <code>"get"</code>
+         * is prepended. Thus if <code>'title</code> is passed as <code>symbol</code>, and the type of the <code>expectedValue</code> is
+         * <code>String</code>, a method named <code>getTitle</code> will be considered a candidate (the return type
+         * of <code>getTitle</code> will not be checked, so it need not be <code>String</code>. By contrast, if <code>'defined</code>
+         * is passed as <code>symbol</code>, and the type of the <code>expectedValue</code> is <code>Boolean</code>, a method
+         * named <code>isTitle</code> will be considered a candidate so long as its return type is <code>Boolean</code>.
+         * </p>
+         * TODO continue the story
+         */
         def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Any] = {
 
           // If 'empty passed, propertyName would be "empty"
@@ -2452,26 +2485,50 @@ trait Matchers extends Assertions { matchers =>
       // book should have (title ("A Tale of Two Cities"))
       //                  ^
       def apply[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
+
         new Matcher[T] {
+
           def apply(left: T) = {
+
             val results =
               for (propertyVerifier <- firstPropertyMatcher :: propertyMatchers.toList) yield
                 propertyVerifier(left)
+
             val firstFailureOption = results.find(pv => !pv.matches)
+
+            val justOneProperty = propertyMatchers.length == 0
+
             firstFailureOption match {
+
               case Some(firstFailure) =>
+
                 val failedVerification = firstFailure
-                MatchResult(
-                  false,
-                  FailureMessages("propertyDidNotHaveExpectedValue", UnquotedString(failedVerification.propertyName), failedVerification.expectedValue, failedVerification.actualValue, left),
-                  FailureMessages("propertyHadExpectedValue", left)
-                )
+                val failureMessage =
+                  FailureMessages(
+                    "propertyDidNotHaveExpectedValue",
+                    UnquotedString(failedVerification.propertyName),
+                    failedVerification.expectedValue,
+                    failedVerification.actualValue,
+                    left
+                  )
+
+                MatchResult(false, failureMessage, failureMessage) // How can this be correct?
+
               case None =>
-                MatchResult(
-                  true,
-                  FailureMessages("propertyDidNotHaveExpectedValue", "NONE", "NONE", "NONE", left), // TODO: This one doesn't make sense
-                  FailureMessages("propertyHadExpectedValue", left)
-                )
+
+                val failureMessage =
+                  if (justOneProperty) {
+                    val firstPropertyResult = results.head // know this will succeed, because firstPropertyMatcher was required
+                    FailureMessages(
+                      "propertyHadExpectedValue",
+                      UnquotedString(firstPropertyResult.propertyName),
+                      firstPropertyResult.expectedValue,
+                      left
+                    )
+                  }
+                  else FailureMessages("allPropertiesHadExpectedValues", left)
+
+                MatchResult(true, failureMessage, failureMessage)
             }
           }
         }
@@ -2974,28 +3031,59 @@ trait Matchers extends Assertions { matchers =>
     // The type parameter U has T as its lower bound, which means that U must be T or a supertype of T. Left is T, oh, because
     // HavePropertyMatcher is contravariant in its type parameter T, and that nmakes sense, because a HavePropertyMatcher of Any should
     // be able to match on a String.
+    // <code>not have (a (1), b (2))</code> must mean the opposite of <code>have (a (1), b (2))</code>, which means that 
+    // <code>not have (a (1), b (2))</code> will be true if either <code>(a (1)).matches</code> or <code>(b (1)).matches</code> is false.
+    // Only if both <code>(a (1)).matches</code> or <code>(b (1)).matches</code> are true will <code>not have (a (1), b (2))</code> be false.
+    // title/author matches | have | have not
+    // 0 0 | 0 | 1 
+    // 0 1 | 0 | 1
+    // 1 0 | 0 | 1
+    // 1 1 | 1 | 0
+    // 
     def have[U >: T](firstPropertyMatcher: HavePropertyMatcher[U, _], propertyMatchers: HavePropertyMatcher[U, _]*) {
+
       val results =
         for (propertyVerifier <- firstPropertyMatcher :: propertyMatchers.toList) yield
           propertyVerifier(left)
-      if (shouldBeTrue) {
-        val firstFailureOption = results.find(pv => !pv.matches)
+
+      val firstFailureOption = results.find(pv => !pv.matches)
+
+      val justOneProperty = propertyMatchers.length == 0
+
+      // if shouldBeTrue is false, then it is like "not have ()", and should throw TFE if firstFailureOption.isDefined is false
+      // if shouldBeTrue is true, then it is like "not (not have ()), which should behave like have ()", and should throw TFE if firstFailureOption.isDefined is true
+      if (firstFailureOption.isDefined == shouldBeTrue) {
         firstFailureOption match {
-          case Some(firstFailure) => // This is the test failure, because all HavePropertyMatchers are supposed to match, and one didn't match
+          case Some(firstFailure) =>
+            // This is one of these cases, thus will only get here if shouldBeTrue is true
+            // 0 0 | 0 | 1
+            // 0 1 | 0 | 1
+            // 1 0 | 0 | 1
             throw newTestFailedException(
-              FailureMessages("propertyDidNotHaveExpectedValue", UnquotedString(firstFailure.propertyName), firstFailure.expectedValue, firstFailure.actualValue, left)
+              FailureMessages(
+                "propertyDidNotHaveExpectedValue",
+                 UnquotedString(firstFailure.propertyName),
+                 firstFailure.expectedValue,
+                 firstFailure.actualValue,
+                 left
+              )
             )
-          case None => () // This is a successful test. None of the HavePropertyMatchers match, which is what they said should be the case
-        } 
-      }
-      else {
-        val firstSuccessOption = results.find(pv => pv.matches)
-        firstSuccessOption match {
-          case Some(firstSuccess) => // This is the test failure, because all HavePropertyMatchers are supposed to fail, and one didn't fail
-            throw newTestFailedException(
-              FailureMessages("propertyHadExpectedValueWhenItShouldNot", UnquotedString(firstSuccess.propertyName), firstSuccess.expectedValue, left)
-            )
-          case None => () // This is a successful test. None of the HavePropertyMatchers match, which is what they said should be the case
+          case None =>
+            // This is this cases, thus will only get here if shouldBeTrue is false
+            // 1 1 | 1 | 0
+            val failureMessage =
+              if (justOneProperty) {
+                val firstPropertyResult = results.head // know this will succeed, because firstPropertyMatcher was required
+                FailureMessages(
+                  "propertyHadExpectedValue",
+                  UnquotedString(firstPropertyResult.propertyName),
+                  firstPropertyResult.expectedValue,
+                  left
+                )
+              }
+              else FailureMessages("allPropertiesHadExpectedValues", left)
+
+            throw newTestFailedException(failureMessage)
         } 
       }
     }
@@ -3736,14 +3824,6 @@ trait Matchers extends Assertions { matchers =>
     // TODO: This now gets caught by the next one?
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication): Matcher[AnyRef] =
       apply(matchers.have.length(resultOfLengthWordApplication.expectedLength))
-
-    // TODO: I think this should be: book should not have title ("One Hundred Years of Solitude")
-    // but it doesn't currently seem to work. Maybe I disallow that syntax and force everyone
-    // to put parens after have, except in the case of length and size. Yes. Probably should delete this:
-/*
-    def have[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
-      apply(matchers.have(firstPropertyMatcher, propertyMatchers: _*))
-*/
 
     // This looks similar to the AndNotWord one, but not quite the same because no and
     // Array(1, 2) should (not have size (5) and not have size (3))

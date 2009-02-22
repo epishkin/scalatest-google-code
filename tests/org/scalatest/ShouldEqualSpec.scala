@@ -80,13 +80,18 @@ class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers with Return
     }
 
     it("should throw an assertion error when not equal") {
-      val caught = intercept[TestFailedException] {
+      val caught1 = intercept[TestFailedException] {
         1 should equal (2)
       }
-      assert(caught.getMessage === "1 did not equal 2")
+      assert(caught1.getMessage === "1 did not equal 2")
 
       // unequal objects used with "a should equal (b)" should throw an TestFailedException
       check((s: String, t: String) => s != t ==> throwsTestFailedException(s should equal (t)))
+
+      val caught2 = intercept[TestFailedException] {
+        1 should not (not equal (2))
+      }
+      assert(caught2.getMessage === "1 did not equal 2")
     }
 
     it("should throw an assertion error when equal but used with should not") {
@@ -109,6 +114,11 @@ class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers with Return
       // two different strings with the same value used with "s should not { equal (t) } should throw TestFailedException
       check((s: String) => throwsTestFailedException(s should not { equal (new String(s)) }))
       check((s: String) => throwsTestFailedException(s should not equal (new String(s))))
+
+      val caught3 = intercept[TestFailedException] {
+        1 should not (not (not equal (1)))
+      }
+      assert(caught3.getMessage === "1 equaled 1")
     }
 
     it("should throw an assertion error when not equal and used in a logical-and expression") {
