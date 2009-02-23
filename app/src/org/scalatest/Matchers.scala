@@ -1326,6 +1326,17 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * book should (not have (title ("Moby Dick")) or not have (author ("Melville")))
+       *                                                    ^
+       * </pre>
+       */
+      def have[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*) =
+        matchersWrapper.or(matchers.not.apply(matchers.have(firstPropertyMatcher, propertyMatchers: _*)))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * 5 should (not be < (7) or not be < (8))
        *                               ^
        * </pre>

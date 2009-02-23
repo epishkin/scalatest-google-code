@@ -215,12 +215,76 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
       }
 
       it("should do nothing if no properties match, when used with and and not") {
+
+        // just one property
         book should (not have (title ("Moby Dick")) and (not have (author ("Melville"))))
         book should (not have (title ("Moby Dick")) and not (have (author ("Melville"))))
         book should (not have (title ("Moby Dick")) and not have (author ("Melville")))
         book should (not have ('title ("Moby Dick")) and (not have ('author ("Melville"))))
         book should (not have ('title ("Moby Dick")) and not (have ('author ("Melville"))))
         book should (not have ('title ("Moby Dick")) and not have ('author ("Melville")))
+
+        // multiple properties
+        book should (not have (title ("Moby Dick"), pubYear (1859)) and (not have (pubYear (1859), author ("Melville"))))
+        book should (not have (title ("Moby Dick"), pubYear (1859)) and not (have (pubYear (1859), author ("Melville"))))
+        book should (not have (title ("Moby Dick"), pubYear (1859)) and not have (pubYear (1859), author ("Melville")))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) and (not have ('pubYear (1859), 'author ("Melville"))))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) and not (have ('pubYear (1859), 'author ("Melville"))))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) and not have ('pubYear (1859), 'author ("Melville")))
+      }
+
+      it("should do nothing if no properties match, when used with or and not") {
+
+        // both true
+        // just one property
+        book should (not have (title ("Moby Dick")) or (not have (author ("Melville"))))
+        book should (not have (title ("Moby Dick")) or not (have (author ("Melville"))))
+        book should (not have (title ("Moby Dick")) or not have (author ("Melville")))
+        book should (not have ('title ("Moby Dick")) or (not have ('author ("Melville"))))
+        book should (not have ('title ("Moby Dick")) or not (have ('author ("Melville"))))
+        book should (not have ('title ("Moby Dick")) or not have ('author ("Melville")))
+
+        // multiple properties
+        book should (not have (title ("Moby Dick"), pubYear (1859)) or (not have (pubYear (1859), author ("Melville"))))
+        book should (not have (title ("Moby Dick"), pubYear (1859)) or not (have (pubYear (1859), author ("Melville"))))
+        book should (not have (title ("Moby Dick"), pubYear (1859)) or not have (pubYear (1859), author ("Melville")))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) or (not have ('pubYear (1859), 'author ("Melville"))))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) or not (have ('pubYear (1859), 'author ("Melville"))))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) or not have ('pubYear (1859), 'author ("Melville")))
+
+        // first true
+        // just one property
+        book should (not have (title ("Moby Dick")) or (not have (author ("Dickens"))))
+        book should (not have (title ("Moby Dick")) or not (have (author ("Dickens"))))
+        book should (not have (title ("Moby Dick")) or not have (author ("Dickens")))
+        book should (not have ('title ("Moby Dick")) or (not have ('author ("Dickens"))))
+        book should (not have ('title ("Moby Dick")) or not (have ('author ("Dickens"))))
+        book should (not have ('title ("Moby Dick")) or not have ('author ("Dickens")))
+
+        // multiple properties
+        book should (not have (title ("Moby Dick"), pubYear (1859)) or (not have (pubYear (1859), author ("Dickens"))))
+        book should (not have (title ("Moby Dick"), pubYear (1859)) or not (have (pubYear (1859), author ("Dickens"))))
+        book should (not have (title ("Moby Dick"), pubYear (1859)) or not have (pubYear (1859), author ("Dickens")))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) or (not have ('pubYear (1859), 'author ("Dickens"))))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) or not (have ('pubYear (1859), 'author ("Dickens"))))
+        book should (not have ('title ("Moby Dick"), pubYear (1859)) or not have ('pubYear (1859), 'author ("Dickens")))
+
+        // second true
+        // just one property
+        book should (not have (title ("A Tale of Two Cities")) or (not have (author ("Melville"))))
+        book should (not have (title ("A Tale of Two Cities")) or not (have (author ("Melville"))))
+        book should (not have (title ("A Tale of Two Cities")) or not have (author ("Melville")))
+        book should (not have ('title ("A Tale of Two Cities")) or (not have ('author ("Melville"))))
+        book should (not have ('title ("A Tale of Two Cities")) or not (have ('author ("Melville"))))
+        book should (not have ('title ("A Tale of Two Cities")) or not have ('author ("Melville")))
+
+        // multiple properties
+        book should (not have (title ("A Tale of Two Cities"), pubYear (1859)) or (not have (pubYear (1859), author ("Melville"))))
+        book should (not have (title ("A Tale of Two Cities"), pubYear (1859)) or not (have (pubYear (1859), author ("Melville"))))
+        book should (not have (title ("A Tale of Two Cities"), pubYear (1859)) or not have (pubYear (1859), author ("Melville")))
+        book should (not have ('title ("A Tale of Two Cities"), pubYear (1859)) or (not have ('pubYear (1859), 'author ("Melville"))))
+        book should (not have ('title ("A Tale of Two Cities"), pubYear (1859)) or not (have ('pubYear (1859), 'author ("Melville"))))
+        book should (not have ('title ("A Tale of Two Cities"), pubYear (1859)) or not have ('pubYear (1859), 'author ("Melville")))
       }
 
       it("should throw TestFailedException if there's just one property and it doesn't match") {
