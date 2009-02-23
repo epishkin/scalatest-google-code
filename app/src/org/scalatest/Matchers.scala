@@ -1387,7 +1387,7 @@ trait Matchers extends Assertions { matchers =>
        *                                                ^
        * </pre>
        */
-      def have(resultOfLengthWordApplication: => ResultOfLengthWordApplication) =
+      def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) =
         matchersWrapper.or(matchers.not.apply(matchers.have.length(resultOfLengthWordApplication.expectedLength)))
 
       /**
