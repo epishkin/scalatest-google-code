@@ -25,6 +25,28 @@ package org.scalatest
 case class MatchResult(
   matches: Boolean,
   failureMessage: String,
-  negativeFailureMessage: String
-)
+  negativeFailureMessage: String,
+  midSentenceFailureMessage: String,
+  midSentenceNegativeFailureMessage: String
+) {
+  def this(matches: Boolean, failureMessage: String, negativeFailureMessage: String) =
+    this(
+      matches,
+      failureMessage,
+      negativeFailureMessage,
+      failureMessage,
+      negativeFailureMessage
+    )
+}
+
+object MatchResult {
+
+/*
+  def apply(matches: Boolean, failureMessage: String, negativeFailureMessage: String, midSentenceFailureMessage: String, midSentenceNegativeFailureMessage: String): MatchResult =
+    new MatchResult(matches, failureMessage, negativeFailureMessage, midSentenceFailureMessage, midSentenceNegativeFailureMessage)
+*/
+
+  def apply(matches: Boolean, failureMessage: String, negativeFailureMessage: String): MatchResult =
+    new MatchResult(matches, failureMessage, negativeFailureMessage, failureMessage, negativeFailureMessage)
+}
 

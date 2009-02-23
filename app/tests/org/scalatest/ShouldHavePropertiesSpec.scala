@@ -292,12 +292,12 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           book should have (author ("Gibson"))
         }
-        assert(caught1.getMessage === "Expected property author to have value \"Gibson\", but it had value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught1.getMessage === "Property author had value \"Dickens\", instead of its expected value \"Gibson\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
 
         val caught2 = intercept[TestFailedException] {
           book should have ('author ("Gibson"))
         }
-        assert(caught2.getMessage === "Expected property author to have value \"Gibson\", but it had value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught2.getMessage === "Property author had value \"Dickens\", instead of its expected value \"Gibson\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
 
       it("should throw TestFailedException if at least one of the properties doesn't match") {
@@ -309,7 +309,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
             pubYear (1859)
           )
         }
-        assert(caught1.getMessage === "Expected property author to have value \"Gibson\", but it had value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught1.getMessage === "Property author had value \"Dickens\", instead of its expected value \"Gibson\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
 
         val caught2 = intercept[TestFailedException] {
           book should have (
@@ -318,7 +318,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
             pubYear (1859)
           )
         }
-        assert(caught2.getMessage === "Expected property author to have value \"Gibson\", but it had value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught2.getMessage === "Property author had value \"Dickens\", instead of its expected value \"Gibson\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
 
         val caught3 = intercept[TestFailedException] {
           book should have (
@@ -327,7 +327,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
             'pubYear (1959)
           )
         }
-        assert(caught3.getMessage === "Expected property pubYear to have value 1959, but it had value 1859, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught3.getMessage === "Property pubYear had value 1859, instead of its expected value 1959, on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
 
       it("should throw TestFailedException if there's just one property and it matches, when used with not") {
@@ -335,44 +335,44 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           book should not have (author ("Dickens"))
         }
-        assert(caught1.getMessage === "Property author had its expected value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught1.getMessage === "Property author had its expected value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
 
         val caught2 = intercept[TestFailedException] {
           book should not have ('author ("Dickens"))
         }
-        assert(caught2.getMessage === "Property author had its expected value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught2.getMessage === "Property author had its expected value \"Dickens\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
 
-/*
-Not (matcher) needs to yield the opposite result as (matcher) itself, and
-that means that not (matcher) will be true if at least one 
+      /*
+      Not (matcher) needs to yield the opposite result as (matcher) itself, and
+      that means that not (matcher) will be true if at least one 
 
-title/author/pubYear matches | have | not have
-0 0 0 | 0 | 1
-0 0 1 | 0 | 1
-0 1 0 | 0 | 1
-0 1 1 | 0 | 1
-1 0 0 | 0 | 1
-1 0 1 | 0 | 1
-1 1 0 | 0 | 1
-1 1 1 | 1 | 0
+      title/author/pubYear matches | have | not have
+      0 0 0 | 0 | 1
+      0 0 1 | 0 | 1
+      0 1 0 | 0 | 1
+      0 1 1 | 0 | 1
+      1 0 0 | 0 | 1
+      1 0 1 | 0 | 1
+      1 1 0 | 0 | 1
+      1 1 1 | 1 | 0
 
-So 'not have" means that at least one is false, not all are false.
+      So 'not have" means that at least one is false, not all are false.
 
-To reduce the number of tests cases just use two:
+      To reduce the number of tests cases just use two:
 
-title/author matches | have | have not
-0 0 | 0 | 1
-0 1 | 0 | 1
-1 0 | 0 | 1
-1 1 | 1 | 0
+      title/author matches | have | have not
+      0 0 | 0 | 1
+      0 1 | 0 | 1
+      1 0 | 0 | 1
+      1 1 | 1 | 0
 
 
-have matches (1 1) All properties matched.
-have does not match (0 0, 0 1, 1 0) the (first property found that doesn't match) didn't match
-not have matches (0 0, 0 1, 1 0) the (first property found that doesn't match), as expected
-not have does not match (1, 1) All properties matched.
-*/
+      have matches (1 1) all properties matched.
+      have does not match (0 0, 0 1, 1 0) the (first property found that doesn't match) didn't match
+      not have matches (0 0, 0 1, 1 0) the (first property found that doesn't match), as expected
+      not have does not match (1, 1) all properties matched.
+      */
       it("should throw TestFailedException if all of the properties match, when used with not") {
         val caught1 = intercept[TestFailedException] {
           book should not have (
@@ -380,39 +380,32 @@ not have does not match (1, 1) All properties matched.
             author ("Dickens")
           )
         }
-        assert(caught1.getMessage === "All properties had their expected values, respectively, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught1.getMessage === "All properties had their expected values, respectively, on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
-/*
-      it("should throw TestFailedException if at least one of the properties matches, when used with not") {
 
+      it("should throw TestFailedException if at least one property does not match, when used with and") {
+
+        // second false
         val caught1 = intercept[TestFailedException] {
-          book should not have (
-            title ("Moby Dick"),
-            author ("Dickens"),
-            pubYear (1851)
-          )
+          book should (have (title ("A Tale of Two Cities")) and (have (author ("Melville"))))
         }
-        assert(caught1.getMessage === "Expected property author to NOT have value "Dickens", but it did have that value, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught1.getMessage === "Property title had its expected value \"A Tale of Two Cities\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), but property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
 
         val caught2 = intercept[TestFailedException] {
-          book should not have (
-            title ("Moby Dick"),
-            'author ("Dickens"),
-            pubYear (1851)
-          )
+          book should (have (title ("A Tale of Two Cities")) and have (author ("Melville")))
         }
-        assert(caught2.getMessage === "")
+        assert(caught2.getMessage === "Property title had its expected value \"A Tale of Two Cities\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), but property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
 
         val caught3 = intercept[TestFailedException] {
-          book should not have (
-            'title ("Moby Dick"),
-            'author ("Gibson"),
-            'pubYear (1959)
-          )
+          book should (have ('title ("A Tale of Two Cities")) and (have ('author ("Melville"))))
         }
-        assert(caught3.getMessage === "")
+        assert(caught3.getMessage === "Property title had its expected value \"A Tale of Two Cities\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), but property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught4 = intercept[TestFailedException] {
+          book should (have ('title ("A Tale of Two Cities")) and have ('author ("Melville")))
+        }
+        assert(caught4.getMessage === "Property title had its expected value \"A Tale of Two Cities\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), but property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
-*/
 
       it("should throw TestFailedException if a nested property matcher expression is used and a nested property doesn't match") {
 
@@ -427,7 +420,7 @@ not have does not match (1, 1) All properties matched.
             )
           )
         }
-        assert(caught1.getMessage === "Expected property book1.author to have value \"Gibson\", but it had value \"Dickens\", on object Bookshelf(Book(A Tale of Two Cities,Dickens,1859,45,true),Book(A Tale of Two Cities,Dickens,1859,45,false),Book(A Tale of Two Cities,Dickens,1859,45,true)).")
+        assert(caught1.getMessage === "Property book1.author had value \"Dickens\", instead of its expected value \"Gibson\", on object Bookshelf(Book(A Tale of Two Cities,Dickens,1859,45,true),Book(A Tale of Two Cities,Dickens,1859,45,false),Book(A Tale of Two Cities,Dickens,1859,45,true))")
       }
 
       it("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
@@ -435,7 +428,7 @@ not have does not match (1, 1) All properties matched.
         val caught1 = intercept[TestFailedException] {
           book should have (length (43))
         }
-        assert(caught1.getMessage === "Expected property length to have value 43, but it had value 45, on object Book(A Tale of Two Cities,Dickens,1859,45,true).")
+        assert(caught1.getMessage === "Property length had value 45, instead of its expected value 43, on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
 
       it("should throw TestFailedException if length used in parens but the length property is not an integral type") {
@@ -457,7 +450,7 @@ not have does not match (1, 1) All properties matched.
         val caught1 = intercept[TestFailedException] {
           (new Size(7)) should have (size (43))
         }
-        assert(caught1.getMessage === "Expected property size to have value 43, but it had value 7, on object Size(7).")
+        assert(caught1.getMessage === "Property size had value 7, instead of its expected value 43, on object Size(7)")
       }
 
       it("should throw TestFailedException if size used in parens but the size property is not an integral type") {
@@ -487,7 +480,7 @@ and that's fine. It actually gives them a way to do it if they want to do it.
             )
           )
         }
-        assert(caught1.getMessage === "Expected property book1.author to have value \"Gibson\", but it had value \"Dickens\".")
+        assert(caught1.getMessage === "expected property book1.author to have value \"Gibson\", but it had value \"Dickens\"")
       }
 */
 
