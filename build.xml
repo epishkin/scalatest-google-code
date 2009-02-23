@@ -280,6 +280,12 @@
             <arg value="-o" />
 
             <arg value="-s" />
+            <arg value="org.scalatest.BePropertyMatcherSpec" />
+
+            <arg value="-s" />
+            <arg value="org.scalatest.BeMatcherSpec" />
+
+            <arg value="-s" />
             <arg value="org.scalatest.ShouldHavePropertiesSpec" />
 
 <!--
