@@ -725,7 +725,17 @@ trait Matchers extends Assertions { matchers =>
        *                                              ^
        * </pre>
        */
-      def be[T](symbol: Symbol) = matchersWrapper.and(matchers.not.be(symbol))
+      def be(symbol: Symbol) = matchersWrapper.and(matchers.not.be(symbol))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * myFile should (not be (directory) and not be (directory))
+       *                                              ^
+       * </pre>
+       */
+      def be[T](bePropertyMatcher: BePropertyMatcher[T]) = matchersWrapper.and(matchers.not.be(bePropertyMatcher))
 
       /**
        * This method enables the following syntax:
@@ -736,6 +746,23 @@ trait Matchers extends Assertions { matchers =>
        * </pre>
        */
       def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
+// TODO drop the type param on the previous one
+
+// TODO, I think I'm supporting be (a ('file)), and I think I should drop that support
+// This shouldn't compile:
+//      def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
+// Instead, this should be required:
+//      def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication.symbol))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * myFile should (not be a (directory) and not be a (directory))
+       *                                             ^
+       * </pre>
+       */
+      def be[T](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication.bePropertyMatcher))
 
       /**
        * This method enables the following syntax:
@@ -746,6 +773,16 @@ trait Matchers extends Assertions { matchers =>
        * </pre>
        */
       def be[T](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * myFile should (not be an (directory) and not be an (directory))
+       *                                              ^
+       * </pre>
+       */
+      def be[T](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication.bePropertyMatcher))
 
       /**
        * This method enables the following syntax:
@@ -4077,6 +4114,9 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    // Probably
+    // myFile should (not be ('hidden) and not be ('hidden))
+    //                    ^
     def be[T <: AnyRef](symbol: Symbol): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
@@ -4085,6 +4125,21 @@ trait Matchers extends Assertions { matchers =>
             !positiveMatchResult.matches,
             positiveMatchResult.negativeFailureMessage,
             positiveMatchResult.failureMessage
+          )
+        }
+      }
+    }
+
+    // myFile should (not be (hidden) and not be (hidden))
+    //                    ^
+    def be[T <: AnyRef](bePropertyMatcher: BePropertyMatcher[T]): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) = {
+          val result = bePropertyMatcher(left)
+          MatchResult(
+            !result.matches,
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasA", left, UnquotedString(result.propertyName))
           )
         }
       }
@@ -4105,6 +4160,21 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    // myFile should (not be a (directory) and not be a (directory))
+    //                    ^
+    def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) = {
+          val result = resultOfAWordApplication.bePropertyMatcher(left)
+          MatchResult(
+            !result.matches,
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasA", left, UnquotedString(result.propertyName))
+          )
+        }
+      }
+    }
+
     // isNotAppleMock should (not be an ('apple) and not be an ('apple))
     //                            ^
     def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication): Matcher[T] = {
@@ -4115,6 +4185,21 @@ trait Matchers extends Assertions { matchers =>
             !positiveMatchResult.matches,
             positiveMatchResult.negativeFailureMessage,
             positiveMatchResult.failureMessage
+          )
+        }
+      }
+    }
+
+    // myFile should (not be an (directory) and not be an (directory))
+    //                    ^
+    def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) = {
+          val result = resultOfAnWordApplication.bePropertyMatcher(left)
+          MatchResult(
+            !result.matches,
+            FailureMessages("wasNotAn", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasAn", left, UnquotedString(result.propertyName))
           )
         }
       }

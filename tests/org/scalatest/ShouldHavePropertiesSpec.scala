@@ -194,7 +194,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         book should (have ('title ("A Tale of Two Cities")) and have ('author ("Dickens")))
       }
 
-      it("should do nothing if at lesat one property matches, when used with or") {
+      it("should do nothing if at least one property matches, when used with or") {
 
         // both true
         book should (have (title ("A Tale of Two Cities")) or (have (author ("Dickens"))))
