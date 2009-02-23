@@ -33,9 +33,9 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       val bookshelf = new Bookshelf(book, badBook, book)
 
       it("should do nothing if a BePropertyMatcher is used and the property is true") {
-          book should be (goodRead)
-          book should be a (goodRead)
-          book should be an (goodRead)
+        book should be (goodRead)
+        book should be a (goodRead)
+        book should be an (goodRead)
       }
 
       it("should throw TestFailedException if a BePropertyMatcher is used with be and the property is false") {
@@ -54,6 +54,60 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
           badBook should be an (goodRead)
         }
         assert(caught3.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not an goodRead")
+      }
+
+      it("should do nothing if a BePropertyMatcher is used and the property is false, when used with not") {
+        badBook should not be (goodRead)
+        badBook should not be a (goodRead)
+        badBook should not be an (goodRead)
+      }
+
+      it("should throw TestFailedException if a BePropertyMatcher is used with be and the property is true, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          book should not be (goodRead)
+        }
+        assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
+
+        val caught2 = intercept[TestFailedException] {
+          book should not be a (goodRead)
+        }
+        assert(caught2.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
+
+        val caught3 = intercept[TestFailedException] {
+          book should not be an (goodRead)
+        }
+        assert(caught3.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
+
+        val caught4 = intercept[TestFailedException] {
+          book should not (be (goodRead))
+        }
+        assert(caught4.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
+
+        val caught5 = intercept[TestFailedException] {
+          book should not (be a (goodRead))
+        }
+        assert(caught5.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
+
+        val caught6 = intercept[TestFailedException] {
+          book should not (be an (goodRead))
+        }
+        assert(caught6.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
+
+        val caught7 = intercept[TestFailedException] {
+          book should (not (be (goodRead)))
+        }
+        assert(caught7.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
+
+        val caught8 = intercept[TestFailedException] {
+          book should (not (be a (goodRead)))
+        }
+        assert(caught8.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
+
+        val caught9 = intercept[TestFailedException] {
+          book should (not (be an (goodRead)))
+        }
+        assert(caught9.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
       }
     }
   }

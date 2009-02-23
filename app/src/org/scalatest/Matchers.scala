@@ -725,7 +725,7 @@ trait Matchers extends Assertions { matchers =>
        *                                                   ^
        * </pre>
        */
-      def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication))
+      def be[T](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication))
 
       /**
        * This method enables the following syntax:
@@ -1413,7 +1413,7 @@ trait Matchers extends Assertions { matchers =>
        *                                                ^
        * </pre>
        */
-      def be[T](resultOfAnWordApplication: ResultOfAnWordApplication) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication))
+      def be[T](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication))
 
       /**
        * This method enables the following syntax:
@@ -2928,14 +2928,14 @@ trait Matchers extends Assertions { matchers =>
     // TODO: Check the shouldBeTrues, are they sometimes always false or true?
     // badBook should be a (goodRead)
     //                   ^
-    def a(beTrueMatcher: BePropertyMatcher[T]) {
-      val beTrueMatchResult = beTrueMatcher(left)
-      if (beTrueMatchResult.matches != shouldBeTrue) {
+    def a(bePropertyMatcher: BePropertyMatcher[T]) {
+      val result = bePropertyMatcher(left)
+      if (result.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue)
-            FailureMessages("wasNotA", left, UnquotedString(beTrueMatchResult.propertyName))
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))
           else
-            FailureMessages("wasA", left, UnquotedString(beTrueMatchResult.propertyName))
+            FailureMessages("wasA", left, UnquotedString(result.propertyName))
         )
       }
     }
@@ -3043,13 +3043,28 @@ trait Matchers extends Assertions { matchers =>
   protected class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWord[T](left, shouldBeTrue) {
 
-    // emptyMock should not be ('empty)
+    // stack should not be ('empty)
     //                      ^
     def be(symbol: Symbol) {
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, false, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+        )
+      }
+    }
+
+    // where empty is a BePropertyMatcher
+    // stack should not be (empty)
+    //                      ^
+    def be(bePropertyMatcher: BePropertyMatcher[T]) {
+      val result = bePropertyMatcher(left)
+      if (result.matches != shouldBeTrue) {
+        throw newTestFailedException(
+          if (shouldBeTrue)
+            FailureMessages("wasNot", left, UnquotedString(result.propertyName))
+          else
+            FailureMessages("was", left, UnquotedString(result.propertyName))
         )
       }
     }
@@ -3065,13 +3080,41 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    // notFileMock should not be a ('file)
+    //                        ^
+    def be[U >: T](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[U]) {
+      val result = resultOfAWordApplication.bePropertyMatcher(left)
+      if (result.matches != shouldBeTrue) {
+        throw newTestFailedException(
+          if (shouldBeTrue)
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))
+          else
+            FailureMessages("wasA", left, UnquotedString(result.propertyName))
+        )
+      }
+    }
+
     // notAppleMock should not be an ('apple)
     //                         ^
-    def be(resultOfAnWordApplication: ResultOfAnWordApplication) {
+    def be(resultOfAnWordApplication: ResultOfAnWordToSymbolApplication) {
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+        )
+      }
+    }
+
+    // notAppleMock should not be an ('apple)
+    //                         ^
+    def be[U >: T](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[U]) {
+      val result = resultOfAnWordApplication.bePropertyMatcher(left)
+      if (result.matches != shouldBeTrue) {
+        throw newTestFailedException(
+          if (shouldBeTrue)
+            FailureMessages("wasNotAn", left, UnquotedString(result.propertyName))
+          else
+            FailureMessages("wasAn", left, UnquotedString(result.propertyName))
         )
       }
     }
@@ -3699,11 +3742,39 @@ trait Matchers extends Assertions { matchers =>
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, true, true)
       }
 
+    // fileMock should not { be a (file) }
+    //                          ^
+    def a[S <: AnyRef](bePropertyMatcher: BePropertyMatcher[S]): Matcher[S] =
+      new Matcher[S] {
+        def apply(left: S) = {
+          val result = bePropertyMatcher(left)
+          MatchResult(
+            result.matches,
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasA", left, UnquotedString(result.propertyName))
+          )
+        }
+      }
+
     // animal should not { be an ('elephant) }
     //                        ^
     def an[S <: AnyRef](right: Symbol): Matcher[S] =
       new Matcher[S] {
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, true, false)
+      }
+
+    // animal should not { be an (elephant) }
+    //                          ^
+    def an[S <: AnyRef](bePropertyMatcher: BePropertyMatcher[S]): Matcher[S] =
+      new Matcher[S] {
+        def apply(left: S) = {
+          val result = bePropertyMatcher(left)
+          MatchResult(
+            result.matches,
+            FailureMessages("wasNotAn", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasAn", left, UnquotedString(result.propertyName))
+          )
+        }
       }
 
     // sevenDotOh should be (7.1 plusOrMinus 0.2)
@@ -3996,7 +4067,7 @@ trait Matchers extends Assertions { matchers =>
 
     // isNotAppleMock should (not be an ('apple) and not be an ('apple))
     //                            ^
-    def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordApplication): Matcher[T] = {
+    def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
           val positiveMatchResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
@@ -4479,7 +4550,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfAWordToBePropertyMatcherApplication[T](val beTrueMatcher: BePropertyMatcher[T])
+  class ResultOfAWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
@@ -4488,9 +4559,13 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class AWord {
+
+    // badBook should not be a ('goodRead)
+    //                         ^
     def apply(symbol: Symbol) = new ResultOfAWordToSymbolApplication(symbol)
 
-    // What does this one enable?
+    // badBook should not be a (goodRead)
+    //                         ^
     def apply[T](beTrueMatcher: BePropertyMatcher[T]) = new ResultOfAWordToBePropertyMatcherApplication(beTrueMatcher)
   }
 
@@ -4502,7 +4577,15 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfAnWordApplication(val symbol: Symbol)
+  class ResultOfAnWordToSymbolApplication(val symbol: Symbol)
+
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
+  class ResultOfAnWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
@@ -4511,7 +4594,14 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class AnWord {
-    def apply(symbol: Symbol) = new ResultOfAnWordApplication(symbol)
+
+    // badBook should not be an ('goodRead)
+    //                          ^
+    def apply(symbol: Symbol) = new ResultOfAnWordToSymbolApplication(symbol)
+
+    // badBook should not be an (goodRead)
+    //                          ^
+    def apply[T](beTrueMatcher: BePropertyMatcher[T]) = new ResultOfAnWordToBePropertyMatcherApplication(beTrueMatcher)
   }
 
   val an = new AnWord
