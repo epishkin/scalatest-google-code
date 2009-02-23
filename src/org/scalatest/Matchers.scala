@@ -1940,7 +1940,7 @@ trait Matchers extends Assertions { matchers =>
      * an expression like <code>(contain key ("fifty five"))</code>. The matcher returned
      * by this method matches <code>scala.collection.Map</code>s with the inferred key type and value type <code>Any</code>. Given
      * <code>Map</code> is covariant in its value type, and <code>Matcher</code> is contravariant in
-     * its type parameter, a <code>Matcher[Map[Int, Any]]<code>, for example, is a subtype of <code>Matcher[Map[Int, String]]</code>.
+     * its type parameter, a <code>Matcher[Map[Int, Any]]</code>, for example, is a subtype of <code>Matcher[Map[Int, String]]</code>.
      * This will enable the matcher returned by this method to be used against any <code>Map</code> that has
      * the inferred key type.
      */
@@ -1973,9 +1973,9 @@ trait Matchers extends Assertions { matchers =>
      * The map's key type parameter cannot be inferred because only a value type is provided in
      * an expression like <code>(contain value (5))</code>. The matcher returned
      * by this method matches <code>scala.collection.Map</code>s with the inferred value type and the existential key
-     * type <code>[K] forSome { type K }</code>. Even though <code>Matcher<code> is contravariant in its type parameter, because
+     * type <code>[K] forSome { type K }</code>. Even though <code>Matcher</code> is contravariant in its type parameter, because
      * <code>Map</code> is nonvariant in its key type, 
-     * a <code>Matcher[Map[Any, Int]]<code>, for example, is <em>not</code> a subtype of <code>Matcher[Map[String, Int]]</code>,
+     * a <code>Matcher[Map[Any, Int]]</code>, for example, is <em>not</em> a subtype of <code>Matcher[Map[String, Int]]</code>,
      * so the key type parameter of the <code>Map</code> returned by this method cannot be <code>Any</code>. By making it
      * an existential type, the Scala compiler will not infer it to anything more specific.
      * This will enable the matcher returned by this method to be used against any <code>Map</code> that has
