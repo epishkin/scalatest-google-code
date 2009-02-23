@@ -2951,6 +2951,20 @@ trait Matchers extends Assertions { matchers =>
         )
       }
     }
+
+    // book should be an (excellentRead)
+    //                ^
+    def an(beTrueMatcher: BePropertyMatcher[T]) {
+      val beTrueMatchResult = beTrueMatcher(left)
+      if (beTrueMatchResult.matches != shouldBeTrue) {
+        throw newTestFailedException(
+          if (shouldBeTrue)
+            FailureMessages("wasNotAn", left, UnquotedString(beTrueMatchResult.propertyName))
+          else
+            FailureMessages("wasAn", left, UnquotedString(beTrueMatchResult.propertyName))
+        )
+      }
+    }
   }
 
   /**
@@ -4475,6 +4489,8 @@ trait Matchers extends Assertions { matchers =>
    */
   class AWord {
     def apply(symbol: Symbol) = new ResultOfAWordToSymbolApplication(symbol)
+
+    // What does this one enable?
     def apply[T](beTrueMatcher: BePropertyMatcher[T]) = new ResultOfAWordToBePropertyMatcherApplication(beTrueMatcher)
   }
 
