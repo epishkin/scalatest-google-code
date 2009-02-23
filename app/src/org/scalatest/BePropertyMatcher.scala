@@ -16,6 +16,8 @@
 package org.scalatest
 
 // T is the type of the object that has a Boolean property to verify with an instance of this trait
+// This is not a subtype of BeMatcher, because BeMatcher only works after "be", but 
+// BePropertyMatcher will work after "be", "be a", or "be an"
 trait BePropertyMatcher[-T] extends Function1[T, BePropertyMatchResult] {
   def apply(objectWithProperty: T): BePropertyMatchResult
 }
