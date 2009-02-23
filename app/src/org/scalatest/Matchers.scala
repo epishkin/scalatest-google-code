@@ -2566,7 +2566,19 @@ trait Matchers extends Assertions { matchers =>
                   }
                   else FailureMessages("allPropertiesHadExpectedValues", left)
 
-                MatchResult(true, failureMessage, failureMessage)
+                val midSentenceFailureMessage =
+                  if (justOneProperty) {
+                    val firstPropertyResult = results.head // know this will succeed, because firstPropertyMatcher was required
+                    FailureMessages(
+                      "midSentencePropertyHadExpectedValue",
+                      UnquotedString(firstPropertyResult.propertyName),
+                      firstPropertyResult.expectedValue,
+                      left
+                    )
+                  }
+                  else FailureMessages("midSentenceAllPropertiesHadExpectedValues", left)
+
+                MatchResult(true, failureMessage, failureMessage, midSentenceFailureMessage, midSentenceFailureMessage)
             }
           }
         }
