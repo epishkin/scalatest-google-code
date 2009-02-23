@@ -337,6 +337,56 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       myFile should (be an (file) or be an (file))
     }
 
+    it("should throw TestFailedException if the both properties return false, when used in a logical-or expression") {
+
+      val caught1 = intercept[TestFailedException] {
+        myFile should ((be (directory)) or (be (directory)))
+      }
+      assert(caught1.getMessage === "MyFile(temp.txt,true,false) was not directory, and MyFile(temp.txt,true,false) was not directory")
+
+      val caught2 = intercept[TestFailedException] {
+        myFile should (be (directory) or (be (directory)))
+      }
+      assert(caught2.getMessage === "MyFile(temp.txt,true,false) was not directory, and MyFile(temp.txt,true,false) was not directory")
+
+      val caught3 = intercept[TestFailedException] {
+        myFile should (be (directory) or be (directory))
+      }
+      assert(caught3.getMessage === "MyFile(temp.txt,true,false) was not directory, and MyFile(temp.txt,true,false) was not directory")
+
+
+      val caught4 = intercept[TestFailedException] {
+        myFile should ((be a (directory)) or (be a (directory)))
+      }
+      assert(caught4.getMessage === "MyFile(temp.txt,true,false) was not a directory, and MyFile(temp.txt,true,false) was not a directory")
+
+      val caught5 = intercept[TestFailedException] {
+        myFile should (be a (directory) or (be a (directory)))
+      }
+      assert(caught5.getMessage === "MyFile(temp.txt,true,false) was not a directory, and MyFile(temp.txt,true,false) was not a directory")
+
+      val caught6 = intercept[TestFailedException] {
+        myFile should (be a (directory) or be a (directory))
+      }
+      assert(caught6.getMessage === "MyFile(temp.txt,true,false) was not a directory, and MyFile(temp.txt,true,false) was not a directory")
+
+
+      val caught7 = intercept[TestFailedException] {
+        myFile should ((be an (directory)) or (be an (directory)))
+      }
+      assert(caught7.getMessage === "MyFile(temp.txt,true,false) was not an directory, and MyFile(temp.txt,true,false) was not an directory")
+
+      val caught8 = intercept[TestFailedException] {
+        myFile should (be an (directory) or (be an (directory)))
+      }
+      assert(caught8.getMessage === "MyFile(temp.txt,true,false) was not an directory, and MyFile(temp.txt,true,false) was not an directory")
+
+      val caught9 = intercept[TestFailedException] {
+        myFile should (be an (directory) or be an (directory))
+      }
+      assert(caught9.getMessage === "MyFile(temp.txt,true,false) was not an directory, and MyFile(temp.txt,true,false) was not an directory")
+    }
+
     it("should do nothing if the property returns false, when used in a logical-and expression with not") {
 
       myFile should (not (be (directory)) and not (be (directory)))
