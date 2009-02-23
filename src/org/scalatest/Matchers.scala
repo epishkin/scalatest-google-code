@@ -3867,7 +3867,7 @@ trait Matchers extends Assertions { matchers =>
           val result = bePropertyMatcher(left)
           MatchResult(
             result.matches,
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasNot", left, UnquotedString(result.propertyName)),
             FailureMessages("was", left, UnquotedString(result.propertyName))
           )
         }
