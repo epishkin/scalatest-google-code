@@ -41,9 +41,19 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       it("should throw TestFailedException if a BePropertyMatcher is used with be and the property is false") {
 
         val caught1 = intercept[TestFailedException] {
+          badBook should be (goodRead)
+        }
+        assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not goodRead")
+
+        val caught2 = intercept[TestFailedException] {
           badBook should be a (goodRead)
         }
-        assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
+        assert(caught2.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
+
+        val caught3 = intercept[TestFailedException] {
+          badBook should be an (goodRead)
+        }
+        assert(caught3.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not an goodRead")
       }
     }
   }
