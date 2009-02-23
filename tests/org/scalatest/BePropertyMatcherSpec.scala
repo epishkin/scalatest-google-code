@@ -592,5 +592,55 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       myFile should ((not be an (directory)) or (not be an (directory)))
       myFile should (not be an (directory) or not be an (directory))
     }
+
+    it("should throw TestFailedException if both properties return false, when used in a logical-or expression with not") {
+
+      val caught1 = intercept[TestFailedException] {
+        myFile should (not (be (file)) or not (be (file)))
+      }
+      assert(caught1.getMessage === "MyFile(temp.txt,true,false) was file, and MyFile(temp.txt,true,false) was file")
+
+      val caught2 = intercept[TestFailedException] {
+        myFile should ((not be (file)) or (not be (file)))
+      }
+      assert(caught2.getMessage === "MyFile(temp.txt,true,false) was file, and MyFile(temp.txt,true,false) was file")
+
+      val caught3 = intercept[TestFailedException] {
+        myFile should (not be (file) or not be (file))
+      }
+      assert(caught3.getMessage === "MyFile(temp.txt,true,false) was file, and MyFile(temp.txt,true,false) was file")
+
+
+      val caught4 = intercept[TestFailedException] {
+        myFile should (not (be a (file)) or not (be a (file)))
+      }
+      assert(caught4.getMessage === "MyFile(temp.txt,true,false) was a file, and MyFile(temp.txt,true,false) was a file")
+
+      val caught5 = intercept[TestFailedException] {
+        myFile should ((not be a (file)) or (not be a (file)))
+      }
+      assert(caught5.getMessage === "MyFile(temp.txt,true,false) was a file, and MyFile(temp.txt,true,false) was a file")
+
+      val caught6 = intercept[TestFailedException] {
+        myFile should (not be a (file) or not be a (file))
+      }
+      assert(caught6.getMessage === "MyFile(temp.txt,true,false) was a file, and MyFile(temp.txt,true,false) was a file")
+
+
+      val caught7 = intercept[TestFailedException] {
+        myFile should (not (be an (file)) or not (be an (file)))
+      }
+      assert(caught7.getMessage === "MyFile(temp.txt,true,false) was an file, and MyFile(temp.txt,true,false) was an file")
+
+      val caught8 = intercept[TestFailedException] {
+        myFile should ((not be an (file)) or (not be an (file)))
+      }
+      assert(caught8.getMessage === "MyFile(temp.txt,true,false) was an file, and MyFile(temp.txt,true,false) was an file")
+
+      val caught9 = intercept[TestFailedException] {
+        myFile should (not be an (file) or not be an (file))
+      }
+      assert(caught9.getMessage === "MyFile(temp.txt,true,false) was an file, and MyFile(temp.txt,true,false) was an file")
+    }
   }
 }
