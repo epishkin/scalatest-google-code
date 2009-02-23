@@ -748,12 +748,6 @@ trait Matchers extends Assertions { matchers =>
       def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
 // TODO drop the type param on the previous one
 
-// TODO, I think I'm supporting be (a ('file)), and I think I should drop that support
-// This shouldn't compile:
-//      def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
-// Instead, this should be required:
-//      def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication.symbol))
-
       /**
        * This method enables the following syntax:
        *
@@ -762,7 +756,7 @@ trait Matchers extends Assertions { matchers =>
        *                                             ^
        * </pre>
        */
-      def be[T](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication.bePropertyMatcher))
+      def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
 
       /**
        * This method enables the following syntax:
@@ -782,7 +776,7 @@ trait Matchers extends Assertions { matchers =>
        *                                              ^
        * </pre>
        */
-      def be[T](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication.bePropertyMatcher))
+      def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]) = matchersWrapper.and(matchers.not.be(resultOfAnWordApplication))
 
       /**
        * This method enables the following syntax:
@@ -1501,7 +1495,7 @@ trait Matchers extends Assertions { matchers =>
        *                                            ^
        * </pre>
        */
-      def be[T](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication.bePropertyMatcher))
+      def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication))
 
       /**
        * This method enables the following syntax:
@@ -1521,7 +1515,7 @@ trait Matchers extends Assertions { matchers =>
        *                                             ^
        * </pre>
        */
-      def be[T](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication.bePropertyMatcher))
+      def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication))
 
       /**
        * This method enables the following syntax:
@@ -4169,8 +4163,8 @@ trait Matchers extends Assertions { matchers =>
           val result = bePropertyMatcher(left)
           MatchResult(
             !result.matches,
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
-            FailureMessages("wasA", left, UnquotedString(result.propertyName))
+            FailureMessages("was", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasNot", left, UnquotedString(result.propertyName))
           )
         }
       }
@@ -4199,8 +4193,8 @@ trait Matchers extends Assertions { matchers =>
           val result = resultOfAWordApplication.bePropertyMatcher(left)
           MatchResult(
             !result.matches,
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
-            FailureMessages("wasA", left, UnquotedString(result.propertyName))
+            FailureMessages("wasA", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))
           )
         }
       }
@@ -4229,8 +4223,8 @@ trait Matchers extends Assertions { matchers =>
           val result = resultOfAnWordApplication.bePropertyMatcher(left)
           MatchResult(
             !result.matches,
-            FailureMessages("wasNotAn", left, UnquotedString(result.propertyName)),
-            FailureMessages("wasAn", left, UnquotedString(result.propertyName))
+            FailureMessages("wasAn", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasNotAn", left, UnquotedString(result.propertyName))
           )
         }
       }
