@@ -405,6 +405,72 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
           book should (have ('title ("A Tale of Two Cities")) and have ('author ("Melville")))
         }
         assert(caught4.getMessage === "Property title had its expected value \"A Tale of Two Cities\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), but property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        // first false
+        val caught11 = intercept[TestFailedException] {
+          book should (have (title ("Moby Dick")) and (have (author ("Dickens"))))
+        }
+        assert(caught11.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught12 = intercept[TestFailedException] {
+          book should (have (title ("Moby Dick")) and have (author ("Dickens")))
+        }
+        assert(caught12.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught13 = intercept[TestFailedException] {
+          book should (have ('title ("Moby Dick")) and (have ('author ("Dickens"))))
+        }
+        assert(caught13.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught14 = intercept[TestFailedException] {
+          book should (have ('title ("Moby Dick")) and have ('author ("Dickens")))
+        }
+        assert(caught14.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        // both false
+        val caught21 = intercept[TestFailedException] {
+          book should (have (title ("Moby Dick")) and (have (author ("Melville"))))
+        }
+        assert(caught21.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught22 = intercept[TestFailedException] {
+          book should (have (title ("Moby Dick")) and have (author ("Melville")))
+        }
+        assert(caught22.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught23 = intercept[TestFailedException] {
+          book should (have ('title ("Moby Dick")) and (have ('author ("Melville"))))
+        }
+        assert(caught23.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught24 = intercept[TestFailedException] {
+          book should (have ('title ("Moby Dick")) and have ('author ("Melville")))
+        }
+        assert(caught24.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+      }
+
+      it("should throw TestFailedException if neither property matches, when used with or") {
+
+        // both false
+        val caught21 = intercept[TestFailedException] {
+          book should (have (title ("Moby Dick")) or (have (author ("Melville"))))
+        }
+        assert(caught21.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), and property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught22 = intercept[TestFailedException] {
+          book should (have (title ("Moby Dick")) or have (author ("Melville")))
+        }
+        assert(caught22.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), and property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught23 = intercept[TestFailedException] {
+          book should (have ('title ("Moby Dick")) or (have ('author ("Melville"))))
+        }
+        assert(caught23.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), and property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
+
+        val caught24 = intercept[TestFailedException] {
+          book should (have ('title ("Moby Dick")) or have ('author ("Melville")))
+        }
+        assert(caught24.getMessage === "Property title had value \"A Tale of Two Cities\", instead of its expected value \"Moby Dick\", on object Book(A Tale of Two Cities,Dickens,1859,45,true), and property author had value \"Dickens\", instead of its expected value \"Melville\", on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
 
       it("should throw TestFailedException if a nested property matcher expression is used and a nested property doesn't match") {

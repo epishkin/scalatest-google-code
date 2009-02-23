@@ -950,13 +950,17 @@ trait Matchers extends Assertions { matchers =>
             MatchResult(
               true,
               leftMatchResult.negativeFailureMessage,
-              leftMatchResult.failureMessage
+              leftMatchResult.failureMessage,
+              leftMatchResult.midSentenceNegativeFailureMessage,
+              leftMatchResult.midSentenceFailureMessage,
             )
           else {
             MatchResult(
               rightMatchResult.matches,
-              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.failureMessage),
-              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.negativeFailureMessage)
+              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.midSentenceFailureMessage),
+              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.midSentenceNegativeFailureMessage),
+              Resources("commaAnd", leftMatchResult.midSentenceFailureMessage, rightMatchResult.midSentenceFailureMessage),
+              Resources("commaAnd", leftMatchResult.midSentenceFailureMessage, rightMatchResult.midSentenceNegativeFailureMessage)
             )
           }
         }
