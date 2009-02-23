@@ -188,14 +188,22 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       myFile should (be an (file) or be an (file))
     }
 
-/*
     it("should do nothing if the property returns false, when used in a logical-and expression with not") {
 
-      myFile should (not (be (file)) and not (be (file)))
-      myFile should ((not be (file)) and (not be (file)))
-      myFile should (not be (file) and not be (file))
+      myFile should (not (be (directory)) and not (be (directory)))
+      myFile should ((not be (directory)) and (not be (directory)))
+      myFile should (not be (directory) and not be (directory))
+
+      myFile should (not (be a (directory)) and not (be a (directory)))
+      myFile should ((not be a (directory)) and (not be a (directory)))
+      myFile should (not be a (directory) and not be a (directory))
+
+      myFile should (not (be an (directory)) and not (be an (directory)))
+      myFile should ((not be an (directory)) and (not be an (directory)))
+      myFile should (not be an (directory) and not be an (directory))
     }
 
+/*
     it("should do nothing if the property returns false, when used in a logical-or expression with not") {
 
       myFile should (not (be (file)) or not (be (file)))
