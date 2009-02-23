@@ -1471,6 +1471,17 @@ trait Matchers extends Assertions { matchers =>
        * </pre>
        */
       def be[T](symbol: Symbol) = matchersWrapper.or(matchers.not.be(symbol))
+// TODO drop the type parameter
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * myFile should (not be (directory) or not be (file))
+       *                                          ^
+       * </pre>
+       */
+      def be[T](bePropertyMatcher: BePropertyMatcher[T]) = matchersWrapper.or(matchers.not.be(bePropertyMatcher))
 
       /**
        * This method enables the following syntax:
@@ -1486,11 +1497,31 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * myFile should (not be a (directory) or not be a (file))
+       *                                            ^
+       * </pre>
+       */
+      def be[T](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]) = matchersWrapper.or(matchers.not.be(resultOfAWordApplication.bePropertyMatcher))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * notAppleMock should (not be an ('apple) or not be an ('apple))
        *                                                ^
        * </pre>
        */
       def be[T](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * myFile should (not be an (directory) or not be an (file))
+       *                                             ^
+       * </pre>
+       */
+      def be[T](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]) = matchersWrapper.or(matchers.not.be(resultOfAnWordApplication.bePropertyMatcher))
 
       /**
        * This method enables the following syntax:

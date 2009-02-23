@@ -203,6 +203,48 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       myFile should (not be an (directory) and not be an (directory))
     }
 
+    it("should do nothing if the property returns false, when used in a logical-or expression with not") {
+
+      // first true
+      myFile should (not (be (directory)) or not (be (file)))
+      myFile should ((not be (directory)) or (not be (file)))
+      myFile should (not be (directory) or not be (file))
+
+      myFile should (not (be a (directory)) or not (be a (file)))
+      myFile should ((not be a (directory)) or (not be a (file)))
+      myFile should (not be a (directory) or not be a (file))
+
+      myFile should (not (be an (directory)) or not (be an (file)))
+      myFile should ((not be an (directory)) or (not be an (file)))
+      myFile should (not be an (directory) or not be an (file))
+
+      // second true
+      myFile should (not (be (file)) or not (be (directory)))
+      myFile should ((not be (file)) or (not be (directory)))
+      myFile should (not be (file) or not be (directory))
+
+      myFile should (not (be a (file)) or not (be a (directory)))
+      myFile should ((not be a (file)) or (not be a (directory)))
+      myFile should (not be a (file) or not be a (directory))
+
+      myFile should (not (be an (file)) or not (be an (directory)))
+      myFile should ((not be an (file)) or (not be an (directory)))
+      myFile should (not be an (file) or not be an (directory))
+
+      // both true
+      myFile should (not (be (directory)) or not (be (directory)))
+      myFile should ((not be (directory)) or (not be (directory)))
+      myFile should (not be (directory) or not be (directory))
+
+      myFile should (not (be a (directory)) or not (be a (directory)))
+      myFile should ((not be a (directory)) or (not be a (directory)))
+      myFile should (not be a (directory) or not be a (directory))
+
+      myFile should (not (be an (directory)) or not (be an (directory)))
+      myFile should ((not be an (directory)) or (not be an (directory)))
+      myFile should (not be an (directory) or not be an (directory))
+    }
+
 /*
     it("should do nothing if the property returns false, when used in a logical-or expression with not") {
 
