@@ -33,41 +33,17 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       val bookshelf = new Bookshelf(book, badBook, book)
 
       it("should do nothing if a BePropertyMatcher is used and the property is true") {
+          book should be (goodRead)
           book should be a (goodRead)
+          book should be an (goodRead)
       }
 
-      it("should throw TestFailedException if a \"be property\" matcher is used with be and the property is false") {
+      it("should throw TestFailedException if a BePropertyMatcher is used with be and the property is false") {
 
         val caught1 = intercept[TestFailedException] {
           badBook should be a (goodRead)
         }
         assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
-      }
-
-      it("should throw TestFailedException if a \"be odd\" matcher is used with be and the Int isn't odd") {
-
-        class OddMatcher extends BeMatcher[Int] {
-          def apply(left: Int): MatchResult = {
-            MatchResult(
-              left % 2 == 1,
-              left.toString + " was even",
-              left.toString + " was odd"
-            )
-          }
-        }
-        val odd = new OddMatcher
-
-        val caught1 = intercept[TestFailedException] {
-          4 should be (odd)
-        }
-        assert(caught1.getMessage === "4 was even")
-
-        val even = not (odd)
-
-        val caught2 = intercept[TestFailedException] {
-          5 should be (even)
-        }
-        assert(caught2.getMessage === "5 was odd")
       }
     }
   }

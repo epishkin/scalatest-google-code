@@ -3839,6 +3839,26 @@ trait Matchers extends Assertions { matchers =>
         def apply(left: T) = right(left)
       }
 
+    /**
+     * This method enables the following syntax, where <code>open</code> refers to a <code>BePropertyMatcher</code>:
+     *
+     * <pre>
+     * door should be (open)
+     *                ^
+     * </pre>
+     */
+    def apply[T](bePropertyMatcher: BePropertyMatcher[T]): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) = {
+          val result = bePropertyMatcher(left)
+          MatchResult(
+            result.matches,
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
+            FailureMessages("was", left, UnquotedString(result.propertyName))
+          )
+        }
+      }
+
     def apply(right: Any): Matcher[Any] =
       Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
   }
