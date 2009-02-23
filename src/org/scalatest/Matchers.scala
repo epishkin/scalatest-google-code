@@ -1096,11 +1096,31 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * isFileMock should (be a (file) or be a (directory))
+       *                                      ^
+       * </pre>
+       */
+      def a[T](bePropertyMatcher: BePropertyMatcher[T]) = or(be.a(bePropertyMatcher))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * appleMock should (be an ('orange) or be an ('apple))
        *                                         ^
        * </pre>
        */
       def an(symbol: Symbol) = or(be.an(symbol))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * appleMock should (be an (orange) or be an (apple))
+       *                                        ^
+       * </pre>
+       */
+      def an[T](bePropertyMatcher: BePropertyMatcher[T]) = or(be.an(bePropertyMatcher))
 
       /**
        * This method enables the following syntax:
