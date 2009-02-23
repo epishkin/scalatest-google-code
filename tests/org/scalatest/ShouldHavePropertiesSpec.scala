@@ -21,6 +21,7 @@ import Arbitrary._
 import Prop._
 import scala.reflect.BeanProperty
 
+// TODO: check not not and not not not to make sure those negative failure messages make sense.
 trait BookPropertyMatchers { this: Matchers => 
 
   case class Book(

@@ -388,11 +388,31 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * myFile should (be a (file) and be a (file))
+       *                                        ^
+       * </pre>
+       */
+      def a[T](bePropertyMatcher: BePropertyMatcher[T]) = and(be.a(bePropertyMatcher))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * isAppleMock should (be an ('apple) and be an ('apple))
        *                                           ^
        * </pre>
        */
       def an(symbol: Symbol) = and(be.an(symbol))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * isAppleMock should (be an (apple) and be an (apple))
+       *                                           ^
+       * </pre>
+       */
+      def an[T](bePropertyMatcher: BePropertyMatcher[T]) = and(be.an(bePropertyMatcher))
 
       /**
        * This method enables the following syntax:

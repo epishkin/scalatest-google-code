@@ -24,91 +24,153 @@ import scala.reflect.BeanProperty
 class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
   // Checking for a specific size
-  describe("The be property syntax") {
+  describe("The be (BePropertyMatcher) syntax") {
 
-    describe("on an object with properties") {
+    case class MyFile(
+      val name: String,
+      val file: Boolean,
+      val isDirectory: Boolean
+    )
 
-      val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
-      val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
-      val bookshelf = new Bookshelf(book, badBook, book)
-
-      it("should do nothing if a BePropertyMatcher is used and the property is true") {
-        book should be (goodRead)
-        book should be a (goodRead)
-        book should be an (goodRead)
-      }
-
-      it("should throw TestFailedException if a BePropertyMatcher is used with be and the property is false") {
-
-        val caught1 = intercept[TestFailedException] {
-          badBook should be (goodRead)
-        }
-        assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not goodRead")
-
-        val caught2 = intercept[TestFailedException] {
-          badBook should be a (goodRead)
-        }
-        assert(caught2.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
-
-        val caught3 = intercept[TestFailedException] {
-          badBook should be an (goodRead)
-        }
-        assert(caught3.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not an goodRead")
-      }
-
-      it("should do nothing if a BePropertyMatcher is used and the property is false, when used with not") {
-        badBook should not be (goodRead)
-        badBook should not be a (goodRead)
-        badBook should not be an (goodRead)
-      }
-
-      it("should throw TestFailedException if a BePropertyMatcher is used with be and the property is true, when used with not") {
-
-        val caught1 = intercept[TestFailedException] {
-          book should not be (goodRead)
-        }
-        assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
-
-        val caught2 = intercept[TestFailedException] {
-          book should not be a (goodRead)
-        }
-        assert(caught2.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
-
-        val caught3 = intercept[TestFailedException] {
-          book should not be an (goodRead)
-        }
-        assert(caught3.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
-
-        val caught4 = intercept[TestFailedException] {
-          book should not (be (goodRead))
-        }
-        assert(caught4.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
-
-        val caught5 = intercept[TestFailedException] {
-          book should not (be a (goodRead))
-        }
-        assert(caught5.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
-
-        val caught6 = intercept[TestFailedException] {
-          book should not (be an (goodRead))
-        }
-        assert(caught6.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
-
-        val caught7 = intercept[TestFailedException] {
-          book should (not (be (goodRead)))
-        }
-        assert(caught7.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
-
-        val caught8 = intercept[TestFailedException] {
-          book should (not (be a (goodRead)))
-        }
-        assert(caught8.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
-
-        val caught9 = intercept[TestFailedException] {
-          book should (not (be an (goodRead)))
-        }
-        assert(caught9.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
+    class FileBePropertyMatcher extends BePropertyMatcher[MyFile] {
+      def apply(file: MyFile) = {
+        new BePropertyMatchResult(file.file, "file")
       }
     }
+
+    class DirectoryBePropertyMatcher extends BePropertyMatcher[MyFile] {
+      def apply(file: MyFile) = {
+        new BePropertyMatchResult(file.isDirectory, "directory")
+      }
+    }
+
+    def file = new FileBePropertyMatcher
+    def directory = new DirectoryBePropertyMatcher
+
+    val myFile = new MyFile("temp.txt", true, false)
+
+    val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
+    val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
+    val bookshelf = new Bookshelf(book, badBook, book)
+
+    it("should do nothing if the property is true") {
+      book should be (goodRead)
+      book should be a (goodRead)
+      book should be an (goodRead)
+    }
+
+    it("should throw TestFailedException if the property is false") {
+
+      val caught1 = intercept[TestFailedException] {
+        badBook should be (goodRead)
+      }
+      assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not goodRead")
+
+      val caught2 = intercept[TestFailedException] {
+        badBook should be a (goodRead)
+      }
+      assert(caught2.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not a goodRead")
+
+      val caught3 = intercept[TestFailedException] {
+        badBook should be an (goodRead)
+      }
+      assert(caught3.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,false) was not an goodRead")
+    }
+
+    it("should do nothing if the property is false, when used with not") {
+      badBook should not be (goodRead)
+      badBook should not be a (goodRead)
+      badBook should not be an (goodRead)
+    }
+
+    it("should throw TestFailedException if the property is true, when used with not") {
+
+      val caught1 = intercept[TestFailedException] {
+        book should not be (goodRead)
+      }
+      assert(caught1.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
+
+      val caught2 = intercept[TestFailedException] {
+        book should not be a (goodRead)
+      }
+      assert(caught2.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
+
+      val caught3 = intercept[TestFailedException] {
+        book should not be an (goodRead)
+      }
+      assert(caught3.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
+
+      val caught4 = intercept[TestFailedException] {
+        book should not (be (goodRead))
+      }
+      assert(caught4.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
+
+      val caught5 = intercept[TestFailedException] {
+        book should not (be a (goodRead))
+      }
+      assert(caught5.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
+
+      val caught6 = intercept[TestFailedException] {
+        book should not (be an (goodRead))
+      }
+      assert(caught6.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
+
+      val caught7 = intercept[TestFailedException] {
+        book should (not (be (goodRead)))
+      }
+      assert(caught7.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was goodRead")
+
+      val caught8 = intercept[TestFailedException] {
+        book should (not (be a (goodRead)))
+      }
+      assert(caught8.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was a goodRead")
+
+      val caught9 = intercept[TestFailedException] {
+        book should (not (be an (goodRead)))
+      }
+      assert(caught9.getMessage === "Book(A Tale of Two Cities,Dickens,1859,45,true) was an goodRead")
+    }
+
+    it("should do nothing if the the property returns true, when used in a logical-and expression") {
+
+      myFile should ((be (file)) and (be (file)))
+      myFile should (be (file) and (be (file)))
+      myFile should (be (file) and be (file))
+
+      myFile should ((be a (file)) and (be a (file)))
+      myFile should (be a (file) and (be a (file)))
+      myFile should (be a (file) and be a (file))
+
+      myFile should ((be an (file)) and (be an (file)))
+      myFile should (be an (file) and (be an (file)))
+      myFile should (be an (file) and be an (file))
+    }
+
+/*
+    it("should do nothing if the property returns true, when used in a logical-or expression") {
+
+      myFile should ((be (directory)) or (be (file)))
+      myFile should (be (directory) or (be (file)))
+      myFile should (be (directory) or be (file))
+    }
+
+    it("should do nothing if the property returns false, when used in a logical-and expression with not") {
+
+      myFile should (not (be (file)) and not (be (file)))
+      myFile should ((not be (file)) and (not be (file)))
+      myFile should (not be (file) and not be (file))
+    }
+
+    it("should do nothing if the property returns false, when used in a logical-or expression with not") {
+
+      myFile should (not (be (file)) or not (be (file)))
+      myFile should ((not be (file)) or (not be (file)))
+      myFile should (not be (file) or not be (file))
+
+      myFile should (not (be (directory)) or not (be (file)))
+      myFile should ((not be (directory)) or (not be (file)))
+      myFile should (not be (directory) or not be (file))
+    }
+*/
   }
 }
