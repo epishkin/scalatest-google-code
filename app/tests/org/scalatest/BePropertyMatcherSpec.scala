@@ -146,14 +146,49 @@ class BePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with 
       myFile should (be an (file) and be an (file))
     }
 
-/*
     it("should do nothing if the property returns true, when used in a logical-or expression") {
 
+      // second true
       myFile should ((be (directory)) or (be (file)))
       myFile should (be (directory) or (be (file)))
       myFile should (be (directory) or be (file))
+
+      myFile should ((be a (directory)) or (be a (file)))
+      myFile should (be a (directory) or (be a (file)))
+      myFile should (be a (directory) or be a (file))
+
+      myFile should ((be an (directory)) or (be an (file)))
+      myFile should (be an (directory) or (be an (file)))
+      myFile should (be an (directory) or be an (file))
+
+      // first true
+      myFile should ((be (file)) or (be (directory)))
+      myFile should (be (file) or (be (directory)))
+      myFile should (be (file) or be (directory))
+
+      myFile should ((be a (file)) or (be a (directory)))
+      myFile should (be a (file) or (be a (directory)))
+      myFile should (be a (file) or be a (directory))
+
+      myFile should ((be an (file)) or (be an (directory)))
+      myFile should (be an (file) or (be an (directory)))
+      myFile should (be an (file) or be an (directory))
+
+      // both true
+      myFile should ((be (file)) or (be (file)))
+      myFile should (be (file) or (be (file)))
+      myFile should (be (file) or be (file))
+
+      myFile should ((be a (file)) or (be a (file)))
+      myFile should (be a (file) or (be a (file)))
+      myFile should (be a (file) or be a (file))
+
+      myFile should ((be an (file)) or (be an (file)))
+      myFile should (be an (file) or (be an (file)))
+      myFile should (be an (file) or be an (file))
     }
 
+/*
     it("should do nothing if the property returns false, when used in a logical-and expression with not") {
 
       myFile should (not (be (file)) and not (be (file)))
