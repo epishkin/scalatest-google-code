@@ -262,13 +262,17 @@ trait Matchers extends Assertions { matchers =>
             MatchResult(
               false,
               leftMatchResult.failureMessage,
-              leftMatchResult.negativeFailureMessage
+              leftMatchResult.negativeFailureMessage,
+              leftMatchResult.midSentenceFailureMessage,
+              leftMatchResult.midSentenceNegativeFailureMessage
             )
           else {
             MatchResult(
               rightMatchResult.matches,
-              Resources("commaBut", leftMatchResult.negativeFailureMessage, rightMatchResult.failureMessage),
-              Resources("commaAnd", leftMatchResult.negativeFailureMessage, rightMatchResult.negativeFailureMessage)
+              Resources("commaBut", leftMatchResult.negativeFailureMessage, rightMatchResult.midSentenceFailureMessage),
+              Resources("commaAnd", leftMatchResult.negativeFailureMessage, rightMatchResult.midSentenceNegativeFailureMessage),
+              Resources("commaBut", leftMatchResult.midSentenceNegativeFailureMessage, rightMatchResult.midSentenceFailureMessage),
+              Resources("commaAnd", leftMatchResult.midSentenceNegativeFailureMessage, rightMatchResult.midSentenceNegativeFailureMessage)
             )
           }
         }
@@ -2533,8 +2537,16 @@ trait Matchers extends Assertions { matchers =>
                     failedVerification.actualValue,
                     left
                   )
+                val midSentenceFailureMessage =
+                  FailureMessages(
+                    "midSentencePropertyDidNotHaveExpectedValue",
+                    UnquotedString(failedVerification.propertyName),
+                    failedVerification.expectedValue,
+                    failedVerification.actualValue,
+                    left
+                  )
 
-                MatchResult(false, failureMessage, failureMessage) // How can this be correct?
+                MatchResult(false, failureMessage, failureMessage, midSentenceFailureMessage, midSentenceFailureMessage)
 
               case None =>
 
@@ -3827,7 +3839,7 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[S] {
         def apply(left: S) =
           matcher(left) match {
-            case MatchResult(bool, s1, s2) => MatchResult(!bool, s2, s1)
+            case MatchResult(bool, s1, s2, s3, s4) => MatchResult(!bool, s2, s1, s4, s3)
           }
       }
 
@@ -3837,7 +3849,7 @@ trait Matchers extends Assertions { matchers =>
       new BeMatcher[S] {
         def apply(left: S) =
           beMatcher(left) match {
-            case MatchResult(bool, s1, s2) => MatchResult(!bool, s2, s1)
+            case MatchResult(bool, s1, s2, s3, s4) => MatchResult(!bool, s2, s1, s4, s3)
           }
       }
 
