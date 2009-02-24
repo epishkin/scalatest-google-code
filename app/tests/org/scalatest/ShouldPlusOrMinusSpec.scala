@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-class PlusOrMinusSpec extends Spec with ShouldMatchers {
+class ShouldPlusOrMinusSpec extends Spec with ShouldMatchers {
 
   describe("The be (X plusOrMinus Y) syntax") {
 

@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-class SameInstanceAsSpec extends Spec with ShouldMatchers {
+class ShouldSameInstanceAsSpec extends Spec with ShouldMatchers {
 
   describe("The be a ('symbol) syntax") {
 

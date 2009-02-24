@@ -20,7 +20,7 @@ This has a bit of redundancy with several other specs, but was the
 original file I used to develop the matchers syntax, and it has a few
 tests that don't exist elsewhere, so I'm keeping it alive for now.
 */
-class MatcherSpec extends Spec with ShouldMatchers {
+class ShouldMatcherSpec extends Spec with ShouldMatchers {
 
   describe("The be matcher") {
 
