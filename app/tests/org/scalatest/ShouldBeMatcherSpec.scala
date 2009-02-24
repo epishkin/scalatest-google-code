@@ -204,6 +204,172 @@ class ShouldBeMatcherSpec extends Spec with ShouldMatchers with Checkers with Re
         assert(caught4.getMessage === "1 was odd, and 1 was odd")
       }
 
+      it("should do nothing if a BeMatcher does not match, when used in a logical-and expression with not") {
+        2 should (not be (odd) and not be (odd))
+        2 should (not be (odd) and not (be (odd)))
+        2 should (not be (odd) and (not (be (odd))))
+        1 should (not be (even) and not be (even))
+        1 should (not be (even) and not (be (even)))
+        1 should (not be (even) and (not (be (even))))
+      }
+
+      it("should throw TestFailedException if at least one BeMatcher matches, when used in a logical-and expression with not") {
+
+        // both true
+        val caught1 = intercept[TestFailedException] {
+          1 should (not be (odd) and not be (odd))
+        }
+        assert(caught1.getMessage === "1 was odd")
+
+        val caught2 = intercept[TestFailedException] {
+          1 should (not be (odd) and not (be (odd)))
+        }
+        assert(caught2.getMessage === "1 was odd")
+
+        val caught3 = intercept[TestFailedException] {
+          1 should (not be (odd) and (not (be (odd))))
+        }
+        assert(caught3.getMessage === "1 was odd")
+
+        val caught4 = intercept[TestFailedException] {
+          2 should (not be (even) and not be (even))
+        }
+        assert(caught4.getMessage === "2 was even")
+
+        val caught5 = intercept[TestFailedException] {
+          2 should (not be (even) and not (be (even)))
+        }
+        assert(caught5.getMessage === "2 was even")
+
+        val caught6 = intercept[TestFailedException] {
+          2 should (not be (even) and (not (be (even))))
+        }
+        assert(caught6.getMessage === "2 was even")
+
+
+        // first false
+        val caught7 = intercept[TestFailedException] {
+          1 should (not be (even) and not be (odd))
+        }
+        assert(caught7.getMessage === "1 was odd, but 1 was odd")
+
+        val caught8 = intercept[TestFailedException] {
+          1 should (not be (even) and not (be (odd)))
+        }
+        assert(caught8.getMessage === "1 was odd, but 1 was odd")
+
+        val caught9 = intercept[TestFailedException] {
+          1 should (not be (even) and (not (be (odd))))
+        }
+        assert(caught9.getMessage === "1 was odd, but 1 was odd")
+
+        val caught10 = intercept[TestFailedException] {
+          2 should (not be (odd) and not be (even))
+        }
+        assert(caught10.getMessage === "2 was even, but 2 was even")
+
+        val caught11 = intercept[TestFailedException] {
+          2 should (not be (odd) and not (be (even)))
+        }
+        assert(caught11.getMessage === "2 was even, but 2 was even")
+
+        val caught12 = intercept[TestFailedException] {
+          2 should (not be (odd) and (not (be (even))))
+        }
+        assert(caught12.getMessage === "2 was even, but 2 was even")
+
+
+        // second false
+        val caught13 = intercept[TestFailedException] {
+          1 should (not be (odd) and not be (even))
+        }
+        assert(caught13.getMessage === "1 was odd")
+
+        val caught14 = intercept[TestFailedException] {
+          1 should (not be (odd) and not (be (even)))
+        }
+        assert(caught14.getMessage === "1 was odd")
+
+        val caught15 = intercept[TestFailedException] {
+          1 should (not be (odd) and (not (be (even))))
+        }
+        assert(caught15.getMessage === "1 was odd")
+
+        val caught16 = intercept[TestFailedException] {
+          2 should (not be (even) and not be (odd))
+        }
+        assert(caught16.getMessage === "2 was even")
+
+        val caught17 = intercept[TestFailedException] {
+          2 should (not be (even) and not (be (odd)))
+        }
+        assert(caught17.getMessage === "2 was even")
+
+        val caught18 = intercept[TestFailedException] {
+          2 should (not be (even) and (not (be (odd))))
+        }
+        assert(caught18.getMessage === "2 was even")
+      }
+
+      it("should do nothing if at least one BeMatcher doesn't match, when used in a logical-or expression when used with not") {
+
+        // both false
+        2 should (not be (odd) or not be (odd))
+        2 should (not be (odd) or not (be (odd)))
+        2 should (not be (odd) or (not (be (odd))))
+        1 should (not be (even) or not be (even))
+        1 should (not be (even) or not (be (even)))
+        1 should (not be (even) or (not (be (even))))
+
+        // first false
+        1 should (not be (even) or not be (odd))
+        1 should (not be (even) or not (be (odd)))
+        1 should (not be (even) or (not (be (odd))))
+        2 should (not be (odd) or not be (even))
+        2 should (not be (odd) or not (be (even)))
+        2 should (not be (odd) or (not (be (even))))
+
+        // second false
+        1 should (not be (odd) or not be (even))
+        1 should (not be (odd) or not (be (even)))
+        1 should (not be (odd) or (not (be (even))))
+        2 should (not be (even) or not be (odd))
+        2 should (not be (even) or not (be (odd)))
+        2 should (not be (even) or (not (be (odd))))
+      }
+
+      it("should throw TestFailedException if both BeMatcher match, when used in a logical-or expression with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          1 should (not be (odd) or not be (odd))
+        }
+        assert(caught1.getMessage === "1 was odd, and 1 was odd")
+
+        val caught2 = intercept[TestFailedException] {
+          1 should (not be (odd) or not (be (odd)))
+        }
+        assert(caught2.getMessage === "1 was odd, and 1 was odd")
+
+        val caught3 = intercept[TestFailedException] {
+          1 should (not be (odd) or (not (be (odd))))
+        }
+        assert(caught3.getMessage === "1 was odd, and 1 was odd")
+
+        val caught4 = intercept[TestFailedException] {
+          2 should (not be (even) or not be (even))
+        }
+        assert(caught4.getMessage === "2 was even, and 2 was even")
+
+        val caught5 = intercept[TestFailedException] {
+          2 should (not be (even) or not (be (even)))
+        }
+        assert(caught5.getMessage === "2 was even, and 2 was even")
+
+        val caught6 = intercept[TestFailedException] {
+          2 should (not be (even) or (not (be (even))))
+        }
+        assert(caught6.getMessage === "2 was even, and 2 was even")
+      }
     }
   }
 }
