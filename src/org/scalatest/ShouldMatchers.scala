@@ -21,7 +21,8 @@ import Helper.newTestFailedException
 /**
  * <p>
  * Trait that provides a domain specific language (DSL) for expressing assertions in tests
- * using the word <code>should</code>. For example, if you mix <code>ShouldMatchers</code> into
+ * using the word <code>should</code>. (If you prefer the word <code>must</code>, you can alternatively
+ * mix in trait <a href="MustMatchers.html"><code>MustMatchers</code></a>.) For example, if you mix <code>ShouldMatchers</code> into
  * a suite class, you can write an equality assertion in that suite like this:
  * </p>
  * 
@@ -31,9 +32,10 @@ import Helper.newTestFailedException
  * <p>
  * Here <code>object</code> is a variable, and can be of any type. If the object is an
  * <code>Int</code> with the value 3, execution will continue (<em>i.e.</em>, the expression will result
- * in the unit value, <code>()</code>). Otherwise, an assertion error
- * will be thrown with the detail message, such as <code>"7 did not equal 3"</code>, which will cause
- * the test to fail.
+ * in the unit value, <code>()</code>). Otherwise, a <code>TestFailedException</code>
+ * will be thrown with a detail message that explains the problem, such as <code>"7 did not equal 3"</code> if the 
+ * object was an <code>Int</code> with the value 7. This
+ * <code>TestFailedException</code> will cause the test to fail.
  * </p>
  * 
  * <h2>Checking size and length</h2>
