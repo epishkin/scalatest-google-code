@@ -18,7 +18,7 @@ package org.scalatest
 import prop.Checkers
 import org.mockito.Mockito._
 
-class LogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldLogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   class Clown {
     def hasBigRedNose = true

@@ -21,7 +21,7 @@ import Arbitrary._
 import Prop._
 import scala.reflect.BeanProperty
 
-class BeMatcherSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
+class ShouldBeMatcherSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
   // Checking for a specific size
   describe("The BeMatcher syntax") {
