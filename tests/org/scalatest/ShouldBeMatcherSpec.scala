@@ -90,6 +90,97 @@ class ShouldBeMatcherSpec extends Spec with ShouldMatchers with Checkers with Re
         2 should (be (even) and (be (even)))
       }
 
+      it("should throw TestFailedException if at least one BeMatcher does not match, when used in a logical-or expression") {
+
+        // both false
+        val caught1 = intercept[TestFailedException] {
+          2 should (be (odd) and be (odd))
+        }
+        assert(caught1.getMessage === "2 was even")
+
+        val caught2 = intercept[TestFailedException] {
+          2 should (be (odd) and (be (odd)))
+        }
+        assert(caught2.getMessage === "2 was even")
+
+        val caught3 = intercept[TestFailedException] {
+          1 should (be (even) and be (even))
+        }
+        assert(caught3.getMessage === "1 was odd")
+
+        val caught4 = intercept[TestFailedException] {
+          1 should (be (even) and (be (even)))
+        }
+        assert(caught4.getMessage === "1 was odd")
+
+
+        // first false
+        val caught5 = intercept[TestFailedException] {
+          1 should (be (even) and be (odd))
+        }
+        assert(caught5.getMessage === "1 was odd")
+
+        val caught6 = intercept[TestFailedException] {
+          1 should (be (even) and (be (odd)))
+        }
+        assert(caught6.getMessage === "1 was odd")
+
+        val caught7 = intercept[TestFailedException] {
+          2 should (be (odd) and be (even))
+        }
+        assert(caught7.getMessage === "2 was even")
+
+        val caught8 = intercept[TestFailedException] {
+          2 should (be (odd) and (be (even)))
+        }
+        assert(caught8.getMessage === "2 was even")
+
+
+// TODO: Remember to try a BeMatcher[Any] one, to make sure it works on an Int
+
+        // second false
+        val caught9 = intercept[TestFailedException] {
+          1 should (be (odd) and be (even))
+        }
+        assert(caught9.getMessage === "1 was odd, but 1 was odd")
+
+        val caught10 = intercept[TestFailedException] {
+          1 should (be (odd) and (be (even)))
+        }
+        assert(caught10.getMessage === "1 was odd, but 1 was odd")
+
+        val caught11 = intercept[TestFailedException] {
+          2 should (be (even) and be (odd))
+        }
+        assert(caught11.getMessage === "2 was even, but 2 was even")
+
+        val caught12 = intercept[TestFailedException] {
+          2 should (be (even) and (be (odd)))
+        }
+        assert(caught12.getMessage === "2 was even, but 2 was even")
+      }
+
+      it("should do nothing if at least one BeMatcher matches, when used in a logical-or expression") {
+
+        // both true
+        1 should (be (odd) or be (odd))
+        1 should (be (odd) or (be (odd)))
+        2 should (be (even) or be (even))
+        2 should (be (even) or (be (even)))
+
+        // first false
+        1 should (be (even) or be (odd))
+        1 should (be (even) or (be (odd)))
+        2 should (be (odd) or be (even))
+        2 should (be (odd) or (be (even)))
+
+        // second false
+        1 should (be (odd) or be (even))
+        1 should (be (odd) or (be (even)))
+        2 should (be (even) or be (odd))
+        2 should (be (even) or (be (odd)))
+      }
+
       it("should throw TestFailedException if a BeMatcher does not match, when used in a logical-or expression") {
 
         val caught1 = intercept[TestFailedException] {
@@ -113,26 +204,6 @@ class ShouldBeMatcherSpec extends Spec with ShouldMatchers with Checkers with Re
         assert(caught4.getMessage === "1 was odd, and 1 was odd")
       }
 
-      it("should do nothing if at least one BeMatcher matches, when used in a logical-or expression") {
-
-        // both true
-        1 should (be (odd) or be (odd))
-        1 should (be (odd) or (be (odd)))
-        2 should (be (even) or be (even))
-        2 should (be (even) or (be (even)))
-
-        // first false
-        1 should (be (even) or be (odd))
-        1 should (be (even) or (be (odd)))
-        2 should (be (odd) or be (even))
-        2 should (be (odd) or (be (even)))
-
-        // second false
-        1 should (be (odd) or be (even))
-        1 should (be (odd) or (be (even)))
-        2 should (be (even) or be (odd))
-        2 should (be (even) or (be (odd)))
-      }
     }
   }
 }
