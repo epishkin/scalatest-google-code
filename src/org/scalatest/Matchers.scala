@@ -733,6 +733,16 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * 2 should (not be (odd) and not be (odd))
+       *                                ^
+       * </pre>
+       */
+      def be[T](beMatcher: BeMatcher[T]) = matchersWrapper.and(matchers.not.be(beMatcher))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * myFile should (not be (directory) and not be (directory))
        *                                              ^
        * </pre>
@@ -1468,6 +1478,16 @@ trait Matchers extends Assertions { matchers =>
        */
       def be[T](symbol: Symbol) = matchersWrapper.or(matchers.not.be(symbol))
 // TODO drop the type parameter
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 2 should (not be (even) or not be (odd))
+       *                                ^
+       * </pre>
+       */
+      def be[T](beMatcher: BeMatcher[T]) = matchersWrapper.or(matchers.not.be(beMatcher))
 
       /**
        * This method enables the following syntax:
@@ -4109,6 +4129,17 @@ trait Matchers extends Assertions { matchers =>
     //                  ^
     def have[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
       apply(matchers.have(firstPropertyMatcher, propertyMatchers: _*))
+
+    // 2 should (not be (odd) and not be (odd))
+    //               ^
+    def be[T](beMatcher: BeMatcher[T]): Matcher[T] = {
+      new Matcher[T] {
+        def apply(left: T) =
+          beMatcher(left) match {
+            case MatchResult(bool, s1, s2, s3, s4) => MatchResult(!bool, s2, s1, s4, s3)
+          }
+      }
+    }
 
     // These next four are for things like not be </>/<=/>=:
     // left should ((not be < (right)) and (not be < (right + 1)))
