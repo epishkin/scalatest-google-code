@@ -223,7 +223,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -281,7 +281,7 @@ trait Matchers extends Assertions { matchers =>
       }
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -320,7 +320,7 @@ trait Matchers extends Assertions { matchers =>
     def and(haveWord: HaveWord): AndHaveWord = new AndHaveWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -369,7 +369,7 @@ trait Matchers extends Assertions { matchers =>
     def and(containWord: ContainWord): AndContainWord = new AndContainWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -438,7 +438,7 @@ trait Matchers extends Assertions { matchers =>
     def and(beWord: BeWord): AndBeWord = new AndBeWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -477,7 +477,7 @@ trait Matchers extends Assertions { matchers =>
     def and(fullyMatchWord: FullyMatchWord): AndFullyMatchWord = new AndFullyMatchWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -526,7 +526,7 @@ trait Matchers extends Assertions { matchers =>
     def and(includeWord: IncludeWord): AndIncludeWord = new AndIncludeWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -575,7 +575,7 @@ trait Matchers extends Assertions { matchers =>
     def and(startWithWord: StartWithWord): AndStartWithWord = new AndStartWithWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -624,7 +624,7 @@ trait Matchers extends Assertions { matchers =>
     def and(endWithWord: EndWithWord): AndEndWithWord = new AndEndWithWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1030,7 +1030,7 @@ trait Matchers extends Assertions { matchers =>
       }
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1069,7 +1069,7 @@ trait Matchers extends Assertions { matchers =>
     def or(haveWord: HaveWord): OrHaveWord = new OrHaveWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1118,7 +1118,7 @@ trait Matchers extends Assertions { matchers =>
     def or(containWord: ContainWord): OrContainWord = new OrContainWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1187,7 +1187,7 @@ trait Matchers extends Assertions { matchers =>
     def or(beWord: BeWord): OrBeWord = new OrBeWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1226,7 +1226,7 @@ trait Matchers extends Assertions { matchers =>
     def or(fullyMatchWord: FullyMatchWord): OrFullyMatchWord = new OrFullyMatchWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1275,7 +1275,7 @@ trait Matchers extends Assertions { matchers =>
     def or(includeWord: IncludeWord): OrIncludeWord = new OrIncludeWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1324,7 +1324,7 @@ trait Matchers extends Assertions { matchers =>
     def or(startWithWord: StartWithWord): OrStartWithWord = new OrStartWithWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1373,7 +1373,7 @@ trait Matchers extends Assertions { matchers =>
     def or(endWithWord: EndWithWord): OrEndWithWord = new OrEndWithWord
 
     /**
-     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+     * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
      * the matchers DSL.
      *
      * @author Bill Venners
@@ -1752,7 +1752,7 @@ trait Matchers extends Assertions { matchers =>
   // ha a key method that takes a K type, they key type of the map. It does the assertion thing.
   // 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -1797,7 +1797,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -1906,7 +1906,7 @@ trait Matchers extends Assertions { matchers =>
   // have key.
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -1914,7 +1914,7 @@ trait Matchers extends Assertions { matchers =>
   protected class BehaveWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2016,7 +2016,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2073,7 +2073,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2130,7 +2130,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2189,7 +2189,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2240,7 +2240,7 @@ trait Matchers extends Assertions { matchers =>
 // perfectly valid Scala way to get a JavaBean property in the bytecodes.
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * <p>
@@ -2340,7 +2340,7 @@ trait Matchers extends Assertions { matchers =>
     }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * <p>
@@ -2444,7 +2444,7 @@ trait Matchers extends Assertions { matchers =>
   // book should have ('author ("Gibson"))
   //                   ^ // Basically this 'author symbol gets converted into this class, and its apply  method takes "Gibson"
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * <p>
@@ -2547,7 +2547,7 @@ trait Matchers extends Assertions { matchers =>
   protected implicit def convertSymbolToHavePropertyMatcherGenerator(symbol: Symbol) = new HavePropertyMatcherGenerator(symbol)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2724,7 +2724,7 @@ trait Matchers extends Assertions { matchers =>
   // has a size method that takes a T type, type parameter of the iterable. It does the assertion thing.
   // 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2742,7 +2742,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2760,7 +2760,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2778,7 +2778,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2796,7 +2796,7 @@ trait Matchers extends Assertions { matchers =>
   }
   
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2819,7 +2819,7 @@ trait Matchers extends Assertions { matchers =>
   }
   
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2842,7 +2842,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2878,7 +2878,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2916,7 +2916,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2956,7 +2956,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2979,7 +2979,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -2997,7 +2997,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3020,7 +3020,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3094,7 +3094,7 @@ trait Matchers extends Assertions { matchers =>
 // TODO: make everything that I can protected
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3175,7 +3175,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3337,7 +3337,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3449,7 +3449,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3475,7 +3475,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3501,7 +3501,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3527,7 +3527,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3553,7 +3553,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3579,7 +3579,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3605,7 +3605,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3620,7 +3620,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3630,7 +3630,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3643,7 +3643,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3651,7 +3651,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfSubstringWordApplication(val substring: String)
  
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3670,7 +3670,7 @@ trait Matchers extends Assertions { matchers =>
   }
   
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3700,7 +3700,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3730,7 +3730,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3761,7 +3761,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3781,7 +3781,7 @@ trait Matchers extends Assertions { matchers =>
   }
   
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3799,7 +3799,7 @@ trait Matchers extends Assertions { matchers =>
   }
   
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3820,7 +3820,7 @@ trait Matchers extends Assertions { matchers =>
     Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -3868,7 +3868,7 @@ trait Matchers extends Assertions { matchers =>
   implicit def convertBeWordToForOrdered(beWord: BeWord): TreatedAsOrderedWrapper = new TreatedAsOrderedWrapper
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4089,7 +4089,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4533,7 +4533,7 @@ trait Matchers extends Assertions { matchers =>
   val be = new BeWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4573,7 +4573,7 @@ trait Matchers extends Assertions { matchers =>
   val endWith = new EndWithWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4606,7 +4606,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4618,7 +4618,7 @@ trait Matchers extends Assertions { matchers =>
   val length = new LengthWord
  
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4652,7 +4652,7 @@ trait Matchers extends Assertions { matchers =>
 
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4664,7 +4664,7 @@ trait Matchers extends Assertions { matchers =>
   val size = new SizeWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4672,7 +4672,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfElementWordApplication[T](val expectedElement: T)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4688,7 +4688,7 @@ trait Matchers extends Assertions { matchers =>
   val element = new ElementWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4696,7 +4696,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfKeyWordApplication[T](val expectedKey: T)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4712,7 +4712,7 @@ trait Matchers extends Assertions { matchers =>
   val key = new KeyWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4720,7 +4720,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfValueWordApplication[T](val expectedValue: T)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4736,7 +4736,7 @@ trait Matchers extends Assertions { matchers =>
   val value = new ValueWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4744,7 +4744,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfAWordToSymbolApplication(val symbol: Symbol)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4752,7 +4752,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfAWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4771,7 +4771,7 @@ trait Matchers extends Assertions { matchers =>
   val a = new AWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4779,7 +4779,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfAnWordToSymbolApplication(val symbol: Symbol)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4787,7 +4787,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfAnWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4806,7 +4806,7 @@ trait Matchers extends Assertions { matchers =>
   val an = new AnWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4814,7 +4814,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfTheSameInstanceAsApplication(val right: AnyRef)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4834,7 +4834,7 @@ trait Matchers extends Assertions { matchers =>
   val substring = new SubstringWord
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4842,7 +4842,7 @@ trait Matchers extends Assertions { matchers =>
   case class DoubleTolerance(right: Double, tolerance: Double)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4858,7 +4858,7 @@ trait Matchers extends Assertions { matchers =>
   implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new DoublePlusOrMinusWrapper(right)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4866,7 +4866,7 @@ trait Matchers extends Assertions { matchers =>
   case class FloatTolerance(right: Float, tolerance: Float)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4882,7 +4882,7 @@ trait Matchers extends Assertions { matchers =>
   implicit def convertFloatToPlusOrMinusWrapper(right: Float) = new FloatPlusOrMinusWrapper(right)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4890,7 +4890,7 @@ trait Matchers extends Assertions { matchers =>
   case class LongTolerance(right: Long, tolerance: Long)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4906,7 +4906,7 @@ trait Matchers extends Assertions { matchers =>
   implicit def convertLongToPlusOrMinusWrapper(right: Long) = new LongPlusOrMinusWrapper(right)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4914,7 +4914,7 @@ trait Matchers extends Assertions { matchers =>
   case class IntTolerance(right: Int, tolerance: Int)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4930,7 +4930,7 @@ trait Matchers extends Assertions { matchers =>
   implicit def convertIntToPlusOrMinusWrapper(right: Int) = new IntPlusOrMinusWrapper(right)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4938,7 +4938,7 @@ trait Matchers extends Assertions { matchers =>
   case class ShortTolerance(right: Short, tolerance: Short)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4954,7 +4954,7 @@ trait Matchers extends Assertions { matchers =>
   implicit def convertShortToPlusOrMinusWrapper(right: Short) = new ShortPlusOrMinusWrapper(right)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4962,7 +4962,7 @@ trait Matchers extends Assertions { matchers =>
   case class ByteTolerance(right: Byte, tolerance: Byte)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -4978,7 +4978,7 @@ trait Matchers extends Assertions { matchers =>
   implicit def convertByteToPlusOrMinusWrapper(right: Byte) = new BytePlusOrMinusWrapper(right)
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -5001,7 +5001,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -5028,7 +5028,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -5055,7 +5055,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -5065,7 +5065,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -5075,7 +5075,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
@@ -5085,7 +5085,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
