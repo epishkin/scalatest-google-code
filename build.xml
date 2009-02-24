@@ -8,6 +8,7 @@
     <!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
     <property name="classes" value="${jar.contents}" />
     <property name="generators" value="generators" />
+    <property name="build.generated" value="${build}/generated" />
     <property name="build.tests" value="${build}/tests" />
     <property name="build.generators" value="${build}/generators" />
     <property name="build.coverage" value="${build}/coverage" />
@@ -89,6 +90,7 @@
 
         <path id="scaladoc.source.path">
             <pathelement location="${src}" />
+            <pathelement location="${build.generated}" />
         </path>
 
         <path id="cobertura.class.path">
@@ -110,7 +112,7 @@
         <!-- First, compile the code generator from ${generators} into ${build.generators} -->
         <fsc srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
         <!-- Then, run it. -->
-        <java classname="GenFunSuiteN" classpathref="run.generators.class.path" fork="false" />
+        <java classname="GenMustMatchers" classpathref="run.generators.class.path" fork="false" />
     </target>
 
     <target name="compile" depends="compile-main, compile-tests"/>
@@ -119,6 +121,9 @@
 
         <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
         <fsc srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
+
+        <!-- Compile the Scala code from ${build.generated} into ${classes}. Scalac will parse any referenced .java files. -->
+        <fsc srcdir="${build.generated}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
         <!-- Compile the Java code from ${src} into ${classes} -->
         <javac srcdir="${src}" destdir="${classes}" classpathref="build.class.path" debug="yes">
