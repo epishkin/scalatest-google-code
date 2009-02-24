@@ -18,39 +18,22 @@ package org.scalatest
 import scala.reflect.Manifest
 import Helper.newTestFailedException
 
-// TODO: Mention JavaMaps don't support should contain element, as well as mentioning Java collection support.
 /**
  * <p>
- * The next release of ScalaTest will include two new traits, <code>ShouldMatchers</code>
- * and <code>MustMatchers</code>. These two traits are basically identical except where
- * <code>ShouldMatchers</code> says <code>should</code>, <code>MustMatchers</code> says
- * <code>must</code>. None of the suite traits will mix either of these in by default, for
- * two reasons. One is that some people prefer "should," and others "must," and this way
- * everyone can select the verb they prefer. Also, both matchers traits involve a lot of
- * implicit conversions, and I prefer that people invite these conversion into their test
- * code explicitly. In this blog post, I'll show <code>ShouldMatchers</code> examples.
+ * Trait that provides a domain specific language (DSL) for expressing assertions in tests
+ * using the word <code>should</code>. For example, if you mix <code>ShouldMatchers</code> into
+ * a suite class, you can write an equality assertion in that suite like this:
  * </p>
  * 
- * <p>
- * Matchers represent a kind of domain specific language (DSL) for assertions, which read
- * a bit more like natural language in the source code, and provide more detailed error
- * messages in assertions when they fail. Some examples of matchers in other test frameworks
- * are <a href="http://code.google.com/p/hamcrest/wiki/Tutorial">Hamcrest matchers</a> (Java),
- * <a href="http://rspec.rubyforge.org/rspec/1.1.11/classes/Spec/Matchers.html">RSpec matchers</a>
- * (Ruby), <a href="http://easyb.org/dsls.html">easyb's ensure syntax</a> (Groovy),
- * and <a href="http://code.google.com/p/specs/wiki/MatchersGuide">specs matchers</a> (Scala).
- * </p>
- * 
- * <p>
- * For example, for a basic equality comparison with ScalaTest matchers, you can say:
- * </p>
  * <pre class="indent">
  * object should equal (3)
  * </pre>
  * <p>
  * Here <code>object</code> is a variable, and can be of any type. If the object is an
- * <code>Int</code> with the value 3, nothing will happen. Otherwise, an assertion error
- * will be thrown with the detail message, such as <code>"7 did not equal 3"</code>.
+ * <code>Int</code> with the value 3, execution will continue (<em>i.e.</em>, the expression will result
+ * in the unit value, <code>()</code>). Otherwise, an assertion error
+ * will be thrown with the detail message, such as <code>"7 did not equal 3"</code>, which will cause
+ * the test to fail.
  * </p>
  * 
  * <h2>Checking size and length</h2>
@@ -110,7 +93,7 @@ import Helper.newTestFailedException
  * one should be >= (0)
  * </pre>
  * 
- * <h2>Checking predicate methods</h2>
+ * <h2>Checking <code>Boolean</code> properties with <code>be</code></h2>
  * 
  * <p>
  * If an object has a method that takes no parameters and returns boolean, you can check
@@ -128,19 +111,17 @@ import Helper.newTestFailedException
  * Given this code, ScalaTest will use reflection to look on the object referenced from
  * <code>emptySet</code> for a method that takes no parameters and results in <code>Boolean</code>,
  * with either the name <code>empty</code> or <code>isEmpty</code>. If found, it invokes
- * that method. If the method returns <code>true</code>, nothing happens. But if it returns
- * <code>false</code>, an assertion error will be thrown that will contain a detail message like:
+ * that method. If the method returns <code>true</code>, execution continues. But if it returns
+ * <code>false</code>, a <code>TestFailedException</code> will be thrown that will contain a detail message like:
  * 
  * <pre class="indent">
  * Set(1, 2, 3) was not empty</code>
  * </pre>
  * 
  * <p>
- * This <code>be</code> syntax can be used with any type, as there's no way in Scala's type
- * system to restrict it just to types that have an appropriate method. If the object does
- * not have an appropriately named predicate method, you'll get an <code>IllegalArgumentException</code>
- * at runtime with a detail message that explains the problem. (Such errors could be caught at
- * compile time, however, with a compiler plug-in.)
+ * This <code>be</code> syntax can be used with any type.  If the object does
+ * not have an appropriately named predicate method, you'll get a <code>TestFailedException</code>
+ * at runtime with a detail message that explains the problem.
  * </p>
  * 
  * <p>
@@ -154,6 +135,32 @@ import Helper.newTestFailedException
  * temp should be a ('file)
  * </pre>
  * 
+ * <p>TODO: need an <code>an</code> example</p>
+ *
+ * <p>
+ * If you prefer to check <code>Boolean</code> properties in a type-safe manner, you can use a <code>BePropertyMatcher</code>.
+ * This would allow you to write expressions such as:
+ * </p>
+ *
+ * <pre class="indent">
+ * emptySet should be (empty)
+ * </pre>
+ * 
+ * <p>
+ * or:
+ * </p>
+ * 
+ * <pre class="indent">
+ * temp should be a (file)
+ * </pre>
+ * 
+ * <p>
+ * These expressions would fail to compile if <code>should</code> is used on an inappropriate type, as determined
+ * by the type parameter of each <code>BePropertyMatcher</code>. If used with an appropriate type, they will compile
+ * and at run time the <code>Boolean</code> property method or field will be accessed directly; <em>i.e.</em>, no reflection will be used.
+ * See the documentation for <code>BePropertyMatcher</code> for more information.
+ * </p>
+ *
  * <h2>Checking object identity</h2>
  * 
  * <p>
@@ -164,7 +171,7 @@ import Helper.newTestFailedException
  * ref1 should be theSameInstanceAs (ref2)
  * </pre>
  * 
- * <h2>Working with floating point numbers</h2>
+ * <h2>Checking numbers against a range</h2>
  * 
  * <p>
  * To check whether a floating point number has a value that exactly matches another, you
@@ -176,7 +183,7 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * Sometimes, however, you may want to check whether a floating point number is within a
+ * Often, however, you may want to check whether a floating point number is within a
  * range. You can do that using <code>be</code> and <code>plusOrMinus</code>, like this:
  * </p>
  * 
@@ -185,7 +192,7 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * This expression will cause an assertion error to be thrown if the floating point
+ * This expression will cause a <code>TestFailedException</code> to be thrown if the floating point
  * value, <code>sevenDotOh</code> is outside the range <code>6.7</code> to <code>7.1</code>.
  * You can also use <code>plusOrMinus</code> with integral types, for example:
  * </p>
@@ -243,13 +250,17 @@ import Helper.newTestFailedException
  * map should contain value ("Howdy")
  * </pre>
  * 
+ * <h2>Java collections and maps</h2>
+ * 
+ * <p>TODO: fill this in.
+ * Mention JavaMaps don't support should contain element, as well as mentioning Java collection support.
+ * </p>
+ *
  * <h2>Be as an equality comparison</h2>
  * 
  * <p>
- * All uses of <code>be</code> other than those shown previously work the same as if <code>be</code>
- * were replaced by <code>equals</code>. This will be the only redundancy
- * in the first release of ScalaTest matchers. It is there because it enables syntax
- * that sounds more natural. For example, instead of writing: 
+ * In a few specific cases, <code>be</code> can be used as an equality comparison, because it enables syntax
+ * that sounds more natural than using <code>equals</code>. For example, instead of writing: 
  * </p>
  * 
  * <pre class="indent">
@@ -266,8 +277,9 @@ import Helper.newTestFailedException
  * 
  * <p>
  * (Hopefully you won't write that too much given <code>null</code> is error prone, and <code>Option</code>
- * is usually a better, well, option.) Here are some other examples of <code>be</code> used for
- * equality comparison:
+ * is usually a better, well, option.) In addition to <code>null</code>, you can use <code>be</code> for equality
+ * comparison of value types (<code>AnyVal</code>s), <code>Option</code>s, and <code>Nil</code>, the empty <code>List</code>.
+ * Here are some other examples of <code>be</code> used for equality comparison:
  * </p>
  * 
  * <pre class="indent">
@@ -275,12 +287,18 @@ import Helper.newTestFailedException
  * boring should be (false)
  * fun should be (true)
  * list should be (Nil)
+ * option should be (None)
+ * option should be (Some(1))
  * </pre>
  * 
+ * <p>
+ * For an equality assertion with any other type, you must use <code>equals</code>.
+ * </p>
+ *
  * <h2>Being negative</h2>
  * 
  * <p>
- * If you wish to check the opposite of some condition, you can use <code>not</code>.
+ * If you wish to check the opposite of some condition, you can simply insert <code>not</code> in the expression.
  * Here are a few examples:
  * </p>
  * 
@@ -291,24 +309,86 @@ import Helper.newTestFailedException
  * string should not startWith substring ("Hello")
  * </pre>
  * 
- * <h2>Combining matchers with <code>and</code> and/or <code>or</code></h2>
+ * <h2>Logical expressions with <code>and</code> and <code>or</code></h2>
  * 
  * <p>
- * You can also combine matcher expressions with <code>and</code> and <code>or</code>, however,
- * you must usually place parentheses or curly braces around the larger
- * (<code>and</code> or <code>or</code>) expression. Here are a few examples:
+ * You can also combine matcher expressions with <code>and</code> and/or <code>or</code>, however,
+ * you must place parentheses or curly braces around the <code>and</code>-ed or <code>or</code>-ed expression. For example, 
+ * this <code>and</code>-expression would not compile, because the parentheses are missing:
  * </p>
  * 
  * <pre class="indent">
- * ten should (equal (2 * 5) and equal (12 - 2))
- * one should (equal (999) or equal (2 - 1))
- * one should (not be >= (7) and equal (2 - 1))
+ * map should have key ("two") and not have value (7) // ERROR, parentheses missing!
+ * </pre>
+ * 
+ * <p>
+ * Instead, you'd need to write:
+ * </p>
+ * 
+ * <pre class="indent">
+ * map should (have key ("two") and not have value (7))
+ * </pre>
+ * 
+ * <p>
+ * Here are some more examples:
+ * </p>
+ * 
+ * <pre class="indent">
+ * number should (be > (0) and be <= (10))
+ * option should (equal (Some(List(1, 2, 3))) or be (None))
+ * string should (
+ *   equal ("fee") or
+ *   equal ("fie") or
+ *   equal ("foe") or
+ *   equal ("fum")
+ * )
+ * </pre>
+ * 
+ * <p>
+ * Two differences exist between these <code>and</code> and <code>or</code> and the expressions you can write
+ * on regular <code>Boolean</code>s using <code>&&</code> and <code>||</code>. First, expressions with <code>and</code>
+ * and <code>or</code> do not short-circuit. The following contrived expression, for example, would print <code>"hello, world!"</code>:
+ * </p>
+ *
+ * <pre class="indent">
+ * "yellow" should (equal ("blue") and equal { println("hello, world!"); "green" })
+ * </pre>
+ * 
+ * <p>
+ * In other words, the entire <code>and</code> or </code>or</code> expression is always evaluated, so you'll see any side effects
+ * of the right-hand side even if evaluating
+ * only the left-hand side is enough to determine the ultimate result of the larger expression. Failure messages produced by these
+ * expressions will "short-circuit," however,
+ * mentioning only the left-hand side if that's enough to determine the result of the entire expression. This behavior is intended
+ * to make it easier and quicker for you to ascertain which part of the expression caused the failure. The failure message for the previous
+ * expression, for example, would be:
+ * </p>
+ * 
+ * <pre class="indent">
+ * "yellow" did not equal "blue"
+ * </pre>
+ * 
+ * <p>
+ * The other difference is that although <code>&&</code> has a higher precedence than <code>||</code>, <code>and</code> and <code>or</code>
+ * have the same precedence. Thus although the <code>Boolean</code> expression <code>(a || b && c)</code> will evaluate the <code>&&</code> expression
+ * before the <code>||</code> expression, like <code>(a || (b && c))</code>, the following expression:
+ * </p>
+ * 
+ * <pre class="indent">
+ * collection should (contain element (7) or contain contain element (8) and have size (9))
+ * </pre>
+ * 
+ * Will evaluate left to right, as:
+ * 
+ * <pre class="indent">
+ * collection should ((contain element (7) or contain contain element (8)) and have size (9))
  * </pre>
  * 
  * <h2>Working with <code>Option</code>s</h2>
  * 
  * <p>
- * ScalaTest matchers has no special support for <code>Option</code>s, but you can 
+ * Other than the ability to use <code>be</code> to compare options for equality,
+ * ScalaTest matchers has no special support for <code>Option</code>s. Nevertheless, you can 
  * work with them quite easily using syntax shown previously. For example, if you wish to check
  * whether an option is <code>None</code>, you can write any of:
  * </p>
@@ -317,6 +397,7 @@ import Helper.newTestFailedException
  * option should equal (None)
  * option should be (None)
  * option should not be ('defined)
+ * option should be ('empty)
  * </pre>
  * 
  * <p>
@@ -335,6 +416,35 @@ import Helper.newTestFailedException
  * <pre class="indent">
  * option should be ('defined)
  * </pre>
+ * 
+ * <h2>Checking arbitrary properties with <code>have</code></h2>
+ * 
+ * <p>
+ * Using <code>have</code>, you can check properties of any type, where a <em>property</em> is an attribute of any
+ * object that can be retrieved either by a public field, method, or JavaBean-style <code>get</code>
+ * or <code>is</code> method, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * book should have (
+ *   'title ("Programming in Scala"),
+ *   'author (List("Odersky", "Spoon", "Venners")),
+ *   'pubYear (2008)
+ * )
+ * </pre>
+ * 
+ * <p>
+ * This expression will use reflection to ensure the title, author, and pubYear properties of object <code>book</code>
+ * are equal to the specified values. For example, it will ensure that <code>book</code> has either a public Java field or method
+ * named <code>title</code>, or a public method named <code>getTitle</code>, that when invoked (or accessed in the field case) results
+ * in a the string <code>"Programming in Scala"</code>. If all three properties exist and have their expected values, respectively,
+ * execution will continue. If one or more of the properties either does not exist, or exists but results in an unexpected value,
+ * a <code>TestFailedException</code> will be thrown that explains the problem.
+ * </p>
+ * 
+ * <p>
+ *  TODO: discuss <code>HavePropertyMatchers</code>
+ * </p>
  * 
  * <h2>Those pesky parens</h2>
  * 

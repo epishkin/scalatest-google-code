@@ -22,6 +22,8 @@ import java.lang.reflect.Field
 import scala.reflect.Manifest
 import Helper.transformOperatorChars
 
+// TODO: drop generic support for be as an equality comparison, in favor of specific ones.
+
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
 // to talk about method names, for example.
