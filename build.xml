@@ -8,7 +8,8 @@
     <!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
     <property name="classes" value="${jar.contents}" />
     <property name="generators" value="generators" />
-    <property name="build.generated" value="${build}/generated" />
+    <property name="build.generated.src" value="${build}/generated/src" />
+    <property name="build.generated.tests" value="${build}/generated/tests" />
     <property name="build.tests" value="${build}/tests" />
     <property name="build.generators" value="${build}/generators" />
     <property name="build.coverage" value="${build}/coverage" />
@@ -35,6 +36,8 @@
         <mkdir dir="${jar.contents}" />
         <mkdir dir="${build.tests}" />
         <mkdir dir="${build.generators}" />
+        <mkdir dir="${build.generated.src}" />
+        <mkdir dir="${build.generated.tests}" />
         <mkdir dir="${dist}" />
         <mkdir dir="${demodoc}" />
         <mkdir dir="${doc}" />
@@ -90,7 +93,7 @@
 
         <path id="scaladoc.source.path">
             <pathelement location="${src}" />
-            <pathelement location="${build.generated}" />
+            <pathelement location="${build.generated.src}" />
         </path>
 
         <path id="cobertura.class.path">
@@ -113,6 +116,7 @@
         <fsc srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
         <!-- Then, run it. -->
         <java classname="GenMustMatchers" classpathref="run.generators.class.path" fork="false" />
+        <java classname="GenMustMatchersTests" classpathref="run.generators.class.path" fork="false" />
     </target>
 
     <target name="compile" depends="compile-main, compile-tests"/>
@@ -122,8 +126,8 @@
         <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
         <fsc srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
-        <!-- Compile the Scala code from ${build.generated} into ${classes}. Scalac will parse any referenced .java files. -->
-        <fsc srcdir="${build.generated}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
+        <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
+        <fsc srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
         <!-- Compile the Java code from ${src} into ${classes} -->
         <javac srcdir="${src}" destdir="${classes}" classpathref="build.class.path" debug="yes">
@@ -137,6 +141,9 @@
 
         <!-- Compile the Scala code from ${tests} into ${build.tests} -->
         <fsc srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path"/>
+
+        <!-- Compile the Scala code from ${build.generated.tests} into ${classes}. Scalac will parse any referenced .java files. -->
+        <fsc srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" />
 
         <!-- Compile the Java code from ${tests} into ${build.tests} -->
         <javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
@@ -285,13 +292,7 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.BePropertyMatcherSpec" />
-
-            <arg value="-s" />
-            <arg value="org.scalatest.BeMatcherSpec" />
-
-            <arg value="-s" />
-            <arg value="org.scalatest.ShouldHavePropertiesSpec" />
+            <arg value="org.scalatest.ShouldBeMatcherSpec" />
 
 <!--
             <arg value="-s" />
