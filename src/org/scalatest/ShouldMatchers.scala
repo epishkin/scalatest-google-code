@@ -355,7 +355,7 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * In other words, the entire <code>and</code> or </code>or</code> expression is always evaluated, so you'll see any side effects
+ * In other words, the entire <code>and</code> or <code>or</code> expression is always evaluated, so you'll see any side effects
  * of the right-hand side even if evaluating
  * only the left-hand side is enough to determine the ultimate result of the larger expression. Failure messages produced by these
  * expressions will "short-circuit," however,
