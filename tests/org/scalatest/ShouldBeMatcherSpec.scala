@@ -57,6 +57,82 @@ class ShouldBeMatcherSpec extends Spec with ShouldMatchers with Checkers with Re
         }
         assert(caught2.getMessage === "5 was odd")
       }
+
+      it("should do nothing if a BeMatcher does not match, when used with not") {
+        2 should not be (odd)
+        1 should not be (even)
+        22 should not (not (be (even)))
+        1 should not (not (be (odd)))
+      }
+
+      it("should throw TestFailedException if a BeMatcher matches, when used with not") {
+
+        val caught1 = intercept[TestFailedException] {
+          3 should not be (odd)
+        }
+        assert(caught1.getMessage === "3 was odd")
+
+        val caught2 = intercept[TestFailedException] {
+          6 should not be (even)
+        }
+        assert(caught2.getMessage === "6 was even")
+
+        val caught3 = intercept[TestFailedException] {
+          6 should not (not (be (odd)))
+        }
+        assert(caught3.getMessage === "6 was even")
+      }
+
+      it("should do nothing if a BeMatcher matches, when used in a logical-and expression") {
+        1 should (be (odd) and be (odd))
+        1 should (be (odd) and (be (odd)))
+        2 should (be (even) and be (even))
+        2 should (be (even) and (be (even)))
+      }
+
+      it("should throw TestFailedException if a BeMatcher does not match, when used in a logical-or expression") {
+
+        val caught1 = intercept[TestFailedException] {
+          2 should (be (odd) or be (odd))
+        }
+        assert(caught1.getMessage === "2 was even, and 2 was even")
+
+        val caught2 = intercept[TestFailedException] {
+          2 should (be (odd) or (be (odd)))
+        }
+        assert(caught2.getMessage === "2 was even, and 2 was even")
+
+        val caught3 = intercept[TestFailedException] {
+          1 should (be (even) or be (even))
+        }
+        assert(caught3.getMessage === "1 was odd, and 1 was odd")
+
+        val caught4 = intercept[TestFailedException] {
+          1 should (be (even) or (be (even)))
+        }
+        assert(caught4.getMessage === "1 was odd, and 1 was odd")
+      }
+
+      it("should do nothing if at least one BeMatcher matches, when used in a logical-or expression") {
+
+        // both true
+        1 should (be (odd) or be (odd))
+        1 should (be (odd) or (be (odd)))
+        2 should (be (even) or be (even))
+        2 should (be (even) or (be (even)))
+
+        // first false
+        1 should (be (even) or be (odd))
+        1 should (be (even) or (be (odd)))
+        2 should (be (odd) or be (even))
+        2 should (be (odd) or (be (even)))
+
+        // second false
+        1 should (be (odd) or be (even))
+        1 should (be (odd) or (be (even)))
+        2 should (be (even) or be (odd))
+        2 should (be (even) or (be (odd)))
+      }
     }
   }
 }

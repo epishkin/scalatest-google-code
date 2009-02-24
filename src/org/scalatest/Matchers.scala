@@ -3071,6 +3071,8 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+// TODO: make everything that I can protected
+
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <code>ShouldMatchers</code> for an overview of
    * the matchers DSL.
@@ -3133,6 +3135,20 @@ trait Matchers extends Assertions { matchers =>
             left,
             comparison.right
           )
+        )
+      }
+    }
+
+    // 2 should not be (odd)
+    //              ^
+    def be(beMatcher: BeMatcher[T]) {
+      val result = beMatcher(left)
+      if (result.matches != shouldBeTrue) {
+        throw newTestFailedException(
+          if (shouldBeTrue)
+            result.failureMessage
+          else
+            result.negativeFailureMessage
         )
       }
     }
