@@ -23,34 +23,34 @@ import scala.reflect.BeanProperty
 
 class ShouldBeMatcherSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
+  class OddMatcher extends BeMatcher[Int] {
+    def apply(left: Int): MatchResult = {
+      MatchResult(
+        left % 2 == 1,
+        left.toString + " was even",
+        left.toString + " was odd"
+      )
+    }
+  }
+  val odd = new OddMatcher
+  val even = not (odd)
+
   // Checking for a specific size
   describe("The BeMatcher syntax") {
 
     describe("on an object with properties") {
 
-      val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
-      val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
-      val bookshelf = new Bookshelf(book, badBook, book)
+      it("should do nothing if a BeMatcher matches") {
+        1 should be (odd)
+        2 should be (even)
+      }
 
-      it("should throw TestFailedException if a \"be odd\" matcher is used with be and the Int isn't odd") {
-
-        class OddMatcher extends BeMatcher[Int] {
-          def apply(left: Int): MatchResult = {
-            MatchResult(
-              left % 2 == 1,
-              left.toString + " was even",
-              left.toString + " was odd"
-            )
-          }
-        }
-        val odd = new OddMatcher
+      it("should throw TestFailedException if a BeMatcher does not match") {
 
         val caught1 = intercept[TestFailedException] {
           4 should be (odd)
         }
         assert(caught1.getMessage === "4 was even")
-
-        val even = not (odd)
 
         val caught2 = intercept[TestFailedException] {
           5 should be (even)
