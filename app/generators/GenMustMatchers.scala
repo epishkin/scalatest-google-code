@@ -10,7 +10,15 @@ object GenMustMatchers extends Application {
   try {
     val shouldLines = Source.fromFile("src/org/scalatest/ShouldMatchers.scala").getLines.toList
     for (shouldLine <- shouldLines) {
-      val mustLine = shouldLine.replaceAll("should", "must").replaceAll("Should", "Must")
+      val temp1 = shouldLine.replaceAll("<code>must</code>", "<code>I_WAS_must_ORIGINALLY</code>")
+      val temp2 = temp1.replaceAll(
+        "<a href=\"MustMatchers.html\"><code>MustMatchers</code></a>",
+        "<a href=\"I_WAS_Must_ORIGINALLYMatchers.html\"><code>I_WAS_Must_ORIGINALLYMatchers</code></a>"
+      )
+      val temp3 = temp2.replaceAll("should", "must")
+      val temp4 = temp3.replaceAll("Should", "Must")
+      val temp5 = temp4.replaceAll("I_WAS_must_ORIGINALLY", "should")
+      val mustLine = temp5.replaceAll("I_WAS_Must_ORIGINALLY", "Should")
       writer.write(mustLine.toString)
     }
   }
