@@ -27,7 +27,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
       // Create a Rerunnable if the Suite has a no-arg constructor
       val hasPublicNoArgConstructor: Boolean =
         try {
-          val constructor: Constructor[_ <: AnyRef] = suite.getClass.getConstructor(Array[java.lang.Class[_]](): _*)
+          val constructor: Constructor[_] = suite.getClass.getConstructor(Array[java.lang.Class[_]](): _*)
           Modifier.isPublic(constructor.getModifiers())
         }
         catch {
