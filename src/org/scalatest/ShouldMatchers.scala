@@ -37,6 +37,31 @@ import Helper.newTestFailedException
  * This <code>TestFailedException</code> will cause the test to fail.
  * </p>
  * 
+ * <p>
+ * The <code>left should equal (right)</code> syntax works by calling == (<em>i.e.</em>, <code>equals</code>) on the <code>left</code>
+ * value, passing in the <code>right</code> value, on every type except arrays. If <code>left</code> is an array, <code>deepEquals</code>
+ * will be invoked on <code>left</code>, passing in <code>right</code>. Thus, even though this expression
+ * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
+ * </p>
+ * 
+ * <pre>
+ * Array(1, 2) == Array(1, 2) // yields false
+ * </pre>
+ *
+ * <p>
+ * The following expression will <em>not</em> result in a <code>TestFailedException</code>, because <code>deepEquals</code> compares
+ * the two arrays structurally, taking into consideration the equality of the array's contents:
+ * </p>
+ *
+ * <pre>
+ * Array(1, 2) should equal Array(1, 2) // succeeds (i.e., does not throw a TestFailedException)
+ * </pre>
+ *
+ * <p>
+ * If you ever do want to verify that two arrays are actually the same object (have the same identity), you can use the
+ * <code>be theSameInstanceAs</code> syntax, described below.
+ * </p>
+ *
  * <h2>Checking size and length</h2>
  * 
  * <p>
@@ -170,27 +195,13 @@ import Helper.newTestFailedException
  * See the documentation for <a href="BePropertyMatcher.html"><code>BePropertyMatcher</code></a> for more information.
  * </p>
  *
- * <h2>Be with arbitrary <code>BeMatchers</code></h2>
+ * <h2>Using custom <code>BeMatchers</code></h2>
  *
  * If you want to create a new way of using <code>be</code>, which doesn't map to an actual property on the
- * type you care about, you can create a <code>BeMatcher</code>. For example, 
- *
- * <pre>
- *  class OddMatcher extends BeMatcher[Int] {
- *    def apply(left: Int): MatchResult = {
- *      MatchResult(
- *        left % 2 == 1,
- *        left.toString + " was even",
- *        left.toString + " was odd"
- *      )
- *    }
- *  }
- *  val odd = new OddMatcher
- *  val even = not (odd)
- * </pre>
- *
- * <p>
- * Given this definition, you could check whether an <code>Int</code> was odd or even with expressions like:
+ * type you care about, you can create a <code>BeMatcher</code>. You could use this, for example, to create <code>BeMatcher[Int]</code>
+ * called <code>odd</code>, which would match any odd <code>Int</code>, and <code>even</code>, which would match
+ * any even <code>Int</code>. 
+ * Given this pair of <code>BeMatcher</code>s, you could check whether an <code>Int</code> was odd or even with expressions like:
  * </p>
  *
  * <pre>
@@ -312,7 +323,6 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * Note 
  * You can check the size of any Java <code>Collection</code> or <code>Map</code>, like this:
  * </p>
  * 
@@ -340,7 +350,7 @@ import Helper.newTestFailedException
  * </p>
  *
  * <p>
- * Despite this difference, the other (more commonly used) map matcher syntax works juse fine on Java <code>Map</code>s.
+ * Despite this difference, the other (more commonly used) map matcher syntax works just fine on Java <code>Map</code>s.
  * You can, for example, check whether a Java <code>Map</code> contains a particular key, or value, like this:
  * </p>
  * 
@@ -349,10 +359,6 @@ import Helper.newTestFailedException
  * javaMap should contain value ("Howdy")
  * </pre>
  * 
- * <p>
- * Mention JavaMaps don't support should contain element, as well as mentioning Java collection support.
- * </p>
- *
  * <h2>Be as an equality comparison</h2>
  * 
  * <p>
@@ -438,8 +444,8 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * Two differences exist between these <code>and</code> and <code>or</code> and the expressions you can write
- * on regular <code>Boolean</code>s using <code>&&</code> and <code>||</code>. First, expressions with <code>and</code>
+ * Two differences exist between expressions composed of these <code>and</code> and <code>or</code> operators and the expressions you can write
+ * on regular <code>Boolean</code>s using its <code>&&</code> and <code>||</code> operators. First, expressions with <code>and</code>
  * and <code>or</code> do not short-circuit. The following contrived expression, for example, would print <code>"hello, world!"</code>:
  * </p>
  *
@@ -472,10 +478,20 @@ import Helper.newTestFailedException
  * collection should (contain element (7) or contain contain element (8) and have size (9))
  * </pre>
  * 
+ * <p>
  * Will evaluate left to right, as:
+ * </p>
  * 
  * <pre class="indent">
  * collection should ((contain element (7) or contain contain element (8)) and have size (9))
+ * </pre>
+ * 
+ * <p>
+ * If you really want the <code>and</code> part to be evaluated first, you'll need to put in parentheses, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * collection should (contain element (7) or (contain contain element (8) and have size (9)))
  * </pre>
  * 
  * <h2>Working with <code>Option</code>s</h2>
@@ -499,7 +515,7 @@ import Helper.newTestFailedException
  * 
  * <pre class="indent">
  * option should equal (Some("hi"))
- * option should be (Some("ho"))
+ * option should be (Some("hi"))
  * </pre>
  * 
  * <p>
