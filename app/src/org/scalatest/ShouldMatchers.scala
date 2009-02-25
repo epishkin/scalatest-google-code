@@ -763,7 +763,7 @@ import Helper.newTestFailedException
  *   author (List("Odersky", "Spoon", "Venners")),
  *   pubYear (2008)
  * <span style="color: #CC3300; font-weight: bold">)</span>
- * javaList should have length (9)
+ * javaList should have length (9) // parens optional for length and size
  * </pre>
  *
  * <p>
