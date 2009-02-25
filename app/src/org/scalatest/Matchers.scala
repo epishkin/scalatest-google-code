@@ -4024,7 +4024,14 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
-// Maybe I could get rid of this one, and just use wasNot
+/* Well heck if I don't need this one
+      [fsc] both method apply in class BeWord of type [T](org.scalatest.BePropertyMatcher[T])org.scalatest.Matcher[T]
+      [fsc] and  method apply in class BeWord of type [T](org.scalatest.BeMatcher[T])org.scalatest.Matcher[T]
+      [fsc] match argument types (Null)
+      [fsc]         o should be (null)
+      [fsc]                  ^
+*/
+
     def apply(o: Null) = 
       new Matcher[AnyRef] {
         def apply(left: AnyRef) = {
@@ -4053,7 +4060,9 @@ trait Matchers extends Assertions { matchers =>
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, false, false)
       }
 
+/*
     // Yes, this one I want to say was not Nil, or maybe not, because Nil is not Nil.toString
+    // Dropping to just say List()
     def apply(right: Nil.type): Matcher[List[_]] =
       new Matcher[List[_]] {
         def apply(left: List[_]) = {
@@ -4064,6 +4073,7 @@ trait Matchers extends Assertions { matchers =>
           )
         }
       }
+*/
 
     def apply[T](right: BeMatcher[T]): Matcher[T] =
       new Matcher[T] {
@@ -4095,6 +4105,14 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[Any] {
         def apply(left: Any) =
           left match {
+            case null =>
+              MatchResult(
+                left == null,
+                FailureMessages("wasNotNull", left),
+                FailureMessages("wasNull"),
+                FailureMessages("wasNotNull", left),
+                FailureMessages("midSentenceWasNull")
+              )
             case leftArray: Array[_] => 
               MatchResult(
                 leftArray.deepEquals(right),

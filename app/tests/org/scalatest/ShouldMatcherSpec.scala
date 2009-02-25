@@ -68,7 +68,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
           val o: String = null
           o should not { be (null) }
         }
-        assert(caught1.getMessage === "null was null")
+        assert(caught1.getMessage === "The reference on which should or must was invoked was null")
       }
 
       it("should work when used in a logical expression") {
@@ -91,7 +91,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught1 = intercept[TestFailedException] {
           nonEmptyList should be (Nil)
         }
-        assert(caught1.getMessage === "List(Helloooooo) was not Nil")
+        assert(caught1.getMessage === "List(Helloooooo) was not equal to List()")
         val caught2 = intercept[TestFailedException] {
           nonEmptyList should equal (Nil)
         }
@@ -109,7 +109,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught1 = intercept[TestFailedException] {
           emptyList should not { be (Nil) }
         }
-        assert(caught1.getMessage === "List() was Nil")
+        assert(caught1.getMessage === "List() was equal to List()")
 
         val caught3 = intercept[TestFailedException] {
           emptyList should not { equal (Nil) }
