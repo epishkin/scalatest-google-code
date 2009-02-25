@@ -18,6 +18,7 @@ package org.scalatest
 import scala.reflect.Manifest
 import Helper.newTestFailedException
 
+// TODO: mention be as an equality will fail with messages that include "equal to" ... was not equal to ...
 /**
  * <p>
  * Trait that provides a domain specific language (DSL) for expressing assertions in tests
@@ -405,6 +406,27 @@ import Helper.newTestFailedException
  *
  * <pre class="indent">
  * Array(1, 2) should be (Array(1, 2)) // succeeds (i.e., does not throw TestFailedException)
+ * </pre>
+ *
+ * <p>
+ * Because <code>be</code> is used in several ways in ScalaTest matcher syntax, just as it is used in many ways in English, one
+ * potential point of confusion in the event of a failure is determining whether <code>be</code> was being used as an equality comparison or
+ * in some other way, such as a property assertion. To make it more obvious when <code>be</code> is being used for equality, the failure
+ * messages generated for those equality checks will include the word <code>equal</code> in them. For example, if this expression fails with a
+ * <code>TestFailedException</code>:
+ * </p>
+ *
+ * <pre class="indent">
+ * option should be (Some(1))
+ * </pre>
+ *
+ * <p>
+ * The detail message in that <code>TestFailedException</code> will include the words <code>"equal to"</code> to signify <code>be</code>
+ * was in this case being used for equality comparison:
+ * </p>
+ *
+ * <pre class="indent">
+ * Some(2) was not equal to Some(1)
  * </pre>
  *
  * <h2>Being negative</h2>
