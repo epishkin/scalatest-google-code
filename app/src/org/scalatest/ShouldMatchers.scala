@@ -33,15 +33,14 @@ import Helper.newTestFailedException
  * Here <code>object</code> is a variable, and can be of any type. If the object is an
  * <code>Int</code> with the value 3, execution will continue (<em>i.e.</em>, the expression will result
  * in the unit value, <code>()</code>). Otherwise, a <code>TestFailedException</code>
- * will be thrown with a detail message that explains the problem, such as <code>"7 did not equal 3"</code> if the 
- * object was an <code>Int</code> with the value 7. This
- * <code>TestFailedException</code> will cause the test to fail.
+ * will be thrown with a detail message that explains the problem, such as <code>"7 did not equal 3"</code>.
+ * This <code>TestFailedException</code> will cause the test to fail.
  * </p>
  * 
  * <h2>Checking size and length</h2>
  * 
  * <p>
- * You can check for a size of length of just about any type of object for which it
+ * You can check the size or length of just about any type of object for which it
  * would make sense. Here's how checking for length looks:
  * </p>
  * <pre class="indent">
@@ -49,14 +48,21 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * This syntax can be used with any object that has a field or method named <code>length</code>
- * or a method named <code>getLength</code>. (The Scala compiler will check for this at compile
- * time.) Size is similar:
+ *Size is similar:
  * </p>
  * 
  * <pre class="indent">
  * object should have size (10)
  * </pre>
+ * 
+ * <p>
+ * The <code>length</code> syntax can be used with any object that has a field or method named <code>length</code>
+ * or a method named <code>getLength</code>.   Similarly, the <code>size</code> syntax can be used with any
+ * object that has a field or method named <code>size</code> or a method named <code>getSize</code>.
+ * The type of a <code>length</code> or <code>size</code> field, or return type of a method, must be either <code>Int</code>
+ * or <code>Long</code>. Any such method must take no parameters. (The Scala compiler will ensure at compile time that
+ * the object on which should is being invoked has the appropriate structure.)
+ * </p>
  * 
  * <h2>Checking strings</h2>
  * 
@@ -84,9 +90,9 @@ import Helper.newTestFailedException
  * 
  * <h2>Greater and less than</h2>
  * <p>
- * You can check whether any type that either is, or can be implicitly converted to,
+ * You can check whether any type that is, or can be implicitly converted to,
  * an <code>Ordered[T]</code> is greater than, less than, greater than or equal, or less
- * than or equal to a value of type <code>T</code>, like this: 
+ * than or equal to a value of type <code>T</code>. The syntax is:
  * </p>
  * <pre class="indent">
  * one should be < (7)
@@ -112,9 +118,9 @@ import Helper.newTestFailedException
  * 
  * Given this code, ScalaTest will use reflection to look on the object referenced from
  * <code>emptySet</code> for a method that takes no parameters and results in <code>Boolean</code>,
- * with either the name <code>empty</code> or <code>isEmpty</code>. If found, it invokes
- * that method. If the method returns <code>true</code>, execution continues. But if it returns
- * <code>false</code>, a <code>TestFailedException</code> will be thrown that will contain a detail message like:
+ * with either the name <code>empty</code> or <code>isEmpty</code>. If found, it will invoke
+ * that method. If the method returns <code>true</code>, execution will continue. But if it returns
+ * <code>false</code>, a <code>TestFailedException</code> will be thrown that will contain a detail message, such as:
  * 
  * <pre class="indent">
  * Set(1, 2, 3) was not empty</code>
@@ -158,10 +164,41 @@ import Helper.newTestFailedException
  * 
  * <p>
  * These expressions would fail to compile if <code>should</code> is used on an inappropriate type, as determined
- * by the type parameter of each <code>BePropertyMatcher</code>. If used with an appropriate type, they will compile
+ * by the type parameter of the <code>BePropertyMatcher</code> being used. (For example, <code>file</code> in this example
+ * would likely be of type <code>BePropertyMatcher[java.util.File]</code>. If used with an appropriate type, such an expression will compile
  * and at run time the <code>Boolean</code> property method or field will be accessed directly; <em>i.e.</em>, no reflection will be used.
- * See the documentation for <code>BePropertyMatcher</code> for more information.
+ * See the documentation for <a href="BePropertyMatcher.html"><code>BePropertyMatcher</code></a> for more information.
  * </p>
+ *
+ * <h2>Be with arbitrary <code>BeMatchers</code></h2>
+ *
+ * If you want to create a new way of using <code>be</code>, which doesn't map to an actual property on the
+ * type you care about, you can create a <code>BeMatcher</code>. For example, 
+ *
+ * <pre>
+ *  class OddMatcher extends BeMatcher[Int] {
+ *    def apply(left: Int): MatchResult = {
+ *      MatchResult(
+ *        left % 2 == 1,
+ *        left.toString + " was even",
+ *        left.toString + " was odd"
+ *      )
+ *    }
+ *  }
+ *  val odd = new OddMatcher
+ *  val even = not (odd)
+ * </pre>
+ *
+ * <p>
+ * Given this definition, you could check whether an <code>Int</code> was odd or even with expressions like:
+ * </p>
+ *
+ * <pre>
+ * num should be (odd)
+ * num should not be (even)
+ * </pre>
+ *
+ * For more information, see the documentation for <a href="BeMatcher.html"><code>BeMatcher</code></a>.
  *
  * <h2>Checking object identity</h2>
  * 
@@ -254,15 +291,74 @@ import Helper.newTestFailedException
  * 
  * <h2>Java collections and maps</h2>
  * 
- * <p>TODO: fill this in.
+ * <p>
+ * You can use similar syntax on Java collections (<code>java.util.Collection</code>) and maps (<code>java.util.Map</code>).
+ * For example, you can check whether a Java <code>Collection</code> or <code>Map</code> is <code>empty</code>,
+ * like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * javaCollection should be ('empty)
+ * javaMap should be ('empty)
+ * </pre>
+ * 
+ * <p>
+ * Even though Java's <code>List</code> type doesn't actually have a <code>length</code> or <code>getLength</code> method,
+ * you can nevertheless check the length of a Java <code>List</code> (<code>java.util.List</code>) like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * javaList should have length (9)
+ * </pre>
+ * 
+ * <p>
+ * Note 
+ * You can check the size of any Java <code>Collection</code> or <code>Map</code>, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * javaMap should have size (20)
+ * javaSet should have size (90)
+ * </pre>
+ * 
+ * <p>
+ * In addition, you can check whether a Java <code>Collection</code> contains a particular
+ * element, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * javaCollection should contain element ("five")
+ * </pre>
+ * 
+ * <p>
+ * One difference to note between the syntax supported on Java collections and that of Scala
+ * iterables is that you can't use <code>contain element (...)</code> syntax with a Java <code>Map</code>.
+ * Java differs from Scala in that its <code>Map</code> is not a subtype of its <code>Collection</code> type.
+ * If you want to check that a Java <code>Map</code> contains a specific key/value pair, the best approach is
+ * to invoke <code>entrySet</code> on the Java <code>Map</code> and check that entry set for the appropriate
+ * element (a <code>java.util.Map.Entry</code>) using <code>contain element (...)</code>.
+ * </p>
+ *
+ * <p>
+ * Despite this difference, the other (more commonly used) map matcher syntax works juse fine on Java <code>Map</code>s.
+ * You can, for example, check whether a Java <code>Map</code> contains a particular key, or value, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * javaMap should contain key (1)
+ * javaMap should contain value ("Howdy")
+ * </pre>
+ * 
+ * <p>
  * Mention JavaMaps don't support should contain element, as well as mentioning Java collection support.
  * </p>
  *
  * <h2>Be as an equality comparison</h2>
  * 
  * <p>
- * In a few specific cases, <code>be</code> can be used as an equality comparison, because it enables syntax
- * that sounds more natural than using <code>equals</code>. For example, instead of writing: 
+ * All uses of <code>be</code> other than those shown previously perform an equality comparison. In other words, they work
+ * the same as <code>equals</code>. This redundance between <code>be</code> and <code>equals</code> exists because it enables syntax
+ * that sometimes sounds more natural. For example, instead of writing: 
  * </p>
  * 
  * <pre class="indent">
@@ -279,8 +375,7 @@ import Helper.newTestFailedException
  * 
  * <p>
  * (Hopefully you won't write that too much given <code>null</code> is error prone, and <code>Option</code>
- * is usually a better, well, option.) In addition to <code>null</code>, you can use <code>be</code> for equality
- * comparison of value types (<code>AnyVal</code>s), <code>Option</code>s, and <code>Nil</code>, the empty <code>List</code>.
+ * is usually a better, well, option.) 
  * Here are some other examples of <code>be</code> used for equality comparison:
  * </p>
  * 
@@ -293,10 +388,6 @@ import Helper.newTestFailedException
  * option should be (Some(1))
  * </pre>
  * 
- * <p>
- * For an equality assertion with any other type, you must use <code>equals</code>.
- * </p>
- *
  * <h2>Being negative</h2>
  * 
  * <p>
@@ -315,7 +406,7 @@ import Helper.newTestFailedException
  * 
  * <p>
  * You can also combine matcher expressions with <code>and</code> and/or <code>or</code>, however,
- * you must place parentheses or curly braces around the <code>and</code>-ed or <code>or</code>-ed expression. For example, 
+ * you must place parentheses or curly braces around the <code>and</code> or <code>or</code> expression. For example, 
  * this <code>and</code>-expression would not compile, because the parentheses are missing:
  * </p>
  * 
@@ -324,7 +415,7 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * Instead, you'd need to write:
+ * Instead, you need to write:
  * </p>
  * 
  * <pre class="indent">
@@ -361,7 +452,8 @@ import Helper.newTestFailedException
  * of the right-hand side even if evaluating
  * only the left-hand side is enough to determine the ultimate result of the larger expression. Failure messages produced by these
  * expressions will "short-circuit," however,
- * mentioning only the left-hand side if that's enough to determine the result of the entire expression. This behavior is intended
+ * mentioning only the left-hand side if that's enough to determine the result of the entire expression. This "short-circuiting" behavior
+ * of failure messages is intended
  * to make it easier and quicker for you to ascertain which part of the expression caused the failure. The failure message for the previous
  * expression, for example, would be:
  * </p>
@@ -389,8 +481,7 @@ import Helper.newTestFailedException
  * <h2>Working with <code>Option</code>s</h2>
  * 
  * <p>
- * Other than the ability to use <code>be</code> to compare options for equality,
- * ScalaTest matchers has no special support for <code>Option</code>s. Nevertheless, you can 
+ * ScalaTest matchers has no special support for <code>Option</code>s, but you can 
  * work with them quite easily using syntax shown previously. For example, if you wish to check
  * whether an option is <code>None</code>, you can write any of:
  * </p>
@@ -436,7 +527,7 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * This expression will use reflection to ensure the title, author, and pubYear properties of object <code>book</code>
+ * This expression will use reflection to ensure the <code>title</code>, <code>author</code>, and <code>pubYear</code> properties of object <code>book</code>
  * are equal to the specified values. For example, it will ensure that <code>book</code> has either a public Java field or method
  * named <code>title</code>, or a public method named <code>getTitle</code>, that when invoked (or accessed in the field case) results
  * in a the string <code>"Programming in Scala"</code>. If all three properties exist and have their expected values, respectively,
@@ -445,7 +536,13 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <p>
- *  TODO: discuss <code>HavePropertyMatchers</code>
+ *  TODO: discuss <code>HavePropertyMatcher</code>s
+ * </p>
+ * 
+ * <h2>Custom matchers</h2>
+ * 
+ * <p>
+ *  TODO: discuss <code>Matcher</code>s
  * </p>
  * 
  * <h2>Those pesky parens</h2>
