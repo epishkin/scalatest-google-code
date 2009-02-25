@@ -684,14 +684,24 @@ import Helper.newTestFailedException
  * </p>
  *
  * <p>
- * 1. You must always put parentheses around <code>and</code> and <code>or</code> expressions, as in:
+ * 1. Although you don't always need them, it is recommended style to always put parentheses
+ * around right-hand values, such as the <code>7</code> in <code>num should equal (7)</code>:
  * </p>
  *
  * <pre class="indent">
- * catMap should <span style="color: #CC3300; font-weight: bold">(</span>contain key (9) and contain value ("lives")<span style="color: #CC3300; font-weight: bold">)</span>
- * number should <span style="color: #CC3300; font-weight: bold">(</span>equal (2) or equal (4) or equal (8)<span style="color: #CC3300; font-weight: bold">)</span>
+ * result should equal <span style="color: #CC3300; font-weight: bold">(</span>4<span style="color: #CC3300; font-weight: bold">)</span>
+ * array should have length <span style="color: #CC3300; font-weight: bold">(</span>3<span style="color: #CC3300; font-weight: bold">)</span>
+ * book should have (
+ *   'title <span style="color: #CC3300; font-weight: bold">(</span>"Programming in Scala"<span style="color: #CC3300; font-weight: bold">)</span>,
+ *   'author <span style="color: #CC3300; font-weight: bold">(</span>List("Odersky", "Spoon", "Venners")<span style="color: #CC3300; font-weight: bold">)</span>,
+ *   'pubYear <span style="color: #CC3300; font-weight: bold">(</span>2008<span style="color: #CC3300; font-weight: bold">)</span>
+ * )
+ * option should be <span style="color: #CC3300; font-weight: bold">(</span>'defined<span style="color: #CC3300; font-weight: bold">)</span>
+ * catMap should (contain key <span style="color: #CC3300; font-weight: bold">(</span>9<span style="color: #CC3300; font-weight: bold">)</span> and contain value <span style="color: #CC3300; font-weight: bold">(</span>"lives"<span style="color: #CC3300; font-weight: bold">)</span>)</span>
+ * keyEvent should be an <span style="color: #CC3300; font-weight: bold">(</span>'actionKey<span style="color: #CC3300; font-weight: bold">)</span>
+ * javaSet should have size <span style="color: #CC3300; font-weight: bold">(</span>90<span style="color: #CC3300; font-weight: bold">)</span>
  * </pre>
- * 
+ *
  * <p>
  * 2. Except for <code>length</code> and <code>size</code>, you must always put parentheses around
  * the list of one or more property values following a <code>have</code>:
@@ -708,7 +718,16 @@ import Helper.newTestFailedException
  * </pre>
  *
  * <p>
- * 3. Although you don't always need them, it is recommended style to always put parentheses
+ * 3. You must always put parentheses around <code>and</code> and <code>or</code> expressions, as in:
+ * </p>
+ *
+ * <pre class="indent">
+ * catMap should <span style="color: #CC3300; font-weight: bold">(</span>contain key (9) and contain value ("lives")<span style="color: #CC3300; font-weight: bold">)</span>
+ * number should <span style="color: #CC3300; font-weight: bold">(</span>equal (2) or equal (4) or equal (8)<span style="color: #CC3300; font-weight: bold">)</span>
+ * </pre>
+ * 
+ * <p>
+ * 4. Although you don't always need them, it is recommended style to always put parentheses
  * around custom <code>Matcher</code>s when they appear directly after <code>not</code>:
  * </p>
  * 
@@ -719,25 +738,6 @@ import Helper.newTestFailedException
  * file should (not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span> and have ('name ("temp.txt"))
  * file should (have ('name ("temp.txt") or exist)
  * file should (have ('name ("temp.txt") or not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span>)
- * </pre>
- *
- * <p>
- * 4. Although you don't always need them, it is recommended style to always put parentheses
- * around right-hand values, such as the <code>7</code> in <code>num should equal (7)</code>:
- * </p>
- *
- * <pre class="indent">
- * result should equal <span style="color: #CC3300; font-weight: bold">(</span>4<span style="color: #CC3300; font-weight: bold">)</span>
- * array should have length <span style="color: #CC3300; font-weight: bold">(</span>3<span style="color: #CC3300; font-weight: bold">)</span>
- * book should have (
- *   'title <span style="color: #CC3300; font-weight: bold">(</span>"Programming in Scala"<span style="color: #CC3300; font-weight: bold">)</span>,
- *   'author <span style="color: #CC3300; font-weight: bold">(</span>List("Odersky", "Spoon", "Venners")<span style="color: #CC3300; font-weight: bold">)</span>,
- *   'pubYear <span style="color: #CC3300; font-weight: bold">(</span>2008<span style="color: #CC3300; font-weight: bold">)</span>
- * )
- * option should be <span style="color: #CC3300; font-weight: bold">(</span>'defined<span style="color: #CC3300; font-weight: bold">)</span>
- * catMap should (contain key <span style="color: #CC3300; font-weight: bold">(</span>9<span style="color: #CC3300; font-weight: bold">)</span> and contain value <span style="color: #CC3300; font-weight: bold">(</span>"lives"<span style="color: #CC3300; font-weight: bold">)</span>)</span>
- * keyEvent should be an <span style="color: #CC3300; font-weight: bold">(</span>'actionKey<span style="color: #CC3300; font-weight: bold">)</span>
- * javaSet should have size <span style="color: #CC3300; font-weight: bold">(</span>90<span style="color: #CC3300; font-weight: bold">)</span>
  * </pre>
  *
  */
