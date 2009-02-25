@@ -54,7 +54,7 @@ import Helper.newTestFailedException
  * </p>
  *
  * <pre>
- * Array(1, 2) should equal Array(1, 2) // succeeds (i.e., does not throw a TestFailedException)
+ * Array(1, 2) should equal (Array(1, 2)) // succeeds (i.e., does not throw a TestFailedException)
  * </pre>
  *
  * <p>
@@ -396,6 +396,15 @@ import Helper.newTestFailedException
  * option should be (Some(1))
  * </pre>
  * 
+ * <p>
+ * As with <code>equal</code>, using <code>be</code> on arrays results in <code>deepEquals</code> being called, not <code>equals</code>. As a result,
+ * the following expression would <em>not</em> throw a <code>TestFailedException</code>:
+ * </p>
+ *
+ * <pre class="indent">
+ * Array(1, 2) should be (Array(1, 2)) // succeeds (i.e., does not throw a TestFailedException)
+ * </pre>
+ *
  * <h2>Being negative</h2>
  * 
  * <p>
