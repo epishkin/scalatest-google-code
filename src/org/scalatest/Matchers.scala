@@ -40,27 +40,6 @@ private[scalatest] object UnquotedString {
 
 private[scalatest] object Helper {
 
-  def equalAndBeAnyMatcher(right: Any, equaledResourceName: String, didNotEqualResourceName: String) = {
-
-      new Matcher[Any] {
-        def apply(left: Any) =
-          left match {
-            case leftArray: Array[_] => 
-              MatchResult(
-                leftArray.deepEquals(right),
-                FailureMessages(didNotEqualResourceName, left, right),
-                FailureMessages(equaledResourceName, left, right)
-              )
-            case _ => 
-              MatchResult(
-                left == right,
-                FailureMessages(didNotEqualResourceName, left, right),
-                FailureMessages(equaledResourceName, left, right)
-              )
-        }
-      }
-  }
-
   def newTestFailedException(message: String): TestFailedException = {
     val fileNames = List("Matchers.scala", "ShouldMatchers.scala", "MustMatchers.scala")
     val temp = new RuntimeException
@@ -3819,8 +3798,26 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  // TODO Mention that Arrays get deep comparisons here and be Any and in the ShouldMatchers overview
   def equal(right: Any): Matcher[Any] =
-    Helper.equalAndBeAnyMatcher(right, "equaled", "didNotEqual")
+      new Matcher[Any] {
+        def apply(left: Any) =
+          left match {
+            case leftArray: Array[_] => 
+              MatchResult(
+                leftArray.deepEquals(right),
+                FailureMessages("didNotEqual", left, right),
+                FailureMessages("equaled", left, right)
+              )
+            case _ => 
+              MatchResult(
+                left == right,
+                FailureMessages("didNotEqual", left, right),
+                FailureMessages("equaled", left, right)
+              )
+        }
+      }
+
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -4093,9 +4090,25 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-// This is the guy
+// This is the guy XXX
     def apply(right: Any): Matcher[Any] =
-      Helper.equalAndBeAnyMatcher(right, "wasEqualTo", "wasNotEqualTo")
+      new Matcher[Any] {
+        def apply(left: Any) =
+          left match {
+            case leftArray: Array[_] => 
+              MatchResult(
+                leftArray.deepEquals(right),
+                FailureMessages("wasNotEqualTo", left, right),
+                FailureMessages("wasEqualTo", left, right)
+              )
+            case _ => 
+              MatchResult(
+                left == right,
+                FailureMessages("wasNotEqualTo", left, right),
+                FailureMessages("wasEqualTo", left, right)
+              )
+        }
+      }
   }
 
   /**
