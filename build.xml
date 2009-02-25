@@ -242,7 +242,7 @@
             <arg value="${build.tests} ${classes}" />
 
             <arg value="-g" />
-            <arg value="-o" />
+            <!--<arg value="-o" />-->
 
             <arg value="-m" />
             <arg value="org.scalatest" />
