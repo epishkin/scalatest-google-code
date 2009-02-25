@@ -155,6 +155,8 @@ import Helper.newTestFailedException
  * This <code>be</code> syntax can be used with any type.  If the object does
  * not have an appropriately named predicate method, you'll get a <code>TestFailedException</code>
  * at runtime with a detail message that explains the problem.
+ * (For the details on how a field or method is selected during this
+ * process, see the documentation for <a href="Matchers.BeWord.html"><code>BeWord</code></a>.)
  * </p>
  * 
  * <p>
@@ -177,7 +179,7 @@ import Helper.newTestFailedException
  * <pre class="indent">
  * keyEvent should be an ('actionKey)
  * </pre>
- *
+ * 
  * <p>
  * If you prefer to check <code>Boolean</code> properties in a type-safe manner, you can use a <code>BePropertyMatcher</code>.
  * This would allow you to write expressions such as:
@@ -559,28 +561,29 @@ import Helper.newTestFailedException
  * named <code>title</code>, or a public method named <code>getTitle</code>, that when invoked (or accessed in the field case) results
  * in a the string <code>"Programming in Scala"</code>. If all specified properties exist and have their expected values, respectively,
  * execution will continue. If one or more of the properties either does not exist, or exists but results in an unexpected value,
- * a <code>TestFailedException</code> will be thrown that explains the problem.
+ * a <code>TestFailedException</code> will be thrown that explains the problem. (For the details on how a field or method is selected during this
+ * process, see the documentation for <a href="Matchers.HavePropertyMatcherGenerator.html"><code>HavePropertyMatcherGenerator</code></a>.)
  * </p>
  * 
  * <p>
  * When you use this syntax, you must place one or more property values in parentheses after <code>have</code>, seperated by commas, where a <em>property
  * value</em> is a symbol indicating the name of the property followed by the expected value in parentheses. The only exceptions to this rule is the syntax
  * for checking size and length shown previously, which does not require parentheses. If you forget and put parentheses in, however, everything will
- * still work as you'd expect. Thus you could write:
- * </p>
- *
- * <pre class="indent">
- * array should have (length (3))
- * set should have (size (90))
- * </pre>
- * 
- * <p>
- * instead of:
+ * still work as you'd expect. Thus instead of writing:
  * </p>
  *
  * <pre class="indent">
  * array should have length (3)
  * set should have size (90)
+ * </pre>
+ * 
+ * <p>
+ * You can alternatively, write:
+ * </p>
+ *
+ * <pre class="indent">
+ * array should have (length (3))
+ * set should have (size (90))
  * </pre>
  * 
  * <p>
@@ -623,12 +626,42 @@ import Helper.newTestFailedException
  * See the documentation for <a href="HavePropertyMatcher.html"><code>HavePropertyMatcher</code></a> for more information.
  * </p>
  *
- * <h2>Custom matchers</h2>
+ * <h2>Using custom matchers</h2>
  * 
  * <p>
- *  TODO: discuss <code>Matcher</code>s
+ * If none of the built-in matcher syntax (or options shown so far for extending the syntax) satisfy a particular need you have, you can create
+ * custom <code>Matcher</code>s that allow
+ * you to place your own syntax directly after <code>should</code>. For example, class <code>java.util.File</code> has a method <code>exists</code>, which
+ * indicates whether a file of a certain path and name exists. Because the <code>exists</code> method takes no parameters and returns <code>Boolean</code>,
+ * you can call it using <code>be</code> with a symbol or <code>BePropertyMatcher</code>, yielding assertions like:
  * </p>
  * 
+ * <pre class="indent">
+ * file should be ('exists)  // using a symbol
+ * file should be (inExistance)   // using a BePropertyMatcher
+ * </pre>
+ * 
+ * <p>
+ * Although these expressions will achieve your goal of throwing a <code>TestFailedException</code> if the file does not exist, they don't produce
+ * the most readable code because the English is either incorrect or awkward. In this case, you might want to create a
+ * custom <code>Matcher[java.util.File]</code>
+ * named <code>exist</code>, which you could then use to write expressions like:
+ * </p>
+ *
+ * <pre class="indent">
+ * // using a plain-old Matcher
+ * file should exist
+ * file should not (exist)
+ * file should (exist and have ('name ("temp.txt"))
+ * </pre>
+ * 
+ * <p>
+ * Note that when you use custom <code>Matcher</code>s, you will need to put parentheses around the custom matcher in more cases than with
+ * the built-in syntax. For example you will usually need the parentheses after <code>not</code>, as shown above. (There's no penalty for
+ * always surrounding custom matchers with parentheses, and if you ever leave them off when they are needed, you'll get a compiler error.)
+ * For more information, please see the documentation for the <a href="Matcher.html"><code>Matcher</code></a> trait.
+ * </p>
+ *
  * <h2>Those pesky parens</h2>
  * 
  * <p>
@@ -810,7 +843,7 @@ trait ShouldMatchers extends Matchers {
 
   protected trait ShouldContainWordForJavaCollectionMethods[T] {
     protected val leftOperand: java.util.Collection[T]
-    // javaList should contain element (2)
+   // javaList should contain element (2) 
     //          ^
     def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] = {
       new ResultOfContainWordForJavaCollection(leftOperand, true)

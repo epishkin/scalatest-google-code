@@ -26,6 +26,8 @@ import Helper.transformOperatorChars
 // TODO: mention on JUnit and TestNG docs that you can now mix in ShouldMatchers or MustMatchers
 // TODO: Rename negatedFailureMessage to oppositeFailureMessage, and explain it better in the doc comments
 // TODO: Put the TFE info in print reporter output too
+// TODO: Put links from ShouldMatchers to wherever I reveal the matrix and algo of how properties are checked dynamically.
+// TODO: double check that I wrote tests for (length (7)) and (size (8)) in parens
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
@@ -2425,6 +2427,7 @@ trait Matchers extends Assertions { matchers =>
   // then represents an object with an apply method. So it gives an apply method to symbols.
   // book should have ('author ("Gibson"))
   //                   ^ // Basically this 'author symbol gets converted into this class, and its apply  method takes "Gibson"
+  // TODO, put the documenation of the details of the algo for selecting a method or field to use here.
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
