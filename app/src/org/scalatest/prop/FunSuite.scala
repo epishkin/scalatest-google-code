@@ -26,9 +26,37 @@ import org.scalacheck.Test
 import org.scalacheck.Test._
 
 /**
- * <strong>Deprecated: mix in <code>Checkers</code> and make explicit calls to <code>check</code> instead. This trait will be removed in a future version of ScalaTest.</strong> A <code>FunSuite</code> subtrait that provides methods that perform
+ * <strong>Deprecated: mix in <code>Checkers</code> and make explicit calls to <code>check</code> instead. This trait will be removed in a future version of ScalaTest.</strong>
+ *
+ * <p>
+ * So instead of this:
+ *
+ * <pre>
+ *   test(
+ *     "list concatenation using a test method",
+ *     (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
+ *   )
+ * </pre>
+ * <p>
+ * You'd say this:
+ * </p>
+ * <pre>
+ *   test("list concatenation using a test method") {
+ *     check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+ *   }
+ * </pre>
+ *
+ * <p>
+ * I decided that this form isn't much more difficult to write, and is more readable because it looks like any
+ * other test function, and always having the word "check" present when there's a property check is a good signal
+ * that ScalaCheck is being used. I will delete PropSuite in a future release of ScalaTest.
+ * </p>
+ *
+ * <p>
+ * A <code>FunSuite</code> subtrait that provides methods that perform
  * ScalaCheck property checks.
  * If ScalaCheck, when invoked via one of the methods provided by <cod>FunSuite</code>, finds a test case for which a property doesn't hold, the problem will be reported as a ScalaTest test failure.
+ * </p>
  * 
  * <p>
  * To use ScalaCheck, you specify properties and, in some cases, generators that generate test data. Often you need not 

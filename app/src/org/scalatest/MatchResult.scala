@@ -20,33 +20,28 @@ package org.scalatest
  *
  * @param matches indicates whether or not the compared values matched
  * @param failureMessage if a match was intended (x should match), but did not match
- * @param negativeFailureMessage if a match was not intended (x should not { match }), but matched
+ * @param negatedFailureMessage if a match was not intended (x should not { match }), but matched
  */
 case class MatchResult(
   matches: Boolean,
   failureMessage: String,
-  negativeFailureMessage: String,
+  negatedFailureMessage: String,
   midSentenceFailureMessage: String,
-  midSentenceNegativeFailureMessage: String
+  midSentenceNegatedFailureMessage: String
 ) {
-  def this(matches: Boolean, failureMessage: String, negativeFailureMessage: String) =
+  def this(matches: Boolean, failureMessage: String, negatedFailureMessage: String) =
     this(
       matches,
       failureMessage,
-      negativeFailureMessage,
+      negatedFailureMessage,
       failureMessage,
-      negativeFailureMessage
+      negatedFailureMessage
     )
 }
 
 object MatchResult {
 
-/*
-  def apply(matches: Boolean, failureMessage: String, negativeFailureMessage: String, midSentenceFailureMessage: String, midSentenceNegativeFailureMessage: String): MatchResult =
-    new MatchResult(matches, failureMessage, negativeFailureMessage, midSentenceFailureMessage, midSentenceNegativeFailureMessage)
-*/
-
-  def apply(matches: Boolean, failureMessage: String, negativeFailureMessage: String): MatchResult =
-    new MatchResult(matches, failureMessage, negativeFailureMessage, failureMessage, negativeFailureMessage)
+  def apply(matches: Boolean, failureMessage: String, negatedFailureMessage: String): MatchResult =
+    new MatchResult(matches, failureMessage, negatedFailureMessage, failureMessage, negatedFailureMessage)
 }
 

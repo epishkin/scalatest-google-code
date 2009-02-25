@@ -61,7 +61,6 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       it("should do nothing when non-null is compared to not null") {
         val o = "Helloooooo"
         o should not { be (null) }
-        // o shouldNot be (null)
       }
 
       it("should throw an assertion error when null compared to not null") {
@@ -70,11 +69,6 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
           o should not { be (null) }
         }
         assert(caught1.getMessage === "null was null")
-        /* val caught2 = intercept[TestFailedException] {
-          val o: String = null
-          o shouldNot be (null)
-        }
-        assert(caught2.getMessage === "null was null")  */
       }
 
       it("should work when used in a logical expression") {
@@ -97,7 +91,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught1 = intercept[TestFailedException] {
           nonEmptyList should be (Nil)
         }
-        assert(caught1.getMessage === "List(Helloooooo) was not List()")
+        assert(caught1.getMessage === "List(Helloooooo) was not Nil")
         val caught2 = intercept[TestFailedException] {
           nonEmptyList should equal (Nil)
         }
@@ -107,9 +101,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       it("should do nothing when non-null is compared to not null") {
         val nonEmptyList = List("Helloooooo")
         nonEmptyList should not { be (Nil) }
-        // nonEmptyList shouldNot be (Nil)
         nonEmptyList should not { equal (Nil) }
-        // nonEmptyList shouldNot equal (Nil)
       }
 
       it("should throw an assertion error when null compared to not null") {
@@ -117,22 +109,12 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught1 = intercept[TestFailedException] {
           emptyList should not { be (Nil) }
         }
-        assert(caught1.getMessage === "List() was List()")
-
-        /* val caught2 = intercept[TestFailedException] {
-          emptyList shouldNot be (Nil)
-        }
-        assert(caught2.getMessage === "List() was List()") */
+        assert(caught1.getMessage === "List() was Nil")
 
         val caught3 = intercept[TestFailedException] {
           emptyList should not { equal (Nil) }
         }
         assert(caught3.getMessage === "List() equaled List()")
-
-        /* val caught4 = intercept[TestFailedException] {
-          emptyList shouldNot equal (Nil)
-        }
-        assert(caught4.getMessage === "List() equaled List()") */
       }
 
       it("should work when used in a logical expression") {
@@ -172,9 +154,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       it("should do nothing when Some is compared to not None") {
         val someString = Some("Helloooooo")
         someString should not { be (None) }
-        // someString shouldNot be (None)
         someString should not { equal (None) }
-        // someString shouldNot equal (None)
       }
 
       it("should throw an assertion error when None compared to not None") {
@@ -184,20 +164,10 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         }
         assert(caught1.getMessage === "None was None")
 
-        /* val caught2 = intercept[TestFailedException] {
-          none shouldNot be (None)
-        }
-        assert(caught2.getMessage === "None was None")  */
-
         val caught3 = intercept[TestFailedException] {
           none should not { equal (None) }
         }
         assert(caught3.getMessage === "None equaled None")
-
-        /* val caught4 = intercept[TestFailedException] {
-          none shouldNot equal (None)
-        }
-        assert(caught4.getMessage === "None equaled None") */
 
         val noString: Option[String] = None
         val caught5 = intercept[TestFailedException] {
@@ -205,20 +175,10 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         }
         assert(caught5.getMessage === "None was None")
 
-        /* val caught6 = intercept[TestFailedException] {
-          noString shouldNot be (None)
-        }
-        assert(caught6.getMessage === "None was None") */
-
         val caught7 = intercept[TestFailedException] {
           noString should not { equal (None) }
         }
         assert(caught7.getMessage === "None equaled None")
-
-        /* val caught8 = intercept[TestFailedException] {
-          noString shouldNot equal (None)
-        }
-        assert(caught8.getMessage === "None equaled None") */
       }
 
       it("should work when used in a logical expression") {
@@ -242,23 +202,20 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught = intercept[TestFailedException] {
           1 should be (2)
         }
-        assert(caught.getMessage === "1 was not 2")
+        assert(caught.getMessage === "1 was not equal to 2")
       }
 
-      it("should do nothing when not equal and used with shouldNot") {
-        // 1 shouldNot be (2)
+      it("should do nothing when not equal and used with should not") {
         1 should not { be (2) }
         val option = Some(1)
-        // option shouldNot be (Some(2))
         option should not { be (Some(2)) }
       }
 
-      it("should throw an assertion error when equal but used with shouldNot") {
+      it("should throw an assertion error when equal but used with should not") {
         val caught = intercept[TestFailedException] {
-          // 1 shouldNot be (1)
           1 should not { be (1) }
         }
-        assert(caught.getMessage === "1 was 1")
+        assert(caught.getMessage === "1 was equal to 1")
       }
     }
   }
@@ -288,9 +245,8 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       otherMap should { contain key ("Howdy") and equal (Map("Howdy" -> 1)) }
     }
 
-    it("should work with map and key, right after a 'shouldNot'") {
+    it("should work with map and key, right after a 'should not'") {
       val map = Map(1 -> "Howdy")
-      // map shouldNot contain key (2)
       map should not { contain key (2) }
     }
 
@@ -311,9 +267,8 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       otherMap should { contain value (1) and equal (Map("Howdy" -> 1)) }
     }
 
-    it("should work with map and value, right after a 'shouldNot'") {
+    it("should work with map and value, right after a 'should not'") {
       val map = Map(1 -> "Howdy")
-      // map shouldNot contain value ("Doody")
       map should not { contain value ("Doody") }
     }
 
@@ -353,40 +308,32 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       assert(caught4.getMessage.indexOf("did not have size") != -1)
     }
 
-    it("should work with collection and size, right after a 'shouldNot'") {
+    it("should work with collection and size, right after a 'should not'") {
 
       val map = Map(1 -> "Howdy")
-      // map shouldNot have size (2)
       map should not { have size (2) }
       val caught1 = intercept[TestFailedException] {
-        // map shouldNot have size (1)
         map should not { have size (1) }
       }
       assert(caught1.getMessage.indexOf("had size") != -1, caught1.getMessage)
 
       val list = List(1, 2, 3, 4, 5)
-      //list shouldNot have size (6)
       list should not { have size (6) }
       val caught2 = intercept[TestFailedException] {
-        // list shouldNot have size (5)
         list should not { have size (5) }
       }
       assert(caught2.getMessage.indexOf("had size") != -1)
 
       val set = Set(1.0, 2.0, 3.0)
-      // set shouldNot have size (0)
       set should not { have size (0) }
       val caught3 = intercept[TestFailedException] {
-        // set shouldNot have size (3)
         set should not { have size (3) }
       }
       assert(caught3.getMessage.indexOf("had size") != -1)
 
       val array = Array[String]()
-      // array shouldNot have size (2)
       array should not { have size (2) }
       val caught4 = intercept[TestFailedException] {
-        // array shouldNot have size (0)
         array should not { have size (0) }
       }
       assert(caught4.getMessage.indexOf("had size") != -1)
@@ -433,41 +380,33 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       assert(caught4.getMessage.indexOf("did not contain element") != -1)
     }
 
-    it("should work with a set, list, array, and map right after a 'shouldNot'") {
+    it("should work with a set, list, array, and map right after a 'should not'") {
 
       val set = Set(1, 2, 3)
-      // set shouldNot contain element (5)
       set should not { contain element (5) }
       val caught1 = intercept[TestFailedException] {
-        // set shouldNot contain element (2)
         set should not { contain element (2) }
       }
       assert(caught1.getMessage.indexOf("contained element") != -1)
 
       val list = List("one", "two", "three")
-      // list shouldNot contain element ("five")
       list should not { contain element ("five") }
       val caught2 = intercept[TestFailedException] {
-        // list shouldNot contain element ("two")
         list should not { contain element ("two") }
       }
       assert(caught2.getMessage.indexOf("contained element") != -1)
 
       val array = Array("one", "two", "three")
-      // array shouldNot contain element ("five")
       array should not { contain element ("five") }
       val caught3 = intercept[TestFailedException] {
-        // array shouldNot contain element ("one")
         array should not { contain element ("one") }
       }
       assert(caught3.getMessage.indexOf("contained element") != -1)
 
       val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
       val tuple2: Tuple2[Int, String] = 1 -> "won"
-      // map shouldNot contain element (tuple2)
       map should not { contain element (tuple2) }
       val caught4 = intercept[TestFailedException] {
-        // map shouldNot contain element (1 -> "one")
         map should not { contain element (1 -> "one") }
       }
       assert(caught4.getMessage.indexOf("contained element") != -1)
@@ -484,21 +423,17 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       string should be theSameInstanceAs (string)
       obj should be theSameInstanceAs (string)
       string should be theSameInstanceAs (obj)
-      // otherString shouldNot be theSameInstanceAs (string)
       otherString should not { be theSameInstanceAs (string) }
     }
 
     it("should throw TestFailedException if the two objects are not the same") {
       val caught1 = intercept[TestFailedException] {
-        // string shouldNot be theSameInstanceAs (string)
         string should not { be theSameInstanceAs (string) }
       }
       val caught2 = intercept[TestFailedException] {
-        // obj shouldNot be theSameInstanceAs (string)
         obj should not { be theSameInstanceAs (string) }
       }
       val caught3 = intercept[TestFailedException] {
-        // string shouldNot be theSameInstanceAs (obj)
         string should not { be theSameInstanceAs (obj) }
       }
       val caught4 = intercept[TestFailedException] {
@@ -511,19 +446,13 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
   describe("The floating point numbers when compared with equals") {
     it("should do nothing if the floating point number is exactly equal to the specified value") {
       val sevenDotOh = 7.0
-      // sevenDotOh should be (7.0 exactly)
       sevenDotOh should be (7.0)
       sevenDotOh should equal (7.0)
-      // sevenDotOh shouldNot be (7.0001 exactly)
-      // sevenDotOh shouldNot be (7.0001)
       sevenDotOh should not { be (7.0001) }
 
       val sixDotOh: Float = 6.0f
-      // sixDotOh should be (6.0 exactly)
       sixDotOh should be (6.0)
       sixDotOh should equal (6.0)
-      // sixDotOh shouldNot be (6.0001 exactly)
-      // sixDotOh shouldNot be (6.0001)
       sixDotOh should not { be (6.0001) }
     }
 
@@ -533,7 +462,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         sevenDotOh should be (7.0)
         // sevenDotOh should be (7.0 exactly)
       }
-      assert(caught1.getMessage === "7.0001 was not 7.0")
+      assert(caught1.getMessage === "7.0001 was not equal to 7.0")
 
       val caught2 = intercept[TestFailedException] {
         sevenDotOh should equal (7.0)
@@ -541,8 +470,6 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       assert(caught2.getMessage === "7.0001 did not equal 7.0")
 
       val caught3 = intercept[TestFailedException] {
-        // sevenDotOh shouldNot be (7.0001 exactly)
-        // sevenDotOh shouldNot be (7.0001)
         sevenDotOh should not { be (7.0001) }
       }
       assert(caught3.getMessage === "7.0001 was 7.0001")
@@ -560,8 +487,6 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       assert(caught5.getMessage === "6.0001 did not equal 6.0")
 
       val caught6 = intercept[TestFailedException] {
-        // sixDotOh shouldNot be (6.0001f exactly)
-        // sixDotOh shouldNot be (6.0001f)
         sixDotOh should not { be (6.0001f) }
       }
       assert(caught6.getMessage === "6.0001 was 6.0001")
@@ -573,15 +498,11 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       val sevenDotOh = 7.0
       sevenDotOh should be (7.1 plusOrMinus 0.2)
       sevenDotOh should be (6.9 plusOrMinus 0.2)
-      /* sevenDotOh shouldNot be (7.5 plusOrMinus 0.2)
-      sevenDotOh shouldNot be (6.5 plusOrMinus 0.2) */
       sevenDotOh should not { be (7.5 plusOrMinus 0.2) }
       sevenDotOh should not { be (6.5 plusOrMinus 0.2) }
       val minusSevenDotOh = -7.0
       minusSevenDotOh should be (-7.1 plusOrMinus 0.2)
       minusSevenDotOh should be (-6.9 plusOrMinus 0.2)
-      /* minusSevenDotOh shouldNot be (-7.5 plusOrMinus 0.2)
-      minusSevenDotOh shouldNot be (-6.5 plusOrMinus 0.2) */
       minusSevenDotOh should not { be (-7.5 plusOrMinus 0.2) }
       minusSevenDotOh should not { be (-6.5 plusOrMinus 0.2) }
     }
@@ -589,13 +510,11 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
     it("should throw TestFailedException if the floating point number is not within the specified range") {
       val sevenDotOh = 7.0
       val caught1 = intercept[TestFailedException] {
-        // sevenDotOh shouldNot be (7.1 plusOrMinus 0.2)
         sevenDotOh should not { be (7.1 plusOrMinus 0.2) }
       }
       assert(caught1.getMessage === "7.0 was 7.1 plus or minus 0.2")
 
       val caught2 = intercept[TestFailedException] {
-        // sevenDotOh shouldNot be (6.9 plusOrMinus 0.2)
         sevenDotOh should not { be (6.9 plusOrMinus 0.2) }
       }
       assert(caught2.getMessage === "7.0 was 6.9 plus or minus 0.2")
@@ -612,13 +531,11 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
 
       val minusSevenDotOh = -7.0
       val caught5 = intercept[TestFailedException] {
-        // minusSevenDotOh shouldNot be (-7.1 plusOrMinus 0.2)
         minusSevenDotOh should not { be (-7.1 plusOrMinus 0.2) }
       }
       assert(caught5.getMessage === "-7.0 was -7.1 plus or minus 0.2")
 
       val caught6 = intercept[TestFailedException] {
-        // minusSevenDotOh shouldNot be (-6.9 plusOrMinus 0.2)
         minusSevenDotOh should not { be (-6.9 plusOrMinus 0.2) }
       }
       assert(caught6.getMessage === "-7.0 was -6.9 plus or minus 0.2")

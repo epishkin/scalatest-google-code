@@ -26,7 +26,9 @@ import org.scalacheck.Test
 import org.scalacheck.Test._
 
 /**
- * <strong>Deprecated: Use org.scalatest.FunSuite with Checkers instead, and use explicit calls to check()</strong>
+ * <strong>Deprecated: mix in <code>Checkers</code> and make explicit calls to <code>check</code> instead. This trait will be removed in a future version of ScalaTest.</strong> 
+ *
+ * <p>
  * So instead of this:
  *
  * <pre>
@@ -42,7 +44,7 @@ import org.scalacheck.Test._
  *   test("list concatenation using a test method") {
  *     check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
  *   }
- * <pre>
+ * </pre>
  *
  * <p>
  * I decided that this form isn't much more difficult to write, and is more readable because it looks like any

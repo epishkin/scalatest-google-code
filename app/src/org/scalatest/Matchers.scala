@@ -24,7 +24,8 @@ import Helper.transformOperatorChars
 
 // TODO: drop generic support for be as an equality comparison, in favor of specific ones.
 // TODO: mention on JUnit and TestNG docs that you can now mix in ShouldMatchers or MustMatchers
-// TODO: Rename negativeFailureMessage to oppositeFailureMessage, and explain it better in the doc comments
+// TODO: Rename negatedFailureMessage to oppositeFailureMessage, and explain it better in the doc comments
+// TODO: Put the TFE info in print reporter output too
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
@@ -266,17 +267,17 @@ trait Matchers extends Assertions { matchers =>
             MatchResult(
               false,
               leftMatchResult.failureMessage,
-              leftMatchResult.negativeFailureMessage,
+              leftMatchResult.negatedFailureMessage,
               leftMatchResult.midSentenceFailureMessage,
-              leftMatchResult.midSentenceNegativeFailureMessage
+              leftMatchResult.midSentenceNegatedFailureMessage
             )
           else {
             MatchResult(
               rightMatchResult.matches,
-              Resources("commaBut", leftMatchResult.negativeFailureMessage, rightMatchResult.midSentenceFailureMessage),
-              Resources("commaAnd", leftMatchResult.negativeFailureMessage, rightMatchResult.midSentenceNegativeFailureMessage),
-              Resources("commaBut", leftMatchResult.midSentenceNegativeFailureMessage, rightMatchResult.midSentenceFailureMessage),
-              Resources("commaAnd", leftMatchResult.midSentenceNegativeFailureMessage, rightMatchResult.midSentenceNegativeFailureMessage)
+              Resources("commaBut", leftMatchResult.negatedFailureMessage, rightMatchResult.midSentenceFailureMessage),
+              Resources("commaAnd", leftMatchResult.negatedFailureMessage, rightMatchResult.midSentenceNegatedFailureMessage),
+              Resources("commaBut", leftMatchResult.midSentenceNegatedFailureMessage, rightMatchResult.midSentenceFailureMessage),
+              Resources("commaAnd", leftMatchResult.midSentenceNegatedFailureMessage, rightMatchResult.midSentenceNegatedFailureMessage)
             )
           }
         }
@@ -1014,18 +1015,18 @@ trait Matchers extends Assertions { matchers =>
           if (leftMatchResult.matches)
             MatchResult(
               true,
-              leftMatchResult.negativeFailureMessage,
+              leftMatchResult.negatedFailureMessage,
               leftMatchResult.failureMessage,
-              leftMatchResult.midSentenceNegativeFailureMessage,
+              leftMatchResult.midSentenceNegatedFailureMessage,
               leftMatchResult.midSentenceFailureMessage,
             )
           else {
             MatchResult(
               rightMatchResult.matches,
               Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.midSentenceFailureMessage),
-              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.midSentenceNegativeFailureMessage),
+              Resources("commaAnd", leftMatchResult.failureMessage, rightMatchResult.midSentenceNegatedFailureMessage),
               Resources("commaAnd", leftMatchResult.midSentenceFailureMessage, rightMatchResult.midSentenceFailureMessage),
-              Resources("commaAnd", leftMatchResult.midSentenceFailureMessage, rightMatchResult.midSentenceNegativeFailureMessage)
+              Resources("commaAnd", leftMatchResult.midSentenceFailureMessage, rightMatchResult.midSentenceNegatedFailureMessage)
             )
           }
         }
@@ -3046,7 +3047,7 @@ trait Matchers extends Assertions { matchers =>
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
-          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negatedFailureMessage
         )
       }
     }
@@ -3059,7 +3060,7 @@ trait Matchers extends Assertions { matchers =>
       if (result.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue)
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))  // TODO, delete. OK
           else
             FailureMessages("wasA", left, UnquotedString(result.propertyName))
         )
@@ -3073,7 +3074,7 @@ trait Matchers extends Assertions { matchers =>
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
-          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negatedFailureMessage
         )
       }
     }
@@ -3170,7 +3171,7 @@ trait Matchers extends Assertions { matchers =>
           if (shouldBeTrue)
             result.failureMessage
           else
-            result.negativeFailureMessage
+            result.negatedFailureMessage
         )
       }
     }
@@ -3191,7 +3192,7 @@ trait Matchers extends Assertions { matchers =>
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, false, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
-          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negatedFailureMessage
         )
       }
     }
@@ -3217,7 +3218,7 @@ trait Matchers extends Assertions { matchers =>
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
-          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negatedFailureMessage
         )
       }
     }
@@ -3229,7 +3230,7 @@ trait Matchers extends Assertions { matchers =>
       if (result.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue)
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))  // TODO, delete. OK
           else
             FailureMessages("wasA", left, UnquotedString(result.propertyName))
         )
@@ -3242,7 +3243,7 @@ trait Matchers extends Assertions { matchers =>
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
         throw newTestFailedException(
-          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negativeFailureMessage
+          if (shouldBeTrue) matcherResult.failureMessage else matcherResult.negatedFailureMessage
         )
       }
     }
@@ -3892,7 +3893,7 @@ trait Matchers extends Assertions { matchers =>
           val result = bePropertyMatcher(left)
           MatchResult(
             result.matches,
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName)), 
             FailureMessages("wasA", left, UnquotedString(result.propertyName))
           )
         }
@@ -4013,6 +4014,9 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
+// Actually, I want to keep this one, becuause it should say "was not true", not "was not equal to true"
+// TODO No, I can get rid of it and just use a pattern match in apply(Any)
+
     def apply(right: Boolean) = 
       new Matcher[Boolean] {
         def apply(left: Boolean) =
@@ -4023,6 +4027,7 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
+// Maybe I could get rid of this one, and just use wasNot
     def apply(o: Null) = 
       new Matcher[AnyRef] {
         def apply(left: AnyRef) = {
@@ -4034,6 +4039,7 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
+// And this I want to say was not None, but again, I could use wasNot But even so, i need to have an apply method, because otherwise it would say was not equal to None
     def apply(o: None.type) = 
       new Matcher[Option[_]] {
         def apply(left: Option[_]) = {
@@ -4050,6 +4056,7 @@ trait Matchers extends Assertions { matchers =>
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, false, false)
       }
 
+    // Yes, this one I want to say was not Nil, or maybe not, because Nil is not Nil.toString
     def apply(right: Nil.type): Matcher[List[_]] =
       new Matcher[List[_]] {
         def apply(left: List[_]) = {
@@ -4080,14 +4087,15 @@ trait Matchers extends Assertions { matchers =>
           val result = bePropertyMatcher(left)
           MatchResult(
             result.matches,
-            FailureMessages("wasNot", left, UnquotedString(result.propertyName)),
+            FailureMessages("wasNot", left, UnquotedString(result.propertyName)), 
             FailureMessages("was", left, UnquotedString(result.propertyName))
           )
         }
       }
 
+// This is the guy
     def apply(right: Any): Matcher[Any] =
-      Helper.equalAndBeAnyMatcher(right, "was", "wasNot")
+      Helper.equalAndBeAnyMatcher(right, "wasEqualTo", "wasNotEqualTo")
   }
 
   /**
@@ -4199,7 +4207,7 @@ trait Matchers extends Assertions { matchers =>
           val positiveMatchResult = matchSymbolToPredicateMethod(left, symbol, false, false)
           MatchResult(
             !positiveMatchResult.matches,
-            positiveMatchResult.negativeFailureMessage,
+            positiveMatchResult.negatedFailureMessage,
             positiveMatchResult.failureMessage
           )
         }
@@ -4229,7 +4237,7 @@ trait Matchers extends Assertions { matchers =>
           val positiveMatchResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
           MatchResult(
             !positiveMatchResult.matches,
-            positiveMatchResult.negativeFailureMessage,
+            positiveMatchResult.negatedFailureMessage,
             positiveMatchResult.failureMessage
           )
         }
@@ -4259,7 +4267,7 @@ trait Matchers extends Assertions { matchers =>
           val positiveMatchResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
           MatchResult(
             !positiveMatchResult.matches,
-            positiveMatchResult.negativeFailureMessage,
+            positiveMatchResult.negatedFailureMessage,
             positiveMatchResult.failureMessage
           )
         }
