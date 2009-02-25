@@ -482,7 +482,34 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * The other difference is that although <code>&&</code> has a higher precedence than <code>||</code>, <code>and</code> and <code>or</code>
+ * Most likely this lack of short-circuiting would rarely be noticeable, because evaluating the right hand side will usually not
+ * involve a side effect. One situation where it might show up, however, is if you attempt to <code>and</code> a <code>null</code> check on a variable with an expression
+ * that uses the variable, like this:
+ * </p>
+ *
+ * <pre class="indent">
+ * map should (not be (null) and contain key ("ouch"))
+ * </pre>
+ * 
+ * <p>
+ * If <code>map</code> is <code>null</code>, the test will indeed fail, but with a <code>NullPointerException</code>, not a
+ * <code>TestFailedException</code>. Here, the <code>NullPointerException</code> is the visible right-hand side effect. To get a
+ * <code>TestFailedException</code>, you would need to check each assertion separately:
+ * </p>
+ *
+ * <pre class="indent">
+ * map should not be (null)
+ * map should contain key ("ouch")
+ * </pre>
+ * 
+ * <p>
+ * If <code>map</code> is <code>null</code> in this case, the <code>null</code> check in the first expression will fail with
+ * a <code>TestFailedException</code>, and the second expression will never be executed.
+ * </p>
+ *
+ * <p>
+ * The other difference with <code>Boolean</code> operators is that although <code>&&</code> has a higher precedence than <code>||</code>,
+ * <code>and</code> and <code>or</code>
  * have the same precedence. Thus although the <code>Boolean</code> expression <code>(a || b && c)</code> will evaluate the <code>&&</code> expression
  * before the <code>||</code> expression, like <code>(a || (b && c))</code>, the following expression:
  * </p>
