@@ -44,7 +44,7 @@ import Helper.newTestFailedException
  * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
  * </p>
  * 
- * <pre>
+ * <pre class="indent">
  * Array(1, 2) == Array(1, 2) // yields false
  * </pre>
  *
@@ -53,8 +53,8 @@ import Helper.newTestFailedException
  * the two arrays structurally, taking into consideration the equality of the array's contents:
  * </p>
  *
- * <pre>
- * Array(1, 2) should equal (Array(1, 2)) // succeeds (i.e., does not throw a TestFailedException)
+ * <pre class="indent">
+ * Array(1, 2) should equal (Array(1, 2)) // succeeds (i.e., does not throw TestFailedException)
  * </pre>
  *
  * <p>
@@ -148,7 +148,7 @@ import Helper.newTestFailedException
  * <code>false</code>, a <code>TestFailedException</code> will be thrown that will contain a detail message, such as:
  * 
  * <pre class="indent">
- * Set(1, 2, 3) was not empty</code>
+ * Set(1, 2, 3) was not empty
  * </pre>
  * 
  * <p>
@@ -174,7 +174,7 @@ import Helper.newTestFailedException
  * an action key with:
  *</p>
  *
- * <pre>
+ * <pre class="indent">
  * keyEvent should be an ('actionKey)
  * </pre>
  *
@@ -206,7 +206,7 @@ import Helper.newTestFailedException
  * Given this pair of <code>BeMatcher</code>s, you could check whether an <code>Int</code> was odd or even with expressions like:
  * </p>
  *
- * <pre>
+ * <pre class="indent">
  * num should be (odd)
  * num should not be (even)
  * </pre>
@@ -402,7 +402,7 @@ import Helper.newTestFailedException
  * </p>
  *
  * <pre class="indent">
- * Array(1, 2) should be (Array(1, 2)) // succeeds (i.e., does not throw a TestFailedException)
+ * Array(1, 2) should be (Array(1, 2)) // succeeds (i.e., does not throw TestFailedException)
  * </pre>
  *
  * <h2>Being negative</h2>
@@ -557,15 +557,72 @@ import Helper.newTestFailedException
  * This expression will use reflection to ensure the <code>title</code>, <code>author</code>, and <code>pubYear</code> properties of object <code>book</code>
  * are equal to the specified values. For example, it will ensure that <code>book</code> has either a public Java field or method
  * named <code>title</code>, or a public method named <code>getTitle</code>, that when invoked (or accessed in the field case) results
- * in a the string <code>"Programming in Scala"</code>. If all three properties exist and have their expected values, respectively,
+ * in a the string <code>"Programming in Scala"</code>. If all specified properties exist and have their expected values, respectively,
  * execution will continue. If one or more of the properties either does not exist, or exists but results in an unexpected value,
  * a <code>TestFailedException</code> will be thrown that explains the problem.
  * </p>
  * 
  * <p>
- *  TODO: discuss <code>HavePropertyMatcher</code>s
+ * When you use this syntax, you must place one or more property values in parentheses after <code>have</code>, seperated by commas, where a <em>property
+ * value</em> is a symbol indicating the name of the property followed by the expected value in parentheses. The only exceptions to this rule is the syntax
+ * for checking size and length shown previously, which does not require parentheses. If you forget and put parentheses in, however, everything will
+ * still work as you'd expect. Thus you could write:
  * </p>
+ *
+ * <pre class="indent">
+ * array should have (length (3))
+ * set should have (size (90))
+ * </pre>
  * 
+ * <p>
+ * instead of:
+ * </p>
+ *
+ * <pre class="indent">
+ * array should have length (3)
+ * set should have size (90)
+ * </pre>
+ * 
+ * <p>
+ * If a property has a value different from the specified expected value, a <code>TestFailedError</code> will be thrown
+ * with a detail message that explains the problem. For example, if you assert the following on
+ * a <code>book</code> whose title is <code>Moby Dick</code>:
+ * </p>
+ *
+ * <pre class="indent">
+ * book should have ('title ("A Tale of Two Cities"))
+ * </pre>
+ *
+ * <p>
+ * You'll get a <code>TestFailedException</code> with this detail message:
+ * </p>
+ *
+ * <pre class="indent">
+ * The title property had value "Moby Dick", instead of its expected value "A Tale of Two Cities",
+ * on object Book("Moby Dick", "Melville", 1851)
+ * </pre>
+ * 
+ * <p>
+ * If you prefer to check properties in a type-safe manner, you can use a <code>HavePropertyMatcher</code>.
+ * This would allow you to write expressions such as:
+ * </p>
+ *
+ * <pre class="indent">
+ * book should have (
+ *   title ("Programming in Scala"),
+ *   author (List("Odersky", "Spoon", "Venners")),
+ *   pubYear (2008)
+ * )
+ * </pre>
+ * 
+ * <p>
+ * These expressions would fail to compile if <code>should</code> is used on an inappropriate type, as determined
+ * by the type parameter of the <code>HavePropertyMatcher</code> being used. (For example, <code>title</code> in this example
+ * might be of type <code>HavePropertyMatcher[org.publiclibrary.Book]</code>. If used with an appropriate type, such an expression will compile
+ * and at run time the property method or field will be accessed directly; <em>i.e.</em>, no reflection will be used.
+ * See the documentation for <a href="HavePropertyMatcher.html"><code>HavePropertyMatcher</code></a> for more information.
+ * </p>
+ *
  * <h2>Custom matchers</h2>
  * 
  * <p>
