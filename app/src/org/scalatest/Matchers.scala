@@ -24,6 +24,7 @@ import Helper.transformOperatorChars
 
 // TODO: drop generic support for be as an equality comparison, in favor of specific ones.
 // TODO: mention on JUnit and TestNG docs that you can now mix in ShouldMatchers or MustMatchers
+// TODO: Rename negativeFailureMessage to oppositeFailureMessage, and explain it better in the doc comments
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string

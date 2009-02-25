@@ -20,7 +20,7 @@ package org.scalatest
  *
  * @param matches indicates whether or not the compared values matched
  * @param failureMessage if a match was intended (x should match), but did not match
- * @param negativeFailureMessage if a match was not indented (x should not { match }), but matched
+ * @param negativeFailureMessage if a match was not intended (x should not { match }), but matched
  */
 case class MatchResult(
   matches: Boolean,
