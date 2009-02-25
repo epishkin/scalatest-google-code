@@ -472,14 +472,14 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       val caught3 = intercept[TestFailedException] {
         sevenDotOh should not { be (7.0001) }
       }
-      assert(caught3.getMessage === "7.0001 was 7.0001")
+      assert(caught3.getMessage === "7.0001 was equal to 7.0001")
 
       val sixDotOh: Float = 6.0001f
       val caught4 = intercept[TestFailedException] {
         // sixDotOh should be (6.0f exactly)
         sixDotOh should be (6.0f)
       }
-      assert(caught4.getMessage === "6.0001 was not 6.0")
+      assert(caught4.getMessage === "6.0001 was not equal to 6.0")
 
       val caught5 = intercept[TestFailedException] {
         sixDotOh should equal (6.0f)
@@ -489,7 +489,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
       val caught6 = intercept[TestFailedException] {
         sixDotOh should not { be (6.0001f) }
       }
-      assert(caught6.getMessage === "6.0001 was 6.0001")
+      assert(caught6.getMessage === "6.0001 was equal to 6.0001")
     }
   }
 
