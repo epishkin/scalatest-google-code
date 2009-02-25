@@ -652,55 +652,93 @@ import Helper.newTestFailedException
  * // using a plain-old Matcher
  * file should exist
  * file should not (exist)
- * file should (exist and have ('name ("temp.txt"))
+ * file should (exist and have ('name ("temp.txt")))
  * </pre>
  * 
  * <p>
  * Note that when you use custom <code>Matcher</code>s, you will need to put parentheses around the custom matcher in more cases than with
- * the built-in syntax. For example you will usually need the parentheses after <code>not</code>, as shown above. (There's no penalty for
+ * the built-in syntax. For example you will often need the parentheses after <code>not</code>, as shown above. (There's no penalty for
  * always surrounding custom matchers with parentheses, and if you ever leave them off when they are needed, you'll get a compiler error.)
- * For more information, please see the documentation for the <a href="Matcher.html"><code>Matcher</code></a> trait.
+ * For more information about how to create custom <code>Matcher</code>s, please see the documentation for the <a href="Matcher.html"><code>Matcher</code></a> trait.
+ * </p>
+ *
+ * <h2>Shared behaviors</h2>
+ *
+ * <p>
+ * TODO: document should behave like
+ * </p>
+ *
+ * <p>
+ * should behave like works only as is, can't be used with not, and, or or. The shared
+ * thing can include it's or describes, or in FunSuite, tests.
  * </p>
  *
  * <h2>Those pesky parens</h2>
  * 
  * <p>
- * You may have noticed that I always put parentheses on the last token in the expressions I've
- * shown. This not always required, but the rule is a bit subtle. If the number of tokens in
- * the expression is odd, the parentheses are not needed. But if the number of tokens is even,
- * the parentheses are required. As a result, I usually include them, because then there's no
- * subtle rule to remember. In addition, although ScalaTest matchers doesn't define which
- * value is "actual" and which "expected," I usually put the expected value last and I think
- * wrapping it in parentheses emphasizes the expected value nicely. Nevertheless, you're
- * free to leave them off in many cases, and you may feel it makes the code more readable.
- * Here are some expressions that work without parentheses:
+ * Perhaps the most challenging part of writing assertions using ScalaTest matchers is remembering
+ * when you need or don't need parentheses, but bearing in mind a few simple rules should help.
+ * It is also reassuring to know that if you ever leave off a set of parentheses when they are
+ * required, your code will not compile. Thus the compiler will help you remember when you need the parens.
+ * That said, the rules are:
  * </p>
- * 
+ *
+ * <p>
+ * 1. You must always put parentheses around <code>and</code> and <code>or</code> expressions, as in:
+ * </p>
+ *
  * <pre class="indent">
- * object should have length 3
- * object should have size 10
- * string should startWith substring "Hello"
- * string should startWith regex "Hel*o"
- * string should endWith substring "world"
- * string should endWith regex "wo.ld"
- * string should include substring "seven"
- * string should include regex "wo.ld"
- * string should fullyMatch regex decimal
- * one should be < 7
- * one should be > 0
- * one should be <= 7
- * one should be >= 0
- * temp should be a 'file
- * object1 should be theSameInstanceAs object2
- * iterable should contain element "five"
- * map should contain key 1
- * map should contain value "Howdy"
+ * catMap should <span style="color: #CC3300; font-weight: bold">(</span>contain key (9) and contain value ("lives")<span style="color: #CC3300; font-weight: bold">)</span>
+ * number should <span style="color: #CC3300; font-weight: bold">(</span>equal (2) or equal (4) or equal (8)<span style="color: #CC3300; font-weight: bold">)</span>
  * </pre>
  * 
  * <p>
- * should behave like works only as is, can't be used with not, and, or or. The shared
- * thing can include it's or describes.
+ * 2. Except for <code>length</code> and <code>size</code>, you must always put parentheses around
+ * the list of one or more property values following a <code>have</code>:
  * </p>
+ *
+ * <pre class="indent">
+ * file should (exist and have <span style="color: #CC3300; font-weight: bold">(</span>'name ("temp.txt")<span style="color: #CC3300; font-weight: bold">)</span>)
+ * book should have <span style="color: #CC3300; font-weight: bold">(</span>
+ *   title ("Programming in Scala"),
+ *   author (List("Odersky", "Spoon", "Venners")),
+ *   pubYear (2008)
+ * <span style="color: #CC3300; font-weight: bold">)</span>
+ * javaList should have length (9)
+ * </pre>
+ *
+ * <p>
+ * 3. Although you don't always need them, it is recommended style to always put parentheses
+ * around custom <code>Matcher</code>s when they appear directly after <code>not</code>:
+ * </p>
+ * 
+ * <pre class="indent">
+ * file should exist
+ * file should not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span>
+ * file should (exist and have ('name ("temp.txt")))
+ * file should (not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span> and have ('name ("temp.txt"))
+ * file should (have ('name ("temp.txt") or exist)
+ * file should (have ('name ("temp.txt") or not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span>)
+ * </pre>
+ *
+ * <p>
+ * 4. Although you don't always need them, it is recommended style to always put parentheses
+ * around right-hand values, such as the <code>7</code> in <code>num should equal (7)</code>:
+ * </p>
+ *
+ * <pre class="indent">
+ * result should equal <span style="color: #CC3300; font-weight: bold">(</span>4<span style="color: #CC3300; font-weight: bold">)</span>
+ * array should have length <span style="color: #CC3300; font-weight: bold">(</span>3<span style="color: #CC3300; font-weight: bold">)</span>
+ * book should have (
+ *   'title <span style="color: #CC3300; font-weight: bold">(</span>"Programming in Scala"<span style="color: #CC3300; font-weight: bold">)</span>,
+ *   'author <span style="color: #CC3300; font-weight: bold">(</span>List("Odersky", "Spoon", "Venners")<span style="color: #CC3300; font-weight: bold">)</span>,
+ *   'pubYear <span style="color: #CC3300; font-weight: bold">(</span>2008<span style="color: #CC3300; font-weight: bold">)</span>
+ * )
+ * option should be <span style="color: #CC3300; font-weight: bold">(</span>'defined<span style="color: #CC3300; font-weight: bold">)</span>
+ * catMap should (contain key <span style="color: #CC3300; font-weight: bold">(</span>9<span style="color: #CC3300; font-weight: bold">)</span> and contain value <span style="color: #CC3300; font-weight: bold">(</span>"lives"<span style="color: #CC3300; font-weight: bold">)</span>)</span>
+ * keyEvent should be an <span style="color: #CC3300; font-weight: bold">(</span>'actionKey<span style="color: #CC3300; font-weight: bold">)</span>
+ * javaSet should have size <span style="color: #CC3300; font-weight: bold">(</span>90<span style="color: #CC3300; font-weight: bold">)</span>
+ * </pre>
  *
  */
 trait ShouldMatchers extends Matchers {
