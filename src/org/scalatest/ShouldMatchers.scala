@@ -168,7 +168,15 @@ import Helper.newTestFailedException
  * temp should be a ('file)
  * </pre>
  * 
- * <p>TODO: need an <code>an</code> example</p>
+ * <p>
+ * Or, given <code>java.awt.event.ActionKey</code> has a method <code>isActionKey</code> that takes
+ * no arguments and returns <code>Boolean</code>, you could assert that a <code>KeyEvent</code> is
+ * an action key with:
+ *</p>
+ *
+ * <pre>
+ * keyEvent should be an ('actionKey)
+ * </pre>
  *
  * <p>
  * If you prefer to check <code>Boolean</code> properties in a type-safe manner, you can use a <code>BePropertyMatcher</code>.
@@ -177,14 +185,8 @@ import Helper.newTestFailedException
  *
  * <pre class="indent">
  * emptySet should be (empty)
- * </pre>
- * 
- * <p>
- * or:
- * </p>
- * 
- * <pre class="indent">
  * temp should be a (file)
+ * keyEvent should be an (actionKey)
  * </pre>
  * 
  * <p>
