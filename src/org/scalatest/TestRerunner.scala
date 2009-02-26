@@ -53,7 +53,7 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
         reporter.runAborted(report)
       }
       case e: NoSuchMethodException => {
-        val report = new Report("org.scalatest.TestRerunner", Resources("cannotFindMethod"), Some(e), None)
+        val report = new Report("org.scalatest.TestRerunner", Resources("cannotFindMethod", e.getMessage), Some(e), None)
         reporter.runAborted(report)
       }
       case e: SecurityException => {
