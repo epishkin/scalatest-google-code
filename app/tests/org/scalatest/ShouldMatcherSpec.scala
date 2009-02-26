@@ -68,7 +68,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
           val o: String = null
           o should not { be (null) }
         }
-        assert(caught1.getMessage === "The reference on which should or must was invoked was null")
+        assert(caught1.getMessage === "The reference was null")
       }
 
       it("should work when used in a logical expression") {
