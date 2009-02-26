@@ -998,11 +998,16 @@ object Runner {
 
             val membersOnlyAndBeginsWithListsAreEmpty = membersOnlyList.isEmpty && wildcardList.isEmpty // They didn't specify any -m's or -w's on the command line
 
+
+            // TODO: rename the 'BeginsWith' variables to 'Wildcard' to match the terminology that
+            // we ended up with on the outside
+            // TODO: Should SuiteDiscoverHelper be a singleton object?
             if (membersOnlyAndBeginsWithListsAreEmpty && !suitesList.isEmpty) {
               (Nil, Nil) // No DiscoverySuites in this case. Just run Suites named with -s
             }
             else {
               val accessibleSuites = (new SuiteDiscoveryHelper).discoverSuiteNames(runpath, loader)
+println("ACCESSIBLE SUITES: " + accessibleSuites)
 
               if (membersOnlyAndBeginsWithListsAreEmpty && suitesList.isEmpty) {
                 // In this case, they didn't specify any -w, -m, or -s on the command line, so the default
@@ -1071,7 +1076,7 @@ object Runner {
             dispatchReporter.runAborted(report)
           }
           case ex: NoClassDefFoundError => {
-            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass"), Some(ex), None)
+            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass", ex.getMessage), Some(ex), None)
             dispatchReporter.runAborted(report)
           }
           case ex: Throwable => {
