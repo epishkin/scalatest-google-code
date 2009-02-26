@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.matchers
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -28,6 +28,7 @@ import Helper.transformOperatorChars
 // TODO: Put the TFE info in print reporter output too
 // TODO: Put links from ShouldMatchers to wherever I reveal the matrix and algo of how properties are checked dynamically.
 // TODO: double check that I wrote tests for (length (7)) and (size (8)) in parens
+// TODO: document how to turn off the === implicit conversion
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.matchers
 
 /*
 This has a bit of redundancy with several other specs, but was the

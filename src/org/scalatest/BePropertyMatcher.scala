@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.matchers
 
 // T is the type of the object that has a Boolean property to verify with an instance of this trait
 // This is not a subtype of BeMatcher, because BeMatcher only works after "be", but 
