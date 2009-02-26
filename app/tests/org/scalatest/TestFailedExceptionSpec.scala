@@ -15,9 +15,11 @@
  */
 package org.scalatest
 
+import org.scalatest.matchers.ShouldMatchers
+
 class TestFailedErrorSpec extends Spec with ShouldMatchers {
 
-  val baseLineNumber = 20
+  val baseLineNumber = 22
 
   describe("The TestFailedException") {
 

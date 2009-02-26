@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import org.scalatest.matchers.ShouldMatchers
+
 class SpecSuite extends FunSuite {
 
   test("calling a describe from within an it clause results in a TestFailedError at runtime") {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.matchers
 
 /**
  * The result of the <code>Matcher</code> <code>apply</code> method.
