@@ -87,7 +87,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
       else
         reporter.runCompleted()
     }
-    catch { // CLOSE THIS
+    catch {
       case ex: ClassNotFoundException => {
         val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite"), Some(ex), None)
         reporter.runAborted(report)
@@ -107,7 +107,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
       case ex: NoClassDefFoundError => {
             // Suggest the problem might be a bad runpath
             // Maybe even print out the current runpath
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass", ex.getMessage), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: Throwable => {
