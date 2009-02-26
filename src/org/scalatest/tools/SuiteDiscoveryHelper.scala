@@ -85,7 +85,7 @@ private[scalatest] class SuiteDiscoveryHelper() {
               }
     
             jarFileOption match {
-              case Some(jf) => processFileNames(getFileNamesIteratorFromJar(jf), fileSeparator, loader)
+              case Some(jf) => processFileNames(getFileNamesIteratorFromJar(jf), '/', loader)
               case None => Set[String]()
             }
           }
@@ -203,15 +203,11 @@ private[scalatest] class SuiteDiscoveryHelper() {
 
   private def extractClassNames(fileNames: Iterator[String], fileSeparator: Char): Iterator[String] = {
 
-    // This was the first time I tried using map and filter. This works, but I find it harder
-    // to read, even though it is more concise.
-    // fileNames.map(transformToClassName(_, fileSeparator)).filter(_.isDefined).map(_.get)
-
     val options =
-      for (fileName <- fileNames)
-        yield transformToClassName(fileName, fileSeparator)
+      for (fileName <- fileNames) yield
+        transformToClassName(fileName, fileSeparator)
 
-    for (option <- options; if option.isDefined)
-      yield option.get
+    for (Some(className) <- options) yield
+      className
   }
 }
