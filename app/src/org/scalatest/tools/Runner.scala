@@ -1007,7 +1007,6 @@ object Runner {
             }
             else {
               val accessibleSuites = (new SuiteDiscoveryHelper).discoverSuiteNames(runpath, loader)
-println("ACCESSIBLE SUITES: " + accessibleSuites)
 
               if (membersOnlyAndBeginsWithListsAreEmpty && suitesList.isEmpty) {
                 // In this case, they didn't specify any -w, -m, or -s on the command line, so the default
