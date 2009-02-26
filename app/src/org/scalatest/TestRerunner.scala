@@ -41,7 +41,7 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
     }
     catch {
       case ex: ClassNotFoundException => {
-        val report = new Report("org.scalatest.TestRerunner", Resources("cannotLoadSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.TestRerunner", Resources("cannotLoadSuite", ex.getMessage), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: InstantiationException => {

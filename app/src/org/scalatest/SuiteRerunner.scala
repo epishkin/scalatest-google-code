@@ -89,7 +89,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
     }
     catch {
       case ex: ClassNotFoundException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite", ex.getMessage), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: InstantiationException => {
