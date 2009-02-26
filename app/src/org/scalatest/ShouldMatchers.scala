@@ -111,7 +111,7 @@ import Helper.newTestFailedException
  * object that has a field or method named <code>size</code> or a method named <code>getSize</code>.
  * The type of a <code>length</code> or <code>size</code> field, or return type of a method, must be either <code>Int</code>
  * or <code>Long</code>. Any such method must take no parameters. (The Scala compiler will ensure at compile time that
- * the object on which should is being invoked has the appropriate structure.)
+ * the object on which <code>should</code> is being invoked has the appropriate structure.)
  * </p>
  * 
  * <h2>Checking strings</h2>
@@ -738,8 +738,8 @@ import Helper.newTestFailedException
  * <h2>Those pesky parens</h2>
  * 
  * <p>
- * Perhaps the most challenging part of writing assertions using ScalaTest matchers is remembering
- * when you need or don't need parentheses, but bearing in mind a few simple rules should help.
+ * Perhaps the most tricky part of writing assertions using ScalaTest matchers is remembering
+ * when you need or don't need parentheses, but bearing in mind a few simple rules <!-- PRESERVE -->should help.
  * It is also reassuring to know that if you ever leave off a set of parentheses when they are
  * required, your code will not compile. Thus the compiler will help you remember when you need the parens.
  * That said, the rules are:
@@ -803,8 +803,8 @@ import Helper.newTestFailedException
  * </pre>
  *
  * <p>
- * That's it. With a bit of practice it should become natural to you, and the compiler will always be there to tell you if you
- * forget a set of required parentheses.
+ * That's it. With a bit of practice it <!-- PRESERVE -->should become natural to you, and the compiler will always be there to tell you if you
+ * forget a set of needed parentheses.
  * </p>
  */
 trait ShouldMatchers extends Matchers {
