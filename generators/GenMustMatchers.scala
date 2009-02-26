@@ -3,6 +3,24 @@ import java.io.FileWriter
 import java.io.BufferedWriter
 import scala.io.Source
 
+object Helper {
+  def translateShouldToMust(shouldLine: String): String = {
+    val temp1 = shouldLine.replaceAll("<code>must</code>", "<code>I_WAS_must_ORIGINALLY</code>")
+    val temp2 = temp1.replaceAll("<!-- PRESERVE -->should", " I_MUST_STAY_SHOULD")
+    val temp3 = temp2.replaceAll(
+      "<a href=\"MustMatchers.html\"><code>MustMatchers</code></a>",
+      "<a href=\"I_WAS_Must_ORIGINALLYMatchers.html\"><code>I_WAS_Must_ORIGINALLYMatchers</code></a>"
+    )
+    val temp4 = temp3.replaceAll("should", "must")
+    val temp5 = temp4.replaceAll("Should", "Must")
+    val temp6 = temp5.replaceAll("I_WAS_must_ORIGINALLY", "should")
+    val temp7 = temp6.replaceAll("I_MUST_STAY_SHOULD", "should")
+    temp7.replaceAll("I_WAS_Must_ORIGINALLY", "Should")
+  }
+}
+
+import Helper.translateShouldToMust
+
 object GenMustMatchers extends Application {
   val dir = new File("build/generated/src/org/scalatest")
   dir.mkdirs()
@@ -10,16 +28,8 @@ object GenMustMatchers extends Application {
   try {
     val shouldLines = Source.fromFile("src/org/scalatest/ShouldMatchers.scala").getLines.toList
     for (shouldLine <- shouldLines) {
-      val temp1 = shouldLine.replaceAll("<code>must</code>", "<code>I_WAS_must_ORIGINALLY</code>")
-      val temp2 = temp1.replaceAll(
-        "<a href=\"MustMatchers.html\"><code>MustMatchers</code></a>",
-        "<a href=\"I_WAS_Must_ORIGINALLYMatchers.html\"><code>I_WAS_Must_ORIGINALLYMatchers</code></a>"
-      )
-      val temp3 = temp2.replaceAll("should", "must")
-      val temp4 = temp3.replaceAll("Should", "Must")
-      val temp5 = temp4.replaceAll("I_WAS_must_ORIGINALLY", "should")
-      val mustLine = temp5.replaceAll("I_WAS_Must_ORIGINALLY", "Should")
-      writer.write(mustLine.toString)
+      val mustLine = translateShouldToMust(shouldLine)
+      writer.write(mustLine)
     }
   }
   finally {
@@ -68,7 +78,7 @@ object GenMustMatchersTests extends Application {
     try {
       val shouldLines = Source.fromFile("tests/org/scalatest/" + shouldFileName).getLines.toList
       for (shouldLine <- shouldLines) {
-        val mustLine = shouldLine.replaceAll("should", "must").replaceAll("Should", "Must")
+        val mustLine = translateShouldToMust(shouldLine)
         writer.write(mustLine.toString)
       }
     }
