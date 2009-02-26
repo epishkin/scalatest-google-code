@@ -57,7 +57,7 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
         reporter.runAborted(report)
       }
       case e: SecurityException => {
-        val report = new Report("org.scalatest.TestRerunner", Resources("securityWhenReruning"), Some(e), None)
+        val report = new Report("org.scalatest.TestRerunner", Resources("securityWhenRerunning", e.getMessage), Some(e), None)
         reporter.runAborted(report)
       }
       case ex: NoClassDefFoundError => {
