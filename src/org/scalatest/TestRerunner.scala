@@ -45,11 +45,11 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
         reporter.runAborted(report)
       }
       case ex: InstantiationException => {
-        val report = new Report("org.scalatest.TestRerunner", Resources("cannotInstantiateSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.TestRerunner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: IllegalAccessException => {
-        val report = new Report("org.scalatest.TestRerunner", Resources("cannotInstantiateSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.TestRerunner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
         reporter.runAborted(report)
       }
       case e: NoSuchMethodException => {
