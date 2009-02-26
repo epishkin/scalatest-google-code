@@ -248,6 +248,9 @@
             <arg value="org.scalatest" />
 
             <arg value="-m" />
+            <arg value="org.scalatest.matchers" />
+
+            <arg value="-m" />
             <arg value="org.scalatest.testng" />
 
             <arg value="-m" />
@@ -294,16 +297,14 @@
             <arg value="-g" />
             <arg value="-o" />
 
-            <arg value="-s" />
-            <arg value="org.scalatest.ShouldBeMatcherSpec" />
-
 <!--
             <arg value="-s" />
-            <arg value="org.scalatest.ShouldOrderedSpec" />
-
-            <arg value="-s" />
-            <arg value="org.scalatest.ShouldEqualSpec" />
+            <arg value="org.scalatest.matchers.ShouldBeMatcherSpec" />
 -->
+
+            <arg value="-m" />
+            <arg value="org.scalatest.matchers" />
+
         </java>
     </target>
 
