@@ -93,11 +93,11 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
         reporter.runAborted(report)
       }
       case ex: InstantiationException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: IllegalAccessException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
         reporter.runAborted(report)
       }
       case e: SecurityException => {

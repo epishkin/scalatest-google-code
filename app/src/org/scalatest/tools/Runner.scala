@@ -1066,12 +1066,12 @@ object Runner {
         catch {
           case ex: InstantiationException => {
             val report =
-                new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+                new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
             dispatchReporter.runAborted(report)
           }
           case ex: IllegalAccessException => {
             val report
-                = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite"), Some(ex), None)
+                = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
             dispatchReporter.runAborted(report)
           }
           case ex: NoClassDefFoundError => {
