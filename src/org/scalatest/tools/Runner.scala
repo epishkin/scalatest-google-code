@@ -973,7 +973,7 @@ object Runner {
         }
         catch {
           case e: ClassNotFoundException => {
-            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite"), Some(e), None)
+            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite", e.getMessage), Some(e), None)
             dispatchReporter.runAborted(report)
             true
           }
