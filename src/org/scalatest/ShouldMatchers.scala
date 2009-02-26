@@ -18,7 +18,31 @@ package org.scalatest
 import scala.reflect.Manifest
 import Helper.newTestFailedException
 
-// TODO: mention be as an equality will fail with messages that include "equal to" ... was not equal to ...
+/* PUT IN a ShouldBehaveLike trait
+ * <h2>Shared behaviors</h2>
+ *
+ * <p>
+ * <code>ShouldMatchers</code> provides syntax that allows you to import <em>shared behavior</em> into a <code>FunSuite</code> or <code>Spec</code>,
+ * where shared
+ * behavior consists of tests that you want to run multiple times with different instances of certain fixture objects each time. For example, you may have
+ * a set of tests that verify that given <code>Stack</code> object behaves like a non-empty stack. Rather than duplicating the code of
+ * these tests for different instances of <code>Stack</code>, you can factor out the commonality into a method or function
+ * and import those tests when needed. If you define a shared behavior method named <code>nonEmptyStack</code>, and want to run those
+ * tests on a <code>Stack</code> that has one item, the object referred to <code>lastValuePushed</code>, you could write:
+ * </p>
+ *
+ * <pre>
+ * stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
+ * </pre>
+ *
+ * <p>
+ * This <code>behave like</code> works only as shown here. It can't be used with <code>not</code> or combined with <code>and</code>
+ * or <code>or</code>. For more information on shared behavior, see the documentation for traits <a href="FunSuite.html"><code>FunSuite</code></a> and
+ * <a href="Spec.html"><code>Spec</code></a>.
+ * </p>
+ *
+*/
+
 /**
  * <p>
  * Trait that provides a domain specific language (DSL) for expressing assertions in tests
@@ -711,17 +735,6 @@ import Helper.newTestFailedException
  * For more information about how to create custom <code>Matcher</code>s, please see the documentation for the <a href="Matcher.html"><code>Matcher</code></a> trait.
  * </p>
  *
- * <h2>Shared behaviors</h2>
- *
- * <p>
- * TODO: document should behave like
- * </p>
- *
- * <p>
- * should behave like works only as is, can't be used with not, and, or or. The shared
- * thing can include it's or describes, or in FunSuite, tests.
- * </p>
- *
  * <h2>Those pesky parens</h2>
  * 
  * <p>
@@ -789,6 +802,10 @@ import Helper.newTestFailedException
  * file should (have ('name ("temp.txt") or not <span style="color: #CC3300; font-weight: bold">(</span>exist<span style="color: #CC3300; font-weight: bold">)</span>)
  * </pre>
  *
+ * <p>
+ * That's it. With a bit of practice it should become natural to you, and the compiler will always be there to tell you if you
+ * forget a set of required parentheses.
+ * </p>
  */
 trait ShouldMatchers extends Matchers {
 
