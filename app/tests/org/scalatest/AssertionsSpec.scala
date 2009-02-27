@@ -18,7 +18,7 @@ package org.scalatest;
 class AssertionsSpec extends Spec {
 
   describe("The === method") {
-    it("should be usable when the left expression result in null") {
+    it("should be usable when the left expression results in null") {
       val npe = new NullPointerException
       assert(npe.getMessage === null)
     }
