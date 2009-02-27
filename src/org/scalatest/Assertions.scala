@@ -69,19 +69,16 @@ trait Assertions {
    * </p>
    * 
    * <p>
-   * The primary constructor takes one object whose type is being converted to <code>Equalizer</code>.
+   * The primary constructor takes one object, <code>left</code>, whose type is being converted to <code>Equalizer</code>. The <code>left</code>
+   * value may be a <code>null</code> reference, because this is allowed by Scala's <code>==</code> operator.
    * </p>
    *
    * @param left An object to convert to <code>Equalizer</code>, which represents the <code>left</code> value
    *     of an assertion.
-   * @throws NullPointerException if <code>left</code> is <code>null</code>
    *
    * @author Bill Venners
    */
   class Equalizer(left: Any) {
-
-    if (left == null)
-      throw new NullPointerException
 
     /**
      * The <code>===</code> operation compares this <code>Equalizer</code>'s <code>left</code> value (passed
