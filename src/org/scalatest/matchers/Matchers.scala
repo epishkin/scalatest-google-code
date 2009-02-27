@@ -3855,8 +3855,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForDouble(left: Double, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Double](left, shouldBeTrue) {
 
-    // sevenDotOh should not be (6.5 plusOrMinus 0.2)
-    //                       ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOh should not be (6.5 plusOrMinus 0.2)
+     *                       ^
+     * </pre>
+     */
     def be(doubleTolerance: DoubleTolerance) {
       import doubleTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
@@ -3881,8 +3887,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForFloat(left: Float, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Float](left, shouldBeTrue) {
 
-    // sevenDotOhFloat should not be (6.5f plusOrMinus 0.2f)
-    //                            ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOhFloat should not be (6.5f plusOrMinus 0.2f)
+     *                            ^
+     * </pre>
+     */
     def be(floatTolerance: FloatTolerance) {
       import floatTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
@@ -3907,8 +3919,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Long](left, shouldBeTrue) {
 
-    // sevenDotOhLong should not be (4L plusOrMinus 2L)
-    //                           ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOhLong should not be (4L plusOrMinus 2L)
+     *                           ^
+     * </pre>
+     */
     def be(longTolerance: LongTolerance) {
       import longTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
@@ -3933,8 +3951,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForInt(left: Int, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Int](left, shouldBeTrue) {
 
-    // sevenDotOhInt should not be (4 plusOrMinus 2)
-    //                          ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOhInt should not be (4 plusOrMinus 2)
+     *                          ^
+     * </pre>
+     */
     def be(intTolerance: IntTolerance) {
       import intTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
@@ -3959,8 +3983,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForShort(left: Short, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Short](left, shouldBeTrue) {
 
-    // sevenDotOhShort should not be (4.toShort plusOrMinus 2.toShort)
-    //                            ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOhShort should not be (4.toShort plusOrMinus 2.toShort)
+     *                            ^
+     * </pre>
+     */
     def be(shortTolerance: ShortTolerance) {
       import shortTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
@@ -3985,8 +4015,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForByte(left: Byte, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Byte](left, shouldBeTrue) {
 
-    // sevenDotOhByte should not be (4.toByte plusOrMinus 2.toByte)
-    //                            ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOhByte should not be (4.toByte plusOrMinus 2.toByte)
+     *                            ^
+     * </pre>
+     */
     def be(byteTolerance: ByteTolerance) {
       import byteTolerance._
       if ((left <= right + tolerance && left >= right - tolerance) != shouldBeTrue) {
@@ -4010,10 +4046,24 @@ trait Matchers extends Assertions { matchers =>
    */
   class RegexWord {
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""".r)
+     *                                     ^
+     * </pre>
+     */
     def apply(regexString: String) = new ResultOfRegexWordApplication(regexString)
 
-    // "eight" should not fullyMatch regex (decimalRegex)
-    //                               ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
+     *                                     ^
+     * </pre>
+     */
     def apply(regex: Regex) = new ResultOfRegexWordApplication(regex)
   }
 
@@ -4021,9 +4071,27 @@ trait Matchers extends Assertions { matchers =>
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
+   * <p>
+   * The primary constructor enables the following syntax (with a passed <code>scala.util.matching.Regex</code>): 
+   * </p>
+   *
+   * <pre>
+   * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""".r)
+   *                               ^
+   * </pre>
+   *
    * @author Bill Venners
    */
   class ResultOfRegexWordApplication(val regex: Regex) {
+
+    /**
+     * This auxiliary constructor enables the following syntax (with a passed <code>java.lang.String</code>): 
+     *
+     * <pre>
+     * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
+     *                               ^
+     * </pre>
+     */
     def this(regexString: String) = this(new Regex(regexString))
   }
 
@@ -4035,14 +4103,25 @@ trait Matchers extends Assertions { matchers =>
    */
   class SubstringWord {
 
-    // "eight" should not fullyMatch substring ("seven")
-    //                               ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * "eight" should not fullyMatch substring ("seven")
+     *                                         ^
+     * </pre>
+     */
     def apply(substring: String) = new ResultOfSubstringWordApplication(substring)
   }
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL.
+   * the matchers DSL. This class enables the following syntax: 
+   *
+   * <pre>
+   * "eight" should not fullyMatch substring ("seven")
+   *                               ^
+   * </pre>
    *
    * @author Bill Venners
    */
@@ -4055,6 +4134,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should have length (12)
+     *                    ^
+     * </pre>
+     */
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -4074,6 +4162,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should include substring ("world")
+     *                       ^
+     * </pre>
+     */
     def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
         throw newTestFailedException(
@@ -4084,7 +4181,25 @@ trait Matchers extends Assertions { matchers =>
           )
         )
     }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should include regex ("world")
+     *                       ^
+     * </pre>
+     */
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should include regex ("wo.ld".r)
+     *                       ^
+     * </pre>
+     */
     def regex(rightRegex: Regex) {
       if (rightRegex.findFirstIn(left).isDefined != shouldBeTrue)
         throw newTestFailedException(
@@ -4104,6 +4219,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should startWith substring ("Hello")
+     *                         ^
+     * </pre>
+     */
     def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
         throw newTestFailedException(
@@ -4114,7 +4238,25 @@ trait Matchers extends Assertions { matchers =>
           )
         )
     }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should startWith regex ("Hel*o")
+     *                         ^
+     * </pre>
+     */
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should startWith regex ("Hel*o".r)
+     *                         ^
+     * </pre>
+     */
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
         throw newTestFailedException(
@@ -4134,6 +4276,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should endWith substring ("world")
+     *                       ^
+     * </pre>
+     */
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
         throw newTestFailedException(
@@ -4144,7 +4295,25 @@ trait Matchers extends Assertions { matchers =>
           )
         )
     }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should endWith regex ("wor.d")
+     *                       ^
+     * </pre>
+     */
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should endWith regex ("wor.d".r)
+     *                       ^
+     * </pre>
+     */
     def regex(rightRegex: Regex) {
       val allMatches = rightRegex.findAllIn(left)
       if ((allMatches.hasNext && (allMatches.end == left.length)) != shouldBeTrue)
@@ -4165,7 +4334,25 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should fullMatch regex ("Hel*o world")
+     *                         ^
+     * </pre>
+     */
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should fullymatch regex ("Hel*o world".r)
+     *                          ^
+     * </pre>
+     */
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
         throw newTestFailedException(
@@ -4185,6 +4372,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * iterable should contain element ("one")
+     *                         ^
+     * </pre>
+     */
     def element(expectedElement: T) {
       if ((left.elements.contains(expectedElement)) != shouldBeTrue)
         throw newTestFailedException(
@@ -4203,6 +4399,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfContainWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * javaCollection should contain element ("one")
+     *                               ^
+     * </pre>
+     */
     def element(expectedElement: T) {
       if ((left.contains(expectedElement)) != shouldBeTrue)
         throw newTestFailedException(
@@ -4214,7 +4419,40 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
-  // TODO Mention that Arrays get deep comparisons here and be Any and in the ShouldMatchers overview
+  /**
+   * This method enables the following syntax: 
+   *
+   * <pre>
+   * result should equal (7)
+   *               ^
+   * </pre>
+   *
+   * <p>
+   * The <code>left should equal (right)</code> syntax works by calling <code>==</code> on the <code>left</code>
+   * value, passing in the <code>right</code> value, on every type except arrays. If <code>left</code> is an array, <code>deepEquals</code>
+   * will be invoked on <code>left</code>, passing in <code>right</code>. Thus, even though this expression
+   * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
+   * </p>
+   * 
+   * <pre class="indent">
+   * Array(1, 2) == Array(1, 2) // yields false
+   * </pre>
+   *
+   * <p>
+   * The following expression will <em>not</em> result in a <code>TestFailedException</code>, because <code>deepEquals</code> compares
+   * the two arrays structurally, taking into consideration the equality of the array's contents:
+   * </p>
+   *
+   * <pre class="indent">
+   * Array(1, 2) should equal (Array(1, 2)) // succeeds (i.e., does not throw TestFailedException)
+   * </pre>
+   *
+   * <p>
+   * If you ever do want to verify that two arrays are actually the same object (have the same identity), you can use the
+   * <code>be theSameInstanceAs</code> syntax.
+   * </p>
+   *
+   */
   def equal(right: Any): Matcher[Any] =
       new Matcher[Any] {
         def apply(left: Any) =
