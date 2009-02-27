@@ -810,7 +810,7 @@ import Helper.newTestFailedException
 trait ShouldMatchers extends Matchers {
 
   // TODO: In the tests, make sure they can create their own matcher and use it.
-  protected trait ShouldMethods[T] {
+  trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
       rightMatcher(leftOperand) match {
@@ -827,7 +827,7 @@ trait ShouldMatchers extends Matchers {
   }
 
   // TODO: Shouldn't this one extend ShouldMethods? See the reminder at the end of this file.
-  protected trait ShouldMethodsForAnyRef[T <: AnyRef] {
+  trait ShouldMethodsForAnyRef[T <: AnyRef] {
 
     protected val leftOperand: T
 
@@ -848,12 +848,12 @@ trait ShouldMatchers extends Matchers {
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
 
-  protected class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
+  class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
 
   // I think the type hasn't been converted yet here. It is just a pass-through. It finally gets
   // converted in ResultOfHaveWordForLengthWrapper, at which point the actual implicit conversions
   // from String, Array, and the structural types get applied.
-  protected class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
 
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
       new ResultOfHaveWordForLengthWrapper(left, true)
@@ -867,7 +867,7 @@ trait ShouldMatchers extends Matchers {
   }
 
   // TODO, add should(BeWord) here, and investigate why there's no should(NotWord) here
-  protected class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
     def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] = {
       new ResultOfHaveWordForSizeWrapper(left, true)
     }
@@ -876,7 +876,7 @@ trait ShouldMatchers extends Matchers {
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](leftOperand, true)
   }
 
-  protected class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethodsForAnyRef[String] {
+  class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethodsForAnyRef[String] {
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
@@ -897,43 +897,43 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class DoubleShouldWrapper(left: Double) extends { val leftOperand = left } with ShouldMethods[Double] {
+  class DoubleShouldWrapper(left: Double) extends { val leftOperand = left } with ShouldMethods[Double] {
     override def should(notWord: NotWord): ResultOfNotWordForDouble = {
       new ResultOfNotWordForDouble(left, false)
     }
   }
 
-  protected class FloatShouldWrapper(left: Float) extends { val leftOperand = left } with ShouldMethods[Float] {
+  class FloatShouldWrapper(left: Float) extends { val leftOperand = left } with ShouldMethods[Float] {
     override def should(notWord: NotWord): ResultOfNotWordForFloat = {
       new ResultOfNotWordForFloat(left, false)
     }
   }
 
-  protected class LongShouldWrapper(left: Long) extends { val leftOperand = left } with ShouldMethods[Long] {
+  class LongShouldWrapper(left: Long) extends { val leftOperand = left } with ShouldMethods[Long] {
     override def should(notWord: NotWord): ResultOfNotWordForLong = {
       new ResultOfNotWordForLong(left, false)
     }
   }
 
-  protected class IntShouldWrapper(left: Int) extends { val leftOperand = left } with ShouldMethods[Int] {
+  class IntShouldWrapper(left: Int) extends { val leftOperand = left } with ShouldMethods[Int] {
     override def should(notWord: NotWord): ResultOfNotWordForInt = {
       new ResultOfNotWordForInt(left, false)
     }
   }
 
-  protected class ShortShouldWrapper(left: Short) extends { val leftOperand = left } with ShouldMethods[Short] {
+  class ShortShouldWrapper(left: Short) extends { val leftOperand = left } with ShouldMethods[Short] {
     override def should(notWord: NotWord): ResultOfNotWordForShort = {
       new ResultOfNotWordForShort(left, false)
     }
   }
 
-  protected class ByteShouldWrapper(left: Byte) extends { val leftOperand = left } with ShouldMethods[Byte] {
+  class ByteShouldWrapper(left: Byte) extends { val leftOperand = left } with ShouldMethods[Byte] {
     override def should(notWord: NotWord): ResultOfNotWordForByte = {
       new ResultOfNotWordForByte(left, false)
     }
   }
 
-  protected class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
+  class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
       with ShouldHaveWordForCollectionMethods[(K, V)] {
 
     def should(containWord: ContainWord): ResultOfContainWordForMap[K, V] = {
@@ -945,7 +945,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected trait ShouldContainWordForJavaCollectionMethods[T] {
+  trait ShouldContainWordForJavaCollectionMethods[T] {
     protected val leftOperand: java.util.Collection[T]
    // javaList should contain element (2) 
     //          ^
@@ -954,44 +954,44 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected trait ShouldContainWordForIterableMethods[T] {
+  trait ShouldContainWordForIterableMethods[T] {
     protected val leftOperand: Iterable[T]
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(leftOperand, true)
     }
   }
 
-  protected trait ShouldHaveWordForCollectionMethods[T] {
+  trait ShouldHaveWordForCollectionMethods[T] {
     protected val leftOperand: Collection[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
       new ResultOfHaveWordForCollection(leftOperand, true)
     }
   }
   
-  protected trait ShouldHaveWordForJavaCollectionMethods[T] {
+  trait ShouldHaveWordForJavaCollectionMethods[T] {
     protected val leftOperand: java.util.Collection[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] = {
       new ResultOfHaveWordForJavaCollection(leftOperand, true)
     }
   }
 
-  protected trait ShouldHaveWordForSeqMethods[T] {
+  trait ShouldHaveWordForSeqMethods[T] {
     protected val leftOperand: Seq[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(leftOperand, true)
     }
   }
   
-  protected trait ShouldHaveWordForJavaListMethods[T] {
+  trait ShouldHaveWordForJavaListMethods[T] {
     protected val leftOperand: java.util.List[T]
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
       new ResultOfHaveWordForJavaList(leftOperand, true)
     }
   }
 
-  protected class AnyRefShouldWrapper[T <: AnyRef](left: T) extends { val leftOperand = left } with ShouldMethodsForAnyRef[T]
+  class AnyRefShouldWrapper[T <: AnyRef](left: T) extends { val leftOperand = left } with ShouldMethodsForAnyRef[T]
 
-  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
+  class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
 
     override def should(notWord: NotWord): ResultOfNotWordForCollection[T, Collection[T]] = {
@@ -1000,7 +1000,7 @@ trait ShouldMatchers extends Matchers {
   }
 
   // TODO: Shouldn't this mix in ShouldMethodsForAnyRef instead of ShouldMethods?
-  protected class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
+  class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
       with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaCollectionMethods[T] {
 
     override def should(notWord: NotWord): ResultOfNotWordForJavaCollection[T, java.util.Collection[T]] = {
@@ -1008,7 +1008,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[java.util.Map[K, V]] {
+  class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[java.util.Map[K, V]] {
 
     def should(containWord: ContainWord): ResultOfContainWordForJavaMap[K, V] = {
       new ResultOfContainWordForJavaMap(left, true)
@@ -1023,10 +1023,10 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
+  class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
 
-  protected class ArrayShouldWrapper[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
+  class ArrayShouldWrapper[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
     override def should(notWord: NotWord): ResultOfNotWordForSeq[T, Array[T]] = {
@@ -1034,7 +1034,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
+  class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
     override def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] = {
@@ -1042,7 +1042,7 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  protected class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
+  class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
       with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaListMethods[T]  {
 
     override def should(notWord: NotWord): ResultOfNotWordForJavaList[T, java.util.List[T]] = {
@@ -1367,3 +1367,5 @@ types don't get more specific visibly enough.
 
 LATER: Well, I'm wondering if now that I've removed the be method in ShouldMethods if this will work. 
 */
+
+object ShouldMatchers extends ShouldMatchers
