@@ -303,13 +303,11 @@
             <arg value="-g" />
             <arg value="-o" />
 
-<!--
             <arg value="-s" />
-            <arg value="org.scalatest.matchers.ShouldBeMatcherSpec" />
--->
+            <arg value="org.scalatest.AssertionsSpec" />
 
-            <arg value="-m" />
-            <arg value="org.scalatest.matchers" />
+            <arg value="-s" />
+            <arg value="org.scalatest.matchers.ShouldBeNullSpec" />
 
         </java>
     </target>

@@ -674,6 +674,16 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * map should (contain key (7) and not be (null))
+       *                                     ^
+       * </pre>
+       */
+      def be[T](o: Null) = matchersWrapper.and(matchers.not.be(o))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * 7 should (not be > (8) and not be > (6))
        *                                ^
        * </pre>
@@ -4041,7 +4051,9 @@ trait Matchers extends Assertions { matchers =>
           MatchResult(
             left == null,
             FailureMessages("wasNotNull", left),
-            FailureMessages("wasNull", left)
+            FailureMessages("wasNull"),
+            FailureMessages("wasNotNull", left),
+            FailureMessages("midSentenceWasNull")
           )
         }
       }
@@ -4185,6 +4197,18 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    def be(o: Null) = 
+      new Matcher[AnyRef] {
+        def apply(left: AnyRef) = {
+          MatchResult(
+            left != null,
+            FailureMessages("wasNull"),
+            FailureMessages("wasNotNull", left),
+            FailureMessages("midSentenceWasNull"),
+            FailureMessages("wasNotNull", left),
+          )
+        }
+      }
     // These next four are for things like not be </>/<=/>=:
     // left should ((not be < (right)) and (not be < (right + 1)))
     //               ^
