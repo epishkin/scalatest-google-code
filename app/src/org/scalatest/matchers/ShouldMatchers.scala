@@ -135,9 +135,14 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * string should fullyMatch regex (decimal)
+ * string should fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
  * </pre>
  * 
+ * <p>
+ * The regular expression passed following the <code>regex</code> token can be either a <code>String</code>
+ * or a <code>scala.util.matching.Regex</code>.
+ * </p>
+ *
  * <h2>Greater and less than</h2>
  * <p>
  * You can check whether any type that is, or can be implicitly converted to,
@@ -196,7 +201,7 @@ import Helper.newTestFailedException
  * </pre>
  * 
  * <p>
- * Or, given <code>java.awt.event.ActionKey</code> has a method <code>isActionKey</code> that takes
+ * Or, given <code>java.awt.event.KeyEvent</code> has a method <code>isActionKey</code> that takes
  * no arguments and returns <code>Boolean</code>, you could assert that a <code>KeyEvent</code> is
  * an action key with:
  *</p>

@@ -2771,6 +2771,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * collection should have size (10)
+     *                        ^
+     * </pre>
+     */
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -2789,6 +2798,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaCollection should have size (10)
+     *                       ^
+     * </pre>
+     */
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -2807,6 +2825,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForJavaMap(left: java.util.Map[_, _], shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaMap should have size (10)
+     *                     ^
+     * </pre>
+     */
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -2825,6 +2852,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * seq should have length (20)
+     *                 ^
+     * </pre>
+     */
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -2845,6 +2881,15 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForIterable[E, T <: Iterable[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * iterable should not contain element ("one")
+     *                     ^
+     * </pre>
+     */
     def contain(resultOfElementWordApplication: ResultOfElementWordApplication[E]) {
       val right = resultOfElementWordApplication.expectedElement
       if ((left.exists(_ == right)) != shouldBeTrue) {
@@ -2868,6 +2913,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForCollection[E, T <: Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForIterable[E, T](left, shouldBeTrue) {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * collection should not have size (3)
+     *                       ^
+     * </pre>
+     */
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
       if ((left.size == right) != shouldBeTrue) {
@@ -2891,6 +2944,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForJavaCollection[E, T <: java.util.Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaCollection should not have size (3)
+     *                           ^
+     * </pre>
+     */
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
       val right = resultOfSizeWordApplication.expectedSize
       if ((left.size == right) != shouldBeTrue) {
@@ -2904,6 +2965,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaCollection should not contain element ("elephant")
+     *                           ^
+     * </pre>
+     */
     def contain(resultOfElementWordApplication: ResultOfElementWordApplication[E]) {
       val right = resultOfElementWordApplication.expectedElement
       if ((left.contains(right)) != shouldBeTrue) {
@@ -2927,6 +2996,15 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[(K, V), scala.collection.Map[K, V]](left, shouldBeTrue) {
 
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * map should not contain key ("three")
+     *                ^
+     * </pre>
+     */
     def contain(resultOfKeyWordApplication: ResultOfKeyWordApplication[K]) {
       val right = resultOfKeyWordApplication.expectedKey
       if ((left.contains(right)) != shouldBeTrue) {
@@ -2940,8 +3018,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // Map("one" -> 1, "two" -> 2) should not contain value (3)
-    //                                        ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should not contain value (3)
+     *                                        ^
+     * </pre>
+     */
     def contain(resultOfValueWordApplication: ResultOfValueWordApplication[V]) {
       val right = resultOfValueWordApplication.expectedValue
       if ((left.values.exists(_ == right)) != shouldBeTrue) {
@@ -2965,8 +3049,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
-    // javaMap should not contain key ("three")
-    //                    ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaMap should not contain key ("three")
+     *                    ^
+     * </pre>
+     */
     def contain(resultOfKeyWordApplication: ResultOfKeyWordApplication[K]) {
       val right = resultOfKeyWordApplication.expectedKey
       if ((left.containsKey(right)) != shouldBeTrue) {
@@ -2980,8 +3070,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // javaMap should not contain value (3)
-    //                            ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaMap should not contain value (3)
+     *                            ^
+     * </pre>
+     */
     def contain(resultOfValueWordApplication: ResultOfValueWordApplication[V]) {
       val right = resultOfValueWordApplication.expectedValue
       if ((left.containsValue(right)) != shouldBeTrue) {
@@ -3005,6 +3101,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[E, T](left, shouldBeTrue) {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * List(1, 2) should not have length (12)
+     *                       ^
+     * </pre>
+     */
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.length == right) != shouldBeTrue) {
@@ -3026,6 +3130,20 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaList should have length (12)
+     *                      ^
+     * </pre>
+     *
+     * <p>
+     * This method invokes <code>size</code> on the <code>java.util.List</code> passed as <code>left</code> to
+     * determine its length.
+     * </p>
+     */
     def length(expectedLength: Int) {
       if ((left.size == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -3046,6 +3164,19 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForJavaList[E, T <: java.util.List[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForJavaCollection[E, T](left, shouldBeTrue) {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * javaList should not have length (12)
+     *                     ^
+     * </pre>
+     *
+     * <p>
+     * This method invokes <code>size</code> on the <code>java.util.List</code> passed as <code>left</code> to
+     * determine its length.
+     * </p>
+     */
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.size == right) != shouldBeTrue) {
@@ -3068,6 +3199,14 @@ trait Matchers extends Assertions { matchers =>
    */
   class ResultOfBeWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean) {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * object should be theSameInstanceAs anotherObject
+     *                  ^
+     * </pre>
+     */
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
         throw newTestFailedException(
@@ -3079,8 +3218,14 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
-    // fileMock should be a ('file)
-    //                    ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * fileMock should be a ('file)
+     *                    ^
+     * </pre>
+     */
     def a(symbol: Symbol) {
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
@@ -3091,8 +3236,15 @@ trait Matchers extends Assertions { matchers =>
     }
 
     // TODO: Check the shouldBeTrues, are they sometimes always false or true?
-    // badBook should be a (goodRead)
-    //                   ^
+    /**
+     * This method enables the following syntax, where <code>badBook</code> is, for example, of type <code>Book</code> and
+     * <code>goodRead</code> refers to a <code>BePropertyMatcher[Book]</code>:
+     *
+     * <pre>
+     * badBook should be a (goodRead)
+     *                   ^
+     * </pre>
+     */
     def a(bePropertyMatcher: BePropertyMatcher[T]) {
       val result = bePropertyMatcher(left)
       if (result.matches != shouldBeTrue) {
@@ -3105,9 +3257,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // fruit should be an ('orange)
-    //                    ^
     // TODO, in both of these, the failure message doesn't have a/an
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * fruit should be an ('orange)
+     *                 ^
+     * </pre>
+     */
     def an(symbol: Symbol) {
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
@@ -3117,8 +3275,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // book should be an (excellentRead)
-    //                ^
+    /**
+     * This method enables the following syntax, where <code>badBook</code> is, for example, of type <code>Book</code> and
+     * <code>excellentRead</code> refers to a <code>BePropertyMatcher[Book]</code>:
+     *
+     * <pre>
+     * book should be an (excellentRead)
+     *                ^
+     * </pre>
+     */
     def an(beTrueMatcher: BePropertyMatcher[T]) {
       val beTrueMatchResult = beTrueMatcher(left)
       if (beTrueMatchResult.matches != shouldBeTrue) {
@@ -3132,8 +3297,6 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
-// TODO: make everything that I can protected
-
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
@@ -3141,6 +3304,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * result should not equal (7)
+     *                   ^
+     * </pre>
+     */
     def equal(right: Any) {
       if ((left == right) != shouldBeTrue)
         throw newTestFailedException(
@@ -3152,6 +3324,14 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * result should not be <= (7)
+     *                   ^
+     * </pre>
+     */
     def be(comparison: ResultOfLessThanOrEqualToComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
         throw newTestFailedException(
@@ -3164,6 +3344,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * result should not be >= (7)
+     *                   ^
+     * </pre>
+     */
     def be(comparison: ResultOfGreaterThanOrEqualToComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
         throw newTestFailedException(
@@ -3176,6 +3364,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * result should not be < (7)
+     *                   ^
+     * </pre>
+     */
     def be(comparison: ResultOfLessThanComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
         throw newTestFailedException(
@@ -3188,6 +3384,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * result should not be > (7)
+     *                   ^
+     * </pre>
+     */
     def be(comparison: ResultOfGreaterThanComparison[T]) {
       if (comparison(left) != shouldBeTrue) {
         throw newTestFailedException(
@@ -3200,8 +3404,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // 2 should not be (odd)
-    //              ^
+    /**
+     * This method enables the following syntax, where <code>odd</code> refers to
+     * a <code>BeMatcher[Int]</code>:
+     *
+     * <pre>
+     * 2 should not be (odd)
+     *              ^
+     * </pre>
+     */
     def be(beMatcher: BeMatcher[T]) {
       val result = beMatcher(left)
       if (result.matches != shouldBeTrue) {
@@ -3224,8 +3435,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWord[T](left, shouldBeTrue) {
 
-    // map should not be (null)
-    //                ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * map should not be (null)
+     *                ^
+     * </pre>
+     */
     def be(o: Null) {
       if ((left == null) != shouldBeTrue) {
         throw newTestFailedException(
@@ -3237,8 +3454,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
     
-    // stack should not be ('empty)
-    //                      ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * stack should not be ('empty)
+     *                  ^
+     * </pre>
+     */
     def be(symbol: Symbol) {
       val matcherResult = matchSymbolToPredicateMethod(left, symbol, false, false)
       if (matcherResult.matches != shouldBeTrue) {
@@ -3248,9 +3471,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // where empty is a BePropertyMatcher
-    // stack should not be (empty)
-    //                      ^
+    /**
+     * This method enables the following syntax, where <code>stack</code> is, for example, of type <code>Stack</code> and
+     * <code>empty</code> refers to a <code>BePropertyMatcher[Stack]</code>:
+     *
+     * <pre>
+     * stack should not be (empty)
+     *                      ^
+     * </pre>
+     */
     def be(bePropertyMatcher: BePropertyMatcher[T]) {
       val result = bePropertyMatcher(left)
       if (result.matches != shouldBeTrue) {
@@ -3263,8 +3492,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // notFileMock should not be a ('file)
-    //                        ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * notFileMock should not be a ('file)
+     *                        ^
+     * </pre>
+     */
     def be(resultOfAWordApplication: ResultOfAWordToSymbolApplication) {
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAWordApplication.symbol, true, true)
       if (matcherResult.matches != shouldBeTrue) {
@@ -3274,8 +3509,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // notFileMock should not be a ('file)
-    //                        ^
+    /**
+     * This method enables the following syntax, where <code>notFileMock</code> is, for example, of type <code>File</code> and
+     * <code>file</code> refers to a <code>BePropertyMatcher[File]</code>:
+     *
+     * <pre>
+     * notFileMock should not be a (file)
+     *                        ^
+     * </pre>
+     */
     def be[U >: T](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[U]) {
       val result = resultOfAWordApplication.bePropertyMatcher(left)
       if (result.matches != shouldBeTrue) {
@@ -3288,8 +3530,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // notAppleMock should not be an ('apple)
-    //                         ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * keyEvent should not be an ('actionKey)
+     *                     ^
+     * </pre>
+     */
     def be(resultOfAnWordApplication: ResultOfAnWordToSymbolApplication) {
       val matcherResult = matchSymbolToPredicateMethod(left, resultOfAnWordApplication.symbol, true, false)
       if (matcherResult.matches != shouldBeTrue) {
@@ -3299,8 +3547,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // notAppleMock should not be an ('apple)
-    //                         ^
+    /**
+     * This method enables the following syntax, where <code>keyEvent</code> is, for example, of type <code>KeyEvent</code> and
+     * <code>actionKey</code> refers to a <code>BePropertyMatcher[KeyEvent]</code>:
+     *
+     * <pre>
+     * keyEvent should not be an (actionKey)
+     *                     ^
+     * </pre>
+     */
     def be[U >: T](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[U]) {
       val result = resultOfAnWordApplication.bePropertyMatcher(left)
       if (result.matches != shouldBeTrue) {
@@ -3313,8 +3568,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // otherString should not be theSameInstanceAs (string)
-    //                        ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * otherString should not be theSameInstanceAs (string)
+     *                        ^
+     * </pre>
+     */
     def be(resultOfSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication) {
       if ((resultOfSameInstanceAsApplication.right eq left) != shouldBeTrue) {
         throw newTestFailedException(
@@ -3327,8 +3588,7 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // book should not have (title ("One Hundred Years of Solitude"))
-    //                 ^
+    // TODO: Explain this matrix somewhere
     // The type parameter U has T as its lower bound, which means that U must be T or a supertype of T. Left is T, oh, because
     // HavePropertyMatcher is contravariant in its type parameter T, and that nmakes sense, because a HavePropertyMatcher of Any should
     // be able to match on a String.
@@ -3341,6 +3601,15 @@ trait Matchers extends Assertions { matchers =>
     // 1 0 | 0 | 1
     // 1 1 | 1 | 0
     // 
+    /**
+     * This method enables the following syntax, where <code>badBook</code> is, for example, of type <code>Book</code> and
+     * <code>title ("One Hundred Years of Solitude")</code> results in a <code>HavePropertyMatcher[Book]</code>:
+     *
+     * <pre>
+     * book should not have (title ("One Hundred Years of Solitude"))
+     *                 ^
+     * </pre>
+     */
     def have[U >: T](firstPropertyMatcher: HavePropertyMatcher[U, _], propertyMatchers: HavePropertyMatcher[U, _]*) {
 
       val results =
@@ -3399,6 +3668,14 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef[String](left, shouldBeTrue) {
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * string should not have length (12)
+     *                   ^
+     * </pre>
+     */
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.length == right) != shouldBeTrue) {
@@ -3412,6 +3689,19 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
+     *                   ^
+     * </pre>
+     *
+     * <p>
+     * The regular expression passed following the <code>regex</code> token can be either a <code>String</code>
+     * or a <code>scala.util.matching.Regex</code>.
+     * </p>
+     */
     def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
@@ -3424,6 +3714,19 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should not include regex ("wo.ld")
+     *                   ^
+     * </pre>
+     *
+     * <p>
+     * The regular expression passed following the <code>regex</code> token can be either a <code>String</code>
+     * or a <code>scala.util.matching.Regex</code>.
+     * </p>
+     */
     def include(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       if (rightRegex.findFirstIn(left).isDefined != shouldBeTrue)
@@ -3436,6 +3739,14 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should not include substring ("world")
+     *                   ^
+     * </pre>
+     */
     def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
@@ -3448,6 +3759,19 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should not startWith regex ("Hel*o")
+     *                   ^
+     * </pre>
+     *
+     * <p>
+     * The regular expression passed following the <code>regex</code> token can be either a <code>String</code>
+     * or a <code>scala.util.matching.Regex</code>.
+     * </p>
+     */
     def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       if (rightRegex.pattern.matcher(left).lookingAt != shouldBeTrue)
@@ -3460,8 +3784,14 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
-    // "eight" should not startWith substring ("1.7")
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * "eight" should not startWith substring ("1.7")
+     *                    ^
+     * </pre>
+     */
     def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       if ((left.indexOf(expectedSubstring) == 0) != shouldBeTrue)
@@ -3474,6 +3804,14 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * greeting should not regex substring ("wor.d")
+     *                     ^
+     * </pre>
+     */
     def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication) {
       val rightRegex = resultOfRegexWordApplication.regex
       val allMatches = rightRegex.findAllIn(left)
@@ -3487,8 +3825,14 @@ trait Matchers extends Assertions { matchers =>
         )
     }
 
-    // "eight" should not endWith substring ("1.7")
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * "eight" should not endWith substring ("1.7")
+     *                    ^
+     * </pre>
+     */
     def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       if ((left endsWith expectedSubstring) != shouldBeTrue)
