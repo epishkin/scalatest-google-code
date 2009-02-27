@@ -24,7 +24,6 @@ import Helper.transformOperatorChars
 
 // TODO: drop generic support for be as an equality comparison, in favor of specific ones.
 // TODO: mention on JUnit and TestNG docs that you can now mix in ShouldMatchers or MustMatchers
-// TODO: Rename negatedFailureMessage to oppositeFailureMessage, and explain it better in the doc comments
 // TODO: Put the TFE info in print reporter output too
 // TODO: Put links from ShouldMatchers to wherever I reveal the matrix and algo of how properties are checked dynamically.
 // TODO: double check that I wrote tests for (length (7)) and (size (8)) in parens
@@ -1742,7 +1741,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
+  class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
 
     /**
      * This method enables the following syntax:
@@ -1787,7 +1786,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfContainWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean) {
+  class ResultOfContainWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
@@ -1836,7 +1835,7 @@ trait Matchers extends Assertions { matchers =>
    * The <code>(contain element ("two"))</code> expression will result in a <code>Matcher[scala.Iterable[String]]</code>. This
    * implicit conversion method will convert that matcher to a <code>Matcher[java.util.Collection[String]]</code>.
    */
-  protected implicit def convertIterableMatcherToJavaCollectionMatcher[T](iterableMatcher: Matcher[Iterable[T]]) = 
+  implicit def convertIterableMatcherToJavaCollectionMatcher[T](iterableMatcher: Matcher[Iterable[T]]) = 
     new Matcher[java.util.Collection[T]] {
       def apply(left: java.util.Collection[T]) = {
         val iterable = new Iterable[T] {
@@ -1861,7 +1860,7 @@ trait Matchers extends Assertions { matchers =>
    * The <code>(contain key ("two"))</code> expression will result in a <code>Matcher[scala.collection.Map[String, Any]]</code>. This
    * implicit conversion method will convert that matcher to a <code>Matcher[java.util.Map[String, Any]]</code>.
    */
-  protected implicit def convertMapMatcherToJavaMapMatcher[K, V](mapMatcher: Matcher[scala.collection.Map[K, V]]) = 
+  implicit def convertMapMatcherToJavaMapMatcher[K, V](mapMatcher: Matcher[scala.collection.Map[K, V]]) = 
     new Matcher[java.util.Map[K, V]] {
       def apply(left: java.util.Map[K, V]) = {
         // Even though the java map is mutable I just wrap it it to a plain old Scala map, because
@@ -1904,7 +1903,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ContainWord {
+  class ContainWord {
 
     /**
      * This method enables the following syntax:
@@ -2006,7 +2005,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class IncludeWord {
+  class IncludeWord {
 
     /**
      * This method enables the following syntax:
@@ -2063,7 +2062,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class StartWithWord {
+  class StartWithWord {
 
     /**
      * This method enables the following syntax:
@@ -2120,7 +2119,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class EndWithWord {
+  class EndWithWord {
 
     /**
      * This method enables the following syntax:
@@ -2179,7 +2178,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class FullyMatchWord {
+  class FullyMatchWord {
 
     /**
      * This method enables the following syntax:
@@ -2441,7 +2440,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class HavePropertyMatcherGenerator(symbol: Symbol) {
+  class HavePropertyMatcherGenerator(symbol: Symbol) {
 
     /**
      * This method enables the following syntax:
@@ -2530,7 +2529,7 @@ trait Matchers extends Assertions { matchers =>
    * This implicit conversion method converts a <code>Symbol</code> to a
    * <code>HavePropertyMatcherGenerator</code>, to enable the symbol to be used with the <code>have ('author ("Dickens"))</code> syntax.
    */
-  protected implicit def convertSymbolToHavePropertyMatcherGenerator(symbol: Symbol) = new HavePropertyMatcherGenerator(symbol)
+  implicit def convertSymbolToHavePropertyMatcherGenerator(symbol: Symbol) = new HavePropertyMatcherGenerator(symbol)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -2538,7 +2537,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class HaveWord {
+  class HaveWord {
 
     // TODO: How about returning a Matcher[Gazornimplatz] and then providing implicit conversion
     // methods from Matcher[Gazornimplatz] to Matcher[Seq], Matcher[String], Matcher[java.util.List], and
@@ -2715,7 +2714,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
+  class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -2733,7 +2732,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
+  class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -2751,7 +2750,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfHaveWordForJavaMap(left: java.util.Map[_, _], shouldBeTrue: Boolean) {
+  class ResultOfHaveWordForJavaMap(left: java.util.Map[_, _], shouldBeTrue: Boolean) {
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -2769,7 +2768,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
+  class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -2787,7 +2786,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForIterable[E, T <: Iterable[E]](left: T, shouldBeTrue: Boolean)
+  class ResultOfNotWordForIterable[E, T <: Iterable[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     def contain(resultOfElementWordApplication: ResultOfElementWordApplication[E]) {
@@ -2810,7 +2809,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForCollection[E, T <: Collection[E]](left: T, shouldBeTrue: Boolean)
+  class ResultOfNotWordForCollection[E, T <: Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForIterable[E, T](left, shouldBeTrue) {
 
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
@@ -2833,7 +2832,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForJavaCollection[E, T <: java.util.Collection[E]](left: T, shouldBeTrue: Boolean)
+  class ResultOfNotWordForJavaCollection[E, T <: java.util.Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
@@ -2869,7 +2868,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
+  class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[(K, V), scala.collection.Map[K, V]](left, shouldBeTrue) {
 
     def contain(resultOfKeyWordApplication: ResultOfKeyWordApplication[K]) {
@@ -2907,7 +2906,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean)
+  class ResultOfNotWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     // javaMap should not contain key ("three")
@@ -2947,7 +2946,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
+  class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[E, T](left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
@@ -2970,7 +2969,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
+  class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
     def length(expectedLength: Int) {
       if ((left.size == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -2988,7 +2987,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForJavaList[E, T <: java.util.List[E]](left: T, shouldBeTrue: Boolean)
+  class ResultOfNotWordForJavaList[E, T <: java.util.List[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForJavaCollection[E, T](left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
@@ -3011,7 +3010,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfBeWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean) {
+  class ResultOfBeWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean) {
 
     def theSameInstanceAs(right: AnyRef) {
       if ((left eq right) != shouldBeTrue)
@@ -3085,7 +3084,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
+  class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
     def equal(right: Any) {
       if ((left == right) != shouldBeTrue)
         throw newTestFailedException(
@@ -3166,7 +3165,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
+  class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWord[T](left, shouldBeTrue) {
 
     // stack should not be ('empty)
@@ -3328,7 +3327,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
+  class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef[String](left, shouldBeTrue) {
 
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
@@ -3440,7 +3439,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForDouble(left: Double, shouldBeTrue: Boolean)
+  class ResultOfNotWordForDouble(left: Double, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Double](left, shouldBeTrue) {
 
     // sevenDotOh should not be (6.5 plusOrMinus 0.2)
@@ -3466,7 +3465,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForFloat(left: Float, shouldBeTrue: Boolean)
+  class ResultOfNotWordForFloat(left: Float, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Float](left, shouldBeTrue) {
 
     // sevenDotOhFloat should not be (6.5f plusOrMinus 0.2f)
@@ -3492,7 +3491,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
+  class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Long](left, shouldBeTrue) {
 
     // sevenDotOhLong should not be (4L plusOrMinus 2L)
@@ -3518,7 +3517,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForInt(left: Int, shouldBeTrue: Boolean)
+  class ResultOfNotWordForInt(left: Int, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Int](left, shouldBeTrue) {
 
     // sevenDotOhInt should not be (4 plusOrMinus 2)
@@ -3544,7 +3543,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForShort(left: Short, shouldBeTrue: Boolean)
+  class ResultOfNotWordForShort(left: Short, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Short](left, shouldBeTrue) {
 
     // sevenDotOhShort should not be (4.toShort plusOrMinus 2.toShort)
@@ -3570,7 +3569,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfNotWordForByte(left: Byte, shouldBeTrue: Boolean)
+  class ResultOfNotWordForByte(left: Byte, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Byte](left, shouldBeTrue) {
 
     // sevenDotOhByte should not be (4.toByte plusOrMinus 2.toByte)
@@ -3642,7 +3641,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
+  class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -3661,7 +3660,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
+  class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
         throw newTestFailedException(
@@ -3691,7 +3690,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
+  class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
         throw newTestFailedException(
@@ -3721,7 +3720,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
+  class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
         throw newTestFailedException(
@@ -3752,7 +3751,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
+  class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
     def regex(rightRegexString: String) { regex(rightRegexString.r) }
     def regex(rightRegex: Regex) {
       if (rightRegex.pattern.matcher(left).matches != shouldBeTrue)
@@ -3772,7 +3771,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
+  class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
     def element(expectedElement: T) {
       if ((left.elements.contains(expectedElement)) != shouldBeTrue)
         throw newTestFailedException(
@@ -3790,7 +3789,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfContainWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
+  class ResultOfContainWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
     def element(expectedElement: T) {
       if ((left.contains(expectedElement)) != shouldBeTrue)
         throw newTestFailedException(
@@ -3829,7 +3828,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class TreatedAsOrderedWrapper {
+  class TreatedAsOrderedWrapper {
     def <[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
@@ -3877,7 +3876,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class BeWord {
+  class BeWord {
 
     // fileMock should not { be a ('file) }
     //                          ^
@@ -5105,7 +5104,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfLessThanComparison[T <% Ordered[T]](val right: T) {
+  class ResultOfLessThanComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left < right
   }
 
@@ -5115,7 +5114,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfGreaterThanComparison[T <% Ordered[T]](val right: T) {
+  class ResultOfGreaterThanComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left > right
   }
 
@@ -5125,7 +5124,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfLessThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+  class ResultOfLessThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left <= right
   }
 
@@ -5135,20 +5134,20 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class ResultOfGreaterThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+  class ResultOfGreaterThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
     def apply(left: T): Boolean = left >= right
   }
 
-  protected def <[T <% Ordered[T]] (right: T): ResultOfLessThanComparison[T] =
+  def <[T <% Ordered[T]] (right: T): ResultOfLessThanComparison[T] =
     new ResultOfLessThanComparison(right)
 
-  protected def >[T <% Ordered[T]] (right: T): ResultOfGreaterThanComparison[T] =
+  def >[T <% Ordered[T]] (right: T): ResultOfGreaterThanComparison[T] =
     new ResultOfGreaterThanComparison(right)
 
-  protected def <=[T <% Ordered[T]] (right: T): ResultOfLessThanOrEqualToComparison[T] =
+  def <=[T <% Ordered[T]] (right: T): ResultOfLessThanOrEqualToComparison[T] =
     new ResultOfLessThanOrEqualToComparison(right)
 
-  protected def >=[T <% Ordered[T]] (right: T): ResultOfGreaterThanOrEqualToComparison[T] =
+  def >=[T <% Ordered[T]] (right: T): ResultOfGreaterThanOrEqualToComparison[T] =
     new ResultOfGreaterThanOrEqualToComparison(right)
 }
 
