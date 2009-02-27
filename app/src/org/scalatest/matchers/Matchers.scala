@@ -24,7 +24,6 @@ import Helper.transformOperatorChars
 
 // TODO: drop generic support for be as an equality comparison, in favor of specific ones.
 // TODO: mention on JUnit and TestNG docs that you can now mix in ShouldMatchers or MustMatchers
-// TODO: Put the TFE info in print reporter output too
 // TODO: Put links from ShouldMatchers to wherever I reveal the matrix and algo of how properties are checked dynamically.
 // TODO: double check that I wrote tests for (length (7)) and (size (8)) in parens
 // TODO: document how to turn off the === implicit conversion
@@ -2565,6 +2564,22 @@ trait Matchers extends Assertions { matchers =>
     // to get it to work with java.util.Collection.
     // I couldn't figure out how to combine view bounds with existential types. May or may not
     // be possible, but going dynamic for now at least.
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * book should have length (9)
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * Currently (as of ScalaTest 0.9.5), this method will produce a <code>Matcher[AnyRef]</code>, and if the
+     * <code>AnyRef</code> passed to that matcher's <code>apply</code> method does not have the appropriate <code>length</code> property
+     * structure, all will compile but a <code>TestFailedException</code> will result at runtime explaining the problem. The one exception is that it will work on
+     * <code>java.util.List</code>, even though that type has no <code>length</code> structure (its <code>size</code> property
+     * will be used instead.) In a future ScalaTest release, this may be tightened so that all is statically checked at compile time.
+     * </p>
+     */
     def length(expectedLength: Long) =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
@@ -2606,6 +2621,21 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * book should have size (9)
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * Currently (as of ScalaTest 0.9.5), this method will produce a <code>Matcher[AnyRef]</code>, and if the
+     * <code>AnyRef</code> passed to that matcher's <code>apply</code> method does not have the appropriate <code>size</code> property
+     * structure, all will compile but a <code>TestFailedException</code> will result at runtime explaining the problem.
+     * In a future ScalaTest release, this may be tightened so that all is statically checked at compile time.
+     * </p>
+     */
     def size(expectedSize: Long) =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
@@ -2641,78 +2671,84 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
-      // book should have (title ("A Tale of Two Cities"))
-      //                  ^
-      def apply[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * book should have (title ("A Tale of Two Cities"))
+     *                  ^
+     * </pre>
+     */
+    def apply[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
 
-        new Matcher[T] {
+      new Matcher[T] {
 
-          def apply(left: T) = {
+        def apply(left: T) = {
 
-            val results =
-              for (propertyVerifier <- firstPropertyMatcher :: propertyMatchers.toList) yield
-                propertyVerifier(left)
+          val results =
+            for (propertyVerifier <- firstPropertyMatcher :: propertyMatchers.toList) yield
+              propertyVerifier(left)
 
-            val firstFailureOption = results.find(pv => !pv.matches)
+          val firstFailureOption = results.find(pv => !pv.matches)
 
-            val justOneProperty = propertyMatchers.length == 0
+          val justOneProperty = propertyMatchers.length == 0
 
-            firstFailureOption match {
+          firstFailureOption match {
 
-              case Some(firstFailure) =>
+            case Some(firstFailure) =>
 
-                val failedVerification = firstFailure
-                val failureMessage =
+              val failedVerification = firstFailure
+              val failureMessage =
+                FailureMessages(
+                  "propertyDidNotHaveExpectedValue",
+                  UnquotedString(failedVerification.propertyName),
+                  failedVerification.expectedValue,
+                  failedVerification.actualValue,
+                  left
+                )
+              val midSentenceFailureMessage =
+                FailureMessages(
+                  "midSentencePropertyDidNotHaveExpectedValue",
+                  UnquotedString(failedVerification.propertyName),
+                  failedVerification.expectedValue,
+                  failedVerification.actualValue,
+                  left
+                )
+
+              MatchResult(false, failureMessage, failureMessage, midSentenceFailureMessage, midSentenceFailureMessage)
+
+            case None =>
+
+              val failureMessage =
+                if (justOneProperty) {
+                  val firstPropertyResult = results.head // know this will succeed, because firstPropertyMatcher was required
                   FailureMessages(
-                    "propertyDidNotHaveExpectedValue",
-                    UnquotedString(failedVerification.propertyName),
-                    failedVerification.expectedValue,
-                    failedVerification.actualValue,
+                    "propertyHadExpectedValue",
+                    UnquotedString(firstPropertyResult.propertyName),
+                    firstPropertyResult.expectedValue,
                     left
                   )
-                val midSentenceFailureMessage =
+                }
+                else FailureMessages("allPropertiesHadExpectedValues", left)
+
+              val midSentenceFailureMessage =
+                if (justOneProperty) {
+                  val firstPropertyResult = results.head // know this will succeed, because firstPropertyMatcher was required
                   FailureMessages(
-                    "midSentencePropertyDidNotHaveExpectedValue",
-                    UnquotedString(failedVerification.propertyName),
-                    failedVerification.expectedValue,
-                    failedVerification.actualValue,
+                    "midSentencePropertyHadExpectedValue",
+                    UnquotedString(firstPropertyResult.propertyName),
+                    firstPropertyResult.expectedValue,
                     left
                   )
+                }
+                else FailureMessages("midSentenceAllPropertiesHadExpectedValues", left)
 
-                MatchResult(false, failureMessage, failureMessage, midSentenceFailureMessage, midSentenceFailureMessage)
-
-              case None =>
-
-                val failureMessage =
-                  if (justOneProperty) {
-                    val firstPropertyResult = results.head // know this will succeed, because firstPropertyMatcher was required
-                    FailureMessages(
-                      "propertyHadExpectedValue",
-                      UnquotedString(firstPropertyResult.propertyName),
-                      firstPropertyResult.expectedValue,
-                      left
-                    )
-                  }
-                  else FailureMessages("allPropertiesHadExpectedValues", left)
-
-                val midSentenceFailureMessage =
-                  if (justOneProperty) {
-                    val firstPropertyResult = results.head // know this will succeed, because firstPropertyMatcher was required
-                    FailureMessages(
-                      "midSentencePropertyHadExpectedValue",
-                      UnquotedString(firstPropertyResult.propertyName),
-                      firstPropertyResult.expectedValue,
-                      left
-                    )
-                  }
-                  else FailureMessages("midSentenceAllPropertiesHadExpectedValues", left)
-
-                MatchResult(true, failureMessage, failureMessage, midSentenceFailureMessage, midSentenceFailureMessage)
-            }
+              MatchResult(true, failureMessage, failureMessage, midSentenceFailureMessage, midSentenceFailureMessage)
           }
         }
+      }
   }
-  
+
   //
   // This class is used as the return type of the overloaded should method (in CollectionShouldWrapper)
   // that takes a HaveWord. It's size method will be called in situations like this:
