@@ -63,7 +63,7 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <p>
- * The <code>left should equal (right)</code> syntax works by calling == (<em>i.e.</em>, <code>equals</code>) on the <code>left</code>
+ * The <code>left should equal (right)</code> syntax works by calling <code>==</code>  on the <code>left</code>
  * value, passing in the <code>right</code> value, on every type except arrays. If <code>left</code> is an array, <code>deepEquals</code>
  * will be invoked on <code>left</code>, passing in <code>right</code>. Thus, even though this expression
  * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
