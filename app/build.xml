@@ -163,7 +163,7 @@
       <jar jarfile="${build.tests.jar}" basedir="${build.tests}" includes="org/scalatest/**/*.class" />
     </target>
 
-    <target name="doc" depends="compile">
+    <target name="doc" depends="compile-main">
         <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpath="${classes}" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
         <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
