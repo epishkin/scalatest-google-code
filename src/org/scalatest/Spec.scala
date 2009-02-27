@@ -479,192 +479,6 @@ when a test fails, it doesn't print them? No, I know, it .... No
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
- * <strong>Shared examples</strong>
- *
- * <p>
- * You can place examples that you would like to reuse in multiple places in methods or functions, then include these
- * "shared" examples wherever you want to reuse them by invoking the method or function. Here's a longer code example
- * illustrating this manner of factoring out of common examples into methods:
- *
- * <pre>
- * 
- * import org.scalatest.Spec
- * 
- * import scala.collection.mutable.ListBuffer
- * 
- * class Stack[T] {
- *   val MAX = 10
- *   private var buf = new ListBuffer[T]
- *   def push(o: T) {
- *     if (!full)
- *       o +: buf
- *     else
- *       throw new IllegalStateException("can't push onto a full stack")
- *   }
- *   def pop(): T = {
- *     if (!empty)
- *       buf.remove(0)
- *     else
- *       throw new IllegalStateException("can't pop an empty stack")
- *   }
- *   def peek: T = {
- *     if (!empty)
- *       buf(0)
- *     else
- *       throw new IllegalStateException("can't pop an empty stack")
- *   }
- *   def full: Boolean = buf.size == MAX
- *   def empty: Boolean = buf.size == 0
- *   def size = buf.size
- * }
- * 
- * 
- * trait StackBehaviors { this: Spec =>
- * 
- *   def includeNonEmptyStackExamples(stack: Stack[Int], lastItemAdded: Int) {
- * 
- *     it("should be non-empty") {
- *       assert(!stack.empty)
- *     }  
- * 
- *     it("should return the top item on peek") {
- *       assert(stack.peek === lastItemAdded)
- *     }
- *   
- *     it("should not remove the top item on peek") {
- *       val size = stack.size
- *       assert(stack.peek === lastItemAdded)
- *       assert(stack.size === size)
- *     }
- *   
- *     it("should remove the top item on pop") {
- *       val size = stack.size
- *       assert(stack.pop === lastItemAdded)
- *       assert(stack.size === size - 1)
- *     }
- *   }
- *   
- *   def includeNonFullStackExamples(stack: Stack[Int]) {
- *       
- *     it("should not be full") {
- *       assert(!stack.full)
- *     }
- *       
- *     it("should add to the top on push") {
- *       val size = stack.size
- *       stack.push(7)
- *       assert(stack.size === size + 1)
- *       assert(stack.peek === 7)
- *     }
- *   }
- * }
- * 
- * class StackSpec extends Spec with StackBehaviors {
- * 
- *   // fixture creation methods
- *   def emptyStack = new Stack[Int]
- *   def fullStack = {
- *     val stack = new Stack[Int]
- *     for (i <- 0 until stack.MAX)
- *       stack.push(i)
- *     stack
- *   }
- *   def stackWithOneItem = {
- *     val stack = new Stack[Int]
- *     stack.push(9)
- *     stack
- *   }
- *   def stackWithOneItemLessThanCapacity = {
- *     val stack = new Stack[Int]
- *     for (i <- 1 to 9)
- *       stack.push(i)
- *     stack
- *   }
- *   val lastValuePushed = 9
- * 
- *   describe("A Stack") {
- * 
- *     describe("(when empty)") {
- *       
- *       it("should be empty") {
- *         assert(emptyStack.empty)
- *       }
- * 
- *       it("should complain on peek") {
- *         intercept[IllegalStateException] {
- *           emptyStack.peek
- *         }
- *       }
- * 
- *       it("should complain on pop") {
- *         intercept[IllegalStateException] {
- *           emptyStack.pop
- *         }
- *       }
- *     }
- * 
- *     describe("(with one item)") {
- *       includeNonEmptyStackExamples(stackWithOneItem, lastValuePushed)
- *       includeNonFullStackExamples(stackWithOneItem)
- *     }
- *     
- *     describe("(with one item less than capacity)") {
- *       includeNonEmptyStackExamples(stackWithOneItemLessThanCapacity, lastValuePushed)
- *       includeNonFullStackExamples(stackWithOneItemLessThanCapacity)
- *     }
- * 
- *     describe("(when full)") {
- *       
- *       it("should be full") {
- *         assert(fullStack.full)
- *       }
- * 
- *       includeNonEmptyStackExamples(fullStack, lastValuePushed)
- * 
- *       it("should complain on a push") {
- *         intercept[IllegalStateException] {
- *           fullStack.push(10)
- *         }
- *       }
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you load this file into the Scala interpreter (with scalatest's JAR file on the class path), and execute it,
- * you'll see:
- * </p>
- *
- * <pre>
- * scala> (new StackSpec).execute()
- * A Stack (when empty)
- * - should be empty
- * - should complain on peek
- * - should complain on pop
- * A Stack (with one item)
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should not be full
- * - should add to the top on push
- * A Stack (with one item less than capacity)
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should not be full
- * - should add to the top on push
- * A Stack (when full)
- * - should be full
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should complain on a push
- * </pre>
- * 
  * @author Bill Venners
  */
 trait Spec extends Suite {
@@ -1273,3 +1087,193 @@ class MyFeatures extends Features {
 }
  */
 
+/*
+I dropped this from the scaladoc for spec, because it is ugly until I release
+the should behave like stuff, and really I question how much 'should behave like' is needed.
+ * <strong>Shared examples</strong>
+ *
+ * <p>
+ * You can place examples that you would like to reuse in multiple places in methods or functions, then include these
+ * "shared" examples wherever you want to reuse them by invoking the method or function. Here's a longer code example
+ * illustrating this manner of factoring out of common examples into methods:
+ *
+ * <pre>
+ * 
+ * import org.scalatest.Spec
+ * 
+ * import scala.collection.mutable.ListBuffer
+ * 
+ * class Stack[T] {
+ *   val MAX = 10
+ *   private var buf = new ListBuffer[T]
+ *   def push(o: T) {
+ *     if (!full)
+ *       o +: buf
+ *     else
+ *       throw new IllegalStateException("can't push onto a full stack")
+ *   }
+ *   def pop(): T = {
+ *     if (!empty)
+ *       buf.remove(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *   def peek: T = {
+ *     if (!empty)
+ *       buf(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *   def full: Boolean = buf.size == MAX
+ *   def empty: Boolean = buf.size == 0
+ *   def size = buf.size
+ * }
+ * 
+ * 
+ * trait StackBehaviors { this: Spec =>
+ * 
+ *   def includeNonEmptyStackExamples(stack: Stack[Int], lastItemAdded: Int) {
+ * 
+ *     it("should be non-empty") {
+ *       assert(!stack.empty)
+ *     }  
+ * 
+ *     it("should return the top item on peek") {
+ *       assert(stack.peek === lastItemAdded)
+ *     }
+ *   
+ *     it("should not remove the top item on peek") {
+ *       val size = stack.size
+ *       assert(stack.peek === lastItemAdded)
+ *       assert(stack.size === size)
+ *     }
+ *   
+ *     it("should remove the top item on pop") {
+ *       val size = stack.size
+ *       assert(stack.pop === lastItemAdded)
+ *       assert(stack.size === size - 1)
+ *     }
+ *   }
+ *   
+ *   def includeNonFullStackExamples(stack: Stack[Int]) {
+ *       
+ *     it("should not be full") {
+ *       assert(!stack.full)
+ *     }
+ *       
+ *     it("should add to the top on push") {
+ *       val size = stack.size
+ *       stack.push(7)
+ *       assert(stack.size === size + 1)
+ *       assert(stack.peek === 7)
+ *     }
+ *   }
+ * }
+ * 
+ * class StackSpec extends Spec with StackBehaviors {
+ * 
+ *   // fixture creation methods
+ *   def emptyStack = new Stack[Int]
+ *   def fullStack = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 0 until stack.MAX)
+ *       stack.push(i)
+ *     stack
+ *   }
+ *   def stackWithOneItem = {
+ *     val stack = new Stack[Int]
+ *     stack.push(9)
+ *     stack
+ *   }
+ *   def stackWithOneItemLessThanCapacity = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 1 to 9)
+ *       stack.push(i)
+ *     stack
+ *   }
+ *   val lastValuePushed = 9
+ * 
+ *   describe("A Stack") {
+ * 
+ *     describe("(when empty)") {
+ *       
+ *       it("should be empty") {
+ *         assert(emptyStack.empty)
+ *       }
+ * 
+ *       it("should complain on peek") {
+ *         intercept[IllegalStateException] {
+ *           emptyStack.peek
+ *         }
+ *       }
+ * 
+ *       it("should complain on pop") {
+ *         intercept[IllegalStateException] {
+ *           emptyStack.pop
+ *         }
+ *       }
+ *     }
+ * 
+ *     describe("(with one item)") {
+ *       includeNonEmptyStackExamples(stackWithOneItem, lastValuePushed)
+ *       includeNonFullStackExamples(stackWithOneItem)
+ *     }
+ *     
+ *     describe("(with one item less than capacity)") {
+ *       includeNonEmptyStackExamples(stackWithOneItemLessThanCapacity, lastValuePushed)
+ *       includeNonFullStackExamples(stackWithOneItemLessThanCapacity)
+ *     }
+ * 
+ *     describe("(when full)") {
+ *       
+ *       it("should be full") {
+ *         assert(fullStack.full)
+ *       }
+ * 
+ *       includeNonEmptyStackExamples(fullStack, lastValuePushed)
+ * 
+ *       it("should complain on a push") {
+ *         intercept[IllegalStateException] {
+ *           fullStack.push(10)
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you load this file into the Scala interpreter (with scalatest's JAR file on the class path), and execute it,
+ * you'll see:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).execute()
+ * A Stack (when empty)
+ * - should be empty
+ * - should complain on peek
+ * - should complain on pop
+ * A Stack (with one item)
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (with one item less than capacity)
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (when full)
+ * - should be full
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should complain on a push
+ * </pre>
+ * 
+*/

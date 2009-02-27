@@ -1896,7 +1896,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  protected class BehaveWord
+  private[scalatest] class BehaveWord
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -4574,7 +4574,7 @@ trait Matchers extends Assertions { matchers =>
   }
 
   val not = new NotWord
-  val behave = new BehaveWord
+  private[scalatest] val behave = new BehaveWord
   val be = new BeWord
 
   /**
@@ -4583,7 +4583,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfBehaveWord[T](left: T) {
+  private [scalatest] class ResultOfBehaveWord[T](left: T) {
     def like(fun: (T) => Unit) {
       fun(left)
     }
