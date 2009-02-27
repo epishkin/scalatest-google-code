@@ -1422,6 +1422,16 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * map should (contain key (7) or not be (null))
+       *                                    ^
+       * </pre>
+       */
+      def be[T](o: Null) = matchersWrapper.or(matchers.not.be(o))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * 5 should (not be < (7) or not be < (8))
        *                               ^
        * </pre>

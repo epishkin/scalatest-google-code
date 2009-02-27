@@ -137,5 +137,44 @@ class ShouldBeNullSpec extends Spec with ShouldMatchers with Checkers with Retur
       }
       assert(caught11.getMessage === "The reference was null, but the reference was null")
     }
+
+    it("should compile and run when used with or (with or without not)") {
+
+      Map(1 -> "one") should (contain key (7) or not be (null))
+      Map(1 -> "one") should (contain key (7) or not (be (null)))
+      Map(1 -> "one") should (contain key (7) or (not (be (null))))
+
+      Map(1 -> "one") should (contain key (1) or not be (null))
+      Map(1 -> "one") should (contain key (1) or not (be (null)))
+      Map(1 -> "one") should (contain key (1) or (not (be (null))))
+
+      val caught4 = intercept[TestFailedException] {
+        Map(1 -> "one") should (contain key (7) or be (null))
+      }
+      assert(caught4.getMessage === "Map(1 -> one) did not contain key 7, and Map(1 -> one) was not null")
+
+      val caught5 = intercept[TestFailedException] {
+        Map(1 -> "one") should (contain key (7) or (be (null)))
+      }
+      assert(caught5.getMessage === "Map(1 -> one) did not contain key 7, and Map(1 -> one) was not null")
+
+      val caught6 = intercept[TestFailedException] {
+        Map(1 -> "one") should (be (null) or be (null))
+      }
+      assert(caught6.getMessage === "Map(1 -> one) was not null, and Map(1 -> one) was not null")
+
+      val caught7 = intercept[TestFailedException] {
+        Map(1 -> "one") should (be (null) or (be (null)))
+      }
+      assert(caught7.getMessage === "Map(1 -> one) was not null, and Map(1 -> one) was not null")
+
+      nullMap should (be (null) or be (null))
+      nullMap should (be (null) or (be (null)))
+      nullMap should (be (null) or not be (null))
+      nullMap should (be (null) or not (be (null)))
+      nullMap should (be (null) or (not (be (null))))
+      nullMap should (not be (null) or be (null))
+      nullMap should (not (be (null)) or be (null))
+    }
   }
 }
