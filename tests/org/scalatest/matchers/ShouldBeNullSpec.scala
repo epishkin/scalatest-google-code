@@ -23,39 +23,119 @@ import Prop._
 class ShouldBeNullSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   val nullMap: Map[Int, String] = null
+  val map = Map(1 -> "one", 2 -> "two")
 
-  describe("the be null syntax") {
+  describe("the be (null) syntax") {
+
+    it("should work in its basic for with or without not") {
+
+      map should not be (null)
+      map should not (be (null))
+      map should (not (be (null)))
+      nullMap should be (null)
+      nullMap should (be (null))
+      // null should be (null) this doesn't compile. can't do implicits on the Null type, which is fine
+      // null should (be (null))
+
+      val caught1 = intercept[TestFailedException] {
+        map should be (null)
+      }
+      assert(caught1.getMessage === "Map(1 -> one, 2 -> two) was not null")
+
+      val caught2 = intercept[TestFailedException] {
+        map should (be (null))
+      }
+      assert(caught2.getMessage === "Map(1 -> one, 2 -> two) was not null")
+
+      val caught3 = intercept[TestFailedException] {
+        nullMap should not be (null)
+      }
+      assert(caught3.getMessage === "The reference was null")
+
+      val caught4 = intercept[TestFailedException] {
+        nullMap should not (be (null))
+      }
+      assert(caught4.getMessage === "The reference was null")
+
+      val caught5 = intercept[TestFailedException] {
+        nullMap should not ((be (null)))
+      }
+      assert(caught5.getMessage === "The reference was null")
+    }
 
     it("should throw a NullPointerException if they try to short circuit with a null check first") {
       // The reason I check this is I warn that this will happen in the ShouldMatcher scaladoc
       intercept[NullPointerException] {
         nullMap should (not be (null) and contain key (7))
       }
+      intercept[NullPointerException] {
+        nullMap should (be (null) and contain key (7))
+      }
     }
 
-    it("should compile and run when used in any position") {
+    it("should compile and run when used with and (with or without not)") {
 
       val caught1 = intercept[TestFailedException] {
         Map(1 -> "one") should (contain key (7) and not be (null))
       }
       assert(caught1.getMessage === "Map(1 -> one) did not contain key 7")
 
-      Map(1 -> "one") should (contain key (1) and not be (null))
-
       val caught2 = intercept[TestFailedException] {
-        Map(1 -> "one") should (contain key (1) and be (null))
+        Map(1 -> "one") should (contain key (7) and not (be (null)))
       }
-      assert(caught2.getMessage === "Map(1 -> one) contained key 1, but Map(1 -> one) was not null")
+      assert(caught2.getMessage === "Map(1 -> one) did not contain key 7")
 
       val caught3 = intercept[TestFailedException] {
-        Map(1 -> "one") should (be (null) and not be (null))
+        Map(1 -> "one") should (contain key (7) and (not (be (null))))
       }
-      assert(caught3.getMessage === "Map(1 -> one) was not null")
+      assert(caught3.getMessage === "Map(1 -> one) did not contain key 7")
+
+      Map(1 -> "one") should (contain key (1) and not be (null))
+      Map(1 -> "one") should (contain key (1) and not (be (null)))
+      Map(1 -> "one") should (contain key (1) and (not (be (null))))
 
       val caught4 = intercept[TestFailedException] {
+        Map(1 -> "one") should (contain key (1) and be (null))
+      }
+      assert(caught4.getMessage === "Map(1 -> one) contained key 1, but Map(1 -> one) was not null")
+
+      val caught5 = intercept[TestFailedException] {
+        Map(1 -> "one") should (contain key (1) and (be (null)))
+      }
+      assert(caught5.getMessage === "Map(1 -> one) contained key 1, but Map(1 -> one) was not null")
+
+      val caught6 = intercept[TestFailedException] {
+        Map(1 -> "one") should (be (null) and not be (null))
+      }
+      assert(caught6.getMessage === "Map(1 -> one) was not null")
+
+      val caught7 = intercept[TestFailedException] {
+        Map(1 -> "one") should (be (null) and not (be (null)))
+      }
+      assert(caught7.getMessage === "Map(1 -> one) was not null")
+
+      val caught8 = intercept[TestFailedException] {
+        Map(1 -> "one") should (be (null) and (not (be (null))))
+      }
+      assert(caught8.getMessage === "Map(1 -> one) was not null")
+
+      nullMap should (be (null) and be (null))
+      nullMap should (be (null) and (be (null)))
+
+      val caught9 = intercept[TestFailedException] {
         nullMap should (be (null) and not be (null))
       }
-      assert(caught4.getMessage === "The reference was null, but the reference was null")
+      assert(caught9.getMessage === "The reference was null, but the reference was null")
+
+      val caught10 = intercept[TestFailedException] {
+        nullMap should (be (null) and not (be (null)))
+      }
+      assert(caught10.getMessage === "The reference was null, but the reference was null")
+
+      val caught11 = intercept[TestFailedException] {
+        nullMap should (be (null) and (not (be (null))))
+      }
+      assert(caught11.getMessage === "The reference was null, but the reference was null")
     }
   }
 }

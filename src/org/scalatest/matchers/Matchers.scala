@@ -3178,6 +3178,19 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWord[T](left, shouldBeTrue) {
 
+    // map should not be (null)
+    //                ^
+    def be(o: Null) {
+      if ((left == null) != shouldBeTrue) {
+        throw newTestFailedException(
+          if (shouldBeTrue)
+            FailureMessages("wasNotNull", left) 
+          else
+            FailureMessages("wasNull")
+        )
+      }
+    }
+    
     // stack should not be ('empty)
     //                      ^
     def be(symbol: Symbol) {
