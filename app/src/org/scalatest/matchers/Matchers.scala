@@ -4479,6 +4479,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
+/*
   class TreatedAsOrderedWrapper {
     def <[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
@@ -4520,6 +4521,7 @@ trait Matchers extends Assertions { matchers =>
 
   // This one is for one should be < (7)
   implicit def convertBeWordToForOrdered(beWord: BeWord): TreatedAsOrderedWrapper = new TreatedAsOrderedWrapper
+*/
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -4528,6 +4530,146 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class BeWord {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * result should be &lt; (7)
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * Note that the less than operator will be invoked on <code>be</code> in this expression, not
+     * on a result of passing <code>be</code> to <code>should</code>, as with most other operators
+     * in the matchers DSL, because the less than operator has a higher precedence than <code>should</code>.
+     * Thus in the above case the first expression evaluated will be <code>be &lt; (7)</code>, which results
+     * in a matcher that is passed to <code>should</code>.
+     * </p>
+     *
+     * <p>
+     * This method also enables the following syntax:
+     * </p>
+     *
+     * <pre>
+     * result should not (be &lt; (7))
+     *                       ^
+     * </pre>
+     */
+    def <[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatchResult(
+            left < right,
+            FailureMessages("wasNotLessThan", left, right),
+            FailureMessages("wasLessThan", left, right)
+          )
+      }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * result should be &gt; (7)
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * Note that the greater than operator will be invoked on <code>be</code> in this expression, not
+     * on a result of passing <code>be</code> to <code>should</code>, as with most other operators
+     * in the matchers DSL, because the greater than operator has a higher precedence than <code>should</code>.
+     * Thus in the above case the first expression evaluated will be <code>be &gt; (7)</code>, which results
+     * in a matcher that is passed to <code>should</code>.
+     * </p>
+     *
+     * <p>
+     * This method also enables the following syntax:
+     * </p>
+     *
+     * <pre>
+     * result should not (be &gt; (7))
+     *                       ^
+     * </pre>
+     */
+    def >[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatchResult(
+            left > right,
+            FailureMessages("wasNotGreaterThan", left, right),
+            FailureMessages("wasGreaterThan", left, right)
+          )
+      }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * result should be &lt;= (7)
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * Note that the less than or equal to operator will be invoked on <code>be</code> in this expression, not
+     * on a result of passing <code>be</code> to <code>should</code>, as with most other operators
+     * in the matchers DSL, because the less than or equal to operator has a higher precedence than <code>should</code>.
+     * Thus in the above case the first expression evaluated will be <code>be &lt;= (7)</code>, which results
+     * in a matcher that is passed to <code>should</code>.
+     * </p>
+     *
+     * <p>
+     * This method also enables the following syntax:
+     * </p>
+     *
+     * <pre>
+     * result should not (be &lt;= (7))
+     *                       ^
+     * </pre>
+     */
+    def <=[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatchResult(
+            left <= right,
+            FailureMessages("wasNotLessThanOrEqualTo", left, right),
+            FailureMessages("wasLessThanOrEqualTo", left, right)
+          )
+      }
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * result should be &gt;= (7)
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * Note that the greater than or equal to operator will be invoked on <code>be</code> in this expression, not
+     * on a result of passing <code>be</code> to <code>should</code>, as with most other operators
+     * in the matchers DSL, because the greater than or equal to operator has a higher precedence than <code>should</code>.
+     * Thus in the above case the first expression evaluated will be <code>be &gt;= (7)</code>, which results
+     * in a matcher that is passed to <code>should</code>.
+     * </p>
+     *
+     * <p>
+     * This method also enables the following syntax:
+     * </p>
+     *
+     * <pre>
+     * result should not (be &gt;= (7))
+     *                       ^
+     * </pre>
+     */
+    def >=[T <% Ordered[T]](right: T): Matcher[T] =
+      new Matcher[T] {
+        def apply(left: T) =
+          MatchResult(
+            left >= right,
+            FailureMessages("wasNotGreaterThanOrEqualTo", left, right),
+            FailureMessages("wasGreaterThanOrEqualTo", left, right)
+          )
+      }
 
     /**
      * This method enables the following syntax: 
@@ -4735,9 +4877,9 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
-// Actually, I want to keep this one, becuause it should say "was not true", not "was not equal to true"
-// TODO No, I can get rid of it and just use a pattern match in apply(Any)
-
+    /**
+     * TODO Get rid of it and just use a pattern match in apply(Any)
+     */
     def apply(right: Boolean) = 
       new Matcher[Boolean] {
         def apply(left: Boolean) =
@@ -4777,8 +4919,10 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-// TODO: I think I want to drop this and use was not equal to None
-// And this I want to say was not None, but again, I could use wasNot But even so, i need to have an apply method, because otherwise it would say was not equal to None
+    /**
+     * TODO: I think I want to drop this and use was not equal to None
+     * And this I want to say was not None, but again, I could use wasNot But even so, i need to have an apply method, because otherwise it would say was not equal to None
+     */
     def apply(o: None.type) = 
       new Matcher[Option[_]] {
         def apply(left: Option[_]) = {
@@ -4803,6 +4947,15 @@ trait Matchers extends Assertions { matchers =>
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, false, false)
       }
 
+    /**
+     * This method enables the following syntax, where <code>num</code> is, for example, of type <code>Int</code> and
+     * <code>odd</code> refers to a <code>BeMatcher[Int]</code>:
+     *
+     * <pre>
+     * num should be (odd)
+     *               ^
+     * </pre>
+     */
     def apply[T](right: BeMatcher[T]): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) = right(left)
@@ -4828,7 +4981,22 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-// This is the guy XXX
+    /**
+     * This method enables <code>be</code> to be used for equality comparison. Here are some examples: 
+     *
+     * <pre>
+     * object should be (None)
+     *                  ^
+     * object should be (Some(1))
+     *                  ^
+     * result should be (true)
+     *                  ^
+     * result should be (false)
+     *                  ^
+     * sum should be (19)
+     *               ^
+     * </pre>
+     */
     def apply(right: Any): Matcher[Any] =
       new Matcher[Any] {
         def apply(left: Any) =
