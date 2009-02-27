@@ -4529,15 +4529,28 @@ trait Matchers extends Assertions { matchers =>
    */
   class BeWord {
 
-    // fileMock should not { be a ('file) }
-    //                          ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * fileMock should not { be a ('file) }
+     *                          ^
+     * </pre>
+     */
     def a[S <: AnyRef](right: Symbol): Matcher[S] =
       new Matcher[S] {
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, true, true)
       }
 
-    // fileMock should not { be a (file) }
-    //                          ^
+    /**
+     * This method enables the following syntax, where <code>fileMock</code> is, for example, of type <code>File</code> and
+     * <code>file</code> refers to a <code>BePropertyMatcher[File]</code>:
+     *
+     * <pre>
+     * fileMock should not { be a (file) }
+     *                          ^
+     * </pre>
+     */
     def a[S <: AnyRef](bePropertyMatcher: BePropertyMatcher[S]): Matcher[S] =
       new Matcher[S] {
         def apply(left: S) = {
@@ -4550,15 +4563,28 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    // animal should not { be an ('elephant) }
-    //                        ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * animal should not { be an ('elephant) }
+     *                        ^
+     * </pre>
+     */
     def an[S <: AnyRef](right: Symbol): Matcher[S] =
       new Matcher[S] {
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, true, false)
       }
 
-    // animal should not { be an (elephant) }
-    //                          ^
+    /**
+     * This method enables the following syntax, where <code>keyEvent</code> is, for example, of type <code>KeyEvent</code> and
+     * <code>actionKey</code> refers to a <code>BePropertyMatcher[KeyEvent]</code>:
+     *
+     * <pre>
+     * keyEvent should not { be an (actionKey) }
+     *                          ^
+     * </pre>
+     */
     def an[S <: AnyRef](bePropertyMatcher: BePropertyMatcher[S]): Matcher[S] =
       new Matcher[S] {
         def apply(left: S) = {
@@ -4571,8 +4597,14 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    // sevenDotOh should be (7.1 plusOrMinus 0.2)
-    //                      ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOh should be (7.1 plusOrMinus 0.2)
+     *                      ^
+     * </pre>
+     */
     def apply(doubleTolerance: DoubleTolerance): Matcher[Double] =
       new Matcher[Double] {
         def apply(left: Double) = {
@@ -4585,8 +4617,14 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    // sevenDotOhFloat should be (7.1f plusOrMinus 0.2f)
-    //                           ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOhFloat should be (7.1f plusOrMinus 0.2f)
+     *                           ^
+     * </pre>
+     */
     def apply(floatTolerance: FloatTolerance): Matcher[Float] =
       new Matcher[Float] {
         def apply(left: Float) = {
@@ -4599,8 +4637,14 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    // sevenLong should be (7L plusOrMinus 2L)
-    //                     ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenLong should be (7L plusOrMinus 2L)
+     *                     ^
+     * </pre>
+     */
     def apply(longTolerance: LongTolerance): Matcher[Long] =
       new Matcher[Long] {
         def apply(left: Long) = {
@@ -4613,8 +4657,14 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    // sevenInt should be (7 plusOrMinus 2)
-    //                     ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenInt should be (7 plusOrMinus 2)
+     *                     ^
+     * </pre>
+     */
     def apply(intTolerance: IntTolerance): Matcher[Int] =
       new Matcher[Int] {
         def apply(left: Int) = {
@@ -4627,8 +4677,14 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    // sevenShort should be (7.toShort plusOrMinus 2.toShort)
-    //                     ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenShort should be (7.toShort plusOrMinus 2.toShort)
+     *                     ^
+     * </pre>
+     */
     def apply(shortTolerance: ShortTolerance): Matcher[Short] =
       new Matcher[Short] {
         def apply(left: Short) = {
@@ -4641,8 +4697,14 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    // sevenByte should be (7.toByte plusOrMinus 2.toByte)
-    //                     ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenByte should be (7.toByte plusOrMinus 2.toByte)
+     *                     ^
+     * </pre>
+     */
     def apply(byteTolerance: ByteTolerance): Matcher[Byte] =
       new Matcher[Byte] {
         def apply(left: Byte) = {
@@ -4655,6 +4717,14 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * object should be theSameInstancreAs (anotherObject)
+     *                  ^
+     * </pre>
+     */
     def theSameInstanceAs(right: AnyRef): Matcher[AnyRef] =
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
@@ -4686,6 +4756,14 @@ trait Matchers extends Assertions { matchers =>
       [fsc]                  ^
 */
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * object should be (null)
+     *                  ^
+     * </pre>
+     */
     def apply(o: Null) = 
       new Matcher[AnyRef] {
         def apply(left: AnyRef) = {
@@ -4699,6 +4777,7 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
+// TODO: I think I want to drop this and use was not equal to None
 // And this I want to say was not None, but again, I could use wasNot But even so, i need to have an apply method, because otherwise it would say was not equal to None
     def apply(o: None.type) = 
       new Matcher[Option[_]] {
@@ -4711,25 +4790,18 @@ trait Matchers extends Assertions { matchers =>
         }
       }
   
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * set should be ('empty)
+     *               ^
+     * </pre>
+     */
     def apply[S <: AnyRef](right: Symbol): Matcher[S] =
       new Matcher[S] {
         def apply(left: S) = matchSymbolToPredicateMethod[S](left, right, false, false)
       }
-
-/*
-    // Yes, this one I want to say was not Nil, or maybe not, because Nil is not Nil.toString
-    // Dropping to just say List()
-    def apply(right: Nil.type): Matcher[List[_]] =
-      new Matcher[List[_]] {
-        def apply(left: List[_]) = {
-          MatchResult(
-            left == Nil,
-            FailureMessages("wasNotNil", left),
-            FailureMessages("wasNil", left)
-          )
-        }
-      }
-*/
 
     def apply[T](right: BeMatcher[T]): Matcher[T] =
       new Matcher[T] {
