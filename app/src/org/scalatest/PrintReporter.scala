@@ -283,7 +283,22 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
         }
       }
 
-    stringToPrintOption match {
+    val stringToPrintWithPossibleLineNumberOption: Option[String] = 
+      stringToPrintOption match {
+        case Some(stringToPrint) =>
+          report.throwable match {
+            case Some(t: TestFailedException) =>
+              t.failedTestCodeFileNameAndLineNumberString match {
+                case Some(lineNumberString) =>
+                  Some(Resources("printedReportPlusLineNumber", stringToPrint, lineNumberString))
+                case None => stringToPrintOption
+              }
+            case _ => stringToPrintOption
+          }
+        case None => None
+      }
+
+    stringToPrintWithPossibleLineNumberOption match {
       case Some(stringToPrint) => {
         pw.println(stringToPrint)
         report.throwable match {
@@ -299,7 +314,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
               case _ => t.printStackTrace(pw)
             }
           }
-          case None => // do nothing}
+          case None => // do nothing
         }
         pw.flush()
       }

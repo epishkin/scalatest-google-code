@@ -507,5 +507,5 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
   }
 }
 
-// for importing into the interpretter especially
+// for importing into the interpreter especially
 object Assertions extends Assertions
