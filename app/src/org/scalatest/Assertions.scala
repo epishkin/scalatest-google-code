@@ -506,3 +506,6 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
     throw new TestFailedException(cause, 2)
   }
 }
+
+// for importing into the interpretter especially
+object Assertions extends Assertions
