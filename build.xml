@@ -304,7 +304,13 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.AssertionsSpec" />
+            <arg value="org.scalatest.matchers.ImportShouldMatchersSpec" />
+
+            <arg value="-s" />
+            <arg value="org.scalatest.TestFailedExceptionSpec" />
+
+            <arg value="-s" />
+            <arg value="org.scalatest.TestFailedExceptionWithImportSpec" />
 
             <arg value="-s" />
             <arg value="org.scalatest.matchers.ShouldBeNullSpec" />

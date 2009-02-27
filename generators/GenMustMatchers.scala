@@ -68,7 +68,8 @@ object GenMustMatchersTests extends Application {
       "ShouldPlusOrMinusSpec.scala",
       "ShouldSameInstanceAsSpec.scala",
       "ShouldStartWithRegexSpec.scala",
-      "ShouldStartWithSubstringSpec.scala"
+      "ShouldStartWithSubstringSpec.scala",
+      "ShouldBeNullSpec.scala"
     )
 
   for (shouldFileName <- shouldFileNames) {
