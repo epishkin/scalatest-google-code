@@ -819,7 +819,7 @@ trait ShouldMatchers extends Matchers {
       }
     }
 // This one supports it should behave like
-    def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     // I don't think there's a be on Any, because a (symbol) and an (symbol), plus
     // theSameInstanceAs only work on AnyRefs. And 1 should be (1) words because be (1) results in a matcher already
     // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
@@ -839,7 +839,7 @@ trait ShouldMatchers extends Matchers {
     }
 
     // This one supports it should behave like
-    def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
 
     def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
       new ResultOfNotWordForAnyRef(leftOperand, false)
