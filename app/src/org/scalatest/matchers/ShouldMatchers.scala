@@ -814,6 +814,15 @@ import Helper.newTestFailedException
  */
 trait ShouldMatchers extends Matchers {
 
+  private object ShouldMethodHelper {
+    def shouldMatcher[T](left: T, rightMatcher: Matcher[T]) {
+      rightMatcher(left) match {
+        case MatchResult(false, failureMessage, _, _, _) => throw newTestFailedException(failureMessage)
+        case _ => ()
+      }
+    }
+  }
+
   // TODO: In the tests, make sure they can create their own matcher and use it.
   trait ShouldMethods[T] {
     protected val leftOperand: T
@@ -853,11 +862,48 @@ trait ShouldMatchers extends Matchers {
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
 
-  class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
+  // Rename to AnyShouldWrapper. Drop ShouldMethods and I think everyone already extends this.
+  // No inheritance. Just have a Helper class with all the implementations, and then just
+  // call them from the specific classes. Simple as that. No inheritance hierarchy at all.
+  // class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
+
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>Any</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
+  class ShouldWrapper[T](left: T) {
+
+    def should(rightMatcher: Matcher[T]) {
+      ShouldMethodHelper.shouldMatcher[T](left, rightMatcher)
+    }
+
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](left)
+
+    def should(notWord: NotWord) = new ResultOfNotWord[T](left, false)
+  }
 
   // I think the type hasn't been converted yet here. It is just a pass-through. It finally gets
   // converted in ResultOfHaveWordForLengthWrapper, at which point the actual implicit conversions
   // from String, Array, and the structural types get applied.
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>AnyRef</code> objects that can be implicitly converted to type <code>LengthWrapper</code>.
+   * Trait <code>ShouldMethods</code> includes implicit conversions from several types, including many structural types, to <code>LengthWrapper</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
 
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
@@ -872,7 +918,20 @@ trait ShouldMatchers extends Matchers {
   }
 
   // TODO, add should(BeWord) here, and investigate why there's no should(NotWord) here
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>AnyRef</code> objects that can be implicitly converted to type <code>SizeWrapper</code>.
+   * Trait <code>ShouldMethods</code> includes implicit conversions from several types, including many structural types, to <code>SizeWrapper</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+
     def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] = {
       new ResultOfHaveWordForSizeWrapper(left, true)
     }
@@ -881,63 +940,157 @@ trait ShouldMatchers extends Matchers {
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](leftOperand, true)
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>String</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethodsForAnyRef[String] {
+
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
+
     def should(includeWord: IncludeWord): ResultOfIncludeWordForString = {
       new ResultOfIncludeWordForString(left, true)
     }
+
     def should(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
       new ResultOfStartWithWordForString(left, true)
     }
+
     def should(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
       new ResultOfEndWithWordForString(left, true)
     }
+
     def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, true)
     }
+
     override def should(notWord: NotWord): ResultOfNotWordForString = {
       new ResultOfNotWordForString(left, false)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>Double</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class DoubleShouldWrapper(left: Double) extends { val leftOperand = left } with ShouldMethods[Double] {
     override def should(notWord: NotWord): ResultOfNotWordForDouble = {
       new ResultOfNotWordForDouble(left, false)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>Float</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class FloatShouldWrapper(left: Float) extends { val leftOperand = left } with ShouldMethods[Float] {
     override def should(notWord: NotWord): ResultOfNotWordForFloat = {
       new ResultOfNotWordForFloat(left, false)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>Long</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class LongShouldWrapper(left: Long) extends { val leftOperand = left } with ShouldMethods[Long] {
     override def should(notWord: NotWord): ResultOfNotWordForLong = {
       new ResultOfNotWordForLong(left, false)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>Int</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class IntShouldWrapper(left: Int) extends { val leftOperand = left } with ShouldMethods[Int] {
     override def should(notWord: NotWord): ResultOfNotWordForInt = {
       new ResultOfNotWordForInt(left, false)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>Short</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class ShortShouldWrapper(left: Short) extends { val leftOperand = left } with ShouldMethods[Short] {
     override def should(notWord: NotWord): ResultOfNotWordForShort = {
       new ResultOfNotWordForShort(left, false)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>Byte</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class ByteShouldWrapper(left: Byte) extends { val leftOperand = left } with ShouldMethods[Byte] {
     override def should(notWord: NotWord): ResultOfNotWordForByte = {
       new ResultOfNotWordForByte(left, false)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>scala.collection.Map[K, V]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
       with ShouldHaveWordForCollectionMethods[(K, V)] {
 
@@ -994,8 +1147,30 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on <code>AnyRef</code>s.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class AnyRefShouldWrapper[T <: AnyRef](left: T) extends { val leftOperand = left } with ShouldMethodsForAnyRef[T]
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>scala.Collection[T]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
 
@@ -1005,6 +1180,17 @@ trait ShouldMatchers extends Matchers {
   }
 
   // TODO: Shouldn't this mix in ShouldMethodsForAnyRef instead of ShouldMethods?
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>java.util.Collection[T]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
       with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaCollectionMethods[T] {
 
@@ -1013,6 +1199,17 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>java.util.Map[K, V]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[java.util.Map[K, V]] {
 
     def should(containWord: ContainWord): ResultOfContainWordForJavaMap[K, V] = {
@@ -1028,9 +1225,31 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>scala.Seq[T]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>scala.Array[T]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class ArrayShouldWrapper[T](left: Array[T]) extends { val leftOperand = left } with ShouldMethods[Array[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
@@ -1039,6 +1258,17 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>scala.List[T]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
 
@@ -1047,6 +1277,17 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
+   * be invoked on objects of type <code>java.util.List[T]</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
       with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaListMethods[T]  {
 
