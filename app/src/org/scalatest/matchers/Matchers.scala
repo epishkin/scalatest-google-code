@@ -6658,6 +6658,25 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfLessThanComparison[T <% Ordered[T]](val right: T) {
+
+    /**
+     * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
+     * enables syntax such as:
+     *
+     * <pre>
+     * result should not be < (7)
+     *                   ^  ... invoked by this be method
+     * </pre>
+     *
+     * <p>
+     * or
+     * </p>
+     *
+     * <pre>
+     * num should (not be < (10) and not be > (17))
+     *                 ^  ... invoked by this be method
+     * </pre>
+     */
     def apply(left: T): Boolean = left < right
   }
 
@@ -6668,6 +6687,25 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfGreaterThanComparison[T <% Ordered[T]](val right: T) {
+
+    /**
+     * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
+     * enables syntax such as:
+     *
+     * <pre>
+     * result should not be > (7)
+     *                   ^  ... invoked by this be method
+     * </pre>
+     *
+     * <p>
+     * or
+     * </p>
+     *
+     * <pre>
+     * num should (not be > (10) and not be < (7))
+     *                 ^  ... invoked by this be method
+     * </pre>
+     */
     def apply(left: T): Boolean = left > right
   }
 
@@ -6678,6 +6716,25 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfLessThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+
+    /**
+     * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
+     * enables syntax such as:
+     *
+     * <pre>
+     * result should not be <= (7)
+     *                   ^  ... invoked by this be method
+     * </pre>
+     *
+     * <p>
+     * or
+     * </p>
+     *
+     * <pre>
+     * num should (not be <= (10) and not be > (17))
+     *                 ^  ... invoked by this be method
+     * </pre>
+     */
     def apply(left: T): Boolean = left <= right
   }
 
@@ -6688,6 +6745,25 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfGreaterThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+
+    /**
+     * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
+     * enables syntax such as:
+     *
+     * <pre>
+     * result should not be >= (7)
+     *                   ^  ... invoked by this be method
+     * </pre>
+     *
+     * <p>
+     * or
+     * </p>
+     *
+     * <pre>
+     * num should (not be >= (10) and not be < (7))
+     *                 ^  ... invoked by this be method
+     * </pre>
+     */
     def apply(left: T): Boolean = left >= right
   }
 
