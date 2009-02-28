@@ -824,6 +824,7 @@ trait ShouldMatchers extends Matchers {
   }
 
   // TODO: In the tests, make sure they can create their own matcher and use it.
+/*
   trait ShouldMethods[T] {
     protected val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
@@ -839,8 +840,10 @@ trait ShouldMatchers extends Matchers {
     // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
   }
+*/
 
   // TODO: Shouldn't this one extend ShouldMethods? See the reminder at the end of this file.
+/*
   trait ShouldMethodsForAnyRef[T <: AnyRef] {
 
     protected val leftOperand: T
@@ -861,6 +864,7 @@ trait ShouldMatchers extends Matchers {
 
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
+*/
 
   // Rename to AnyShouldWrapper. Drop ShouldMethods and I think everyone already extends this.
   // No inheritance. Just have a Helper class with all the implementations, and then just
@@ -878,7 +882,7 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class ShouldWrapper[T](left: T) {
+  class AnyShouldWrapper[T](left: T) {
 
     def should(rightMatcher: Matcher[T]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
@@ -899,22 +903,27 @@ trait ShouldMatchers extends Matchers {
    * <p>
    * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
    * be invoked on <code>AnyRef</code> objects that can be implicitly converted to type <code>LengthWrapper</code>.
-   * Trait <code>ShouldMethods</code> includes implicit conversions from several types, including many structural types, to <code>LengthWrapper</code>.
+   * Trait <code>ShouldMatchers</code> includes implicit conversions from several types, including many structural types, to <code>LengthWrapper</code>.
    * </p>
    *
    * @author Bill Venners
    */
-  class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) {
 
-    def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] = {
+    def should(rightMatcher: Matcher[A]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
+    // This one supports it should behave like
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
+
+    def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] =
       new ResultOfHaveWordForLengthWrapper(left, true)
-    }
 
-    override def should(notWord: NotWord): ResultOfNotWordForLengthWrapper[A] = {
-      new ResultOfNotWordForLengthWrapper(leftOperand, false)
-    }
+    def should(notWord: NotWord): ResultOfNotWordForLengthWrapper[A] =
+      new ResultOfNotWordForLengthWrapper(left, false)
 
-    def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](leftOperand, true)
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](left, true)
   }
 
   // TODO, add should(BeWord) here, and investigate why there's no should(NotWord) here
@@ -925,19 +934,28 @@ trait ShouldMatchers extends Matchers {
    * <p>
    * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
    * be invoked on <code>AnyRef</code> objects that can be implicitly converted to type <code>SizeWrapper</code>.
-   * Trait <code>ShouldMethods</code> includes implicit conversions from several types, including many structural types, to <code>SizeWrapper</code>.
+   * Trait <code>ShouldMatchers</code> includes implicit conversions from several types, including many structural types, to <code>SizeWrapper</code>.
    * </p>
    *
    * @author Bill Venners
    */
-  class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) extends { val leftOperand = left } with ShouldMethods[A] {
+  class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) {
 
-    def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] = {
-      new ResultOfHaveWordForSizeWrapper(left, true)
+    def should(rightMatcher: Matcher[A]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+    // This one supports it should behave like
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
+
+    def should(notWord: NotWord): ResultOfNotWordForSizeWrapper[A] =
+      new ResultOfNotWordForSizeWrapper(left, false)
+
+    def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] =
+      new ResultOfHaveWordForSizeWrapper(left, true)
+
     // TODO I just added this. Didn't do a test for it.
-    def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](leftOperand, true)
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](left, true)
   }
 
   /**
@@ -951,7 +969,16 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class StringShouldWrapper(left: String) extends { val leftOperand = left } with ShouldMethodsForAnyRef[String] {
+  class StringShouldWrapper(left: String) {
+
+    def should(rightMatcher: Matcher[String]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
+    // This one supports it should behave like
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[String] = new ResultOfBeWordForAnyRef(left, true)
 
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
@@ -973,7 +1000,7 @@ trait ShouldMatchers extends Matchers {
       new ResultOfFullyMatchWordForString(left, true)
     }
 
-    override def should(notWord: NotWord): ResultOfNotWordForString = {
+    def should(notWord: NotWord): ResultOfNotWordForString = {
       new ResultOfNotWordForString(left, false)
     }
   }
@@ -1133,18 +1160,31 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) extends { val leftOperand = left } with ShouldMethods[scala.collection.Map[K, V]]
-      with ShouldHaveWordForCollectionMethods[(K, V)] {
+  class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) {
+
+    def should(rightMatcher: Matcher[scala.collection.Map[K, V]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
+    // This one supports it should behave like
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[scala.collection.Map[K, V]] = new ResultOfBeWordForAnyRef(left, true)
+
+    def should(haveWord: HaveWord): ResultOfHaveWordForCollection[(K, V)] = {
+      new ResultOfHaveWordForCollection(left, true)
+    }
 
     def should(containWord: ContainWord): ResultOfContainWordForMap[K, V] = {
       new ResultOfContainWordForMap(left, true)
     }
 
-    override def should(notWord: NotWord): ResultOfNotWordForMap[K, V] = {
+    def should(notWord: NotWord): ResultOfNotWordForMap[K, V] = {
       new ResultOfNotWordForMap(left, false)
     }
   }
 
+/*
   trait ShouldContainWordForJavaCollectionMethods[T] {
     protected val leftOperand: java.util.Collection[T]
    // javaList should contain element (2) 
@@ -1188,6 +1228,7 @@ trait ShouldMatchers extends Matchers {
       new ResultOfHaveWordForJavaList(leftOperand, true)
     }
   }
+*/
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -1209,9 +1250,8 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
-    def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
+    def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] =
       new ResultOfNotWordForAnyRef(left, false)
-    }
 
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef(left, true)
   }
@@ -1248,7 +1288,6 @@ trait ShouldMatchers extends Matchers {
       new ResultOfNotWordForCollection(left, false)
   }
 
-  // TODO: Shouldn't this mix in ShouldMethodsForAnyRef instead of ShouldMethods?
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
@@ -1294,19 +1333,27 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) extends { val leftOperand = left } with ShouldMethodsForAnyRef[java.util.Map[K, V]] {
+  class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) {
+
+    def should(rightMatcher: Matcher[java.util.Map[K, V]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
     def should(containWord: ContainWord): ResultOfContainWordForJavaMap[K, V] = {
       new ResultOfContainWordForJavaMap(left, true)
     }
  
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaMap = {
-      new ResultOfHaveWordForJavaMap(leftOperand, true)
+      new ResultOfHaveWordForJavaMap(left, true)
     }
 
-    override def should(notWord: NotWord): ResultOfNotWordForJavaMap[K, V] = {
-      new ResultOfNotWordForJavaMap[K, V](leftOperand, false)
+    def should(notWord: NotWord): ResultOfNotWordForJavaMap[K, V] = {
+      new ResultOfNotWordForJavaMap[K, V](left, false)
     }
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[java.util.Map[K, V]] = new ResultOfBeWordForAnyRef(left, true)
   }
 
   /**
@@ -1320,8 +1367,30 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class SeqShouldWrapper[T](left: Seq[T]) extends { val leftOperand = left } with ShouldMethods[Seq[T]]
-      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T]
+  class SeqShouldWrapper[T](left: Seq[T]) {
+ 
+    def should(containWord: ContainWord): ResultOfContainWordForIterable[T] =
+      new ResultOfContainWordForIterable(left, true)
+
+    def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
+      new ResultOfHaveWordForSeq(left, true)
+
+    def should(rightMatcher: Matcher[Seq[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
+    // This one supports it should behave like
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
+
+/* TODO: This is what I think it should be. But it was the AnyRef one, or maybe even not that.
+    def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] =
+      new ResultOfNotWordForSeq(left, false)
+*/
+    def should(notWord: NotWord): ResultOfNotWordForAnyRef[Seq[T]] =
+      new ResultOfNotWordForAnyRef(left, false)
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[Seq[T]] = new ResultOfBeWordForAnyRef(left, true)
+  }
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -1365,12 +1434,26 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class ListShouldWrapper[T](left: List[T]) extends { val leftOperand = left } with ShouldMethods[List[T]]
-      with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForSeqMethods[T] {
+  class ListShouldWrapper[T](left: List[T]) {
 
-    override def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] = {
-      new ResultOfNotWordForSeq(leftOperand, false)
+    def should(rightMatcher: Matcher[List[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
+
+    // This one supports it should behave like
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[List[T]] = new ResultOfBeWordForAnyRef(left, true)
+
+    def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
+      new ResultOfHaveWordForSeq(left, true)
+
+    def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
+      new ResultOfContainWordForIterable(left, true)
+    }
+
+    def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] =
+      new ResultOfNotWordForSeq(left, false)
   }
 
   /**
@@ -1409,13 +1492,13 @@ trait ShouldMatchers extends Matchers {
   }
 
   /**
-   * Implicitly converts an object of type <code>T</code> to a <code>ShouldWrapper</code>,
+   * Implicitly converts an object of type <code>T</code> to a <code>AnyShouldWrapper[T]</code>,
    * to enable <code>should</code> methods to be invokable on that object.
    */
-  implicit def convertToShouldWrapper[T](o: T): ShouldWrapper[T] = new ShouldWrapper(o)
+  implicit def convertToAnyShouldWrapper[T](o: T): AnyShouldWrapper[T] = new AnyShouldWrapper(o)
 
   /**
-   * Implicitly converts an object of type <code>T</code> to a <code>DoubleShouldWrapper</code>,
+   * Implicitly converts an object of type <code>scala.Double</code> to a <code>DoubleShouldWrapper</code>,
    * to enable <code>should</code> methods to be invokable on that object.
    */
   implicit def convertToDoubleShouldWrapper(o: Double): DoubleShouldWrapper = new DoubleShouldWrapper(o)
