@@ -1260,12 +1260,27 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) extends { val leftOperand = left } with ShouldMethods[java.util.Collection[T]]
-      with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaCollectionMethods[T] {
+  class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) {
 
-    override def should(notWord: NotWord): ResultOfNotWordForJavaCollection[T, java.util.Collection[T]] = {
-      new ResultOfNotWordForJavaCollection(leftOperand, false)
+    // javaList should contain element (2) 
+    //          ^
+    def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] =
+      new ResultOfContainWordForJavaCollection(left, true)
+
+    def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] =
+      new ResultOfHaveWordForJavaCollection(left, true)
+
+    def should(rightMatcher: Matcher[java.util.Collection[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
+
+    // This one supports it should behave like
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
+
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[java.util.Collection[T]] = new ResultOfBeWordForAnyRef(left, true)
+
+    def should(notWord: NotWord): ResultOfNotWordForJavaCollection[T, java.util.Collection[T]] =
+      new ResultOfNotWordForJavaCollection(left, false)
   }
 
   /**
@@ -1369,11 +1384,27 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class JavaListShouldWrapper[T](left: java.util.List[T]) extends { val leftOperand = left } with ShouldMethods[java.util.List[T]]
-      with ShouldContainWordForJavaCollectionMethods[T] with ShouldHaveWordForJavaListMethods[T]  {
+  class JavaListShouldWrapper[T](left: java.util.List[T]) {
 
-    override def should(notWord: NotWord): ResultOfNotWordForJavaList[T, java.util.List[T]] = {
-      new ResultOfNotWordForJavaList(leftOperand, false)
+    def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
+      new ResultOfHaveWordForJavaList(left, true)
+    }
+
+    // javaList should contain element (2) 
+    //          ^
+    def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] = {
+      new ResultOfContainWordForJavaCollection(left, true)
+    }
+
+    def should(rightMatcher: Matcher[java.util.List[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
+    // TODO: Check all the type parameters for ResultOfBehaveWord. Do some of them say T still?
+    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[java.util.List[T]](left)
+
+    def should(notWord: NotWord): ResultOfNotWordForJavaList[T, java.util.List[T]] = {
+      new ResultOfNotWordForJavaList(left, false)
     }
   }
 
