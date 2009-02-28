@@ -5336,10 +5336,8 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-    // isNotAppleMock should (not be an ('apple) and not be an ('apple))
-    //                            ^
-     * iterable should contain element ("one")
-     *                         ^
+     * isNotAppleMock should (not be an ('apple) and not be ('rotten))
+     *                            ^
      * </pre>
      */
     def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication): Matcher[T] = {
@@ -5355,8 +5353,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // myFile should (not be an (directory) and not be an (directory))
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * myFile should (not be an (directory) and not be an (directory))
+     *                    ^
+     * </pre>
+     */
     def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToBePropertyMatcherApplication[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
@@ -5370,8 +5374,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // obj should (not be theSameInstanceAs (otherString) and not be theSameInstanceAs (otherString))
-    //                 ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * myFish should (not be theSameInstanceAs (redFish) and not be theSameInstanceAs (blueFish))
+     *                    ^
+     * </pre>
+     */
     def be[T <: AnyRef](resultOfTheSameInstanceAsApplication: ResultOfTheSameInstanceAsApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
@@ -5384,8 +5394,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // sevenDotOh should ((not be (17.1 plusOrMinus 0.2)) and (not be (17.1 plusOrMinus 0.2)))
-    //                         ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOh should ((not be (17.1 plusOrMinus 0.2)) and (not be (27.1 plusOrMinus 0.2)))
+     *                         ^
+     * </pre>
+     */
     def be(doubleTolerance: DoubleTolerance): Matcher[Double] = {
       import doubleTolerance._
       new Matcher[Double] {
@@ -5399,8 +5415,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // sevenDotOhFloat should ((not be (17.1f plusOrMinus 0.2f)) and (not be (17.1f plusOrMinus 0.2f)))
-    //                         ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenDotOhFloat should ((not be (17.1f plusOrMinus 0.2f)) and (not be (27.1f plusOrMinus 0.2f)))
+     *                         ^
+     * </pre>
+     */
     def be(floatTolerance: FloatTolerance): Matcher[Float] = {
       import floatTolerance._
       new Matcher[Float] {
@@ -5414,8 +5436,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // sevenLong should ((not be (19L plusOrMinus 2L)) and (not be (19L plusOrMinus 2L)))
-    //                        ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenLong should ((not be (19L plusOrMinus 2L)) and (not be (29L plusOrMinus 2L)))
+     *                        ^
+     * </pre>
+     */
     def be(longTolerance: LongTolerance): Matcher[Long] = {
       import longTolerance._
       new Matcher[Long] {
@@ -5429,8 +5457,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // sevenInt should ((not be (19 plusOrMinus 2)) and (not be (19 plusOrMinus 2)))
-    //                       ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenInt should ((not be (19 plusOrMinus 2)) and (not be (29 plusOrMinus 2)))
+     *                       ^
+     * </pre>
+     */
     def be(intTolerance: IntTolerance): Matcher[Int] = {
       import intTolerance._
       new Matcher[Int] {
@@ -5444,8 +5478,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // sevenShort should ((not be (19.toShort plusOrMinus 2.toShort)) and (not be (19.toShort plusOrMinus 2.toShort)))
-    //                         ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenShort should ((not be (19.toShort plusOrMinus 2.toShort)) and (not be (29.toShort plusOrMinus 2.toShort)))
+     *                         ^
+     * </pre>
+     */
     def be(shortTolerance: ShortTolerance): Matcher[Short] = {
       import shortTolerance._
       new Matcher[Short] {
@@ -5459,8 +5499,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (19.toByte plusOrMinus 2.toByte)))
-    //                        ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * sevenByte should ((not be (19.toByte plusOrMinus 2.toByte)) and (not be (29.toByte plusOrMinus 2.toByte)))
+     *                        ^
+     * </pre>
+     */
     def be(byteTolerance: ByteTolerance): Matcher[Byte] = {
       import byteTolerance._
       new Matcher[Byte] {
@@ -5474,6 +5520,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should (not fullyMatch regex ("Hel*o) and not include substring ("orld"))
+     *                    ^
+     * </pre>
+     */
     def fullyMatch(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
       val rightRegexString = resultOfRegexWordApplication.regex.toString
       new Matcher[String] {
@@ -5486,8 +5540,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // "fred" should (not include regex ("bob") and not include regex (decimal))
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should (not include regex ("Hel.o") and not include regex ("""(-)?(\d+)(\.\d*)?"""))
+     *                    ^
+     * </pre>
+     */
     def include(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
       val rightRegex = resultOfRegexWordApplication.regex
       new Matcher[String] {
@@ -5500,8 +5560,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // "fred" should (not include substring ("bob") and not include substring ("1.7"))
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should (not include substring ("cat") and not include substring ("1.7"))
+     *                    ^
+     * </pre>
+     */
     def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       new Matcher[String] {
@@ -5514,8 +5580,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // "fred" should (not startWith regex ("bob") and not startWith regex (decimal))
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should (not startWith regex ("hel*o") and not endWith regex ("wor.d))
+     *                    ^
+     * </pre>
+     */
     def startWith(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
       val rightRegex = resultOfRegexWordApplication.regex
       new Matcher[String] {
@@ -5528,8 +5600,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // "fred" should ((not startWith substring ("red")) and (not startWith substring ("1.7")))
-    //                     ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should ((not startWith substring ("red")) and (not startWith substring ("1.7")))
+     *                     ^
+     * </pre>
+     */
     def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       new Matcher[String] {
@@ -5542,8 +5620,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // "fred" should (not endWith regex ("bob") and not endWith regex (decimal))
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should (not endWith regex ("wor.d") and not startWith regex ("Hel*o"))
+     *                    ^
+     * </pre>
+     */
     def endWith(resultOfRegexWordApplication: ResultOfRegexWordApplication): Matcher[String] = {
       val rightRegex = resultOfRegexWordApplication.regex
       new Matcher[String] {
@@ -5558,8 +5642,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // "fred" should (not endWith substring ("fre") and not endWith substring ("1.7"))
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * string should (not endWith substring ("blue") and not endWith substring ("1.7"))
+     *                    ^
+     * </pre>
+     */
     def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
       val expectedSubstring = resultOfSubstringWordApplication.substring
       new Matcher[String] {
@@ -5573,8 +5663,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // Array(1, 2) should (not contain element (5) and not contain element (3))
-    //                         ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * Array(1, 2) should (not contain element (5) and not contain element (3))
+     *                         ^
+     * </pre>
+     */
     def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): Matcher[Iterable[T]] = {
       val expectedElement = resultOfElementWordApplication.expectedElement
       new Matcher[Iterable[T]] {
@@ -5588,8 +5684,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // Map("one" -> 1, "two" -> 2) should (not contain key ("three"))
-    //                                         ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should (not contain key ("three"))
+     *                                         ^
+     * </pre>
+     */
     def contain[K](resultOfKeyWordApplication: ResultOfKeyWordApplication[K]): Matcher[scala.collection.Map[K, Any]] = {
       val expectedKey = resultOfKeyWordApplication.expectedKey
       new Matcher[scala.collection.Map[K, Any]] {
@@ -5603,8 +5705,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // Map("one" -> 1, "two" -> 2) should (not contain value (3))
-    //                                         ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * Map("one" -> 1, "two" -> 2) should (not contain value (3))
+     *                                         ^
+     * </pre>
+     */
     def contain[K, V](resultOfValueWordApplication: ResultOfValueWordApplication[V]): Matcher[scala.collection.Map[K, V] forSome { type K }] = {
       val expectedValue = resultOfValueWordApplication.expectedValue
       new Matcher[scala.collection.Map[K, V] forSome { type K }] {
@@ -5620,7 +5728,9 @@ trait Matchers extends Assertions { matchers =>
   }
 
   val not = new NotWord
+
   private[scalatest] val behave = new BehaveWord
+
   val be = new BeWord
 
   /**
