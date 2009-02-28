@@ -5727,10 +5727,26 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * This field enables syntax like the following: 
+   *
+   * <pre>
+   * myFile should (not be an (directory) and not have ('name ("foo.bar")))
+   *                ^
+   * </pre>
+   */
   val not = new NotWord
 
   private[scalatest] val behave = new BehaveWord
 
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * obj should (be theSameInstanceAs (string) and be theSameInstanceAs (string))
+   *             ^
+   * </pre>
+   */
   val be = new BeWord
 
   /**
@@ -5748,8 +5764,7 @@ trait Matchers extends Assertions { matchers =>
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.
     The type HaveWord can contain a key method that takes a S or what not, and returns a matcher, which
-    stores the key value in a val and whose apply method checks the passed map for the remembered key. This
-    one would be used in things like:
+    stores the key value in a val and whose apply method checks the passed map for the remembered key. This one would be used in things like:
 
     map should { have key 9 and have value "bob" }
 
@@ -5766,11 +5781,64 @@ trait Matchers extends Assertions { matchers =>
     starters, and other people may create classes that have length methods. Would be nice to be able to use them.
   */
 
-  val have = new HaveWord // TODO: Should I just make these singleton objects?
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * list should (have length (3) and not contain element ('a'))
+   *              ^
+   * </pre>
+   */
+  val have = new HaveWord
+
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * list should (contain element ('a') and have length (7))
+   *              ^
+   * </pre>
+   */
   val contain = new ContainWord
+
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * string should (include substring ("hope") and not startWith substring ("no"))
+   *                ^
+   * </pre>
+   */
   val include = new IncludeWord
+
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * string should (fullyMatch regex ("Hel*o, wor.d") and not have length (99))
+   *                ^
+   * </pre>
+   */
   val fullyMatch = new FullyMatchWord
+
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * string should (startWith substring ("Four") and include substring ("year"))
+   *              ^
+   * </pre>
+   */
   val startWith = new StartWithWord
+
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * string should (endWith substring ("ago") and include substring ("score"))
+   *                ^
+   * </pre>
+   */
   val endWith = new EndWithWord
 
   /**
