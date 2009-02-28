@@ -6513,10 +6513,37 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
+  class ResultOfNotWordForSizeWrapper[A <: AnyRef <% SizeWrapper](left: A, shouldBeTrue: Boolean)
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
+
+/*  I just added this whole thing in here for completeness when doing SizeShouldWrapper. Write some tests to prove it is needed.
+// TODO: This should be for "sizey should not have size (12)" Try that test.
+    def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
+      val right = resultOfLengthWordApplication.expectedLength
+      if ((left.length == right) != shouldBeTrue) {
+          throw newTestFailedException(
+            FailureMessages(
+             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              right
+            )
+          )
+      }
+    }
+*/
+  }
+
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfNotWordForLengthWrapper[A <: AnyRef <% LengthWrapper](left: A, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
 /* TODO What's going on? Why can I drop this and still get a compile
+// TODO: This should be for "lengthy should not have length (12)" Try that test.
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.length == right) != shouldBeTrue) {
@@ -6604,8 +6631,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * <pre>
      * obj should have size (2)
-     * seven should be (17L plusOrMinus 2)
-     *                      ^
+     *                 ^
      * </pre>
      *
      * <p>
@@ -6630,7 +6656,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * <pre>
      * obj should have size (2L)
-     *                      ^
+     *                 ^
      * </pre>
      *
      * <p>
