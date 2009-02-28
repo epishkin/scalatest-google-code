@@ -2238,9 +2238,10 @@ trait Matchers extends Assertions { matchers =>
       }
   }
 
-// TODO: Drop the getLength and getSize field conversions, so that this is consistent with
-// what I do in symbol HavePropertyMatchers. Actually, no, keep them, because a val geLength is a 
-// perfectly valid Scala way to get a JavaBean property in the bytecodes.
+// The getLength and getSize field conversions seem inconsistent with
+// what I do in symbol HavePropertyMatchers. It isn't, though because the difference is here
+// it's a Scala field and there a Java field: a val getLength is a 
+// perfectly valid Scala way to get a JavaBean property Java method in the bytecodes.
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -2446,7 +2447,7 @@ trait Matchers extends Assertions { matchers =>
   // then represents an object with an apply method. So it gives an apply method to symbols.
   // book should have ('author ("Gibson"))
   //                   ^ // Basically this 'author symbol gets converted into this class, and its apply  method takes "Gibson"
-  // TODO, put the documenation of the details of the algo for selecting a method or field to use here.
+  // TODO, put the documentation of the details of the algo for selecting a method or field to use here.
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
@@ -4107,8 +4108,8 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * "eight" should not fullyMatch substring ("seven")
-     *                                         ^
+     * "eight" should not include substring ("seven")
+     *                                      ^
      * </pre>
      */
     def apply(substring: String) = new ResultOfSubstringWordApplication(substring)
@@ -5848,6 +5849,25 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[AnyRef, Long] {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * "hi" should not have (length (3))
+     *                      ^
+     * </pre>
+     *
+     * <p>
+     * This reason <code>ResultOfLengthWordApplication</code> is a <code>HavePropertyMatcher[AnyRef, Long]</code> is
+     * so that you don't have to remember whether <code>length</code> needs to be surrounded by parentheses when following
+     * <code>have</code>. Only <code>length</code> and <code>size</code> can be used without parentheses: everything else
+     * needs the parentheses. So this approach means that if you use the unneeded parentheses with <code>length</code> and
+     * <code>size</code>, it will still work. This <code>apply</code> method uses reflection to find and access the <code>length</code>
+     * property on the passed <code>objectWithProperty</code>. Therefore if the object does not have the appropriate structure, the expression
+     * will compile, but at will produce a <code>TestFailedException</code> at runtime.
+     * </p>
+     */
     def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Long] = {
 
       accessProperty(objectWithProperty, 'length, false) match {
@@ -5881,9 +5901,26 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class LengthWord {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * "hi" should not have length (3)
+     *                             ^
+     * </pre>
+     */
     def apply(expectedLength: Long) = new ResultOfLengthWordApplication(expectedLength)
   }
 
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * "hi" should not have length (3)
+   *                      ^
+   * </pre>
+   */
   val length = new LengthWord
  
   /**
@@ -5893,6 +5930,25 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfSizeWordApplication(val expectedSize: Long) extends HavePropertyMatcher[AnyRef, Long] {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * set should not have (size (3))
+     *                     ^
+     * </pre>
+     *
+     * <p>
+     * This reason <code>ResultOfSizeWordApplication</code> is a <code>HavePropertyMatcher[AnyRef, Long]</code> is
+     * so that you don't have to remember whether <code>size</code> needs to be surrounded by parentheses when following
+     * <code>have</code>. Only <code>length</code> and <code>size</code> can be used without parentheses: everything else
+     * needs the parentheses. So this approach means that if you use the unneeded parentheses with <code>length</code> and
+     * <code>size</code>, it will still work. This <code>apply</code> method uses reflection to find and access the <code>size</code>
+     * property on the passed <code>objectWithProperty</code>. Therefore if the object does not have the appropriate structure, the expression
+     * will compile, but at will produce a <code>TestFailedException</code> at runtime.
+     * </p>
+     */
     def apply(objectWithProperty: AnyRef): HavePropertyMatchResult[Long] = {
 
       accessProperty(objectWithProperty, 'size, false) match {
@@ -5927,9 +5983,26 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class SizeWord {
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * set should not have size (3)
+     *                          ^
+     * </pre>
+     */
     def apply(expectedSize: Long) = new ResultOfSizeWordApplication(expectedSize)
   }
 
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * set should not have size (3)
+   *                     ^
+   * </pre>
+   */
   val size = new SizeWord
 
   /**
@@ -5947,13 +6020,26 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ElementWord {
-    // array should not contain element (10)
-    //                                  ^
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * array should not contain element (10)
+     *                                  ^
+     * </pre>
+     */
     def apply[T](expectedElement: T) = new ResultOfElementWordApplication(expectedElement)
   }
 
-  // array should not contain element (10)
-  //                          ^
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * array should not contain element (10)
+   *                          ^
+   * </pre>
+   */
   val element = new ElementWord
 
   /**
@@ -5971,13 +6057,26 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class KeyWord {
-    // map should not contain key (10)
-    //                            ^
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * map should not contain key (10)
+     *                            ^
+     * </pre>
+     */
     def apply[T](expectedKey: T) = new ResultOfKeyWordApplication(expectedKey)
   }
 
-  // map should not contain key (10)
-  //                        ^
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * map should not contain key (10)
+   *                        ^
+   * </pre>
+   */
   val key = new KeyWord
 
   /**
@@ -5995,13 +6094,26 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ValueWord {
-    // map should not contain value (10)
-    //                              ^
+
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * map should not contain value (10)
+     *                              ^
+     * </pre>
+     */
     def apply[T](expectedValue: T) = new ResultOfValueWordApplication(expectedValue)
   }
 
-  // map should not contain value (10)
-  //                        ^
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * map should not contain value (10)
+   *                        ^
+   * </pre>
+   */
   val value = new ValueWord
 
   /**
@@ -6028,15 +6140,36 @@ trait Matchers extends Assertions { matchers =>
    */
   class AWord {
 
-    // badBook should not be a ('goodRead)
-    //                         ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * badBook should not be a ('goodRead)
+     *                         ^
+     * </pre>
+     */
     def apply(symbol: Symbol) = new ResultOfAWordToSymbolApplication(symbol)
 
-    // badBook should not be a (goodRead)
-    //                         ^
+    /**
+     * This method enables the following syntax, where, for example, <code>badBook</code> is of type <code>Book</code> and <code>goodRead</code>
+     * is a <code>BePropertyMatcher[Book]</code>:
+     *
+     * <pre>
+     * badBook should not be a (goodRead)
+     *                         ^
+     * </pre>
+     */
     def apply[T](beTrueMatcher: BePropertyMatcher[T]) = new ResultOfAWordToBePropertyMatcherApplication(beTrueMatcher)
   }
 
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * badBook should not be a ('goodRead)
+   *                       ^
+   * </pre>
+   */
   val a = new AWord
 
   /**
@@ -6063,15 +6196,36 @@ trait Matchers extends Assertions { matchers =>
    */
   class AnWord {
 
-    // badBook should not be an ('goodRead)
-    //                          ^
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * badBook should not be an ('excellentRead)
+     *                          ^
+     * </pre>
+     */
     def apply(symbol: Symbol) = new ResultOfAnWordToSymbolApplication(symbol)
 
-    // badBook should not be an (goodRead)
-    //                          ^
+    /**
+     * This method enables the following syntax, where, for example, <code>badBook</code> is of type <code>Book</code> and <code>excellentRead</code>
+     * is a <code>BePropertyMatcher[Book]</code>:
+     *
+     * <pre>
+     * badBook should not be an (excellentRead)
+     *                          ^
+     * </pre>
+     */
     def apply[T](beTrueMatcher: BePropertyMatcher[T]) = new ResultOfAnWordToBePropertyMatcherApplication(beTrueMatcher)
   }
 
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * badBook should not be an (excellentRead)
+   *                       ^
+   * </pre>
+   */
   val an = new AnWord
 
   /**
@@ -6089,17 +6243,46 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class TheSameInstanceAsPhrase {
-    // otherString should not be theSameInstanceAs (string)
-    //                                             ^
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * oneString should not be theSameInstanceAs (anotherString)
+     *                                           ^
+     * </pre>
+     */
     def apply(anyRef: AnyRef) = new ResultOfTheSameInstanceAsApplication(anyRef)
   }
 
-  // otherString should not be theSameInstanceAs (string)
-  //                           ^
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * oneString should not be theSameInstanceAs (anotherString)
+   *                         ^
+   * </pre>
+   */
   val theSameInstanceAs = new TheSameInstanceAsPhrase
 
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * "eight" should not fullyMatch regex ("""(-)?(\d+)(\.\d*)?""".r)
+   *                               ^
+   * </pre>
+   */
   val regex = new RegexWord
 
+  /**
+   * This method enables the following syntax: 
+   *
+   * <pre>
+   * "eight" should not include substring ("seven")
+   *                            ^
+   * </pre>
+   */
   val substring = new SubstringWord
 
   /**
@@ -6117,6 +6300,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class DoublePlusOrMinusWrapper(right: Double) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * sevenDotOh should be (17.0 plusOrMinus 0.2)
+     *                            ^
+     * </pre>
+     */
     def plusOrMinus(tolerance: Double): DoubleTolerance = {
       if (tolerance <= 0.0)
         throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
@@ -6124,6 +6316,10 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * Implicitly converts an object of type <code>Double</code> to a <code>DoublePlusOrMinusWrapper</code>,
+   * to enable a <code>plusOrMinus</code> method to be invokable on that object.
+   */
   implicit def convertDoubleToPlusOrMinusWrapper(right: Double) = new DoublePlusOrMinusWrapper(right)
 
   /**
@@ -6141,6 +6337,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class FloatPlusOrMinusWrapper(right: Float) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * sevenDotOh should be (17.0f plusOrMinus 0.2f)
+     *                             ^
+     * </pre>
+     */
     def plusOrMinus(tolerance: Float): FloatTolerance = {
       if (tolerance <= 0.0f)
         throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
@@ -6148,6 +6353,10 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * Implicitly converts an object of type <code>Float</code> to a <code>FloatPlusOrMinusWrapper</code>,
+   * to enable a <code>plusOrMinus</code> method to be invokable on that object.
+   */
   implicit def convertFloatToPlusOrMinusWrapper(right: Float) = new FloatPlusOrMinusWrapper(right)
 
   /**
@@ -6165,6 +6374,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class LongPlusOrMinusWrapper(right: Long) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * seven should be (17L plusOrMinus 2)
+     *                      ^
+     * </pre>
+     */
     def plusOrMinus(tolerance: Long): LongTolerance = {
       if (tolerance <= 0L)
         throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
@@ -6172,6 +6390,10 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * Implicitly converts an object of type <code>Long</code> to a <code>LongPlusOrMinusWrapper</code>,
+   * to enable a <code>plusOrMinus</code> method to be invokable on that object.
+   */
   implicit def convertLongToPlusOrMinusWrapper(right: Long) = new LongPlusOrMinusWrapper(right)
 
   /**
@@ -6189,6 +6411,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class IntPlusOrMinusWrapper(right: Int) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * seven should be (17 plusOrMinus 2)
+     *                     ^
+     * </pre>
+     */
     def plusOrMinus(tolerance: Int): IntTolerance = {
       if (tolerance <= 0)
         throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
@@ -6196,6 +6427,10 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * Implicitly converts an object of type <code>Int</code> to a <code>IntPlusOrMinusWrapper</code>,
+   * to enable a <code>plusOrMinus</code> method to be invokable on that object.
+   */
   implicit def convertIntToPlusOrMinusWrapper(right: Int) = new IntPlusOrMinusWrapper(right)
 
   /**
@@ -6213,6 +6448,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ShortPlusOrMinusWrapper(right: Short) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * seven should be (17.toShort plusOrMinus 2.toShort)
+     *                             ^
+     * </pre>
+     */
     def plusOrMinus(tolerance: Short): ShortTolerance = {
       if (tolerance <= 0)
         throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
@@ -6220,6 +6464,10 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * Implicitly converts an object of type <code>Short</code> to a <code>ShortPlusOrMinusWrapper</code>,
+   * to enable a <code>plusOrMinus</code> method to be invokable on that object.
+   */
   implicit def convertShortToPlusOrMinusWrapper(right: Short) = new ShortPlusOrMinusWrapper(right)
 
   /**
@@ -6237,6 +6485,15 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class BytePlusOrMinusWrapper(right: Byte) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * seven should be (17.toByte plusOrMinus 2.toByte)
+     *                            ^
+     * </pre>
+     */
     def plusOrMinus(tolerance: Byte): ByteTolerance = {
       if (tolerance <= 0)
         throw newTestFailedException(Resources("negativeOrZeroRange", tolerance.toString))
@@ -6244,6 +6501,10 @@ trait Matchers extends Assertions { matchers =>
     }
   }
 
+  /**
+   * Implicitly converts an object of type <code>Byte</code> to a <code>BytePlusOrMinusWrapper</code>,
+   * to enable a <code>plusOrMinus</code> method to be invokable on that object.
+   */
   implicit def convertByteToPlusOrMinusWrapper(right: Byte) = new BytePlusOrMinusWrapper(right)
 
   /**
@@ -6255,6 +6516,7 @@ trait Matchers extends Assertions { matchers =>
   class ResultOfNotWordForLengthWrapper[A <: AnyRef <% LengthWrapper](left: A, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
+/* TODO What's going on? Why can I drop this and still get a compile
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
       val right = resultOfLengthWordApplication.expectedLength
       if ((left.length == right) != shouldBeTrue) {
@@ -6267,6 +6529,7 @@ trait Matchers extends Assertions { matchers =>
           )
       }
     }
+*/
   }
 
   /**
@@ -6276,6 +6539,22 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * obj should have length (2)
+     *                      ^
+     * </pre>
+     *
+     * <p>
+     * This method is ultimately invoked for objects that have a <code>length</code> property structure
+     * of type <code>Int</code>,
+     * but is of a type that is not handled by implicit conversions from nominal types such as
+     * <code>scala.Seq</code>, <code>java.lang.String</code>, and <code>java.util.List</code>.
+     * </p>
+     */
     def length(expectedLength: Int) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -6285,6 +6564,22 @@ trait Matchers extends Assertions { matchers =>
             expectedLength)
         )
     }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * obj should have length (2L)
+     *                      ^
+     * </pre>
+     *
+     * <p>
+     * This method is ultimately invoked for objects that have a <code>length</code> property structure
+     * of type <code>Long</code>,
+     * but is of a type that is not handled by implicit conversions from nominal types such as
+     * <code>scala.Seq</code>, <code>java.lang.String</code>, and <code>java.util.List</code>.
+     * </p>
+     */
     def length(expectedLength: Long) {
       if ((left.length == expectedLength) != shouldBeTrue)
         throw newTestFailedException(
@@ -6303,6 +6598,23 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * obj should have size (2)
+     * seven should be (17L plusOrMinus 2)
+     *                      ^
+     * </pre>
+     *
+     * <p>
+     * This method is ultimately invoked for objects that have a <code>size</code> property structure
+     * of type <code>Int</code>,
+     * but is of a type that is not handled by implicit conversions from nominal types such as
+     * <code>scala.Collection</code> and <code>java.util.Collection</code>.
+     * </p>
+     */
     def size(expectedSize: Int) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -6312,6 +6624,22 @@ trait Matchers extends Assertions { matchers =>
             expectedSize)
         )
     }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * obj should have size (2L)
+     *                      ^
+     * </pre>
+     *
+     * <p>
+     * This method is ultimately invoked for objects that have a <code>size</code> property structure
+     * of type <code>Long</code>,
+     * but is of a type that is not handled by implicit conversions from nominal types such as
+     * <code>scala.Collection</code> and <code>java.util.Collection</code>.
+     * </p>
+     */
     def size(expectedSize: Long) {
       if ((left.size == expectedSize) != shouldBeTrue)
         throw newTestFailedException(
@@ -6363,15 +6691,47 @@ trait Matchers extends Assertions { matchers =>
     def apply(left: T): Boolean = left >= right
   }
 
+  /**
+   * This method enables the following syntax: 
+   *
+   * <pre>
+   * num should (not be < (10) and not be > (17))
+   *                    ^
+   * </pre>
+   */
   def <[T <% Ordered[T]] (right: T): ResultOfLessThanComparison[T] =
     new ResultOfLessThanComparison(right)
 
+  /**
+   * This method enables the following syntax: 
+   *
+   * <pre>
+   * num should (not be > (10) and not be < (7))
+   *                    ^
+   * </pre>
+   */
   def >[T <% Ordered[T]] (right: T): ResultOfGreaterThanComparison[T] =
     new ResultOfGreaterThanComparison(right)
 
+  /**
+   * This method enables the following syntax: 
+   *
+   * <pre>
+   * num should (not be <= (10) and not be > (17))
+   *                    ^
+   * </pre>
+   */
   def <=[T <% Ordered[T]] (right: T): ResultOfLessThanOrEqualToComparison[T] =
     new ResultOfLessThanOrEqualToComparison(right)
 
+  /**
+   * This method enables the following syntax: 
+   *
+   * <pre>
+   * num should (not be >= (10) and not be < (7))
+   *                    ^
+   * </pre>
+   */
   def >=[T <% Ordered[T]] (right: T): ResultOfGreaterThanOrEqualToComparison[T] =
     new ResultOfGreaterThanOrEqualToComparison(right)
 }
