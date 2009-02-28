@@ -5033,6 +5033,15 @@ trait Matchers extends Assertions { matchers =>
    */
   class NotWord {
 
+    /**
+     * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.util.File</code>
+     * and <code>exist</code> is a <code>Matcher[java.util.File]</code>: 
+     *
+     * <pre>
+     * tempFile should not (exist)
+     *                     ^
+     * </pre>
+     */
     def apply[S <: Any](matcher: Matcher[S]) =
       new Matcher[S] {
         def apply(left: S) =
@@ -5041,8 +5050,33 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
-    // val even = not (odd)
-    //                ^
+    /**
+     * This method enables any <code>BeMatcher</code> to be negated by passing it to <code>not</code>. 
+     * For example, if you have a <code>BeMatcher[Int]</code> called <code>odd</code>, which matches
+     * <code>Int</code>s that are odd, you can negate it to get a <code>BeMatcher[Int]</code> that matches
+     * even <code>Int</code>s, like this:
+     *
+     * <pre>
+     * val even = not (odd)
+     *                ^
+     * </pre>
+     *
+     * <p>
+     * In addition, this method enables you to negate a <code>BeMatcher</code> at its point of use, like this:
+     * </p>
+     *
+     * </pre>
+     * num should be (not (odd))
+     * </pre>
+     *
+     * <p>
+     * Nevertheless, in such as case it would be more idiomatic to write:
+     * </p>
+     *
+     * </pre>
+     * num should not be (odd)
+     * </pre>
+     */
     def apply[S <: Any](beMatcher: BeMatcher[S]) =
       new BeMatcher[S] {
         def apply(left: S) =
@@ -5051,24 +5085,60 @@ trait Matchers extends Assertions { matchers =>
           }
       }
 
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * num should (not equal (7) and be < (9))
+     *                 ^
+     * </pre>
+     */
     def equal(right: Any): Matcher[Any] = apply(matchers.equal(right))
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * Array(1, 2) should (not have length (5) and not have length (3))
+     *                         ^
+     * </pre>
+     */
     def have(resultOfLengthWordApplication: ResultOfLengthWordApplication): Matcher[AnyRef] =
       apply(matchers.have.length(resultOfLengthWordApplication.expectedLength))
 
     // This looks similar to the AndNotWord one, but not quite the same because no and
-    // Array(1, 2) should (not have size (5) and not have size (3))
-    //                     ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * Array(1, 2) should (not have size (5) and not have size (3))
+     *                         ^
+     * </pre>
+     */
     def have(resultOfSizeWordApplication: ResultOfSizeWordApplication): Matcher[AnyRef] =
       apply(matchers.have.size(resultOfSizeWordApplication.expectedSize))
 
-    // book should (not have (title ("Moby Dick")) and (not have (author ("Melville"))))
-    //                  ^
+    /**
+     * This method enables the following syntax, where, for example, <code>book</code> is of type <code>Book</code> and <code>title</code> and <code>author</code>
+     * are both of type <code>HavePropertyMatcher[Book, String]</code>:
+     *
+     * <pre>
+     * book should (not have (title ("Moby Dick")) and (not have (author ("Melville"))))
+     *                  ^
+     * </pre>
+     */
     def have[T](firstPropertyMatcher: HavePropertyMatcher[T, _], propertyMatchers: HavePropertyMatcher[T, _]*): Matcher[T] =
       apply(matchers.have(firstPropertyMatcher, propertyMatchers: _*))
 
-    // 2 should (not be (odd) and not be (odd))
-    //               ^
+    /**
+     * This method enables the following syntax, where, for example, <code>num</code> is an <code>Int</code> and <code>odd</code>
+     * of type <code>BeMatcher[Int]</code>:
+     *
+     * <pre>
+     * num should (not be (odd) and be <= (8))
+     *                 ^
+     * </pre>
+     */
     def be[T](beMatcher: BeMatcher[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
@@ -5078,6 +5148,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * map should (not be (null))
+     *                 ^
+     * </pre>
+     */
     def be(o: Null) = 
       new Matcher[AnyRef] {
         def apply(left: AnyRef) = {
@@ -5090,9 +5168,16 @@ trait Matchers extends Assertions { matchers =>
           )
         }
       }
+
     // These next four are for things like not be </>/<=/>=:
-    // left should ((not be < (right)) and (not be < (right + 1)))
-    //               ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * num should (not be < (7) and not be > (10))
+     *                 ^
+     * </pre>
+     */
     def be[T](resultOfLessThanComparison: ResultOfLessThanComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
@@ -5104,6 +5189,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * num should (not be > (10) and not be < (7))
+     *                 ^
+     * </pre>
+     */
     def be[T](resultOfGreaterThanComparison: ResultOfGreaterThanComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
@@ -5115,6 +5208,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * num should (not be <= (7) and not be > (10))
+     *                 ^
+     * </pre>
+     */
     def be[T](resultOfLessThanOrEqualToComparison: ResultOfLessThanOrEqualToComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
@@ -5126,6 +5227,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * num should (not be >= (10) and not be < (7))
+     *                 ^
+     * </pre>
+     */
     def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) =
@@ -5137,9 +5246,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // Probably
-    // myFile should (not be ('hidden) and not be ('hidden))
-    //                    ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * myFile should (not be ('hidden) and have (name ("temp.txt")))
+     *                    ^
+     * </pre>
+     */
     def be[T <: AnyRef](symbol: Symbol): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
@@ -5153,8 +5267,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // myFile should (not be (hidden) and not be (hidden))
-    //                    ^
+    /**
+     * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.util.File</code>
+     * and <code>hidden</code> is a <code>BePropertyMatcher[java.util.File]</code>: 
+     *
+     * <pre>
+     * tempFile should (not be (hidden) and have ('name ("temp.txt")))
+     *                    ^
+     * </pre>
+     */
     def be[T <: AnyRef](bePropertyMatcher: BePropertyMatcher[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
@@ -5168,8 +5289,14 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // isNotFileMock should (not be a ('file) and not be a ('file))
-    //                           ^
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * isNotFileMock should (not be a ('file) and have ('name ("temp.txt"))))
+     *                           ^
+     * </pre>
+     */
     def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordToSymbolApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
@@ -5183,8 +5310,15 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
-    // myFile should (not be a (directory) and not be a (directory))
-    //                    ^
+    /**
+     * This method enables the following syntax, where <code>notSoSecretFile</code>, for example, refers to a <code>java.util.File</code>
+     * and <code>directory</code> is a <code>BePropertyMatcher[java.util.File]</code>: 
+     *
+     * <pre>
+     * notSoSecretFile should (not be a (directory) and have ('name ("passwords.txt")))
+     *                             ^
+     * </pre>
+     */
     def be[T <: AnyRef](resultOfAWordApplication: ResultOfAWordToBePropertyMatcherApplication[T]): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
@@ -5198,8 +5332,16 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+    /**
+     * This method enables the following syntax: 
+     *
+     * <pre>
     // isNotAppleMock should (not be an ('apple) and not be an ('apple))
     //                            ^
+     * iterable should contain element ("one")
+     *                         ^
+     * </pre>
+     */
     def be[T <: AnyRef](resultOfAnWordApplication: ResultOfAnWordToSymbolApplication): Matcher[T] = {
       new Matcher[T] {
         def apply(left: T) = {
