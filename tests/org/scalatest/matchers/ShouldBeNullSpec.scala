@@ -31,6 +31,7 @@ class ShouldBeNullSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       map should not be (null)
       map should not (be (null))
+      map should (not be (null))
       map should (not (be (null)))
       nullMap should be (null)
       nullMap should (be (null))
