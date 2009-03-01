@@ -345,37 +345,37 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
     it("should work with a set, list, array, and map right after a 'should'") {
 
       val set = Set(1, 2, 3)
-      set should contain element (2)
+      set should contain (2)
       val caught1 = intercept[TestFailedException] {
-        set should contain element (5)
+        set should contain (5)
       }
       assert(caught1.getMessage.indexOf("did not contain element") != -1)
 
-      set should { contain element (2) and equal (Set(1, 2, 3)) }
+      set should { contain (2) and equal (Set(1, 2, 3)) }
       val caught1b = intercept[TestFailedException] {
-        set should { contain element (5) and equal(Set(1, 2, 3)) }
+        set should { contain (5) and equal(Set(1, 2, 3)) }
       }
       assert(caught1b.getMessage.indexOf("did not contain element") != -1)
 
       val list = List("one", "two", "three")
-      list should contain element ("two")
+      list should contain ("two")
       val caught2 = intercept[TestFailedException] {
-        list should contain element ("five")
+        list should contain ("five")
       }
       assert(caught2.getMessage.indexOf("did not contain element") != -1)
 
       val array = Array("one", "two", "three")
-      array should contain element ("one")
+      array should contain ("one")
       val caught3 = intercept[TestFailedException] {
-        array should contain element ("five")
+        array should contain ("five")
       }
       assert(caught3.getMessage.indexOf("did not contain element") != -1)
 
       val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
       val tuple2: Tuple2[Int, String] = 1 -> "one"
-      map should contain element (tuple2)
+      map should contain (tuple2)
       val caught4 = intercept[TestFailedException] {
-        map should contain element (1 -> "won")
+        map should contain (1 -> "won")
       }
       assert(caught4.getMessage.indexOf("did not contain element") != -1)
     }
@@ -383,31 +383,31 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
     it("should work with a set, list, array, and map right after a 'should not'") {
 
       val set = Set(1, 2, 3)
-      set should not { contain element (5) }
+      set should not { contain (5) }
       val caught1 = intercept[TestFailedException] {
-        set should not { contain element (2) }
+        set should not { contain (2) }
       }
       assert(caught1.getMessage.indexOf("contained element") != -1)
 
       val list = List("one", "two", "three")
-      list should not { contain element ("five") }
+      list should not { contain ("five") }
       val caught2 = intercept[TestFailedException] {
-        list should not { contain element ("two") }
+        list should not { contain ("two") }
       }
       assert(caught2.getMessage.indexOf("contained element") != -1)
 
       val array = Array("one", "two", "three")
-      array should not { contain element ("five") }
+      array should not { contain ("five") }
       val caught3 = intercept[TestFailedException] {
-        array should not { contain element ("one") }
+        array should not { contain ("one") }
       }
       assert(caught3.getMessage.indexOf("contained element") != -1)
 
       val map = Map(1 -> "one", 2 -> "two", 3 -> "three")
       val tuple2: Tuple2[Int, String] = 1 -> "won"
-      map should not { contain element (tuple2) }
+      map should not { contain (tuple2) }
       val caught4 = intercept[TestFailedException] {
-        map should not { contain element (1 -> "one") }
+        map should not { contain (1 -> "one") }
       }
       assert(caught4.getMessage.indexOf("contained element") != -1)
     }
