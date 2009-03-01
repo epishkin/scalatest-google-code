@@ -66,6 +66,32 @@ class CustomMatcherSpec extends Spec with ShouldMatchers with CustomMatchers {
       }
       assert(caught2.getMessage === "imaginary.txt was not a file, but the directory named imaginary.txt did not exist")
     }
+
+    it("should work when used in various combinations of and, or, and not, when the file does exist") {
+
+      val tempFile = java.io.File.createTempFile("delete", "me")
+
+      try {
+        tempFile should exist
+
+        val caught1 = intercept[TestFailedException] {
+          tempFile should not (exist)
+        }
+        assert(caught1.getMessage === "The file named " + tempFile.getName + " existed")
+        caught1.getMessage should startWith substring ("The file named delete")
+        caught1.getMessage should endWith substring ("me existed")
+
+        tempFile should (be a ('file) and exist)
+
+        val caught2 = intercept[TestFailedException] {
+          tempFile should (be a ('file) and not (exist))
+        }
+        caught2.getMessage should endWith substring (", but the file named " + tempFile.getName + " existed")
+      }
+      finally {
+        tempFile.delete()
+      }
+    }
   }
 }
  
