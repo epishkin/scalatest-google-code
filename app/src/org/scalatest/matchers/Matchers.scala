@@ -2028,7 +2028,6 @@ trait Matchers extends Assertions { matchers =>
    */
   class StartWithWord {
 
-// TODO: Why do I need the T here? String is final
     /**
      * This method enables the following syntax:
      *
@@ -2037,9 +2036,9 @@ trait Matchers extends Assertions { matchers =>
      *                          ^
      * </pre>
      */
-    def apply[T <: String](right: T) =
-      new Matcher[T] {
-        def apply(left: T) =
+    def apply(right: String) =
+      new Matcher[String] {
+        def apply(left: String) =
           MatchResult(
             left startsWith right,
             FailureMessages("didNotStartWith", left, right),
@@ -2086,7 +2085,6 @@ trait Matchers extends Assertions { matchers =>
    */
   class EndWithWord {
 
-// TODO Why do I need the T here? String is final.
     /**
      * This method enables the following syntax:
      *
@@ -2095,9 +2093,9 @@ trait Matchers extends Assertions { matchers =>
      *                        ^
      * </pre>
      */
-    def apply[T <: String](right: T) =
-      new Matcher[T] {
-        def apply(left: T) =
+    def apply(right: String) =
+      new Matcher[String] {
+        def apply(left: String) =
           MatchResult(
             left endsWith right,
             FailureMessages("didNotEndWith", left, right),
