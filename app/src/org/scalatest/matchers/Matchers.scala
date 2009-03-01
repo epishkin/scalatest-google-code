@@ -491,17 +491,6 @@ trait Matchers extends Assertions { matchers =>
        * </pre>
        */
       def regex(regex: Regex) = and(include.regex(regex))
-
-      /**
-       * This method enables the following syntax:
-       *
-       * <pre>
-       * "a1.7b" should (include substring ("1.7") and include substring ("1.7"))
-       *                                                       ^
-       * </pre>
-      def substring(expectedSubstring: String) = and(include.substring(expectedSubstring))
-TODO: Delete 
-       */
     }
 
     /**
@@ -541,17 +530,6 @@ TODO: Delete
        * </pre>
        */
       def regex(regex: Regex) = and(startWith.regex(regex))
-
-      /**
-       * This method enables the following syntax:
-       *
-       * <pre>
-       * "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
-       *                                                         ^
-       * </pre>
-      def substring(expectedSubstring: String) = and(startWith.substring(expectedSubstring))
-TODO: Delete
-       */
     }
 
     /**
@@ -591,17 +569,6 @@ TODO: Delete
        * </pre>
        */
       def regex(regex: Regex) = and(endWith.regex(regex))
-
-      /**
-       * This method enables the following syntax:
-       *
-       * <pre>
-       * "1.7b" should (endWith substring ("1.7b") and endWith substring ("7b"))
-       *                                                       ^
-       * </pre>
-      def substring(expectedSubstring: String) = and(endWith.substring(expectedSubstring))
-TODO: Delete this
-       */
     }
 
     /**
@@ -1254,17 +1221,6 @@ TODO: Delete this
        * </pre>
        */
       def regex(regex: Regex) = or(include.regex(regex))
-
-      /**
-       * This method enables the following syntax:
-       *
-       * <pre>
-       * "a1.7b" should (include ("1.7") or include ("1.7"))
-       *                                    ^
-       * </pre>
-      def substring(expectedSubstring: String) = or(include.substring(expectedSubstring))
-TODO Delete
-       */
     }
 
     /**
@@ -1304,17 +1260,6 @@ TODO Delete
        * </pre>
        */
       def regex(regex: Regex) = or(startWith.regex(regex))
-
-      /**
-       * This method enables the following syntax:
-       *
-       * <pre>
-       * "1.7" should (startWith substring ("hello") or startWith substring ("1.7"))
-       *                                                          ^
-       * </pre>
-      def substring(expectedSubstring: String) = or(startWith.substring(expectedSubstring))
-TODO: Delete
-       */
     }
 
     /**
@@ -1354,17 +1299,6 @@ TODO: Delete
        * </pre>
        */
       def regex(regex: Regex) = or(endWith.regex(regex))
-
-      /**
-       * This method enables the following syntax:
-       *
-       * <pre>
-       * "1.7b" should (endWith substring ("hello") or endWith substring ("7b"))
-       *                                                       ^
-       * </pre>
-      def substring(expectedSubstring: String) = or(endWith.substring(expectedSubstring))
-TODO: Delete
-       */
     }
 
     /**
@@ -4113,40 +4047,6 @@ TODO: Delete
    * the matchers DSL.
    *
    * @author Bill Venners
-  class SubstringWord {
-
-    /**
-     * This method enables the following syntax: 
-     *
-     * <pre>
-     * "eight" should not include substring ("seven")
-     *                                      ^
-     * </pre>
-     */
-    def apply(substring: String) = new ResultOfSubstringWordApplication(substring)
-  }
-TODO: Delete
-   */
-
-  /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL. This class enables the following syntax: 
-   *
-   * <pre>
-   * "eight" should not fullyMatch substring ("seven")
-   *                               ^
-   * </pre>
-   *
-   * @author Bill Venners
-  class ResultOfSubstringWordApplication(val substring: String)
-TODO: Delete
-   */
- 
-  /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL.
-   *
-   * @author Bill Venners
    */
   class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
 
@@ -4177,26 +4077,6 @@ TODO: Delete
    * @author Bill Venners
    */
   class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
-
-    /**
-     * This method enables the following syntax: 
-     *
-     * <pre>
-     * string should include ("world")
-     *                       ^
-     * </pre>
-    def substring(expectedSubstring: String) {
-      if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
-        throw newTestFailedException(
-          FailureMessages(
-            if (shouldBeTrue) "didNotIncludeSubstring" else "includedSubstring",
-            left,
-            expectedSubstring
-          )
-        )
-    }
-TODO: Delete
-     */
 
     /**
      * This method enables the following syntax: 
@@ -4240,26 +4120,6 @@ TODO: Delete
      * This method enables the following syntax: 
      *
      * <pre>
-     * string should startWith substring ("Hello")
-     *                         ^
-     * </pre>
-    def substring(right: String) {
-      if ((left startsWith right) != shouldBeTrue)
-        throw newTestFailedException(
-          FailureMessages(
-            if (shouldBeTrue) "didNotStartWith" else "startedWith",
-            left,
-            right
-          )
-        )
-    }
-TODO Delete
-     */
-
-    /**
-     * This method enables the following syntax: 
-     *
-     * <pre>
      * string should startWith regex ("Hel*o")
      *                         ^
      * </pre>
@@ -4293,26 +4153,6 @@ TODO Delete
    * @author Bill Venners
    */
   class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
-
-    /**
-     * This method enables the following syntax: 
-     *
-     * <pre>
-     * string should endWith substring ("world")
-     *                       ^
-     * </pre>
-    def substring(right: String) {
-      if ((left endsWith right) != shouldBeTrue)
-        throw newTestFailedException(
-          FailureMessages(
-            if (shouldBeTrue) "didNotEndWith" else "endedWith",
-            left,
-            right
-          )
-        )
-    }
-TODO Delete
-     */
 
     /**
      * This method enables the following syntax: 
