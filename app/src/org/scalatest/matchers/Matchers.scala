@@ -27,6 +27,10 @@ import Helper.transformOperatorChars
 // TODO: Put links from ShouldMatchers to wherever I reveal the matrix and algo of how properties are checked dynamically.
 // TODO: double check that I wrote tests for (length (7)) and (size (8)) in parens
 // TODO: document how to turn off the === implicit conversion
+// TODO: Try putting Mockito on the runpath
+// TODO: Document you can use JMock, EasyMock, etc.
+// TODO: Import that branch that guy gave
+// TODO: Check out labels for properties in ScalaCheck like that guy suggested
 
 // This is used to pass a string to the FailureMessages apply method
 // but prevent it from being quoted. This is useful when using a string
@@ -151,8 +155,8 @@ import Helper.newTestFailedException
 import Helper.accessProperty
 
 /**
- * This trait is part of the ScalaTest matchers DSL. Please see the documentation for ShouldMatchers for an overview of
- * the matchers DSL.
+ * This trait is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html">ShouldMatchers</a> or
+ * <a href="MustMatchers.html">MustMatchers</a> for an overview of the matchers DSL.
  *
  * @author Bill Venners
  */
@@ -5035,8 +5039,8 @@ trait Matchers extends Assertions { matchers =>
   class NotWord {
 
     /**
-     * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.util.File</code>
-     * and <code>exist</code> is a <code>Matcher[java.util.File]</code>: 
+     * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.io.File</code>
+     * and <code>exist</code> is a <code>Matcher[java.io.File]</code>: 
      *
      * <pre>
      * tempFile should not (exist)
@@ -5269,8 +5273,8 @@ trait Matchers extends Assertions { matchers =>
     }
 
     /**
-     * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.util.File</code>
-     * and <code>hidden</code> is a <code>BePropertyMatcher[java.util.File]</code>: 
+     * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.io.File</code>
+     * and <code>hidden</code> is a <code>BePropertyMatcher[java.io.File]</code>: 
      *
      * <pre>
      * tempFile should (not be (hidden) and have ('name ("temp.txt")))
@@ -5312,8 +5316,8 @@ trait Matchers extends Assertions { matchers =>
     }
 
     /**
-     * This method enables the following syntax, where <code>notSoSecretFile</code>, for example, refers to a <code>java.util.File</code>
-     * and <code>directory</code> is a <code>BePropertyMatcher[java.util.File]</code>: 
+     * This method enables the following syntax, where <code>notSoSecretFile</code>, for example, refers to a <code>java.io.File</code>
+     * and <code>directory</code> is a <code>BePropertyMatcher[java.io.File]</code>: 
      *
      * <pre>
      * notSoSecretFile should (not be a (directory) and have ('name ("passwords.txt")))
