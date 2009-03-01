@@ -218,7 +218,7 @@ trait Checkers {
     check(p, Test.defaultParams)
   }
 
-  // TODO: Internationalize these
+  // TODO: Internationalize these, and make them consistent with FailureMessages stuff (only strings get quotes around them, etc.)
   private def prettyTestStats(result: Test.Result) = result.status match {
 
     case Test.Proved(args) =>
@@ -228,17 +228,23 @@ trait Checkers {
       "OK, passed " + result.succeeded + " tests."
 
     case Test.Failed(args, labels) =>
-      "Falsified after " + result.succeeded + " passed tests:\n" + prettyArgs(args)
+      "Falsified after " + result.succeeded + " passed tests:\n" + prettyLabels(labels) + prettyArgs(args)
 
     case Test.Exhausted =>
       "Gave up after only " + result.succeeded + " passed tests. " +
           result.discarded + " tests were discarded."
 
     case Test.PropException(args, e, labels) =>
-      "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during property evaluation:\n" + prettyArgs(args)
+      "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during property evaluation:\n" + prettyLabels(labels) + prettyArgs(args)
 
     case Test.GenException(e) =>
       "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during argument generation."
+  }
+
+  private def prettyLabels(labels: Set[String]) = {
+    if (labels.isEmpty) ""
+    else if (labels.size == 1) "Label of failing property: " + labels.elements.next + "\n"
+    else "Labels of failing property: " + labels.mkString("\n") + "\n"
   }
 
   private def prettyArgs(args: List[Arg]) = {

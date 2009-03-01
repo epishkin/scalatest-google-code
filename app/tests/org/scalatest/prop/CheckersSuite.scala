@@ -71,5 +71,14 @@ class CheckersSuite extends Suite with Checkers {
       check((s: String, t: String, u: String) => { throw myIAE })
     }
     assert(caught2.getCause === myIAE)
+
+    val complexProp = forAll { (m: Int, n: Int) =>
+      val res = n * m
+      (res >= m)    :| "result > #1" &&
+      (res >= n)    :| "result > #2" &&
+      (res < m + n) :| "result not sum"
+    }
+
+    check(complexProp)
   }
 }
