@@ -78,15 +78,15 @@ class CustomMatcherSpec extends Spec with ShouldMatchers with CustomMatchers {
           tempFile should not (exist)
         }
         assert(caught1.getMessage === "The file named " + tempFile.getName + " existed")
-        caught1.getMessage should startWith substring ("The file named delete")
-        caught1.getMessage should endWith substring ("me existed")
+        caught1.getMessage should startWith ("The file named delete")
+        caught1.getMessage should endWith ("me existed")
 
         tempFile should (be a ('file) and exist)
 
         val caught2 = intercept[TestFailedException] {
           tempFile should (be a ('file) and not (exist))
         }
-        caught2.getMessage should endWith substring (", but the file named " + tempFile.getName + " existed")
+        caught2.getMessage should endWith (", but the file named " + tempFile.getName + " existed")
       }
       finally {
         tempFile.delete()
