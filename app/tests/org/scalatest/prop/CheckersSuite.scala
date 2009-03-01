@@ -57,10 +57,19 @@ class CheckersSuite extends Suite with Checkers {
 
     // Make sure a Generator t throws an exception results in an TestFailedException
     // val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (throw new ArrayIndexOutOfBoundsException)
-    val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (n => throw new ArrayIndexOutOfBoundsException)
+    val myArrayException = new ArrayIndexOutOfBoundsException
+    val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (n => throw myArrayException )
     val propEvenIntegerWithBuggyGen = Prop.forAll(smallEvenIntegerWithBug)(n => n >= 0 && n <= 200 && n % 2 == 0)
-    intercept[TestFailedException] {
+    val caught1 = intercept[TestFailedException] {
       check(propEvenIntegerWithBuggyGen)
     }
+    assert(caught1.getCause === myArrayException)
+
+    // Make sure that I get a thrown exception back as the TFE's cause
+    val myIAE = new IllegalArgumentException
+    val caught2 = intercept[TestFailedException] {
+      check((s: String, t: String, u: String) => { throw myIAE })
+    }
+    assert(caught2.getCause === myIAE)
   }
 }

@@ -190,9 +190,21 @@ trait Checkers {
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check(p: Prop, prms: Test.Params) {
+
     val result = Test.check(prms, p)
     if (!result.passed) {
-      throw new TestFailedException(prettyTestStats(result), getStackDepth("Checkers.scala", "check"))
+
+      result.status match {
+
+        case Test.PropException(args, e, labels) =>
+          throw new TestFailedException(prettyTestStats(result), e, getStackDepth("Checkers.scala", "check"))
+
+        case Test.GenException(e) =>
+          throw new TestFailedException(prettyTestStats(result), e, getStackDepth("Checkers.scala", "check"))
+
+        case _ =>
+          throw new TestFailedException(prettyTestStats(result), getStackDepth("Checkers.scala", "check"))
+      }
     }
   }
 
@@ -206,29 +218,35 @@ trait Checkers {
     check(p, Test.defaultParams)
   }
 
+  // TODO: Internationalize these
   private def prettyTestStats(result: Test.Result) = result.status match {
+
     case Test.Proved(args) =>
       "OK, proved property:                   \n" + prettyArgs(args)
+
     case Test.Passed =>
       "OK, passed " + result.succeeded + " tests."
+
     case Test.Failed(args, labels) =>
-      "Falsified after "+result.succeeded+" passed tests:\n"+prettyArgs(args)
+      "Falsified after " + result.succeeded + " passed tests:\n" + prettyArgs(args)
+
     case Test.Exhausted =>
       "Gave up after only " + result.succeeded + " passed tests. " +
-      result.discarded + " tests were discarded."
+          result.discarded + " tests were discarded."
+
     case Test.PropException(args, e, labels) =>
-      "Exception \"" + e + "\" raised on property evaluation:\n" +
-      prettyArgs(args)
+      "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during property evaluation:\n" + prettyArgs(args)
+
     case Test.GenException(e) =>
-      "Exception \"" + e + "\" raised on argument generation."
+      "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during argument generation."
   }
 
   private def prettyArgs(args: List[Arg]) = {
     val strs = for((a,i) <- args.zipWithIndex) yield (
       "> " +
-      (if(a.label == "") "ARG_" + i else a.label) +
+      (if (a.label == "") "ARG_" + i else a.label) +
       " = \"" + a.arg +
-      (if(a.shrinks > 0) "\" (" + a.shrinks + " shrinks)" else "\"")
+      (if (a.shrinks > 0) "\" (" + a.shrinks + " shrinks)" else "\"")
     )
     strs.mkString("\n")
   }
