@@ -725,8 +725,7 @@ trait Matchers extends Assertions { matchers =>
        *                                                ^
        * </pre>
        */
-      def be[T](resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
-// TODO drop the type param on the previous one
+      def be(resultOfAWordApplication: ResultOfAWordToSymbolApplication) = matchersWrapper.and(matchers.not.be(resultOfAWordApplication))
 
       /**
        * This method enables the following syntax:
@@ -1425,8 +1424,7 @@ trait Matchers extends Assertions { matchers =>
        *                                            ^
        * </pre>
        */
-      def be[T](symbol: Symbol) = matchersWrapper.or(matchers.not.be(symbol))
-// TODO drop the type parameter
+      def be(symbol: Symbol) = matchersWrapper.or(matchers.not.be(symbol))
 
       /**
        * This method enables the following syntax:
