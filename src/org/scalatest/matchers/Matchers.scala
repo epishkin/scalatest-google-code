@@ -3258,7 +3258,7 @@ trait Matchers extends Assertions { matchers =>
       if (result.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue)
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))  // TODO, delete. OK
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))
           else
             FailureMessages("wasA", left, UnquotedString(result.propertyName))
         )
@@ -3531,7 +3531,7 @@ trait Matchers extends Assertions { matchers =>
       if (result.matches != shouldBeTrue) {
         throw newTestFailedException(
           if (shouldBeTrue)
-            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))  // TODO, delete. OK
+            FailureMessages("wasNotA", left, UnquotedString(result.propertyName))
           else
             FailureMessages("wasA", left, UnquotedString(result.propertyName))
         )
@@ -4372,60 +4372,6 @@ trait Matchers extends Assertions { matchers =>
         )
     }
   }
-  
-  /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL.
-   *
-   * @author Bill Venners
-  class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
-
-    /**
-     * This method enables the following syntax: 
-     *
-     * <pre>
-     * iterable should contain element ("one")
-     *                         ^
-     * </pre>
-     */
-    def element(expectedElement: T) {
-      if ((left.elements.contains(expectedElement)) != shouldBeTrue)
-        throw newTestFailedException(
-          FailureMessages(
-            if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
-            left,
-            expectedElement)
-        )
-    }
-  } TODO delete this
-   */
-  
-  /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL.
-   *
-   * @author Bill Venners
-  class ResultOfContainWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
-
-    /**
-     * This method enables the following syntax: 
-     *
-     * <pre>
-     * javaCollection should contain element ("one")
-     *                               ^
-     * </pre>
-     */
-    def element(expectedElement: T) {
-      if ((left.contains(expectedElement)) != shouldBeTrue)
-        throw newTestFailedException(
-          FailureMessages(
-            if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
-            left,
-            expectedElement)
-        )
-    }
-  } TODO Delete this
-   */
   
   /**
    * This method enables the following syntax: 
@@ -6018,36 +5964,6 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
   class ResultOfElementWordApplication[T](val expectedElement: T)
-
-  /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL.
-   *
-   * @author Bill Venners
-  class ElementWord {
-
-    /**
-     * This method enables the following syntax: 
-     *
-     * <pre>
-     * array should not contain element (10)
-     *                                  ^
-     * </pre>
-     */
-    def apply[T](expectedElement: T) = new ResultOfElementWordApplication(expectedElement)
-  } // TODO delete this
-   */
-
-  /**
-   * This field enables the following syntax: 
-   *
-   * <pre>
-   * array should not contain element (10)
-   *                          ^
-   * </pre>
-  val element = new ElementWord
-TODO: Delete this
-   */
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
