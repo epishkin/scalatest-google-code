@@ -829,8 +829,6 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-  // TODO: In the tests, make sure they can create their own matcher and use it.
-
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
@@ -910,7 +908,6 @@ trait ShouldMatchers extends Matchers {
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](left, true)
   }
 
-  // TODO, add should(BeWord) here, and investigate why there's no should(NotWord) here
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
@@ -1299,12 +1296,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-/*
-    def should(containWord: ContainWord): ResultOfContainWordForIterable[T] =
-      new ResultOfContainWordForIterable(left, true)
-TODO: Delete this
-*/
-
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] =
       new ResultOfHaveWordForCollection(left, true)
 
@@ -1341,14 +1332,6 @@ TODO: Delete this
     def should(rightMatcher: Matcher[java.util.Collection[T]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    // javaList should contain element (2) 
-    //          ^
-/*
-    def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] =
-      new ResultOfContainWordForJavaCollection(left, true)
-TODO Delete this
-*/
 
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] =
       new ResultOfHaveWordForJavaCollection(left, true)
@@ -1429,12 +1412,6 @@ TODO Delete this
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-/*
-    def should(containWord: ContainWord): ResultOfContainWordForIterable[T] =
-      new ResultOfContainWordForIterable(left, true)
-TODO delete this
-*/
-
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
 
@@ -1475,13 +1452,6 @@ TODO delete this
     def should(rightMatcher: Matcher[Array[T]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-/*
-    def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-      new ResultOfContainWordForIterable(left, true)
-    }
-TODO Delete this
-*/
 
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(left, true)
@@ -1526,13 +1496,6 @@ TODO Delete this
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
 
-/*
-    def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-      new ResultOfContainWordForIterable(left, true)
-    }
-TODO Delete this
-*/
-
     def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] =
       new ResultOfNotWordForSeq(left, false)
   }
@@ -1565,15 +1528,6 @@ TODO Delete this
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
       new ResultOfHaveWordForJavaList(left, true)
     }
-
-    // javaList should contain element (2) 
-    //          ^
-/*
-    def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] = {
-      new ResultOfContainWordForJavaCollection(left, true)
-    }
-TODO Delete this
-*/
 
     // TODO: Check all the type parameters for ResultOfBehaveWord. Do some of them say T still?
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[java.util.List[T]](left)
