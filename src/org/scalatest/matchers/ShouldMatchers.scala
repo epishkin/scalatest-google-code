@@ -122,11 +122,11 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * string should startWith substring ("Hello")
+ * string should startWith ("Hello")
  * string should startWith regex ("Hel*o")
- * string should endWith substring ("world")
+ * string should endWith ("world")
  * string should endWith regex ("wo.ld")
- * string should include substring ("seven")
+ * string should include ("seven")
  * string should include regex ("wo.ld")
  * </pre>
  * 
@@ -191,7 +191,7 @@ import Helper.newTestFailedException
  * 
  * <p>
  * If you think it reads better, you can optionally put <code>a</code> or <code>an</code> after
- * <code>be</code>. For example, <code>java.util.File</code> has two predicate methods,
+ * <code>be</code>. For example, <code>java.io.File</code> has two predicate methods,
  * <code>isFile</code> and <code>isDirectory</code>. Thus with a <code>File</code> object
  * named <code>temp</code>, you could write:
  * </p>
@@ -224,7 +224,7 @@ import Helper.newTestFailedException
  * <p>
  * These expressions would fail to compile if <code>should</code> is used on an inappropriate type, as determined
  * by the type parameter of the <code>BePropertyMatcher</code> being used. (For example, <code>file</code> in this example
- * would likely be of type <code>BePropertyMatcher[java.util.File]</code>. If used with an appropriate type, such an expression will compile
+ * would likely be of type <code>BePropertyMatcher[java.io.File]</code>. If used with an appropriate type, such an expression will compile
  * and at run time the <code>Boolean</code> property method or field will be accessed directly; <em>i.e.</em>, no reflection will be used.
  * See the documentation for <a href="BePropertyMatcher.html"><code>BePropertyMatcher</code></a> for more information.
  * </p>
@@ -709,7 +709,7 @@ import Helper.newTestFailedException
  * <p>
  * If none of the built-in matcher syntax (or options shown so far for extending the syntax) satisfy a particular need you have, you can create
  * custom <code>Matcher</code>s that allow
- * you to place your own syntax directly after <code>should</code>. For example, class <code>java.util.File</code> has a method <code>exists</code>, which
+ * you to place your own syntax directly after <code>should</code>. For example, class <code>java.io.File</code> has a method <code>exists</code>, which
  * indicates whether a file of a certain path and name exists. Because the <code>exists</code> method takes no parameters and returns <code>Boolean</code>,
  * you can call it using <code>be</code> with a symbol or <code>BePropertyMatcher</code>, yielding assertions like:
  * </p>
@@ -722,7 +722,7 @@ import Helper.newTestFailedException
  * <p>
  * Although these expressions will achieve your goal of throwing a <code>TestFailedException</code> if the file does not exist, they don't produce
  * the most readable code because the English is either incorrect or awkward. In this case, you might want to create a
- * custom <code>Matcher[java.util.File]</code>
+ * custom <code>Matcher[java.io.File]</code>
  * named <code>exist</code>, which you could then use to write expressions like:
  * </p>
  *
@@ -824,52 +824,6 @@ trait ShouldMatchers extends Matchers {
   }
 
   // TODO: In the tests, make sure they can create their own matcher and use it.
-/*
-  trait ShouldMethods[T] {
-    protected val leftOperand: T
-    def should(rightMatcher: Matcher[T]) {
-      rightMatcher(leftOperand) match {
-        case MatchResult(false, failureMessage, _, _, _) => throw newTestFailedException(failureMessage)
-        case _ => ()
-      }
-    }
-// This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
-    // I don't think there's a be on Any, because a (symbol) and an (symbol), plus
-    // theSameInstanceAs only work on AnyRefs. And 1 should be (1) words because be (1) results in a matcher already
-    // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
-    def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
-  }
-*/
-
-  // TODO: Shouldn't this one extend ShouldMethods? See the reminder at the end of this file.
-/*
-  trait ShouldMethodsForAnyRef[T <: AnyRef] {
-
-    protected val leftOperand: T
-
-    def should(rightMatcher: Matcher[T]) { // First step, duplicate code. TODO: Eliminate the duplication
-      rightMatcher(leftOperand) match {
-        case MatchResult(false, failureMessage, _, _, _) => throw newTestFailedException(failureMessage)
-        case _ => ()
-      }
-    }
-
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
-
-    def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
-      new ResultOfNotWordForAnyRef(leftOperand, false)
-    }
-
-    def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
-  }
-*/
-
-  // Rename to AnyShouldWrapper. Drop ShouldMethods and I think everyone already extends this.
-  // No inheritance. Just have a Helper class with all the implementations, and then just
-  // call them from the specific classes. Simple as that. No inheritance hierarchy at all.
-  // class ShouldWrapper[T](left: T) extends { val leftOperand = left } with ShouldMethods[T]
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -884,12 +838,28 @@ trait ShouldMatchers extends Matchers {
    */
   class AnyShouldWrapper[T](left: T) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should equal (3)
+     *        ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[T]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * result should not equal (3)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord) = new ResultOfNotWord[T](left, false)
   }
 
@@ -910,6 +880,14 @@ trait ShouldMatchers extends Matchers {
    */
   class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * objectWithLength should equal (3)
+     *                  ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[A]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -941,6 +919,14 @@ trait ShouldMatchers extends Matchers {
    */
   class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * objectWithSize should equal (3)
+     *                ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[A]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -971,6 +957,14 @@ trait ShouldMatchers extends Matchers {
    */
   class StringShouldWrapper(left: String) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should equal ("hi")
+     *        ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[String]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1018,6 +1012,14 @@ trait ShouldMatchers extends Matchers {
    */
   class DoubleShouldWrapper(left: Double) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * aDouble should equal (8.8)
+     *        ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[Double]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1042,6 +1044,14 @@ trait ShouldMatchers extends Matchers {
    */
   class FloatShouldWrapper(left: Float) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * aFloat should equal (3.3f)
+     *       ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[Float]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1066,6 +1076,14 @@ trait ShouldMatchers extends Matchers {
    */
   class LongShouldWrapper(left: Long) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * aLong should equal (3L)
+     *      ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[Long]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1090,6 +1108,14 @@ trait ShouldMatchers extends Matchers {
    */
   class IntShouldWrapper(left: Int) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * anInt should equal (3)
+     *      ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[Int]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1114,6 +1140,14 @@ trait ShouldMatchers extends Matchers {
    */
   class ShortShouldWrapper(left: Short) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * aShort should equal (3.toShort)
+     *        ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[Short]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1138,6 +1172,14 @@ trait ShouldMatchers extends Matchers {
    */
   class ByteShouldWrapper(left: Byte) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * aByte should equal (3.toByte)
+     *       ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[Byte]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1162,6 +1204,14 @@ trait ShouldMatchers extends Matchers {
    */
   class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * map should equal (Map(1 -> "one", 2 -> "two"))
+     *     ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[scala.collection.Map[K, V]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1184,52 +1234,6 @@ trait ShouldMatchers extends Matchers {
     }
   }
 
-/*
-  trait ShouldContainWordForJavaCollectionMethods[T] {
-    protected val leftOperand: java.util.Collection[T]
-   // javaList should contain element (2) 
-    //          ^
-    def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] = {
-      new ResultOfContainWordForJavaCollection(leftOperand, true)
-    }
-  }
-
-  trait ShouldContainWordForIterableMethods[T] {
-    protected val leftOperand: Iterable[T]
-    def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
-      new ResultOfContainWordForIterable(leftOperand, true)
-    }
-  }
-
-  trait ShouldHaveWordForCollectionMethods[T] {
-    protected val leftOperand: Collection[T]
-    def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = {
-      new ResultOfHaveWordForCollection(leftOperand, true)
-    }
-  }
-  
-  trait ShouldHaveWordForJavaCollectionMethods[T] {
-    protected val leftOperand: java.util.Collection[T]
-    def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] = {
-      new ResultOfHaveWordForJavaCollection(leftOperand, true)
-    }
-  }
-
-  trait ShouldHaveWordForSeqMethods[T] {
-    protected val leftOperand: Seq[T]
-    def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
-      new ResultOfHaveWordForSeq(leftOperand, true)
-    }
-  }
-  
-  trait ShouldHaveWordForJavaListMethods[T] {
-    protected val leftOperand: java.util.List[T]
-    def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
-      new ResultOfHaveWordForJavaList(leftOperand, true)
-    }
-  }
-*/
-
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
@@ -1243,6 +1247,14 @@ trait ShouldMatchers extends Matchers {
    */
   class AnyRefShouldWrapper[T <: AnyRef](left: T) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * anyRef should equal (anotherObject)
+     *        ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[T]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1269,15 +1281,23 @@ trait ShouldMatchers extends Matchers {
    */
   class CollectionShouldWrapper[T](left: Collection[T]) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * collection should equal (Set(1, 2, 3))
+     *            ^
+     * </pre>
+     */
+    def should(rightMatcher: Matcher[Collection[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] =
       new ResultOfContainWordForIterable(left, true)
 
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] =
       new ResultOfHaveWordForCollection(left, true)
-
-    def should(rightMatcher: Matcher[Collection[T]]) {
-      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
-    }
 
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
@@ -1301,6 +1321,18 @@ trait ShouldMatchers extends Matchers {
    */
   class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaCollection should equal (aJavaSet)
+     *                ^
+     * </pre>
+     */
+    def should(rightMatcher: Matcher[java.util.Collection[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
     // javaList should contain element (2) 
     //          ^
     def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] =
@@ -1308,10 +1340,6 @@ trait ShouldMatchers extends Matchers {
 
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] =
       new ResultOfHaveWordForJavaCollection(left, true)
-
-    def should(rightMatcher: Matcher[java.util.Collection[T]]) {
-      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
-    }
 
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
@@ -1335,6 +1363,14 @@ trait ShouldMatchers extends Matchers {
    */
   class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaMap should equal (someJavaMap)
+     *         ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[java.util.Map[K, V]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1369,15 +1405,23 @@ trait ShouldMatchers extends Matchers {
    */
   class SeqShouldWrapper[T](left: Seq[T]) {
  
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * seq should equal (List(1, 2, 3))
+     *     ^
+     * </pre>
+     */
+    def should(rightMatcher: Matcher[Seq[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] =
       new ResultOfContainWordForIterable(left, true)
 
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
-
-    def should(rightMatcher: Matcher[Seq[T]]) {
-      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
-    }
 
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
@@ -1405,16 +1449,24 @@ trait ShouldMatchers extends Matchers {
    */
   class ArrayShouldWrapper[T](left: Array[T]) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * array should equal (Array("one", "two"))
+     *       ^
+     * </pre>
+     */
+    def should(rightMatcher: Matcher[Array[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(left, true)
     }
 
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(left, true)
-    }
-
-    def should(rightMatcher: Matcher[Array[T]]) {
-      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Array[T]](left)
@@ -1436,6 +1488,14 @@ trait ShouldMatchers extends Matchers {
    */
   class ListShouldWrapper[T](left: List[T]) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * list should equal (List(1, 2, 3))
+     *      ^
+     * </pre>
+     */
     def should(rightMatcher: Matcher[List[T]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
@@ -1469,6 +1529,18 @@ trait ShouldMatchers extends Matchers {
    */
   class JavaListShouldWrapper[T](left: java.util.List[T]) {
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaList should equal (someOtherJavaList)
+     *          ^
+     * </pre>
+     */
+    def should(rightMatcher: Matcher[java.util.List[T]]) {
+      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
+    }
+
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
       new ResultOfHaveWordForJavaList(left, true)
     }
@@ -1477,10 +1549,6 @@ trait ShouldMatchers extends Matchers {
     //          ^
     def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] = {
       new ResultOfContainWordForJavaCollection(left, true)
-    }
-
-    def should(rightMatcher: Matcher[java.util.List[T]]) {
-      ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
     // TODO: Check all the type parameters for ResultOfBehaveWord. Do some of them say T still?
