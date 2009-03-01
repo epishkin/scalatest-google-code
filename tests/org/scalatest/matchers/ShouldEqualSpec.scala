@@ -36,7 +36,7 @@ class ShouldEqualSpec extends Spec with ShouldMatchers with Checkers with Return
       check((s: String) => returnsNormally(s should equal (new String(s))))
     }
 
-    it("should do nothing when not equal and used with should not") {
+    it("should do nothing when not equal and used with not") {
       1 should not { equal (2) }
       1 should not equal (2)
 

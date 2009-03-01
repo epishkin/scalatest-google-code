@@ -499,15 +499,16 @@ trait Matchers extends Assertions { matchers =>
        * "a1.7b" should (include substring ("1.7") and include substring ("1.7"))
        *                                                       ^
        * </pre>
-       */
       def substring(expectedSubstring: String) = and(include.substring(expectedSubstring))
+TODO: Delete 
+       */
     }
 
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * "a1.7b" should (include substring ("1.7") and include substring ("1.7"))
+     * "hello, world" should (include regex ("hel*o") and include regex ("wor.d"))
      *                                           ^
      * </pre>
      */
@@ -548,16 +549,17 @@ trait Matchers extends Assertions { matchers =>
        * "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
        *                                                         ^
        * </pre>
-       */
       def substring(expectedSubstring: String) = and(startWith.substring(expectedSubstring))
+TODO: Delete
+       */
     }
 
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * "1.7" should (startWith substring ("1.7") and startWith substring ("1.7"))
-     *                                           ^
+     * "1.78" should (have length (4) and startWith regex ("1.7"))
+     *                                ^
      * </pre>
      */
     def and(startWithWord: StartWithWord): AndStartWithWord = new AndStartWithWord
@@ -597,8 +599,9 @@ trait Matchers extends Assertions { matchers =>
        * "1.7b" should (endWith substring ("1.7b") and endWith substring ("7b"))
        *                                                       ^
        * </pre>
-       */
       def substring(expectedSubstring: String) = and(endWith.substring(expectedSubstring))
+TODO: Delete this
+       */
     }
 
     /**
@@ -884,12 +887,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * "fred" should (not include substring ("bob") and not include substring ("1.7"))
-       *                                                      ^
+       * "fred" should (not include ("bob") and not include ("1.7"))
+       *                                            ^
        * </pre>
        */
-      def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
-        matchersWrapper.and(matchers.not.include(resultOfSubstringWordApplication))
+      def include(expectedSubstring: String) =
+        matchersWrapper.and(matchers.not.include(expectedSubstring))
 
       /**
        * This method enables the following syntax:
@@ -906,12 +909,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * "fred" should (not startWith substring ("red") and not startWith substring ("1.7"))
-       *                                                        ^
+       * "fred" should (not startWith ("red") and not startWith ("1.7"))
+       *                                              ^
        * </pre>
        */
-      def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
-        matchersWrapper.and(matchers.not.startWith(resultOfSubstringWordApplication))
+      def startWith(expectedSubstring: String) =
+        matchersWrapper.and(matchers.not.startWith(expectedSubstring))
 
       /**
        * This method enables the following syntax:
@@ -928,12 +931,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * "fred" should (not endWith substring ("fre") and not endWith substring ("1.7"))
-       *                                                      ^
+       * "fred" should (not endWith ("fre") and not endWith ("1.7"))
+       *                                            ^
        * </pre>
        */
-      def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
-        matchersWrapper.and(matchers.not.endWith(resultOfSubstringWordApplication))
+      def endWith(expectedSubstring: String) =
+        matchersWrapper.and(matchers.not.endWith(expectedSubstring))
 
       /**
        * This method enables the following syntax:
@@ -1256,19 +1259,20 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * "a1.7b" should (include substring ("1.7") or include substring ("1.7"))
-       *                                                      ^
+       * "a1.7b" should (include ("1.7") or include ("1.7"))
+       *                                    ^
        * </pre>
-       */
       def substring(expectedSubstring: String) = or(include.substring(expectedSubstring))
+TODO Delete
+       */
     }
 
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * "a1.7b" should (include substring ("1.7") or include substring ("1.7"))
-     *                                           ^
+     * "a1.7b" should (include regex ("1.7") or include regex ("1.7"))
+     *                                          ^
      * </pre>
      */
     def or(includeWord: IncludeWord): OrIncludeWord = new OrIncludeWord
@@ -1308,16 +1312,17 @@ trait Matchers extends Assertions { matchers =>
        * "1.7" should (startWith substring ("hello") or startWith substring ("1.7"))
        *                                                          ^
        * </pre>
-       */
       def substring(expectedSubstring: String) = or(startWith.substring(expectedSubstring))
+TODO: Delete
+       */
     }
 
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * "1.7" should (startWith substring ("hello") or startWith substring ("1.7"))
-     *                                             ^
+     * "1.7" should (startWith regex ("hello") or startWith regex ("1.7"))
+     *                                            ^
      * </pre>
      */
     def or(startWithWord: StartWithWord): OrStartWithWord = new OrStartWithWord
@@ -1357,16 +1362,17 @@ trait Matchers extends Assertions { matchers =>
        * "1.7b" should (endWith substring ("hello") or endWith substring ("7b"))
        *                                                       ^
        * </pre>
-       */
       def substring(expectedSubstring: String) = or(endWith.substring(expectedSubstring))
+TODO: Delete
+       */
     }
 
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * "1.7b" should (endWith substring ("hello") or endWith substring ("7b"))
-     *                                            ^
+     * "1.7b" should (endWith regex ("hello") or endWith regex ("7b"))
+     *                                           ^
      * </pre>
      */
     def or(endWithWord: EndWithWord): OrEndWithWord = new OrEndWithWord
@@ -1644,12 +1650,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * "fred" should (not include substring ("bob") or not include substring ("1.7"))
-       *                                                     ^
+       * "fred" should (not include ("bob") or not include ("1.7"))
+       *                                           ^
        * </pre>
        */
-      def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
-        matchersWrapper.or(matchers.not.include(resultOfSubstringWordApplication))
+      def include(expectedSubstring: String) =
+        matchersWrapper.or(matchers.not.include(expectedSubstring))
 
       /**
        * This method enables the following syntax:
@@ -1666,12 +1672,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * "fred" should (not startWith substring ("fred") or not startWith substring ("1.7"))
-       *                                                        ^
+       * "fred" should (not startWith ("fred") or not startWith ("1.7"))
+       *                                              ^
        * </pre>
        */
-      def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
-        matchersWrapper.or(matchers.not.startWith(resultOfSubstringWordApplication))
+      def startWith(expectedSubstring: String) =
+        matchersWrapper.or(matchers.not.startWith(expectedSubstring))
 
       /**
        * This method enables the following syntax:
@@ -1688,12 +1694,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * "fred" should (not endWith substring ("fred") or not endWith substring ("1.7"))
-       *                                                      ^
+       * "fred" should (not endWith ("fred") or not endWith ("1.7"))
+       *                                            ^
        * </pre>
        */
-      def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) =
-        matchersWrapper.or(matchers.not.endWith(resultOfSubstringWordApplication))
+      def endWith(expectedSubstring: String) =
+        matchersWrapper.or(matchers.not.endWith(expectedSubstring))
 
       /**
        * This method enables the following syntax:
@@ -2037,11 +2043,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax:
      *
      * <pre>
-     * "1.7" should (include substring ("1.7") and include substring ("1.8"))
+     * "1.7" should (include ("1.7") and include ("1.8"))
      *                       ^
      * </pre>
      */
-    def substring(expectedSubstring: String): Matcher[String] =
+    def apply(expectedSubstring: String): Matcher[String] =
       new Matcher[String] {
         def apply(left: String) =
           MatchResult(
@@ -2090,15 +2096,16 @@ trait Matchers extends Assertions { matchers =>
    */
   class StartWithWord {
 
+// TODO: Why do I need the T here? String is final
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * "1.7b" should (startWith substring ("1.7") and startWith substring ("1.7b"))
+     * "1.7b" should (startWith ("1.7") and startWith ("1.7b"))
      *                          ^
      * </pre>
      */
-    def substring[T <: String](right: T) =
+    def apply[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
           MatchResult(
@@ -2147,15 +2154,16 @@ trait Matchers extends Assertions { matchers =>
    */
   class EndWithWord {
 
+// TODO Why do I need the T here? String is final.
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * "1.7b" should (endWith substring ("1.7b") and endWith substring ("7b"))
+     * "1.7b" should (endWith ("1.7b") and endWith ("7b"))
      *                        ^
      * </pre>
      */
-    def substring[T <: String](right: T) =
+    def apply[T <: String](right: T) =
       new Matcher[T] {
         def apply(left: T) =
           MatchResult(
@@ -3751,12 +3759,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * string should not include substring ("world")
+     * string should not include ("world")
      *                   ^
      * </pre>
      */
-    def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
-      val expectedSubstring = resultOfSubstringWordApplication.substring
+    def include(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
         throw newTestFailedException(
           FailureMessages(
@@ -3796,12 +3803,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * "eight" should not startWith substring ("1.7")
+     * "eight" should not startWith ("1.7")
      *                    ^
      * </pre>
      */
-    def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
-      val expectedSubstring = resultOfSubstringWordApplication.substring
+    def startWith(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) == 0) != shouldBeTrue)
         throw newTestFailedException(
           FailureMessages(
@@ -3816,7 +3822,7 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * greeting should not regex substring ("wor.d")
+     * greeting should not endWith regex ("wor.d")
      *                     ^
      * </pre>
      */
@@ -3837,12 +3843,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * "eight" should not endWith substring ("1.7")
+     * "eight" should not endWith ("1.7")
      *                    ^
      * </pre>
      */
-    def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication) {
-      val expectedSubstring = resultOfSubstringWordApplication.substring
+    def endWith(expectedSubstring: String) {
       if ((left endsWith expectedSubstring) != shouldBeTrue)
         throw newTestFailedException(
           FailureMessages(
@@ -4108,7 +4113,6 @@ trait Matchers extends Assertions { matchers =>
    * the matchers DSL.
    *
    * @author Bill Venners
-   */
   class SubstringWord {
 
     /**
@@ -4121,6 +4125,8 @@ trait Matchers extends Assertions { matchers =>
      */
     def apply(substring: String) = new ResultOfSubstringWordApplication(substring)
   }
+TODO: Delete
+   */
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -4132,8 +4138,9 @@ trait Matchers extends Assertions { matchers =>
    * </pre>
    *
    * @author Bill Venners
-   */
   class ResultOfSubstringWordApplication(val substring: String)
+TODO: Delete
+   */
  
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -4175,10 +4182,9 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * string should include substring ("world")
+     * string should include ("world")
      *                       ^
      * </pre>
-     */
     def substring(expectedSubstring: String) {
       if ((left.indexOf(expectedSubstring) >= 0) != shouldBeTrue)
         throw newTestFailedException(
@@ -4189,6 +4195,8 @@ trait Matchers extends Assertions { matchers =>
           )
         )
     }
+TODO: Delete
+     */
 
     /**
      * This method enables the following syntax: 
@@ -4235,7 +4243,6 @@ trait Matchers extends Assertions { matchers =>
      * string should startWith substring ("Hello")
      *                         ^
      * </pre>
-     */
     def substring(right: String) {
       if ((left startsWith right) != shouldBeTrue)
         throw newTestFailedException(
@@ -4246,6 +4253,8 @@ trait Matchers extends Assertions { matchers =>
           )
         )
     }
+TODO Delete
+     */
 
     /**
      * This method enables the following syntax: 
@@ -4292,7 +4301,6 @@ trait Matchers extends Assertions { matchers =>
      * string should endWith substring ("world")
      *                       ^
      * </pre>
-     */
     def substring(right: String) {
       if ((left endsWith right) != shouldBeTrue)
         throw newTestFailedException(
@@ -4303,6 +4311,8 @@ trait Matchers extends Assertions { matchers =>
           )
         )
     }
+TODO Delete
+     */
 
     /**
      * This method enables the following syntax: 
@@ -5478,7 +5488,7 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * string should (not fullyMatch regex ("Hel*o) and not include substring ("orld"))
+     * string should (not fullyMatch regex ("Hel*o) and not include ("orld"))
      *                    ^
      * </pre>
      */
@@ -5518,12 +5528,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * string should (not include substring ("cat") and not include substring ("1.7"))
+     * string should (not include ("cat") and not include ("1.7"))
      *                    ^
      * </pre>
      */
-    def include(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
-      val expectedSubstring = resultOfSubstringWordApplication.substring
+    def include(expectedSubstring: String): Matcher[String] = {
       new Matcher[String] {
         def apply(left: String) =
           MatchResult(
@@ -5558,12 +5567,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * string should ((not startWith substring ("red")) and (not startWith substring ("1.7")))
+     * string should ((not startWith ("red")) and (not startWith ("1.7")))
      *                     ^
      * </pre>
      */
-    def startWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
-      val expectedSubstring = resultOfSubstringWordApplication.substring
+    def startWith(expectedSubstring: String): Matcher[String] = {
       new Matcher[String] {
         def apply(left: String) =
           MatchResult(
@@ -5600,12 +5608,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * string should (not endWith substring ("blue") and not endWith substring ("1.7"))
+     * string should (not endWith ("blue") and not endWith ("1.7"))
      *                    ^
      * </pre>
      */
-    def endWith(resultOfSubstringWordApplication: ResultOfSubstringWordApplication): Matcher[String] = {
-      val expectedSubstring = resultOfSubstringWordApplication.substring
+    def endWith(expectedSubstring: String): Matcher[String] = {
       new Matcher[String] {
         def apply(left: String) = {
           MatchResult(
@@ -5758,7 +5765,7 @@ trait Matchers extends Assertions { matchers =>
    * This method enables syntax such as the following:
    *
    * <pre>
-   * string should (include substring ("hope") and not startWith substring ("no"))
+   * string should (include ("hope") and not startWith ("no"))
    *                ^
    * </pre>
    */
@@ -5778,8 +5785,8 @@ trait Matchers extends Assertions { matchers =>
    * This method enables syntax such as the following:
    *
    * <pre>
-   * string should (startWith substring ("Four") and include substring ("year"))
-   *              ^
+   * string should (startWith ("Four") and include ("year"))
+   *                ^
    * </pre>
    */
   val startWith = new StartWithWord
@@ -5788,7 +5795,7 @@ trait Matchers extends Assertions { matchers =>
    * This method enables syntax such as the following:
    *
    * <pre>
-   * string should (endWith substring ("ago") and include substring ("score"))
+   * string should (endWith ("ago") and include ("score"))
    *                ^
    * </pre>
    */
@@ -6205,8 +6212,8 @@ trait Matchers extends Assertions { matchers =>
    * "eight" should not include substring ("seven")
    *                            ^
    * </pre>
-   */
   val substring = new SubstringWord
+   */
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
