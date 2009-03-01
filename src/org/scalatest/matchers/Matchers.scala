@@ -318,11 +318,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * Array(1, 2) should (contain element (2) and contain element (3 - 1))
-       *                                                     ^
+       * Array(1, 2) should (contain (2) and contain (3 - 1))
+       *                                             
        * </pre>
        */
-      def element[T](expectedElement: T) = matchersWrapper.and(matchers.contain.element(expectedElement))
+      def apply[T](expectedElement: T) = matchersWrapper.and(matchers.contain(expectedElement))
+      // def element[T](expectedElement: T) = matchersWrapper.and(matchers.contain.apply(expectedElement))
 
       /**
        * This method enables the following syntax:
@@ -938,12 +939,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * Array(1, 2) should (not contain element (5) and not contain element (3))
+       * Array(1, 2) should (not contain (5) and not contain (3))
        *                                                     ^
        * </pre>
        */
-      def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
-        matchersWrapper.and(matchers.not.contain(resultOfElementWordApplication))
+      def contain[T](expectedElement: T) =
+        matchersWrapper.and(matchers.not.contain(expectedElement))
 
       /**
        * This method enables the following syntax:
@@ -1077,11 +1078,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * Array(1, 2) should (contain element (2) or contain element (3 - 1))
-       *                                                    ^
+       * Array(1, 2) should (contain (2) or contain (3 - 1))
+       *                                            ^
        * </pre>
        */
-      def element[T](expectedElement: T) = matchersWrapper.or(matchers.contain.element(expectedElement))
+      def apply[T](expectedElement: T) = matchersWrapper.or(matchers.contain(expectedElement))
+      // def element[T](expectedElement: T) = matchersWrapper.or(matchers.contain.apply(expectedElement))
 
       /**
        * This method enables the following syntax:
@@ -1697,12 +1699,12 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
-       * Array(1, 2) should (not contain element (1) or not contain element (3))
-       *                                                    ^
+       * Array(1, 2) should (not contain (1) or not contain (3))
+       *                                            ^
        * </pre>
        */
-      def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]) =
-        matchersWrapper.or(matchers.not.contain(resultOfElementWordApplication))
+      def contain[T](expectedElement: T) =
+        matchersWrapper.or(matchers.not.contain(expectedElement))
 
       /**
        * This method enables the following syntax:
@@ -1764,7 +1766,8 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
+  class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) {
+  // class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
 
     /**
      * This method enables the following syntax:
@@ -1907,7 +1910,7 @@ trait Matchers extends Assertions { matchers =>
     }
 
   // Ack. The above conversion doesn't apply to java.util.Maps, because java.util.Map is not a subinterface
-  // of java.util.Collection. But right now Matcher[Iterable] supports only "contain element" and "have size"
+  // of java.util.Collection. But right now Matcher[Iterable] supports only "contain" and "have size"
   // syntax, and thus that should work on Java maps too, why not. Well I'll tell you why not. It is too complicated.
   // Since java Map is not a java Collection, I'll say the contain syntax doesn't work on it. But you can say
   // have key.
@@ -1932,11 +1935,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax:
      *
      * <pre>
-     * Array(1, 2) should (contain element (2) and contain element (1))
+     * Array(1, 2) should (contain (2) and contain (1))
      *                             ^
      * </pre>
      */
-    def element[T](expectedElement: T): Matcher[Iterable[T]] =
+    def apply[T](expectedElement: T): Matcher[Iterable[T]] =
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) =
           MatchResult(
@@ -2565,7 +2568,7 @@ trait Matchers extends Assertions { matchers =>
 
     // TODO: How about returning a Matcher[Gazornimplatz] and then providing implicit conversion
     // methods from Matcher[Gazornimplatz] to Matcher[Seq], Matcher[String], Matcher[java.util.List], and
-    // Matcher[the structural length methods]. This is similar to the technique I used with "contain element (7)"
+    // Matcher[the structural length methods]. This is similar to the technique I used with "contain (7)"
     // to get it to work with java.util.Collection.
     // I couldn't figure out how to combine view bounds with existential types. May or may not
     // be possible, but going dynamic for now at least.
@@ -2891,12 +2894,12 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax:
      *
      * <pre>
-     * iterable should not contain element ("one")
+     * iterable should not contain ("one")
      *                     ^
      * </pre>
      */
-    def contain(resultOfElementWordApplication: ResultOfElementWordApplication[E]) {
-      val right = resultOfElementWordApplication.expectedElement
+    def contain(expectedElement: E) {
+      val right = expectedElement
       if ((left.exists(_ == right)) != shouldBeTrue) {
         throw newTestFailedException(
           FailureMessages(
@@ -2974,12 +2977,12 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax:
      *
      * <pre>
-     * javaCollection should not contain element ("elephant")
+     * javaCollection should not contain ("elephant")
      *                           ^
      * </pre>
      */
-    def contain(resultOfElementWordApplication: ResultOfElementWordApplication[E]) {
-      val right = resultOfElementWordApplication.expectedElement
+    def contain(expectedElement: E) {
+      val right = expectedElement
       if ((left.contains(right)) != shouldBeTrue) {
         throw newTestFailedException(
           FailureMessages(
@@ -4375,7 +4378,6 @@ trait Matchers extends Assertions { matchers =>
    * the matchers DSL.
    *
    * @author Bill Venners
-   */
   class ResultOfContainWordForIterable[T](left: Iterable[T], shouldBeTrue: Boolean) {
 
     /**
@@ -4395,14 +4397,14 @@ trait Matchers extends Assertions { matchers =>
             expectedElement)
         )
     }
-  }
+  } TODO delete this
+   */
   
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
    * @author Bill Venners
-   */
   class ResultOfContainWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
 
     /**
@@ -4422,7 +4424,8 @@ trait Matchers extends Assertions { matchers =>
             expectedElement)
         )
     }
-  }
+  } TODO Delete this
+   */
   
   /**
    * This method enables the following syntax: 
@@ -5672,12 +5675,11 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax: 
      *
      * <pre>
-     * Array(1, 2) should (not contain element (5) and not contain element (3))
+     * Array(1, 2) should (not contain (5) and not contain (3))
      *                         ^
      * </pre>
      */
-    def contain[T](resultOfElementWordApplication: ResultOfElementWordApplication[T]): Matcher[Iterable[T]] = {
-      val expectedElement = resultOfElementWordApplication.expectedElement
+    def contain[T](expectedElement: T): Matcher[Iterable[T]] = {
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) = {
           MatchResult(
@@ -5790,7 +5792,7 @@ trait Matchers extends Assertions { matchers =>
    * This method enables syntax such as the following:
    *
    * <pre>
-   * list should (have length (3) and not contain element ('a'))
+   * list should (have length (3) and not contain ('a'))
    *              ^
    * </pre>
    */
@@ -5800,7 +5802,7 @@ trait Matchers extends Assertions { matchers =>
    * This method enables syntax such as the following:
    *
    * <pre>
-   * list should (contain element ('a') and have length (7))
+   * list should (contain ('a') and have length (7))
    *              ^
    * </pre>
    */
@@ -6022,7 +6024,6 @@ trait Matchers extends Assertions { matchers =>
    * the matchers DSL.
    *
    * @author Bill Venners
-   */
   class ElementWord {
 
     /**
@@ -6034,7 +6035,8 @@ trait Matchers extends Assertions { matchers =>
      * </pre>
      */
     def apply[T](expectedElement: T) = new ResultOfElementWordApplication(expectedElement)
-  }
+  } // TODO delete this
+   */
 
   /**
    * This field enables the following syntax: 
@@ -6043,8 +6045,9 @@ trait Matchers extends Assertions { matchers =>
    * array should not contain element (10)
    *                          ^
    * </pre>
-   */
   val element = new ElementWord
+TODO: Delete this
+   */
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of

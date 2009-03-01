@@ -117,21 +117,27 @@ import Helper.newTestFailedException
  * <h2>Checking strings</h2>
  * 
  * <p>
- * You can check for whether a string starts with, ends with, or includes a substring
- * or regular expression, like this:
+ * You can check for whether a string starts with, ends with, or includes a substring like this:
  * </p>
  * 
  * <pre class="indent">
  * string should startWith ("Hello")
- * string should startWith regex ("Hel*o")
  * string should endWith ("world")
- * string should endWith regex ("wo.ld")
  * string should include ("seven")
+ * </pre>
+ * 
+ * <p>
+ * You can check for whether a string starts with, ends with, or includes a regular expression, like this:
+ * </p>
+ * 
+ * <pre class="indent">
+ * string should startWith regex ("Hel*o")
+ * string should endWith regex ("wo.ld")
  * string should include regex ("wo.ld")
  * </pre>
  * 
  * <p>
- * You can check whether a string fully matches a regular expression, like this:
+ * And you can check whether a string fully matches a regular expression, like this:
  * </p>
  * 
  * <pre class="indent">
@@ -322,7 +328,7 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * iterable should contain element ("five")
+ * iterable should contain ("five")
  * </pre>
  * 
  * <p>
@@ -371,16 +377,16 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * javaCollection should contain element ("five")
+ * javaCollection should contain ("five")
  * </pre>
  * 
  * <p>
  * One difference to note between the syntax supported on Java collections and that of Scala
- * iterables is that you can't use <code>contain element (...)</code> syntax with a Java <code>Map</code>.
+ * iterables is that you can't use <code>contain (...)</code> syntax with a Java <code>Map</code>.
  * Java differs from Scala in that its <code>Map</code> is not a subtype of its <code>Collection</code> type.
  * If you want to check that a Java <code>Map</code> contains a specific key/value pair, the best approach is
  * to invoke <code>entrySet</code> on the Java <code>Map</code> and check that entry set for the appropriate
- * element (a <code>java.util.Map.Entry</code>) using <code>contain element (...)</code>.
+ * element (a <code>java.util.Map.Entry</code>) using <code>contain (...)</code>.
  * </p>
  *
  * <p>
@@ -566,7 +572,7 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * collection should (contain element (7) or contain contain element (8) and have size (9))
+ * collection should (contain (7) or contain (8) and have size (9))
  * </pre>
  * 
  * <p>
@@ -574,7 +580,7 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * collection should ((contain element (7) or contain contain element (8)) and have size (9))
+ * collection should ((contain (7) or contain (8)) and have size (9))
  * </pre>
  * 
  * <p>
@@ -582,7 +588,7 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * collection should (contain element (7) or (contain contain element (8) and have size (9)))
+ * collection should (contain (7) or (contain (8) and have size (9)))
  * </pre>
  * 
  * <h2>Working with <code>Option</code>s</h2>
@@ -1293,8 +1299,11 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+/*
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] =
       new ResultOfContainWordForIterable(left, true)
+TODO: Delete this
+*/
 
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] =
       new ResultOfHaveWordForCollection(left, true)
@@ -1335,8 +1344,11 @@ trait ShouldMatchers extends Matchers {
 
     // javaList should contain element (2) 
     //          ^
+/*
     def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] =
       new ResultOfContainWordForJavaCollection(left, true)
+TODO Delete this
+*/
 
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] =
       new ResultOfHaveWordForJavaCollection(left, true)
@@ -1417,8 +1429,11 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+/*
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] =
       new ResultOfContainWordForIterable(left, true)
+TODO delete this
+*/
 
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
@@ -1461,9 +1476,12 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+/*
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(left, true)
     }
+TODO Delete this
+*/
 
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(left, true)
@@ -1508,9 +1526,12 @@ trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
 
+/*
     def should(containWord: ContainWord): ResultOfContainWordForIterable[T] = {
       new ResultOfContainWordForIterable(left, true)
     }
+TODO Delete this
+*/
 
     def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] =
       new ResultOfNotWordForSeq(left, false)
@@ -1547,9 +1568,12 @@ trait ShouldMatchers extends Matchers {
 
     // javaList should contain element (2) 
     //          ^
+/*
     def should(containWord: ContainWord): ResultOfContainWordForJavaCollection[T] = {
       new ResultOfContainWordForJavaCollection(left, true)
     }
+TODO Delete this
+*/
 
     // TODO: Check all the type parameters for ResultOfBehaveWord. Do some of them say T still?
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[java.util.List[T]](left)
