@@ -17,6 +17,10 @@ package org.scalatest.matchers
 
 // T is the type of the object that has a property to verify with an instance of this trait, P is the type of that particular property
 // Since I should be able to pass 
+ /*
+ *
+ * @author Bill Venners
+ */
 trait HavePropertyMatcher[-T, P] extends Function1[T, HavePropertyMatchResult[P]] {
   def apply(objectWithProperty: T): HavePropertyMatchResult[P]
 }

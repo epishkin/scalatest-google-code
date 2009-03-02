@@ -15,6 +15,10 @@
  */
 package org.scalatest.matchers
 
+ /*
+ *
+ * @author Bill Venners
+ */
 class BePropertyMatchResult(
   val matches: Boolean, // true if the Boolean property was true
   val propertyName: String

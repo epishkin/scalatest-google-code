@@ -31,6 +31,8 @@ package org.scalatest.matchers
  * </pre>
  *
  * For more information, see the documentation for <a href="BeMatcher.html"><code>BeMatcher</code></a>.
+ *
+ * @author Bill Venners
 */
 trait BeMatcher[-T] extends Function1[T, MatchResult] {
 
