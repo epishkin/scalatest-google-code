@@ -29,19 +29,7 @@ import Helper.transformOperatorChars
 // TODO: document how to turn off the === implicit conversion
 // TODO: Try putting Mockito on the runpath
 // TODO: Document you can use JMock, EasyMock, etc.
-// TODO: Import that branch that guy gave
-// TODO: Check out labels for properties in ScalaCheck like that guy suggested
-
-// This is used to pass a string to the FailureMessages apply method
-// but prevent it from being quoted. This is useful when using a string
-// to talk about method names, for example.
-private[scalatest] class UnquotedString(s: String) {
-  override def toString = s
-}
-
-private[scalatest] object UnquotedString {
-  def apply(s: String) = new UnquotedString(s)
-}
+// TODO: Make a CheckFailedException
 
 private[scalatest] object Helper {
 

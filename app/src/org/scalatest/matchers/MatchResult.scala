@@ -18,9 +18,11 @@ package org.scalatest.matchers
 /**
  * The result of the <code>Matcher</code> <code>apply</code> method.
  *
- * @param matches indicates whether or not the compared values matched
- * @param failureMessage if a match was intended (x should match), but did not match
- * @param negatedFailureMessage if a match was not intended (x should not { match }), but matched
+ * @param matches indicates whether or not the matcher matched
+ * @param failureMessage a failure message to report if a match fails
+ * @param negatedFailureMessage the opposite of the failure message ...
+ * @param midSentenceFailureMessage if a match was intended (x should match), but did not match
+ * @param midSentenceNegatedFailureMessage if a match was not intended (x should not { match }), but matched
  */
 case class MatchResult(
   matches: Boolean,

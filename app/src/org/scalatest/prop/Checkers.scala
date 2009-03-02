@@ -196,16 +196,110 @@ trait Checkers {
 
       result.status match {
 
-        case Test.PropException(args, e, labels) =>
-          throw new TestFailedException(prettyTestStats(result), e, getStackDepth("Checkers.scala", "check"))
+        case Test.Proved(args) =>
+
+          val (args, labels) = argsAndLabels(result)
+          throw new PropertyTestFailedException(
+            prettyTestStats(result),
+            None,
+            getStackDepth("Checkers.scala", "check"),
+            FailureMessages("propertyProved"),
+            args,
+            labels
+          )
+
+        case Test.Passed => // Should never get here, because this is executed only if !result.passed. Better to refactor this away
+
+          val (args, labels) = argsAndLabels(result)
+          throw new PropertyTestFailedException(
+            prettyTestStats(result),
+            None,
+            getStackDepth("Checkers.scala", "check"),
+            FailureMessages("propertyPassed", result.succeeded),
+            args,
+            labels
+          )
+
+        case Test.Exhausted =>
+
+          val (args, labels) = argsAndLabels(result)
+          throw new PropertyTestFailedException(
+            prettyTestStats(result),
+            None,
+            getStackDepth("Checkers.scala", "check"),
+            FailureMessages("propertyExhausted", result.succeeded, result.discarded),
+            args,
+            labels
+          )
+
+        case Test.Failed(scalaCheckArgs, scalaCheckLabels) =>
+
+          val (args, labels) = argsAndLabels(result)
+          throw new PropertyTestFailedException(
+            prettyTestStats(result),
+            None,
+            getStackDepth("Checkers.scala", "check"),
+            FailureMessages("propertyFailed", result.succeeded),
+            args,
+            labels
+          )
+
+        case Test.PropException(scalaCheckArgs, e, scalaCheckLabels) =>
+          val (args, labels) = argsAndLabels(result)
+          throw new PropertyTestFailedException(
+            prettyTestStats(result),
+            Some(e),
+            getStackDepth("Checkers.scala", "check"),
+            FailureMessages("propertyException", UnquotedString(e.getClass.getName)),
+            args,
+            labels
+          )
 
         case Test.GenException(e) =>
-          throw new TestFailedException(prettyTestStats(result), e, getStackDepth("Checkers.scala", "check"))
+          val (args, labels) = argsAndLabels(result)
+          throw new PropertyTestFailedException(
+            prettyTestStats(result),
+            Some(e),
+            getStackDepth("Checkers.scala", "check"),
+            FailureMessages("generatorException", UnquotedString(e.getClass.getName)),
+            args,
+            labels
+          )
 
         case _ =>
-          throw new TestFailedException(prettyTestStats(result), getStackDepth("Checkers.scala", "check"))
+          val (args, labels) = argsAndLabels(result)
+          throw new PropertyTestFailedException(prettyTestStats(result), None, getStackDepth("Checkers.scala", "check"), "FILL ME IN", args, labels)
       }
     }
+  }
+
+  private def argsAndLabels(result: Test.Result): (Option[List[Any]], Option[List[String]]) = {
+
+    val (scalaCheckArgsOption, scalaCheckLabelsOption) =
+      result.status match {
+        case Test.Proved(args) => (Some(args), None)
+        case Test.Failed(args, labels) => (Some(args), Some(labels))
+        case Test.PropException(args, _, labels) => (Some(args), Some(labels))
+        case _ => (None, None)
+      }
+
+    val argsOption: Option[List[Any]] = 
+      scalaCheckArgsOption match {
+        case Some(scalaCheckArgs) =>
+          val argList = for (scalaCheckArg <- scalaCheckArgs.toList) yield scalaCheckArg.arg
+          Some(argList)
+        case None => None
+      }
+
+    val labelsOption: Option[List[String]] =
+      scalaCheckLabelsOption match {
+        case Some(scalaCheckLabels) => // scalaCheckLabels is a Set[String], I think
+          val labelList = for (scalaCheckLabel <- scalaCheckLabels.elements.toList) yield scalaCheckLabel
+          Some(labelList)
+        case None => None
+      }
+
+    (argsOption, labelsOption)
   }
 
   /**
