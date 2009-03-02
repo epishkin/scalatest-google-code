@@ -81,8 +81,18 @@ package org.scalatest.matchers
  * 
  *   val exist = new FileExistsMatcher
  * }
+ *
+ * // Make them easy to import with:
+ * // import CustomMatchers._
+ * object CustomMatchers extends CustomMatchers
  * </pre>
  * 
+ * <p>
+ * Note: the <code>CustomMatchers</code> companion object exists to make it easy to bring the
+ * matchers defined in this trait into scope via importing, instead of mixing in the trait. The ability
+ * to import them is useful, for example, when you want to use the matchers defined in a trait in the Scala interpreter console.
+ * </p>
+ *
  * <p>
  * This trait contains one matcher class, <code>FileExistsMatcher</code>, and a <code>val</code> named <code>exist</code> that refers to
  * an instance of <code>FileExistsMatcher</code>. Because the class extends <code>Matcher[java.io.File]</code>,
