@@ -79,6 +79,8 @@ class CheckersSuite extends Suite with Checkers {
       (res < m + n) :| "result not sum"
     }
 
-    check(complexProp)
+    intercept[PropertyTestFailedException] {
+      check(complexProp)
+    }
   }
 }

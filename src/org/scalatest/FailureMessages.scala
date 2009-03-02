@@ -41,3 +41,14 @@ private[scalatest] object FailureMessages {
     Resources(resourceName, args.map((arg: Any) => decorateToStringValue(arg)): _*)
 }
 
+// This is used to pass a string to the FailureMessages apply method
+// but prevent it from being quoted. This is useful when using a string
+// to talk about method names, for example.
+private[scalatest] class UnquotedString(s: String) {
+  override def toString = s
+}
+
+private[scalatest] object UnquotedString {
+  def apply(s: String) = new UnquotedString(s)
+}
+

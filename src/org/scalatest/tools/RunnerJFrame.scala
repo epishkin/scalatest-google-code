@@ -55,6 +55,7 @@ import java.util.concurrent.Semaphore
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.EventQueue
+import org.scalatest.prop.PropertyTestFailedException
 
 /**
  * The main class for Runner's GUI.
@@ -314,6 +315,24 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
               else new scala.xml.NodeBuffer
             }
 
+            val mainMessage =
+              report.throwable match {
+                case Some(ex: PropertyTestFailedException) => ex.undecoratedMessage
+                case _ => report.message.trim
+              }
+
+            val propCheckArgsOption =
+              report.throwable match {
+                case Some(ex: PropertyTestFailedException) => ex.args
+                case _ => None
+              }
+
+            val propCheckLabelsOption =
+              report.throwable match {
+                case Some(ex: PropertyTestFailedException) => ex.labels
+                case _ => None
+              }
+
             val detailsHTML =
               <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
                 <head>
@@ -333,9 +352,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                       <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td><td align="left">
                       {
                         if (isFailureReport) {
-                          <span class="dark">{ report.message }</span>
+                          <span class="dark">{ mainMessage }</span>
                         } else {
-                          <span>{ report.message }</span>
+                          <span>{ mainMessage }</span>
                         }
                       }
                       </td></tr>
@@ -347,6 +366,24 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                       case Some(fileAndLine) =>
                         <tr valign="top"><td align="right"><span class="label">{ Resources("LineNumber") + ":" }</span></td><td align="left"><span class="dark">{ "(" + fileAndLine + ")" }</span></td></tr>
                       case None =>
+                    }
+                  }
+                  {
+                    propCheckArgsOption match {
+                      case Some(propCheckArgs) =>
+                        for ((propCheckArg, argIndex) <- propCheckArgs.zipWithIndex) yield
+                          <tr valign="top"><td align="right"><span class="label">{ Resources("argN", argIndex.toString) + ":" }</span></td><td align="left"><span class="dark">{ propCheckArg }</span></td></tr>
+                      case None =>
+                    }
+                  }
+                  {
+                    propCheckLabelsOption match {
+                      case Some(propCheckLabels) =>
+                        val labelOrLabels = if (propCheckLabels.length > 1) Resources("DetailsLabels") else Resources("DetailsLabel")
+                        val labelHTML = for (propCheckLabel <- propCheckLabels) yield { <span class="dark">{ propCheckLabel }</span><br></br> }
+
+                        <tr valign="top"><td align="right"><span class="label">{ labelOrLabels + ":" }</span></td><td align="left"><span class="dark">{ labelHTML }</span></td></tr>
+                      case None => new scala.xml.NodeBuffer
                     }
                   }
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.date }</td></tr>
