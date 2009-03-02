@@ -1806,8 +1806,8 @@ SetWrapper
 /*
 leave this explanation in. It is a useful reminder.
 THIS DOESN'T WORK BECAUSE...
-  protected trait ShouldMethods[T] {
-    protected val leftOperand: T
+  trait ShouldMethods[T] {
+    val leftOperand: T
     def should(rightMatcher: Matcher[T]) {
       rightMatcher(leftOperand) match {
         case MatchResult(false, failureMessage, _) => throw newTestFailedException(failureMessage)
@@ -1822,7 +1822,7 @@ THIS DOESN'T WORK BECAUSE...
     // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
     def should(notWord: NotWord) = new ResultOfNotWord[T](leftOperand, false)
   }
-  protected trait ShouldMethodsForAnyRef[T <: AnyRef] extends ShouldMethods[T] {
+  trait ShouldMethodsForAnyRef[T <: AnyRef] extends ShouldMethods[T] {
     val leftOperand: T
     override def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] = {
       new ResultOfNotWordForAnyRef(leftOperand, false)
@@ -1830,7 +1830,7 @@ THIS DOESN'T WORK BECAUSE...
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef[T](leftOperand, true)
   }
 
-  protected class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left }
+  class CollectionShouldWrapper[T](left: Collection[T]) extends { val leftOperand = left }
   with ShouldMethodsForAnyRef[Collection[T]]
       with ShouldContainWordForIterableMethods[T] with ShouldHaveWordForCollectionMethods[T] {
 
