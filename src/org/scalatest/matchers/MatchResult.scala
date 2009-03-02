@@ -117,8 +117,61 @@ package org.scalatest.matchers
  *
  * <h2>Understanding the "<code>midSentence</code>" messages</h2>
  *
+ * <p>
+ * When a ScalaTest matcher expression that involves <code>and</code> or <code>or</code> fails, the failure message that
+ * results is composed from the failure messages of the left and right matcher operatnds to <code>and</code> or </code>or</code>.
+ * For example:
+ * </p>
  *
- * 
+ * <pre>
+ * 8 should (equal (7) or equal (9))
+ * </pre>
+ *
+ * <p>
+ * This above expression would fail with the following failure message reported to the user:
+ * </p>
+ *
+ * <pre>
+ * 8 did not equal 7, and 8 did not equal 9
+ * </pre>
+ *
+ * <p>
+ * This works fine, but what if the failure messages being combined begin with a capital letter, such as:
+ * </p>
+ *
+ * <pre>
+ * The name property did not equal "Carl"
+ * </pre>
+ *
+ * <p>
+ * A combination of two such failure messages might result in an abomination of English grammer, such as:
+ * </p>
+ *
+ * <pre>
+ * The name property did not equal "Carl", and The name property did not equal "Dick"
+ * </pre>
+ *
+ * <p>
+ * Because ScalaTest is an internationalized application, taking all of its strings from a property file
+ * enabling it to be localized, it isn't a good idea to force the first character to lower case. Besides,
+ * it might actually represent a String value which should stay upper case. The <code>midSentenceFailureMessage</code>
+ * exists for this situation. If the failure message is used at the beginning of the sentence, <code>failureMessage</code>
+ * will be used. But if it appears mid-sentence, or at the end of the sentence, <code>midSentenceFailureMessage</code>
+ * will be used. Given these failure message strings:
+ * </p>
+ *
+ * <pre>
+ *            failureMessage: The name property did not equal "Dick"
+ * midSentenceFailureMessage: the name property did not equal "Dick"
+ * </pre>
+ *
+ * <p>
+ * The resulting failure of the <code>or</code> expression involving to matchers would make any English teacher proud:
+ * </p>
+ *
+ * <pre>
+ * The name property did not equal "Carl", and the name property did not equal "Dick"
+ * </pre>
  *
  * @param matches indicates whether or not the matcher matched
  * @param failureMessage a failure message to report if a match fails
