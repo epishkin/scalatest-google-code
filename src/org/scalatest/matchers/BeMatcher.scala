@@ -16,8 +16,22 @@
 package org.scalatest.matchers
 
 /**
- * TODO
- */
+ * <h2>Writing custom <code>BeMatchers</code></h2>
+ *
+ * If you want to create a new way of using <code>be</code>, which doesn't map to an actual property on the
+ * type you care about, you can create a <code>BeMatcher</code>. You could use this, for example, to create <code>BeMatcher[Int]</code>
+ * called <code>odd</code>, which would match any odd <code>Int</code>, and <code>even</code>, which would match
+ * any even <code>Int</code>. 
+ * Given this pair of <code>BeMatcher</code>s, you could check whether an <code>Int</code> was odd or even with expressions like:
+ * </p>
+ *
+ * <pre class="indent">
+ * num should be (odd)
+ * num should not be (even)
+ * </pre>
+ *
+ * For more information, see the documentation for <a href="BeMatcher.html"><code>BeMatcher</code></a>.
+*/
 trait BeMatcher[-T] extends Function1[T, MatchResult] {
 
   /**

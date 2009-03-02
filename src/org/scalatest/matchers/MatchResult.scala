@@ -16,13 +16,115 @@
 package org.scalatest.matchers
 
 /**
- * The result of the <code>Matcher</code> <code>apply</code> method.
+ * The result of a match operation, such as one performed by a <a href="Matcher.html"><code>Matcher</code></a> or
+ * <a href="BeMatcher.html"><code>BeMatcher</code></a>, which 
+ * contains one field that indicates whether the match succeeded and four fields that provide
+ * failure messages to report under different circumstances.
+ * 
+ * <p>
+ * A <code>MatchResult</code>'s <code>matches</code> field indicates whether a match succeeded. If it succeeded,
+ * <code>matches</code> will be <code>true</code>.
+ * The other four fields contain failure message strings, one of which will be presented to the user in case of a match failure. If a match succeeds,
+ * none of these strings will be used, because no failure message will be reported (<em>i.e.</em>, because there was no failure
+ * to report). If a match fails (<code>matches</code> is <code>false</code>), the <code>failureMessage</code> (or
+ * <code>midSentenceFailure</code>&#8212;more on that below) will be reported to help the user understand what went wrong.
+ * </p>
+ *
+ * <h2>Understanding <code>negatedFailureMessage</code></h2>
+ *
+ * <p>
+ * The <code>negatedFailureMessage</code> exists so that it can become the <code>failureMessage</code> if the matcher is <em>inverted</em>,
+ * which happens, for instance, if it is passed to <code>not</code>. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * val equalSeven = equal (7)
+ * val notEqualSeven = not (equalSeven)
+ * </pre>
+ *
+ * <p>
+ * The <code>Matcher[Int]</code> that results from passing 7 to <code>equal</code>, which is assigned to the <code>equalSeven</code>
+ * variable, will compare <code>Int</code>s passed to its
+ * <code>apply</code> method with 7. If 7 is passed, the <code>equalSeven</code> match will succeed. If anything other than 7 is passed, it
+ * will fail. By contrast, the <code>notEqualSeven</code> matcher, which results from passing <code>equalSeven</code> to <code>not</code>, does
+ * just the opposite. If 7 is passed, the <code>notEqualSeven</code> match will fail. If anything other than 7 is passed, it will succeed.
+ * </p>
+ *
+ * <p>
+ * For example, if 8 is passed, <code>equalSeven</code>'s <code>MatchResult</code> will contain:
+ * </p>
+ *
+ * <pre>
+ *            expression: equalSeven(8)
+ *               matches: false
+ *        failureMessage: 8 did not equal 7
+ * negatedFailureMessage: 8 equaled 7
+ * </pre>
+ *
+ * <p>
+ * Although the <code>negatedFailureMessage</code> is nonsensical, it will not be reported to the user. Only the <code>failureMessage</code>,
+ * which does actually explain what caused the failure, will be reported by the user. If you pass 8 to <code>notEqualSeven</code>'s <code>apply</code>
+ * method, by contrast, the <code>failureMessage</code> and <code>negatedFailureMessage</code> will be:
+ * </p>
+ *
+ * <pre>
+ *            expression: notEqualSeven(8)
+ *               matches: true
+ *        failureMessage: 8 equaled 7
+ * negatedFailureMessage: 8 did not equal 7
+ * </pre>
+ *
+ * <p>
+ * Note that the messages are swapped from the <code>equalSeven</code> messages. This swapping was effectively performed by the <code>not</code> matcher,
+ * which in addition to swapping the <code>failureMessage</code> and <code>negatedFailureMessage</code>, also inverted the
+ * <code>matches</code> value. Thus when you pass the same value to both <code>equalSeven</code> and <code>notEqualSeven</code> the <code>matches</code>
+ * field of one <code>MatchResult</code> will be <code>true</code> and the other <code>false</code>. Because the
+ * <code>matches</code> field of the <code>MatchResult</code> returned by <code>notEqualSeven(8)</code> is <code>true</code>,
+ * the nonsensical <code>failureMessage</code>, "<code>8 equaled 7</code>", will <em>not</em> be reported to the user.
+ * </p>
+ *
+ * <p>
+ * If 7 is passed, by contrast, the <code>failureMessage</code> and <code>negatedFailureMessage</code> of <code>equalSeven</code>
+ * will be:
+ * </p>
+ *
+ * <pre>
+ *            expression: equalSeven(7)
+ *               matches: true
+ *        failureMessage: 7 did not equal 7
+ * negatedFailureMessage: 7 equaled 7
+ * </pre>
+ *
+ * <p>
+ * In this case <code>equalSeven</code>'s <code>failureMessage</code> is nonsensical, but because the match succeeded, the nonsensical message will
+ * not be reported to the user.
+ * If you pass 7 to <code>notEqualSeven</code>'s <code>apply</code>
+ * method, you'll get:
+ * </p>
+ *
+ * <pre>
+ *            expression: notEqualSeven(7)
+ *               matches: false
+ *        failureMessage: 7 equaled 7
+ * negatedFailureMessage: 7 did not equal 7
+ * </pre>
+ *
+ * <p>
+ * Again the messages are swapped from the <code>equalSeven</code> messages, but this time, the <code>failureMessage</code> makes sense
+ * and explains what went wrong: the <code>notEqualSeven</code> match failed because the number passed did in fact equal 7. Since
+ * the match failed, this failure message, "<code>7 equaled 7</code>", will be reported to the user.
+ * </p>
+ *
+ * <h2>Understanding the "<code>midSentence</code>" messages</h2>
+ *
+ *
+ * 
  *
  * @param matches indicates whether or not the matcher matched
  * @param failureMessage a failure message to report if a match fails
- * @param negatedFailureMessage the opposite of the failure message ...
- * @param midSentenceFailureMessage if a match was intended (x should match), but did not match
- * @param midSentenceNegatedFailureMessage if a match was not intended (x should not { match }), but matched
+ * @param negatedFailureMessage a message with a meaning opposite to that of the failure message
+ * @param midSentenceFailureMessage a failure message suitable for appearing mid-sentence
+ * @param midSentenceNegatedFailureMessage a negated failure message suitable for appearing mid-sentence
  */
 case class MatchResult(
   matches: Boolean,
@@ -31,6 +133,17 @@ case class MatchResult(
   midSentenceFailureMessage: String,
   midSentenceNegatedFailureMessage: String
 ) {
+
+  /**
+   * Constructs a new <code>MatchResult</code> with passed <code>matches</code>, <code>failureMessage</code>, and
+   * <code>negativeFailureMessage</code> fields. The <code>midSentenceFailureMessage</code> will return the same
+   * string as <code>failureMessage</code>, and the <code>midSentenceNegatedFailureMessage</code> will return the
+   * same string as <code>negatedFailureMessage</code>.
+   *
+   * @param matches indicates whether or not the matcher matched
+   * @param failureMessage a failure message to report if a match fails
+   * @param negatedFailureMessage a message with a meaning opposite to that of the failure message
+   */
   def this(matches: Boolean, failureMessage: String, negatedFailureMessage: String) =
     this(
       matches,
@@ -43,6 +156,16 @@ case class MatchResult(
 
 object MatchResult {
 
+  /**
+   * Factory method that constructs a new <code>MatchResult</code> with passed <code>matches</code>, <code>failureMessage</code>, and
+   * <code>negativeFailureMessage</code> fields. The <code>midSentenceFailureMessage</code> will return the same
+   * string as <code>failureMessage</code>, and the <code>midSentenceNegatedFailureMessage</code> will return the
+   * same string as <code>negatedFailureMessage</code>.
+   *
+   * @param matches indicates whether or not the matcher matched
+   * @param failureMessage a failure message to report if a match fails
+   * @param negatedFailureMessage a message with a meaning opposite to that of the failure message
+   */
   def apply(matches: Boolean, failureMessage: String, negatedFailureMessage: String): MatchResult =
     new MatchResult(matches, failureMessage, negatedFailureMessage, failureMessage, negatedFailureMessage)
 }
