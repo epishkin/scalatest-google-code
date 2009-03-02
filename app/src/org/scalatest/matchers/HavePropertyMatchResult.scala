@@ -15,6 +15,10 @@
  */
 package org.scalatest.matchers
 
+ /*
+ *
+ * @author Bill Venners
+ */
 protected class HavePropertyMatchResult[P](
   val matches: Boolean,
   val propertyName: String,

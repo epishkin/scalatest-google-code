@@ -140,7 +140,7 @@ package org.scalatest.matchers
  * </p>
  *
  * <pre>
- * The name property did not equal "Carl"
+ * The name property did not equal "Ricky"
  * </pre>
  *
  * <p>
@@ -148,7 +148,7 @@ package org.scalatest.matchers
  * </p>
  *
  * <pre>
- * The name property did not equal "Carl", and The name property did not equal "Dick"
+ * The name property did not equal "Ricky", and The name property did not equal "Bobby"
  * </pre>
  *
  * <p>
@@ -161,8 +161,8 @@ package org.scalatest.matchers
  * </p>
  *
  * <pre>
- *            failureMessage: The name property did not equal "Dick"
- * midSentenceFailureMessage: the name property did not equal "Dick"
+ *            failureMessage: The name property did not equal "Bobby"
+ * midSentenceFailureMessage: the name property did not equal "Bobby"
  * </pre>
  *
  * <p>
@@ -170,7 +170,7 @@ package org.scalatest.matchers
  * </p>
  *
  * <pre>
- * The name property did not equal "Carl", and the name property did not equal "Dick"
+ * The name property did not equal "Ricky", and the name property did not equal "Bobby"
  * </pre>
  *
  * @param matches indicates whether or not the matcher matched
@@ -178,6 +178,8 @@ package org.scalatest.matchers
  * @param negatedFailureMessage a message with a meaning opposite to that of the failure message
  * @param midSentenceFailureMessage a failure message suitable for appearing mid-sentence
  * @param midSentenceNegatedFailureMessage a negated failure message suitable for appearing mid-sentence
+ *
+ * @author Bill Venners
  */
 case class MatchResult(
   matches: Boolean,

@@ -199,6 +199,7 @@ package org.scalatest.matchers
  * <code>Matcher[Fruit]</code> is indeed a subtype of <code>Matcher[Orange]</code>.
  * </p>
  *
+ * @author Bill Venners
  */
 trait Matcher[-T] extends Function1[T, MatchResult] {
 
