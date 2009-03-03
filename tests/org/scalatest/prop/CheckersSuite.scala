@@ -82,5 +82,15 @@ class CheckersSuite extends Suite with Checkers {
     intercept[PropertyTestFailedException] {
       check(complexProp)
     }
+
+    // This code shows up in the front page for ScalaTest
+    import scala.collection.mutable.Stack
+    check {
+      (list: List[Int]) => {
+        val stack = new Stack[Int]
+        for (element <- list) stack.push(element)
+        stack.elements.toList == list
+      }
+    }
   }
 }
