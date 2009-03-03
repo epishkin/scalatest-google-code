@@ -3433,7 +3433,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if object size does not match and used with should not") {
         obj should not { have size (3) }
-        obj should not { have size (3L) }
+        obj should not have size (3L)
         check((len: Int, wrongLen: Int) => len != wrongLen ==> returnsNormally(new Sizey(len) should not { have size (wrongLen) }))
         check((len: Long, wrongLen: Long) => len != wrongLen ==> returnsNormally(new Sizey(len) should not { have size (wrongLen) }))
       }
