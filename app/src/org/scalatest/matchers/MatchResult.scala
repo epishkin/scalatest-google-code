@@ -209,6 +209,11 @@ case class MatchResult(
     )
 }
 
+/**
+ * Companion object for the <code>MatchResult</code> case class.
+ *
+ * @author Bill Venners
+ */
 object MatchResult {
 
   /**

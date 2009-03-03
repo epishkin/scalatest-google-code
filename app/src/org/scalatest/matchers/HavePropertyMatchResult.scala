@@ -41,3 +41,10 @@ case class HavePropertyMatchResult[P](
   val expectedValue: P,
   val actualValue: P
 )
+
+/**
+ * Companion object for the <code>HavePropertyMatchResult</code> case class.
+ *
+ * @author Bill Venners
+ */
+object HavePropertyMatchResult

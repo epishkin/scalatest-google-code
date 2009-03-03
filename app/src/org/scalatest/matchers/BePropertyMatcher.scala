@@ -21,7 +21,7 @@ package org.scalatest.matchers
 /**
  * Trait extended by matcher objects, which may appear after the word <code>be</code>, that can match against a <code>Boolean</code>
  * property. The match will succeed if and only if the <code>Boolean</code> property equals <code>true</code>.
- * The object containing the property, which must be of the type specifid by the <code>BePropertyMatcher</code>'s type
+ * The object containing the property, which must be of the type specified by the <code>BePropertyMatcher</code>'s type
  * parameter <code>T</code>, is passed to the <code>BePropertyMatcher</code>'s
  * <code>apply</code> method. The result is a <code>BePropertyMatchResult</code>.
  * A <code>BePropertyMatcher</code> is, therefore, a function from the specified type, <code>T</code>, to
@@ -31,7 +31,7 @@ package org.scalatest.matchers
  * Although <code>BePropertyMatcher</code>
  * and <code>Matcher</code> represent similar concepts, they have no inheritance relationship
  * because <code>Matcher</code> is intended for use right after <code>should</code> or <code>must</code>
- * whereas <code>BeMatcher</code> is intended for use right after <code>be</code>.
+ * whereas <code>BePropertyMatcher</code> is intended for use right after <code>be</code>.
  * </p>
  *
  * <p>
@@ -41,7 +41,7 @@ package org.scalatest.matchers
  *
  * <pre>
  * tempFile should be a ('file) // dynamic: uses reflection
- * tempFile should be a (file)  // type safe: only works on Files, and no reflection used
+ * tempFile should be a (file)  // type safe: only works on Files; no reflection used
  * </pre>
  *
  * <p>
@@ -127,7 +127,7 @@ trait BePropertyMatcher[-T] extends Function1[T, BePropertyMatchResult] {
    * </pre>
    *
    * @param objectWithProperty the object with the <code>Boolean</code> property against which to match
-   * @return the <code>MatchResult</code> that represents the result of the match
+   * @return the <code>BePropertyMatchResult</code> that represents the result of the match
    */
   def apply(objectWithProperty: T): BePropertyMatchResult
 }
