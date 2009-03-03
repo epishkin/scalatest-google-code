@@ -2389,6 +2389,31 @@ trait Matchers extends Assertions { matchers =>
    * <code>convertSymbolToHavePropertyMatcherGenerator</code>.
    * </p>
    *
+   * <p>
+   * Class <code>HavePropertyMatcherGenerator</code>'s primary constructor takes a <code>Symbol</code>. The 
+   * <code>apply</code> method uses reflection to find and access a property that has the name specified by the
+   * <code>Symbol</code> passed to the constructor, so it can determine if the property has the expected value
+   * passed to <code>apply</code>.
+   * If the symbol passed is <code>'title</code>, for example, the <code>apply</code> method
+   * will use reflection to look for a public Java field named
+   * "title", a public method named "title", or a public method named "getTitle". 
+   * If a method, it must take no parameters. If multiple candidates are found,
+   * the <code>apply</code> method will select based on the following algorithm:
+   * </p>
+   * 
+   * <table cellpadding="2" border="1">
+   * <tr><th>Field</th><th>Method</th><th>"is" Method</th><th>Result</th></tr>
+   * <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>Throws <code>TestFailedException</code>, because no candidates found</td></tr>
+   * <tr><td>&nbsp;</td><td>&nbsp;</td><td><code>getTitle()</code></td><td>Invokes <code>getTitle()</code></td></tr>
+   * <tr><td>&nbsp;</td><td><code>title()</code></td><td>&nbsp;</td><td>Invokes <code>title()</code></td></tr>
+   * <tr><td>&nbsp;</td><td><code>title()</code></td><td><code>getTitle()</code></td><td>Invokes <code>title()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * <tr><td><code>title</code></td><td>&nbsp;</td><td>&nbsp;</td><td>Accesses field <code>title</code></td></tr>
+   * <tr><td><code>title</code></td><td>&nbsp;</td><td><code>getTitle()</code></td><td>Invokes <code>getTitle()</code></td></tr>
+   * <tr><td><code>title</code></td><td><code>title()</code></td><td>&nbsp;</td><td>Invokes <code>title()</code></td></tr>
+   * <tr><td><code>title</code></td><td><code>title()</code></td><td><code>getTitle()</code></td><td>Invokes <code>title()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * </table>
+   * 
+   *
    * @author Bill Venners
    */
   class HavePropertyMatcherGenerator(symbol: Symbol) {
@@ -4313,9 +4338,32 @@ trait Matchers extends Assertions { matchers =>
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
+   * <p>
+   * Class <code>BeWord</code> contains an <code>apply</code> method that takes a <code>Symbol</code>, which uses reflection
+   * to find and access a <code>Boolean</code> property and determine if it is <code>true</code>.
+   * If the symbol passed is <code>'empty</code>, for example, the <code>apply</code> method
+   * will use reflection to look for a public Java field named
+   * "empty", a public method named "empty", or a public method named "isEmpty". If a field, it must be of type <code>Boolean</code>.
+   * If a method, it must take no parameters and return <code>Boolean</code>. If multiple candidates are found,
+   * the <code>apply</code> method will select based on the following algorithm:
+   * </p>
+   * 
+   * <table cellpadding="2" border="1">
+   * <tr><th>Field</th><th>Method</th><th>"is" Method</th><th>Result</th></tr>
+   * <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>Throws <code>TestFailedException</code>, because no candidates found</td></tr>
+   * <tr><td>&nbsp;</td><td>&nbsp;</td><td><code>isEmpty()</code></td><td>Invokes <code>isEmpty()</code></td></tr>
+   * <tr><td>&nbsp;</td><td><code>empty()</code></td><td>&nbsp;</td><td>Invokes <code>empty()</code></td></tr>
+   * <tr><td>&nbsp;</td><td><code>empty()</code></td><td><code>isEmpty()</code></td><td>Invokes <code>empty()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * <tr><td><code>empty</code></td><td>&nbsp;</td><td>&nbsp;</td><td>Accesses field <code>empty</code></td></tr>
+   * <tr><td><code>empty</code></td><td>&nbsp;</td><td><code>isEmpty()</code></td><td>Invokes <code>isEmpty()</code></td></tr>
+   * <tr><td><code>empty</code></td><td><code>empty()</code></td><td>&nbsp;</td><td>Invokes <code>empty()</code></td></tr>
+   * <tr><td><code>empty</code></td><td><code>empty()</code></td><td><code>isEmpty()</code></td><td>Invokes <code>empty()</code> (this can occur when <code>BeanProperty</code> annotation is used)</td></tr>
+   * </table>
+   * 
    * @author Bill Venners
    */
   class BeWord {
+
 
     /**
      * This method enables the following syntax: 
@@ -4710,21 +4758,6 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    /*
-     * TODO: If this works, delete it. I think I want to drop this and use was not equal to None
-     * And this I want to say was not None, but again, I could use wasNot But even so, i need to have an apply method, because otherwise it would say was not equal to None
-    def apply(o: None.type) = 
-      new Matcher[Option[_]] {
-        def apply(left: Option[_]) = {
-          MatchResult(
-            left == None,
-            FailureMessages("wasNotNone", left),
-            FailureMessages("wasNone", left)
-          )
-        }
-      }
-     */
-  
     /**
      * This method enables the following syntax: 
      *
