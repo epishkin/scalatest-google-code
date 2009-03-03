@@ -372,7 +372,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                     propCheckArgsOption match {
                       case Some(propCheckArgs) =>
                         for ((propCheckArg, argIndex) <- propCheckArgs.zipWithIndex) yield
-                          <tr valign="top"><td align="right"><span class="label">{ Resources("argN", argIndex.toString) + ":" }</span></td><td align="left"><span class="dark">{ propCheckArg }</span></td></tr>
+                          <tr valign="top"><td align="right"><span class="label">{ Resources("argN", argIndex.toString) + ":" }</span></td><td align="left"><span class="dark">{ propCheckArg.toString }</span></td></tr>
                       case None =>
                     }
                   }
