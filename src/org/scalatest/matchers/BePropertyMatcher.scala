@@ -70,7 +70,7 @@ package org.scalatest.matchers
  * Because the type parameter of these two <code>BePropertyMatcher</code>s is <code>java.io.File</code>, they 
  * can only be used with instances of that type. (The compiler will enforce this.) All they do is create a
  * <code>BePropertyMatchResult</code> whose <code>matches</code> field is <code>true</code> if and only if the <code>Boolean</code> property
- * is <code>true</code>. The second field, <code>propertyName</code> is simply the string name of the property.
+ * is <code>true</code>. The second field, <code>propertyName</code>, is simply the string name of the property.
  * The <code>file</code> and <code>directory</code> <code>val</code>s create variables that can be used in
  * matcher expressions that test whether a <code>java.io.File</code> is a file or a directory. Here's an example:
  * </p>
@@ -97,7 +97,7 @@ package org.scalatest.matchers
  * </pre>
  *
  * <p>
- * These matches should succeed, but if the first match, <code>tempFile should be a (file)</code>, were to fail, for example you would get an error message like:
+ * These matches should succeed, but if for example the first match, <code>tempFile should be a (file)</code>, were to fail, you would get an error message like:
  * </p>
  *
  * <pre>
