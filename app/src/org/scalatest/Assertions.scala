@@ -507,5 +507,46 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
   }
 }
 
-// for importing into the interpreter especially
+/**
+ * Companion object that facilitates the importing of <code>Assertions</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>Assertions</code> members so you can use
+ * them in the Scala interpreter:
+ *
+ * <pre>
+ * $scala -classpath scalatest.jar
+ * Welcome to Scala version 2.7.3.final (Java HotSpot(TM) Client VM, Java 1.5.0_16).
+ * Type in expressions to have them evaluated.
+ * Type :help for more information.
+ * 
+ * scala> import org.scalatest.Assertions._
+ * import org.scalatest.Assertions._
+ * 
+ * scala> assert(1 === 2)
+ * org.scalatest.TestFailedException: 1 did not equal 2
+ * 	at org.scalatest.Assertions$class.assert(Assertions.scala:211)
+ * 	at org.scalatest.Assertions$.assert(Assertions.scala:511)
+ * 	at .<init>(<console>:7)
+ * 	at .<clinit>(<console>)
+ * 	at RequestResult$.<init>(<console>:3)
+ * 	at RequestResult$.<clinit>(<console>)
+ * 	at RequestResult$result(<console>)
+ * 	at sun.reflect.NativeMethodAccessorImpl.invoke...
+ *
+ * scala> expect(3) { 1 + 3 }
+ * org.scalatest.TestFailedException: Expected 3, but got 4
+ * 	at org.scalatest.Assertions$class.expect(Assertions.scala:447)
+ * 	at org.scalatest.Assertions$.expect(Assertions.scala:511)
+ * 	at .<init>(<console>:7)
+ * 	at .<clinit>(<console>)
+ * 	at RequestResult$.<init>(<console>:3)
+ * 	at RequestResult$.<clinit>(<console>)
+ * 	at RequestResult$result(<console>)
+ * 	at sun.reflect.NativeMethodAccessorImpl.in...
+ *
+ * scala> val caught = intercept[StringIndexOutOfBoundsException] { "hi".charAt(-1) }
+ * caught: StringIndexOutOfBoundsException = java.lang.StringIndexOutOfBoundsException: String index out of range: -1
+ * <pre>
+ *
+ * @author Bill Venners
+ */
 object Assertions extends Assertions
