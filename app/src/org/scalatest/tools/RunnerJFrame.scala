@@ -321,16 +321,16 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                 case _ => report.message.trim
               }
 
-            val propCheckArgsOption =
+            val propCheckArgs: List[Any] =
               report.throwable match {
                 case Some(ex: PropertyTestFailedException) => ex.args
-                case _ => None
+                case _ => List()
               }
 
-            val propCheckLabelsOption =
+            val propCheckLabels: List[String] =
               report.throwable match {
                 case Some(ex: PropertyTestFailedException) => ex.labels
-                case _ => None
+                case _ => List()
               }
 
             val detailsHTML =
@@ -369,22 +369,21 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                     }
                   }
                   {
-                    propCheckArgsOption match {
-                      case Some(propCheckArgs) =>
+                    if (!propCheckArgs.isEmpty) {
                         for ((propCheckArg, argIndex) <- propCheckArgs.zipWithIndex) yield
                           <tr valign="top"><td align="right"><span class="label">{ Resources("argN", argIndex.toString) + ":" }</span></td><td align="left"><span class="dark">{ propCheckArg.toString }</span></td></tr>
-                      case None =>
                     }
+                    else new scala.xml.NodeBuffer
                   }
                   {
-                    propCheckLabelsOption match {
-                      case Some(propCheckLabels) =>
-                        val labelOrLabels = if (propCheckLabels.length > 1) Resources("DetailsLabels") else Resources("DetailsLabel")
-                        val labelHTML = for (propCheckLabel <- propCheckLabels) yield { <span class="dark">{ propCheckLabel }</span><br></br> }
-
-                        <tr valign="top"><td align="right"><span class="label">{ labelOrLabels + ":" }</span></td><td align="left"><span class="dark">{ labelHTML }</span></td></tr>
-                      case None => new scala.xml.NodeBuffer
+                    if (!propCheckLabels.isEmpty) {
+                      val labelOrLabels = if (propCheckLabels.length > 1) Resources("DetailsLabels") else Resources("DetailsLabel")
+                      val labelHTML = for (propCheckLabel <- propCheckLabels) yield {
+                        <span class="dark">{ propCheckLabel }</span><br></br>
+                      }
+                      <tr valign="top"><td align="right"><span class="label">{ labelOrLabels + ":" }</span></td><td align="left"><span class="dark">{ labelHTML }</span></td></tr>
                     }
+                    else new scala.xml.NodeBuffer
                   }
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.date }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ report.threadName }</td></tr>

@@ -37,8 +37,8 @@ class PropertyTestFailedException(
   cause: Option[Throwable],
   failedTestCodeStackDepth: Int,
   val undecoratedMessage: String,
-  val args: Option[List[Any]],
-  val labels: Option[List[String]]
+  val args: List[Any],
+  val labels: List[String]
 ) extends TestFailedException(Some(message), cause, failedTestCodeStackDepth) {
 
   if (message == null) throw new NullPointerException("message was null")

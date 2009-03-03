@@ -273,33 +273,22 @@ trait Checkers {
     }
   }
 
-  private def argsAndLabels(result: Test.Result): (Option[List[Any]], Option[List[String]]) = {
+  private def argsAndLabels(result: Test.Result): (List[Any], List[String]) = {
 
-    val (scalaCheckArgsOption, scalaCheckLabelsOption) =
+    val (scalaCheckArgs, scalaCheckLabels) =
       result.status match {
-        case Test.Proved(args) => (Some(args), None)
-        case Test.Failed(args, labels) => (Some(args), Some(labels))
-        case Test.PropException(args, _, labels) => (Some(args), Some(labels))
-        case _ => (None, None)
+        case Test.Proved(args) => (args, List())
+        case Test.Failed(args, labels) => (args, labels)
+        case Test.PropException(args, _, labels) => (args, labels)
+        case _ => (List(), List())
       }
 
-    val argsOption: Option[List[Any]] = 
-      scalaCheckArgsOption match {
-        case Some(scalaCheckArgs) =>
-          val argList = for (scalaCheckArg <- scalaCheckArgs.toList) yield scalaCheckArg.arg
-          Some(argList)
-        case None => None
-      }
+    val args: List[Any] = for (scalaCheckArg <- scalaCheckArgs.toList) yield scalaCheckArg.arg
 
-    val labelsOption: Option[List[String]] =
-      scalaCheckLabelsOption match {
-        case Some(scalaCheckLabels) => // scalaCheckLabels is a Set[String], I think
-          val labelList = for (scalaCheckLabel <- scalaCheckLabels.elements.toList) yield scalaCheckLabel
-          Some(labelList)
-        case None => None
-      }
+    // scalaCheckLabels is a Set[String], I think
+    val labels: List[String] = for (scalaCheckLabel <- scalaCheckLabels.elements.toList) yield scalaCheckLabel
 
-    (argsOption, labelsOption)
+    (args, labels)
   }
 
   /**
