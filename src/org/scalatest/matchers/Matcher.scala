@@ -19,6 +19,7 @@ package org.scalatest.matchers
  * Trait extended by objects that can match a value of the specified type. The value to match is
  * passed to the matcher's <code>apply</code> method. The result is a <code>MatchResult</code>.
  * A matcher is, therefore, a function from the specified type, <code>T</code>, to a <code>MatchResult</code>.
+ * <p></p> <!-- needed otherwise the heading below shows up in the wrong place. dumb scaladoc algo -->
  *
  * <h2>Creating custom matchers</h2>
  * 

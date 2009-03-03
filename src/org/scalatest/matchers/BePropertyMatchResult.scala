@@ -36,3 +36,10 @@ case class BePropertyMatchResult(
   val matches: Boolean, // true if the Boolean property was true
   val propertyName: String
 )
+
+/**
+ * Companion object for the <code>BePropertyMatchResult</code> case class.
+ *
+ * @author Bill Venners
+ */
+object BePropertyMatchResult
