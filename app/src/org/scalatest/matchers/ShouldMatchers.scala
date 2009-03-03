@@ -898,12 +898,36 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should have length (3)
+     *        ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForLengthWrapper[A] =
       new ResultOfHaveWordForLengthWrapper(left, true)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should not have length (3)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForLengthWrapper[A] =
       new ResultOfNotWordForLengthWrapper(left, false)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should be theSameInstanceAs anotherObject
+     *        ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](left, true)
   }
 
@@ -936,13 +960,37 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should not have size (3)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForSizeWrapper[A] =
       new ResultOfNotWordForSizeWrapper(left, false)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should have size (3)
+     *        ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForSizeWrapper[A] =
       new ResultOfHaveWordForSizeWrapper(left, true)
 
     // TODO I just added this. Didn't do a test for it.
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should be theSameInstanceAs anotherObject
+     *        ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[A] = new ResultOfBeWordForAnyRef[A](left, true)
   }
 
@@ -974,28 +1022,84 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should be theSameInstanceAs anotherObject
+     *        ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[String] = new ResultOfBeWordForAnyRef(left, true)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should have length (3)
+     *        ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForString = {
       new ResultOfHaveWordForString(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should include regex ("hi")
+     *        ^
+     * </pre>
+     */
     def should(includeWord: IncludeWord): ResultOfIncludeWordForString = {
       new ResultOfIncludeWordForString(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should startWith regex ("hello")
+     *        ^
+     * </pre>
+     */
     def should(startWithWord: StartWithWord): ResultOfStartWithWordForString = {
       new ResultOfStartWithWordForString(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should endWith regex ("world")
+     *        ^
+     * </pre>
+     */
     def should(endWithWord: EndWithWord): ResultOfEndWithWordForString = {
       new ResultOfEndWithWordForString(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should 
+     *        ^
+     * </pre>
+     */
     def should(fullyMatchWord: FullyMatchWord): ResultOfFullyMatchWordForString = {
       new ResultOfFullyMatchWordForString(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * string should not have length (3)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForString = {
       new ResultOfNotWordForString(left, false)
     }
@@ -1028,6 +1132,14 @@ trait ShouldMatchers extends Matchers {
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Double](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * result should not equal (8.8)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForDouble = {
       new ResultOfNotWordForDouble(left, false)
     }
@@ -1060,6 +1172,14 @@ trait ShouldMatchers extends Matchers {
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Float](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * result should not equal (8.8f)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForFloat = {
       new ResultOfNotWordForFloat(left, false)
     }
@@ -1092,6 +1212,14 @@ trait ShouldMatchers extends Matchers {
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Long](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * result should not equal (88L)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForLong = {
       new ResultOfNotWordForLong(left, false)
     }
@@ -1124,6 +1252,14 @@ trait ShouldMatchers extends Matchers {
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Int](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * result should not equal (8)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForInt = {
       new ResultOfNotWordForInt(left, false)
     }
@@ -1156,6 +1292,14 @@ trait ShouldMatchers extends Matchers {
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Short](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * result should not equal (8.toShort)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForShort = {
       new ResultOfNotWordForShort(left, false)
     }
@@ -1188,6 +1332,14 @@ trait ShouldMatchers extends Matchers {
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Byte](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * result should not equal (8.toByte)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForByte = {
       new ResultOfNotWordForByte(left, false)
     }
@@ -1221,16 +1373,48 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * map should be theSameInstanceAs (anotherMap)
+     *     ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[scala.collection.Map[K, V]] = new ResultOfBeWordForAnyRef(left, true)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * map should have size (3)
+     *     ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[(K, V)] = {
       new ResultOfHaveWordForCollection(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * map should contain key (10)
+     *     ^
+     * </pre>
+     */
     def should(containWord: ContainWord): ResultOfContainWordForMap[K, V] = {
       new ResultOfContainWordForMap(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * map should not have size (3)
+     *     ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForMap[K, V] = {
       new ResultOfNotWordForMap(left, false)
     }
@@ -1264,9 +1448,25 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should not have length (3)
+     *        ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForAnyRef[T] =
       new ResultOfNotWordForAnyRef(left, false)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * object should be theSameInstanceAs anotherObject
+     *        ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[T] = new ResultOfBeWordForAnyRef(left, true)
   }
 
@@ -1295,14 +1495,38 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * collection should have length (3)
+     *            ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] =
       new ResultOfHaveWordForCollection(left, true)
 
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * collection should be theSameInstanceAs anotherObject
+     *            ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[Collection[T]] = new ResultOfBeWordForAnyRef(left, true)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * collection should not have size (3)
+     *            ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForCollection[T, Collection[T]] =
       new ResultOfNotWordForCollection(left, false)
   }
@@ -1332,14 +1556,38 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaCollection should have size (3)
+     *                ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] =
       new ResultOfHaveWordForJavaCollection(left, true)
 
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaCollection should be theSameInstanceAs anotherObject
+     *                ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[java.util.Collection[T]] = new ResultOfBeWordForAnyRef(left, true)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaCollection should not have size (3)
+     *                ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForJavaCollection[T, java.util.Collection[T]] =
       new ResultOfNotWordForJavaCollection(left, false)
   }
@@ -1371,18 +1619,50 @@ trait ShouldMatchers extends Matchers {
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaMap should contain value (3)
+     *         ^
+     * </pre>
+     */
     def should(containWord: ContainWord): ResultOfContainWordForJavaMap[K, V] = {
       new ResultOfContainWordForJavaMap(left, true)
     }
  
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaMap should have size (3)
+     *         ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaMap = {
       new ResultOfHaveWordForJavaMap(left, true)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaMap should not have length (3)
+     *         ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForJavaMap[K, V] = {
       new ResultOfNotWordForJavaMap[K, V](left, false)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaMap should be theSameInstanceAs anotherObject
+     *         ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[java.util.Map[K, V]] = new ResultOfBeWordForAnyRef(left, true)
   }
 
@@ -1411,6 +1691,14 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * seq should have length (3)
+     *     ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
 
@@ -1421,9 +1709,25 @@ trait ShouldMatchers extends Matchers {
     def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] =
       new ResultOfNotWordForSeq(left, false)
 */
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * seq should not have length (3)
+     *     ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForAnyRef[Seq[T]] =
       new ResultOfNotWordForAnyRef(left, false)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * seq should be theSameInstanceAs anotherObject
+     *     ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[Seq[T]] = new ResultOfBeWordForAnyRef(left, true)
   }
 
@@ -1452,15 +1756,33 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * array should have length (3)
+     *       ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] = {
       new ResultOfHaveWordForSeq(left, true)
     }
 
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Array[T]](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * array should not have length (3)
+     *       ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForSeq[T, Array[T]] =
       new ResultOfNotWordForSeq(left, false)
   }
+  // Note, no should(beWord) is needed here because a different implicit conversion will be used
+  // on "array shoudl be ..." because this one doesn't solve the type error.
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -1490,11 +1812,35 @@ trait ShouldMatchers extends Matchers {
     // This one supports it should behave like
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * list should be theSameInstanceAs anotherObject
+     *      ^
+     * </pre>
+     */
     def should(beWord: BeWord): ResultOfBeWordForAnyRef[List[T]] = new ResultOfBeWordForAnyRef(left, true)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * list should have length (3)
+     *      ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * list should not have length (3)
+     *      ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] =
       new ResultOfNotWordForSeq(left, false)
   }
@@ -1524,6 +1870,14 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaList should have length (3)
+     *          ^
+     * </pre>
+     */
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
       new ResultOfHaveWordForJavaList(left, true)
     }
@@ -1531,6 +1885,14 @@ trait ShouldMatchers extends Matchers {
     // TODO: Check all the type parameters for ResultOfBehaveWord. Do some of them say T still?
     private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[java.util.List[T]](left)
 
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * javaList should not have length (3)
+     *          ^
+     * </pre>
+     */
     def should(notWord: NotWord): ResultOfNotWordForJavaList[T, java.util.List[T]] = {
       new ResultOfNotWordForJavaList(left, false)
     }

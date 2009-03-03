@@ -27,9 +27,7 @@ import Helper.transformOperatorChars
 // TODO: Put links from ShouldMatchers to wherever I reveal the matrix and algo of how properties are checked dynamically.
 // TODO: double check that I wrote tests for (length (7)) and (size (8)) in parens
 // TODO: document how to turn off the === implicit conversion
-// TODO: Try putting Mockito on the runpath
 // TODO: Document you can use JMock, EasyMock, etc.
-// TODO: Make a CheckFailedException
 
 private[scalatest] object Helper {
 
