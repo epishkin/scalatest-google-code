@@ -144,7 +144,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught1 = intercept[TestFailedException] {
           someString should be (None)
         }
-        assert(caught1.getMessage === "Some(Helloooooo) was not None")
+        assert(caught1.getMessage === "Some(Helloooooo) was not equal to None")
         val caught2 = intercept[TestFailedException] {
           someString should equal (None)
         }
@@ -162,7 +162,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught1 = intercept[TestFailedException] {
           none should not { be (None) }
         }
-        assert(caught1.getMessage === "None was None")
+        assert(caught1.getMessage === "None was equal to None")
 
         val caught3 = intercept[TestFailedException] {
           none should not { equal (None) }
@@ -173,7 +173,7 @@ class ShouldMatcherSpec extends Spec with ShouldMatchers {
         val caught5 = intercept[TestFailedException] {
           noString should not { be (None) }
         }
-        assert(caught5.getMessage === "None was None")
+        assert(caught5.getMessage === "None was equal to None")
 
         val caught7 = intercept[TestFailedException] {
           noString should not { equal (None) }
