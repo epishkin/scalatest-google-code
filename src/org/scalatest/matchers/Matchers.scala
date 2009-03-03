@@ -4664,7 +4664,12 @@ trait Matchers extends Assertions { matchers =>
       }
 
     /**
-     * TODO Get rid of it and just use a pattern match in apply(Any)
+     * This method enables the following syntax: 
+     *
+     * <pre>
+     * result should be (true)
+     *                  ^
+     * </pre>
      */
     def apply(right: Boolean) = 
       new Matcher[Boolean] {
@@ -4705,10 +4710,9 @@ trait Matchers extends Assertions { matchers =>
         }
       }
 
-    /**
-     * TODO: I think I want to drop this and use was not equal to None
+    /*
+     * TODO: If this works, delete it. I think I want to drop this and use was not equal to None
      * And this I want to say was not None, but again, I could use wasNot But even so, i need to have an apply method, because otherwise it would say was not equal to None
-     */
     def apply(o: None.type) = 
       new Matcher[Option[_]] {
         def apply(left: Option[_]) = {
@@ -4719,6 +4723,7 @@ trait Matchers extends Assertions { matchers =>
           )
         }
       }
+     */
   
     /**
      * This method enables the following syntax: 
