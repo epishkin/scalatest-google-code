@@ -1855,4 +1855,39 @@ types don't get more specific visibly enough.
 LATER: Well, I'm wondering if now that I've removed the be method in ShouldMethods if this will work. 
 */
 
+/**
+ * Companion object that facilitates the importing of <code>ShouldMatchers</code> members as 
+ * an alternative to mixing it the trait. One use case is to import <code>ShouldMatchers</code> members so you can use
+ * them in the Scala interpreter:
+ *
+ * <pre>
+ * $scala -classpath scalatest.jar
+ * Welcome to Scala version 2.7.3.final (Java HotSpot(TM) Client VM, Java 1.5.0_16).
+ * Type in expressions to have them evaluated.
+ * Type :help for more information.
+ * 
+ * scala> import org.scalatest.matchers.ShouldMatchers._
+ * import org.scalatest.matchers.ShouldMatchers._
+ * 
+ * scala> 1 should equal (2)
+ * org.scalatest.TestFailedException: 1 did not equal 2
+ * 	at org.scalatest.matchers.Helper$.newTestFailedException(Matchers.scala:40)
+ * 	at org.scalatest.matchers.ShouldMatchers$ShouldMethodHelper$.shouldMatcher(ShouldMatchers.scala:826)
+ * 	at org.scalatest.matchers.ShouldMatchers$IntShouldWrapper.should(ShouldMatchers.scala:1123)
+ * 	at .<init>(<console>:9)
+ * 	at .<clinit>(<console>)
+ * 	at RequestR...
+ *
+ * scala> "hello, world" should startWith ("hello")
+ * 
+ * scala> 7 should (be >= (3) and not be <= (7))
+ * org.scalatest.TestFailedException: 7 was greater than or equal to 3, but 7 was less than or equal to 7
+ * 	at org.scalatest.matchers.Helper$.newTestFailedException(Matchers.scala:40)
+ * 	at org.scalatest.matchers.ShouldMatchers$ShouldMethodHelper$.shouldMatcher(ShouldMatchers.scala:826)
+ * 	at org.scalatest.matchers.ShouldMatchers$IntShouldWrapper.should(ShouldMatchers.scala:1123)
+ * 	at .<init>(...
+ * <pre>
+ *
+ * @author Bill Venners
+ */
 object ShouldMatchers extends ShouldMatchers
