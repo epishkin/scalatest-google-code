@@ -13,23 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.scalatest.junit.helpers
+package org.scalatest.junit
 
 import org.junit.runner.RunWith
 
-// @RunWith(classOf[JUnitRunner])
-class EasySuite extends FunSuite with JUnitRunnable {
+@RunWith(classOf[JUnitRunner])
+trait JUnitRunnable
 
-  test("JUnit ran this OK!") {
-    assert(1 === 1)
-  }
-
-  test("JUnit ran this OK!, but it had a failure we hope") {
-    assert(1 === 2)
-  }
-
-  test("bla bla bla") {
-    assert(1 === 2)
-  }
-}

@@ -309,6 +309,9 @@
             <arg value="-s" />
             <arg value="org.scalatest.junit.EasySuite" />
 
+            <arg value="-s" />
+            <arg value="org.scalatest.junit.JUnitRunnerSuite" />
+
         </java>
     </target>
 
