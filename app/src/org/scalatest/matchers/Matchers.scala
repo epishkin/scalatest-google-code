@@ -2402,7 +2402,7 @@ trait Matchers extends Assertions { matchers =>
    * </p>
    * 
    * <table cellpadding="2" border="1">
-   * <tr><th>Field</th><th>Method</th><th>"is" Method</th><th>Result</th></tr>
+   * <tr><th>Field</th><th>Method</th><th>"get" Method</th><th>Result</th></tr>
    * <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>Throws <code>TestFailedException</code>, because no candidates found</td></tr>
    * <tr><td>&nbsp;</td><td>&nbsp;</td><td><code>getTitle()</code></td><td>Invokes <code>getTitle()</code></td></tr>
    * <tr><td>&nbsp;</td><td><code>title()</code></td><td>&nbsp;</td><td>Invokes <code>title()</code></td></tr>
