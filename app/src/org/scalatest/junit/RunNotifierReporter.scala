@@ -17,6 +17,7 @@ package org.scalatest.junit
 
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
+import org.junit.runner.notification.Failure
 
 // TODO: Mention on each Reporter method that it does nothing
 
@@ -25,5 +26,16 @@ class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
   override def testStarting(report: Report) {
     val displayNameForJUnit = report.message + "(" + report.name + ")"
     runNotifier.fireTestStarted(Description.createSuiteDescription(displayNameForJUnit))
+  }
+
+  // Not sure if the exception passed to new Failure can be null, but it will be
+  override def testFailed(report: Report) {
+    val displayNameForJUnit = report.message + "(" + report.name + ")"
+    val throwable =
+      report.throwable match {
+        case Some(t) => t
+        case None => null // yuck
+      }
+    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(displayNameForJUnit), throwable))
   }
 }
