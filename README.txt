@@ -37,7 +37,7 @@ guaranteed to work with earlier Scala versions.
 ABOUT SCALATEST
 
 ScalaTest was written by Bill Venners, Josh Cough, and George Berger starting
-in late 2007. ScalaTest, which is almost exclusively written in Scala,
+in late 2007.  ScalaTest, which is almost exclusively written in Scala,
 follows and improves upon the Java code and design of Artima SuiteRunner,
 a testing tool also written primarily by Bill Venners, starting in 2001. Over
 the years a few other people have contributed to SuiteRunner as
@@ -49,4 +49,9 @@ Frank Sommers
 John Mitchel
 Mark Brouwer
 Matt Gerrans
+
+Several people have helped with ScalaTest, including:
+
+Daniel Watson
+Joel Neely
 
