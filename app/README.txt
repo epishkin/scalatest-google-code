@@ -1,15 +1,22 @@
-ScalaTest 0.9.4
+ScalaTest 0.9.5
 
 ScalaTest is a free, open-source testing toolkit for Scala and
-Java programmers. 
+Java programmers.  Because different developers take different approaches to creating
+software, no single approach to testing is a good fit for everyone. In light of
+this reality, ScalaTest is designed to facilitate different styles of testing. ScalaTest
+provides several traits that you can mix together into whatever combination makes you feel the most productive.
+For some examples of the various styles that ScalaTest supports, see:
+
+http://www.artima.com/scalatest
 
 GETTING STARTED
 
-Although this is a pre-1.0 release, ScalaTest is very robust and well
-documented. You can already use it to write tests in Scala against
+Although ScalaTest 0.9.5 sports a pre-1.0 version number, ScalaTest is mature,
+fully featured, and thoroughly documented.
+You can already use it to write tests in Scala against
 production Scala or Java code. To learn how to use ScalaTest, please
 open in your browser the scaladoc documentation in the
-/scalatest-0.9.4/doc directory. Look first at the documentation for trait
+/scalatest-0.9.5/doc directory. Look first at the documentation for trait
 org.scalatest.Suite, which gives a decent intro. All the other types are
 documented as well, so you can hop around to learn more.
 org.scalatest.tools.Runner explains how to use the application. The
@@ -18,13 +25,13 @@ Ignore class is written in Java, and isn't currently shown in the Scaladoc.
 To try it out, you can use ScalaTest to run its own tests, i.e., the tests
 used to test ScalaTest itself. This command will run the GUI:
 
-scala -classpath scalatest-0.9.4.jar org.scalatest.tools.Runner -p "scalatest-0.9.4-tests.jar" -g -s org.scalatest.SuiteSuite
+scala -classpath scalatest-0.9.5.jar org.scalatest.tools.Runner -p "scalatest-0.9.5-tests.jar" -g -s org.scalatest.SuiteSuite
 
 This command will run and just print results to the standard output:
 
-scala -classpath scalatest-0.9.4.jar org.scalatest.tools.Runner -p "scalatest-0.9.4-tests.jar" -o -s org.scalatest.SuiteSuite
+scala -classpath scalatest-0.9.5.jar org.scalatest.tools.Runner -p "scalatest-0.9.5-tests.jar" -o -s org.scalatest.SuiteSuite
 
-ScalaTest 0.9.4 was tested with Scala version 2.7.2.final, so it is not
+ScalaTest 0.9.5 was tested with Scala version 2.7.3.final, so it is not
 guaranteed to work with earlier Scala versions.
 
 ABOUT SCALATEST
