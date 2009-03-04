@@ -304,7 +304,10 @@
             <arg value="-o" />
 
             <arg value="-s" />
-            <arg value="org.scalatest.junit.NotifierSuite" />
+            <arg value="org.scalatest.junit.RunNotifierSuite" />
+
+            <arg value="-s" />
+            <arg value="org.scalatest.junit.EasySuite" />
 
         </java>
     </target>

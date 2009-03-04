@@ -18,6 +18,7 @@ package org.scalatest.junit
 
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
+import org.junit.runner.notification.Failure
 
 class RunNotifierSuite extends FunSuite {
 
@@ -38,5 +39,26 @@ class RunNotifierSuite extends FunSuite {
     reporter.testStarting(report)
     assert(runNotifier.fireTestStartedWasInvoked)
     assert(runNotifier.passedDesc.getDisplayName === "test starting just fine we think(some test name)")
+  }
+
+  test("report.testFailed generates a fireTestFailure invocation") {
+
+    val runNotifier =
+      new RunNotifier {
+        var methodWasInvoked = false
+        var passed: Failure = _
+        override def fireTestFailure(failure: Failure) {
+          methodWasInvoked = true
+          passed = failure
+        }
+      }
+
+    val reporter = new RunNotifierReporter(runNotifier)
+    val exception = new IllegalArgumentException
+    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
+    reporter.testFailed(report)
+    assert(runNotifier.methodWasInvoked)
+    assert(runNotifier.passed.getException === exception)
+    assert(runNotifier.passed.getDescription.getDisplayName === "test starting just fine we think(some test name)")
   }
 }
