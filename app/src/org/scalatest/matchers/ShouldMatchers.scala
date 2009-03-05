@@ -486,7 +486,7 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * map should have key ("two") and not have value (7) // ERROR, parentheses missing!
+ * map should contain key ("two") and not contain value (7) // ERROR, parentheses missing!
  * </pre>
  * 
  * <p>
@@ -494,7 +494,7 @@ import Helper.newTestFailedException
  * </p>
  * 
  * <pre class="indent">
- * map should (have key ("two") and not have value (7))
+ * map should (contain key ("two") and not contain value (7))
  * </pre>
  * 
  * <p>

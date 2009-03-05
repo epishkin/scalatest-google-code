@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package org.scalatest.junit.helpers
+package org.scalatest.junit
 
-import org.junit.runner.RunWith
+import org.junit.runner.JUnitCore
+import org.junit.runner.Description
+import org.junit.runner.notification.Failure
+import org.scalatest.junit.helpers.EasySuite
 
-// @RunWith(classOf[JUnitRunner])
-class EasySuite extends FunSuite with JUnitRunnable {
+class JUnitRunnerSuite extends FunSuite {
 
-// TODO put method on here that says how many tests, and how many should fail 
-  test("JUnit ran this OK!") {
-    assert(1 === 1)
-  }
-
-  test("JUnit ran this OK!, but it had a failure we hope") {
-    assert(1 === 2)
-  }
-
-  test("bla bla bla") {
-    assert(1 === 2)
+  test("That EasySuite gets run by JUnit given its RunWith annotation") {
+    val result = JUnitCore.runClasses(classOf[EasySuite])
+    assert(result.getRunCount === 3) // EasySuite has 3 tests
+    assert(result.getFailureCount === 2) // EasySuite has 2 tests that blow up
   }
 }
