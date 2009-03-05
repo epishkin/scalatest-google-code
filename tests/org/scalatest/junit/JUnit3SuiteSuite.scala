@@ -15,10 +15,10 @@
  */
 package org.scalatest.junit {
 
-   import org.scalatest.jmock._
-   import junit.test._
+import org.scalatest.jmock._
+import junit.test._
 
-   class JUnitSuiteSuite extends SMockFunSuite  with SuiteExpectations {
+class JUnit3SuiteSuite extends SMockFunSuite  with SuiteExpectations {
 
      mockTest( "Reporter Should Be Notified When Test Passes" ){
        
