@@ -16,21 +16,14 @@
 
 package org.scalatest.junit.helpers
 
-import org.junit.runner.RunWith
+import org.junit.Test
 
-// @RunWith(classOf[JUnitRunner])
-class EasySuite extends FunSuite with JUnitRunnable {
+class HappySuite extends JUnitSuite {
 
-// TODO put method on here that says how many tests, and how many should fail 
-  test("JUnit ran this OK!") {
-    assert(1 === 1)
-  }
+  var testMethodWasInvoked = false
 
-  test("JUnit ran this OK!, but it had a failure we hope") {
-    assert(1 === 2)
-  }
-
-  test("bla bla bla") {
-    assert(1 === 2)
+  @Test def verifySomething() {
+println("I GOT INVOKED!!!")
+    testMethodWasInvoked = true
   }
 }

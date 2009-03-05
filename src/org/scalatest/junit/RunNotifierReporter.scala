@@ -21,7 +21,7 @@ import org.junit.runner.notification.Failure
 
 // TODO: Mention on each Reporter method that it does nothing
 
-class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
+private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
 
   override def testStarting(report: Report) {
     val displayNameForJUnit = report.message + "(" + report.name + ")"
