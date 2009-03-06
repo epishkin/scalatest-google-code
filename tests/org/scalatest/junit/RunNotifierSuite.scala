@@ -80,4 +80,23 @@ class RunNotifierSuite extends FunSuite {
     assert(runNotifier.methodWasInvoked)
     assert(runNotifier.passed.getDisplayName === "some test name")
   }
+
+  test("report.testIgnored generates a fireTestIgnored invocation") {
+
+    val runNotifier =
+      new RunNotifier {
+        var methodWasInvoked = false
+        var passed: Description = _
+        override def fireTestIgnored(description: Description) {
+          methodWasInvoked = true
+          passed = description
+        }
+      }
+
+    val reporter = new RunNotifierReporter(runNotifier)
+    val report = new Report("some test name", "test starting just fine we think")
+    reporter.testIgnored(report)
+    assert(runNotifier.methodWasInvoked)
+    assert(runNotifier.passed.getDisplayName === "some test name")
+  }
 }
