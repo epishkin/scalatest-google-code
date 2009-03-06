@@ -18,5 +18,5 @@ package org.scalatest.junit
 import org.junit.runner.RunWith
 
 @RunWith(classOf[JUnitRunner])
-trait JUnitRunnable
+class JUnitRunnable
 
