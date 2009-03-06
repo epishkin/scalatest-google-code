@@ -31,6 +31,10 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
     runNotifier.fireTestFinished(Description.createSuiteDescription(report.name))
   }
 
+  override def testIgnored(report: Report) {
+    runNotifier.fireTestIgnored(Description.createSuiteDescription(report.name))
+  }
+
   // Not sure if the exception passed to new Failure can be null, but it will be
   override def testFailed(report: Report) {
     val throwable =
