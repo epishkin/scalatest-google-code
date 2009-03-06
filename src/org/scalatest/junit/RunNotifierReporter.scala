@@ -24,18 +24,20 @@ import org.junit.runner.notification.Failure
 private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
 
   override def testStarting(report: Report) {
-    val displayNameForJUnit = report.message + "(" + report.name + ")"
-    runNotifier.fireTestStarted(Description.createSuiteDescription(displayNameForJUnit))
+    runNotifier.fireTestStarted(Description.createSuiteDescription(report.name))
+  }
+
+  override def testSucceeded(report: Report) {
+    runNotifier.fireTestFinished(Description.createSuiteDescription(report.name))
   }
 
   // Not sure if the exception passed to new Failure can be null, but it will be
   override def testFailed(report: Report) {
-    val displayNameForJUnit = report.message + "(" + report.name + ")"
     val throwable =
       report.throwable match {
         case Some(t) => t
         case None => null // yuck
       }
-    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(displayNameForJUnit), throwable))
+    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(report.name), throwable))
   }
 }

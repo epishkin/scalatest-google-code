@@ -18,10 +18,12 @@ package org.scalatest.junit.helpers
 
 import org.junit.runner.RunWith
 
-// @RunWith(classOf[JUnitRunner])
-class EasySuite extends FunSuite with JUnitRunnable {
+@RunWith(classOf[JUnitRunner])
+class EasySuite extends FunSuite {
 
-// TODO put method on here that says how many tests, and how many should fail 
+  val runCount = 3 
+  val failedCount = 2
+
   test("JUnit ran this OK!") {
     assert(1 === 1)
   }

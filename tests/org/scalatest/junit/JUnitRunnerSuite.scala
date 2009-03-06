@@ -25,7 +25,8 @@ class JUnitRunnerSuite extends FunSuite {
 
   test("That EasySuite gets run by JUnit given its RunWith annotation") {
     val result = JUnitCore.runClasses(classOf[EasySuite])
-    assert(result.getRunCount === 3) // EasySuite has 3 tests
-    assert(result.getFailureCount === 2) // EasySuite has 2 tests that blow up
+    val easySuite = new EasySuite
+    assert(result.getRunCount === easySuite.runCount) // EasySuite has 3 tests
+    assert(result.getFailureCount === easySuite.failedCount) // EasySuite has 2 tests that blow up
   }
 }

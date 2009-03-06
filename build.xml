@@ -303,22 +303,19 @@
             <arg value="-g" />
             <arg value="-o" />
 
-<!--
+            <arg value="-s" />
+            <arg value="org.scalatest.junit.JUnitRunnerSuite" />
+
             <arg value="-s" />
             <arg value="org.scalatest.junit.RunNotifierSuite" />
 
-            <arg value="-s" />
-            <arg value="org.scalatest.junit.EasySuite" />
-
-            <arg value="-s" />
-            <arg value="org.scalatest.junit.JUnitRunnerSuite" />
--->
+<!--
             <arg value="-s" />
             <arg value="org.scalatest.junit.JUnitSuiteSuite" />
 
             <arg value="-s" />
             <arg value="org.scalatest.junit.helpers.HappySuite" />
-
+-->
         </java>
     </target>
 
