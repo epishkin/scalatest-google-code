@@ -20,6 +20,12 @@ import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.junit.runner.notification.Failure
 
+// There's no way to really pass along a suiteStarting or suiteCompleted
+// report. They have a dumb comment to "Do not invoke" fireTestRunStarted
+// and fireTestRunFinished, so I think they must be doing that themselves.
+// This means we don't have a way to really forward runStarting and
+// runCompleted reports either. But runAborted reports should be sent
+// out the door somehow, so we report them with yet another fireTestFailure.
 class RunNotifierSuite extends FunSuite {
 
   test("report.testStarting generates a fireTestStarted invocation") {
@@ -98,5 +104,49 @@ class RunNotifierSuite extends FunSuite {
     reporter.testIgnored(report)
     assert(runNotifier.methodWasInvoked)
     assert(runNotifier.passed.getDisplayName === "some test name")
+  }
+
+  // fireTestFailure is the best we could do given the RunNotifier interface
+  test("report.suiteAborted generates a fireTestFailure invocation") {
+
+    val runNotifier =
+      new RunNotifier {
+        var methodWasInvoked = false
+        var passed: Failure = _
+        override def fireTestFailure(failure: Failure) {
+          methodWasInvoked = true
+          passed = failure
+        }
+      }
+
+    val reporter = new RunNotifierReporter(runNotifier)
+    val exception = new IllegalArgumentException
+    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
+    reporter.suiteAborted(report)
+    assert(runNotifier.methodWasInvoked)
+    assert(runNotifier.passed.getException === exception)
+    assert(runNotifier.passed.getDescription.getDisplayName === "some test name")
+  }
+
+  // fireTestFailure is the best we could do given the RunNotifier interface
+  test("report.runAborted generates a fireTestFailure invocation") {
+
+    val runNotifier =
+      new RunNotifier {
+        var methodWasInvoked = false
+        var passed: Failure = _
+        override def fireTestFailure(failure: Failure) {
+          methodWasInvoked = true
+          passed = failure
+        }
+      }
+
+    val reporter = new RunNotifierReporter(runNotifier)
+    val exception = new IllegalArgumentException
+    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
+    reporter.runAborted(report)
+    assert(runNotifier.methodWasInvoked)
+    assert(runNotifier.passed.getException === exception)
+    assert(runNotifier.passed.getDescription.getDisplayName === "some test name")
   }
 }

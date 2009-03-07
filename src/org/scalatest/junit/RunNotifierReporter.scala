@@ -21,6 +21,12 @@ import org.junit.runner.notification.Failure
 
 // TODO: Mention on each Reporter method that it does nothing
 
+// There's no way to really pass along a suiteStarting or suiteCompleted
+// report. They have a dumb comment to "Do not invoke" fireTestRunStarted
+// and fireTestRunFinished, so I think they must be doing that themselves.
+// This means we don't have a way to really forward runStarting and
+// runCompleted reports either. But runAborted reports should be sent
+// out the door somehow, so we report them with yet another fireTestFailure.
 private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
 
   override def testStarting(report: Report) {
@@ -37,6 +43,26 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
 
   // Not sure if the exception passed to new Failure can be null, but it will be
   override def testFailed(report: Report) {
+    val throwable =
+      report.throwable match {
+        case Some(t) => t
+        case None => null // yuck
+      }
+    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(report.name), throwable))
+  }
+
+  // Not sure if the exception passed to new Failure can be null, but it will be
+  override def suiteAborted(report: Report) {
+    val throwable =
+      report.throwable match {
+        case Some(t) => t
+        case None => null // yuck
+      }
+    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(report.name), throwable))
+  }
+
+  // Not sure if the exception passed to new Failure can be null, but it will be
+  override def runAborted(report: Report) {
     val throwable =
       report.throwable match {
         case Some(t) => t

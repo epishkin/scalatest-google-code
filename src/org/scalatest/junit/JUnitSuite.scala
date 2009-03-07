@@ -43,31 +43,30 @@ trait JUnitSuite extends Suite {
 */
 
     override def testFailure(failure: Failure) {
-println("testFailure CALLED")
+      val report = new Report(failure.getDescription.getDisplayName, "")
+      reporter.testFailed(report)
     }
 
     override def testFinished(description: Description) {
       val report = new Report(description.getDisplayName, "")
       reporter.testSucceeded(report)
-println("testFinished CALLED" + description.getDisplayName)
     }
 
     override def testIgnored(description: Description) {
-println("testIgnored CALLED")
+      val report = new Report(description.getDisplayName, "")
+      reporter.testIgnored(report)
     }
 
     override def testRunFinished(result: Result) {
-println("testRunFinished CALLED")
     }
 
     override def testRunStarted(description: Description) {
-      val report = new Report(description.getDisplayName, "")
-      reporter.testStarting(report)
-println("testRunStarted CALLED")
+      reporter.runStarting(description.testCount)
     }
 
     override def testStarted(description: Description) {
-println("testStarted CALLED")
+      val report = new Report(description.getDisplayName, "")
+      reporter.testStarting(report)
     }
   }
 }
