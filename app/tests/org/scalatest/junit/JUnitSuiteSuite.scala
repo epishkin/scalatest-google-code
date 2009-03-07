@@ -85,6 +85,11 @@ package org.scalatest.junit {
       override def testIgnored(report: Report) {
         testIgnoredReport = Some(report)
       }
+
+      var runCompletedCount = 0
+      override def runCompleted() {
+        runCompletedCount += 1
+      }
     }
 
     test("A JUnitSuite with a JUnit 4 Test annotation will cause testStarting to be invoked") {
@@ -145,6 +150,14 @@ package org.scalatest.junit {
       happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.runStartingCount === 1)
       assert(repA.testCountPassedToRunStarting === 1)
+    }
+
+    test("A JUnitSuite with a JUnit 4 Test annotation will cause runCompleted to be invoked") {
+
+      val happy = new HappySuite
+      val repA = new MyReporter
+      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      assert(repA.runCompletedCount === 1)
     }
   }
 }
