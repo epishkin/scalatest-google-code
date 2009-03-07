@@ -1,0 +1,29 @@
+
+package org.scalatest.junit
+
+@Runswith(class=JUnitRunner)
+trait JUnitRunnable
+
+Or, make them put the annotation on each one.
+
+@Runswith(class=JUnitRunner)
+trait CumfySuite extends FunSuite with MustMatchers with Checkers with JUnitRunnable
+
+class JUnitRunner(suiteClass: java.lang.Class) extends org.junit.runner.Runner {
+
+  def getDescription() // what's this describe?
+
+  def run(notifier: RunNotifier)
+
+  def testCount()
+}
+
+private[junit] class NotifierReporter(notifier: Notifier) {
+
+  def testFailed ... // invokes approparte method on the Notifier
+ 
+and as we do, we'll need to create Failure and Description  and Result objects
+
+}
+
+kkkk
