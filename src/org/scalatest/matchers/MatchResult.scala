@@ -144,7 +144,7 @@ package org.scalatest.matchers
  * </pre>
  *
  * <p>
- * A combination of two such failure messages might result in an abomination of English grammer, such as:
+ * A combination of two such failure messages might result in an abomination of English punctuation, such as:
  * </p>
  *
  * <pre>
