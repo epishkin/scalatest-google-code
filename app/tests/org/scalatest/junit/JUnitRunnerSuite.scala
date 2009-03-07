@@ -16,6 +16,8 @@
 
 package org.scalatest.junit {
 
+  // Put fixture suites in a subpackage, so they won't be discovered by
+  // -m org.scalatest.junit when running the test target for this project.
   package helpers {
 
     import org.junit.runner.RunWith

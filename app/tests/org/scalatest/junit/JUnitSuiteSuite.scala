@@ -15,7 +15,9 @@
  */
 package org.scalatest.junit {
 
-  package nestedHelpers {
+  // Put fixture suites in a subpackage, so they won't be discovered by
+  // -m org.scalatest.junit when running the test target for this project.
+  package helpers {
 
     import _root_.org.junit.Test
     import _root_.org.junit.Ignore
@@ -47,7 +49,7 @@ package org.scalatest.junit {
     }
   }
 
-  import nestedHelpers._
+  import helpers._
 
   class JUnitSuiteSuite extends FunSuite {
 
@@ -91,7 +93,7 @@ package org.scalatest.junit {
       val repA = new MyReporter
       happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testStartingReport.isDefined)
-      assert(repA.testStartingReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.HappySuite)")
+      assert(repA.testStartingReport.get.name === "verifySomething(org.scalatest.junit.helpers.HappySuite)")
     }
 
     test("A JUnitSuite with a JUnit 4 Test annotation will cause testSucceeded to be invoked") {
@@ -100,7 +102,7 @@ package org.scalatest.junit {
       val repA = new MyReporter
       happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testSucceededReport.isDefined)
-      assert(repA.testSucceededReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.HappySuite)")
+      assert(repA.testSucceededReport.get.name === "verifySomething(org.scalatest.junit.helpers.HappySuite)")
     }
 
     test("A JUnitSuite with a JUnit 4 Test annotation on a bad test will cause testFailed to be invoked") {
@@ -109,7 +111,7 @@ package org.scalatest.junit {
       val repA = new MyReporter
       bitter.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testFailedReport.isDefined)
-      assert(repA.testFailedReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.BitterSuite)")
+      assert(repA.testFailedReport.get.name === "verifySomething(org.scalatest.junit.helpers.BitterSuite)")
     }
 
     test("A JUnitSuite with JUnit 4 Ignore and Test annotations will cause testIgnored to be invoked") {
@@ -118,7 +120,7 @@ package org.scalatest.junit {
       val repA = new MyReporter
       ignored.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testIgnoredReport.isDefined)
-      assert(repA.testIgnoredReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.IgnoredSuite)")
+      assert(repA.testIgnoredReport.get.name === "verifySomething(org.scalatest.junit.helpers.IgnoredSuite)")
     }
 
     test("A JUnitSuite with two JUnit 4 Test annotations will cause testStarting and testSucceeded to be invoked twice each") {
@@ -128,11 +130,11 @@ package org.scalatest.junit {
       many.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
 
       assert(repA.testStartingReport.isDefined)
-      assert(repA.testStartingReport.get.name === "verifySomethingElse(org.scalatest.junit.nestedHelpers.ManySuite)")
+      assert(repA.testStartingReport.get.name === "verifySomethingElse(org.scalatest.junit.helpers.ManySuite)")
       assert(repA.testStartingCount === 2)
 
       assert(repA.testSucceededReport.isDefined)
-      assert(repA.testSucceededReport.get.name === "verifySomethingElse(org.scalatest.junit.nestedHelpers.ManySuite)")
+      assert(repA.testSucceededReport.get.name === "verifySomethingElse(org.scalatest.junit.helpers.ManySuite)")
       assert(repA.testSucceededCount === 2)
     }
 
