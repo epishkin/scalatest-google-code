@@ -58,6 +58,7 @@ trait JUnitSuite extends Suite {
     }
 
     override def testRunFinished(result: Result) {
+      reporter.runCompleted()
     }
 
     override def testRunStarted(description: Description) {
