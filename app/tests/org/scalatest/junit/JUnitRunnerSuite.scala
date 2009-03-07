@@ -14,19 +14,44 @@
  * limitations under the License.
  */
 
-package org.scalatest.junit
+package org.scalatest.junit {
 
-import org.junit.runner.JUnitCore
-import org.junit.runner.Description
-import org.junit.runner.notification.Failure
-import org.scalatest.junit.helpers.EasySuite
+  package helpers {
 
-class JUnitRunnerSuite extends FunSuite {
+    import org.junit.runner.RunWith
 
-  test("That EasySuite gets run by JUnit given its RunWith annotation") {
-    val result = JUnitCore.runClasses(classOf[EasySuite])
-    val easySuite = new EasySuite
-    assert(result.getRunCount === easySuite.runCount) // EasySuite has 3 tests
-    assert(result.getFailureCount === easySuite.failedCount) // EasySuite has 2 tests that blow up
+    @RunWith(classOf[JUnitRunner])
+    class EasySuite extends FunSuite {
+
+      val runCount = 3
+      val failedCount = 2
+
+      test("JUnit ran this OK!") {
+        assert(1 === 1)
+      }
+
+      test("JUnit ran this OK!, but it had a failure we hope") {
+        assert(1 === 2)
+      }
+
+      test("bla bla bla") {
+        assert(1 === 2)
+      }
+    }
+  }
+
+  import org.junit.runner.JUnitCore
+  import org.junit.runner.Description
+  import org.junit.runner.notification.Failure
+  import org.scalatest.junit.helpers.EasySuite
+
+  class JUnitRunnerSuite extends FunSuite {
+
+    test("That EasySuite gets run by JUnit given its RunWith annotation") {
+      val result = JUnitCore.runClasses(classOf[EasySuite])
+      val easySuite = new EasySuite
+      assert(result.getRunCount === easySuite.runCount) // EasySuite has 3 tests
+      assert(result.getFailureCount === easySuite.failedCount) // EasySuite has 2 tests that blow up
+    }
   }
 }

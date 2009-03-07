@@ -47,102 +47,102 @@ package org.scalatest.junit {
     }
   }
 
-import nestedHelpers._
+  import nestedHelpers._
 
-class JUnitSuiteSuite extends FunSuite {
+  class JUnitSuiteSuite extends FunSuite {
 
-  class MyReporter extends Reporter {
+    class MyReporter extends Reporter {
 
-    var runStartingCount = 0
-    var testCountPassedToRunStarting = -1
-    override def runStarting(testCount: Int) {
-      testCountPassedToRunStarting = testCount
-      runStartingCount += 1
+      var runStartingCount = 0
+      var testCountPassedToRunStarting = -1
+      override def runStarting(testCount: Int) {
+        testCountPassedToRunStarting = testCount
+        runStartingCount += 1
+      }
+
+      var testStartingCount = 0
+      var testStartingReport: Option[Report] = None
+      override def testStarting(report: Report) {
+        testStartingReport = Some(report)
+        testStartingCount += 1
+      }
+
+      var testSucceededCount = 0
+      var testSucceededReport: Option[Report] = None
+      override def testSucceeded(report: Report) {
+        testSucceededReport = Some(report)
+        testSucceededCount += 1
+      }
+
+      var testFailedReport: Option[Report] = None
+      override def testFailed(report: Report) {
+        testFailedReport = Some(report)
+      }
+
+      var testIgnoredReport: Option[Report] = None
+      override def testIgnored(report: Report) {
+        testIgnoredReport = Some(report)
+      }
     }
 
-    var testStartingCount = 0
-    var testStartingReport: Option[Report] = None
-    override def testStarting(report: Report) {
-      testStartingReport = Some(report)
-      testStartingCount += 1
+    test("A JUnitSuite with a JUnit 4 Test annotation will cause testStarting to be invoked") {
+
+      val happy = new HappySuite
+      val repA = new MyReporter
+      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      assert(repA.testStartingReport.isDefined)
+      assert(repA.testStartingReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.HappySuite)")
     }
 
-    var testSucceededCount = 0
-    var testSucceededReport: Option[Report] = None
-    override def testSucceeded(report: Report) {
-      testSucceededReport = Some(report)
-      testSucceededCount += 1
+    test("A JUnitSuite with a JUnit 4 Test annotation will cause testSucceeded to be invoked") {
+
+      val happy = new HappySuite
+      val repA = new MyReporter
+      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      assert(repA.testSucceededReport.isDefined)
+      assert(repA.testSucceededReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.HappySuite)")
     }
 
-    var testFailedReport: Option[Report] = None
-    override def testFailed(report: Report) {
-      testFailedReport = Some(report)
+    test("A JUnitSuite with a JUnit 4 Test annotation on a bad test will cause testFailed to be invoked") {
+
+      val bitter = new BitterSuite
+      val repA = new MyReporter
+      bitter.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      assert(repA.testFailedReport.isDefined)
+      assert(repA.testFailedReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.BitterSuite)")
     }
 
-    var testIgnoredReport: Option[Report] = None
-    override def testIgnored(report: Report) {
-      testIgnoredReport = Some(report)
+    test("A JUnitSuite with JUnit 4 Ignore and Test annotations will cause testIgnored to be invoked") {
+
+      val ignored = new IgnoredSuite
+      val repA = new MyReporter
+      ignored.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      assert(repA.testIgnoredReport.isDefined)
+      assert(repA.testIgnoredReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.IgnoredSuite)")
+    }
+
+    test("A JUnitSuite with two JUnit 4 Test annotations will cause testStarting and testSucceeded to be invoked twice each") {
+
+      val many = new ManySuite
+      val repA = new MyReporter
+      many.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+
+      assert(repA.testStartingReport.isDefined)
+      assert(repA.testStartingReport.get.name === "verifySomethingElse(org.scalatest.junit.nestedHelpers.ManySuite)")
+      assert(repA.testStartingCount === 2)
+
+      assert(repA.testSucceededReport.isDefined)
+      assert(repA.testSucceededReport.get.name === "verifySomethingElse(org.scalatest.junit.nestedHelpers.ManySuite)")
+      assert(repA.testSucceededCount === 2)
+    }
+
+    test("A JUnitSuite with a JUnit 4 Test annotation will cause runStarting to be invoked") {
+
+      val happy = new HappySuite
+      val repA = new MyReporter
+      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      assert(repA.runStartingCount === 1)
+      assert(repA.testCountPassedToRunStarting === 1)
     }
   }
-
-  test("A JUnitSuite with a JUnit 4 Test annotation will cause testStarting to be invoked") {
-
-    val happy = new HappySuite
-    val repA = new MyReporter
-    happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
-    assert(repA.testStartingReport.isDefined)
-    assert(repA.testStartingReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.HappySuite)")
-  }
-
-  test("A JUnitSuite with a JUnit 4 Test annotation will cause testSucceeded to be invoked") {
-
-    val happy = new HappySuite
-    val repA = new MyReporter
-    happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
-    assert(repA.testSucceededReport.isDefined)
-    assert(repA.testSucceededReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.HappySuite)")
-  }
-
-  test("A JUnitSuite with a JUnit 4 Test annotation on a bad test will cause testFailed to be invoked") {
-
-    val bitter = new BitterSuite
-    val repA = new MyReporter
-    bitter.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
-    assert(repA.testFailedReport.isDefined)
-    assert(repA.testFailedReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.BitterSuite)")
-  }
-
-  test("A JUnitSuite with JUnit 4 Ignore and Test annotations will cause testIgnored to be invoked") {
-
-    val ignored = new IgnoredSuite
-    val repA = new MyReporter
-    ignored.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
-    assert(repA.testIgnoredReport.isDefined)
-    assert(repA.testIgnoredReport.get.name === "verifySomething(org.scalatest.junit.nestedHelpers.IgnoredSuite)")
-  }
-
-  test("A JUnitSuite with two JUnit 4 Test annotations will cause testStarting and testSucceeded to be invoked twice each") {
-
-    val many = new ManySuite
-    val repA = new MyReporter
-    many.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
-
-    assert(repA.testStartingReport.isDefined)
-    assert(repA.testStartingReport.get.name === "verifySomethingElse(org.scalatest.junit.nestedHelpers.ManySuite)")
-    assert(repA.testStartingCount === 2)
-
-    assert(repA.testSucceededReport.isDefined)
-    assert(repA.testSucceededReport.get.name === "verifySomethingElse(org.scalatest.junit.nestedHelpers.ManySuite)")
-    assert(repA.testSucceededCount === 2)
-  }
-
-  test("A JUnitSuite with a JUnit 4 Test annotation will cause runStarting to be invoked") {
-
-    val happy = new HappySuite
-    val repA = new MyReporter
-    happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
-    assert(repA.runStartingCount === 1)
-    assert(repA.testCountPassedToRunStarting === 1)
-  }
-}
 }
