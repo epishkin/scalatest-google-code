@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.junit;
+package org.scalatest.junit
 
+import _root_.junit.framework.TestCase
+
+
+trait JUnit3Suite extends TestCase with JUnitSuite
+
+/*
 import org.scalatest.Suite
 import org.scalatest.Report
 
@@ -160,3 +166,4 @@ trait JUnit3Suite extends TestCase with Suite {
     }
   }
 }
+*/
