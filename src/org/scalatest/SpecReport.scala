@@ -119,8 +119,8 @@ class SpecReport(
   override val throwable: Option[Throwable],
   override val rerunnable: Option[Rerunnable],
   override val threadName: String,
-  override val date: Date
-) extends Report(name, message, throwable, rerunnable, threadName, date) {
+  override val timeStamp: Date
+) extends Report(name, message, None, None, throwable, rerunnable, threadName, timeStamp) {
 
   if (plainSpecText == null)
     throw new NullPointerException("plainSpecText was null")

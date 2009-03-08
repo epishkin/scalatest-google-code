@@ -225,19 +225,20 @@ trait Reporter {
      * Indicates a runner has stopped running a suite of tests prior to completion, likely
      * because of a stop request.
      *
-     * <P> FIX ME
+     * <p>
      * <code>Suite</code>'s <code>execute</code> method takes a <code>Stopper</code>, whose <code>stopRequested</code>
-     * method indicates a stop was requested. Code responsible for running tests and suites, such as the 
-     * a <code>boolean</code> parameter. If <code>false</code> is passed to
-     * <code>setStopRequested</code> while a <code>Suite</code> of tests is running, the
-     * <code>execute</code> method of all <code>Suite</code>'s should promptly
-     * return even if they haven't finished running all of their tests.
+     * method indicates a stop was requested. If <code>true</code> is returned by
+     * <code>stopRequested</code> while a suite of tests is running, the
+     * <code>execute</code> method should promptly
+     * return even if that suite hasn't finished running all of its tests.
+     * </p>
      *
-     * <P>If a stop is requested via <code>Suite</code>'s static <code>setStopRequested</code>
-     * method, class <code>Runner</code> invokes <code>runStopped</code>
+     * <p>If a stop was requested via the <code>Stopper</code>.
+     * <code>Runner</code> will invoke <code>runStopped</code>
      * when the <code>execute</code> method of the run's starting <code>Suite</code> returns.
-     * If a stop is not requested, class <code>Runner</code> invokes <code>runCompleted</code>
+     * If a stop is not requested, class <code>Runner</code> will invoke <code>runCompleted</code>
      * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns.
+     * </p>
      */
     def runStopped() = ()
 
@@ -258,20 +259,20 @@ trait Reporter {
     /**
      * Indicates a runner has completed running a suite of tests.
      *
-     * <P> FIX
-     * Class <code>Suite</code> has a static method <code>setStopRequested</code>, which takes
-     * a <code>boolean</code> parameter. If <code>false</code> is passed to
-     * <code>setStopRequested</code> while a <code>Suite</code> of tests is running, the
-     * <code>execute</code> method of all <code>Suite</code>'s should promptly
-     * return even if they haven't finished running all of their tests.
+     * <p>
+     * <code>Suite</code>'s <code>execute</code> method takes a <code>Stopper</code>, whose <code>stopRequested</code>
+     * method indicates a stop was requested. If <code>true</code> is returned by
+     * <code>stopRequested</code> while a suite of tests is running, the
+     * <code>execute</code> method should promptly
+     * return even if that suite hasn't finished running all of its tests.
+     * </p>
      *
-     * <P>
-     * Object <code>Runner</code> invokes <code>runFinished</code>
-     * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns,
-     * unless a stop is requested. If a stop is requested
-     * via <code>Suite</code>'s static <code>setStopRequested</code> method, class <code>Runner</code>
-     * invokes <code>runStopped</code> when the last <code>execute</code> method of the run's
-     * starting <code>Suite</code>s returns.
+     * <p>If a stop was requested via the <code>Stopper</code>.
+     * <code>Runner</code> will invoke <code>runStopped</code>
+     * when the <code>execute</code> method of the run's starting <code>Suite</code> returns.
+     * If a stop is not requested, <code>Runner</code> will invoke <code>runCompleted</code>
+     * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns.
+     * </p>
      */
     def runCompleted() = ()
 
@@ -283,12 +284,6 @@ trait Reporter {
      * this method is invoked.
      */
     def dispose() = ()
-
-/*
-    def setConfiguration(configs: Set[Opts.Value]): Unit
-    [bv: I decided to remove this from here, and use a FilterReporter that is configurable.
-       You put it in front of the other reporters, and it filters for you.]
-     */
 }
 /*
 So I remember, this is why I decided not to make case class subclasses of

@@ -32,19 +32,24 @@ class RunNotifierSuite extends FunSuite {
 
     val runNotifier =
       new RunNotifier {
-        var fireTestStartedWasInvoked = false
-        var passedDesc: Description = _
+        var fireTestStartedInvocationCount = 0
+        var passedDesc: Option[Description] = None
         override def fireTestStarted(description: Description) {
-          fireTestStartedWasInvoked = true
-          passedDesc = description
+          fireTestStartedInvocationCount += 1
+          passedDesc = Some(description)
         }
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
     val report = new Report("some test name", "test starting just fine we think")
     reporter.testStarting(report)
-    assert(runNotifier.fireTestStartedWasInvoked)
-    assert(runNotifier.passedDesc.getDisplayName === "some test name")
+    assert(runNotifier.fireTestStartedInvocationCount === 1)
+    assert(runNotifier.passedDesc.get.getDisplayName === "some test name")
+
+    val report2 = new Report("name", "message", Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    reporter.testStarting(report2)
+    assert(runNotifier.fireTestStartedInvocationCount === 2)
+    assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
   }
 
   test("report.testFailed generates a fireTestFailure invocation") {
