@@ -385,7 +385,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                     }
                     else new scala.xml.NodeBuffer
                   }
-                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.date }</td></tr>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.timeStamp }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ report.threadName }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
                   </table>

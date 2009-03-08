@@ -29,8 +29,18 @@ import org.junit.runner.notification.Failure
 // out the door somehow, so we report them with yet another fireTestFailure.
 private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
 
+  private def getNameFromReport(report: Report): String =
+    report.suiteClassName match {
+      case Some(suiteClassName) =>
+          report.testName match {
+            case Some(testName) => testName + "(" + suiteClassName + ")"
+            case None => report.name
+          }
+      case None => report.name
+    }
+
   override def testStarting(report: Report) {
-    runNotifier.fireTestStarted(Description.createSuiteDescription(report.name))
+    runNotifier.fireTestStarted(Description.createSuiteDescription(getNameFromReport(report)))
   }
 
   override def testSucceeded(report: Report) {
