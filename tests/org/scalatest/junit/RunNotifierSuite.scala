@@ -41,7 +41,7 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    val report = new Report("some test name", "test starting just fine we think")
+    val report = new Report("some test name", "test starting just fine we think", None, None, None, None)
     reporter.testStarting(report)
     assert(runNotifier.fireTestStartedInvocationCount === 1)
     assert(runNotifier.passedDesc.get.getDisplayName === "some test name")
@@ -56,21 +56,27 @@ class RunNotifierSuite extends FunSuite {
 
     val runNotifier =
       new RunNotifier {
-        var methodWasInvoked = false
-        var passed: Failure = _
+        var methodInvocationCount = 0
+        var passed: Option[Failure] = None
         override def fireTestFailure(failure: Failure) {
-          methodWasInvoked = true
-          passed = failure
+          methodInvocationCount += 1
+          passed = Some(failure)
         }
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
+    val report = new Report("some test name", "test starting just fine we think", None, None, Some(exception), None)
     reporter.testFailed(report)
-    assert(runNotifier.methodWasInvoked)
-    assert(runNotifier.passed.getException === exception)
-    assert(runNotifier.passed.getDescription.getDisplayName === "some test name")
+    assert(runNotifier.methodInvocationCount === 1)
+    assert(runNotifier.passed.get.getException === exception)
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
+
+    val report2 = new Report("some test name", "test starting just fine we think", Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    reporter.testFailed(report2)
+    assert(runNotifier.methodInvocationCount === 2)
+    assert(runNotifier.passed.get.getException === exception)
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
   }
 
   test("report.testSucceeded generates a fireTestFinished invocation") {

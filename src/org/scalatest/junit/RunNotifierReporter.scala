@@ -58,7 +58,7 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
         case Some(t) => t
         case None => null // yuck
       }
-    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(report.name), throwable))
+    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(getNameFromReport(report)), throwable))
   }
 
   // Not sure if the exception passed to new Failure can be null, but it will be
