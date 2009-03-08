@@ -133,7 +133,6 @@
         <!-- Compile the Java code from ${src} into ${classes} -->
         <javac srcdir="${src}" destdir="${classes}" classpathref="build.class.path" debug="yes">
             <include name="org/scalatest/Ignore.java" />
-            <include name="org/scalatest/junit/JUnitVersionHelper.java"/>
             <include name="org/scalatest/tools/ScalaTestTask.java" />
         </javac>
     </target>
