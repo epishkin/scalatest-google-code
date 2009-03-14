@@ -26,6 +26,28 @@ import org.junit.runner.Description
  stupid Description displayName. We probably need to add optional test name and
  suite class name to Report, just to satisfy JUnit integration.
 */
+/**
+ * A JUnit <code>Runner</code> that knows how to run any ScalaTest <code>Suite</code>
+ * (or <code>Spec</code>, which extends <code>Suite</code>).
+ * This enables you to provide a JUnit <code>RunWith</code> annotation on any
+ * ScalaTest <code>Suite</code>. Here's an example:
+ *
+ * <pre>
+ * import org.junit.runner.RunWith
+ * import org.scalatest.junit.JUnitRunner
+ * import org.scalatest.FunSuite
+ *
+ * @RunWith(@RunWith(classOf[JUnitRunner])
+ * class MySuite extends FunSuite {
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * This <code>RunWith</code> annotation will enable the <code>MySuite</code> class
+ * to be executed by JUnit 4.
+ * </p>
+ */
 class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.Runner {
 
   private val canInstantiate = Suite.checkForPublicNoArgConstructor(suiteClass)
@@ -33,12 +55,33 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
 
   private val suiteToRun = suiteClass.newInstance
 
+  /**
+   * Get a JUnit <code>Description</code> for this ScalaTest <code>Suite</code> of tests.
+   *
+   * return a <code>Description</code> of this suite of tests
+   */
   def getDescription() = Description.createSuiteDescription(suiteClass)
 
+  /**
+   * Run this <code>Suite</code> of tests, reporting results to the passed <code>RunNotifier</code>.
+   * This class's implementation of this method invokes execute on an instance of the
+   * <code>suiteClass</code> <code>Class</code> passed to the primary constructor, passing
+   * in a <code>Reporter</code> that forwards to the  <code>RunNotifier</code> passed to this
+   * method as <code>notifier</code>.
+   *
+   * @param notifier the JUnit <code>RunNotifier</code> to which to report the results of executing
+   * this suite of tests
+   */
   def run(notifier: RunNotifier) {
     suiteToRun.execute(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set(), Map(), None)
   }
 
+  /**
+   * Returns the number of tests that are expected to run when this ScalaTest <code>Suite</code>
+   * is executed.
+   *
+   *  @return the expected number of tests that will run when this suite is executed
+   */
   override def testCount() = suiteToRun.expectedTestCount(Set(), Set())
 }
 

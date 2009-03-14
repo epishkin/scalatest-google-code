@@ -18,6 +18,49 @@ package org.scalatest.junit
 import _root_.junit.framework.TestCase
 
 
+/**
+ * A suite of tests that can be run with either JUnit or ScalaTest. This trait allows you to write JUnit 3 tests
+ * with ScalaTest's more concise assertion syntax as well as JUnit's assertions (<code>assertEquals</code>, etc.).
+ * You create tests by defining methods that start with <code>test</code>, and can create fixtures with methods
+ * named <code>setUp</code> and <code>tearDown</code>. For example:
+ *
+ * <pre>
+ * import org.scalatest.junit.JUnit3Suite
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class TwoSuite extends JUnit3Suite {
+ *
+ *   var sb: StringBuilder = _
+ *   var lb: ListBuffer[String] = _
+ *
+ *   override def setUp() {
+ *     sb = new StringBuilder("ScalaTest is ")
+ *     lb = new ListBuffer[String]
+ *   }
+ *
+ *   def testEasy() {
+ *     sb.append("easy!")
+ *     assert(sb.toString === "ScalaTest is easy!")
+ *     assert(lb.isEmpty)
+ *     lb += "sweet"
+ *   }
+ *
+ *   def testFun() {
+ *     sb.append("fun!")
+ *     assert(sb.toString === "ScalaTest is fun!")
+ *     assert(lb.isEmpty)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * To execute <code>JUnit3Suite</code>s with ScalaTest's <code>Runner</code>, you must include JUnit's jar file on the class path or runpath.
+ * This version of <code>JUnit3Suite</code> was tested with JUnit version 4.4.
+ * </p>
+ *
+ * @author Josh Cough
+ * @author Bill Venners
+ */
 trait JUnit3Suite extends TestCase with JUnitSuite
 
 /*
