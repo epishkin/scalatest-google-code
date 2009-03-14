@@ -30,16 +30,30 @@ import java.lang.annotation.ElementType
 import scala.collection.immutable.TreeSet
 
 /**
- * <p>
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
- * suite (<em>i.e.</em>, a collection) of tests. This trait defines a default way to create
- * and execute tests, which involves writing <em>test methods</em>. This approach will likely suffice
- * in the vast majority of applications, but if desired, subtypes can override certain methods
- * to define other ways to create and execute tests.
- * </p>
+ * suite (<em>i.e.</em>, a collection) of tests.
  *
  * <p>
- * The easiest way to use this trait is to use its default approach: Simply create classes that
+ * This trait provides an interface that allows suites of tests to be executed.
+ * Its implementation enables a default way of writing and executing tests.  Subtraits and subclasses can
+ * override <code>Suite</code>'s methods to enable other ways of writing and executing tests.
+ * This trait's default approach allows tests to be defined as methods whose name starts with "<code>test</code>."
+ * This approach is easy to understand, and a good way for Scala beginners to start writing tests.
+ * More advanced Scala programmers may prefer to mix together other <code>Suite</code> subtraits defined in ScalaTest, 
+ * or create their own, to write tests in the way they feel makes them most productive. Here's a quick overview
+ * of some of the options:
+ * </p>
+ *
+ * <ul>
+ * <li><code>Suite</code> - tests defined as methods that start with "<code>test</code>"</li>
+ * <li><a href="FunSuite.html"><code>FunSuite</code></a> - tests defined as functions registered by invoking "<code>test</code>"</li>
+ * <li><a href="Spec.html"><code>Spec</code></a> - supports behavior-driven development style, using "<code>describe</code>" and "</code>it</code>"</li>
+ * <li><a href="junit/JUnitSuite.html"><code>JUnitSuite</code></a> - facilitates writing JUnit tests in Scala</li>
+ * <li><a href="testng/TestNGSuite.html"><code>TestNGSuite</code></a> - facilitates writing TestNG tests in Scala</li>
+ * </ul>
+ *
+ * <p>
+ * To use this trait's approach to writing tests, simply create classes that
  * extend <code>Suite</code> and define test methods. Test methods have names of the form <code>testX</code>, 
  * where <code>X</code> is some unique, hopefully meaningful, string. A test method must be public and
  * can have any result type, but the most common result type is <code>Unit</code>. Here's an example:
@@ -232,7 +246,7 @@ import scala.collection.immutable.TreeSet
  *
  * <pre>
  * val s = "hi"
- * intercept(classOf[IndexOutOfBoundsException]) {
+ * intercept[IndexOutOfBoundsException] {
  *   s.charAt(-1)
  * }
  * </pre>
@@ -247,6 +261,36 @@ import scala.collection.immutable.TreeSet
  *
  * <p>
  * <strong>Using other assertions</strong>
+ * </p>
+ *
+ * <p>
+ * ScalaTest also supports another style of assertions via its matchers DSL. By mixing in
+ * trait <a href="matchers/ShouldMatchers.html"><code>ShouldMatchers</code></a>, you can 
+ * write suites that look like:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Suite
+ * import org.scalatest.matchers.ShouldMatchers
+ *
+ * class MySuite extends Suite with ShouldMatchers {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     sum should equal (2)
+ *     sum + 2 should equal (4)
+ *   }
+ *
+ *   def testSubtraction() {
+ *     val diff = 4 - 1
+ *     diff should equal (3)
+ *     diff - 2 should equal (1)
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>If you prefer the word "<code>must</code>" to the word "<code>should</code>," you can alternatively mix in
+ * trait <a href="matchers/MustMatchers.html"><code>MustMatchers</code></a>.
  * </p>
  *
  * <p>

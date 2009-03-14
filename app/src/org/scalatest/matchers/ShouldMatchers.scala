@@ -474,7 +474,7 @@ import Helper.newTestFailedException
  * object should not be (null)
  * sum should not be <= (10)
  * mylist should not equal (yourList)
- * string should not startWith substring ("Hello")
+ * string should not startWith ("Hello")
  * </pre>
  * 
  * <h2>Logical expressions with <code>and</code> and <code>or</code></h2>

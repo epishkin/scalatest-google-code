@@ -16,14 +16,12 @@
 package org.scalatest
 
 /**
- * <p>
  * A object that facilitates concurrent and/or distributed execution of <code>Suite</code>s.
  * An optional <code>Distributor</code> is passed to the <code>execute</code> method of <code>Suite</code>. If a
  * <code>Distributor</code> is indeed passed, trait <code>Suite</code>'s implementation of <code>execute</code> will
  * populate that <code>Distributor</code> with its nested <code>Suite</code>s (by passing them to the <code>Distributor</code>'s
  * <code>put</code> method) rather than executing the nested <code>Suite</code>s directly. It is then up to another party or parties
  * to execute those <code>Suite</code>s.
- * </p>
  *
  * <p>
  * If you have a set of nested <code>Suite</code>s that must be executed sequentially, you can override <code>runNestedSuites</code> and
