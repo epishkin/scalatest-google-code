@@ -344,16 +344,6 @@ object Runner {
 
   private val RUNNER_JFRAME_START_X: Int = 150
   private val RUNNER_JFRAME_START_Y: Int = 100
-  private val passFailReporter = new PassFailReporter
-
-  class PassFailReporter extends Reporter {
-    var allTestsPassed = true
-
-    override def testFailed(report: Report) = {
-      allTestsPassed = false
-    }
-  }
-  def allTestsPassed = passFailReporter.allTestsPassed
 
   // TODO: I don't think I'm enforcing that properties can't start with "org.scalatest"
   // TODO: I don't think I'm handling rejecting multiple -f/-r with the same arg. -f fred.txt -f fred.txt should
@@ -876,8 +866,8 @@ object Runner {
     }
 
     val reporterSeq =
-      (for (spec <- reporterSpecs)
-        yield getReporterFromSpec(spec)) ++ List(passFailReporter)
+      for (spec <- reporterSpecs)
+        yield getReporterFromSpec(spec)
 
     val fullReporterList: List[Reporter] =
       graphicReporter match {

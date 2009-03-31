@@ -3,15 +3,13 @@ package org.scalatest.tools;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.AntClassLoader;
 
 import java.util.ArrayList;
 
 /**
  * <p>
  * An ant task to run scalatest.  Instructions on how to specify various
- * options are below.  See the scaladocs for the Runner class for a description
+ * options are below.  See the javadocs for the Runner class for a description
  * of what each of the options does.
  * </p>
  *
@@ -195,25 +193,8 @@ public class ScalaTestTask extends Task {
         addTestNGSuiteArgs(args);
         addConcurrentArg(args);
 
-        javaTaskRunner(args);
-    }
-
-    void javaTaskRunner(ArrayList<String> args) {
-        Java java = new Java();
-        java.bindToOwner(this);
-        java.init();
-        java.setFork(true);
-        java.setClassname("org.scalatest.tools.Runner");
-
-        AntClassLoader classLoader =
-            (AntClassLoader) getClass().getClassLoader();
-
-        java.setClasspath(new Path(getProject(), classLoader.getClasspath()));
-
-        for (String arg: args) {
-            java.createArg().setValue(arg);
-        }
-        java.execute();
+        String[] argsArray = args.toArray(new String[args.size()]);
+        Runner.main(argsArray);
     }
 
     //
@@ -414,6 +395,7 @@ public class ScalaTestTask extends Task {
             this.runpath.add(element);
         }
     }
+    
     
     public void setTestNGSuites(Path testNGSuitePath) {
         for (String element: testNGSuitePath.list()) {

@@ -34,7 +34,6 @@ import javax.swing.JButton
 import javax.swing.JCheckBoxMenuItem
 import javax.swing.JDialog
 import javax.swing.JFrame
-import javax.swing.WindowConstants
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JMenu
@@ -132,7 +131,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   private def initialize() = {
 
-    setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE)
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 
     val ambientURL: URL = classOf[Suite].getClassLoader().getResource("images/greendot.gif")
     val ambientIcon: ImageIcon = new ImageIcon(ambientURL)
