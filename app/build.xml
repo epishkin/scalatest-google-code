@@ -47,7 +47,6 @@
 
         <path id="lib.path">
             <fileset dir="${lib}"><include name="**/*.jar" /></fileset>
-            <pathelement location="${lib}/scala-library.jar" />
         </path>        
         
         <path id="build.class.path">
@@ -107,6 +106,19 @@
 
     </target>
 
+    <target name="taskdefscalatest">
+        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask">
+            <classpath>
+                <pathelement location="${classes}" />
+                <pathelement location="${lib}/scala-library.jar" />
+                <pathelement location="${lib}/junit-4.4.jar" />
+                <pathelement location="${lib}/ScalaCheck-1.5.jar" />
+                <pathelement location="${lib}/mockito-all-1.6.jar" />
+                <pathelement location="${lib}/testng-5.7-jdk15.jar" />
+            </classpath>
+        </taskdef>
+    </target>
+
     <target name="clean" depends="init">
         <delete dir="${build}" />
         <delete dir="test-output" quiet="true" />
@@ -163,7 +175,7 @@
     </target>
 
     <target name="doc" depends="compile-main">
-        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpath="${classes}" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
+        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
         <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
             <include name="**/*.scala" />
@@ -239,31 +251,15 @@
         </copy>
     </target>
 
-    <target name="test" depends="compile,copyprops,jartests">
-        <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
-
-            <arg value="-p" />
-            <!--<arg value="${build.tests} ${classes}" />-->
-            <arg value="${build.tests.jar}" />
-
-            <arg value="-g" />
-            <!--<arg value="-o" />-->
-
-            <arg value="-m" />
-            <arg value="org.scalatest" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.matchers" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.testng" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.junit" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.prop" />
-        </java>
+    <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
+        <scalatest runpath="${build.tests.jar}">
+            <reporter type="graphic" />
+            <membersonly package="org.scalatest" />
+            <membersonly package="org.scalatest.matchers" />
+            <membersonly package="org.scalatest.testng" />
+            <membersonly package="org.scalatest.junit" />
+            <membersonly package="org.scalatest.prop" />
+        </scalatest>
     </target>
 
     <target name="coverage" depends="compile,copyprops,instrument,jartests">
@@ -381,14 +377,7 @@
     </target>
 
 
-    <target name="ant-task-test" depends="compile">
-        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask">
-            <classpath>
-                <pathelement location="${classes}" />
-                <pathelement location="${lib}/scala-library.jar" />
-            </classpath>
-        </taskdef>
-
+    <target name="ant-task-test" depends="compile,taskdefscalatest">
         <scalatest runpath="${build.tests};${classes}">
             <runpath>
                 <pathelement location="dist" />
@@ -401,6 +390,7 @@
             <reporter type="graphic" />
         </scalatest>
     </target>
+
     <target name="jar" depends="dist"></target>
 </project>
 
