@@ -25,6 +25,7 @@
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
     <property name="lib" value="lib" />
+    <property name="jvmargs" value="-Xmx1280M"/>
 
     <!--
   <property name="build.compiler" value="jikes"/>
@@ -47,7 +48,6 @@
 
         <path id="lib.path">
             <fileset dir="${lib}"><include name="**/*.jar" /></fileset>
-            <pathelement location="${lib}/scala-library.jar" />
         </path>        
         
         <path id="build.class.path">
@@ -107,6 +107,19 @@
 
     </target>
 
+    <target name="taskdefscalatest">
+        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask">
+            <classpath>
+                <pathelement location="${classes}" />
+                <pathelement location="${lib}/scala-library.jar" />
+                <pathelement location="${lib}/junit-4.4.jar" />
+                <pathelement location="${lib}/ScalaCheck-1.5.jar" />
+                <pathelement location="${lib}/mockito-all-1.6.jar" />
+                <pathelement location="${lib}/testng-5.7-jdk15.jar" />
+            </classpath>
+        </taskdef>
+    </target>
+
     <target name="clean" depends="init">
         <delete dir="${build}" />
         <delete dir="test-output" quiet="true" />
@@ -114,7 +127,7 @@
 
     <target name="gencode" depends="init">
         <!-- First, compile the code generator from ${generators} into ${build.generators} -->
-        <fsc srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
+        <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
         <!-- Then, run it. -->
         <java classname="GenMustMatchers" classpathref="run.generators.class.path" fork="false" />
         <java classname="GenMustMatchersTests" classpathref="run.generators.class.path" fork="false" />
@@ -125,10 +138,10 @@
     <target name="compile-main" depends="init">
 
         <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
-        <fsc srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
+        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
-        <fsc srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
+        <scalac srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
         <!-- Compile the Java code from ${src} into ${classes} -->
         <javac srcdir="${src}" destdir="${classes}" classpathref="build.class.path" debug="yes">
@@ -140,10 +153,10 @@
     <target name="compile-tests" depends="compile-main">
 
         <!-- Compile the Scala code from ${tests} into ${build.tests} -->
-        <fsc srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path"/>
+        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs}"/>
 
         <!-- Compile the Scala code from ${build.generated.tests} into ${classes}. Scalac will parse any referenced .java files. -->
-        <fsc srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" />
+        <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" />
 
         <!-- Compile the Java code from ${tests} into ${build.tests} -->
         <javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
@@ -163,7 +176,7 @@
     </target>
 
     <target name="doc" depends="compile-main">
-        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpath="${classes}" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
+        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
         <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
             <include name="**/*.scala" />
@@ -239,31 +252,15 @@
         </copy>
     </target>
 
-    <target name="test" depends="compile,copyprops,jartests">
-        <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
-
-            <arg value="-p" />
-            <!--<arg value="${build.tests} ${classes}" />-->
-            <arg value="${build.tests.jar}" />
-
-            <arg value="-g" />
-            <!--<arg value="-o" />-->
-
-            <arg value="-m" />
-            <arg value="org.scalatest" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.matchers" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.testng" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.junit" />
-
-            <arg value="-m" />
-            <arg value="org.scalatest.prop" />
-        </java>
+    <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
+        <scalatest runpath="${build.tests.jar}" haltonfailure="true">
+            <reporter type="graphic" />
+            <membersonly package="org.scalatest" />
+            <membersonly package="org.scalatest.matchers" />
+            <membersonly package="org.scalatest.testng" />
+            <membersonly package="org.scalatest.junit" />
+            <membersonly package="org.scalatest.prop" />
+        </scalatest>
     </target>
 
     <target name="coverage" depends="compile,copyprops,instrument,jartests">
@@ -381,15 +378,8 @@
     </target>
 
 
-    <target name="ant-task-test" depends="compile">
-        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask">
-            <classpath>
-                <pathelement location="${classes}" />
-                <pathelement location="${lib}/scala-library.jar" />
-            </classpath>
-        </taskdef>
-
-        <scalatest runpath="${build.tests};${classes}">
+    <target name="ant-task-test" depends="compile,taskdefscalatest">
+        <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
             <runpath>
                 <pathelement location="dist" />
             </runpath>
@@ -401,6 +391,7 @@
             <reporter type="graphic" />
         </scalatest>
     </target>
+
     <target name="jar" depends="dist"></target>
 </project>
 

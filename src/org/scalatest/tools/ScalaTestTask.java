@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * <p>
  * An ant task to run scalatest.  Instructions on how to specify various
- * options are below.  See the javadocs for the Runner class for a description
+ * options are below.  See the scaladocs for the Runner class for a description
  * of what each of the options does.
  * </p>
  *
@@ -162,6 +162,11 @@ import java.util.ArrayList;
  *     &lt;wildcard package="com.artima.joker"/&gt;
  * </pre>
  *
+ * <p>
+ * Use attribute haltonfailure="true" to cause ant to fail the
+ * build if there's a test failure.
+ * </p>
+ *
  * @author George Berger
  */
 public class ScalaTestTask extends Task {
@@ -177,6 +182,7 @@ public class ScalaTestTask extends Task {
         new ArrayList<ReporterElement>();
     private ArrayList<NameValuePair> properties =
         new ArrayList<NameValuePair>();
+    private boolean haltonfailure = false;
 
     //
     // Executes the task.
@@ -194,7 +200,11 @@ public class ScalaTestTask extends Task {
         addConcurrentArg(args);
 
         String[] argsArray = args.toArray(new String[args.size()]);
-        Runner.main(argsArray);
+        boolean success = Runner.runTests(argsArray);
+
+        if (!success && haltonfailure) {
+            throw new BuildException("scalatest test failed");
+        }
     }
 
     //
@@ -396,6 +406,12 @@ public class ScalaTestTask extends Task {
         }
     }
     
+    //
+    // Sets value of 'haltonfailure' attribute.
+    //
+    public void setHaltonfailure(boolean haltonfailure) {
+        this.haltonfailure = haltonfailure;
+    }
     
     public void setTestNGSuites(Path testNGSuitePath) {
         for (String element: testNGSuitePath.list()) {
