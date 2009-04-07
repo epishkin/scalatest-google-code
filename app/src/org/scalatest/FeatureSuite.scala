@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * @author Bill Venners
  */
-private[scalatest] class FeatureSuite(override val suiteName: String) extends Suite with GivenWhenThen {
+private[scalatest] class FeatureSuite(override val suiteName: String) extends Suite with GivenWhenThen { thisSuite =>
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
@@ -95,7 +95,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
-        apply(new SpecReport(nameForReport, message, message, "  " + message, true))
+        apply(new SpecReport(nameForReport, message, message, "  " + message, true, Some(suiteName), Some(thisSuite.getClass.getName), None))
       }
     }
     
@@ -199,7 +199,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
     val specText = Resources("scenario", scenarioName)
-    val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true)
+    val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
 
     wrappedReporter.testStarting(report)
 
@@ -220,7 +220,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              val report = new SpecReport(nameForReport, message, message, "    " + message, true)
+              val report = new SpecReport(nameForReport, message, message, "    " + message, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
               wrappedReporter.infoProvided(report)
             }
           }
@@ -231,7 +231,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       }
 
       // Supress this report in the spec output. (Will show it if there was a failure, though.)
-      val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false)
+      val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
 
       wrappedReporter.testSucceeded(report)
     }
@@ -255,7 +255,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
         t.toString
 
     val specText = Resources("scenario", scenarioName)
-    val report = new SpecReport(getTestNameForReport(scenarioName), msg, specText, "  " + specText, true, Some(t), None)
+    val report = new SpecReport(getTestNameForReport(scenarioName), msg, specText, "  " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName), Some(t), None)
 
     reporter.testFailed(report)
   }

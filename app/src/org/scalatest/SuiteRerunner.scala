@@ -49,9 +49,9 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
         val report =
           suite match {
             case spec: Spec =>
-              new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
+              new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
             case _ =>
-              new Report(suite.suiteName, rawString, None, rerunnable)
+              new Report(suite.suiteName, rawString, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
           }
         reporter.suiteStarting(report)
 
@@ -61,9 +61,9 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
         val report2 =
           suite match {
             case spec: Spec =>
-              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, None, rerunnable)
+              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
             case _ =>
-              new Report(suite.suiteName, rawString2, None, rerunnable)
+              new Report(suite.suiteName, rawString2, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
           }
         reporter.suiteCompleted(report2)
       }
@@ -73,9 +73,9 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
           val report3 =
             suite match {
               case spec: Spec =>
-                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
+                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(suite.suiteName), Some(suite.getClass.getName), None, Some(e), rerunnable)
               case _ =>
-                new Report(suite.suiteName, rawString3, Some(e), rerunnable)
+                new Report(suite.suiteName, rawString3, Some(suite.suiteName), Some(suite.getClass.getName), None, Some(e), rerunnable)
             }
           reporter.suiteAborted(report3)
         }
@@ -89,29 +89,29 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
     }
     catch {
       case ex: ClassNotFoundException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite", ex.getMessage), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite", ex.getMessage), None, Some(suiteClassName), None, Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: InstantiationException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), None, Some(suiteClassName), None, Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: IllegalAccessException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), None, Some(suiteClassName), None, Some(ex), None)
         reporter.runAborted(report)
       }
       case e: SecurityException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("securityWhenRerruning", e.getMessage), Some(e), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("securityWhenRerruning", e.getMessage), None, Some(suiteClassName), None, Some(e), None)
         reporter.runAborted(report)
       }
       case ex: NoClassDefFoundError => {
             // Suggest the problem might be a bad runpath
             // Maybe even print out the current runpath
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass", ex.getMessage), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass", ex.getMessage), None, Some(suiteClassName), None, Some(ex), None)
         reporter.runAborted(report)
       }
       case ex: Throwable => {
-        val report = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), Some(ex), None)
+        val report = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), None, Some(suiteClassName), None, Some(ex), None)
         reporter.runAborted(report)
       }
     }

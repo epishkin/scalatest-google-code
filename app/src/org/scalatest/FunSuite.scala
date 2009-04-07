@@ -475,7 +475,7 @@ import org.scalatest.TestFailedExceptionHelper.getStackDepth
  *
  * @author Bill Venners
  */
-trait FunSuite extends Suite {
+trait FunSuite extends Suite { thisSuite =>
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
@@ -554,7 +554,7 @@ trait FunSuite extends Suite {
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
-        apply(new Report(nameForReport, message))
+        apply(new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), None))
       }
     }
     
@@ -676,9 +676,9 @@ trait FunSuite extends Suite {
      
     val report =
       if (hasPublicNoArgConstructor)
-        new Report(getTestNameForReport(testName), "", None, rerunnable)
+        new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
       else
-        new Report(getTestNameForReport(testName), "")
+        new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
 
     wrappedReporter.testStarting(report)
 
@@ -699,7 +699,7 @@ trait FunSuite extends Suite {
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              val report = new Report(nameForReport, message)
+              val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
               wrappedReporter.infoProvided(report)
             }
           }
@@ -711,9 +711,9 @@ trait FunSuite extends Suite {
 
       val report =
         if (hasPublicNoArgConstructor)
-          new Report(getTestNameForReport(testName), "", None, rerunnable)
+          new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
         else 
-          new Report(getTestNameForReport(testName), "")
+          new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
 
       wrappedReporter.testSucceeded(report)
     }
@@ -736,7 +736,7 @@ trait FunSuite extends Suite {
       else
         t.toString
 
-    val report = new Report(getTestNameForReport(testName), msg, Some(t), rerunnable)
+    val report = new Report(getTestNameForReport(testName), msg, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), rerunnable)
 
     reporter.testFailed(report)
   }
@@ -793,7 +793,7 @@ trait FunSuite extends Suite {
             case Test(tn, _) =>
               if (!stopper.stopRequested && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
                 if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
-                  wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
+                  wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
                 }
                 else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
                   runTest(tn, wrappedReporter, stopper, goodies)
@@ -828,7 +828,7 @@ trait FunSuite extends Suite {
         def apply(message: String) {
           if (message == null)
             throw new NullPointerException
-          val report = new Report(nameForReport, message)
+          val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), None)
           wrappedReporter.infoProvided(report)
         }
       }

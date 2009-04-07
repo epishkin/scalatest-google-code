@@ -44,9 +44,9 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
       val report =
         suite match {
           case spec: Spec =>
-            new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
+            new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
           case _ =>
-            new Report(suite.suiteName, rawString, None, rerunnable)
+            new Report(suite.suiteName, rawString, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
         }
   
       dispatchReporter.suiteStarting(report)
@@ -59,9 +59,9 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
         val report2 =
           suite match {
             case spec: Spec =>
-              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, None, rerunnable)
+              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
             case _ =>
-              new Report(suite.suiteName, rawString2, None, rerunnable)
+              new Report(suite.suiteName, rawString2, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
           }
   
         dispatchReporter.suiteCompleted(report2)
@@ -73,9 +73,9 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
           val report3 =
             suite match {
               case spec: Spec =>
-                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
+                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(suite.suiteName), Some(suite.getClass.getName), None, Some(e), rerunnable)
               case _ =>
-                new Report(suite.suiteName, rawString3, Some(e), rerunnable)
+                new Report(suite.suiteName, rawString3, Some(suite.suiteName), Some(suite.getClass.getName), None, Some(e), rerunnable)
             }
   
           dispatchReporter.suiteAborted(report3)

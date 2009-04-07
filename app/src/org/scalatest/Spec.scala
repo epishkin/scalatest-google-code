@@ -481,7 +481,7 @@ when a test fails, it doesn't print them? No, I know, it .... No
  *
  * @author Bill Venners
  */
-trait Spec extends Suite {
+trait Spec extends Suite { thisSuite =>
 
   private val IgnoreGroupName = "org.scalatest.Ignore"
 
@@ -657,7 +657,7 @@ trait Spec extends Suite {
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
           val descriptionNameForReport = getTestNameForReport(descriptionFullName)
-          val report = new SpecReport(descriptionNameForReport, descriptionFullName, descriptionFullName, descriptionFullName, true)
+          val report = new SpecReport(descriptionNameForReport, descriptionFullName, descriptionFullName, descriptionFullName, true, Some(suiteName), Some(thisSuite.getClass.getName), None)
           wrappedReporter.infoProvided(report)
         }
         
@@ -687,7 +687,7 @@ trait Spec extends Suite {
             if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
               val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
-              val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true)
+              val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
               wrappedReporter.testIgnored(report)
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
@@ -740,14 +740,14 @@ trait Spec extends Suite {
           // A testStarting report won't normally show up in a specification-style output, but
           // will show up in a test-style output.
           val report =
-            new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false, None, rerunnable)
+            new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
   
           wrappedReporter.testStarting(report)
   
           try {
             example.f()
   
-            val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true, None, rerunnable)
+            val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
   
             wrappedReporter.testSucceeded(report)
           }
@@ -782,7 +782,7 @@ trait Spec extends Suite {
       else
         t.toString
 
-    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(t), rerunnable)
+    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), rerunnable)
 
     reporter.testFailed(report)
   }

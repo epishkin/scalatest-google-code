@@ -53,6 +53,7 @@ import java.util.Date
  *
  * @param name the name of the entity about which this report was generated.
  * @param message a <code>String</code> message.
+ * @param suiteName an optional name of the suite about which this <code>Report</code> was made
  * @param suiteClassName an optional fully qualifed Suite class name about which this <code>Report</code> was made
  * @param testName an optional test name about which this <code>Report</code> was made
  * @param throwable the <code>Throwable</code> that indicated the problem, or a <code>Throwable</code> created
@@ -65,9 +66,7 @@ import java.util.Date
  *     indicating the time this <code>Report</code> was generated, or a <code>Date</code>
  *     indicating the time the event reported by this <code>Report</code> occurred.
  *
- * @throws NullPointerException if any of the specified
- *     <code>name</code>, <code>message</code>, <code>throwable</code>, or <code>rerunnable</code>, <code>threadName</code>, or
- *     <code>date</code> references are <code>null</code>.
+ * @throws NullPointerException if any of the specified parameters are <code>null</code>.
  *
  * @author Bill Venners
  */
@@ -75,6 +74,7 @@ import java.util.Date
 class Report(
   val name: String,
   val message: String,
+  val suiteName: Option[String],
   val suiteClassName: Option[String],
   val testName: Option[String],
   val throwable: Option[Throwable],
@@ -88,6 +88,9 @@ class Report(
 
   if (message == null)
     throw new NullPointerException("message was null")
+
+  if (suiteName == null)
+    throw new NullPointerException("suiteName was null")
 
   if (suiteClassName == null)
     throw new NullPointerException("suiteClassName was null")
@@ -116,6 +119,7 @@ class Report(
    *
    * @param name the name of the entity about which this report was generated.
    * @param message a <code>String</code> message.
+   * @param suiteName an optional name of the suite about which this <code>Report</code> was made
    * @param suiteClassName an optional fully qualifed Suite class name about which this <code>Report</code> was made
    * @param testName an optional test name about which this <code>Report</code> was made
    * @param throwable a relevant <code>Throwable</code>, or <code>None</code>. For example, this
@@ -124,13 +128,29 @@ class Report(
    *     information in the <code>Report</code>.
    * @param rerunnable a <code>Rerunnable</code> that can be used to rerun a test or other entity, or <code>None</code>.
    *
-   * @throws NullPointerException if any of the specified
-   *     <code>name</code>, <code>message</code>, <code>throwable</code>,
-   *     or <code>rerunnable</code> parameters are <code>null</code>.
+   * @throws NullPointerException if any of the specified parameters are <code>null</code>.
    */
-  def this(name: String, message: String, suiteClassName: Option[String], testName: Option[String],
+  def this(name: String, message: String, suiteName: Option[String], suiteClassName: Option[String], testName: Option[String],
       throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
-      message, suiteClassName, testName, throwable, rerunnable, Thread.currentThread.getName, new Date)
+      message, suiteName, suiteClassName, testName, throwable, rerunnable, Thread.currentThread.getName, new Date)
+
+  /**
+   * Constructs a new <code>Report</code> with specified name,
+   * message, optional throwable, and optional rerunnable. This constructor will
+   * invoke the primary constructor, passing along the specified values, plus the
+   * name of the current thread as <code>threadName</code> and the current time stamp
+   * as <code>timeStamp</code>.
+   *
+   * @param name the name of the entity about which this report was generated.
+   * @param message a <code>String</code> message.
+   * @param suiteName an optional name of the suite about which this <code>Report</code> was made
+   * @param suiteClassName an optional fully qualifed Suite class name about which this <code>Report</code> was made
+   * @param testName an optional test name about which this <code>Report</code> was made
+   *
+   * @throws NullPointerException if any of the specified parameters are <code>null</code>.
+   */
+  def this(name: String, message: String, suiteName: Option[String], suiteClassName: Option[String], testName: Option[String])  = this(name,
+      message, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, new Date)
 
   /**
    * <b>Deprecated. Please use one of the non-deprecated constructors. This constructor will
@@ -146,7 +166,7 @@ class Report(
    *     or <code>message</code> parameters are <code>null</code>.
    */
   @deprecated
-  def this(name: String, message: String) = this(name, message, None, None,
+  def this(name: String, message: String) = this(name, message, None, None, None,
       None, None, Thread.currentThread.getName, new Date)
 
 
@@ -176,7 +196,7 @@ class Report(
    */
   @deprecated
   def this(name: String, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
-      message, None, None, throwable, rerunnable, Thread.currentThread.getName, new Date)
+      message, None, None, None, throwable, rerunnable, Thread.currentThread.getName, new Date)
 
   /**
    * <b>Deprecated. Please use one of the non-deprecated constructors. This constructor will
@@ -199,9 +219,10 @@ class Report(
    *     <code>name</code>, <code>message</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
+  @deprecated
   def this(name: String, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable],
     threadName: String, timeStamp: Date) = this(name,
-      message, None, None, throwable, rerunnable, Thread.currentThread.getName, new Date)
+      message, None, None, None, throwable, rerunnable, Thread.currentThread.getName, new Date)
 
 }
 /*
