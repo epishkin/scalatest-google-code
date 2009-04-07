@@ -27,6 +27,7 @@ package org.scalatest.junit {
 
       val runCount = 3
       val failedCount = 2
+      val ignoreCount = 1
 
       test("JUnit ran this OK!") {
         assert(1 === 1)
@@ -37,6 +38,10 @@ package org.scalatest.junit {
       }
 
       test("bla bla bla") {
+        assert(1 === 2)
+      }
+
+      ignore("I should be ignored") {
         assert(1 === 2)
       }
     }
@@ -52,8 +57,9 @@ package org.scalatest.junit {
     test("That EasySuite gets run by JUnit given its RunWith annotation") {
       val result = JUnitCore.runClasses(classOf[EasySuite])
       val easySuite = new EasySuite
-      assert(result.getRunCount === easySuite.runCount) // EasySuite has 3 tests
+      assert(result.getRunCount === easySuite.runCount) // EasySuite has 3 tests (excluding the ignored one)
       assert(result.getFailureCount === easySuite.failedCount) // EasySuite has 2 tests that blow up
+      assert(result.getIgnoreCount === easySuite.ignoreCount) // EasySuite has 1 ignored test
     }
   }
 }

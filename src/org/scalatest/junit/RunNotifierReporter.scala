@@ -32,10 +32,10 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
   private def getNameFromReport(report: Report): String =
     report.suiteClassName match {
       case Some(suiteClassName) =>
-          report.testName match {
-            case Some(testName) => testName + "(" + suiteClassName + ")"
-            case None => report.name
-          }
+        report.testName match {
+          case Some(testName) => testName + "(" + suiteClassName + ")"
+          case None => report.name
+        }
       case None => report.name
     }
 
@@ -48,7 +48,8 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
   }
 
   override def testIgnored(report: Report) {
-    runNotifier.fireTestIgnored(Description.createSuiteDescription(getNameFromReport(report)))
+    val description = Description.createSuiteDescription(getNameFromReport(report))
+    runNotifier.fireTestIgnored(description)
   }
 
   // Not sure if the exception passed to new Failure can be null, but it will be
@@ -58,26 +59,17 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
         case Some(t) => t
         case None => null // yuck
       }
-    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(getNameFromReport(report)), throwable))
+    val description = Description.createSuiteDescription(getNameFromReport(report))
+    runNotifier.fireTestFailure(new Failure(description, throwable))
+    runNotifier.fireTestFinished(description)
   }
 
-  // Not sure if the exception passed to new Failure can be null, but it will be
   override def suiteAborted(report: Report) {
-    val throwable =
-      report.throwable match {
-        case Some(t) => t
-        case None => null // yuck
-      }
-    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(getNameFromReport(report)), throwable))
+    testFailed(report) // Best we can do in JUnit, as far as I know
   }
 
   // Not sure if the exception passed to new Failure can be null, but it will be
   override def runAborted(report: Report) {
-    val throwable =
-      report.throwable match {
-        case Some(t) => t
-        case None => null // yuck
-      }
-    runNotifier.fireTestFailure(new Failure(Description.createSuiteDescription(getNameFromReport(report)), throwable))
+    testFailed(report) // Best we can do in JUnit, as far as I know
   }
 }

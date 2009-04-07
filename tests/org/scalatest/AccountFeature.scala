@@ -43,7 +43,11 @@ class AccountFeature extends FeatureSuite("transfer from savings to checking acc
   info("As a savings account holder")
   info("I want to transfer money from my savings account to my checking account")
   info("So that I can get cash easily from an ATM")
-
+/*
+  As a "savings account holder"
+  I want "to transfer"
+  So that "I can get"
+  */
   scenario("savings account has sufficient funds") {
 
     given("my savings account balance is $100")

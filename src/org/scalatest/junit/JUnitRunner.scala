@@ -60,7 +60,7 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    *
    * return a <code>Description</code> of this suite of tests
    */
-  def getDescription() = Description.createSuiteDescription(suiteClass)
+  val getDescription = Description.createSuiteDescription(suiteClass)
 
   /**
    * Run this <code>Suite</code> of tests, reporting results to the passed <code>RunNotifier</code>.
@@ -73,7 +73,7 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    * this suite of tests
    */
   def run(notifier: RunNotifier) {
-    suiteToRun.execute(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set(), Map(), None)
+    suiteToRun.execute(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
   }
 
   /**
@@ -83,5 +83,7 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    *  @return the expected number of tests that will run when this suite is executed
    */
   override def testCount() = suiteToRun.expectedTestCount(Set(), Set())
+
+  println(getDescription)
 }
 

@@ -116,11 +116,14 @@ class SpecReport(
   val plainSpecText: String,
   val formattedSpecText: String,
   val includeInSpecOutput: Boolean,
+  override val suiteName: Option[String],
+  override val suiteClassName: Option[String],
+  override val testName: Option[String],
   override val throwable: Option[Throwable],
   override val rerunnable: Option[Rerunnable],
   override val threadName: String,
   override val timeStamp: Date
-) extends Report(name, message, None, None, throwable, rerunnable, threadName, timeStamp) {
+) extends Report(name, message, suiteName, suiteClassName, testName, throwable, rerunnable, threadName, timeStamp) {
 
   if (plainSpecText == null)
     throw new NullPointerException("plainSpecText was null")
@@ -138,8 +141,8 @@ class SpecReport(
    * @throws NullPointerException if any of the specified <code>name</code>,
    *     <code>message</code>, <code>plainSpecText</code>, or <code>formattedSpecText</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean) =
-    this(name, message, plainSpecText, formattedSpecText, includeInSpecOutput, None, None, Thread.currentThread.getName, new Date)
+  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean, suiteName: Option[String], suiteClassName: Option[String], testName: Option[String]) =
+    this(name, message, plainSpecText, formattedSpecText, includeInSpecOutput, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, new Date)
 
     /**
    * Constructs a new <code>Report</code> with specified name,
@@ -157,6 +160,6 @@ class SpecReport(
    *     <code>name</code>, <code>message</code>, , <code>plainSpecText</code>, <code>formattedSpecText</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
-      message, plainSpecText, formattedSpecText, includeInSpecOutput, throwable, rerunnable, Thread.currentThread.getName, new Date)
+  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean, suiteName: Option[String], suiteClassName: Option[String], testName: Option[String], throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
+      message, plainSpecText, formattedSpecText, includeInSpecOutput, suiteName, suiteClassName, testName, throwable, rerunnable, Thread.currentThread.getName, new Date)
 }

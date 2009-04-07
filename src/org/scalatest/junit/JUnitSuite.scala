@@ -26,20 +26,20 @@ import org.junit.runner.Result
  * A suite of tests that can be run with either JUnit or ScalaTest. This trait allows you to write JUnit 4 tests
  * with ScalaTest's more concise assertion syntax as well as JUnit's assertions (<code>assertEquals</code>, etc.).
  * You create tests by defining methods that are annotated with <code>Test</code>, and can create fixtures with
- * methods annotated with <code>WHAT?</code> and <code>WHAT?</code>. For example:
+ * methods annotated with <code>Before</code> and <code>After</code>. For example:
  *
  * <pre>
  * import org.scalatest.junit.JUnitSuite
  * import scala.collection.mutable.ListBuffer
  * import _root_.org.junit.Test
- * import _root_.org.junit.Before?
+ * import _root_.org.junit.Before
  *
  * class TwoSuite extends JUnitSuite {
  *
  *   var sb: StringBuilder = _
  *   var lb: ListBuffer[String] = _
  *
- *   @Before? override def setUp() {
+ *   @Before override def initialize() {
  *     sb = new StringBuilder("ScalaTest is ")
  *     lb = new ListBuffer[String]
  *   }
