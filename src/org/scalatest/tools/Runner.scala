@@ -350,17 +350,22 @@ object Runner {
   // whether or not all tests passed.
   //
   class PassFailReporter extends Reporter {
-    var fail = false
-    var allTestsCompleted = false
+    var failed = false
+    var aborted = false
+    var completed = false
 
-    override def testFailed(report: Report)   = { fail = true }
-    override def runAborted(report: Report)   = { fail = true }
-    override def suiteAborted(report: Report) = { fail = true }
-
-    override def runCompleted() = { allTestsCompleted = true }
+    override def testFailed(report: Report)   { failed = true }
+    override def runAborted(report: Report)   { aborted = true }
+    override def suiteAborted(report: Report) { aborted = true }
+    override def runCompleted()               { completed = true }
   }
-  def allTestsPassed =
-    passFailReporter.allTestsCompleted && !passFailReporter.fail
+
+  def allTestsPassed = {
+    while (!passFailReporter.completed && !passFailReporter.aborted)
+      Thread.sleep(100)
+
+    !passFailReporter.failed && !passFailReporter.aborted
+  }
 
   // TODO: I don't think I'm enforcing that properties can't start with "org.scalatest"
   // TODO: I don't think I'm handling rejecting multiple -f/-r with the same arg. -f fred.txt -f fred.txt should
