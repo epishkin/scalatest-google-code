@@ -200,10 +200,10 @@ public class ScalaTestTask extends Task {
         addConcurrentArg(args);
 
         String[] argsArray = args.toArray(new String[args.size()]);
-        boolean success = Runner.runTests(argsArray);
+        boolean success = Runner.run(argsArray);
 
         if (!success && haltonfailure) {
-            throw new BuildException("scalatest test failed");
+            throw new BuildException("ScalaTest run failed.");
         }
     }
 
