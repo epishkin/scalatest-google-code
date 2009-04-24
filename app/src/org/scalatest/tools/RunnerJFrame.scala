@@ -503,7 +503,14 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       new ActionListener() {
         def actionPerformed(ae: ActionEvent) {
           dispose()
-          System.exit(0)
+          // Only exit if started from main(), not run(). If starting from run(),
+          // we want to return a pass/fail status from run(). Actually, if we
+          // have a passFailReporter, then that means we want to indicate status,
+          // so that's why it is used here to determine whether or not to exit.
+          passFailReporter match {
+            case Some(_) =>
+            case None => System.exit(0)
+          }
         }
       }
     )
