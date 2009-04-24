@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.testng;
+package org.scalatest.testng
 
 import org.scalatest.Suite
 import org.scalatest.Report
@@ -131,17 +131,16 @@ trait TestNGSuite extends Suite {
     // if testName is supplied, ignore groups.
     testName match {
       case Some(tn) => setupTestNGToRunSingleMethod(tn, testng)
-      case None => handleGroups( groupsToInclude, groupsToExclude, testng )
+      case None => handleGroups(groupsToInclude, groupsToExclude, testng)
     }
 
     this.run(testng, reporter)
-    
   }
   
   /**
    * Runs the TestNG object which calls back to the given Reporter.
    */
-  private[testng] def run( testng: TestNG, reporter: Reporter ): TestListenerAdapter = {
+  private[testng] def run(testng: TestNG, reporter: Reporter): TestListenerAdapter = {
     
     // setup the callback mechanism
     val tla = new MyTestListenerAdapter(reporter)
@@ -215,7 +214,8 @@ trait TestNGSuite extends Suite {
      * and/or chat with Cedric to determine if its possible to get this number from TestNG.
      */
     override def onStart(itc: ITestContext) = {
-      reporter.suiteStarting( new Report(itc.getName, className, None, None ) )
+      val message = Resources("suiteExecutionStarting")
+      reporter.suiteStarting(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
     }
 
     /**
@@ -224,7 +224,8 @@ trait TestNGSuite extends Suite {
      * in the ITestContext object into ScalaTest Reports and call reporter.infoProvided.
      */
     override def onFinish(itc: ITestContext) = {
-       reporter.suiteCompleted( new Report(itc.getName, className, None, None ) )
+      val message = Resources("suiteCompletedNormally")
+      reporter.suiteCompleted(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
     }
     
     /**
@@ -288,8 +289,8 @@ trait TestNGSuite extends Suite {
      * because there may be a large number of setup methods and infoProvided doesn't 
      * show up in your face on the UI, and so doesn't clutter the UI. 
      */
-    override def onConfigurationSuccess(itr: ITestResult) = {
-      reporter.infoProvided( new Report(itr.getName, className) )
+    override def onConfigurationSuccess(itr: ITestResult) = { // TODO: Work on this report
+      reporter.infoProvided(new Report(itr.getName, className, Some(suiteName), Some(className), Some(itr.getName)))
     }
     
     /**
