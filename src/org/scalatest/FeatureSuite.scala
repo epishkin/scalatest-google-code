@@ -312,7 +312,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
             case Test(tn, _) =>
               if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
                 if (excludes.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
-                  wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
+                  wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
                 }
                 else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
                   runTest(tn, wrappedReporter, stopper, goodies)
@@ -347,7 +347,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
         def apply(message: String) {
           if (message == null)
             throw new NullPointerException
-          val report = new Report(nameForReport, message)
+          val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), None)
           wrappedReporter.infoProvided(report)
         }
       }
