@@ -88,18 +88,20 @@ trait JUnitSuite extends Suite {
     }
 */
 
+    // For now, at least, pass Nones for suiteName, suiteClassName, and testName. Possibly
+    // later enhance this so that I'm grabbing this info out of JUnit's stupid displayName string.
     override def testFailure(failure: Failure) {
-      val report = new Report(failure.getDescription.getDisplayName, "")
+      val report = new Report(failure.getDescription.getDisplayName, "", None, None, None)
       reporter.testFailed(report)
     }
 
     override def testFinished(description: Description) {
-      val report = new Report(description.getDisplayName, "")
+      val report = new Report(description.getDisplayName, "", None, None, None)
       reporter.testSucceeded(report)
     }
 
     override def testIgnored(description: Description) {
-      val report = new Report(description.getDisplayName, "")
+      val report = new Report(description.getDisplayName, "", None, None, None)
       reporter.testIgnored(report)
     }
 
@@ -112,7 +114,7 @@ trait JUnitSuite extends Suite {
     }
 
     override def testStarted(description: Description) {
-      val report = new Report(description.getDisplayName, "")
+      val report = new Report(description.getDisplayName, "", None, None, None)
       reporter.testStarting(report)
     }
   }
