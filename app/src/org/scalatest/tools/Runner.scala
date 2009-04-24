@@ -402,7 +402,7 @@ object Runner {
    *
    * @return true if all tests were executed and passed.
    */
-  def runTests(args: Array[String]): Boolean = {
+  def run(args: Array[String]): Boolean = {
     runOptionallyWithPassFailReporter(args, true)
   }
 
