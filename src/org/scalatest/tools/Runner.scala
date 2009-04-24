@@ -338,33 +338,47 @@ import org.scalatest.testng.TestNGWrapperSuite
  * </p>
  *
  * @author Bill Venners
+ * @author George Berger
  * @author Josh Cough
  */
 object Runner {
+
   private val RUNNER_JFRAME_START_X: Int = 150
   private val RUNNER_JFRAME_START_Y: Int = 100
-  private val passFailReporter = new PassFailReporter
 
   //
   // We always include a PassFailReporter on runs in order to determine
   // whether or not all tests passed.
   //
-  class PassFailReporter extends Reporter {
-    var failed = false
-    var aborted = false
-    var completed = false
+  private class PassFailReporter extends Reporter {
 
-    override def testFailed(report: Report)   { failed = true }
-    override def runAborted(report: Report)   { aborted = true }
-    override def suiteAborted(report: Report) { aborted = true }
-    override def runCompleted()               { completed = true }
-  }
+    @volatile private var failedAbortedOrStopped = false
+    @volatile private var finished = false
 
-  def allTestsPassed = {
-    while (!passFailReporter.completed && !passFailReporter.aborted)
-      Thread.sleep(100)
+    override def testFailed(report: Report) {
+      failedAbortedOrStopped = true
+    }
+    override def runAborted(report: Report) {
+      failedAbortedOrStopped = true
+      finished = true
+    }
+    override def suiteAborted(report: Report) {
+      failedAbortedOrStopped = true
+    }
+    override def runStopped() {
+      failedAbortedOrStopped = true
+      finished = true
+    }
+    override def runCompleted() {
+      finished = true
+    }
 
-    !passFailReporter.failed && !passFailReporter.aborted
+    def allTestsPassed = {
+      while (!finished)
+        Thread.sleep(100)
+
+      !failedAbortedOrStopped
+    }
   }
 
   // TODO: I don't think I'm enforcing that properties can't start with "org.scalatest"
@@ -375,13 +389,24 @@ object Runner {
    * Runs a suite of tests, with optional GUI. See the main documentation for this singleton object for the details.
    */
   def main(args: Array[String]) {
-    runTests(args)
+    runOptionallyWithPassFailReporter(args, false)
   }
 
-  //
-  // Returns true if all tests passed.
-  //
-  def runTests(args: Array[String]): boolean = {
+  /**
+   * Runs a suite of tests, with optional GUI. See the main documentation for this singleton object for the details.
+   * The difference between this method and <code>main</code> is simply that this method will block until the run
+   * has completed, aborted, or been stopped, and return <code>true</code> if all tests executed and passed. In other
+   * words, if any test fails, or if any suite aborts, or if the run aborts or is stopped, this method will
+   * return <code>false</code>. This value is used, for example, by the ScalaTest ant task to determine whether
+   * to continue the build if <code>haltOnFailure</code> is set to <code>true</code>.
+   *
+   * @return true if all tests were executed and passed.
+   */
+  def runTests(args: Array[String]): Boolean = {
+    runOptionallyWithPassFailReporter(args, true)
+  }
+
+  private def runOptionallyWithPassFailReporter(args: Array[String], runWithPassFailReporter: Boolean): Boolean = {
 
     checkArgsForValidity(args) match {
       case Some(s) => {
@@ -442,13 +467,15 @@ object Runner {
         }
       }
 
+    val passFailReporter = if (runWithPassFailReporter) Some(new PassFailReporter) else None
+
     fullReporterSpecs.graphicReporterSpec match {
       case Some(GraphicReporterSpec(configSet)) => {
         val graphicConfigSet = if (configSet.isEmpty) ReporterOpts.allOptions else configSet
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
           val rjf = new RunnerJFrame(recipeName, graphicConfigSet, reporterSpecs, suitesList, runpathList,
-            includes, excludes, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList) 
+            includes, excludes, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter)
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
           rjf.prepUIForRunning()
@@ -461,7 +488,7 @@ object Runner {
         rjf.blockUntilWindowClosed()
       }
       case None => { // Run the test without a GUI
-        withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, None) {
+        withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, None, passFailReporter) {
           (loader, dispatchReporter) => {
             doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, includes, excludesWithIgnore(excludes),
                 propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}) 
@@ -469,7 +496,11 @@ object Runner {
         }
       }
     }
-    allTestsPassed
+    
+    passFailReporter match {
+      case Some(pfr) => pfr.allTestsPassed
+      case None => false
+    }
   }
 
   // Returns an Option[String]. Some is an error message. None means no error.
@@ -865,7 +896,7 @@ object Runner {
   }
 */
 
-  private[scalatest] def getDispatchReporter(reporterSpecs: ReporterSpecs, graphicReporter: Option[Reporter], loader: ClassLoader) = {
+  private[scalatest] def getDispatchReporter(reporterSpecs: ReporterSpecs, graphicReporter: Option[Reporter], passFailReporter: Option[Reporter], loader: ClassLoader) = {
     def getReporterFromSpec(spec: ReporterSpec): Reporter = spec match {
       case StandardOutReporterSpec(configSet) => {
         if (configSet.isEmpty)
@@ -897,12 +928,18 @@ object Runner {
 
     val reporterSeq =
       (for (spec <- reporterSpecs)
-        yield getReporterFromSpec(spec)) ++ List(passFailReporter)
+        yield getReporterFromSpec(spec))
 
-    val fullReporterList: List[Reporter] =
+    val almostFullReporterList: List[Reporter] =
       graphicReporter match {
         case None => reporterSeq.toList
         case Some(gRep) => gRep :: reporterSeq.toList
+      }
+      
+    val fullReporterList: List[Reporter] =
+      passFailReporter match {
+        case Some(pfr) => pfr :: almostFullReporterList
+        case None => almostFullReporterList
       }
 
     new DispatchReporter(fullReporterList)
@@ -993,7 +1030,7 @@ object Runner {
           val unassignableList = suitesList.filter(className => !classOf[Suite].isAssignableFrom(loader.loadClass(className)))
           if (!unassignableList.isEmpty) {
             val names = for (className <- unassignableList) yield " " + className
-            val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names)
+            val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names, None, None, None)
             dispatchReporter.runAborted(report)
             true
           }
@@ -1124,13 +1161,13 @@ object Runner {
   private[scalatest] def excludesWithIgnore(excludes: Set[String]) = excludes + "org.scalatest.Ignore"
 
   private[scalatest] def withClassLoaderAndDispatchReporter(runpathList: List[String], reporterSpecs: ReporterSpecs,
-      graphicReporter: Option[Reporter])(f: (ClassLoader, DispatchReporter) => Unit): Unit = {
+      graphicReporter: Option[Reporter], passFailReporter: Option[Reporter])(f: (ClassLoader, DispatchReporter) => Unit): Unit = {
 
     val loader: ClassLoader = getRunpathClassLoader(runpathList)
     try {
       Thread.currentThread.setContextClassLoader(loader)
       try {
-        val dispatchReporter = getDispatchReporter(reporterSpecs, graphicReporter, loader)
+        val dispatchReporter = getDispatchReporter(reporterSpecs, graphicReporter, passFailReporter, loader)
         try {
           f(loader, dispatchReporter)
         }
