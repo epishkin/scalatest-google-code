@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import java.util.Date
+
 /**
  * Trait whose instances collect the results of a running
  * suite of tests and presents those results in some way to the user.
@@ -130,7 +132,61 @@ trait Reporter {
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
     def testStarting(report: Report) = ()
+/*
+    def testStarting(
+      name: String,
+      suiteName: String,
+      suiteClassName: Option[String],
+      testName: String,
+      supress: Boolean, // True if from Spec, means won't show up in output'
+      rerunnable: Option[Rerunnable],
+      payload: Option[Any],
+      threadName: String,
+      timeStamp: Date
+    ) = ()
 
+    final def testStarting(
+      name: String,
+      suiteName: String,
+      suiteClassName: Option[String],
+      testName: String,
+      supress: Boolean,
+      rerunnable: Option[Rerunnable],
+      payload: Option[Any]
+    ) {
+      testStarting(name, suiteName, suiteClassName, testName, supress, rerunnable, payload, Thread.currentThread.getName, new Date)
+    }
+
+    final def testStarting(
+      name: String,
+      suiteName: String,
+      suiteClassName: Option[String],
+      testName: String,
+      supress: Boolean,
+      rerunnable: Option[Rerunnable]
+    ) {
+      testStarting(name, suiteName, suiteClassName, testName, supress, rerunnable, None, Thread.currentThread.getName, new Date)
+    }
+
+    final def testStarting(
+      name: String,
+      suiteName: String,
+      suiteClassName: Option[String],
+      testName: String,
+      supress: Boolean
+    ) {
+      testStarting(name, suiteName, suiteClassName, testName, supress, None, None, Thread.currentThread.getName, new Date)
+    }
+
+    final def testStarting(
+      name: String,
+      suiteName: String,
+      suiteClassName: Option[String],
+      testName: String
+    ) {
+      testStarting(name, suiteName, suiteClassName, testName, false, None, None, Thread.currentThread.getName, new Date)
+    }
+*/
     /**
      * Indicates a suite (or other entity) has completed running a test that succeeded.
      *
