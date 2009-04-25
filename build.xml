@@ -290,31 +290,17 @@
         <cobertura-report srcdir="${src}" destdir="${build.coverage}"/>
     </target>
 
-    <target name="bvtest" depends="compile,copyprops">
-        <java classname="org.scalatest.tools.Runner" classpathref="test.class.path" fork="true">
-
-            <arg value="-p" />
-            <arg value="${build.tests} ${classes}" />
-
-            <arg value="-o" />
-            <arg value="-g" />
-
-<!--
-            <arg value="-s" />
-            <arg value="org.scalatest.junit.JUnitRunnerSuite" />
--->
-
-            <arg value="-s" />
-            <arg value="org.scalatest.junit.VladSuite" />
-<!--
-            <arg value="-s" />
-            <arg value="org.scalatest.junit.RunNotifierSuite" />
-            <arg value="-s" />
-            <arg value="org.scalatest.junit.JUnitSuiteSuite" />
--->
-        </java>
+    <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
+        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+            <!--<reporter type="graphic" />-->
+            <reporter type="stdout" />
+            <suite classname="org.scalatest.SuiteSuite" />
+        </scalatest>
+        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+            <reporter type="stdout" />
+            <suite classname="org.scalatest.CatchReporterSuite" />
+        </scalatest>
     </target>
-
 
     <path id="example.class.path">
         <pathelement location="${dist}/lib/scalatest.jar" />
