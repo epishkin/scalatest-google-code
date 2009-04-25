@@ -26,6 +26,7 @@ import java.io.IOException
 import javax.swing.SwingUtilities
 import java.util.concurrent.ArrayBlockingQueue
 import org.scalatest.testng.TestNGWrapperSuite
+import java.util.concurrent.Semaphore
 
 /**
  * <p>
@@ -350,33 +351,54 @@ object Runner {
   // We always include a PassFailReporter on runs in order to determine
   // whether or not all tests passed.
   //
+  // The thread that calls Runner.run() will either start a GUI, if a graphic
+  // reporter was requested, or just run the tests itself. If a GUI is started,
+  // an event handler thread will get going, and it will start a RunnerThread,
+  // which will actually do the running. The GUI can repeatedly start RunnerThreads
+  // and RerunnerThreads, until the GUI is closed. If -c is specified, that means
+  // the tests should be run concurrently, which in turn means a Distributor will
+  // be passed to the execute method of the Suites, which will in turn populate
+  // it with its nested suites instead of executing them directly in the same
+  // thread. The Distributor works in conjunction with a pool of threads that
+  // will take suites out of the distributor queue and execute them. The DispatchReporter
+  // will serialize all reports via an actor, which because that actor uses receive
+  // not react, will have its own thread. So the DispatchReporter actor's thread will
+  // be the one that actually invokes testFailed, runAborted, etc., on this PassFailReporter.
+  // The thread that invoked Runner.run(), will be the one that calls allTestsPassed.
+  //
+  // The thread that invoked Runner.run() will be the one to instantiate the PassFailReporter
+  // and in its primary constructor acquire the single semaphore permit. This permit will
+  // only be released by the DispatchReporter's actor thread when a runAborted, runStopped,
+  // or runCompleted is invoked. allTestsPassed will block until it can reacquire the lone
+  // semaphore permit. Thus, a PassFailReporter can just be used for one run, then it is
+  // spent. A new PassFailReporter is therefore created each time the Runner.run() method is invoked.
+  //
   private class PassFailReporter extends Reporter {
 
     @volatile private var failedAbortedOrStopped = false
-    @volatile private var finished = false
+    private val runDoneSemaphore = new Semaphore(1)
+    runDoneSemaphore.acquire()
 
     override def testFailed(report: Report) {
       failedAbortedOrStopped = true
     }
     override def runAborted(report: Report) {
       failedAbortedOrStopped = true
-      finished = true
+      runDoneSemaphore.release()
     }
     override def suiteAborted(report: Report) {
       failedAbortedOrStopped = true
     }
     override def runStopped() {
       failedAbortedOrStopped = true
-      finished = true
+      runDoneSemaphore.release()
     }
     override def runCompleted() {
-      finished = true
+      runDoneSemaphore.release()
     }
 
     def allTestsPassed = {
-      while (!finished)
-        Thread.sleep(100)
-
+      runDoneSemaphore.acquire()
       !failedAbortedOrStopped
     }
   }
