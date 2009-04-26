@@ -138,7 +138,7 @@ trait Reporter {
       suiteName: String,
       suiteClassName: Option[String],
       testName: String,
-      supress: Boolean, // True if from Spec, means won't show up in output'
+      fromSpec: Boolean, // True if from Spec, means won't show up in specification-style output
       rerunnable: Option[Rerunnable],
       payload: Option[Any],
       threadName: String,
@@ -150,11 +150,11 @@ trait Reporter {
       suiteName: String,
       suiteClassName: Option[String],
       testName: String,
-      supress: Boolean,
+      fromSpec: Boolean,
       rerunnable: Option[Rerunnable],
       payload: Option[Any]
     ) {
-      testStarting(name, suiteName, suiteClassName, testName, supress, rerunnable, payload, Thread.currentThread.getName, new Date)
+      testStarting(name, suiteName, suiteClassName, testName, fromSpec, rerunnable, payload, Thread.currentThread.getName, new Date)
     }
 
     final def testStarting(
@@ -162,10 +162,10 @@ trait Reporter {
       suiteName: String,
       suiteClassName: Option[String],
       testName: String,
-      supress: Boolean,
+      fromSpec: Boolean,
       rerunnable: Option[Rerunnable]
     ) {
-      testStarting(name, suiteName, suiteClassName, testName, supress, rerunnable, None, Thread.currentThread.getName, new Date)
+      testStarting(name, suiteName, suiteClassName, testName, fromSpec, rerunnable, None, Thread.currentThread.getName, new Date)
     }
 
     final def testStarting(
@@ -173,9 +173,9 @@ trait Reporter {
       suiteName: String,
       suiteClassName: Option[String],
       testName: String,
-      supress: Boolean
+      fromSpec: Boolean
     ) {
-      testStarting(name, suiteName, suiteClassName, testName, supress, None, None, Thread.currentThread.getName, new Date)
+      testStarting(name, suiteName, suiteClassName, testName, fromSpec, None, None, Thread.currentThread.getName, new Date)
     }
 
     final def testStarting(
