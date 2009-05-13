@@ -16,6 +16,7 @@
 package org.scalatest
 
 import java.util.Date
+import org.scalatest.events.Event
 
 /**
  * Trait whose instances collect the results of a running
@@ -287,6 +288,8 @@ trait Reporter {
      * this method is invoked.
      */
     def dispose() = ()
+
+  def apply(event: Event) = ()
 }
 /*
 So I remember, this is why I decided not to make case class subclasses of
