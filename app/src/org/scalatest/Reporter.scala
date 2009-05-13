@@ -132,61 +132,8 @@ trait Reporter {
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
     def testStarting(report: Report) = ()
-/*
-    def testStarting(
-      name: String,
-      suiteName: String,
-      suiteClassName: Option[String],
-      testName: String,
-      fromSpec: Boolean, // True if from Spec, means won't show up in specification-style output
-      rerunnable: Option[Rerunnable],
-      payload: Option[Any],
-      threadName: String,
-      timeStamp: Date
-    ) = ()
 
-    final def testStarting(
-      name: String,
-      suiteName: String,
-      suiteClassName: Option[String],
-      testName: String,
-      fromSpec: Boolean,
-      rerunnable: Option[Rerunnable],
-      payload: Option[Any]
-    ) {
-      testStarting(name, suiteName, suiteClassName, testName, fromSpec, rerunnable, payload, Thread.currentThread.getName, new Date)
-    }
 
-    final def testStarting(
-      name: String,
-      suiteName: String,
-      suiteClassName: Option[String],
-      testName: String,
-      fromSpec: Boolean,
-      rerunnable: Option[Rerunnable]
-    ) {
-      testStarting(name, suiteName, suiteClassName, testName, fromSpec, rerunnable, None, Thread.currentThread.getName, new Date)
-    }
-
-    final def testStarting(
-      name: String,
-      suiteName: String,
-      suiteClassName: Option[String],
-      testName: String,
-      fromSpec: Boolean
-    ) {
-      testStarting(name, suiteName, suiteClassName, testName, fromSpec, None, None, Thread.currentThread.getName, new Date)
-    }
-
-    final def testStarting(
-      name: String,
-      suiteName: String,
-      suiteClassName: Option[String],
-      testName: String
-    ) {
-      testStarting(name, suiteName, suiteClassName, testName, false, None, None, Thread.currentThread.getName, new Date)
-    }
-*/
     /**
      * Indicates a suite (or other entity) has completed running a test that succeeded.
      *
