@@ -44,19 +44,19 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
     var alive = true // local variable, right? Only used by the Actor's thread, so no need for synchronization
     while (alive) {
       receive {
-        case RunStarting(expectedTestCount) => dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(expectedTestCount))
-        case TestStarting(report) => dispatch("testStarting", (reporter: Reporter) => reporter.testStarting(report))
-        case TestIgnored(report) => dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(report))
-        case TestSucceeded(report) => dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(report))
-        case TestFailed(report) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(report))
-        case SuiteStarting(report) => dispatch("suiteStarting", (reporter: Reporter) => reporter.suiteStarting(report))
-        case SuiteCompleted(report) => dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(report))
-        case SuiteAborted(report) => dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(report))
-        case InfoProvided(report) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(report))
-        case RunStopped() => dispatch("runStopped", (reporter: Reporter) => reporter.runStopped())
-        case RunAborted(report) => dispatch("runAborted", (reporter: Reporter) => reporter.runAborted(report))
-        case RunCompleted() => dispatch("runCompleted", (reporter: Reporter) => reporter.runCompleted())
-        case Dispose() => {
+        case RunStartingMsg(expectedTestCount) => dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(expectedTestCount))
+        case TestStartingMsg(report) => dispatch("testStarting", (reporter: Reporter) => reporter.testStarting(report))
+        case TestIgnoredMsg(report) => dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(report))
+        case TestSucceededMsg(report) => dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(report))
+        case TestFailedMsg(report) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(report))
+        case SuiteStartingMsg(report) => dispatch("suiteStarting", (reporter: Reporter) => reporter.suiteStarting(report))
+        case SuiteCompletedMsg(report) => dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(report))
+        case SuiteAbortedMsg(report) => dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(report))
+        case InfoProvidedMsg(report) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(report))
+        case RunStoppedMsg() => dispatch("runStopped", (reporter: Reporter) => reporter.runStopped())
+        case RunAbortedMsg(report) => dispatch("runAborted", (reporter: Reporter) => reporter.runAborted(report))
+        case RunCompletedMsg() => dispatch("runCompleted", (reporter: Reporter) => reporter.runCompleted())
+        case DisposeMsg() => {
           dispatch("dispose", (reporter: Reporter) => reporter.dispose())
           alive = false
         }
@@ -90,7 +90,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @param testCount the number of tests expected during this run
    * @throws IllegalArgumentException if <code>testCount</code> is less than zero
    */
-  override def runStarting(expectedTestCount: Int) = julia ! RunStarting(expectedTestCount)
+  override def runStarting(expectedTestCount: Int) = julia ! RunStartingMsg(expectedTestCount)
      
   /**
    * Invokes <code>testSucceeded</code> on each <code>Reporter</code> in this
@@ -107,7 +107,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @param report the <code>Report</code> encapsulating this test succeeded event
    * @throws NullPointerException if <code>report</code> is <code>null</code>
    */
-  override def testSucceeded(report: Report) = julia ! TestSucceeded(report)
+  override def testSucceeded(report: Report) = julia ! TestSucceededMsg(report)
 
   /**
    * Invokes <code>testIgnored</code> on each <code>Reporter</code> in this
@@ -122,7 +122,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * standard error stream.
    * 
    */
-  override def testIgnored(report: Report) = julia ! TestIgnored(report) 
+  override def testIgnored(report: Report) = julia ! TestIgnoredMsg(report)
 
   /**
    * Invokes <code>testFailed</code> on each <code>Reporter</code> in this
@@ -139,7 +139,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @param report the <code>Report</code> encapsulating this test failed event
    * @throws NullPointerException if <code>report</code> is <code>null</code>
    */
-  override def testFailed(report: Report) = julia ! TestFailed(report)
+  override def testFailed(report: Report) = julia ! TestFailedMsg(report)
 
   /**
    * Invokes <code>infoProvided</code> on each <code>Reporter</code> in this
@@ -156,7 +156,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @param report the <code>Report</code> encapsulating this info provided event
    * @throws NullPointerException if <code>report</code> is <code>null</code>
    */
-  override def infoProvided(report: Report) = julia ! InfoProvided(report)
+  override def infoProvided(report: Report) = julia ! InfoProvidedMsg(report)
 
  /**
   * Invokes <code>testStarting</code> on each <code>Reporter</code> in this
@@ -173,7 +173,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
   * @param report the <code>Report</code> encapsulating this test starting event
   * @throws NullPointerException if <code>report</code> is <code>null</code>
   */
-  override def testStarting(report: Report) = julia ! TestStarting(report)
+  override def testStarting(report: Report) = julia ! TestStartingMsg(report)
   
   /**
    * Invokes <code>suiteStarting</code> on each <code>Reporter</code> in this
@@ -191,7 +191,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    *
    * @throws NullPointerException if <code>report</code> reference is <code>null</code>
    */
-  override def suiteStarting(report: Report) = julia ! SuiteStarting(report)
+  override def suiteStarting(report: Report) = julia ! SuiteStartingMsg(report)
 
   /**
    * Invokes <code>suiteCompleted</code> on each <code>Reporter</code> in this
@@ -208,7 +208,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @param report a <code>Report</code> that encapsulates the suite completed event to report.
    * @throws NullPointerException if <code>report</code> reference is <code>null</code>
    */
-  override def suiteCompleted(report: Report) = julia ! SuiteCompleted(report)
+  override def suiteCompleted(report: Report) = julia ! SuiteCompletedMsg(report)
 
   /**
    * Indicates the execution of a suite of tests has aborted prior to completion.
@@ -226,7 +226,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
    * @throws NullPointerException if <code>report</code> reference is <code>null</code>
    */
-  override def suiteAborted(report: Report) = julia ! SuiteAborted(report)
+  override def suiteAborted(report: Report) = julia ! SuiteAbortedMsg(report)
 
   /**
    * Indicates a runner has stopped running a suite of tests prior to completion.
@@ -240,7 +240,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * a <code>runStopped</code> method and handles it by printing an error message to the
    * standard error stream.
    */
-  override def runStopped() = julia ! RunStopped()
+  override def runStopped() = julia ! RunStoppedMsg()
 
   /**
    * Indicates a run has aborted prior to completion.
@@ -258,7 +258,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
    * @throws NullPointerException if <code>report</code> reference is <code>null</code>
    */
-  override def runAborted(report: Report) = julia ! RunAborted(report)
+  override def runAborted(report: Report) = julia ! RunAbortedMsg(report)
      
   /**
    * Invokes <code>runCompleted</code> on each <code>Reporter</code> in this
@@ -271,7 +271,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * a <code>runCompleted</code> method and handles it by printing an error message to the
    * standard error stream.
    */
-  override def runCompleted() = julia ! RunCompleted()
+  override def runCompleted() = julia ! RunCompletedMsg()
 
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this
@@ -284,7 +284,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * a <code>dispose</code> method and handles it by printing an error message to the
    * standard error stream.
    */
-  override def dispose() = julia ! Dispose()
+  override def dispose() = julia ! DisposeMsg()
 
   private def dispatch(methodName: String, methodCall: (Reporter) => Unit) {
  

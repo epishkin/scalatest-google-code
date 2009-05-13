@@ -22,16 +22,16 @@ package org.scalatest
  * @author Bill Venners
  */
 private[scalatest] abstract class ReportMsg(report: Report)
-private[scalatest] case class TestStarting(report: Report) extends ReportMsg(report)
-private[scalatest] case class TestIgnored(report: Report) extends ReportMsg(report)
-private[scalatest] case class TestSucceeded(report: Report) extends ReportMsg(report)
-private[scalatest] case class TestFailed(report: Report) extends ReportMsg(report)
-private[scalatest] case class SuiteStarting(report: Report) extends ReportMsg(report)
-private[scalatest] case class SuiteCompleted(report: Report) extends ReportMsg(report)
-private[scalatest] case class SuiteAborted(report: Report) extends ReportMsg(report)
-private[scalatest] case class InfoProvided(report: Report) extends ReportMsg(report)
-private[scalatest] case class RunStarting (expectedTestCount: Int)
-private[scalatest] case class RunStopped
-private[scalatest] case class RunAborted(report: Report) extends ReportMsg(report)
-private[scalatest] case class RunCompleted
-private[scalatest] case class Dispose
+private[scalatest] case class TestStartingMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class TestIgnoredMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class TestSucceededMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class TestFailedMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class SuiteStartingMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class SuiteCompletedMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class SuiteAbortedMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class InfoProvidedMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class RunStartingMsg(expectedTestCount: Int)
+private[scalatest] case class RunStoppedMsg
+private[scalatest] case class RunAbortedMsg(report: Report) extends ReportMsg(report)
+private[scalatest] case class RunCompletedMsg
+private[scalatest] case class DisposeMsg
