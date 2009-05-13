@@ -15,6 +15,7 @@
  */
 package org.scalatest.jmock;
 
+import org.scalatest.events.Event
 
 /**
  * This class only exists because I cant get jmock to work with Scala. 
@@ -29,6 +30,9 @@ class TestReporter extends Reporter{
   var ignoreReport: Report = null;
   var ignoreCount = 0;
   
+  def apply(event: Event) {
+  }
+
   override def testSucceeded(report: Report){ 
     successCount = successCount + 1 
     this.report = report;

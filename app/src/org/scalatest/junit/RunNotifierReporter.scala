@@ -18,6 +18,7 @@ package org.scalatest.junit
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.junit.runner.notification.Failure
+import org.scalatest.events.Event
 
 // TODO: Mention on each Reporter method that it does nothing
 
@@ -38,6 +39,9 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
         }
       case None => report.name
     }
+
+  def apply(event: Event) {
+  }
 
   override def testStarting(report: Report) {
     runNotifier.fireTestStarted(Description.createSuiteDescription(getNameFromReport(report)))

@@ -27,6 +27,7 @@ import javax.swing.SwingUtilities
 import java.util.concurrent.ArrayBlockingQueue
 import org.scalatest.testng.TestNGWrapperSuite
 import java.util.concurrent.Semaphore
+import org.scalatest.events.Event
 
 /**
  * <p>
@@ -378,6 +379,9 @@ object Runner {
     @volatile private var failedAbortedOrStopped = false
     private val runDoneSemaphore = new Semaphore(1)
     runDoneSemaphore.acquire()
+
+    def apply(event: Event) {
+    }
 
     override def testFailed(report: Report) {
       failedAbortedOrStopped = true

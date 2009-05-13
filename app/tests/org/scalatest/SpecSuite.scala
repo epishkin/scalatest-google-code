@@ -16,6 +16,7 @@
 package org.scalatest
 
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.events.Event
 
 class SpecSuite extends FunSuite {
 
@@ -23,6 +24,8 @@ class SpecSuite extends FunSuite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
           testFailedAdExpected = true
@@ -45,6 +48,8 @@ class SpecSuite extends FunSuite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
           testFailedAdExpected = true
@@ -70,6 +75,8 @@ class SpecSuite extends FunSuite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
           testFailedAdExpected = true
@@ -93,6 +100,8 @@ class SpecSuite extends FunSuite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
           testFailedAdExpected = true
@@ -116,6 +125,8 @@ class SpecSuite extends FunSuite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
           testFailedAdExpected = true
@@ -139,6 +150,8 @@ class SpecSuite extends FunSuite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
           testFailedAdExpected = true
@@ -248,6 +261,8 @@ class SpecSuite extends FunSuite {
   class MyReporter extends Reporter {
     var testIgnoredCalled = false
     var lastReport: Report = null
+    def apply(event: Event) {
+    }
     override def testIgnored(report: Report) {
       testIgnoredCalled = true
       lastReport = report
@@ -448,6 +463,8 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
@@ -476,6 +493,8 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testSucceeded(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
@@ -504,6 +523,8 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
@@ -538,6 +559,8 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
         assert(!theOtherMethodHasBeenInvoked)
@@ -594,6 +617,8 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
         assert(!theOtherMethodHasBeenInvoked)
@@ -650,6 +675,8 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
         assert(!theOtherMethodHasBeenInvoked)
@@ -708,6 +735,8 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
         assert(!theOtherMethodHasBeenInvoked)
@@ -766,6 +795,8 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
         assert(!theOtherMethodHasBeenInvoked)
@@ -824,6 +855,8 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
         assert(!theOtherMethodHasBeenInvoked)
@@ -878,6 +911,8 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         if (report.name.indexOf("it should start with proper words") != -1)
           reportHadCorrectTestName = true
@@ -909,6 +944,8 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
@@ -940,6 +977,8 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testSucceeded(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
@@ -971,6 +1010,8 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
@@ -1008,6 +1049,8 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         // infoProvided should be invoked before the other method
         assert(!theOtherMethodHasBeenInvoked)
@@ -1078,7 +1121,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute(Some("it should be invoked"), new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+    a.execute(Some("it should be invoked"), StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     assert(correctTestWasInvoked)
     assert(!wrongTestWasInvoked)
   }
@@ -1093,7 +1136,7 @@ class SpecSuite extends FunSuite {
       it("it should find my goodie") {}
     }
     val a = new MySpec
-    a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map("my goodie" -> "hi"), None)
+    a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map("my goodie" -> "hi"), None)
     assert(foundMyGoodie)  
   }
   
@@ -1101,6 +1144,8 @@ class SpecSuite extends FunSuite {
   test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         if (report.name.indexOf("A Stack (when working right) should push and pop properly") != -1) {
           testStartingReportHadCorrectTestName = true
@@ -1137,6 +1182,8 @@ class SpecSuite extends FunSuite {
   test("In a testStarting report, the example name should be verbatim if top level if example registered with it") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         if (report.name.indexOf("this thing must start with proper words") != -1) {
           testStartingReportHadCorrectTestName = true
@@ -1154,6 +1201,8 @@ class SpecSuite extends FunSuite {
   test("In a testSucceeded report, the example name should be verbatim if top level if example registered with it") {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testSucceeded(report: Report) {
         if (report.name.indexOf("this thing must start with proper words") != -1) {
           testSucceededReportHadCorrectTestName = true
@@ -1171,6 +1220,8 @@ class SpecSuite extends FunSuite {
   test("In a testFailed report, the example name should be verbatim if top level if example registered with it") {
     var testFailedReportHadCorrectTestName = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this thing must start with proper words") != -1) {
           testFailedReportHadCorrectTestName = true
@@ -1189,6 +1240,8 @@ class SpecSuite extends FunSuite {
         "inside a describe clause and registered with it") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         if (report.name.indexOf("A Stack needs to push and pop properly") != -1) {
           testStartingReportHadCorrectTestName = true
@@ -1209,9 +1262,11 @@ class SpecSuite extends FunSuite {
     class MyReporter extends Reporter {
       var gotANonSpecReport = false
       var lastNonSpecReport: Option[Report] = None
-  	  override def testStarting(report: Report) {
+      def apply(event: Event) {
+      }
+      override def testStarting(report: Report) {
         ensureSpecReport(report)
-  	  }
+      }
 
       private def ensureSpecReport(report: Report) {
 	    report match {
@@ -1222,37 +1277,37 @@ class SpecSuite extends FunSuite {
           }
         }
       }
-	  override def testSucceeded(report: Report) {
+      override def testSucceeded(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
 	    
-	  override def testIgnored(report: Report) {
+      override def testIgnored(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
 	
-	  override def testFailed(report: Report) {
+      override def testFailed(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
 	
-	  override def infoProvided(report: Report) {
+      override def infoProvided(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
 	
-	  override def suiteStarting(report: Report) {
+      override def suiteStarting(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
 	
-	  override def suiteCompleted(report: Report) {
+      override def suiteCompleted(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
 	
-	  override def suiteAborted(report: Report) {
+      override def suiteAborted(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
 	
-	  override def runAborted(report: Report) {
+      override def runAborted(report: Report) {
         ensureSpecReport(report)
-	  }
+      }
     }
     class MySpec extends Spec with ShouldMatchers {
       it("it should send SpecReports") {
@@ -1272,6 +1327,8 @@ class SpecSuite extends FunSuite {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
@@ -1295,6 +1352,8 @@ class SpecSuite extends FunSuite {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
@@ -1320,6 +1379,8 @@ class SpecSuite extends FunSuite {
     var testStartingReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
+      def apply(event: Event) {
+      }
       override def testStarting(report: Report) {
         report match {
           case specReport: SpecReport =>
@@ -1351,6 +1412,8 @@ class SpecSuite extends FunSuite {
       var infoProvidedCalled = false
       var expectedMessageReceived = false
       var lastReport: Report = null
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         infoProvidedCalled = true
         if (!expectedMessageReceived) {
@@ -1386,6 +1449,8 @@ class SpecSuite extends FunSuite {
       var infoProvidedCalled = false
       var expectedMessageReceived = false
       var lastReport: Report = null
+      def apply(event: Event) {
+      }
       override def infoProvided(report: Report) {
         report match {
           case specReport: SpecReport => {
@@ -1422,6 +1487,9 @@ class SpecSuite extends FunSuite {
       var expectedLevelReceivedByTestSucceeded = false
       var expectedLevelReceivedByTestFailed = false
  
+      def apply(event: Event) {
+      }
+
       override def testSucceeded(report: Report) {
         report match {
           case specReport: SpecReport => {
@@ -1473,6 +1541,9 @@ class SpecSuite extends FunSuite {
       var expectedLevelReceivedByTestFailed = false
       var expectedLevelReceivedByInfoProvided = false
  
+      def apply(event: Event) {
+      }
+
       override def testSucceeded(report: Report) {
         report match {
           case specReport: SpecReport => {
@@ -1638,6 +1709,10 @@ class SpecSuite extends FunSuite {
   test("The test name for a shared specifier invoked with 'should behave like a' should be verbatim if top level") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
+
+      def apply(event: Event) {
+      }
+
       override def testStarting(report: Report) {
         if (report.name.indexOf("it should be invoked") != -1) {
           testStartingReportHadCorrectTestName = true
@@ -1661,6 +1736,10 @@ class SpecSuite extends FunSuite {
   ignore("The example name for a shared example invoked with 'it should behave like' should start with '<description> should' if nested one level in a describe clause") {
     var testStartingReportHadCorrectTestName = false
     class MyReporter extends Reporter {
+
+      def apply(event: Event) {
+      }
+
       override def testStarting(report: Report) {
         if (report.name.indexOf("A Stack should pop properly") != -1) {
           testStartingReportHadCorrectTestName = true
@@ -1764,6 +1843,10 @@ class SpecSuite extends FunSuite {
       var infoProvidedCalled = false
       var expectedMessageReceived = false
       var lastReport: Report = null
+
+      def apply(event: Event) {
+      }
+
       override def infoProvided(report: Report) {
         infoProvidedCalled = true
         if (!expectedMessageReceived) {

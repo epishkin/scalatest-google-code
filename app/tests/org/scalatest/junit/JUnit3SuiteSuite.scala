@@ -16,6 +16,8 @@
 
 package org.scalatest.junit {
 
+  import org.scalatest.events.Event
+
   // Put fixture Suites in a subpackage, so they won't be discovered by
   // -m org.scalatest.junit when running the test target for this project.
   package helpers {
@@ -51,6 +53,10 @@ package org.scalatest.junit {
 
       var runStartingCount = 0
       var testCountPassedToRunStarting = -1
+
+      def apply(event: Event) {
+      }
+
       override def runStarting(testCount: Int) {
         testCountPassedToRunStarting = testCount
         runStartingCount += 1

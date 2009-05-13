@@ -57,6 +57,7 @@ import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.EventQueue
 import org.scalatest.prop.PropertyTestFailedException
+import org.scalatest.events.Event
 
 /**
  * The main class for Runner's GUI.
@@ -710,6 +711,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       }
     }
   
+    def apply(event: Event) {
+    }
+
     override def testSucceeded(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")
@@ -1202,6 +1206,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     // rerun has a lot of errors, you don't hang up the GUI giving the event handler thread too much
     // work to do.
     var anErrorHasOccurredAlready = false
+
+    def apply(event: Event) = ()
 
     override def runStarting(testCount: Int) {
       if (testCount < 0)

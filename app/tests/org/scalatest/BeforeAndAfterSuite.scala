@@ -16,6 +16,7 @@
 package org.scalatest
 
 import scala.collection.mutable.ListBuffer
+import org.scalatest.events.Event
 
 class BeforeAndAfterSuite extends FunSuite {
 
@@ -102,7 +103,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.runTest("july", new Reporter {}, new Stopper {}, Map())
+      a.runTest("july", StubReporter, new Stopper {}, Map())
     }
   }
   
@@ -121,7 +122,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.runTest("july", new Reporter {}, new Stopper {}, Map())
+      a.runTest("july", StubReporter, new Stopper {}, Map())
     }
     assert(a.afterEachCalled)
   }
@@ -142,7 +143,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.runTest("july", new Reporter {}, new Stopper {}, Map())
+      a.runTest("july", StubReporter, new Stopper {}, Map())
     }
     assert(a.afterEachCalled)
   }
@@ -156,7 +157,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.runTest("testJuly", new Reporter {}, new Stopper {}, Map())
+      a.runTest("testJuly", StubReporter, new Stopper {}, Map())
     }
   }
  
@@ -170,7 +171,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
   }
  
@@ -190,7 +191,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
     assert(a.afterAllCalled)
   }
@@ -212,7 +213,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
     assert(a.afterAllCalled)
   }
@@ -226,7 +227,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.execute(None, new Reporter {}, new Stopper {}, Set(), Set(), Map(), None)
+      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
   }
 }

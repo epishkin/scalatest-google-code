@@ -16,6 +16,7 @@
 package org.scalatest
 
 import java.io.PrintStream
+import org.scalatest.events.Event
 
 /**
  * This reporter just catches exceptions thrown by the passed reporter and
@@ -28,6 +29,9 @@ import java.io.PrintStream
 private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) extends Reporter {
 
   def this(reporter: Reporter) = this(reporter, System.err)
+
+  def apply(event: Event) {
+  }
 
   override def runStarting(testCount: Int) = dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(testCount))
   override def testSucceeded(report: Report) = dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(report))

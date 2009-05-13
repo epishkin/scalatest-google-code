@@ -17,12 +17,15 @@ package org.scalatest
 
 import java.io.PrintStream
 import java.io.ByteArrayOutputStream
+import org.scalatest.events.Event
 
 class CatchReporterSuite extends Suite {
 
   def testCatching() {
 
     val buggyReporter = new Reporter {
+      def apply(event: Event) {
+      }
       override def runStarting(testCount: Int) {
         throw new RuntimeException
       }
