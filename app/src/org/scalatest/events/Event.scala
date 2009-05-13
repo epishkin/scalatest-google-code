@@ -2702,3 +2702,13 @@ object InfoProvided {
   }
 }
 
+/**
+ * Event that indicates the life cycle of a report function (reporter) is about to end.
+ * If the reporter is holding onto any non-memory finite resources, such as file handles or sockets, 
+ * it should release them. Clients should fire this event when they no longer need the reporter, before
+ * releasing the last reference to the reporter. After this event is received, the reporter may be defunct,
+ * and therefore not usable anymore. If a reporter holds no non-memory finite resources, it may do nothing when
+ * this event is received.
+ */
+case object LifeCycleEnding
+
