@@ -259,6 +259,7 @@
             <membersonly package="org.scalatest.matchers" />
             <membersonly package="org.scalatest.testng" />
             <membersonly package="org.scalatest.junit" />
+            <membersonly package="org.scalatest.events" />
             <membersonly package="org.scalatest.prop" />
         </scalatest>
     </target>
@@ -285,6 +286,9 @@
             <arg value="org.scalatest.junit" />
 
             <arg value="-m" />
+            <arg value="org.scalatest.events" />
+
+            <arg value="-m" />
             <arg value="org.scalatest.prop" />
         </java>
         <cobertura-report srcdir="${src}" destdir="${build.coverage}"/>
@@ -292,14 +296,16 @@
 
     <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
-            <!--<reporter type="graphic" />-->
+            <reporter type="graphic" />
             <reporter type="stdout" />
-            <suite classname="org.scalatest.SuiteSuite" />
+            <suite classname="org.scalatest.events.OrdinalSpec" />
         </scalatest>
+<!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="stdout" />
             <suite classname="org.scalatest.CatchReporterSuite" />
         </scalatest>
+-->
     </target>
 
     <path id="example.class.path">
