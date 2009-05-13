@@ -590,6 +590,17 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * 1 should (not be (2) and not be (3 - 1))
+       *                              ^
+       * </pre>
+       */
+      def be(any: Any) =
+        matchersWrapper.and(matchers.not.apply(matchers.be(any)))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * Array(1, 2) should (not have size (5) and not have length (3))
        *                                               ^
        * </pre>
@@ -1314,6 +1325,17 @@ trait Matchers extends Assertions { matchers =>
        */
       def equal(any: Any) =
         matchersWrapper.or(matchers.not.apply(matchers.equal(any)))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 1 should (not be (1) or not be (2))
+       *                             ^
+       * </pre>
+       */
+      def be(any: Any) =
+        matchersWrapper.or(matchers.not.apply(matchers.be(any)))
 
       /**
        * This method enables the following syntax:
@@ -3285,6 +3307,25 @@ trait Matchers extends Assertions { matchers =>
      * This method enables the following syntax:
      *
      * <pre>
+     * result should not be (7)
+     *                   ^
+     * </pre>
+     */
+    def be(right: Any) {
+      if ((left == right) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+           if (shouldBeTrue) "wasNotEqualTo" else "wasEqualTo",
+            left,
+            right
+          )
+        )
+    }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
      * result should not be <= (7)
      *                   ^
      * </pre>
@@ -4827,10 +4868,10 @@ trait Matchers extends Assertions { matchers =>
           left match {
             case null =>
               MatchResult(
-                left == null,
-                FailureMessages("wasNotNull", left),
+                right == null,
+                FailureMessages("wasNotNull", right),
                 FailureMessages("wasNull"),
-                FailureMessages("wasNotNull", left),
+                FailureMessages("wasNotNull", right),
                 FailureMessages("midSentenceWasNull")
               )
             case leftArray: Array[_] => 
@@ -5340,6 +5381,51 @@ trait Matchers extends Assertions { matchers =>
             FailureMessages("wasPlusOrMinus", left, right, tolerance),
             FailureMessages("wasNotPlusOrMinus", left, right, tolerance)
           )
+        }
+      }
+    }
+
+    /**
+     * This method enables <code>be</code> to be used for inequality comparison. Here are some examples:
+     *
+     * <pre>
+     * object should not be (None)
+     *                      ^
+     * object should not be (Some(1))
+     *                      ^
+     * result should not be (true)
+     *                      ^
+     * result should not be (false)
+     *                      ^
+     * sum should not be (19)
+     *                   ^
+     * </pre>
+     */
+    def be(right: Any): Matcher[Any] = {
+      new Matcher[Any] {
+        def apply(left: Any) = {
+          left match {
+            case null =>
+              MatchResult(
+                right != null, 
+                FailureMessages("wasNull"),
+                FailureMessages("wasNotNull", right),
+                FailureMessages("midSentenceWasNull"),
+                FailureMessages("wasNotNull", right)
+              )
+            case leftArray: Array[_] => 
+              MatchResult(
+                !leftArray.deepEquals(right),
+                FailureMessages("wasEqualTo", left, right),
+                FailureMessages("wasNotEqualTo", left, right)
+              )
+            case _ => 
+              MatchResult(
+                left != right,
+                FailureMessages("wasEqualTo", left, right),
+                FailureMessages("wasNotEqualTo", left, right)
+              )
+          }
         }
       }
     }
