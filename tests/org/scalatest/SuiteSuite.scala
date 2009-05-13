@@ -16,6 +16,7 @@
 package org.scalatest
 
 import scala.collection.immutable.TreeSet
+import org.scalatest.events.Event
 
 class SuiteFriend(suite: Suite) {
 
@@ -112,6 +113,8 @@ class SuiteSuite extends Suite with PrivateMethodTester {
   class MyReporter extends Reporter {
     var testIgnoredCalled = false
     var lastReport: Report = null
+    def apply(event: Event) {
+    }
     override def testIgnored(report: Report) {
       testIgnoredCalled = true
       lastReport = report

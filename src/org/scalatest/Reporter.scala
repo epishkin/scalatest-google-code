@@ -289,7 +289,7 @@ trait Reporter {
      */
     def dispose() = ()
 
-  def apply(event: Event) = ()
+  def apply(event: Event)
 }
 /*
 So I remember, this is why I decided not to make case class subclasses of

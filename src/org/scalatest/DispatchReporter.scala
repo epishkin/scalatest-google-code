@@ -22,6 +22,7 @@ import scala.actors.Actor.loop
 import scala.actors.Actor.receive
 import org.scalatest.CatchReporter.handleReporterException
 import java.io.PrintStream
+import org.scalatest.events.Event
 
 /**
  * A <code>Reporter</code> that dispatches test results to other <code>Reporter</code>s.
@@ -66,6 +67,9 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
 
   def this(reporters: List[Reporter]) = this(reporters, System.out)
   def this(reporter: Reporter) = this(List(reporter), System.out)
+
+  def apply(event: Event) {
+  }
 
   /* where do I put this Scaladoc?
    * Returns a <code>List</code> of the <code>Reporter</code>s contained in this

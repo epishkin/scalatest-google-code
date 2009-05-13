@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest.events.Event
+
  /**
  * FiterReporter catches exceptions that may be thrown by custom reporters, and doesn't forward
  * reports that were not selected by the passed configuration.
@@ -25,7 +27,10 @@ private[scalatest] class FilterReporter(wrappedReporter: Reporter, configSet: Re
 
   def reFilter(configSet: ReporterOpts.Set32) = new FilterReporter(wrappedReporter, configSet)
       
-   // Have some methods that translate chars & strings to Opts things, and vice versa
+  def apply(event: Event) {
+  }
+
+  // Have some methods that translate chars & strings to Opts things, and vice versa
  
   override def runStarting(testCount: Int) =
     if (configSet.contains(ReporterOpts.PresentRunStarting))

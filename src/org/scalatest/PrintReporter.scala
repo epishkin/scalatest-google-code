@@ -25,6 +25,7 @@ import java.io.PrintWriter
 import java.util.Iterator
 import java.util.Set
 import java.io.StringWriter
+import org.scalatest.events.Event
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -61,6 +62,9 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   * @throws IOException if unable to open the specified file for writing
   */
   def this(filename: String) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), PrintReporter.BufferSize)))
+
+  def apply(event: Event) {
+  }
 
   /**
   * Prints information indicating that a run with an expected <code>testCount</code>

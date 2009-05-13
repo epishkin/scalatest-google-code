@@ -15,6 +15,8 @@
  */
 package org.scalatest.junit {
 
+  import org.scalatest.events.Event
+
   // Put fixture suites in a subpackage, so they won't be discovered by
   // -m org.scalatest.junit when running the test target for this project.
   package helpers {
@@ -54,6 +56,9 @@ package org.scalatest.junit {
   class JUnitSuiteSuite extends FunSuite {
 
     class MyReporter extends Reporter {
+
+      def apply(event: Event) {
+      }
 
       var runStartingCount = 0
       var testCountPassedToRunStarting = -1
