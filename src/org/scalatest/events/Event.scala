@@ -1136,10 +1136,9 @@ object TestPending {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param name a localized name identifying the suite that is starting, which should include the
+ * @param suiteName a localized name identifying the suite that is starting, which should include the
  *        suite name, suitable for presenting to the user
- * @param suiteName the name of the suite containing the suite that is starting
- * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that is starting
+ * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that is starting (if <code>None</code>
@@ -1151,7 +1150,6 @@ object TestPending {
  */
 final case class SuiteStarting private (
   ordinal: Ordinal,
-  name: String,
   suiteName: String,
   suiteClassName: Option[String],
   formatter: Option[Formatter],
@@ -1160,11 +1158,9 @@ final case class SuiteStarting private (
   threadName: String,
   timeStamp: Long
 ) extends Event {
-    
+
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
   if (suiteClassName == null)
@@ -1195,10 +1191,9 @@ object SuiteStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that is starting, which should include the
+   * @param suiteName a localized name identifying the suite that is starting, which should include the
    *        suite name, suitable for presenting to the user
-   * @param suiteName the name of the suite containing the suite that is starting
-   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that is starting
+   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
    * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that is starting (if <code>None</code>
@@ -1211,14 +1206,13 @@ object SuiteStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     formatter: Option[Formatter],
     rerunnable: Option[Rerunnable],
     payload: Option[Any]
   ): SuiteStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1227,10 +1221,9 @@ object SuiteStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that is starting, which should include the
+   * @param suiteName a localized name identifying the suite that is starting, which should include the
    *        suite name, suitable for presenting to the user
-   * @param suiteName the name of the suite containing the suite that is starting
-   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that is starting
+   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
    * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that is starting (if <code>None</code>
@@ -1242,13 +1235,12 @@ object SuiteStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     formatter: Option[Formatter],
     rerunnable: Option[Rerunnable]
   ): SuiteStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1258,10 +1250,9 @@ object SuiteStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that is starting, which should include the
+   * @param suiteName a localized name identifying the suite that is starting, which should include the
    *        suite name, suitable for presenting to the user
-   * @param suiteName the name of the suite containing the suite that is starting
-   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that is starting
+   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
    *
@@ -1271,12 +1262,11 @@ object SuiteStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     formatter: Option[Formatter]
   ): SuiteStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1286,10 +1276,9 @@ object SuiteStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that is starting, which should include the
+   * @param suiteName a localized name identifying the suite that is starting, which should include the
    *        suite name, suitable for presenting to the user
-   * @param suiteName the name of the suite containing the suite that is starting
-   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that is starting
+   * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
    *
@@ -1297,11 +1286,10 @@ object SuiteStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
