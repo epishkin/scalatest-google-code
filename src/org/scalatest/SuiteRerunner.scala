@@ -16,6 +16,7 @@
 package org.scalatest
 
 import org.scalatest.Suite.checkForPublicNoArgConstructor
+import org.scalatest.events._
 
 /**
  * A Rerunner for Suites.
@@ -27,8 +28,8 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
   if (suiteClassName == null)
     throw new NullPointerException
 
-  def rerun(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-            properties: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader) {
+  override def rerun(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+            properties: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader, runStamp: Int) {
 
     try {
       val suiteClass = loader.loadClass(suiteClassName)
@@ -41,7 +42,9 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunnabl
                        else
                          None
 
-      reporter.runStarting(expectedTestCount)
+      //reporter.runStarting(expectedTestCount)
+      val ordinal = new Ordinal(runStamp)
+      reporter.apply(RunStarting(ordinal, expectedTestCount))
 
       try {
 

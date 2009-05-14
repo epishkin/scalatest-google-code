@@ -110,6 +110,7 @@ trait JUnitSuite extends Suite {
     }
 
     override def testRunStarted(description: Description) {
+      // Not sure what to do here with respect to ordinal and apply. Will have to see when it is called.
       reporter.runStarting(description.testCount)
     }
 

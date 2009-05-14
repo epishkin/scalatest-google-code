@@ -120,7 +120,6 @@ trait Reporter {
      * @throws IllegalArgumentException if <code>expectedTestsCount</code> is less than zero.
      */
     def runStarting(testCount: Int) = ()
-    // def runStarting(testCount: Int) = testCount
 
     /**
      * Indicates a suite (or other entity) is about to start a test.
