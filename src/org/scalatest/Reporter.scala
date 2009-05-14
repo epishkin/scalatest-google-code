@@ -309,8 +309,8 @@ trait Reporter extends Function1[Event, Unit] {
 
       case TestPending(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
-      case SuiteStarting(ordinal, name, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteStarting(new Report(name, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
+      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
 
       case SuiteCompleted(ordinal, name, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
         suiteCompleted(new Report(name, "XXX suite completed", None, rerunnable, threadName, new Date(timeStamp)))
