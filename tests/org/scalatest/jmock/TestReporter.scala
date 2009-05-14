@@ -30,7 +30,8 @@ class TestReporter extends Reporter{
   var ignoreReport: Report = null;
   var ignoreCount = 0;
   
-  def apply(event: Event) {
+  override def apply(event: Event) {
+    super.apply(event)
   }
 
   override def testSucceeded(report: Report){ 

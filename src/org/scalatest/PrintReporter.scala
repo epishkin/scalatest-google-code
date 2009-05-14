@@ -63,7 +63,8 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   def this(filename: String) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), PrintReporter.BufferSize)))
 
-  def apply(event: Event) {
+  override def apply(event: Event) {
+    super.apply(event)
   }
 
   /**

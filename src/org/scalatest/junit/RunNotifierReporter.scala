@@ -40,7 +40,8 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
       case None => report.name
     }
 
-  def apply(event: Event) {
+  override def apply(event: Event) {
+    super.apply(event)
   }
 
   override def testStarting(report: Report) {

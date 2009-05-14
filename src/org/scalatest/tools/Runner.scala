@@ -380,7 +380,8 @@ object Runner {
     private val runDoneSemaphore = new Semaphore(1)
     runDoneSemaphore.acquire()
 
-    def apply(event: Event) {
+    override def apply(event: Event) {
+      super.apply(event)
     }
 
     override def testFailed(report: Report) {

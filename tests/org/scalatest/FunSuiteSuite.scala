@@ -150,7 +150,8 @@ class FunSuiteSuite extends Suite {
   class MyReporter extends Reporter {
     var testIgnoredCalled = false
     var lastReport: Report = null
-    def apply(event: Event) {
+    override def apply(event: Event) {
+      super.apply(event)
     }
     override def testIgnored(report: Report) {
       testIgnoredCalled = true
@@ -509,7 +510,8 @@ class FunSuiteSuite extends Suite {
     class MyReporter extends Reporter {
       var infoProvidedCalled = false
       var lastReport: Report = null
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def infoProvided(report: Report) {
         infoProvidedCalled = true
@@ -533,7 +535,8 @@ class FunSuiteSuite extends Suite {
     class MyReporter extends Reporter {
       var infoProvidedCalled = false
       var lastReport: Report = null
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def infoProvided(report: Report) {
         infoProvidedCalled = true
@@ -557,7 +560,8 @@ class FunSuiteSuite extends Suite {
     var infoProvidedCalled = false
     var infoProvidedCalledBeforeTest = false
     class MyReporter extends Reporter {
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def infoProvided(report: Report) {
         infoProvidedCalled = true
@@ -581,7 +585,8 @@ class FunSuiteSuite extends Suite {
     var infoProvidedCalled = false
     var infoProvidedCalledAfterTest = true
     class MyReporter extends Reporter {
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def infoProvided(report: Report) {
         infoProvidedCalled = true
@@ -606,7 +611,8 @@ class FunSuiteSuite extends Suite {
 
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
@@ -631,7 +637,8 @@ class FunSuiteSuite extends Suite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
@@ -656,7 +663,8 @@ class FunSuiteSuite extends Suite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)
@@ -681,7 +689,8 @@ class FunSuiteSuite extends Suite {
     
     var testFailedAdExpected = false
     class MyReporter extends Reporter {
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def testFailed(report: Report) {
         if (report.name.indexOf("this test should blow up") != -1)

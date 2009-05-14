@@ -82,7 +82,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
   def this(reporters: List[Reporter]) = this(reporters, System.out)
   def this(reporter: Reporter) = this(List(reporter), System.out)
 
-  def apply(event: Event) {
+  override def apply(event: Event) {
     julia ! event
   }
 

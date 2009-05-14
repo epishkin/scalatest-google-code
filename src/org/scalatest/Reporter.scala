@@ -16,7 +16,7 @@
 package org.scalatest
 
 import java.util.Date
-import org.scalatest.events.Event
+import org.scalatest.events._
 
 /**
  * Trait whose instances collect the results of a running
@@ -120,6 +120,7 @@ trait Reporter {
      * @throws IllegalArgumentException if <code>expectedTestsCount</code> is less than zero.
      */
     def runStarting(testCount: Int) = ()
+    // def runStarting(testCount: Int) = testCount
 
     /**
      * Indicates a suite (or other entity) is about to start a test.
@@ -289,8 +290,48 @@ trait Reporter {
      */
     def dispose() = ()
 
-  def apply(event: Event)
+  def apply(event: Event) {
+
+    event match {
+
+      case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
+
+      case TestStarting(ordinal, name, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        testStarting(new Report(name, "XXX test starting", None, rerunnable, threadName, new Date(timeStamp)))
+
+      case TestSucceeded(ordinal, name, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        testSucceeded(new Report(name, "XXX test succeeded", None, rerunnable, threadName, new Date(timeStamp)))
+
+      case TestFailed(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        testFailed(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
+
+      case TestIgnored(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+        testIgnored(new Report(name, "XXX test ignored", None, None, threadName, new Date(timeStamp)))
+
+      case TestPending(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+
+      case SuiteStarting(ordinal, name, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteStarting(new Report(name, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
+
+      case SuiteCompleted(ordinal, name, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteCompleted(new Report(name, "XXX suite completed", None, rerunnable, threadName, new Date(timeStamp)))
+
+      case SuiteAborted(ordinal, name, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteAborted(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
+
+      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) => 
+        infoProvided(new Report("XXX Unknown", message, throwable, None, threadName, new Date(timeStamp)))
+
+      case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runStopped()
+
+      case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
+        runAborted(new Report("org.scalatest.tools.Runner", message, throwable, None, threadName, new Date(timeStamp)))
+
+      case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
+    }
+  }
 }
+
 /*
 So I remember, this is why I decided not to make case class subclasses of
 Report, and then have Reporter just have a submit(report: Report) method.
