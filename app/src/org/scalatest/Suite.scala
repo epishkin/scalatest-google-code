@@ -1053,6 +1053,11 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * <p>
    * This method serves as a convenient way to execute a single test, especially from within the Scala interpreter.
    * </p>
+   *
+   * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
+   *
+   * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
   final def execute(testName: String) {
     execute(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), Map(), None)
@@ -1386,7 +1391,6 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
    *         
-   *
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
   def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],

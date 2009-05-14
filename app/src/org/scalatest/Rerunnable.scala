@@ -25,20 +25,25 @@ package org.scalatest
  */
 trait Rerunnable {
 
-  // DEPRECATE
   /**
    * <strong>Deprecated: this method will be deleted in a future release of ScalaTest. Please rewrite any Rerunnable you may have
    * so that it only has the rerun form that takes a runStamp, and inherits the default implementation of this rerun method, which forwards
    * to the other one.</strong> Rerun a test or other entity (such as a suite), reporting results to the specified <code>Reporter</code>.
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include during this rerun
+   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude during this rerun
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the suite or test being rerun
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s, if any, to be executed
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
    * @param loader the <code>ClassLoader</code> from which to load classes needed to rerun
-   *     the test or other entity.
+   *     the test or suite.
    * @throws NullPointerException if <CODE>reporter</CODE> is <CODE>null</CODE>.
    */
-  @deprecated def rerun(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-            properties: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader) {
-    rerun(reporter, stopper, includes, excludes, properties, distributor, loader, 99)
+  @deprecated def rerun(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+            goodies: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader) {
+    rerun(reporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor, loader, 99)
   }
 
   /**
@@ -49,12 +54,18 @@ trait Rerunnable {
    * existing <code>Rerunnable</code>s can simply be recompiled and continue to work during the deprecation period.</strong>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include during this rerun
+   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude during this rerun
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the suite or test being rerun
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s, if any, to be executed
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
    * @param loader the <code>ClassLoader</code> from which to load classes needed to rerun
-   *     the test or other entity.
+   *     the test or suite.
    * @throws NullPointerException if <CODE>reporter</CODE> is <CODE>null</CODE>.
    */
-  def rerun(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-            properties: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader, runStamp: Int) {
-    rerun(reporter, stopper, includes, excludes, properties, distributor, loader)
+  def rerun(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+            goodies: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader, runStamp: Int) {
+    rerun(reporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor, loader)
   }
 }
