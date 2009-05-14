@@ -105,7 +105,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait Reporter {
+trait Reporter extends Function1[Event, Unit] {
 
     /**
      * Indicates a runner is about run a suite of tests.
