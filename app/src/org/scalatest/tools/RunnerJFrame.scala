@@ -129,6 +129,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   private val exitSemaphore = new Semaphore(1)
 
+  private var nextRunStamp = 1
+
   initialize()
 
   private def initialize() = {
@@ -1373,10 +1375,11 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         (loader, dispatchReporter) => {
           try {
             Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, stopper, includes, excludes,
-                propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this) 
+                propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this, nextRunStamp) 
           }
           finally {
             stopper.reset()
+            nextRunStamp += 1
           }
         }
       }
@@ -1396,7 +1399,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         (loader, dispatchReporter) => {
           try {
             rerunnable.rerun(dispatchReporter, stopper, includes, Runner.excludesWithIgnore(excludes), propertiesMap,
-                distributor, loader)
+                distributor, loader, nextRunStamp)
           }
           catch {
             case ex: Throwable => {
@@ -1407,6 +1410,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
           finally {
             stopper.reset()
             RunnerJFrame.this.done()
+            nextRunStamp += 1
           }
         }
       }

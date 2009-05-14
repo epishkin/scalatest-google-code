@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities
 import java.util.concurrent.ArrayBlockingQueue
 import org.scalatest.testng.TestNGWrapperSuite
 import java.util.concurrent.Semaphore
-import org.scalatest.events.Event
+import org.scalatest.events._
 
 /**
  * <p>
@@ -518,7 +518,7 @@ object Runner {
         withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, None, passFailReporter) {
           (loader, dispatchReporter) => {
             doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, includes, excludesWithIgnore(excludes),
-                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}) 
+                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1) 
           }
         }
       }
@@ -1024,7 +1024,8 @@ object Runner {
     testNGList: List[String],
     runpath: List[String],
     loader: ClassLoader,
-    doneListener: RunDoneListener
+    doneListener: RunDoneListener,
+    runStamp: Int
   ) = {
 
     // TODO: add more, and to RunnerThread too
@@ -1135,7 +1136,9 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          dispatchReporter.runStarting(expectedTestCount)
+          val ordinal = new Ordinal(runStamp)
+          // dispatchReporter.runStarting(expectedTestCount) TODO DELETE
+          dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
 
           if (concurrent) {
             val distributor = new ConcurrentDistributor(dispatchReporter, stopper, includes, excludesWithIgnore(excludes), propertiesMap)
