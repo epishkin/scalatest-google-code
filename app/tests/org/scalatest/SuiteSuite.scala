@@ -113,7 +113,8 @@ class SuiteSuite extends Suite with PrivateMethodTester {
   class MyReporter extends Reporter {
     var testIgnoredCalled = false
     var lastReport: Report = null
-    def apply(event: Event) {
+    override def apply(event: Event) {
+      super.apply(event)
     }
     override def testIgnored(report: Report) {
       testIgnoredCalled = true

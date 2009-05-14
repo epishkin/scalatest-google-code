@@ -24,7 +24,8 @@ class CatchReporterSuite extends Suite {
   def testCatching() {
 
     val buggyReporter = new Reporter {
-      def apply(event: Event) {
+      override def apply(event: Event) {
+        super.apply(event)
       }
       override def runStarting(testCount: Int) {
         throw new RuntimeException

@@ -30,7 +30,7 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
 
   def this(reporter: Reporter) = this(reporter, System.err)
 
-  def apply(event: Event) {
+  override def apply(event: Event) {
     try {
       reporter(event)
     }

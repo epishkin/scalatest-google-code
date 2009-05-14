@@ -711,7 +711,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       }
     }
   
-    def apply(event: Event) {
+    override def apply(event: Event) {
+      super.apply(event)
     }
 
     override def testSucceeded(report: Report) {
@@ -1207,7 +1208,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     // work to do.
     var anErrorHasOccurredAlready = false
 
-    def apply(event: Event) = ()
+    override def apply(event: Event) {
+      super.apply(event)
+    }
 
     override def runStarting(testCount: Int) {
       if (testCount < 0)

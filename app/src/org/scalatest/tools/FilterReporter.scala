@@ -27,7 +27,8 @@ private[scalatest] class FilterReporter(wrappedReporter: Reporter, configSet: Re
 
   def reFilter(configSet: ReporterOpts.Set32) = new FilterReporter(wrappedReporter, configSet)
       
-  def apply(event: Event) {
+  override def apply(event: Event) {
+    super.apply(event)
   }
 
   // Have some methods that translate chars & strings to Opts things, and vice versa
