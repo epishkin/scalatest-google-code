@@ -31,8 +31,18 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
   def this(reporter: Reporter) = this(reporter, System.err)
 
   def apply(event: Event) {
+    try {
+      reporter(event)
+    }
+    catch {
+      case e: Exception => 
+        val stringToPrint = Resources("reportFunctionThrew", event)
+        out.println(stringToPrint)
+        e.printStackTrace(out)
+    }
   }
 
+  // Won't need the rest of this class after phase II of the reporter refactor is done, probably 0.9.8
   override def runStarting(testCount: Int) = dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(testCount))
   override def testSucceeded(report: Report) = dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(report))
   override def testIgnored(report: Report) = dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(report))
@@ -58,6 +68,7 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
   }
 }
 
+// Won't need this after phase II of the reporter refactor is done, probably 0.9.8
 private[scalatest] object CatchReporter {
 
   def handleReporterException(e: Exception, methodName: String, out: PrintStream) {

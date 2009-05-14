@@ -22,7 +22,7 @@ import scala.actors.Actor.loop
 import scala.actors.Actor.receive
 import org.scalatest.CatchReporter.handleReporterException
 import java.io.PrintStream
-import org.scalatest.events.Event
+import org.scalatest.events._
 
 /**
  * A <code>Reporter</code> that dispatches test results to other <code>Reporter</code>s.
@@ -41,8 +41,8 @@ import org.scalatest.events.Event
  */
 private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: PrintStream) extends Reporter {
 
-  private val julia = actor {
-    var alive = true // local variable, right? Only used by the Actor's thread, so no need for synchronization
+  private val julia = actor { // This actor is named for Julia Roberts, not Vlad's wife
+    var alive = true // local variable, only used by the Actor's thread, so no need for synchronization
     while (alive) {
       receive {
         case RunStartingMsg(expectedTestCount) => dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(expectedTestCount))
@@ -61,6 +61,20 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
           dispatch("dispose", (reporter: Reporter) => reporter.dispose())
           alive = false
         }
+        case event: Event =>
+          // This actor attempts to invoke apply on each contained reporter,
+          // even if some reporters' apply methods throw exceptions. This method catches any exception thrown by
+          // an apply method and handles it by printing an error message to the out stream (likely the standard error stream).
+          try {
+            for (report <- reporters)
+              report(event)
+          }
+          catch {
+            case e: Exception => 
+              val stringToPrint = Resources("reportFunctionThrew", event)
+              out.println(stringToPrint)
+              e.printStackTrace(out)
+          }
       }
     }
   }
@@ -69,6 +83,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
   def this(reporter: Reporter) = this(List(reporter), System.out)
 
   def apply(event: Event) {
+    julia ! event
   }
 
   /* where do I put this Scaladoc?
