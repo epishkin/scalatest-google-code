@@ -106,5 +106,5 @@ final case object MotionToSuppress extends Formatter
  * @throws IllegalArgumentException if the specified <code>indentationLevel</code> is less than zero
  */
 final case class IndentedText(formattedText: String, rawText: String, indentationLevel: Int) extends Formatter {
-  require(indentationLevel < 0, "indentationLevel was less than zero: " + indentationLevel)
+  require(indentationLevel >= 0, "indentationLevel was less than zero: " + indentationLevel)
 }
