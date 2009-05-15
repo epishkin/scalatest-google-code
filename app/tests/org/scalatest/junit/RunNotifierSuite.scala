@@ -19,6 +19,7 @@ package org.scalatest.junit
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.junit.runner.notification.Failure
+import org.scalatest.events._
 
 // There's no way to really pass along a suiteStarting or suiteCompleted
 // report. They have a dumb comment to "Do not invoke" fireTestRunStarted
@@ -27,6 +28,8 @@ import org.junit.runner.notification.Failure
 // runCompleted reports either. But runAborted reports should be sent
 // out the door somehow, so we report them with yet another fireTestFailure.
 class RunNotifierSuite extends FunSuite {
+
+  val ordinal = new Ordinal(99)
 
   test("report.testStarting generates a fireTestStarted invocation") {
 
@@ -41,17 +44,22 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    //val report = new Report("some test name", "test starting just fine we think", None, None, None)
     val report = new Report("some test name", "test starting just fine we think")
     reporter.testStarting(report)
     assert(runNotifier.fireTestStartedInvocationCount === 1)
     assert(runNotifier.passedDesc.get.getDisplayName === "some test name")
 
-    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report2 = new Report("name", "message", None, None)
     reporter.testStarting(report2)
     assert(runNotifier.fireTestStartedInvocationCount === 2)
+    assert(runNotifier.passedDesc.get.getDisplayName === "name")
+
+    reporter(TestStarting(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
     assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
+
+    reporter(TestStarting(ordinal, "SuiteClassName", None, "theTestName"))
+    assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(SuiteClassName)")
   }
 
   test("report.testFailed generates a fireTestFailure invocation") {
@@ -68,19 +76,25 @@ class RunNotifierSuite extends FunSuite {
 
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    //val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.testFailed(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
     assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
 
-    //val report2 = new Report("some test name", "test starting just fine we think", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report2 = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.testFailed(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getException === exception)
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
+
+    reporter(TestFailed(ordinal, "No msg", "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName", Some(exception)))
     assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
+    reporter(TestFailed(ordinal, "No msg", "SuiteClassName", None, "theTestName", Some(exception)))
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(SuiteClassName)")
   }
 
   test("report.testSucceeded generates a fireTestFinished invocation") {
@@ -95,18 +109,23 @@ class RunNotifierSuite extends FunSuite {
         }
       }
 
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val reporter = new RunNotifierReporter(runNotifier)
-    //val report = new Report("some test name", "test starting just fine we think", None, None, None)
     val report = new Report("some test name", "test starting just fine we think")
     reporter.testSucceeded(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getDisplayName === "some test name")
 
-    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report2 = new Report("name", "message", None, None)
     reporter.testSucceeded(report2)
     assert(runNotifier.methodInvocationCount === 2)
+    assert(runNotifier.passed.get.getDisplayName === "name")
+
+    reporter(TestSucceeded(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
+    reporter(TestSucceeded(ordinal, "SuiteClassName", None, "theTestName"))
+    assert(runNotifier.passed.get.getDisplayName === "theTestName(SuiteClassName)")
   }
 
   test("report.testIgnored generates a fireTestIgnored invocation") {
@@ -121,17 +140,23 @@ class RunNotifierSuite extends FunSuite {
         }
       }
 
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val reporter = new RunNotifierReporter(runNotifier)
     val report = new Report("some test name", "test starting just fine we think")
     reporter.testIgnored(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getDisplayName === "some test name")
 
-    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report2 = new Report("name", "message", None, None)
     reporter.testIgnored(report2)
     assert(runNotifier.methodInvocationCount === 2)
+    assert(runNotifier.passed.get.getDisplayName === "name")
+
+    reporter(TestIgnored(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
+    reporter(TestIgnored(ordinal, "SuiteClassName", None, "theTestName"))
+    assert(runNotifier.passed.get.getDisplayName === "theTestName(SuiteClassName)")
   }
 
   // fireTestFailure is the best we could do given the RunNotifier interface
@@ -147,21 +172,26 @@ class RunNotifierSuite extends FunSuite {
         }
       }
 
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    //val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
     val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.suiteAborted(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
     assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
 
-    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report2 = new Report("name", "message", Some(exception), None)
     reporter.suiteAborted(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getException === exception)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "name")
+
+    reporter(SuiteAborted(ordinal, "No msg", "SuiteClassName", Some("fully.qualified.SuiteClassName"), Some(exception)))
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "fully.qualified.SuiteClassName")
+    reporter(SuiteAborted(ordinal, "No msg", "SuiteClassName", None, Some(exception)))
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "SuiteClassName")
   }
 
   // fireTestFailure is the best we could do given the RunNotifier interface
@@ -179,18 +209,23 @@ class RunNotifierSuite extends FunSuite {
 
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    //val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.runAborted(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
     assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
 
-    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report2 = new Report("name", "message", Some(exception), None)
     reporter.runAborted(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getException === exception)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "name")
+
+    reporter(RunAborted(ordinal, "No msg", Some(exception)))
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "org.scalatest.tools.Runner")
   }
 }
+
