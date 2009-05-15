@@ -58,8 +58,6 @@ sealed abstract class Event extends Ordered[Event] {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param name a localized name identifying the test that is starting, which should include the
- *        suite and test names, suitable for presenting to the user
  * @param suiteName the name of the suite containing the test that is starting
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
  * @param testName the name of the test that is starting
@@ -74,7 +72,6 @@ sealed abstract class Event extends Ordered[Event] {
  */
 final case class TestStarting private (
   ordinal: Ordinal,
-  name: String,
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
@@ -87,8 +84,6 @@ final case class TestStarting private (
     
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
   if (suiteClassName == null)
@@ -121,8 +116,6 @@ object TestStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that is starting, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that is starting
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
    * @param testName the name of the test that is starting
@@ -139,7 +132,6 @@ object TestStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
@@ -147,7 +139,7 @@ object TestStarting {
     rerunnable: Option[Rerunnable],
     payload: Option[Any]
   ): TestStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -156,8 +148,6 @@ object TestStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that is starting, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that is starting
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
    * @param testName the name of the test that is starting
@@ -172,14 +162,13 @@ object TestStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter],
     rerunnable: Option[Rerunnable]
   ): TestStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -189,8 +178,6 @@ object TestStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that is starting, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that is starting
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
    * @param testName the name of the test that is starting
@@ -203,13 +190,12 @@ object TestStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter]
   ): TestStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -219,8 +205,6 @@ object TestStarting {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that is starting, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that is starting
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is starting
    * @param testName the name of the test that is starting
@@ -231,12 +215,11 @@ object TestStarting {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String
   ): TestStarting = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -270,8 +253,6 @@ object TestStarting {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param name a localized name identifying the test that has succeeded, which should include the
- *        suite and test names, suitable for presenting to the user
  * @param suiteName the name of the suite containing the test that has succeeded
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
  * @param testName the name of the test that has succeeded
@@ -287,7 +268,6 @@ object TestStarting {
  */
 final case class TestSucceeded private (
   ordinal: Ordinal,
-  name: String,
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
@@ -301,8 +281,6 @@ final case class TestSucceeded private (
 
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
   if (suiteClassName == null)
@@ -337,8 +315,6 @@ object TestSucceeded {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has succeeded, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has succeeded
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
    * @param testName the name of the test that has succeeded
@@ -355,7 +331,6 @@ object TestSucceeded {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
@@ -364,7 +339,7 @@ object TestSucceeded {
     rerunnable: Option[Rerunnable],
     payload: Option[Any]
   ): TestSucceeded = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -373,8 +348,6 @@ object TestSucceeded {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has succeeded, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has succeeded
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
    * @param testName the name of the test that has succeeded
@@ -390,7 +363,6 @@ object TestSucceeded {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
@@ -398,7 +370,7 @@ object TestSucceeded {
     formatter: Option[Formatter],
     rerunnable: Option[Rerunnable]
   ): TestSucceeded = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -408,8 +380,6 @@ object TestSucceeded {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has succeeded, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has succeeded
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
    * @param testName the name of the test that has succeeded
@@ -423,14 +393,13 @@ object TestSucceeded {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestSucceeded = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -440,8 +409,6 @@ object TestSucceeded {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has succeeded, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has succeeded
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
    * @param testName the name of the test that has succeeded
@@ -453,13 +420,12 @@ object TestSucceeded {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     duration: Option[Long]
   ): TestSucceeded = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -469,8 +435,6 @@ object TestSucceeded {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has succeeded, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has succeeded
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has succeeded
    * @param testName the name of the test that has succeeded
@@ -481,12 +445,11 @@ object TestSucceeded {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String
   ): TestSucceeded = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -519,8 +482,6 @@ object TestSucceeded {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param name a localized name identifying the test that has failed, which should include the
- *        suite and test names, suitable for presenting to the user
  * @param message a localized message suitable for presenting to the user
  * @param suiteName the name of the suite containing the test that has failed
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
@@ -539,7 +500,6 @@ object TestSucceeded {
  */
 final case class TestFailed private (
   ordinal: Ordinal,
-  name: String,
   message: String,
   suiteName: String,
   suiteClassName: Option[String],
@@ -555,8 +515,6 @@ final case class TestFailed private (
 
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (message == null)
     throw new NullPointerException("message was null")
   if (suiteName == null)
@@ -595,8 +553,6 @@ object TestFailed {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has failed, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has failed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
@@ -616,7 +572,6 @@ object TestFailed {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
@@ -627,7 +582,7 @@ object TestFailed {
     rerunnable: Option[Rerunnable],
     payload: Option[Any]
   ): TestFailed = {
-    apply(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -636,8 +591,6 @@ object TestFailed {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has failed, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has failed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
@@ -656,7 +609,6 @@ object TestFailed {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
@@ -666,7 +618,7 @@ object TestFailed {
     formatter: Option[Formatter],
     rerunnable: Option[Rerunnable]
   ): TestFailed = {
-    apply(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -676,8 +628,6 @@ object TestFailed {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has failed, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has failed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
@@ -694,7 +644,6 @@ object TestFailed {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
@@ -703,7 +652,7 @@ object TestFailed {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): TestFailed = {
-    apply(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -713,8 +662,6 @@ object TestFailed {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has failed, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has failed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
@@ -729,7 +676,6 @@ object TestFailed {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
@@ -737,7 +683,7 @@ object TestFailed {
     throwable: Option[Throwable],
     duration: Option[Long]
   ): TestFailed = {
-    apply(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -747,8 +693,6 @@ object TestFailed {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that has failed, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that has failed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that has failed
@@ -762,14 +706,13 @@ object TestFailed {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     throwable: Option[Throwable]
   ): TestFailed = {
-    apply(ordinal, name, message, suiteName, suiteClassName, testName, throwable, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, testName, throwable, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -803,8 +746,6 @@ object TestFailed {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param name a localized name identifying the test that was ignored, which should include the
- *        suite and test names, suitable for presenting to the user
  * @param suiteName the name of the suite containing the test that was ignored
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was ignored
  * @param testName the name of the test that was ignored
@@ -817,7 +758,6 @@ object TestFailed {
  */
 final case class TestIgnored private (
   ordinal: Ordinal,
-  name: String,
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
@@ -829,8 +769,6 @@ final case class TestIgnored private (
     
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
   if (suiteClassName == null)
@@ -861,8 +799,6 @@ object TestIgnored {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that was ignored, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that was ignored
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was ignored
    * @param testName the name of the test that was ignored
@@ -876,14 +812,13 @@ object TestIgnored {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestIgnored = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -892,8 +827,6 @@ object TestIgnored {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that was ignored, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that was ignored
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was ignored
    * @param testName the name of the test that was ignored
@@ -906,13 +839,12 @@ object TestIgnored {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter]
   ): TestIgnored = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -922,8 +854,6 @@ object TestIgnored {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that was ignored, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that was ignored
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that was ignored
    * @param testName the name of the test that was ignored
@@ -934,12 +864,11 @@ object TestIgnored {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String
   ): TestIgnored = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -967,8 +896,6 @@ object TestIgnored {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param name a localized name identifying the test that is pending, which should include the
- *        suite and test names, suitable for presenting to the user
  * @param suiteName the name of the suite containing the test that is pending
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
  * @param testName the name of the test that is pending
@@ -981,7 +908,6 @@ object TestIgnored {
  */
 final case class TestPending private (
   ordinal: Ordinal,
-  name: String,
   suiteName: String,
   suiteClassName: Option[String],
   testName: String,
@@ -993,8 +919,6 @@ final case class TestPending private (
 
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
   if (suiteClassName == null)
@@ -1025,8 +949,6 @@ object TestPending {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that is pending, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that is pending
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
    * @param testName the name of the test that is pending
@@ -1040,14 +962,13 @@ object TestPending {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter],
     payload: Option[Any]
   ): TestPending = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1056,8 +977,6 @@ object TestPending {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that is pending, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that is pending
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
    * @param testName the name of the test that is pending
@@ -1070,13 +989,12 @@ object TestPending {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter]
   ): TestPending = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, formatter, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1086,8 +1004,6 @@ object TestPending {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the test that is pending, which should include the
-   *        suite and test names, suitable for presenting to the user
    * @param suiteName the name of the suite containing the test that is pending
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the test that is pending
    * @param testName the name of the test that is pending
@@ -1098,12 +1014,11 @@ object TestPending {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     testName: String
   ): TestPending = {
-    apply(ordinal, name, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, testName, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1323,8 +1238,6 @@ object SuiteStarting {
  *
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
- * @param name a localized name identifying the suite that has completed, which should include the
- *        suite name, suitable for presenting to the user
  * @param suiteName the name of the suite containing the suite that has completed
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has completed
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
@@ -1339,7 +1252,6 @@ object SuiteStarting {
  */
 final case class SuiteCompleted private (
   ordinal: Ordinal,
-  name: String,
   suiteName: String,
   suiteClassName: Option[String],
   duration: Option[Long],
@@ -1352,8 +1264,6 @@ final case class SuiteCompleted private (
 
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (suiteName == null)
     throw new NullPointerException("suiteName was null")
   if (suiteClassName == null)
@@ -1386,8 +1296,6 @@ object SuiteCompleted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has completed, which should include the
-   *        suite name, suitable for presenting to the user
    * @param suiteName the name of the suite containing the suite that has completed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has completed
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
@@ -1403,7 +1311,6 @@ object SuiteCompleted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     duration: Option[Long],
@@ -1411,7 +1318,7 @@ object SuiteCompleted {
     rerunnable: Option[Rerunnable],
     payload: Option[Any]
   ): SuiteCompleted = {
-    apply(ordinal, name, suiteName, suiteClassName, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1420,8 +1327,6 @@ object SuiteCompleted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has completed, which should include the
-   *        suite name, suitable for presenting to the user
    * @param suiteName the name of the suite containing the suite that has completed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has completed
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
@@ -1436,14 +1341,13 @@ object SuiteCompleted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     duration: Option[Long],
     formatter: Option[Formatter],
     rerunnable: Option[Rerunnable]
   ): SuiteCompleted = {
-    apply(ordinal, name, suiteName, suiteClassName, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1453,8 +1357,6 @@ object SuiteCompleted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has completed, which should include the
-   *        suite name, suitable for presenting to the user
    * @param suiteName the name of the suite containing the suite that has completed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has completed
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
@@ -1467,13 +1369,12 @@ object SuiteCompleted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteCompleted = {
-    apply(ordinal, name, suiteName, suiteClassName, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1483,8 +1384,6 @@ object SuiteCompleted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has completed, which should include the
-   *        suite name, suitable for presenting to the user
    * @param suiteName the name of the suite containing the suite that has completed
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has completed
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
@@ -1495,12 +1394,11 @@ object SuiteCompleted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String],
     duration: Option[Long]
   ): SuiteCompleted = {
-    apply(ordinal, name, suiteName, suiteClassName, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1521,11 +1419,10 @@ object SuiteCompleted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     suiteName: String,
     suiteClassName: Option[String]
   ): SuiteCompleted = {
-    apply(ordinal, name, suiteName, suiteClassName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, suiteName, suiteClassName, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
@@ -1579,7 +1476,6 @@ object SuiteCompleted {
  */
 final case class SuiteAborted private (
   ordinal: Ordinal,
-  name: String,
   message: String,
   suiteName: String,
   suiteClassName: Option[String],
@@ -1594,8 +1490,6 @@ final case class SuiteAborted private (
 
   if (ordinal == null)
     throw new NullPointerException("ordinal was null")
-  if (name == null)
-    throw new NullPointerException("name was null")
   if (message == null)
     throw new NullPointerException("message was null")
   if (suiteName == null)
@@ -1652,7 +1546,6 @@ object SuiteAborted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
@@ -1662,7 +1555,7 @@ object SuiteAborted {
     rerunnable: Option[Rerunnable],
     payload: Option[Any]
   ): SuiteAborted = {
-    apply(ordinal, name, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1671,8 +1564,6 @@ object SuiteAborted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has aborted, which should include the
-   *        suite name, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the suite that has aborted
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has aborted
@@ -1690,7 +1581,6 @@ object SuiteAborted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
@@ -1699,7 +1589,7 @@ object SuiteAborted {
     formatter: Option[Formatter],
     rerunnable: Option[Rerunnable]
   ): SuiteAborted = {
-    apply(ordinal, name, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1709,8 +1599,6 @@ object SuiteAborted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has aborted, which should include the
-   *        suite name, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param throwable an optional <code>Throwable</code> that, if a <code>Some</code>, indicates why the suite has aborted,
    *        or a <code>Throwable</code> created to capture stack trace information about the problem.
@@ -1726,7 +1614,6 @@ object SuiteAborted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
@@ -1734,7 +1621,7 @@ object SuiteAborted {
     duration: Option[Long],
     formatter: Option[Formatter]
   ): SuiteAborted = {
-    apply(ordinal, name, message, suiteName, suiteClassName, throwable, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1744,8 +1631,6 @@ object SuiteAborted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has aborted, which should include the
-   *        suite name, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the suite that has aborted
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has aborted
@@ -1759,14 +1644,13 @@ object SuiteAborted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
     throwable: Option[Throwable],
     duration: Option[Long]
   ): SuiteAborted = {
-    apply(ordinal, name, message, suiteName, suiteClassName, throwable, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, duration, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1776,8 +1660,6 @@ object SuiteAborted {
    *
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
-   * @param name a localized name identifying the suite that has aborted, which should include the
-   *        suite name, suitable for presenting to the user
    * @param message a localized message suitable for presenting to the user
    * @param suiteName the name of the suite containing the suite that has aborted
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name containing the suite that has aborted
@@ -1790,13 +1672,12 @@ object SuiteAborted {
    */
   def apply(
     ordinal: Ordinal,
-    name: String,
     message: String,
     suiteName: String,
     suiteClassName: Option[String],
     throwable: Option[Throwable]
   ): SuiteAborted = {
-    apply(ordinal, name, message, suiteName, suiteClassName, throwable, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, suiteName, suiteClassName, throwable, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

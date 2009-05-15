@@ -295,19 +295,19 @@ trait Reporter extends Function1[Event, Unit] {
 
       case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
 
-      case TestStarting(ordinal, name, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        testStarting(new Report(name, "XXX test starting", None, rerunnable, threadName, new Date(timeStamp)))
+      case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        testStarting(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "XXX test starting", None, rerunnable, threadName, new Date(timeStamp)))
 
-      case TestSucceeded(ordinal, name, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        testSucceeded(new Report(name, "XXX test succeeded", None, rerunnable, threadName, new Date(timeStamp)))
+      case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        testSucceeded(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "XXX test succeeded", None, rerunnable, threadName, new Date(timeStamp)))
 
-      case TestFailed(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        testFailed(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
+      case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        testFailed(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), message, throwable, rerunnable, threadName, new Date(timeStamp)))
 
-      case TestIgnored(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
-        testIgnored(new Report(name, "XXX test ignored", None, None, threadName, new Date(timeStamp)))
+      case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+        testIgnored(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "XXX test ignored", None, None, threadName, new Date(timeStamp)))
 
-      case TestPending(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+      case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
       case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
         suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
@@ -323,14 +323,25 @@ trait Reporter extends Function1[Event, Unit] {
         }
 */
 
-      case SuiteCompleted(ordinal, name, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteCompleted(new Report(name, "XXX suite completed", None, rerunnable, threadName, new Date(timeStamp)))
+      case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteCompleted(new Report(suiteName, "XXX suite completed", None, rerunnable, threadName, new Date(timeStamp)))
 
-      case SuiteAborted(ordinal, name, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteAborted(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
+      case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteAborted(new Report(suiteName, message, throwable, rerunnable, threadName, new Date(timeStamp)))
 
-      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) => 
-        infoProvided(new Report("XXX Unknown", message, throwable, None, threadName, new Date(timeStamp)))
+      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) => {
+        val name =
+          nameInfo match {
+            case Some(nameInfo) =>
+              nameInfo.testName match {
+                case Some(testName) => Resources("suiteAndTestNamesFormattedForDisplay", nameInfo.suiteName, testName)
+                case None => nameInfo.suiteName
+              }
+            case None => "org.scalatest.tools.Runner"
+          }
+ 
+        infoProvided(new Report(name, message, throwable, None, threadName, new Date(timeStamp)))
+      }
 
       case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runStopped()
 
