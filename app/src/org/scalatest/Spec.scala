@@ -774,7 +774,7 @@ trait Spec extends Suite { thisSuite =>
     if (testName == null)
       throw new NullPointerException("testName was null")
 
-    suiteName + ": " + testName
+    suiteName + ", " + testName
   }
 
   private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,

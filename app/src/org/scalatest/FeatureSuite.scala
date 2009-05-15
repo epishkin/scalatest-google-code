@@ -281,7 +281,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     if (testName == null)
       throw new NullPointerException("testName was null")
 
-    suiteName + ": " + testName
+    suiteName + ", " + testName
   }
   
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],

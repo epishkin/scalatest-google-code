@@ -1664,27 +1664,12 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    */
   def suiteName = getSimpleNameOfThisObjectsClass
 
-  /**
-   * <p>
-   * Get a user-friendly test name for one of this <code>Suite</code>'s test methods, whose
-   * <code>String</code> name is passed as <code>testName</code>. This trait's
-   * implementation of this method returns the concatenation of the simple name of this object's
-   * class, a dot, and the specified <code>String</code> <code>testMethodName</code>. This
-   * class's implementation of <code>runTests</code> calls this method to obtain a
-   * name for <code>Report</code>s to pass to the <code>testStarting</code>, <code>testSucceeded</code>,
-   * and <code>testFailed</code> methods of the <code>Reporter</code>.
-   * </p>
-   *
-   * @param testName the name of the test
-   * @throws NullPointerException if <code>testMethodName</code> is <code>null</code>
-   * @return a test name for a test of this <code>Suite</code>.
-   */
   private[scalatest] def getTestNameForReport(testName: String) = {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
 
-    suiteName + "." + testName
+    suiteName + ", " + testName
   }
 
   private def getSimpleNameOfThisObjectsClass = stripDollars(parseSimpleName(getClass().getName()))
