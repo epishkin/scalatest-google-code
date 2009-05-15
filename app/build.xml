@@ -299,7 +299,7 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic" />
             <reporter type="stdout" />
-            <suite classname="org.scalatest.events.OrdinalSpec" />
+            <suite classname="org.scalatest.StackSpec" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">

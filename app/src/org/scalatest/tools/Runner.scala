@@ -1058,7 +1058,8 @@ object Runner {
           val unassignableList = suitesList.filter(className => !classOf[Suite].isAssignableFrom(loader.loadClass(className)))
           if (!unassignableList.isEmpty) {
             val names = for (className <- unassignableList) yield " " + className
-            val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names, None, None, None)
+            //val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names, None, None, None)
+            val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names)
             dispatchReporter.runAborted(report)
             true
           }

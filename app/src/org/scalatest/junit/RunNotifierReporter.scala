@@ -30,7 +30,8 @@ import org.scalatest.events.Event
 // out the door somehow, so we report them with yet another fireTestFailure.
 private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
 
-  private def getNameFromReport(report: Report): String =
+  private def getNameFromReport(report: Report): String = report.name // TODO: handle these things going through events.
+/*
     report.suiteClassName match {
       case Some(suiteClassName) =>
         report.testName match {
@@ -39,9 +40,60 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
         }
       case None => report.name
     }
+*/
 
   override def apply(event: Event) {
     super.apply(event)
+/*
+    event match {
+
+      case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
+
+      case TestStarting(ordinal, name, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        testStarting(new Report(name, "XXX test starting", None, rerunnable, threadName, new Date(timeStamp)))
+
+      case TestSucceeded(ordinal, name, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        testSucceeded(new Report(name, "XXX test succeeded", None, rerunnable, threadName, new Date(timeStamp)))
+
+      case TestFailed(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        testFailed(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
+
+      case TestIgnored(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+        testIgnored(new Report(name, "XXX test ignored", None, None, threadName, new Date(timeStamp)))
+
+      case TestPending(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+
+      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
+
+/*
+      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        formatter match {
+          case Some(formatter) =>
+            suiteStarting(new SpecReport(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
+
+          case None =>
+            suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
+        }
+*/
+
+      case SuiteCompleted(ordinal, name, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteCompleted(new Report(name, "XXX suite completed", None, rerunnable, threadName, new Date(timeStamp)))
+
+      case SuiteAborted(ordinal, name, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        suiteAborted(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
+
+      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) => 
+        infoProvided(new Report("XXX Unknown", message, throwable, None, threadName, new Date(timeStamp)))
+
+      case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runStopped()
+
+      case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
+        runAborted(new Report("org.scalatest.tools.Runner", message, throwable, None, threadName, new Date(timeStamp)))
+
+      case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
+    }
+*/
   }
 
   override def testStarting(report: Report) {

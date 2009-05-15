@@ -41,12 +41,14 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    val report = new Report("some test name", "test starting just fine we think", None, None, None)
+    //val report = new Report("some test name", "test starting just fine we think", None, None, None)
+    val report = new Report("some test name", "test starting just fine we think")
     reporter.testStarting(report)
     assert(runNotifier.fireTestStartedInvocationCount === 1)
     assert(runNotifier.passedDesc.get.getDisplayName === "some test name")
 
-    val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    val report2 = new Report("name", "message", None, None)
     reporter.testStarting(report2)
     assert(runNotifier.fireTestStartedInvocationCount === 2)
     assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
@@ -66,13 +68,15 @@ class RunNotifierSuite extends FunSuite {
 
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+    //val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.testFailed(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
     assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
 
-    val report2 = new Report("some test name", "test starting just fine we think", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    //val report2 = new Report("some test name", "test starting just fine we think", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    val report2 = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.testFailed(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getException === exception)
@@ -92,12 +96,14 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    val report = new Report("some test name", "test starting just fine we think", None, None, None)
+    //val report = new Report("some test name", "test starting just fine we think", None, None, None)
+    val report = new Report("some test name", "test starting just fine we think")
     reporter.testSucceeded(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getDisplayName === "some test name")
 
-    val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    val report2 = new Report("name", "message", None, None)
     reporter.testSucceeded(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
@@ -121,7 +127,8 @@ class RunNotifierSuite extends FunSuite {
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getDisplayName === "some test name")
 
-    val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), None, None)
+    val report2 = new Report("name", "message", None, None)
     reporter.testIgnored(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
@@ -142,13 +149,15 @@ class RunNotifierSuite extends FunSuite {
 
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+    //val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.suiteAborted(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
     assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
 
-    val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    val report2 = new Report("name", "message", Some(exception), None)
     reporter.suiteAborted(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getException === exception)
@@ -170,13 +179,15 @@ class RunNotifierSuite extends FunSuite {
 
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+    //val report = new Report("some test name", "test starting just fine we think", None, None, None, Some(exception), None)
+    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
     reporter.runAborted(report)
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
     assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
 
-    val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    //val report2 = new Report("name", "message", None, Some("fully.qualified.SuiteClassName"), Some("theTestName"), Some(exception), None)
+    val report2 = new Report("name", "message", Some(exception), None)
     reporter.runAborted(report2)
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getException === exception)
