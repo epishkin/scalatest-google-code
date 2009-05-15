@@ -299,7 +299,7 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic" />
             <reporter type="stdout" />
-            <suite classname="org.scalatest.StackSpec" />
+            <suite classname="org.scalatest.junit.RunNotifierSuite" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">

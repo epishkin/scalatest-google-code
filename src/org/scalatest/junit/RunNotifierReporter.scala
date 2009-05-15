@@ -18,7 +18,7 @@ package org.scalatest.junit
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.junit.runner.notification.Failure
-import org.scalatest.events.Event
+import org.scalatest.events._
 
 // TODO: Mention on each Reporter method that it does nothing
 
@@ -30,70 +30,65 @@ import org.scalatest.events.Event
 // out the door somehow, so we report them with yet another fireTestFailure.
 private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
 
-  private def getNameFromReport(report: Report): String = report.name // TODO: handle these things going through events.
-/*
-    report.suiteClassName match {
-      case Some(suiteClassName) =>
-        report.testName match {
-          case Some(testName) => testName + "(" + suiteClassName + ")"
-          case None => report.name
-        }
-      case None => report.name
+  private def getNameFromReport(report: Report): String = report.name
+
+  private def testDescriptionName(suiteName: String, suiteClassName: Option[String], testName: String) =
+    suiteClassName match {
+      case Some(suiteClassName) => testName + "(" + suiteClassName + ")"
+      case None => testName + "(" + suiteName + ")"
     }
-*/
+
+  private def suiteDescriptionName(suiteName: String, suiteClassName: Option[String]) =
+    suiteClassName match {
+      case Some(suiteClassName) => suiteClassName
+      case None => suiteName
+    }
 
   override def apply(event: Event) {
-    super.apply(event)
-/*
+
     event match {
 
-      case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
+      case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        runNotifier.fireTestStarted(Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName)))
 
-      case TestStarting(ordinal, name, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        testStarting(new Report(name, "XXX test starting", None, rerunnable, threadName, new Date(timeStamp)))
+      case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        val throwableOrNull =
+          throwable match {
+            case Some(t) => t
+            case None => null // Yuck. Not sure if the exception passed to new Failure can be null, but it could be given this code. Usually throwable would be defined.
+          }
+        val description = Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName))
+        runNotifier.fireTestFailure(new Failure(description, throwableOrNull))
+        runNotifier.fireTestFinished(description)
 
-      case TestSucceeded(ordinal, name, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        testSucceeded(new Report(name, "XXX test succeeded", None, rerunnable, threadName, new Date(timeStamp)))
+      case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        runNotifier.fireTestFinished(Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName)))
 
-      case TestFailed(ordinal, name, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        testFailed(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
+      case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+        runNotifier.fireTestIgnored(Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName)))
 
-      case TestIgnored(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
-        testIgnored(new Report(name, "XXX test ignored", None, None, threadName, new Date(timeStamp)))
-
-      case TestPending(ordinal, name, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
-
-      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
-
-/*
-      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        formatter match {
-          case Some(formatter) =>
-            suiteStarting(new SpecReport(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
-
-          case None =>
-            suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
-        }
-*/
-
-      case SuiteCompleted(ordinal, name, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteCompleted(new Report(name, "XXX suite completed", None, rerunnable, threadName, new Date(timeStamp)))
-
-      case SuiteAborted(ordinal, name, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteAborted(new Report(name, message, throwable, rerunnable, threadName, new Date(timeStamp)))
-
-      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) => 
-        infoProvided(new Report("XXX Unknown", message, throwable, None, threadName, new Date(timeStamp)))
-
-      case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runStopped()
+      case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        val throwableOrNull =
+          throwable match {
+            case Some(t) => t
+            case None => null // Yuck. Not sure if the exception passed to new Failure can be null, but it could be given this code. Usually throwable would be defined.
+          }
+        val description = Description.createSuiteDescription(suiteDescriptionName(suiteName, suiteClassName))
+        runNotifier.fireTestFailure(new Failure(description, throwableOrNull)) // Best we can do in JUnit, as far as I know
+        runNotifier.fireTestFinished(description)
 
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
-        runAborted(new Report("org.scalatest.tools.Runner", message, throwable, None, threadName, new Date(timeStamp)))
+        val throwableOrNull =
+          throwable match {
+            case Some(t) => t
+            case None => null // Yuck. Not sure if the exception passed to new Failure can be null, but it could be given this code. Usually throwable would be defined.
+          }
+        val description = Description.createSuiteDescription("org.scalatest.tools.Runner")
+        runNotifier.fireTestFailure(new Failure(description, throwableOrNull)) // Best we can do in JUnit, as far as I know
+        runNotifier.fireTestFinished(description)
 
-      case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
+      case _ =>
     }
-*/
   }
 
   override def testStarting(report: Report) {
