@@ -95,7 +95,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
-        apply(new SpecReport(nameForReport, message, message, "  " + message, true, Some(suiteName), Some(thisSuite.getClass.getName), None))
+        //apply(new SpecReport(nameForReport, message, message, "  " + message, true, Some(suiteName), Some(thisSuite.getClass.getName), None))
+        apply(new SpecReport(nameForReport, message, message, "  " + message, true))
       }
     }
     
@@ -199,7 +200,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
     val specText = Resources("scenario", scenarioName)
-    val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
+    //val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
+    val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true)
 
     wrappedReporter.testStarting(report)
 
@@ -220,7 +222,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              val report = new SpecReport(nameForReport, message, message, "    " + message, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
+              //val report = new SpecReport(nameForReport, message, message, "    " + message, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
+              val report = new SpecReport(nameForReport, message, message, "    " + message, true)
               wrappedReporter.infoProvided(report)
             }
           }
@@ -231,7 +234,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       }
 
       // Supress this report in the spec output. (Will show it if there was a failure, though.)
-      val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
+      //val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
+      val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false)
 
       wrappedReporter.testSucceeded(report)
     }
@@ -255,7 +259,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
         t.toString
 
     val specText = Resources("scenario", scenarioName)
-    val report = new SpecReport(getTestNameForReport(scenarioName), msg, specText, "  " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName), Some(t), None)
+    //val report = new SpecReport(getTestNameForReport(scenarioName), msg, specText, "  " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName), Some(t), None)
+    val report = new SpecReport(getTestNameForReport(scenarioName), msg, specText, "  " + specText, true, Some(t), None)
 
     reporter.testFailed(report)
   }
@@ -312,7 +317,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
             case Test(tn, _) =>
               if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
                 if (excludes.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
-                  wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
+                  //wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
+                  wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
                 }
                 else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
                   runTest(tn, wrappedReporter, stopper, goodies)
@@ -347,7 +353,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
         def apply(message: String) {
           if (message == null)
             throw new NullPointerException
-          val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), None)
+          //val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), None)
+          val report = new Report(nameForReport, message)
           wrappedReporter.infoProvided(report)
         }
       }

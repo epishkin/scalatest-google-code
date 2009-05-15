@@ -389,7 +389,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                     }
                     else new scala.xml.NodeBuffer
                   }
-                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.timeStamp }</td></tr>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ report.date }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ report.threadName }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
                   </table>
@@ -765,7 +765,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       // the event handler thread shows up as the originating thread of this report,
       // and that looks bad and is wrong to boot.
       val stringToReport: String = Resources("runStarting", testCount.toString)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
       val reportHolder: ReportHolder = new ReportHolder(report, ReporterOpts.PresentRunStarting)
 
       usingEventDispatchThread {
@@ -794,7 +795,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       // the event handler thread shows up as the originating thread of this report,
       // and that looks bad and is wrong to boot.
       val stringToReport: String = Resources("runCompleted", testsCompletedCount.toString)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentRunCompleted)
       }
@@ -837,7 +839,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       // the event handler thread shows up as the originating thread of this report,
       // and that looks bad and is actually wrong.
       val stringToReport: String = Resources("runStopped", testsCompletedCount.toString)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentRunStopped)
       }
@@ -1222,7 +1225,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       // the event handler thread shows up as the originating thread of this report,
       // and that looks bad and is actually wrong.
       val stringToReport: String = Resources("rerunStarting", testCount.toString)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
 
       usingEventDispatchThread {
         rerunTestsCompletedCount = 0
@@ -1324,7 +1328,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       // the event handler thread shows up as the originating thread of this report,
       // and that looks bad and is actually wrong.
       val stringToReport: String = Resources("rerunStopped", rerunTestsCompletedCount.toString)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
       usingEventDispatchThread {
         registerRerunReport(report, ReporterOpts.PresentRunStopped)
         scrollTheRerunStartingReportToTheTopOfVisibleReports()
@@ -1349,7 +1354,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       // the event handler thread shows up as the originating thread of this report,
       // and that looks bad and is actually wrong.
       val stringToReport: String = Resources("rerunCompleted", rerunTestsCompletedCount.toString)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
+      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
 
       usingEventDispatchThread {
         registerRerunReport(report, ReporterOpts.PresentRunCompleted)

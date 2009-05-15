@@ -215,7 +215,8 @@ trait TestNGSuite extends Suite {
      */
     override def onStart(itc: ITestContext) = {
       val message = Resources("suiteExecutionStarting")
-      reporter.suiteStarting(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
+      //reporter.suiteStarting(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
+      reporter.suiteStarting(new Report(getTestNameForReport(itc.getName), message))
     }
 
     /**
@@ -225,7 +226,8 @@ trait TestNGSuite extends Suite {
      */
     override def onFinish(itc: ITestContext) = {
       val message = Resources("suiteCompletedNormally")
-      reporter.suiteCompleted(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
+      //reporter.suiteCompleted(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
+      reporter.suiteCompleted(new Report(getTestNameForReport(itc.getName), message))
     }
     
     /**
@@ -277,10 +279,11 @@ trait TestNGSuite extends Suite {
      * In my opinion, we need an additional failure indicator available on the Reporter which
      * also shows up in red on the UI. Something like, "reporter.failure", or "reporter.setupFailure".
      * Something that differentiates between test's failing, and other types of failures such as a 
-     * setup method.
+     * setup method. TODO: This is probably a SuiteAborted.
      */
     override def onConfigurationFailure(itr: ITestResult) = {
-      reporter.testFailed( new Report(itr.getName, className, Some(itr.getThrowable), None) )
+      //reporter.testFailed(new Report(itr.getName, className, Some(itr.getThrowable), None))
+      reporter.testFailed(new Report(itr.getName, className, Some(itr.getThrowable), None))
     }
 
     /**
@@ -290,7 +293,8 @@ trait TestNGSuite extends Suite {
      * show up in your face on the UI, and so doesn't clutter the UI. 
      */
     override def onConfigurationSuccess(itr: ITestResult) = { // TODO: Work on this report
-      reporter.infoProvided(new Report(itr.getName, className, Some(suiteName), Some(className), Some(itr.getName)))
+      //reporter.infoProvided(new Report(itr.getName, className, Some(suiteName), Some(className), Some(itr.getName)))
+      reporter.infoProvided(new Report(itr.getName, className))
     }
     
     /**
