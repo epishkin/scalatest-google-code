@@ -764,7 +764,7 @@ trait FunSuite extends Suite { thisSuite =>
     if (testName == null)
       throw new NullPointerException("testName was null")
 
-    suiteName + ": " + testName
+    suiteName + ", " + testName
   }
   
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],

@@ -296,21 +296,21 @@ trait Reporter extends Function1[Event, Unit] {
       case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
 
       case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        testStarting(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "XXX test starting", None, rerunnable, threadName, new Date(timeStamp)))
+        testStarting(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "", None, rerunnable, threadName, new Date(timeStamp)))
 
       case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        testSucceeded(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "XXX test succeeded", None, rerunnable, threadName, new Date(timeStamp)))
+        testSucceeded(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "", None, rerunnable, threadName, new Date(timeStamp)))
 
       case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
         testFailed(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), message, throwable, rerunnable, threadName, new Date(timeStamp)))
 
       case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
-        testIgnored(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "XXX test ignored", None, None, threadName, new Date(timeStamp)))
+        testIgnored(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "", None, None, threadName, new Date(timeStamp)))
 
       case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
       case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
+        suiteStarting(new Report(suiteName, "", None, rerunnable, threadName, new Date(timeStamp)))
 
 /*
       case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
@@ -324,7 +324,7 @@ trait Reporter extends Function1[Event, Unit] {
 */
 
       case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteCompleted(new Report(suiteName, "XXX suite completed", None, rerunnable, threadName, new Date(timeStamp)))
+        suiteCompleted(new Report(suiteName, "", None, rerunnable, threadName, new Date(timeStamp)))
 
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
         suiteAborted(new Report(suiteName, message, throwable, rerunnable, threadName, new Date(timeStamp)))

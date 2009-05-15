@@ -254,8 +254,9 @@
 
     <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
         <scalatest runpath="${build.tests.jar}" haltonfailure="true">
-            <reporter type="graphic" />
+            <reporter type="graphic" config="FTU"/>
             <reporter type="stdout" />
+            <reporter type="file" filename="delme.txt" />
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.matchers" />
             <membersonly package="org.scalatest.testng" />
@@ -299,6 +300,7 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic" />
             <reporter type="stdout" />
+            <reporter type="file" filename="delme.txt" />
             <suite classname="org.scalatest.junit.RunNotifierSuite" />
         </scalatest>
 <!--
