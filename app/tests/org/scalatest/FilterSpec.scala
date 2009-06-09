@@ -1,7 +1,7 @@
 package org.scalatest
 
 import org.scalatest.matchers.ShouldMatchers
-
+import scala.collection.immutable.TreeSet
 import org.scalacheck._
 import Arbitrary._
 import Prop._
@@ -39,7 +39,7 @@ class FilterSpec extends Spec with ShouldMatchers {
     it("should throw IAE if passed an empty set for testName in the includedTestCount method") {
       val caught = intercept[IllegalArgumentException] {
         val filter = new Filter(None, Set())
-        filter.includedTestCount(Set("hi", "ho"), Map("hi" -> Set()))
+        filter.runnableTestsCount(Set("hi", "ho"), Map("hi" -> Set()))
       }
       assert(caught.getMessage === "hi was associated with an empty set in the map passsed as tags")
     }
@@ -71,7 +71,10 @@ class FilterSpec extends Spec with ShouldMatchers {
 
         val tagsToExclude = Set() ++ potentialTagNames.drop(randomPositiveInt(potentialTagNames.length)) // Do want an empty set here occasionally
         val filter = new Filter(None, tagsToExclude)
-        val filtered = filter(Set() ++ testNames, tags)
+        val filtered = filter(TreeSet[String]() ++ testNames, tags)
+
+        assert(filtered.sort(_ < _) === filtered)
+
         for ((testName, ignore) <- filtered) {
 
           // testName should not be in the tagsToExclude map unless it is ignored
@@ -98,7 +101,28 @@ class FilterSpec extends Spec with ShouldMatchers {
           if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore"))
             assert(filtered exists (tuple => tuple._1 == testName && tuple._2 == true), testName + " was in the tags map as ignored, but did not show up in the result of apply marked as ignored") 
         }
+
+        // Check that only the non-ignored tests are counted in the runnableTestsCount
+        val runnableTests =
+          for {
+            (testName, ignore) <- filtered
+            if !ignore
+          } yield testName
+
+        assert(filter.runnableTestsCount(Set() ++ testNames, tags) === runnableTests.size, "runnableTests = " + runnableTests + ", testNames = " + testNames + ", tags = " + tags + ", tagsToExclude = " + tagsToExclude)
       }
+    }
+
+    it("should not include an excluded tag even if it also appears as an included tag") {
+      val filter = new Filter(Some(Set("Slow")), Set("Slow"))
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("Slow")))
+      assert(filtered.size === 0) 
+    }
+
+    it("should include an included tag if there are no excluded tags") {
+      val filter = new Filter(Some(Set("Slow")), Set())
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("Slow")))
+      assert(filtered.size === 1) 
     }
 
     it("should work properly when Some is passed to filter for tagsToInclude") {
@@ -118,7 +142,9 @@ class FilterSpec extends Spec with ShouldMatchers {
         val tagsToInclude = Set() ++ potentialTagNames.drop(randomPositiveInt(potentialTagNames.length - 1)) // Again, subtracting one to avoid an empty set, which is an illegal argument. 
 
         val filter = new Filter(Some(tagsToInclude), tagsToExclude)
-        val filtered = filter(Set() ++ testNames, tags)
+        val filtered = filter(TreeSet[String]() ++ testNames, tags)
+
+        assert(filtered.sort(_ < _) === filtered)
 
         // Anything that's not in the include tags should not appear in the output
         // Look at everything in the output, and make sure it is in the include tags
