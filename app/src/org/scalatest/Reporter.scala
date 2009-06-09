@@ -383,3 +383,8 @@ reporter match {
 
 I don't know the pattern matching syntax very well yet. But something like that.
 */
+/*
+Todo: Make a ResourcefulReporter, a subclass of Reporter, that has the dispose method. Deprecate dispose in Reporter.
+Make FileReporter a ResourcefulReporter. Change my code that calls dispose to do a pattern match on the type. Ask anyone
+who has written a dispose method to make their reporter Resourceful. After 2 releases drop dispose() from Reporter.
+*/
