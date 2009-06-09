@@ -1247,7 +1247,7 @@ object Runner {
         }
   
       // Here is where the Jini preferred class loader stuff went.
-  
+
       // Tell the URLConnections to not use caching, so that repeated runs and reruns actually work
       // on the latest binaries.
       for (url <- urlsList) {
@@ -1258,7 +1258,7 @@ object Runner {
           case e: IOException => // just ignore these
         }
       }
-  
+
       new URLClassLoader(urlsList.toArray, classOf[Suite].getClassLoader)
     }
   }
