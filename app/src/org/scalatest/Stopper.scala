@@ -36,3 +36,44 @@ trait Stopper {
 // One question people will have is do I make this a val or a def in the supertype.
 // A val can override a def. Can it be the other way around? How does he implement
 // this?
+
+/*
+   Could make this a function too. Would simply be () => Boolean. Could name the parameter stopRequested
+  
+   Then the code would be:
+
+   if (stopRequested()) {
+     // bla bla bla
+   }
+
+   Instead of:
+
+   if (stopper.stopRequested) {
+     // bla bla bla
+   }
+
+   Could call it StopRequestedFunction instead of Stopper
+   stopRequested: StopRequestedFunction
+
+   Or could just not give it a name so they'd write:
+   stopRequested: () => Boolean
+
+   Blech. Could also use StopRequestedFun
+   stopRequested: StopRequestedFun
+
+  Or just, StopRequested
+  stopRequested: StopRequested
+
+  StopRequested, Distribute, Report (hmm. deprecation is a problem here), Filter
+  StopRequestedFun, DistributeFun, ReportFun, FilterFun
+
+  Honestly, I kind of like: StopRequested, Distribute, Filter, and Report (problem with these latter two is they pass as nouns too, and in the case of Report that's misleading)
+
+  StopRequestedFunction, DistributeFunction, ReportFunction, FilterFunction
+  testName: Option[String], report: ReportFunction, stopRequested: StopRequestedFunction, filter: FilterFunction, goodies: Map[String, Set[String]], distribute: Option[DistributeFunction]
+
+  I think that latter is the most clear.
+*/
+
+
+
