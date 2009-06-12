@@ -63,9 +63,11 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   def this(filename: String) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), PrintReporter.BufferSize)))
 
+/* Dropping under theory I'll simply have two running schemes for two releases
   override def apply(event: Event) {
     super.apply(event)
   }
+*/
 
   /**
   * Prints information indicating that a run with an expected <code>testCount</code>

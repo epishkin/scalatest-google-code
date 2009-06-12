@@ -713,9 +713,11 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       }
     }
   
+/* Dropping under theory I'll simply have two running schemes for two releases
     override def apply(event: Event) {
       super.apply(event)
     }
+*/
 
     override def testSucceeded(report: Report) {
       if (report == null)
@@ -1213,9 +1215,11 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     // work to do.
     var anErrorHasOccurredAlready = false
 
+/* Dropping under theory I'll simply have two running schemes for two releases
     override def apply(event: Event) {
       super.apply(event)
     }
+*/
 
     override def runStarting(testCount: Int) {
       if (testCount < 0)
@@ -1405,7 +1409,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         (loader, dispatchReporter) => {
           try {
             rerunnable.rerun(dispatchReporter, stopper, includes, Runner.excludesWithIgnore(excludes), propertiesMap,
-                distributor, loader, nextRunStamp)
+                distributor, loader) // I deleted passing of nextRunStamp here
           }
           catch {
             case ex: Throwable => {

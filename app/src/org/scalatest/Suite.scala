@@ -1373,6 +1373,60 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   }
 
   /**
+   * Run this <code>Suite</code>.
+   *
+   * <p>If <code>testName</code> is <code>None</code>, this trait's implementation of this method
+   * calls these two methods on this object in this order:</p>
+   *
+   * <ol>
+   * <li><code>runNestedSuites(wrappedReportFunction, stopRequested, filter, goodies, distribute)</code></li>
+   * <li><code>runTests(testName, wrappedReportFunction, stopRequested, filter, goodies, distribute)</code></li>
+   * </ol>
+   *
+   * <p>
+   * If <code>testName</code> is <code>Some</code>, then this trait's implementation of this method
+   * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>.
+   * </p>
+   *
+   * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
+   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
+   * @param report the report function to which events will be reported.
+   * @param stopRequested the stop requested function that will be consulted to determine whether to stop execution early.
+   * @param filter a filter that can determine which tests to run based on specified tags to include and exclude
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param distribute an optional distribute function, into which to put nested <code>Suite</code>s to be executed
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, this trait's implementation
+   *              will execute nested <code>Suite</code>s will sequentially.
+   *         
+   * @throws NullPointerException if any passed parameter is <code>null</code>.
+   */
+  def run(testName: Option[String], report: Event => Unit, stopRequested: () => Boolean, filter: Filter,
+              goodies: Map[String, Any], distribute: Option[Suite => Unit]) {
+
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+    if (report == null)
+      throw new NullPointerException("the report function was null")
+    if (stopRequested == null)
+      throw new NullPointerException("the stopRequested function was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
+    if (goodies == null)
+      throw new NullPointerException("goodies was null")
+    if (distribute == null)
+      throw new NullPointerException("the distribute function was null")
+
+    // The report function passed to this method knows how to report events passed to apply. The Reporter taken by execute knows
+    // how to report info passed to its handler methods. So I need a Reporter that 
+/*
+    val reporter = new Reporter {
+    }
+
+    execute(testName, )
+*/
+  }
+
+  /**
    * Execute this <code>Suite</code>.
    *
    * <p>If <code>testName</code> is <code>None</code>, this trait's implementation of this method
@@ -1474,7 +1528,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * <strong>Deprecated: this method will be removed in a future version of ScalaTest. If you have overriden this method, please override
    * the overloaded from that takes a report function and an ordinal instead, and delete your overloaded version of this method. During the deprecation
    * period, ScalaTest's runner will continue to call this form. Once you change your overload to the other form, you will inherit this default
-   * implementation, which simply calls the other form.</stong> Execute zero to many of this <code>Suite</code>'s nested <code>Suite</code>s.
+   * implementation, which simply calls the other form.</strong> Execute zero to many of this <code>Suite</code>'s nested <code>Suite</code>s.
    * </p>
    *
    * <p>
@@ -1504,43 +1558,6 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   @deprecated protected def runNestedSuites(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
                                 goodies: Map[String, Any], distributor: Option[Distributor]) {
 
-    val ordinal = new Ordinal(99) // Later will grab it from a thread local
-    runNestedSuites(reporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor, ordinal)
-  }
-
-  /**
-   * <p>
-   * Execute zero to many of this <code>Suite</code>'s nested <code>Suite</code>s.
-   * </p>
-   *
-   * <p>
-   * If the passed <code>distributor</code> is <code>None</code>, this trait's
-   * implementation of this method invokes <code>execute</code> on each
-   * nested <code>Suite</code> in the <code>List</code> obtained by invoking <code>nestedSuites</code>.
-   * If a nested <code>Suite</code>'s <code>execute</code>
-   * method completes abruptly with an exception, this trait's implementation of this
-   * method reports that the <code>Suite</code> aborted and attempts to execute the
-   * next nested <code>Suite</code>.
-   * If the passed <code>distributor</code> is <code>Some</code>, this trait's implementation
-   * puts each nested <code>Suite</code> 
-   * into the <code>Distributor</code> contained in the <code>Some</code>, in the order in which the
-   * <code>Suite</code>s appear in the <code>List</code> returned by <code>nestedSuites</code>.
-   * </p>
-   *
-   * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
-   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
-   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
-   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
-   * @param nextOrdinal the next ordinal to use when sending an event to the passed report function
-   *         
-   * @throws NullPointerException if any passed parameter is <code>null</code>.
-   */
-  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-                                goodies: Map[String, Any], distributor: Option[Distributor], nextOrdinal: Ordinal) {
-
     if (reporter == null)
       throw new NullPointerException("reporter was null")
     if (stopper == null)
@@ -1553,10 +1570,6 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       throw new NullPointerException("goodies was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
-    if (nextOrdinal == null)
-      throw new NullPointerException("nextOrdinal was null")
-
-    var ordinal = nextOrdinal
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
@@ -1573,22 +1586,22 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
           else
             None
 
-/*
-        val rawString = Resources("suiteExecutionStarting")
+    val rawString = Resources("suiteExecutionStarting")
 
         val report =
           nestedSuite match {
             case spec: Spec =>
-              new SpecReport(nestedSuite.suiteName, rawString, nestedSuite.suiteName, nestedSuite.suiteName, true, Some(suiteName), Some(thisSuite.getClass.getName), None, None, rerunnable)
+              new SpecReport(nestedSuite.suiteName, rawString, nestedSuite.suiteName, nestedSuite.suiteName, true, None, rerunnable)
             case _ =>
-              if (hasPublicNoArgConstructor) 
-                new Report(nestedSuite.suiteName, rawString, Some(suiteName), Some(thisSuite.getClass.getName), None, None, rerunnable)
-              else 
-                new Report(nestedSuite.suiteName, rawString, Some(suiteName), Some(thisSuite.getClass.getName), None)
+              if (hasPublicNoArgConstructor)
+                new Report(nestedSuite.suiteName, rawString, None, rerunnable)
+              else
+                new Report(nestedSuite.suiteName, rawString)
           }
-        
+
         wrappedReporter.suiteStarting(report)
-*/
+
+/*
         val formatter = 
           nestedSuite match {
             case spec: Spec => Some(IndentedText(nestedSuite.suiteName, nestedSuite.suiteName, 0))
@@ -1597,6 +1610,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 
         reporter(SuiteStarting(ordinal, nestedSuite.suiteName, Some(thisSuite.getClass.getName), formatter, rerunnable))
         ordinal = ordinal.next
+*/
 
         try {
           nestedSuite.execute(None, wrappedReporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor)

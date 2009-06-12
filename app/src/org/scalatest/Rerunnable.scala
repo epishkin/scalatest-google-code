@@ -42,9 +42,7 @@ trait Rerunnable {
    * @throws NullPointerException if <CODE>reporter</CODE> is <CODE>null</CODE>.
    */
   @deprecated def rerun(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-            goodies: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader) {
-    rerun(reporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor, loader, 99)
-  }
+            goodies: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader): Unit
 
   /**
    * Rerun a test or other entity (such as a suite), reporting results to the specified <code>Reporter</code>.
@@ -63,9 +61,9 @@ trait Rerunnable {
    * @param loader the <code>ClassLoader</code> from which to load classes needed to rerun
    *     the test or suite.
    * @throws NullPointerException if <CODE>reporter</CODE> is <CODE>null</CODE>.
-   */
   def rerun(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
             goodies: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader, runStamp: Int) {
     rerun(reporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor, loader)
   }
+   */
 }

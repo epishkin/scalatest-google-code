@@ -105,7 +105,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait Reporter extends Function1[Event, Unit] {
+trait Reporter {
 
     /**
      * Indicates a runner is about run a suite of tests.
@@ -289,6 +289,7 @@ trait Reporter extends Function1[Event, Unit] {
      */
     def dispose() = ()
 
+/*
   def apply(event: Event) {
 
     event match {
@@ -351,6 +352,7 @@ trait Reporter extends Function1[Event, Unit] {
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
     }
   }
+*/
 }
 
 /*

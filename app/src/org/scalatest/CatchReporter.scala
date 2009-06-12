@@ -30,6 +30,7 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
 
   def this(reporter: Reporter) = this(reporter, System.err)
 
+/* Dropping under theory I'll simply have two running schemes for two releases
   override def apply(event: Event) {
     try {
       reporter(event)
@@ -41,6 +42,7 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
         e.printStackTrace(out)
     }
   }
+*/
 
   // Won't need the rest of this class after phase II of the reporter refactor is done, probably 0.9.8
   override def runStarting(testCount: Int) = dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(testCount))
