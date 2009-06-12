@@ -49,11 +49,61 @@ class FilterSpec extends Spec with ShouldMatchers {
 
     def randomPositiveInt(max: Int) = (Math.random * 10000).toInt % (max + 1)
 
-    it("should handle Ignore properly when None is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
-      val filter = new Filter(None, Set("no ignore here"))
+    def validateIgnoreBehavior(filter: Filter) {
       val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("org.scalatest.Ignore")))
-      assert(filtered exists (tuple => tuple._1 == "myTestName"), "myTestName was not in the tags map, but did not show up in the result of apply") 
+      assert(filtered exists (tuple => tuple._1 == "myTestName"), "myTestName was in the tags map, but did not show up in the result of apply") 
       assert(filtered exists (tuple => tuple._1 == "myTestName" && tuple._2 == true), "myTestName was in the result of apply, but was not marked as ignored") 
+    }
+
+    it("should report a test as ignored when None is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(None, Set("no ignore here"))
+      validateIgnoreBehavior(filter)
+    }
+
+    it("should report a test as ignored when None is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+      val filter = new Filter(None, Set("org.scalatest.Ignore"))
+      validateIgnoreBehavior(filter)
+    }
+
+    it("should report a test as ignored when Some(Ignore) is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("org.scalatest.Ignore")), Set("no ignore here"))
+      validateIgnoreBehavior(filter)
+    }
+
+    it("should report a test as ignored when Some(Ignore) is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("org.scalatest.Ignore")), Set("org.scalatest.Ignore"))
+      validateIgnoreBehavior(filter)
+    }
+
+    def validateIgnoreOtherBehavior(filter: Filter) {
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("org.scalatest.Ignore", "Other")))
+      assert(filtered exists (tuple => tuple._1 == "myTestName"), "myTestName was in the tags map, but did not show up in the result of apply") 
+      assert(filtered exists (tuple => tuple._1 == "myTestName" && tuple._2 == true), "myTestName was in the result of apply, but was not marked as ignored") 
+    }
+
+    it("should report a test tagged as Other as ignored when Some(Other) is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("Other")), Set("no ignore here"))
+      validateIgnoreOtherBehavior(filter)
+    }
+
+    it("should report a test tagged as Other as ignored when Some(Other) is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("Other")), Set("org.scalatest.Ignore"))
+      validateIgnoreOtherBehavior(filter)
+    }
+
+    def validateNotReportingIgnoresBehavior(filter: Filter) {
+      val filtered = filter(Set("myTestName"), Map("myTestName" -> Set("org.scalatest.Ignore")))
+      assert(!(filtered exists (tuple => tuple._1 == "myTestName")), "myTestName's Ignore tag was not in tagsToInclude, but showed up in the result of apply") 
+    }
+
+    it("should not report a test as ignored when Some(no ignore here) is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("no ignore here")), Set("no ignore here"))
+      validateNotReportingIgnoresBehavior(filter)
+    }
+
+    it("should not report a test as ignored when Some(no ignore here) is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+      val filter = new Filter(Some(Set("no ignore here")), Set("org.scalatest.Ignore"))
+      validateNotReportingIgnoresBehavior(filter)
     }
 
     it("should work properly when None is passed to filter for tagsToInclude") {
