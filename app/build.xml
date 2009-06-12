@@ -20,7 +20,7 @@
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
     <property name="project.name" value="ScalaTest" />
-    <property name="release" value="0.9.5" />
+    <property name="release" value="0.9.6" />
     <property name="demo" value="${build}/demo" />
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
@@ -153,7 +153,7 @@
     <target name="compile-tests" depends="compile-main">
 
         <!-- Compile the Scala code from ${tests} into ${build.tests} -->
-        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs}"/>
+        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
 
         <!-- Compile the Scala code from ${build.generated.tests} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs}" />
@@ -301,7 +301,7 @@
             <reporter type="graphic" />
             <reporter type="stdout" />
             <reporter type="file" filename="delme.txt" />
-            <suite classname="org.scalatest.junit.RunNotifierSuite" />
+            <suite classname="org.scalatest.FilterSpec" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
