@@ -129,7 +129,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
 
     val repA = new MyReporter
-    a.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+    a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
     assert(!repA.testIgnoredCalled)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
@@ -143,7 +143,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
 
     val repB = new MyReporter
-    b.execute(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    b.run(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repB.testIgnoredCalled)
     assert(repB.lastReport.name endsWith "testThis")
     assert(!b.theTestThisCalled)
@@ -158,7 +158,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
 
     val repC = new MyReporter
-    c.execute(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    c.run(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repC.testIgnoredCalled)
     assert(repC.lastReport.name endsWith "testThat(Informer)", repC.lastReport.name)
     assert(c.theTestThisCalled)
@@ -174,13 +174,13 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
 
     val repD = new MyReporter
-    d.execute(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    d.run(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
     assert(repD.testIgnoredCalled)
-    assert(repD.lastReport.name endsWith "testThis") // last because executed alphabetically
+    assert(repD.lastReport.name endsWith "testThis") // last because run alphabetically
     assert(!d.theTestThisCalled)
     assert(!d.theTestThatCalled)
 
-    // If I provide a specific testName to execute, then it should ignore an Ignore on that test
+    // If I provide a specific testName to run, then it should ignore an Ignore on that test
     // method and actually invoke it.
 
     val e = new Suite {
@@ -192,7 +192,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
 
     val repE = new MyReporter
-    e.execute(Some("testThis"), repE, new Stopper {}, Set(), Set(), Map(), None)
+    e.run(Some("testThis"), repE, new Stopper {}, Set(), Set(), Map(), None)
     assert(!repE.testIgnoredCalled)
     assert(e.theTestThisCalled)
   }
@@ -207,7 +207,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repA = new MyReporter
-    a.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+    a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
     assert(!repA.testIgnoredCalled)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
@@ -220,7 +220,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repB = new MyReporter
-    b.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
+    b.run(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
     assert(!repB.testIgnoredCalled)
     assert(b.theTestThisCalled)
     assert(!b.theTestThatCalled)
@@ -234,7 +234,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repC = new MyReporter
-    c.execute(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
+    c.run(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None)
     assert(!repC.testIgnoredCalled)
     assert(c.theTestThisCalled)
     assert(c.theTestThatCalled)
@@ -249,7 +249,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repD = new MyReporter
-    d.execute(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None)
+    d.run(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None)
     assert(repD.testIgnoredCalled)
     assert(!d.theTestThisCalled)
     assert(d.theTestThatCalled)
@@ -266,7 +266,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repE = new MyReporter
-    e.execute(None, repE, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
+    e.run(None, repE, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None)
     assert(!repE.testIgnoredCalled)
     assert(!e.theTestThisCalled)
@@ -286,7 +286,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repF = new MyReporter
-    f.execute(None, repF, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
+    f.run(None, repF, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None)
     assert(!repF.testIgnoredCalled)
     assert(!f.theTestThisCalled)
@@ -306,7 +306,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repG = new MyReporter
-    g.execute(None, repG, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
+    g.run(None, repG, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None)
     assert(!repG.testIgnoredCalled)
     assert(!g.theTestThisCalled)
@@ -325,7 +325,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repH = new MyReporter
-    h.execute(None, repH, new Stopper {}, Set(), Set("org.scalatest.FastAsLight"), Map(), None)
+    h.run(None, repH, new Stopper {}, Set(), Set("org.scalatest.FastAsLight"), Map(), None)
     assert(!repH.testIgnoredCalled)
     assert(!h.theTestThisCalled)
     assert(h.theTestThatCalled)
@@ -343,7 +343,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repI = new MyReporter
-    i.execute(None, repI, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
+    i.run(None, repI, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
     assert(!repI.testIgnoredCalled)
     assert(!i.theTestThisCalled)
     assert(!i.theTestThatCalled)
@@ -363,7 +363,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repJ = new MyReporter
-    j.execute(None, repJ, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
+    j.run(None, repJ, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None)
     assert(!repI.testIgnoredCalled)
     assert(!j.theTestThisCalled)
     assert(!j.theTestThatCalled)
@@ -384,7 +384,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repK = new MyReporter
-    k.execute(None, repK, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None)
+    k.run(None, repK, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None)
     assert(repK.testIgnoredCalled)
     assert(!k.theTestThisCalled)
     assert(!k.theTestThatCalled)

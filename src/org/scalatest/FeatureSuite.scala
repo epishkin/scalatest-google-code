@@ -34,8 +34,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
 
   // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
-  // by execute. When running tests concurrently with ScalaTest Runner, different threads can
-  // instantiate and execute the Suite. Instead of synchronizing, I put them in an immutable Bundle object (and
+  // by run. When running tests concurrently with ScalaTest Runner, different threads can
+  // instantiate and run the suite. Instead of synchronizing, I put them in an immutable Bundle object (and
   // all three collections--testNamesList, testsMap, and groupsMap--are immuable collections), then I put the Bundle
   // in an AtomicReference. Since the expected use case is the test, testWithInformer, etc., methods will be called
   // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
@@ -46,9 +46,9 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     val doList: List[FunNode],
     val testsMap: Map[String, Test],
     val groupsMap: Map[String, Set[String]],
-    val executeHasBeenInvoked: Boolean
+    val runHasBeenInvoked: Boolean
   ) {
-    def unpack = (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked)
+    def unpack = (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked)
   }
   
   private object Bundle {
@@ -57,9 +57,9 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       doList: List[FunNode],
       testsMap: Map[String, Test],
       groupsMap: Map[String, Set[String]],
-      executeHasBeenInvoked: Boolean
+      runHasBeenInvoked: Boolean
     ): Bundle =
-      new Bundle(testNamesList, doList,testsMap, groupsMap, executeHasBeenInvoked)
+      new Bundle(testNamesList, doList,testsMap, groupsMap, runHasBeenInvoked)
   }
 
   private val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
@@ -88,9 +88,9 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
         if (report == null)
           throw new NullPointerException
         val oldBundle = atomic.get
-        var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+        var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
         doList ::= Info(report)
-        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
+        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
       }
       def apply(message: String) {
         if (message == null)
@@ -118,7 +118,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
 
   /**
    * Register a scenario with the specified name, optional groups, and function value that takes no arguments.
-   * This method will register the scenario for later execution via an invocation of one of the <code>execute</code>
+   * This method will register the scenario for later execution via an invocation of one of the <code>run</code>
    * methods. The passed scenario name must not have been registered previously on
    * this <code>FeatureSuite</code> instance.
    *
@@ -127,10 +127,10 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
   protected def scenario(scenarioName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+    var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
 
-    if (executeHasBeenInvoked)
-      throw new IllegalStateException("You cannot register a test  on a FunSuite after execute has been invoked.")
+    if (runHasBeenInvoked)
+      throw new IllegalStateException("You cannot register a test on a FunSuite after run has been invoked.")
     
     require(!testsMap.keySet.contains(scenarioName), "Duplicate test name: " + scenarioName)
 
@@ -142,14 +142,14 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     if (!groupNames.isEmpty)
       groupsMap += (scenarioName -> groupNames)
 
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
+    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
   }
 
   /**
    * Register a scenario to ignore, which has the specified name, optional groups, and function value that takes no arguments.
-   * This method will register the scenario for later ignoring via an invocation of one of the <code>execute</code>
+   * This method will register the scenario for later ignoring via an invocation of one of the <code>run</code>
    * methods. This method exists to make it easy to ignore an existing scenario method by changing the call to <code>scenario</code>
-   * to <code>ignore</code> without deleting or commenting out the actual scenario code. The scenario will not be executed, but a
+   * to <code>ignore</code> without deleting or commenting out the actual scenario code. The scenario will not be run, but a
    * report will be sent that indicates the scenario was ignored. The passed scenario name must not have been registered previously on
    * this <code>FeatureSuite</code> instance.
    *
@@ -160,12 +160,12 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     scenario(scenarioName)(f) // Call test without passing the groups
 
     val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+    var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
 
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (scenarioName -> (groupNames + IgnoreGroupName))
 
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
+    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
   }
 
   /**
@@ -177,7 +177,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
   * </p>
   */
   override def testNames: Set[String] = {
-    // I'm returning a ListSet here so that they tests will be executed in registration order
+    // I'm returning a ListSet here so that they tests will be run in registration order
     ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
@@ -185,7 +185,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
   /**
    * Run a scenario. This trait's implementation runs the scenario registered with the name specified by <code>scenarioName</code>.
    *
-   * @param scenarioName the name of one scenario to execute.
+   * @param scenarioName the name of one scenario to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param properties a <code>Map</code> of properties that can be used by the executing <code>FeatureSuite</code>.
@@ -305,7 +305,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     // into error messages on the standard error stream.
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    // If a testName to execute is passed, just execute that, else execute the tests returned
+    // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
       case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
@@ -330,14 +330,14 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     }
   }
 
-  override def execute(testName: Option[String], reporter: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor]) {
 
-    // Set the flag that indicates execute has been invoked, which will disallow any further
+    // Set the flag that indicates run has been invoked, which will disallow any further
     // invocations of "test" with an IllegalStateException.
     val oldBundle = atomic.get
-    val (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
-    if (!executeHasBeenInvoked)
+    val (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
+    if (!runHasBeenInvoked)
       updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, true))
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
@@ -360,7 +360,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       }
 
     try {
-      super.execute(testName, wrappedReporter, stopRequested, includes, excludes, goodies, distributor)
+      super.run(testName, wrappedReporter, stopRequested, includes, excludes, goodies, distributor)
     }
     finally {
       currentInformer = zombieInformer

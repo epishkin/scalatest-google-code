@@ -54,7 +54,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
       dispatchReporter.suiteStarting(report)
   
       try {
-        suite.execute(None, dispatchReporter, stopRequested, includes, excludes, propertiesMap, distributor)
+        suite.run(None, dispatchReporter, stopRequested, includes, excludes, propertiesMap, distributor)
   
         val rawString2 = Resources("suiteCompletedNormally")
   

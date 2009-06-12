@@ -36,7 +36,7 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
       val suite = suiteClass.newInstance.asInstanceOf[Suite]
 
       reporter.runStarting(1)
-      suite.execute(Some(testName), reporter, stopper, includes, excludes, goodies, distributor) 
+      suite.run(Some(testName), reporter, stopper, includes, excludes, goodies, distributor) 
       reporter.runCompleted()
     }
     catch {

@@ -183,7 +183,7 @@ import org.scalatest.TestFailedExceptionHelper.getStackDepth
  * </pre>
  * 
  * One advantage of this approach compared to the create method approach shown previously is that
- * you can more easily perform cleanup after each test executes. For example, you
+ * you can more easily perform cleanup after each test runs. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
  * doing so before and after invoking the test function in a <code>withTempFile</code>
  * method. Here's an example:
@@ -367,12 +367,12 @@ import org.scalatest.TestFailedExceptionHelper.getStackDepth
  * </p>
  *
  * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
- * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
+ * The primary <code>run</code> method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be run
  * except those those belonging to groups listed in the
  * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
  * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
- * will be executed.
+ * will be run.
  * </p>
  *
  * <p>
@@ -410,7 +410,7 @@ import org.scalatest.TestFailedExceptionHelper.getStackDepth
  * </p>
  *
  * <pre>
- * scala> (new MySuite).execute()
+ * scala> (new MySuite).run()
  * </pre>
  *
  * <p>
@@ -424,9 +424,9 @@ import org.scalatest.TestFailedExceptionHelper.getStackDepth
  * </pre>
  *
  * <p>
- * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The <code>execute</code> method that takes no parameters
+ * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The <code>run</code> method that takes no parameters
  * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
- * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
+ * the primary <code>run</code> method, as does <code>Runner</code>. The only difference between
  * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
  * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
@@ -437,7 +437,7 @@ import org.scalatest.TestFailedExceptionHelper.getStackDepth
  * </p>
  *
  * <p>
- * One of the parameters to the primary <code>execute</code> method is a <code>Reporter</code>, which
+ * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
  * will collect and report information about the running suite of tests.
  * Information about suites and tests that were run, whether tests succeeded or failed, 
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
@@ -485,8 +485,8 @@ trait FunSuite extends Suite { thisSuite =>
 
   // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
-  // by execute. When running tests concurrently with ScalaTest Runner, different threads can
-  // instantiate and execute the Suite. Instead of synchronizing, I put them in an immutable Bundle object (and
+  // by run. When running tests concurrently with ScalaTest Runner, different threads can
+  // instantiate and run the suite. Instead of synchronizing, I put them in an immutable Bundle object (and
   // all three collections--testNamesList, testsMap, and groupsMap--are immuable collections), then I put the Bundle
   // in an AtomicReference. Since the expected use case is the test method will be called
   // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
@@ -497,9 +497,9 @@ trait FunSuite extends Suite { thisSuite =>
     val doList: List[FunNode],
     val testsMap: Map[String, Test],
     val groupsMap: Map[String, Set[String]],
-    val executeHasBeenInvoked: Boolean
+    val runHasBeenInvoked: Boolean
   ) {
-    def unpack = (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked)
+    def unpack = (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked)
   }
 
   private object Bundle {
@@ -508,9 +508,9 @@ trait FunSuite extends Suite { thisSuite =>
       doList: List[FunNode],
       testsMap: Map[String, Test],
       groupsMap: Map[String, Set[String]],
-      executeHasBeenInvoked: Boolean
+      runHasBeenInvoked: Boolean
     ): Bundle =
-      new Bundle(testNamesList, doList,testsMap, groupsMap, executeHasBeenInvoked)
+      new Bundle(testNamesList, doList,testsMap, groupsMap, runHasBeenInvoked)
   }
 
   private val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
@@ -547,9 +547,9 @@ trait FunSuite extends Suite { thisSuite =>
         if (report == null)
           throw new NullPointerException
         val oldBundle = atomic.get
-        var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+        var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
         doList ::= Info(report)
-        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
+        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
       }
       def apply(message: String) {
         if (message == null)
@@ -577,7 +577,7 @@ trait FunSuite extends Suite { thisSuite =>
 
     /**
      *  Register a test with the specified name, optional groups, and function value that takes no arguments.
-     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+     * This method will register the test for later execution via an invocation of one of the <code>run</code>
      * methods. The passed test name must not have been registered previously on
      * this <code>FunSuite</code> instance.
      *
@@ -586,9 +586,9 @@ trait FunSuite extends Suite { thisSuite =>
   protected def test(testName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
+    var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
 
-    if (executeHasBeenInvoked)
+    if (runHasBeenInvoked)
       throw new TestFailedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
     
     if (testsMap.keySet.contains(testName)) {
@@ -603,14 +603,14 @@ trait FunSuite extends Suite { thisSuite =>
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked))
+    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
   }
 
   /**
    * Register a test to ignore, which has the specified name, optional groups, and function value that takes no arguments.
-   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
+   * This method will register the test for later ignoring via an invocation of one of the <code>run</code>
    * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>test</code>
-   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
+   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be run, but a
    * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
    * this <code>FunSuite</code> instance.
    *
@@ -619,20 +619,20 @@ trait FunSuite extends Suite { thisSuite =>
   protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
 
     val oldBundle = atomic.get
-    val (_, _, _, _, executeHasBeenInvoked) = oldBundle.unpack
+    val (_, _, _, _, runHasBeenInvoked) = oldBundle.unpack
 
-    if (executeHasBeenInvoked)
+    if (runHasBeenInvoked)
       throw new TestFailedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth("FunSuite.scala", "ignore"))
 
     test(testName)(f) // Call test without passing the groups
 
     val oldBundle2 = atomic.get
-    var (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvokedFlag) = oldBundle2.unpack
+    var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvokedFlag) = oldBundle2.unpack
 
     val groupNames = Set[String]() ++ testGroups.map(_.name)
     groupsMap += (testName -> (groupNames + IgnoreGroupName))
 
-    updateAtomic(oldBundle2, Bundle(testNamesList, doList, testsMap, groupsMap, executeHasBeenInvokedFlag))
+    updateAtomic(oldBundle2, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvokedFlag))
   }
 
   /**
@@ -644,7 +644,7 @@ trait FunSuite extends Suite { thisSuite =>
   * </p>
   */
   override def testNames: Set[String] = {
-    // I'm returning a ListSet here so that they tests will be executed in registration order
+    // I'm returning a ListSet here so that they tests will be run in registration order
     ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
@@ -652,7 +652,7 @@ trait FunSuite extends Suite { thisSuite =>
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
    *
-   * @param testName the name of one test to execute.
+   * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param goodies a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
@@ -788,7 +788,7 @@ trait FunSuite extends Suite { thisSuite =>
     // into error messages on the standard error stream.
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    // If a testName to execute is passed, just execute that, else execute the tests returned
+    // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
       case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
@@ -813,14 +813,14 @@ trait FunSuite extends Suite { thisSuite =>
     }
   }
 
-  override def execute(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor]) {
 
-    // Set the flag that indicates execute has been invoked, which will disallow any further
+    // Set the flag that indicates run has been invoked, which will disallow any further
     // invocations of "test" with an IllegalStateException.
     val oldBundle = atomic.get
-    val (testNamesList, doList, testsMap, groupsMap, executeHasBeenInvoked) = oldBundle.unpack
-    if (!executeHasBeenInvoked)
+    val (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
+    if (!runHasBeenInvoked)
       updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, true))
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
@@ -843,7 +843,7 @@ trait FunSuite extends Suite { thisSuite =>
       }
 
     try {
-      super.execute(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
+      super.run(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
     }
     finally {
       currentInformer = zombieInformer

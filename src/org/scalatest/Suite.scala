@@ -35,7 +35,7 @@ import org.scalatest.events._
  * suite (<em>i.e.</em>, a collection) of tests.
  *
  * <p>
- * This trait provides an interface that allows suites of tests to be executed.
+ * This trait provides an interface that allows suites of tests to be run.
  * Its implementation enables a default way of writing and executing tests.  Subtraits and subclasses can
  * override <code>Suite</code>'s methods to enable other ways of writing and executing tests.
  * This trait's default approach allows tests to be defined as methods whose name starts with "<code>test</code>."
@@ -80,8 +80,8 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * You run a <code>Suite</code> by invoking on it one of three overloaded <code>execute</code>
- * methods. Two of these <code>execute</code> methods, which print test results to the
+ * You run a <code>Suite</code> by invoking on it one of five overloaded <code>run</code>
+ * methods. Four of these <code>run</code> methods, which print test results to the
  * standard output, are intended to serve as a
  * convenient way to run tests from within the Scala interpreter. For example,
  * to run <code>MySuite</code> from within the Scala interpreter, you could write:
@@ -120,8 +120,8 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * The third overloaded <code>execute</code> method takes seven parameters, so it is a bit unwieldy to invoke from
- * within the Scala interpreter. Instead, this <code>execute</code> method is intended to be invoked indirectly by a test runner, such
+ * The third overloaded <code>run</code> method takes seven parameters, so it is a bit unwieldy to invoke from
+ * within the Scala interpreter. Instead, this <code>run</code> method is intended to be invoked indirectly by a test runner, such
  * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="tools/Runner$object.html">documentation for <code>Runner</code></a> for more detail.
  * </p>
  *
@@ -236,7 +236,7 @@ import org.scalatest.events._
  * <p>
  * If <code>charAt</code> throws <code>IndexOutOfBoundsException</code> as left, control will transfer
  * to the catch case, which does nothing. If, however, <code>charAt</code> fails to throw an exception,
- * the next statement, <code>fail()</code>, will be executed. The <code>fail</code> method always completes abruptly with
+ * the next statement, <code>fail()</code>, will be run. The <code>fail</code> method always completes abruptly with
  * an <code>AssertionError</code>, thereby signaling a failed test.
  * </p>
  *
@@ -397,8 +397,8 @@ import org.scalatest.events._
  * which are called <em>nested</em> <code>Suite</code>s. Those nested  <code>Suite</code>s can in turn have
  * their own nested  <code>Suite</code>s, and so on. Large test suites can be organized, therefore, as a tree of
  * nested <code>Suite</code>s.
- * This trait's <code>execute</code> method, in addition to invoking its
- * test methods, invokes <code>execute</code> on each of its nested <code>Suite</code>s.
+ * This trait's <code>run</code> method, in addition to invoking its
+ * test methods, invokes <code>run</code> on each of its nested <code>Suite</code>s.
  * </p>
  *
  * <p>
@@ -568,7 +568,7 @@ import org.scalatest.events._
  * </pre>
  * 
  * One advantage of this approach compared to the create method approach shown previously is that
- * you can more easily perform cleanup after each test executes. For example, you
+ * you can more easily perform cleanup after each test runs. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
  * doing so before and after invoking the test function in a <code>withTempFile</code>
  * method. Here's an example:
@@ -709,8 +709,8 @@ import org.scalatest.events._
  * In some cases you may need to pass information from a suite to its nested suites.
  * For example, perhaps a main suite needs to open a database connection that is then
  * used by all of its nested suites. You can accomplish this in ScalaTest by using
- * goodies, which are passed to <code>execute</code> as a <code>Map[String, Any]</code>.
- * This trait's <code>execute</code> method calls two other methods, both of which you
+ * goodies, which are passed to <code>run</code> as a <code>Map[String, Any]</code>.
+ * This trait's <code>run</code> method calls two other methods, both of which you
  * can override:
  * </p>
  *
@@ -816,12 +816,12 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
- * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
+ * The primary <code>run</code> method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be run
  * except those those belonging to groups listed in the
  * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
  * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
- * will be executed.
+ * will be run.
  * </p>
  *
  * <p>
@@ -874,9 +874,9 @@ import org.scalatest.events._
  * </pre>
  * 
  * <p>
- * <code>Ignore</code> is implemented as a group. The <code>execute</code> method that takes no parameters
+ * <code>Ignore</code> is implemented as a group. The <code>run</code> method that takes no parameters
  * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
- * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
+ * the primary <code>run</code> method, as does <code>Runner</code>. The only difference between
  * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
  * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
@@ -887,7 +887,7 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * One of the parameters to the primary <code>execute</code> method is an <code>Informer</code>, which
+ * One of the parameters to the primary <code>run</code> method is an <code>Informer</code>, which
  * will collect and report information about the running suite of tests.
  * Information about suites and tests that were run, whether tests succeeded or failed, 
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
@@ -925,12 +925,12 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * The primary <code>execute</code> method takes as its last parameter an optional <code>Distributor</code>. If 
- * a <code>Distributor</code> is passed in, this trait's implementation of <code>execute</code> puts its nested
- * <code>Suite</code>s into the distributor rather than executing them directly. The caller of <code>execute</code>
- * is responsible for ensuring that some entity executes the <code>Suite</code>s placed into the 
+ * The primary <code>run</code> method takes as its last parameter an optional <code>Distributor</code>. If 
+ * a <code>Distributor</code> is passed in, this trait's implementation of <code>run</code> puts its nested
+ * <code>Suite</code>s into the distributor rather than executing them directly. The caller of <code>run</code>
+ * is responsible for ensuring that some entity runs the <code>Suite</code>s placed into the 
  * distributor. The <code>-c</code> command line parameter to <code>Runner</code>, for example, will cause
- * <code>Suite</code>s put into the <code>Distributor</code> to be executed concurrently via a pool of threads.
+ * <code>Suite</code>s put into the <code>Distributor</code> to be run concurrently via a pool of threads.
  * </p>
  *
  * <p>
@@ -944,9 +944,9 @@ import org.scalatest.events._
  * </p>
  *
  * <ul>
- * <li><code>execute</code> - override this method to define custom ways to executes suites of
+ * <li><code>run</code> - override this method to define custom ways to run suites of
  *   tests.</li>
- * <li><code>runTest</code> - override this method to define custom ways to execute a single named test.</li>
+ * <li><code>runTest</code> - override this method to define custom ways to run a single named test.</li>
  * <li><code>testNames</code> - override this method to specify the <code>Suite</code>'s test names in a custom way.</li>
  * <li><code>groups</code> - override this method to specify the <code>Suite</code>'s test groups in a custom way.</li>
  * <li><code>nestedSuites</code> - override this method to specify the <code>Suite</code>'s nested <code>Suite</code>s in a custom way.</li>
@@ -959,7 +959,7 @@ import org.scalatest.events._
  * and places these in a <code>Set</code> whose iterator returns the names in alphabetical order. If you wish to run tests in a different
  * order in a particular <code>Suite</code>, perhaps because a test named <code>testAlpha</code> can only succeed after a test named
  * <code>testBeta</code> has run, you can override <code>testNames</code> so that it returns a <code>Set</code> whose iterator returns
- * <code>testBeta</code> <em>before</em> <code>testAlpha</code>. (This trait's implementation of <code>execute</code> will invoke tests
+ * <code>testBeta</code> <em>before</em> <code>testAlpha</code>. (This trait's implementation of <code>run</code> will invoke tests
  * in the order they come out of the <code>testNames</code> <code>Set</code> iterator.)
  * </p>
  *
@@ -975,7 +975,7 @@ import org.scalatest.events._
  * that starts and either succeeds or fails, and can be ignored. In <code>org.scalatest.FunSuite</code>, for example, tests are represented
  * as function values. This
  * approach might look foreign to JUnit users, but may feel more natural to programmers with a functional programming background.
- * To facilitate this style of writing tests, <code>FunSuite</code> overrides <code>testNames</code>, <code>runTest</code>, and <code>execute</code> such that you can 
+ * To facilitate this style of writing tests, <code>FunSuite</code> overrides <code>testNames</code>, <code>runTest</code>, and <code>run</code> such that you can 
  * define tests as function values.
  * </p>
  *
@@ -1029,11 +1029,11 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to execute a <code>Suite</code>, especially from within the Scala interpreter.
+   * This method serves as a convenient way to run a <code>Suite</code>, especially from within the Scala interpreter.
    * </p>
    */
   final def run() {
-    execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
+    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
   }
 
   /**
@@ -1052,11 +1052,11 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to execute a <code>Suite</code>, especially from within the Scala interpreter.
+   * This method serves as a convenient way to run a <code>Suite</code>, passing in some objects via the <code>goodies</code> map, especially from within the Scala interpreter.
    * </p>
    */
   final def run(goodies: Map[String, Any]) {
-    execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), goodies, None)
+    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), goodies, None)
   }
 
   /**
@@ -1084,7 +1084,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
   final def run(testName: String) {
-    execute(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), Map(), None)
+    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), Map(), None)
   }
 
   /**
@@ -1103,7 +1103,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to run a single test, especially from within the Scala interpreter.
+   * This method serves as a convenient way to run a single test, passing in some objects via the <code>goodies</code> map, especially from within the Scala interpreter.
    * </p>
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
@@ -1112,7 +1112,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
   final def run(testName: String, goodies: Map[String, Any]) {
-    execute(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), goodies, None)
+    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), goodies, None)
   }
 
   /**
@@ -1182,7 +1182,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   *
   * <p>
   * Subclasses may override this method to produce test names in a custom manner. One potential reason to override <code>testNames</code> is
-  * to execute tests in a different order, for example, to ensure that tests that depend on other tests are run after those other tests.
+  * to run tests in a different order, for example, to ensure that tests that depend on other tests are run after those other tests.
   * Another potential reason to override is to discover test methods annotated with JUnit 4 or TestNG <code>@Test</code> annotations. Or
   * a subclass could override this method and return a static, hard-coded <code>Set</code> of tests, etc.
   * </p>
@@ -1234,7 +1234,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   /**
    * Run a test. This trait's implementation uses Java reflection to invoke on this object the test method identified by the passed <code>testName</code>.
    *
-   * @param testName the name of one test to execute.
+   * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
@@ -1338,11 +1338,11 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    *
    * <p>
    * This method takes a <code>Set</code> of group names that should be included (<code>groupsToInclude</code>), and a <code>Set</code>
-   * that should be excluded (<code>groupsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to execute.
-   * If <code>groupsToInclude</code> is empty, all tests will be executed
+   * that should be excluded (<code>groupsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to run.
+   * If <code>groupsToInclude</code> is empty, all tests will be run
    * except those those belonging to groups listed in the <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
    * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>
-   * will be executed. However, if <code>testName</code> is <code>Some</code>, <code>groupsToInclude</code> and <code>groupsToExclude</code> are essentially ignored.
+   * will be run. However, if <code>testName</code> is <code>Some</code>, <code>groupsToInclude</code> and <code>groupsToExclude</code> are essentially ignored.
    * Only if <code>testName</code> is <code>None</code> will <code>groupsToInclude</code> and <code>groupsToExclude</code> be consulted to
    * determine which of the tests named in the <code>testNames</code> <code>Set</code> should be run. This trait's implementation
    * behaves this way, and it is part of the general contract of this method, so all overridden forms of this method should behave
@@ -1351,9 +1351,9 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    *
    * <p>
    * If <code>testName</code> is <code>None</code>, this trait's implementation of this method
-   * invokes <code>testNames</code> on this <code>Suite</code> to get a <code>Set</code> of names of tests to potentially execute.
+   * invokes <code>testNames</code> on this <code>Suite</code> to get a <code>Set</code> of names of tests to potentially run.
    * (A <code>testNames</code> value of <code>None</code> essentially acts as a wildcard that means all tests in
-   * this <code>Suite</code> that are selected by <code>groupsToInclude</code> and <code>groupsToExclude</code> should be executed.)
+   * this <code>Suite</code> that are selected by <code>groupsToInclude</code> and <code>groupsToExclude</code> should be run.)
    * For each test in the <code>testName</code> <code>Set</code>, in the order
    * they appear in the iterator obtained by invoking the <code>elements</code> method on the <code>Set</code>, this trait's implementation
    * of this method checks whether the test should be run based on the <code>groupsToInclude</code> and <code>groupsToExclude</code> <code>Set</code>s.
@@ -1367,8 +1367,8 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
-   * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
-   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
+   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
+   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
@@ -1377,7 +1377,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    *
-   * This trait's implementation of this method executes tests
+   * This trait's implementation of this method runs tests
    * in the manner described in detail in the following paragraphs, but subclasses may override the method to provide different
    * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
    * used by all the methods of this <code>Suite</code>.
@@ -1403,7 +1403,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     // into error messages on the standard error stream.
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    // If a testName to execute is passed, just execute that, else execute the tests returned
+    // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
       case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
@@ -1424,7 +1424,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   }
 
   /**
-   * Execute this <code>Suite</code>.
+   * Run this suite of tests.
    *
    * <p>If <code>testName</code> is <code>None</code>, this trait's implementation of this method
    * calls these two methods on this object in this order:</p>
@@ -1439,19 +1439,19 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>.
    * </p>
    *
-   * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
-   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
+   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
+   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
-   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
-   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  def execute(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  def run(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
               goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     if (testName == null)
@@ -1530,11 +1530,11 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    *
    * <p>
    * If the passed <code>distributor</code> is <code>None</code>, this trait's
-   * implementation of this method invokes <code>execute</code> on each
+   * implementation of this method invokes <code>run</code> on each
    * nested <code>Suite</code> in the <code>List</code> obtained by invoking <code>nestedSuites</code>.
-   * If a nested <code>Suite</code>'s <code>execute</code>
+   * If a nested <code>Suite</code>'s <code>run</code>
    * method completes abruptly with an exception, this trait's implementation of this
-   * method reports that the <code>Suite</code> aborted and attempts to execute the
+   * method reports that the <code>Suite</code> aborted and attempts to run the
    * next nested <code>Suite</code>.
    * If the passed <code>distributor</code> is <code>Some</code>, this trait's implementation
    * puts each nested <code>Suite</code> 
@@ -1547,8 +1547,8 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
-   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
-   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
@@ -1610,7 +1610,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 */
 
         try {
-          nestedSuite.execute(None, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
+          nestedSuite.run(None, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
 
           val rawString = Resources("suiteCompletedNormally")
 
@@ -1686,7 +1686,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   private def getSimpleNameOfThisObjectsClass = stripDollars(parseSimpleName(getClass().getName()))
 
   /**
-   * The total number of tests that are expected to run when this <code>Suite</code>'s <code>execute</code> method is invoked.
+   * The total number of tests that are expected to run when this <code>Suite</code>'s <code>run</code> method is invoked.
    * This trait's implementation of this method returns the sum of:
    *
    * <ul>

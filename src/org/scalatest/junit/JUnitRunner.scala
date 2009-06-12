@@ -45,7 +45,7 @@ import org.junit.runner.Description
  *
  * <p>
  * This <code>RunWith</code> annotation will enable the <code>MySuite</code> class
- * to be executed by JUnit 4.
+ * to be run by JUnit 4.
  * </p>
  */
 class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.Runner {
@@ -64,7 +64,7 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
 
   /**
    * Run this <code>Suite</code> of tests, reporting results to the passed <code>RunNotifier</code>.
-   * This class's implementation of this method invokes execute on an instance of the
+   * This class's implementation of this method invokes <code>run</code> on an instance of the
    * <code>suiteClass</code> <code>Class</code> passed to the primary constructor, passing
    * in a <code>Reporter</code> that forwards to the  <code>RunNotifier</code> passed to this
    * method as <code>notifier</code>.
@@ -73,14 +73,14 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    * this suite of tests
    */
   def run(notifier: RunNotifier) {
-    suiteToRun.execute(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    suiteToRun.run(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
   }
 
   /**
    * Returns the number of tests that are expected to run when this ScalaTest <code>Suite</code>
-   * is executed.
+   * is run.
    *
-   *  @return the expected number of tests that will run when this suite is executed
+   *  @return the expected number of tests that will run when this suite is run
    */
   override def testCount() = suiteToRun.expectedTestCount(Set(), Set())
 
