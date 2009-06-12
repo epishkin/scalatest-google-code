@@ -57,10 +57,6 @@ package org.scalatest.junit {
 
     class MyReporter extends Reporter {
 
-      override def apply(event: Event) {
-        super.apply(event)
-      }
-
       var runStartingCount = 0
       var testCountPassedToRunStarting = -1
       override def runStarting(testCount: Int) {

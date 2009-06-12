@@ -54,10 +54,6 @@ package org.scalatest.junit {
       var runStartingCount = 0
       var testCountPassedToRunStarting = -1
 
-      override def apply(event: Event) {
-        super.apply(event)
-      }
-
       override def runStarting(testCount: Int) {
         testCountPassedToRunStarting = testCount
         runStartingCount += 1

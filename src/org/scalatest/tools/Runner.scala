@@ -380,9 +380,11 @@ object Runner {
     private val runDoneSemaphore = new Semaphore(1)
     runDoneSemaphore.acquire()
 
+/* Dropping under theory I'll simply have two running schemes for two releases
     override def apply(event: Event) {
       super.apply(event)
     }
+*/
 
     override def testFailed(report: Report) {
       failedAbortedOrStopped = true
@@ -1138,8 +1140,8 @@ object Runner {
           val expectedTestCount = sumInts(testCountList)
 
           val ordinal = new Ordinal(runStamp)
-          // dispatchReporter.runStarting(expectedTestCount) TODO DELETE
-          dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
+          dispatchReporter.runStarting(expectedTestCount)
+          // dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
 
           if (concurrent) {
             val distributor = new ConcurrentDistributor(dispatchReporter, stopper, includes, excludesWithIgnore(excludes), propertiesMap)
