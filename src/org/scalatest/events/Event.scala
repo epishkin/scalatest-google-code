@@ -63,7 +63,7 @@ sealed abstract class Event extends Ordered[Event] {
  * @param testName the name of the test that is starting
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
- * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that is starting (if <code>None</code>
+ * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that is starting (if <code>None</code>
  *        is passed, the test cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestStarting</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
@@ -76,7 +76,7 @@ final case class TestStarting private (
   suiteClassName: Option[String],
   testName: String,
   formatter: Option[Formatter],
-  rerunnable: Option[Rerunnable],
+  rerunnable: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -121,7 +121,7 @@ object TestStarting {
    * @param testName the name of the test that is starting
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that is starting (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that is starting (if <code>None</code>
    *        is passed, the test cannot be rerun)
    * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestStarting</code> event
    *
@@ -136,7 +136,7 @@ object TestStarting {
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable],
+    rerunnable: Option[Rerunner],
     payload: Option[Any]
   ): TestStarting = {
     apply(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
@@ -153,7 +153,7 @@ object TestStarting {
    * @param testName the name of the test that is starting
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that is starting (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that is starting (if <code>None</code>
    *        is passed, the test cannot be rerun)
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -166,7 +166,7 @@ object TestStarting {
     suiteClassName: Option[String],
     testName: String,
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable]
+    rerunnable: Option[Rerunner]
   ): TestStarting = {
     apply(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
@@ -259,7 +259,7 @@ object TestStarting {
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has succeeded
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
- * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that has succeeded (if <code>None</code>
+ * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that has succeeded (if <code>None</code>
  *        is passed, the test cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestSucceeded</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
@@ -273,7 +273,7 @@ final case class TestSucceeded private (
   testName: String,
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunnable: Option[Rerunnable],
+  rerunnable: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -321,7 +321,7 @@ object TestSucceeded {
    * @param duration an optional amount of time, in milliseconds, that was required to run the test that has succeeded
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that has succeeded (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that has succeeded (if <code>None</code>
    *        is passed, the test cannot be rerun)
    * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestSucceeded</code> event
    *
@@ -336,7 +336,7 @@ object TestSucceeded {
     testName: String,
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable],
+    rerunnable: Option[Rerunner],
     payload: Option[Any]
   ): TestSucceeded = {
     apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
@@ -354,7 +354,7 @@ object TestSucceeded {
    * @param duration an optional amount of time, in milliseconds, that was required to run the test that has succeeded
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that has succeeded (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that has succeeded (if <code>None</code>
    *        is passed, the test cannot be rerun)
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -368,7 +368,7 @@ object TestSucceeded {
     testName: String,
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable]
+    rerunnable: Option[Rerunner]
   ): TestSucceeded = {
     apply(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
@@ -491,7 +491,7 @@ object TestSucceeded {
  * @param duration an optional amount of time, in milliseconds, that was required to run the test that has failed
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
- * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that has failed (if <code>None</code>
+ * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that has failed (if <code>None</code>
  *        is passed, the test cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestFailed</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
@@ -507,7 +507,7 @@ final case class TestFailed private (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunnable: Option[Rerunnable],
+  rerunnable: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -562,7 +562,7 @@ object TestFailed {
    * @param duration an optional amount of time, in milliseconds, that was required to run the test that has failed
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that has failed (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that has failed (if <code>None</code>
    *        is passed, the test cannot be rerun)
    * @param payload an optional object that can be used to pass custom information to the reporter about the <code>TestFailed</code> event
    *
@@ -579,7 +579,7 @@ object TestFailed {
     throwable: Option[Throwable],
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable],
+    rerunnable: Option[Rerunner],
     payload: Option[Any]
   ): TestFailed = {
     apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
@@ -600,7 +600,7 @@ object TestFailed {
    * @param duration an optional amount of time, in milliseconds, that was required to run the test that has failed
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the test that has failed (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the test that has failed (if <code>None</code>
    *        is passed, the test cannot be rerun)
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -616,7 +616,7 @@ object TestFailed {
     throwable: Option[Throwable],
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable]
+    rerunnable: Option[Rerunner]
   ): TestFailed = {
     apply(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
@@ -1056,7 +1056,7 @@ object TestPending {
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
- * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that is starting (if <code>None</code>
+ * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that is starting (if <code>None</code>
  *        is passed, the suite cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteStarting</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
@@ -1068,7 +1068,7 @@ final case class SuiteStarting private (
   suiteName: String,
   suiteClassName: Option[String],
   formatter: Option[Formatter],
-  rerunnable: Option[Rerunnable],
+  rerunnable: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1111,7 +1111,7 @@ object SuiteStarting {
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that is starting (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that is starting (if <code>None</code>
    *        is passed, the suite cannot be rerun)
    * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteStarting</code> event
    *
@@ -1124,7 +1124,7 @@ object SuiteStarting {
     suiteName: String,
     suiteClassName: Option[String],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable],
+    rerunnable: Option[Rerunner],
     payload: Option[Any]
   ): SuiteStarting = {
     apply(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
@@ -1141,7 +1141,7 @@ object SuiteStarting {
    * @param suiteClassName an optional fully qualifed <code>Suite</code> class name of the suite that is starting
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that is starting (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that is starting (if <code>None</code>
    *        is passed, the suite cannot be rerun)
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -1153,7 +1153,7 @@ object SuiteStarting {
     suiteName: String,
     suiteClassName: Option[String],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable]
+    rerunnable: Option[Rerunner]
   ): SuiteStarting = {
     apply(ordinal, suiteName, suiteClassName, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
@@ -1243,7 +1243,7 @@ object SuiteStarting {
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
- * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that has completed (if <code>None</code>
+ * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that has completed (if <code>None</code>
  *        is passed, the suite cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteCompleted</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
@@ -1256,7 +1256,7 @@ final case class SuiteCompleted private (
   suiteClassName: Option[String],
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunnable: Option[Rerunnable],
+  rerunnable: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1301,7 +1301,7 @@ object SuiteCompleted {
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that has completed (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that has completed (if <code>None</code>
    *        is passed, the suite cannot be rerun)
    * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteCompleted</code> event
    *
@@ -1315,7 +1315,7 @@ object SuiteCompleted {
     suiteClassName: Option[String],
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable],
+    rerunnable: Option[Rerunner],
     payload: Option[Any]
   ): SuiteCompleted = {
     apply(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
@@ -1332,7 +1332,7 @@ object SuiteCompleted {
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has completed
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that has completed (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that has completed (if <code>None</code>
    *        is passed, the suite cannot be rerun)
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -1345,7 +1345,7 @@ object SuiteCompleted {
     suiteClassName: Option[String],
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable]
+    rerunnable: Option[Rerunner]
   ): SuiteCompleted = {
     apply(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }
@@ -1467,7 +1467,7 @@ object SuiteCompleted {
  * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has aborted
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
- * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that has aborted (if <code>None</code>
+ * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that has aborted (if <code>None</code>
  *        is passed, the suite cannot be rerun)
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteAborted</code> event
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
@@ -1482,7 +1482,7 @@ final case class SuiteAborted private (
   throwable: Option[Throwable],
   duration: Option[Long],
   formatter: Option[Formatter],
-  rerunnable: Option[Rerunnable],
+  rerunnable: Option[Rerunner],
   payload: Option[Any],
   threadName: String,
   timeStamp: Long
@@ -1536,7 +1536,7 @@ object SuiteAborted {
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has aborted
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that has aborted (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that has aborted (if <code>None</code>
    *        is passed, the suite cannot be rerun)
    * @param payload an optional object that can be used to pass custom information to the reporter about the <code>SuiteAborted</code> event
    *
@@ -1552,7 +1552,7 @@ object SuiteAborted {
     throwable: Option[Throwable],
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable],
+    rerunnable: Option[Rerunner],
     payload: Option[Any]
   ): SuiteAborted = {
     apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, Thread.currentThread.getName, (new Date).getTime)
@@ -1572,7 +1572,7 @@ object SuiteAborted {
    * @param duration an optional amount of time, in milliseconds, that was required to execute the suite that has aborted
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
-   * @param rerunnable an optional <code>Rerunnable</code> that can be used to rerun the suite that has aborted (if <code>None</code>
+   * @param rerunnable an optional <code>Rerunner</code> that can be used to rerun the suite that has aborted (if <code>None</code>
    *        is passed, the suite cannot be rerun)
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -1587,7 +1587,7 @@ object SuiteAborted {
     throwable: Option[Throwable],
     duration: Option[Long],
     formatter: Option[Formatter],
-    rerunnable: Option[Rerunnable]
+    rerunnable: Option[Rerunner]
   ): SuiteAborted = {
     apply(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, None, Thread.currentThread.getName, (new Date).getTime)
   }

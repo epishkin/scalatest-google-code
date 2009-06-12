@@ -60,37 +60,37 @@ class BeforeAndAfterSuite extends FunSuite {
 
   test("super's runTest must be called") {
     val a = new MySuite
-    a.execute()
+    a.run()
     assert(a.runTestWasCalled)
   }
   
   test("super's execute must be called") {
     val a = new MySuite
-    a.execute()
+    a.run()
     assert(a.executeWasCalled)
   }
 
   test("beforeEach gets called before runTest") {
     val a = new MySuite
-    a.execute()
+    a.run()
     assert(a.beforeEachCalledBeforeRunTest)
   }
   
   test("afterEach gets called after runTest") {
     val a = new MySuite
-    a.execute()
+    a.run()
     assert(a.afterEachCalledAfterRunTest)
   }
 
   test("beforeAll gets called before execute") {
     val a = new MySuite
-    a.execute()
+    a.run()
     assert(a.beforeAllCalledBeforeExecute)
   }
   
   test("afterAll gets called after execute") {
     val a = new MySuite
-    a.execute()
+    a.run()
     assert(a.afterAllCalledAfterExecute)
   }
   

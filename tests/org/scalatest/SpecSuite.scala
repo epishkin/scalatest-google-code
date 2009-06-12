@@ -347,7 +347,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute()
+    a.run()
     assert(a.example1WasInvoked)
     assert(a.example2WasInvokedAfterExample1)
     assert(a.example3WasInvokedAfterExample2)
@@ -373,7 +373,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute()
+    a.run()
     assert(a.example1WasInvoked)
     assert(a.example2WasInvokedAfterExample1)
     assert(a.example3WasInvokedAfterExample2)
@@ -392,7 +392,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute()
+    a.run()
     assert(a.testNames.size === 2)
     assert(a.testNames.elements.toList(0) === "should get invoked")
     assert(a.testNames.elements.toList(1) === "should also get invoked")
@@ -440,7 +440,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute()
+    a.run()
   }
   
   // Test for good strings in report for top-level examples  
@@ -1064,7 +1064,7 @@ class SpecSuite extends FunSuite {
       describe("this will be empty") {}
     }
     val a = new MySpec
-    a.execute()
+    a.run()
   }  
   
   test("Only a passed test name should be invoked.") {
@@ -1550,7 +1550,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute()
+    a.run()
     assert(a.sharedExampleInvoked)
   }
   
@@ -1577,7 +1577,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.execute()
+    a.run()
     assert(a.sharedExampleInvoked)
     assert(a.sharedExampleAlsoInvoked)
   }
@@ -1603,7 +1603,7 @@ class SpecSuite extends FunSuite {
       1 should behave like invocationVerifier
     }
     val a = new MySpec
-    a.execute()
+    a.run()
     assert(a.example1WasInvoked)
     assert(a.example2WasInvokedAfterExample1)
     assert(a.example3WasInvokedAfterExample2)
@@ -1630,7 +1630,7 @@ class SpecSuite extends FunSuite {
       // don't use it: should behave like an InvocationVerifier()
     }
     val a = new MySpec
-    a.execute()
+    a.run()
     assert(!a.example1WasInvoked)
     assert(!a.example2WasInvokedAfterExample1)
     assert(!a.example3WasInvokedAfterExample2)

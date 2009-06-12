@@ -17,21 +17,21 @@ package org.scalatest
 
 /**
  * Trait whose instances can indicate whether a stop has been requested. This is passed in
- * to the <code>execute</code> method of <code>Suite</code>, so that running suites of tests can be
+ * to the <code>run</code> method of <code>Suite</code>, so that running suites of tests can be
  * requested to stop early.
  *
  * @author Bill Venners
  */
-trait Stopper {
+trait Stopper extends (() => Boolean) {
 
   /**
    * Indicates whether a stop has been requested.  Call this method
-   * to determine whether a running test should stop. The <code>execute</code> method of any <code>Suite</code>, or
-   * code invoked by <code>execute</code>, should periodically check the
-   * <code>stopRequested</code> property. If <code>true</code>,
-   * the <code>execute</code> method should interrupt its work and simply return.
+   * to determine whether a running test should stop. The <code>run</code> method of any <code>Suite</code>, or
+   * code invoked by <code>run</code>, should periodically check the
+   * stop requested function. If <code>true</code>,
+   * the <code>run</code> method should interrupt its work and simply return.
    */
-  def stopRequested = false
+  override def apply() = false
 }
 // One question people will have is do I make this a val or a def in the supertype.
 // A val can override a def. Can it be the other way around? How does he implement

@@ -47,7 +47,7 @@ import java.util.Date
  * @param throwable the <code>Throwable</code> that indicated the problem, or a <code>Throwable</code> created
  *     to capture stack trace information about the problem, or <code>None</code>. If <code>None</code> is passed, the problem
  *     is reported without describing a <code>Throwable</code>.
- * @param rerunnable a <code>Rerunnable</code> that can be used to rerun a test or other entity (such as a suite),
+ * @param rerunnable a <code>Rerunner</code> that can be used to rerun a test or other entity (such as a suite),
  *     or <code>None</code>. If <code>None</code> is passed, the test or other entity can not be rerun.
  * @param threadName a name for the <code>Thread</code> about whose activity this report was generated.
  * @param date a relevant <code>Date</code>. For example, the a <code>Date</code>
@@ -61,7 +61,7 @@ import java.util.Date
  * @author Bill Venners
  */
 @serializable
-class Report(val name: String, val message: String, val throwable: Option[Throwable], val rerunnable: Option[Rerunnable],
+class Report(val name: String, val message: String, val throwable: Option[Throwable], val rerunnable: Option[Rerunner],
     val threadName: String, val date: Date) {
 
   if (name == null)
@@ -95,7 +95,7 @@ class Report(val name: String, val message: String, val throwable: Option[Throwa
   def this(name: String, message: String) = this(name, message,
       None, None, Thread.currentThread.getName, new Date)
 
-// def this(name: String, message: String, rerunnable: Option[Rerunnable]) = this(name,
+// def this(name: String, message: String, rerunnable: Option[Rerunner]) = this(name,
 //    message, None, rerunnable, Thread.currentThread.getName, new Date)
 // [bv: this will trip people up. Option's type is erased, so overloading this way didn't work. So
 // may want to mention this somewhere]
@@ -112,13 +112,13 @@ class Report(val name: String, val message: String, val throwable: Option[Throwa
    *     <code>Throwable</code> may have indicated a problem being reported by this
    *     <code>Report</code>, or it may have been created to provide stack trace
    *     information in the <code>Report</code>.
-   * @param rerunnable a <code>Rerunnable</code> that can be used to rerun a test or other entity, or <code>None</code>.
+   * @param rerunnable a <code>Rerunner</code> that can be used to rerun a test or other entity, or <code>None</code>.
    *
    * @throws NullPointerException if any of the specified 
    *     <code>name</code>, <code>message</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
+  def this(name: String, message: String, throwable: Option[Throwable], rerunnable: Option[Rerunner])  = this(name,
       message, throwable, rerunnable, Thread.currentThread.getName, new Date)
 }
 /*
@@ -127,7 +127,7 @@ for say:
 
 1. String, String, Option[Throwable]
 
-2. String, String, Throwable, Rerunnable
+2. String, String, Throwable, Rerunner
 
 3. String String, Throwable
 
@@ -135,6 +135,6 @@ for say:
 
 Decided to make people say None at the end, so no 1. Decided it was confusing to have throwable be
 both an Option[Throwable] and a Throwable. So didn't do the others. Maybe convenient, but confusing
-and i realized sometimes I had an Option[Rerunnable] variable already, so I really did want to pass
+and i realized sometimes I had an Option[Rerunner] variable already, so I really did want to pass
 that in without checking it with a match. (for a while I thought I would only have 2, 3, and 4.)
 */

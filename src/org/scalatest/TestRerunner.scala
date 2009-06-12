@@ -16,29 +16,27 @@
 package org.scalatest
 
 import java.lang.reflect.Method
-import org.scalatest.events._
 
 /**
  * A rerunner for test methods.
  *
  * @author Bill Venners
  */
-private[scalatest] class TestRerunner(suiteClassName: String, testName: String) extends Rerunnable {
+private[scalatest] class TestRerunner(suiteClassName: String, testName: String) extends Rerunner {
 
   if (suiteClassName == null || testName == null)
     throw new NullPointerException
 
-  override def rerun(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String], properties: Map[String, Any],
-            distributor: Option[Distributor], loader: ClassLoader, runStamp: Int) {
+  // [bv: I wasn't sure if I need to say override here.]
+  def apply(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String], goodies: Map[String, Any],
+            distributor: Option[Distributor], loader: ClassLoader) {
 
     try {
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance.asInstanceOf[Suite]
 
-      // reporter.runStarting(1)
-      val ordinal = new Ordinal(runStamp)
-      reporter.apply(RunStarting(ordinal, 1))
-      suite.execute(Some(testName), reporter, stopper, includes, excludes, properties, distributor) 
+      reporter.runStarting(1)
+      suite.execute(Some(testName), reporter, stopper, includes, excludes, goodies, distributor) 
       reporter.runCompleted()
     }
     catch {

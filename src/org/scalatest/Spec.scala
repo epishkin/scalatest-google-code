@@ -643,7 +643,7 @@ trait Spec extends Suite { thisSuite =>
    */
   override def groups: Map[String, Set[String]] = groupsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any]) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any]) {
     branch match {
       case desc @ Description(_, descriptionName, level) => {
 
@@ -684,7 +684,7 @@ trait Spec extends Suite { thisSuite =>
           val wrappedReporter = wrapReporterIfNecessary(reporter)
 
           val tn = ex.testName
-          if (!stopper.stopRequested && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
+          if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
               val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
@@ -693,11 +693,11 @@ trait Spec extends Suite { thisSuite =>
               wrappedReporter.testIgnored(report)
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopper, goodies)
+              runTest(tn, wrappedReporter, stopRequested, goodies)
             }
           }
         }
-        case branch: Branch => runTestsInBranch(branch, reporter, stopper, groupsToInclude, groupsToExclude, goodies)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies)
       }
     )
   }
@@ -710,14 +710,14 @@ trait Spec extends Suite { thisSuite =>
    *
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param goodies a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+  override def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any]) {
 
-    if (testName == null || reporter == null || stopper == null || goodies == null)
+    if (testName == null || reporter == null || stopRequested == null || goodies == null)
       throw new NullPointerException
 
     runningATest = true
@@ -730,7 +730,7 @@ trait Spec extends Suite { thisSuite =>
           val exampleSucceededIcon = Resources("exampleSucceededIconChar")
           val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
   
-          // Create a Rerunnable if the Spec has a no-arg constructor
+          // Create a Rerunner if the Spec has a no-arg constructor
           val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
   
           val rerunnable =
@@ -778,7 +778,7 @@ trait Spec extends Suite { thisSuite =>
   }
 
   private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      specText: String, rerunnable: Option[Rerunnable], reporter: Reporter) {
+      specText: String, rerunnable: Option[Rerunner], reporter: Reporter) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -807,7 +807,7 @@ trait Spec extends Suite { thisSuite =>
    * <li><code>testName</code> - the <code>String</code> value of the <code>testName</code> <code>Option</code> passed
    *   to this method</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopRequested</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
@@ -836,29 +836,29 @@ trait Spec extends Suite { thisSuite =>
    * <ul>
    * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopRequested</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Spec</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Spec</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
-  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  override def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any]) {
     
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
-    if (stopper == null)
-      throw new NullPointerException("stopper was null")
+    if (stopRequested == null)
+      throw new NullPointerException("stopRequested was null")
     if (groupsToInclude == null)
       throw new NullPointerException("groupsToInclude was null")
     if (groupsToExclude == null)
@@ -867,8 +867,8 @@ trait Spec extends Suite { thisSuite =>
       throw new NullPointerException("goodies was null")
 
     testName match {
-      case None => runTestsInBranch(trunk, reporter, stopper, groupsToInclude, groupsToExclude, goodies)
-      case Some(exampleName) => runTest(exampleName, reporter, stopper, goodies)
+      case None => runTestsInBranch(trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies)
+      case Some(exampleName) => runTest(exampleName, reporter, stopRequested, goodies)
     }
   }
 

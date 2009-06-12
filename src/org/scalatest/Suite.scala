@@ -88,7 +88,7 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * scala> (new MySuite).execute()
+ * scala> (new MySuite).run()
  * </pre>
  *
  * <p>
@@ -107,7 +107,7 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * scala> (new MySuite).execute("testAddition")
+ * scala> (new MySuite).run("testAddition")
  * </pre>
  *
  * <p>
@@ -431,7 +431,7 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * scala> (new AlphabetSuite).execute()
+ * scala> (new AlphabetSuite).run()
  * </pre>
  *
  * <p>
@@ -734,10 +734,10 @@ import org.scalatest.events._
  *
  * class NestedSuite extends Suite {
  *
- *   override def execute(
+ *   override def run(
  *     testName: Option[String],
  *     reporter: Reporter,
- *     stopper: Stopper,
+ *     stopRequested: Stopper,
  *     groupsToInclude: Set[String],
  *     groupsToExclude: Set[String],
  *     goodies: Map[String, Any],
@@ -759,7 +759,7 @@ import org.scalatest.events._
  *
  *   override def runNestedSuites(
  *     reporter: Reporter,
- *     stopper: Stopper,
+ *     stopRequested: Stopper,
  *     groupsToInclude: Set[String],
  *     groupsToExclude: Set[String],
  *     goodies: Map[String, Any],
@@ -768,7 +768,7 @@ import org.scalatest.events._
  *     val writer = new FileWriter("fixture.txt")
  *     try {
  *       val myGoodies = goodies + (Constants.GoodieKey -> writer)
- *       super.runNestedSuites(reporter, stopper, groupsToInclude, groupsToExclude, myGoodies, distributor)
+ *       super.runNestedSuites(reporter, stopRequested, groupsToInclude, groupsToExclude, myGoodies, distributor)
  *     }
  *     finally {
  *       writer.close()
@@ -860,7 +860,7 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * scala> (new MySuite).execute()
+ * scala> (new MySuite).run()
  * </pre>
  *
  * <p>
@@ -914,7 +914,7 @@ import org.scalatest.events._
  * included in the printed report:
  *
  * <pre>
- * scala> (new MySuite).execute()
+ * scala> (new MySuite).run()
  * Test Starting - MySuite.testAddition(Reporter)
  * Info Provided - MySuite.testAddition(Reporter): Addition seems to work
  * Test Succeeded - MySuite.testAddition(Reporter)
@@ -1014,54 +1014,105 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   def nestedSuites: List[Suite] = Nil
   
   /**
-   * Executes this <code>Suite</code>, printing results to the standard output. This method
-   * implementation calls on this <code>Suite</code> the <code>execute</code> method that takes
+   * Runs this <code>Suite</code>, printing results to the standard output. This method
+   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
    * seven parameters, passing in:
    *
    * <ul>
    * <li><code>testName</code> - <code>None</code></li>
-   * <li><code>reporter</code> - a reporter that prints to the standard output</li>
-   * <li><code>stopper</code> - a <code>Stopper</code> whose <code>stopRequested</code> method always returns <code>false</code></li>
+   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>stopRequested</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
    * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
    * <li><code>groupsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
    * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
-   * <li><code>distributor</code> - <code>None</code></li>
+   * <li><code>distribute</code> - <code>None</code></li>
    * </ul>
    *
    * <p>
    * This method serves as a convenient way to execute a <code>Suite</code>, especially from within the Scala interpreter.
    * </p>
    */
-  final def execute() {
+  final def run() {
     execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
   }
 
   /**
-   * Executes the test specified <code>testName</code> in this <code>Suite</code>, printing results to the standard output. This method
-   * implementation calls on this <code>Suite</code> the <code>execute</code> method that takes
+   * Runs this <code>Suite</code> with the specified <code>goodies</code> map, printing results to the standard output. This method
+   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
+   * seven parameters, passing in:
+   *
+   * <ul>
+   * <li><code>testName</code> - <code>None</code></li>
+   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>stopRequested</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
+   * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>groupsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
+   * <li><code>goodies</code> - the specified <code>goodies</code> <code>Map[String, Any]</code></li>
+   * <li><code>distribute</code> - <code>None</code></li>
+   * </ul>
+   *
+   * <p>
+   * This method serves as a convenient way to execute a <code>Suite</code>, especially from within the Scala interpreter.
+   * </p>
+   */
+  final def run(goodies: Map[String, Any]) {
+    execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), goodies, None)
+  }
+
+  /**
+   * Runs the test specified <code>testName</code> in this <code>Suite</code>, printing results to the standard output. This method
+   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
    * seven parameters, passing in:
    *
    * <ul>
    * <li><code>testName</code> - <code>Some(testName)</code></li>
-   * <li><code>reporter</code> - a reporter that prints to the standard output</li>
-   * <li><code>stopper</code> - a <code>Stopper</code> whose <code>stopRequested</code> method always returns <code>false</code></li>
+   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>stopRequested</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
    * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
    * <li><code>groupsToExclude</code> - an empty <code>Set[String]</code></li>
    * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
-   * <li><code>distributor</code> - <code>None</code></li>
+   * <li><code>distribute</code> - <code>None</code></li>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to execute a single test, especially from within the Scala interpreter.
+   * This method serves as a convenient way to run a single test, especially from within the Scala interpreter.
    * </p>
    *
-   * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
-   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
+   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
+   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    *
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
-  final def execute(testName: String) {
+  final def run(testName: String) {
     execute(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), Map(), None)
+  }
+
+  /**
+   * Runs the test specified <code>testName</code> in this <code>Suite</code> with the specified <code>goodies</code> map, printing results to the standard output. This method
+   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
+   * seven parameters, passing in:
+   *
+   * <ul>
+   * <li><code>testName</code> - <code>Some(testName)</code></li>
+   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>stopRequested</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
+   * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>groupsToExclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>goodies</code> - the specified <code>goodies</code> <code>Map[String, Any]</code></li>
+   * <li><code>distribute</code> - <code>None</code></li>
+   * </ul>
+   *
+   * <p>
+   * This method serves as a convenient way to run a single test, especially from within the Scala interpreter.
+   * </p>
+   *
+   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
+   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
+   *
+   * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
+   */
+  final def run(testName: String, goodies: Map[String, Any]) {
+    execute(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), goodies, None)
   }
 
   /**
@@ -1185,20 +1236,20 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    *
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+  protected def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any]) {
 
-    if (testName == null || reporter == null || stopper == null || goodies == null)
+    if (testName == null || reporter == null || stopRequested == null || goodies == null)
       throw new NullPointerException
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
     val method = getMethodForTestName(testName)
 
-    // Create a Rerunnable if the Suite has a no-arg constructor
+    // Create a Rerunner if the Suite has a no-arg constructor
     val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
 
     val rerunnable =
@@ -1281,7 +1332,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * <li><code>testName</code> - the <code>String</code> value of the <code>testName</code> <code>Option</code> passed
    *   to this method</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopRequested</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
@@ -1312,18 +1363,18 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * <ul>
    * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopRequested</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    *
    * This trait's implementation of this method executes tests
@@ -1331,15 +1382,15 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
    * used by all the methods of this <code>Suite</code>.
    */
-  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
                              goodies: Map[String, Any]) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
-    if (stopper == null)
-      throw new NullPointerException("stopper was null")
+    if (stopRequested == null)
+      throw new NullPointerException("stopRequested was null")
     if (groupsToInclude == null)
       throw new NullPointerException("groupsToInclude was null")
     if (groupsToExclude == null)
@@ -1355,75 +1406,21 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     // If a testName to execute is passed, just execute that, else execute the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopper, goodies)
+      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
       case None => {
         for (tn <- testNames) {
-          if (!stopper.stopRequested && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
+          if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (groupsToExclude.contains(IgnoreAnnotation) && groups.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
               //wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
               wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopper, goodies)
+              runTest(tn, wrappedReporter, stopRequested, goodies)
             }
           }
         }
       }
     }
-  }
-
-  /**
-   * Run this <code>Suite</code>.
-   *
-   * <p>If <code>testName</code> is <code>None</code>, this trait's implementation of this method
-   * calls these two methods on this object in this order:</p>
-   *
-   * <ol>
-   * <li><code>runNestedSuites(wrappedReportFunction, stopRequested, filter, goodies, distribute)</code></li>
-   * <li><code>runTests(testName, wrappedReportFunction, stopRequested, filter, goodies, distribute)</code></li>
-   * </ol>
-   *
-   * <p>
-   * If <code>testName</code> is <code>Some</code>, then this trait's implementation of this method
-   * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>.
-   * </p>
-   *
-   * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
-   *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
-   * @param report the report function to which events will be reported.
-   * @param stopRequested the stop requested function that will be consulted to determine whether to stop execution early.
-   * @param filter a filter that can determine which tests to run based on specified tags to include and exclude
-   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
-   * @param distribute an optional distribute function, into which to put nested <code>Suite</code>s to be executed
-   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, this trait's implementation
-   *              will execute nested <code>Suite</code>s will sequentially.
-   *         
-   * @throws NullPointerException if any passed parameter is <code>null</code>.
-   */
-  def run(testName: Option[String], report: Event => Unit, stopRequested: () => Boolean, filter: Filter,
-              goodies: Map[String, Any], distribute: Option[Suite => Unit]) {
-
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-    if (report == null)
-      throw new NullPointerException("the report function was null")
-    if (stopRequested == null)
-      throw new NullPointerException("the stopRequested function was null")
-    if (filter == null)
-      throw new NullPointerException("filter was null")
-    if (goodies == null)
-      throw new NullPointerException("goodies was null")
-    if (distribute == null)
-      throw new NullPointerException("the distribute function was null")
-
-    // The report function passed to this method knows how to report events passed to apply. The Reporter taken by execute knows
-    // how to report info passed to its handler methods. So I need a Reporter that 
-/*
-    val reporter = new Reporter {
-    }
-
-    execute(testName, )
-*/
   }
 
   /**
@@ -1433,8 +1430,8 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * calls these two methods on this object in this order:</p>
    *
    * <ol>
-   * <li><code>runNestedSuites(wrappedReporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor)</code></li>
-   * <li><code>runTests(testName, wrappedReporter, stopper, groupsToInclude, groupsToExclude, goodies)</code></li>
+   * <li><code>runNestedSuites(wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)</code></li>
+   * <li><code>runTests(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies)</code></li>
    * </ol>
    *
    * <p>
@@ -1445,7 +1442,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
@@ -1454,15 +1451,15 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  def execute(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
               goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
-    if (stopper == null)
-      throw new NullPointerException("stopper was null")
+    if (stopRequested == null)
+      throw new NullPointerException("stopRequested was null")
     if (groupsToInclude == null)
       throw new NullPointerException("groupsToInclude was null")
     if (groupsToExclude == null)
@@ -1475,12 +1472,12 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
     testName match {
-      case None => runNestedSuites(wrappedReporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor)
+      case None => runNestedSuites(wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
       case Some(_) =>
     }
-    runTests(testName, wrappedReporter, stopper, groupsToInclude, groupsToExclude, goodies)
+    runTests(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies)
 
-    if (stopper.stopRequested) {
+    if (stopRequested()) {
       val rawString = Resources("executeStopping")
       //wrappedReporter.infoProvided(new Report(suiteName, rawString, Some(suiteName), Some(thisSuite.getClass.getName), None))
       wrappedReporter.infoProvided(new Report(suiteName, rawString))
@@ -1504,7 +1501,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
         myReporter.testFailed(report);
 */
   private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunnable], reporter: Reporter) {
+      rerunnable: Option[Rerunner], reporter: Reporter) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -1546,7 +1543,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * </p>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
@@ -1555,13 +1552,13 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  @deprecated protected def runNestedSuites(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  @deprecated protected def runNestedSuites(reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
                                 goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     if (reporter == null)
       throw new NullPointerException("reporter was null")
-    if (stopper == null)
-      throw new NullPointerException("stopper was null")
+    if (stopRequested == null)
+      throw new NullPointerException("stopRequested was null")
     if (groupsToInclude == null)
       throw new NullPointerException("groupsToInclude was null")
     if (groupsToExclude == null)
@@ -1575,9 +1572,9 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 
     def callExecuteOnSuite(nestedSuite: Suite) {
 
-      if (!stopper.stopRequested) {
+      if (!stopRequested()) {
 
-        // Create a Rerunnable if the Suite has a no-arg constructor 
+        // Create a Rerunner if the Suite has a no-arg constructor 
         val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(nestedSuite.getClass)
 
         val rerunnable =
@@ -1613,7 +1610,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 */
 
         try {
-          nestedSuite.execute(None, wrappedReporter, stopper, groupsToInclude, groupsToExclude, goodies, distributor)
+          nestedSuite.execute(None, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
 
           val rawString = Resources("suiteCompletedNormally")
 
@@ -1663,7 +1660,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 
     distributor match {
       case None => nestedSuites.foreach(callExecuteOnSuite)
-      case Some(d) => nestedSuites.foreach(d.put)
+      case Some(distribute) => nestedSuites.foreach(distribute)
     }
   }
 

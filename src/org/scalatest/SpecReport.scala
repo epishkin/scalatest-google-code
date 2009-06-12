@@ -96,7 +96,7 @@ import java.util.Date
  * @param throwable the <code>Throwable</code> that indicated the problem, or a <code>Throwable</code> created
  *     to capture stack trace information about the problem, or <code>None</code>. If <code>None</code> is passed, the problem
  *     is reported without describing a <code>Throwable</code>.
- * @param rerunnable a <code>Rerunnable</code> that can be used to rerun a test or other entity (such as a suite),
+ * @param rerunnable a <code>Rerunner</code> that can be used to rerun a test or other entity (such as a suite),
  *     or <code>None</code>. If <code>None</code> is passed, the test or other entity can not be rerun.
  * @param threadName a name for the <code>Thread</code> about whose activity this report was generated.
  * @param date a relevant <code>Date</code>. For example, the a <code>Date</code>
@@ -117,7 +117,7 @@ class SpecReport(
   val formattedSpecText: String,
   val includeInSpecOutput: Boolean,
   override val throwable: Option[Throwable],
-  override val rerunnable: Option[Rerunnable],
+  override val rerunnable: Option[Rerunner],
   override val threadName: String,
   override val date: Date
 ) extends Report(name, message, throwable, rerunnable, threadName, date) {
@@ -151,12 +151,12 @@ class SpecReport(
    *     <code>Throwable</code> may have indicated a problem being reported by this
    *     <code>Report</code>, or it may have been created to provide stack trace
    *     information in the <code>Report</code>.
-   * @param rerunnable a <code>Rerunnable</code> that can be used to rerun a test or other entity, or <code>None</code>.
+   * @param rerunnable a <code>Rerunner</code> that can be used to rerun a test or other entity, or <code>None</code>.
    *
    * @throws NullPointerException if any of the specified 
    *     <code>name</code>, <code>message</code>, , <code>plainSpecText</code>, <code>formattedSpecText</code>, <code>throwable</code>,
    *     or <code>rerunnable</code> parameters are <code>null</code>.
    */
-  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean, throwable: Option[Throwable], rerunnable: Option[Rerunnable])  = this(name,
+  def this(name: String, message: String, plainSpecText: String, formattedSpecText: String, includeInSpecOutput: Boolean, throwable: Option[Throwable], rerunnable: Option[Rerunner])  = this(name,
       message, plainSpecText, formattedSpecText, includeInSpecOutput, throwable, rerunnable, Thread.currentThread.getName, new Date)
 }

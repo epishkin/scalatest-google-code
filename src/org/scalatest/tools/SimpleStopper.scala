@@ -28,20 +28,20 @@ private[scalatest] class SimpleStopper extends Stopper {
   private var stopWasRequested = false
 
   /**
-   * Gets the <code>boolean</code> stopRequested property. Call this method
-   * to determine whether a running test should stop. The <code>execute</code> method of any <code>Suite</code>, or
-   * code invoked by <code>execute</code>, should periodically check the
-   * stopRequested property. If <code>true</code>,
-   * the <code>execute</code> method should interrupt its work and simply return.
+   * Gets the <code>boolean</code> "stop requested" property. Call this method
+   * to determine whether a running test should stop. The <code>run</code> method of any <code>Suite</code>, or
+   * code invoked by <code>run</code>, should periodically check the
+   * stop requested property. If <code>true</code>,
+   * the <code>run</code> method should interrupt its work and simply return.
    */
-  override def stopRequested = stopWasRequested
+  override def apply() = stopWasRequested
 
   /**
-   * Sets the stopRequested property to the specified <code>boolean</code> value. Call this method
-   * to request that a running test stop. The <code>execute</code> method of any <code>Suite</code>, or
-   * code invoked by <code>execute</code>, should periodically check the
-   * stopRequested property. If <code>true</code>,
-   * the <code>execute</code> method should interrupt its work and simply return.
+   * Sets the stop requested property to the specified <code>Boolean</code> value. Call this method
+   * to request that a running test stop. The <code>run</code> method of any <code>Suite</code>, or
+   * code invoked by <code>run</code>, should periodically check the
+   * stop requested property. If <code>true</code>,
+   * the <code>run</code> method should interrupt its work and simply return.
    */
   def requestStop() {
     stopWasRequested = true
