@@ -70,7 +70,7 @@ private[scalatest] object ReadyState extends RunnerGUIState {
 
   def rerunButtonPressed(runnerGUI: RunnerGUI): RunnerGUIState = {
 
-    runnerGUI.getSelectedRerunnable() match {
+    runnerGUI.getSelectedRerunner() match {
       case None => {
         runnerGUI.prepUIForReady()
         this

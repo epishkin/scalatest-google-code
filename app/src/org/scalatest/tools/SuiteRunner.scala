@@ -18,13 +18,13 @@ package org.scalatest.tools
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 
-private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchReporter, stopper: Stopper, includes: Set[String],
+private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchReporter, stopRequested: Stopper, includes: Set[String],
     excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor]) extends Runnable {
 
   def run() {
 
-    if (!stopper.stopRequested) {
-      // Create a Rerunnable if the Suite has a no-arg constructor
+    if (!stopRequested()) {
+      // Create a Rerunner if the Suite has a no-arg constructor
       val hasPublicNoArgConstructor: Boolean =
         try {
           val constructor: Constructor[_] = suite.getClass.getConstructor(Array[java.lang.Class[_]](): _*)
@@ -34,7 +34,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
           case nsme: NoSuchMethodException => false
         }
   
-      val rerunnable: Option[Rerunnable] =
+      val rerunnable: Option[Rerunner] =
         if (hasPublicNoArgConstructor)
           Some(new SuiteRerunner(suite.getClass.getName))
         else
@@ -54,7 +54,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
       dispatchReporter.suiteStarting(report)
   
       try {
-        suite.execute(None, dispatchReporter, stopper, includes, excludes, propertiesMap, distributor)
+        suite.execute(None, dispatchReporter, stopRequested, includes, excludes, propertiesMap, distributor)
   
         val rawString2 = Resources("suiteCompletedNormally")
   

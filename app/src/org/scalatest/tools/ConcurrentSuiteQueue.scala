@@ -31,7 +31,7 @@ private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporte
   private val execSvc: ExecutorService = Executors.newCachedThreadPool()
   private val futureQueue = new LinkedBlockingQueue[Future[T] forSome { type T }]
 
-  def put(suite: Suite) = {
+  def apply(suite: Suite) {
     val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopper, includes, excludes, propertiesMap, Some(this))
     val future: Future[_] = execSvc.submit(suiteRunner)
     futureQueue.put(future)
@@ -39,7 +39,7 @@ private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporte
 
   def poll() = None
 
-  def waitUntilDone(): Unit = {
+  def waitUntilDone() {
     while (futureQueue.peek != null)
       futureQueue.poll().get()
   }

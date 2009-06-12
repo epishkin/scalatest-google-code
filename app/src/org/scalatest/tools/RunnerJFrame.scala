@@ -880,7 +880,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   }
 
   // Must be called from event handler thread
-  override def rerunFromGUI(rerunnable: Rerunnable) {
+  override def rerunFromGUI(rerunnable: Rerunner) {
     (new RerunnerThread(rerunnable)).start()
   }
 
@@ -1199,7 +1199,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     }
   }
 
-  def getSelectedRerunnable(): Option[Rerunnable] = {
+  def getSelectedRerunner(): Option[Rerunner] = {
     val rh: ReportHolder = reportsJList.getSelectedValue().asInstanceOf[ReportHolder] 
     if (rh == null)
       None
@@ -1396,9 +1396,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     }
   }
 
-  private class RerunnerThread(rerunnable: Rerunnable) extends Thread {
+  private class RerunnerThread(rerun: Rerunner) extends Thread {
 
-    if (rerunnable == null)
+    if (rerun == null)
       throw new NullPointerException
 
     override def run() {
@@ -1408,7 +1408,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, Some(graphicRerunReporter), None) {
         (loader, dispatchReporter) => {
           try {
-            rerunnable.rerun(dispatchReporter, stopper, includes, Runner.excludesWithIgnore(excludes), propertiesMap,
+            rerun(dispatchReporter, stopper, includes, Runner.excludesWithIgnore(excludes), propertiesMap,
                 distributor, loader) // I deleted passing of nextRunStamp here
           }
           catch {

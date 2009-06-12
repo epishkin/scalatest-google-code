@@ -20,6 +20,105 @@ import org.scalatest.events._
 
 /**
  * Trait whose instances collect the results of a running
+ * suite of tests and presents those results in some way to the user. Instances of this trait can
+ * be called "report functions" or "reporters."
+ *
+ * <p>
+ * <strong>
+ * All handler methods that existed in this trait in prior versions have been deprecated in 0.9.6. In 0.9.7 they will
+ * be removed. In the meantime, any subclass implementations of this trait should override <code>apply(Event)</code> instead. 
+ * During 0.9.6, two ways exist to run tests. The old way, which uses the old methods on <code>Reporter</code>, and the new way, which
+ * uses the <code>apply</code> method. The only reason to use the old way of running tests during 0.9.6 is if you want to use
+ * a custom 
+ * </strong>
+ * </p>
+ *
+ * <p>
+ * Reporters receive test results via thirteen events.
+ * Each event is fired to pass a particular kind of information to
+ * the reporter. The events are:
+ * </p>
+ *
+ * <ul>
+ * <li><code>RunStarting</code>
+ * <li><code>TestStarting</code>
+ * <li><code>TestSucceeded</code>
+ * <li><code>TestFailed</code>
+ * <li><code>TestIgnored</code>
+ * <li><code>TestPending</code>
+ * <li><code>SuiteStarting</code>
+ * <li><code>SuiteCompleted</code>
+ * <li><code>SuiteAborted</code>
+ * <li><code>InfoProvided</code>
+ * <li><code>RunStopped</code>
+ * <li><code>RunAborted</code>
+ * <li><code>RunCompleted</code>
+ * </ul>
+ *
+ * <p>
+ * Reporters may be implemented such that they only present some of the reported events to the user. For example, you could
+ * define a reporter class that doesn nothing in response to <code>SuiteStarting</code> events.
+ * Such a class would always ignore <code>SuiteStarting</code> events.
+ * </p>
+ *
+ * <p>
+ * The term <em>test</em> as used in the <code>TestStarting</code>, <code>TestSucceeded</code>,
+ * and <code>TestFailed</code> event names
+ * is defined abstractly to enable a wide range of test implementations.
+ * Trait <code>Suite</code> fires <code>TestStarting</code> to indicate it is about to invoke one
+ * of its test methods, <code>TestSucceeded</code> to indicate a test method returned normally,
+ * and <code>TestFailed</code> to indicate a test method completed abruptly with an exception.
+ * Although the execution of a <code>Suite</code>'s test methods will likely be a common event
+ * reported via the
+ * <code>TestStarting</code>, <code>TestSucceeded</code>, and <code>TestFailed</code> methods, because
+ * of the abstract definition of &#8220;test&#8221; used by the
+ * the event classes, these events are not limited to this use. Information about any conceptual test
+ * may be reported via the <code>TestStarting</code>, <code>TestSucceeded</code>, and
+ * <code>TestFailed</code> events.
+ *
+ * <p>
+ * Likewise, the term <em>suite</em> as used in the <code>SuiteStarting</code>, <code>SuiteAborted</code>,
+ * and <code>SuiteCompleted</code> event names
+ * is defined abstractly to enable a wide range of suite implementations.
+ * Object <code>Runner</code> fires <code>SuiteStarting</code> to indicate it is about to invoke
+ * <code>run</code> on a
+ * <code>Suite</code>, <code>SuiteCompleted</code> to indicate a <code>Suite</code>'s
+ * <code>run</code> method returned normally,
+ * and <code>SuiteAborted</code> to indicate a <code>Suite</code>'s <code>run</code>
+ * method completed abruptly with an exception.
+ * Similarly, class <code>Suite</code> fires <code>SuiteStarting</code> to indicate it is about to invoke
+ * <code>run</code> on a
+ * nested <code>Suite</code>, <code>SuiteCompleted</code> to indicate a nested <code>Suite</code>'s
+ * <code>run</code> method returned normally,
+ * and <code>SuiteAborted</code> to indicate a nested <code>Suite</code>'s <code>run</code>
+ * method completed abruptly with an exception.
+ * Although the execution of a <code>Suite</code>'s <code>run</code> method will likely be a
+ * common event reported via the
+ * <code>SuiteStarting</code>, <code>SuiteAborted</code>, and <code>SuiteCompleted</code> events, because
+ * of the abstract definition of "suite" used by the
+ * event classes, these events are not limited to this use. Information about any conceptual suite
+ * may be reported via the <code>SuiteStarting</code>, <code>SuiteAborted</code>, and
+ * <code>SuiteCompleted</code> events.
+ *
+ * <p>
+ * <strong>Extensibility</strong>
+ * </p>
+ *
+ * <p>
+ * You can create classes that extend <code>ReportFunction</code> to report test results in custom ways, and to
+ * report custom information passed as an event "payload." For more information on the latter
+ * use case, see the <em>Extensibility</em> section of the <a href="Event.html"><code>Event</code> documentation</a>.
+ * </p>
+ *
+ * <p>
+ * Reporter classes can handle events in any manner, including doing nothing.
+ * For convenience, trait <code>ReporterFunction</code> includes a default implentation of <code>apply</code> that does nothing.
+ * </p>
+ *
+ * @author Bill Venners
+ */
+/*
+ * Trait whose instances collect the results of a running
  * suite of tests and presents those results in some way to the user.
  *
  * <p>
@@ -105,7 +204,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait Reporter {
+trait Reporter extends (Event => Unit) {
 
     /**
      * Indicates a runner is about run a suite of tests.
@@ -119,7 +218,7 @@ trait Reporter {
      *
      * @throws IllegalArgumentException if <code>expectedTestsCount</code> is less than zero.
      */
-    def runStarting(testCount: Int) = ()
+    @deprecated def runStarting(testCount: Int) = ()
 
     /**
      * Indicates a suite (or other entity) is about to start a test.
@@ -132,7 +231,7 @@ trait Reporter {
      *
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def testStarting(report: Report) = ()
+    @deprecated def testStarting(report: Report) = ()
 
 
     /**
@@ -146,7 +245,7 @@ trait Reporter {
      * @param report a <code>Report</code> that encapsulates the test succeeded event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def testSucceeded(report: Report) = ()
+    @deprecated def testSucceeded(report: Report) = ()
     
     /**
      * Indicates a suite (or other entity) is annotated as a ignore test.
@@ -159,7 +258,7 @@ trait Reporter {
      * @param report a <code>Report</code> that encapsulates the ignored test event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def testIgnored(report: Report) = ()
+    @deprecated def testIgnored(report: Report) = ()
 
     /**
      * Indicates a suite (or other entity) has completed running a test that failed.
@@ -172,7 +271,7 @@ trait Reporter {
      * @param report a <code>Report</code> that encapsulates the test failed event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def testFailed(report: Report) = ()
+    @deprecated def testFailed(report: Report) = ()
 
     /**
      * Indicates a suite of tests is about to start executing.
@@ -186,7 +285,7 @@ trait Reporter {
      *
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def suiteStarting(report: Report) = ()
+    @deprecated def suiteStarting(report: Report) = ()
 
     /**
      * Indicates a suite of tests has completed executing.
@@ -199,7 +298,7 @@ trait Reporter {
      * @param report a <code>Report</code> that encapsulates the suite completed event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def suiteCompleted(report: Report) = ()
+    @deprecated def suiteCompleted(report: Report) = ()
 
     /**
      * Indicates the execution of a suite of tests has aborted, likely because of an error, prior
@@ -213,7 +312,7 @@ trait Reporter {
      * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def suiteAborted(report: Report) = ()
+    @deprecated def suiteAborted(report: Report) = ()
 
     /**
      * Provides information that is not appropriate to report via any other
@@ -223,7 +322,7 @@ trait Reporter {
      *
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    def infoProvided(report: Report) = ()
+    @deprecated def infoProvided(report: Report) = ()
 
     /**
      * Indicates a runner has stopped running a suite of tests prior to completion, likely
@@ -244,7 +343,7 @@ trait Reporter {
      * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns.
      * </p>
      */
-    def runStopped() = ()
+    @deprecated def runStopped() = ()
 
     /**
      * Indicates a runner encountered an error while attempting to run a suite of tests.
@@ -258,7 +357,7 @@ trait Reporter {
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
 
-    def runAborted(report: Report) = ()
+    @deprecated def runAborted(report: Report) = ()
 
     /**
      * Indicates a runner has completed running a suite of tests.
@@ -278,7 +377,7 @@ trait Reporter {
      * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns.
      * </p>
      */
-    def runCompleted() = ()
+    @deprecated def runCompleted() = ()
 
     /**
      * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
@@ -287,9 +386,13 @@ trait Reporter {
      * and therefore not usable anymore. If the <code>Reporter</code> holds no resources, it may do nothing when
      * this method is invoked.
      */
-    def dispose() = ()
+    @deprecated def dispose() = ()
 
-/*
+  /**
+   * Invoked to report an event that subclasses may wish to report in some way to the user.
+   *
+   * @param event the event being reported
+   */
   def apply(event: Event) {
 
     event match {
@@ -352,7 +455,6 @@ trait Reporter {
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
     }
   }
-*/
 }
 
 /*

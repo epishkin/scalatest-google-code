@@ -31,8 +31,8 @@ private[scalatest] trait RunnerGUI {
   def prepUIForStopping(): Unit
   def prepUIForReStopping(): Unit
   def showErrorDialog(title: String, msg: String): Unit
-  def getSelectedRerunnable(): Option[Rerunnable]
+  def getSelectedRerunner(): Option[Rerunner]
   def runFromGUI(): Unit
-  def rerunFromGUI(rerunnable: Rerunnable): Unit
+  def rerunFromGUI(rerunnable: Rerunner): Unit
   def requestStop(): Unit
 }

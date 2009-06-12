@@ -137,12 +137,12 @@ class FunSuiteSuite extends Suite {
     }
 
     val a = new MySuite 
-    a.execute("test this")
+    a.run("test this")
     assert(a.theTestThisCalled)
     assert(!a.theTestThatCalled)
 
     val b = new MySuite
-    b.execute()
+    b.run()
     assert(b.theTestThisCalled)
     assert(b.theTestThatCalled)
   }
@@ -493,13 +493,13 @@ class FunSuiteSuite extends Suite {
       }
     }
     val a = new MySuite
-    a.execute()
+    a.run()
     assert(a.fromConstructorTestExecuted)
     assert(!a.fromMethodTestExecuted)
     intercept[TestFailedException] {
       a.registerOne()
     }
-    a.execute()
+    a.run()
     assert(!a.fromMethodTestExecuted)
   }
   

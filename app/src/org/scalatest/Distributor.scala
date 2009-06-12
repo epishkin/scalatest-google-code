@@ -16,11 +16,11 @@
 package org.scalatest
 
 /**
- * A object that facilitates concurrent and/or distributed execution of <code>Suite</code>s.
- * An optional <code>Distributor</code> is passed to the <code>execute</code> method of <code>Suite</code>. If a
- * <code>Distributor</code> is indeed passed, trait <code>Suite</code>'s implementation of <code>execute</code> will
- * populate that <code>Distributor</code> with its nested <code>Suite</code>s (by passing them to the <code>Distributor</code>'s
- * <code>put</code> method) rather than executing the nested <code>Suite</code>s directly. It is then up to another party or parties
+ * Function trait whose instances facilitate concurrent and/or distributed execution of <code>Suite</code>s.
+ * An optional <code>DistributeFunction</code> is passed to the <code>run</code> method of <code>Suite</code>. If a
+ * <code>DistributeFunction</code> is indeed passed, trait <code>Suite</code>'s implementation of <code>run</code> will
+ * populate that <code>DistributeFunction</code> with its nested <code>Suite</code>s (by passing them to the <code>DistributeFunctions</code>'s
+ * <code>apply</code> method) rather than executing the nested <code>Suite</code>s directly. It is then up to another party or parties
  * to execute those <code>Suite</code>s.
  *
  * <p>
@@ -44,7 +44,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait Distributor {
+trait Distributor extends (Suite => Unit) {
 
   /**
    * Puts a <code>Suite</code> into the <code>Distributor</code>.
@@ -53,8 +53,9 @@ trait Distributor {
    *
    * @throws NullPointerException if <code>suite</code> is <code>null</code>.
    */
-  def put(suite: Suite)
+  override def apply(suite: Suite)
 }
+
 /*
    Could make this a function too. Would simply be (Suite) => Unit. Could name the parameter stopRequested
    Then the code would be:

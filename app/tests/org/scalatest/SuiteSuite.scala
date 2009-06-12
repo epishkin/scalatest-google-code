@@ -100,12 +100,12 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
 
     val a = new MySuite 
-    a.execute("testThis")
+    a.run("testThis")
     assert(a.theTestThisCalled)
     assert(!a.theTestThatCalled)
 
     val b = new MySuite
-    b.execute()
+    b.run()
     assert(b.theTestThisCalled)
     assert(b.theTestThatCalled)
   }

@@ -1016,7 +1016,7 @@ object Runner {
   private[scalatest] def doRunRunRunADoRunRun(
     dispatchReporter: DispatchReporter,
     suitesList: List[String],
-    stopper: Stopper,
+    stopRequested: Stopper,
     includes: Set[String],
     excludes: Set[String],
     propertiesMap: Map[String, String],
@@ -1035,7 +1035,7 @@ object Runner {
       throw new NullPointerException
     if (suitesList == null)
       throw new NullPointerException
-    if (stopper == null)
+    if (stopRequested == null)
       throw new NullPointerException
     if (includes == null)
       throw new NullPointerException
@@ -1144,21 +1144,20 @@ object Runner {
           // dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatchReporter, stopper, includes, excludesWithIgnore(excludes), propertiesMap)
+            val distributor = new ConcurrentDistributor(dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes), propertiesMap)
             for (suite <- suiteInstances)
-              distributor.put(suite)
+              distributor(suite)
             distributor.waitUntilDone()
           }
           else {
             for (suite <- suiteInstances) {
-              val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopper, includes, excludesWithIgnore(excludes),
+              val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes),
                   propertiesMap, None)
               suiteRunner.run()
             }
           }
 
-
-          if (stopper.stopRequested)
+          if (stopRequested())
             dispatchReporter.runStopped()
           else
             dispatchReporter.runCompleted()

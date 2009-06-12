@@ -187,14 +187,14 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
    *
    * @param scenarioName the name of one scenario to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param properties a <code>Map</code> of properties that can be used by the executing <code>FeatureSuite</code>.
-   * @throws NullPointerException if any of <code>scenarioName</code>, <code>reporter</code>, <code>stopper</code>, or <code>properties</code>
+   * @throws NullPointerException if any of <code>scenarioName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>properties</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(scenarioName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
+  protected override def runTest(scenarioName: String, reporter: Reporter, stopRequested: Stopper, properties: Map[String, Any]) {
 
-    if (scenarioName == null || reporter == null || stopper == null || properties == null)
+    if (scenarioName == null || reporter == null || stopRequested == null || properties == null)
       throw new NullPointerException
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
@@ -250,7 +250,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
   }
 
   private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, scenarioName: String,
-      rerunnable: Option[Rerunnable], reporter: Reporter) {
+      rerunnable: Option[Rerunner], reporter: Reporter) {
 
     val msg =
       if (t.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -284,15 +284,15 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     suiteName + ", " + testName
   }
   
-  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  protected override def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
       goodies: Map[String, Any]) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
-    if (stopper == null)
-      throw new NullPointerException("stopper was null")
+    if (stopRequested == null)
+      throw new NullPointerException("stopRequested was null")
     if (includes == null)
       throw new NullPointerException("includes was null")
     if (excludes == null)
@@ -308,20 +308,20 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     // If a testName to execute is passed, just execute that, else execute the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopper, goodies)
+      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
       case None => {
         val doList = atomic.get.doList.reverse
         for (node <- doList) {
           node match {
             case Info(message) => info(message)
             case Test(tn, _) =>
-              if (!stopper.stopRequested && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
+              if (!stopRequested() && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
                 if (excludes.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
                   //wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
                   wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
                 }
                 else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
-                  runTest(tn, wrappedReporter, stopper, goodies)
+                  runTest(tn, wrappedReporter, stopRequested, goodies)
                 }
               }
           }
@@ -330,7 +330,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     }
   }
 
-  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  override def execute(testName: Option[String], reporter: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     // Set the flag that indicates execute has been invoked, which will disallow any further
@@ -360,7 +360,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       }
 
     try {
-      super.execute(testName, wrappedReporter, stopper, includes, excludes, goodies, distributor)
+      super.execute(testName, wrappedReporter, stopRequested, includes, excludes, goodies, distributor)
     }
     finally {
       currentInformer = zombieInformer
