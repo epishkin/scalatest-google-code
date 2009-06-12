@@ -54,7 +54,7 @@ trait ExecuteAndRun {
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  def execute(
+  def run(
     testName: Option[String],
     reporter: Reporter,
     stopper: Stopper,

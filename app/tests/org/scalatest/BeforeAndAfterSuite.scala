@@ -22,15 +22,15 @@ class BeforeAndAfterSuite extends FunSuite {
 
   class TheSuper extends Suite {
     var runTestWasCalled = false
-    var executeWasCalled = false
+    var runWasCalled = false
     override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
       runTestWasCalled = true
       super.runTest(testName, reporter, stopper, properties)
     }
-    override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+    override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                          properties: Map[String, Any], distributor: Option[Distributor]) {
-      executeWasCalled = true
-      super.execute(testName, reporter, stopper, includes, excludes, properties, distributor)
+      runWasCalled = true
+      super.run(testName, reporter, stopper, includes, excludes, properties, distributor)
     }
   }
   
@@ -40,7 +40,7 @@ class BeforeAndAfterSuite extends FunSuite {
     var beforeAllCalledBeforeExecute = false
     var afterAllCalledAfterExecute = false
     override def beforeAll() {
-      if (!executeWasCalled)
+      if (!runWasCalled)
         beforeAllCalledBeforeExecute = true
     }
     override def beforeEach() {
@@ -53,7 +53,7 @@ class BeforeAndAfterSuite extends FunSuite {
         afterEachCalledAfterRunTest = true
     }
     override def afterAll() {
-      if (executeWasCalled)
+      if (runWasCalled)
         afterAllCalledAfterExecute = true
     }
   }
@@ -64,10 +64,10 @@ class BeforeAndAfterSuite extends FunSuite {
     assert(a.runTestWasCalled)
   }
   
-  test("super's execute must be called") {
+  test("super's run must be called") {
     val a = new MySuite
     a.run()
-    assert(a.executeWasCalled)
+    assert(a.runWasCalled)
   }
 
   test("beforeEach gets called before runTest") {
@@ -82,13 +82,13 @@ class BeforeAndAfterSuite extends FunSuite {
     assert(a.afterEachCalledAfterRunTest)
   }
 
-  test("beforeAll gets called before execute") {
+  test("beforeAll gets called before run") {
     val a = new MySuite
     a.run()
     assert(a.beforeAllCalledBeforeExecute)
   }
   
-  test("afterAll gets called after execute") {
+  test("afterAll gets called after run") {
     val a = new MySuite
     a.run()
     assert(a.afterAllCalledAfterExecute)
@@ -161,8 +161,8 @@ class BeforeAndAfterSuite extends FunSuite {
     }
   }
  
-  // test exceptions with execute
-  test("If any invocation of beforeAll completes abruptly with an exception, execute " +
+  // test exceptions with run
+  test("If any invocation of beforeAll completes abruptly with an exception, run " +
     "will complete abruptly with the same exception.") {
     
     class MySuite extends Suite with BeforeAndAfter {
@@ -171,14 +171,14 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
+      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
   }
  
-  test("If any call to super.execute completes abruptly with an exception, execute " +
+  test("If any call to super.run completes abruptly with an exception, run " +
     "will complete abruptly with the same exception, however, before doing so, it will invoke afterAll") {
     trait FunkySuite extends Suite {
-      override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                            properties: Map[String, Any], distributor: Option[Distributor]) {
         throw new NumberFormatException
       }
@@ -191,15 +191,15 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
+      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
     assert(a.afterAllCalled)
   }
    
-  test("If both super.execute and afterAll complete abruptly with an exception, execute " + 
-    "will complete abruptly with the exception thrown by super.execute.") {
+  test("If both super.run and afterAll complete abruptly with an exception, run " + 
+    "will complete abruptly with the exception thrown by super.run.") {
     trait FunkySuite extends Suite {
-      override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                            properties: Map[String, Any], distributor: Option[Distributor]) {
         throw new NumberFormatException
       }
@@ -213,13 +213,13 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
+      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
     assert(a.afterAllCalled)
   }
   
-  test("If super.execute returns normally, but afterAll completes abruptly with an " +
-    "exception, execute will complete abruptly with the same exception.") {
+  test("If super.run returns normally, but afterAll completes abruptly with an " +
+    "exception, run will complete abruptly with the same exception.") {
        
     class MySuite extends Suite with BeforeAndAfter {
       override def afterAll() { throw new NumberFormatException }
@@ -227,7 +227,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.execute(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
+      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None)
     }
   }
 }

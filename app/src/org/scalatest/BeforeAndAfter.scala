@@ -52,7 +52,7 @@ package org.scalatest
  * </pre>
  * 
  * <p>
- * Because this trait invokes <code>super.execute</code> to execute the suite and <code>super.runTest</code> to
+ * Because this trait invokes <code>super.run</code> to run the suite and <code>super.runTest</code> to
  * run each test, you may need to mix this trait in last to get the desired behavior. For example, this won't
  * work, because <code>BeforeAndAfter</code> is "super" to </code>FunSuite</code>:
  * </p>
@@ -69,7 +69,7 @@ package org.scalatest
  *
  * <p>
  * If you want to do something before and after both the tests and the nested <code>Suite</code>s,
- * then you can override <code>execute</code> itself, or use the <code>beforeAll</code>
+ * then you can override <code>run</code> itself, or use the <code>beforeAll</code>
  * and <code>afterAll</code> methods of <code>BeforeAndAfter</code>.
  * </p>
  *
@@ -96,8 +96,8 @@ trait BeforeAndAfter extends ExecuteAndRun {
   protected def afterEach() = ()
   
   /**
-   * Defines a method to be run before any of this suite's tests or nested suites are executed. This trait's implementation
-   * of <code>execute</code> invokes this method before executing
+   * Defines a method to be run before any of this suite's tests or nested suites are run. This trait's implementation
+   * of <code>run</code> invokes this method before executing
    * any tests or nested suites, thus this method can be used to set up a test fixture
    * needed by the entire suite. This trait's implementation of this method does nothing.
    */
@@ -105,8 +105,8 @@ trait BeforeAndAfter extends ExecuteAndRun {
   
   /**
    * Defines a method to be run after all of this suite's tests and nested suites have
-   * been executed. This trait's implementation
-   * of <code>execute</code> invokes this method after executing
+   * been run. This trait's implementation
+   * of <code>run</code> invokes this method after executing
    * all tests and nested suites, thus this method can be used to tear down a test fixture
    * needed by the entire suite. This trait's implementation of this method does nothing.
    */
@@ -151,34 +151,34 @@ trait BeforeAndAfter extends ExecuteAndRun {
    * Execute a suite surrounded by calls to <code>beforeAll</code> and <code>afterAll</code>.
    * This trait's implementation of this method ("this method") invokes <code>beforeAll</code>
    * before executing any tests or nested suites and <code>afterAll</code>
-   * after executing all tests and nested suites. It executes the suite by invoking <code>super.execute</code>, passing along
+   * after executing all tests and nested suites. It runs the suite by invoking <code>super.run</code>, passing along
    * the seven parameters passed to it.
    * 
    * <p>
    * If any invocation of <code>beforeAll</code> completes abruptly with an exception, this
    * method will complete abruptly with the same exception. If any call to
-   * <code>super.execute</code> completes abruptly with an exception, this method
+   * <code>super.run</code> completes abruptly with an exception, this method
    * will complete abruptly with the same exception, however, before doing so, it will
    * invoke <code>afterAll</code>. If <cod>afterAll</code> <em>also</em> completes abruptly with an exception, this 
-   * method will nevertheless complete abruptly with the exception previously thrown by <code>super.execute</code>.
-   * If <code>super.execute</code> returns normally, but <code>afterAll</code> completes abruptly with an
+   * method will nevertheless complete abruptly with the exception previously thrown by <code>super.run</code>.
+   * If <code>super.run</code> returns normally, but <code>afterAll</code> completes abruptly with an
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
-  abstract override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
                        properties: Map[String, Any], distributor: Option[Distributor]) {
     beforeAll()
     try {
-      super.execute(testName, reporter, stopper, includes, excludes, properties, distributor)
+      super.run(testName, reporter, stopper, includes, excludes, properties, distributor)
       afterAll()
     }
     catch {
      case e: Exception =>
        try {
-         afterAll() // Make sure that afterAll is called even if execute completes abruptly.
+         afterAll() // Make sure that afterAll is called even if run completes abruptly.
        }
        finally {
-         throw e // If both execute and afterAll throw an exception, report the test exception
+         throw e // If both run and afterAll throw an exception, report the test exception
        }
     }
   }

@@ -98,7 +98,7 @@ package org.scalatest.junit {
 
       val happy = new HappySuite
       val repA = new MyReporter
-      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      happy.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testStartingReport.isDefined)
       assert(repA.testStartingReport.get.name === "verifySomething(org.scalatest.junit.helpers.HappySuite)")
     }
@@ -107,7 +107,7 @@ package org.scalatest.junit {
 
       val happy = new HappySuite
       val repA = new MyReporter
-      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      happy.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testSucceededReport.isDefined)
       assert(repA.testSucceededReport.get.name === "verifySomething(org.scalatest.junit.helpers.HappySuite)")
     }
@@ -116,7 +116,7 @@ package org.scalatest.junit {
 
       val bitter = new BitterSuite
       val repA = new MyReporter
-      bitter.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      bitter.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testFailedReport.isDefined)
       assert(repA.testFailedReport.get.name === "verifySomething(org.scalatest.junit.helpers.BitterSuite)")
     }
@@ -125,7 +125,7 @@ package org.scalatest.junit {
 
       val ignored = new IgnoredSuite
       val repA = new MyReporter
-      ignored.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      ignored.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.testIgnoredReport.isDefined)
       assert(repA.testIgnoredReport.get.name === "verifySomething(org.scalatest.junit.helpers.IgnoredSuite)")
     }
@@ -134,7 +134,7 @@ package org.scalatest.junit {
 
       val many = new ManySuite
       val repA = new MyReporter
-      many.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      many.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
 
       assert(repA.testStartingReport.isDefined)
       assert(repA.testStartingReport.get.name === "verifySomethingElse(org.scalatest.junit.helpers.ManySuite)")
@@ -149,7 +149,7 @@ package org.scalatest.junit {
 
       val happy = new HappySuite
       val repA = new MyReporter
-      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      happy.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.runStartingCount === 1)
       assert(repA.testCountPassedToRunStarting === 1)
     }
@@ -158,7 +158,7 @@ package org.scalatest.junit {
 
       val happy = new HappySuite
       val repA = new MyReporter
-      happy.execute(None, repA, new Stopper {}, Set(), Set(), Map(), None)
+      happy.run(None, repA, new Stopper {}, Set(), Set(), Map(), None)
       assert(repA.runCompletedCount === 1)
     }
   }

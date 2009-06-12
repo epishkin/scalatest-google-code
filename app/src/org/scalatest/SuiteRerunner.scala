@@ -55,7 +55,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
           }
         reporter.suiteStarting(report)
 
-        suite.execute(None, reporter, stopRequested, includes, excludes, goodies, distributor)
+        suite.run(None, reporter, stopRequested, includes, excludes, goodies, distributor)
 
         val rawString2 = Resources("suiteCompletedNormally")
         val report2 =

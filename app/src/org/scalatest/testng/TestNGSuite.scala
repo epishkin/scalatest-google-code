@@ -89,7 +89,7 @@ trait TestNGSuite extends Suite {
    *              Because TestNG handles its own concurrency, this class ignores this parameter.
    * <br><br>
    */
-  override def execute(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
       groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
     
     runTestNG(testName, reporter, groupsToInclude, groupsToExclude);
