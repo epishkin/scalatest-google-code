@@ -346,26 +346,6 @@ trait Reporter extends (Event => Unit) {
     def runAborted(report: Report) = ()
 
     /**
-     * Indicates a runner has completed running a suite of tests.
-     *
-     * <p>
-     * <code>Suite</code>'s <code>execute</code> method takes a <code>Stopper</code>, whose <code>stopRequested</code>
-     * method indicates a stop was requested. If <code>true</code> is returned by
-     * <code>stopRequested</code> while a suite of tests is running, the
-     * <code>execute</code> method should promptly
-     * return even if that suite hasn't finished running all of its tests.
-     * </p>
-     *
-     * <p>If a stop was requested via the <code>Stopper</code>.
-     * <code>Runner</code> will invoke <code>runStopped</code>
-     * when the <code>execute</code> method of the run's starting <code>Suite</code> returns.
-     * If a stop is not requested, <code>Runner</code> will invoke <code>runCompleted</code>
-     * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns.
-     * </p>
-     */
-    def runCompleted() = ()
-
-    /**
      * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
      * call this method when they no longer need the <code>Reporter</code>, before releasing the last reference
      * to the <code>Reporter</code>. After this method is invoked, the <code>Reporter</code> may be defunct,

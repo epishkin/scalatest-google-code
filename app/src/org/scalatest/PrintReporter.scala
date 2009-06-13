@@ -25,8 +25,7 @@ import java.io.PrintWriter
 import java.util.Iterator
 import java.util.Set
 import java.io.StringWriter
-import org.scalatest.events.Event
-import org.scalatest.events.RunStarting
+import org.scalatest.events._
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -78,6 +77,10 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
         suitesAbortedCount = 0
 
         printResourceStringWithInt("runStarting", testCount)
+
+      case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => 
+
+        makeFinalReport("runCompleted") // TODO: use Summary info
 
       case _ => throw new RuntimeException("Unhandled event")
     }
@@ -186,13 +189,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   override def runAborted(report: Report) {
     makeReport(report, "runAborted")
-  }
-
-  /**
-  * Prints information indicating a run has completed.
-  */
-  override def runCompleted() {
-    makeFinalReport("runCompleted")
   }
 
   /**

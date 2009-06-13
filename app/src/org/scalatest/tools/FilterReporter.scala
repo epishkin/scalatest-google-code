@@ -15,8 +15,7 @@
  */
 package org.scalatest.tools
 
-import org.scalatest.events.Event
-import org.scalatest.events.RunStarting
+import org.scalatest.events._
 
  /**
  * FiterReporter catches exceptions that may be thrown by custom reporters, and doesn't forward
@@ -32,6 +31,7 @@ private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpt
     event match {
 
       case event: RunStarting => if (configSet.contains(ReporterOpts.PresentRunStarting)) report(event)
+      case event: RunCompleted => if (configSet.contains(ReporterOpts.PresentRunCompleted)) report(event)
       case _ => throw new RuntimeException("Unhandled event")
     }
   }
@@ -78,10 +78,6 @@ private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpt
   override def runAborted(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentRunAborted))
       report.runAborted(rpt)
-
-  override def runCompleted() =
-    if (configSet.contains(ReporterOpts.PresentRunCompleted))
-      report.runCompleted()
 
   override def dispose() = report.dispose()
 }

@@ -16,8 +16,7 @@
 package org.scalatest
 
 import java.lang.reflect.Method
-import org.scalatest.events.RunStarting
-import org.scalatest.events.Ordinal
+import org.scalatest.events._
 
 /**
  * A rerunner for test methods.
@@ -43,7 +42,9 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
       ordinal = ordinal.next
 
       ordinal = suite.run(Some(testName), report, stopper, includes, excludes, goodies, distributor, ordinal) 
-      report.runCompleted()
+
+      report(RunCompleted(ordinal)) // TODO: pass a duration
+      // Don't need to increment ordinal, because it isn't used after this
     }
     catch {
       case ex: ClassNotFoundException => {

@@ -417,9 +417,6 @@ object Runner {
       failedAbortedOrStopped = true
       runDoneSemaphore.release()
     }
-    override def runCompleted() {
-      runDoneSemaphore.release()
-    }
 
     def allTestsPassed = {
       runDoneSemaphore.acquire()
@@ -1158,6 +1155,7 @@ object Runner {
 
           var ordinal = new Ordinal(runStamp)
           dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
+          ordinal = ordinal.next
 
           if (concurrent) {
             val distributor = new ConcurrentDistributor(dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes), propertiesMap)
@@ -1181,7 +1179,7 @@ object Runner {
           if (stopRequested())
             dispatchReporter.runStopped()
           else
-            dispatchReporter.runCompleted()
+            dispatchReporter.apply(RunCompleted(ordinal)) // Don't need to increment ordinal, because it won't be used anymore
         }
         catch {
           case ex: InstantiationException => {
