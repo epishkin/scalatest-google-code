@@ -203,66 +203,6 @@ class TestFailedExceptionWithImportSpec extends Spec {
       }
     }
 
-    it("should give the proper line on intercept(classOf[IllegalArgumentException]) {}") { // Once I remove this deprecated one, will delete this test
-      try {
-        intercept(classOf[IllegalArgumentException]) {}
-      }
-      catch {
-        case e: TestFailedException =>
-          e.failedTestCodeFileNameAndLineNumberString match {
-            case Some(s) => s should equal ("TestFailedExceptionWithImportSpec.scala:" + (baseLineNumber + 186))
-            case None => fail("intercept(classOf[IllegalArgumentException]) {} didn't produce a file name and line number string", e)
-          }
-        case e =>
-          fail("intercept(classOf([IllegalArgumentException]) {} didn't produce a TestFailedException", e)
-      }
-    }
-
-    it("should give the proper line on intercept(classOf[IllegalArgumentException]) { throw new RuntimeException }") {
-      try {
-        intercept(classOf[IllegalArgumentException]) { if (false) 1 else throw new RuntimeException }
-      }
-      catch {
-        case e: TestFailedException =>
-          e.failedTestCodeFileNameAndLineNumberString match {
-            case Some(s) => s should equal ("TestFailedExceptionWithImportSpec.scala:" + (baseLineNumber + 201))
-            case None => fail("intercept(classOf([IllegalArgumentException]) { throw new RuntimeException } didn't produce a file name and line number string", e)
-          }
-        case e =>
-          fail("intercept(classOf([IllegalArgumentException]) { throw new RuntimeException } didn't produce a TestFailedException", e)
-      }
-    }
-
-    it("should give the proper line on intercept(classOf[IllegalArgumentException], \"some message\") {}") { // Once I remove this deprecated one, will delete this test
-      try {
-        intercept(classOf[IllegalArgumentException], "some message") {}
-      }
-      catch {
-        case e: TestFailedException =>
-          e.failedTestCodeFileNameAndLineNumberString match {
-            case Some(s) => s should equal ("TestFailedExceptionWithImportSpec.scala:" + (baseLineNumber + 216))
-            case None => fail("intercept(classOf[IllegalArgumentException], \"some message\") {} didn't produce a file name and line number string", e)
-          }
-        case e =>
-          fail("intercept(classOf([IllegalArgumentException], \"some message\") {} didn't produce a TestFailedException", e)
-      }
-    }
-
-    it("should give the proper line on intercept(classOf[IllegalArgumentException], \"some message\") { throw new RuntimeException }") {
-      try {
-        intercept(classOf[IllegalArgumentException], "some message") { if (false) 1 else throw new RuntimeException }
-      }
-      catch {
-        case e: TestFailedException =>
-          e.failedTestCodeFileNameAndLineNumberString match {
-            case Some(s) => s should equal ("TestFailedExceptionWithImportSpec.scala:" + (baseLineNumber + 231))
-            case None => fail("intercept(classOf([IllegalArgumentException], \"some message\") { throw new RuntimeException } didn't produce a file name and line number string", e)
-          }
-        case e =>
-          fail("intercept(classOf([IllegalArgumentException], \"some message\") { throw new RuntimeException } didn't produce a TestFailedException", e)
-      }
-    }
-
     it("bla bla bla") {
       // fail("message")
       // fail(new Throwable)
