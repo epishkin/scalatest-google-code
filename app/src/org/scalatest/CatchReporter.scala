@@ -36,7 +36,7 @@ private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) exten
     }
     catch {
       case e: Exception => 
-        val stringToPrint = Resources("reportThrew", event)
+        val stringToPrint = Resources("reporterThrew", event)
         out.println(stringToPrint)
         e.printStackTrace(out)
     }
@@ -72,7 +72,7 @@ private[scalatest] object CatchReporter {
 
   def handleReporterException(e: Exception, methodName: String, out: PrintStream) {
 
-    val stringToPrint = Resources("reportThrew", methodName)
+    val stringToPrint = Resources("reporterThrew", methodName)
 
     out.println(stringToPrint)
     e.printStackTrace(out)
