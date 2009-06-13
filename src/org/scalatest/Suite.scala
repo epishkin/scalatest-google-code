@@ -741,7 +741,8 @@ import org.scalatest.events._
  *     groupsToInclude: Set[String],
  *     groupsToExclude: Set[String],
  *     goodies: Map[String, Any],
- *     distributor: Option[Distributor]
+ *     distributor: Option[Distributor],
+ *     firstOrdinal: Ordinal
  *   ) {
  *     def complain() = fail("Hey, where's my goodie?")
  *
@@ -1033,7 +1034,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * </p>
    */
   final def run() {
-    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
+    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None, new Ordinal(99))
   }
 
   /**
@@ -1056,7 +1057,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * </p>
    */
   final def run(goodies: Map[String, Any]) {
-    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), goodies, None)
+    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), goodies, None, new Ordinal(99))
   }
 
   /**
@@ -1084,7 +1085,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
   final def run(testName: String) {
-    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), Map(), None)
+    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
   }
 
   /**
@@ -1112,7 +1113,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
   final def run(testName: String, goodies: Map[String, Any]) {
-    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), goodies, None)
+    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), goodies, None, new Ordinal(99))
   }
 
   /**
@@ -1452,7 +1453,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
   def run(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-              goodies: Map[String, Any], distributor: Option[Distributor]) {
+              goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1468,11 +1469,15 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       throw new NullPointerException("goodies was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
+    if (firstOrdinal == null)
+      throw new NullPointerException("firstOrdinal was null")
+
+    var ordinal = firstOrdinal
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
     testName match {
-      case None => runNestedSuites(wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
+      case None => ordinal = runNestedSuites(wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, ordinal)
       case Some(_) =>
     }
     runTests(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies)
@@ -1482,6 +1487,8 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       //wrappedReporter.infoProvided(new Report(suiteName, rawString, Some(suiteName), Some(thisSuite.getClass.getName), None))
       wrappedReporter.infoProvided(new Report(suiteName, rawString))
     }
+
+    firstOrdinal
   }
 
   /* [bv: This is a good example of that common refactor for initialization]
@@ -1553,7 +1560,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
   protected def runNestedSuites(reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-                                goodies: Map[String, Any], distributor: Option[Distributor]) {
+                                goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
 
     if (reporter == null)
       throw new NullPointerException("reporter was null")
@@ -1567,6 +1574,10 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       throw new NullPointerException("goodies was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
+    if (firstOrdinal == null)
+      throw new NullPointerException("firstOrdinal was null")
+
+    var ordinal = firstOrdinal
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
@@ -1610,7 +1621,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 */
 
         try {
-          nestedSuite.run(None, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
+          nestedSuite.run(None, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, ordinal)
 
           val rawString = Resources("suiteCompletedNormally")
 
@@ -1660,8 +1671,15 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 
     distributor match {
       case None => nestedSuites.foreach(callExecuteOnSuite)
-      case Some(distribute) => nestedSuites.foreach(distribute)
+      case Some(distribute) =>
+        for (nestedSuite <- nestedSuites) {
+          val (nextForNewSuite, nextForThisSuite) = ordinal.nextNewOldPair
+          ordinal = nextForThisSuite
+          distribute(nestedSuite, nextForNewSuite)
+        }
     }
+
+    ordinal
   }
 
   /**

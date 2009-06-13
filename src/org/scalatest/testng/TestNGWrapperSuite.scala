@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.testng;
+package org.scalatest.testng
 
+import org.scalatest.events.Ordinal
 import org.testng.TestNG
 import org.testng.TestListenerAdapter
 
@@ -69,9 +70,11 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
    * <br><br>
    */
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
     
-    runTestNG(reporter, groupsToInclude, groupsToExclude);
+    runTestNG(reporter, groupsToInclude, groupsToExclude) // TODO: Handle ordinals
+
+    firstOrdinal
   }
 
   /**

@@ -22,7 +22,7 @@ import scala.actors.Actor.loop
 import scala.actors.Actor.receive
 import org.scalatest.CatchReporter.handleReporterException
 import java.io.PrintStream
-import org.scalatest.events._
+import org.scalatest.events.Event
 
 /**
  * A <code>Reporter</code> that dispatches test results to other <code>Reporter</code>s.
@@ -41,50 +41,42 @@ import org.scalatest.events._
  */
 private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: PrintStream) extends Reporter {
 
-  private val julia = actor { // This actor is named for Julia Roberts, not Vlad's wife
-    var alive = true // local variable, only used by the Actor's thread, so no need for synchronization
+  private val julia = actor {
+    var alive = true // local variable, right? Only used by the Actor's thread, so no need for synchronization
     while (alive) {
       receive {
-        case RunStartingMsg(expectedTestCount) => dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(expectedTestCount))
-        case TestStartingMsg(report) => dispatch("testStarting", (reporter: Reporter) => reporter.testStarting(report))
-        case TestIgnoredMsg(report) => dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(report))
-        case TestSucceededMsg(report) => dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(report))
-        case TestFailedMsg(report) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(report))
-        case SuiteStartingMsg(report) => dispatch("suiteStarting", (reporter: Reporter) => reporter.suiteStarting(report))
-        case SuiteCompletedMsg(report) => dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(report))
-        case SuiteAbortedMsg(report) => dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(report))
-        case InfoProvidedMsg(report) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(report))
-        case RunStoppedMsg() => dispatch("runStopped", (reporter: Reporter) => reporter.runStopped())
-        case RunAbortedMsg(report) => dispatch("runAborted", (reporter: Reporter) => reporter.runAborted(report))
-        case RunCompletedMsg() => dispatch("runCompleted", (reporter: Reporter) => reporter.runCompleted())
-        case DisposeMsg() => {
-          dispatch("dispose", (reporter: Reporter) => reporter.dispose())
-          alive = false
-        }
-        case event: Event =>
-          // This actor attempts to invoke apply on each contained reporter,
-          // even if some reporters' apply methods throw exceptions. This method catches any exception thrown by
-          // an apply method and handles it by printing an error message to the out stream (likely the standard error stream).
+        case event: Event => 
           try {
             for (report <- reporters)
               report(event)
           }
           catch {
             case e: Exception => 
-              val stringToPrint = Resources("reportFunctionThrew", event)
+              val stringToPrint = Resources("reporterThrew", event)
               out.println(stringToPrint)
               e.printStackTrace(out)
           }
+        case TestStartingMsg(rpt) => dispatch("testStarting", (reporter: Reporter) => reporter.testStarting(rpt))
+        case TestIgnoredMsg(rpt) => dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(rpt))
+        case TestSucceededMsg(rpt) => dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(rpt))
+        case TestFailedMsg(rpt) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(rpt))
+        case SuiteStartingMsg(rpt) => dispatch("suiteStarting", (reporter: Reporter) => reporter.suiteStarting(rpt))
+        case SuiteCompletedMsg(rpt) => dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(rpt))
+        case SuiteAbortedMsg(rpt) => dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(rpt))
+        case InfoProvidedMsg(rpt) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(rpt))
+        case RunStoppedMsg() => dispatch("runStopped", (reporter: Reporter) => reporter.runStopped())
+        case RunAbortedMsg(rpt) => dispatch("runAborted", (reporter: Reporter) => reporter.runAborted(rpt))
+        case RunCompletedMsg() => dispatch("runCompleted", (reporter: Reporter) => reporter.runCompleted())
+        case DisposeMsg() => {
+          dispatch("dispose", (reporter: Reporter) => reporter.dispose())
+          alive = false
+        }
       }
     }
   }
 
   def this(reporters: List[Reporter]) = this(reporters, System.out)
   def this(reporter: Reporter) = this(List(reporter), System.out)
-
-  override def apply(event: Event) {
-    julia ! event
-  }
 
   /* where do I put this Scaladoc?
    * Returns a <code>List</code> of the <code>Reporter</code>s contained in this
@@ -94,23 +86,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * <code>DispatchReporter</code>.
    */
 
-  /**
-   * Invokes <code>runStarting</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list, passing the specified
-   * <code>testCount</code>.
-   *
-   * <P>
-   * This method attempts to invoke <code>runStarting</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>runStarting</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>runStarting</code> method and handles it by printing an error message to the
-   * standard error stream.
-   *
-   * @param testCount the number of tests expected during this run
-   * @throws IllegalArgumentException if <code>testCount</code> is less than zero
-   */
-  override def runStarting(expectedTestCount: Int) = julia ! RunStartingMsg(expectedTestCount)
-     
   /**
    * Invokes <code>testSucceeded</code> on each <code>Reporter</code> in this
    * <code>DispatchReporter</code>'s reporters list, passing the specified
@@ -304,6 +279,10 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * standard error stream.
    */
   override def dispose() = julia ! DisposeMsg()
+
+  def apply(event: Event) {
+    julia ! event
+  }
 
   private def dispatch(methodName: String, methodCall: (Reporter) => Unit) {
  

@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import org.scalatest.events.Ordinal
+
 /**
  * Trait that can be mixed into suites that need methods invoked before and after executing the
  * suite, and/or before and after running each test. This trait facilitates a style of testing in which mutable
@@ -130,20 +132,28 @@ trait BeforeAndAfter extends ExecuteAndRun {
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
-  abstract override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any]) {
+  abstract override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+
+    var thrownException: Option[Throwable] = None
+
     beforeEach()
     try {
-      super.runTest(testName, reporter, stopper, properties)
-      afterEach()
+      super.runTest(testName, reporter, stopper, goodies)
     }
     catch {
-     case e: Exception =>
-       try {
-         afterEach() // Make sure that afterEach is called even if the runTest completes abruptly.
-       }
-       finally {
-         throw e // If both runTest and after throw an exception, report the test exception
-       }
+      case e: Exception => thrownException = Some(e)
+    }
+    finally {
+      try {
+        afterEach() // Make sure that afterEach is called even if runTest completes abruptly.
+      }
+      catch {
+        case laterException: Exception =>
+          thrownException match { // If both run and afterAll throw an exception, report the test exception
+            case Some(earlierException) => throw earlierException
+            case None => throw laterException
+          }
+      }
     }
   }
 
@@ -166,20 +176,31 @@ trait BeforeAndAfter extends ExecuteAndRun {
    * </p>
   */
   abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-                       properties: Map[String, Any], distributor: Option[Distributor]) {
+                       goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
+    // wierd I must do it this way
+    var ordinal = firstOrdinal
+    var thrownException: Option[Throwable] = None
+
     beforeAll()
     try {
-      super.run(testName, reporter, stopper, includes, excludes, properties, distributor)
-      afterAll()
+      ordinal = super.run(testName, reporter, stopper, includes, excludes, goodies, distributor, ordinal)
     }
     catch {
-     case e: Exception =>
-       try {
-         afterAll() // Make sure that afterAll is called even if run completes abruptly.
-       }
-       finally {
-         throw e // If both run and afterAll throw an exception, report the test exception
-       }
+      case e: Exception => thrownException = Some(e)
     }
+    finally {
+      try {
+        afterAll() // Make sure that afterAll is called even if run completes abruptly.
+      }
+      catch {
+        case laterException: Exception =>
+          thrownException match { // If both run and afterAll throw an exception, report the test exception
+            case Some(earlierException) => throw earlierException
+            case None => throw laterException
+          }
+      }
+    }
+
+    ordinal
   }
 }

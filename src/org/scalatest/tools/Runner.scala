@@ -380,11 +380,28 @@ object Runner {
     private val runDoneSemaphore = new Semaphore(1)
     runDoneSemaphore.acquire()
 
-/* Dropping under theory I'll simply have two running schemes for two releases
     override def apply(event: Event) {
-      super.apply(event)
+      event match {
+        case _: TestFailed =>
+          failedAbortedOrStopped = true
+
+        case _: RunAborted =>
+          failedAbortedOrStopped = true
+          runDoneSemaphore.release()
+
+        case _: SuiteAborted =>
+          failedAbortedOrStopped = true
+
+        case _: RunStopped =>
+          failedAbortedOrStopped = true
+          runDoneSemaphore.release() 
+
+        case _: RunCompleted =>
+          runDoneSemaphore.release()
+
+        case _ =>
+      }
     }
-*/
 
     override def testFailed(report: Report) {
       failedAbortedOrStopped = true
@@ -1139,20 +1156,24 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          val ordinal = new Ordinal(runStamp)
-          dispatchReporter.runStarting(expectedTestCount)
-          // dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
+          var ordinal = new Ordinal(runStamp)
+          dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
 
           if (concurrent) {
             val distributor = new ConcurrentDistributor(dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes), propertiesMap)
-            for (suite <- suiteInstances)
-              distributor(suite)
+            for (suite <- suiteInstances) {
+              val (nextForNewSuite, nextForThisRunner) = ordinal.nextNewOldPair
+              ordinal = nextForThisRunner
+              distributor.apply(suite, nextForNewSuite)
+            }
             distributor.waitUntilDone()
           }
           else {
             for (suite <- suiteInstances) {
+              val (nextForNewSuite, nextForThisRunner) = ordinal.nextNewOldPair
+              ordinal = nextForThisRunner
               val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes),
-                  propertiesMap, None)
+                  propertiesMap, None, nextForNewSuite)
               suiteRunner.run()
             }
           }

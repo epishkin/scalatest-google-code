@@ -207,20 +207,6 @@ import org.scalatest.events._
 trait Reporter extends (Event => Unit) {
 
     /**
-     * Indicates a runner is about run a suite of tests.
-     *
-     * <p>
-     * Object <code>Runner</code> invokes <code>runStarting</code> to report
-     * that the first <code>execute</code> method of a run's starting <code>Suite</code>s
-     * is about to be invoked.
-     *
-     * @param testCount the number of tests expected during this run
-     *
-     * @throws IllegalArgumentException if <code>expectedTestsCount</code> is less than zero.
-     */
-    @deprecated def runStarting(testCount: Int) = ()
-
-    /**
      * Indicates a suite (or other entity) is about to start a test.
      *
      * <p>
@@ -231,7 +217,7 @@ trait Reporter extends (Event => Unit) {
      *
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def testStarting(report: Report) = ()
+    def testStarting(report: Report) = ()
 
 
     /**
@@ -245,7 +231,7 @@ trait Reporter extends (Event => Unit) {
      * @param report a <code>Report</code> that encapsulates the test succeeded event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def testSucceeded(report: Report) = ()
+    def testSucceeded(report: Report) = ()
     
     /**
      * Indicates a suite (or other entity) is annotated as a ignore test.
@@ -258,7 +244,7 @@ trait Reporter extends (Event => Unit) {
      * @param report a <code>Report</code> that encapsulates the ignored test event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def testIgnored(report: Report) = ()
+    def testIgnored(report: Report) = ()
 
     /**
      * Indicates a suite (or other entity) has completed running a test that failed.
@@ -271,7 +257,7 @@ trait Reporter extends (Event => Unit) {
      * @param report a <code>Report</code> that encapsulates the test failed event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def testFailed(report: Report) = ()
+    def testFailed(report: Report) = ()
 
     /**
      * Indicates a suite of tests is about to start executing.
@@ -285,7 +271,7 @@ trait Reporter extends (Event => Unit) {
      *
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def suiteStarting(report: Report) = ()
+    def suiteStarting(report: Report) = ()
 
     /**
      * Indicates a suite of tests has completed executing.
@@ -298,7 +284,7 @@ trait Reporter extends (Event => Unit) {
      * @param report a <code>Report</code> that encapsulates the suite completed event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def suiteCompleted(report: Report) = ()
+    def suiteCompleted(report: Report) = ()
 
     /**
      * Indicates the execution of a suite of tests has aborted, likely because of an error, prior
@@ -312,7 +298,7 @@ trait Reporter extends (Event => Unit) {
      * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def suiteAborted(report: Report) = ()
+    def suiteAborted(report: Report) = ()
 
     /**
      * Provides information that is not appropriate to report via any other
@@ -322,7 +308,7 @@ trait Reporter extends (Event => Unit) {
      *
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
-    @deprecated def infoProvided(report: Report) = ()
+    def infoProvided(report: Report) = ()
 
     /**
      * Indicates a runner has stopped running a suite of tests prior to completion, likely
@@ -343,7 +329,7 @@ trait Reporter extends (Event => Unit) {
      * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns.
      * </p>
      */
-    @deprecated def runStopped() = ()
+    def runStopped() = ()
 
     /**
      * Indicates a runner encountered an error while attempting to run a suite of tests.
@@ -357,7 +343,7 @@ trait Reporter extends (Event => Unit) {
      * @throws NullPointerException if <code>report</code> reference is <code>null</code>
      */
 
-    @deprecated def runAborted(report: Report) = ()
+    def runAborted(report: Report) = ()
 
     /**
      * Indicates a runner has completed running a suite of tests.
@@ -377,7 +363,7 @@ trait Reporter extends (Event => Unit) {
      * when the last <code>execute</code> method of the run's starting <code>Suite</code>s returns.
      * </p>
      */
-    @deprecated def runCompleted() = ()
+    def runCompleted() = ()
 
     /**
      * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
@@ -386,13 +372,19 @@ trait Reporter extends (Event => Unit) {
      * and therefore not usable anymore. If the <code>Reporter</code> holds no resources, it may do nothing when
      * this method is invoked.
      */
-    @deprecated def dispose() = ()
+    def dispose() = ()
 
   /**
    * Invoked to report an event that subclasses may wish to report in some way to the user.
    *
    * @param event the event being reported
    */
+  def apply(event: Event)
+
+  /**
+   * Invoked to report an event that subclasses may wish to report in some way to the user.
+   *
+   * @param event the event being reported
   def apply(event: Event) {
 
     event match {
@@ -455,6 +447,7 @@ trait Reporter extends (Event => Unit) {
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
     }
   }
+   */
 }
 
 /*

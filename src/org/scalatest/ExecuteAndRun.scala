@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import org.scalatest.events.Ordinal
+
 /**
  * Trait that abstracts out the <code>execute</code> and <code>runTest</code> methods of <code>Suite</code>. This
  * trait exists to support the use of trait <code>BeforeAndAfter</code>, which is a direct subtrait of this trait. The
@@ -61,8 +63,9 @@ trait ExecuteAndRun {
     groupsToInclude: Set[String],
     groupsToExclude: Set[String],
     goodies: Map[String, Any],
-    distributor: Option[Distributor]
-  )
+    distributor: Option[Distributor],
+    firstOrdinal: Ordinal
+  ): Ordinal
 
   /**
    * Run a test.

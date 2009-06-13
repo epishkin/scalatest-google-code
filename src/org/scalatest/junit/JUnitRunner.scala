@@ -19,6 +19,8 @@ package org.scalatest.junit
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 
+import org.scalatest.events.Ordinal
+
 /*
  I think that Stopper really should be a no-op, like it is, because the user has
  no way to stop it. This is wierd, because it will call nested suites. So the tests
@@ -73,7 +75,7 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    * this suite of tests
    */
   def run(notifier: RunNotifier) {
-    suiteToRun.run(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None)
+    suiteToRun.run(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Ordinal(99))
   }
 
   /**

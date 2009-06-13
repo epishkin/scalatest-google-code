@@ -17,11 +17,14 @@ package org.scalatest.tools
 
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
+import org.scalatest.events.Ordinal
 
 private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchReporter, stopRequested: Stopper, includes: Set[String],
-    excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor]) extends Runnable {
+    excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal) extends Runnable {
 
   def run() {
+
+    var ordinal = firstOrdinal
 
     if (!stopRequested()) {
       // Create a Rerunner if the Suite has a no-arg constructor
@@ -44,17 +47,15 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
       val report =
         suite match {
           case spec: Spec =>
-            //new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
             new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
           case _ =>
-            //new Report(suite.suiteName, rawString, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
             new Report(suite.suiteName, rawString, None, rerunnable)
         }
   
       dispatchReporter.suiteStarting(report)
   
       try {
-        suite.run(None, dispatchReporter, stopRequested, includes, excludes, propertiesMap, distributor)
+        ordinal = suite.run(None, dispatchReporter, stopRequested, includes, excludes, propertiesMap, distributor, ordinal)
   
         val rawString2 = Resources("suiteCompletedNormally")
   

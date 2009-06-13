@@ -16,6 +16,7 @@
 package org.scalatest.tools
 
 import org.scalatest.events.Event
+import org.scalatest.events.RunStarting
 
  /**
  * FiterReporter catches exceptions that may be thrown by custom reporters, and doesn't forward
@@ -23,65 +24,64 @@ import org.scalatest.events.Event
  *
  * @author Bill Venners
  */
-private[scalatest] class FilterReporter(wrappedReporter: Reporter, configSet: ReporterOpts.Set32) extends Reporter {
+private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpts.Set32) extends Reporter {
 
-  def reFilter(configSet: ReporterOpts.Set32) = new FilterReporter(wrappedReporter, configSet)
+  def reFilter(configSet: ReporterOpts.Set32) = new FilterReporter(report, configSet)
       
-/* Dropping under theory I'll simply have two running schemes for two releases
   override def apply(event: Event) {
-    super.apply(event)
+    event match {
+
+      case event: RunStarting => if (configSet.contains(ReporterOpts.PresentRunStarting)) report(event)
+      case _ => throw new RuntimeException("Unhandled event")
+    }
   }
-*/
 
   // Have some methods that translate chars & strings to Opts things, and vice versa
  
-  override def runStarting(testCount: Int) =
-    if (configSet.contains(ReporterOpts.PresentRunStarting))
-      wrappedReporter.runStarting(testCount)
 
-  override def testStarting(report: Report) =
+  override def testStarting(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentTestStarting))
-      wrappedReporter.testStarting(report)
+      report.testStarting(rpt)
 
-  override def testSucceeded(report: Report) =
+  override def testSucceeded(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentTestSucceeded))
-      wrappedReporter.testSucceeded(report)
+      report.testSucceeded(rpt)
     
-  override def testIgnored(report: Report) =
+  override def testIgnored(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentTestIgnored))
-      wrappedReporter.testIgnored(report)
+      report.testIgnored(rpt)
 
-  override def testFailed(report: Report) =
+  override def testFailed(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentTestFailed))
-      wrappedReporter.testFailed(report)
+      report.testFailed(rpt)
 
-  override def suiteStarting(report: Report) =
+  override def suiteStarting(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentSuiteStarting))
-      wrappedReporter.suiteStarting(report)
+      report.suiteStarting(rpt)
 
-  override def suiteCompleted(report: Report) =
+  override def suiteCompleted(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentSuiteCompleted))
-      wrappedReporter.suiteCompleted(report)
+      report.suiteCompleted(rpt)
 
-  override def suiteAborted(report: Report) =
+  override def suiteAborted(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentSuiteAborted))
-      wrappedReporter.suiteAborted(report)
+      report.suiteAborted(rpt)
 
-  override def infoProvided(report: Report) =
+  override def infoProvided(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentInfoProvided))
-      wrappedReporter.infoProvided(report)
+      report.infoProvided(rpt)
 
   override def runStopped() =
     if (configSet.contains(ReporterOpts.PresentRunStopped))
-      wrappedReporter.runStopped()
+      report.runStopped()
 
-  override def runAborted(report: Report) =
+  override def runAborted(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentRunAborted))
-      wrappedReporter.runAborted(report)
+      report.runAborted(rpt)
 
   override def runCompleted() =
     if (configSet.contains(ReporterOpts.PresentRunCompleted))
-      wrappedReporter.runCompleted()
+      report.runCompleted()
 
-  override def dispose() = wrappedReporter.dispose()
+  override def dispose() = report.dispose()
 }

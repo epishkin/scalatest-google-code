@@ -20,19 +20,21 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.Future
 
+import org.scalatest.events.Ordinal
+
 /**
  * This Distributor can be used by multiple threads.
  *
  * @author Bill Venners
  */
 private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporter, stopper: Stopper, includes: Set[String],
-    excludes: Set[String], propertiesMap: Map[String, Any]) extends Distributor {
+    excludes: Set[String], goodies: Map[String, Any]) extends Distributor {
 
   private val execSvc: ExecutorService = Executors.newCachedThreadPool()
   private val futureQueue = new LinkedBlockingQueue[Future[T] forSome { type T }]
 
-  def apply(suite: Suite) {
-    val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopper, includes, excludes, propertiesMap, Some(this))
+  def apply(suite: Suite, firstOrdinal: Ordinal) {
+    val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopper, includes, excludes, goodies, Some(this), firstOrdinal)
     val future: Future[_] = execSvc.submit(suiteRunner)
     futureQueue.put(future)
   }

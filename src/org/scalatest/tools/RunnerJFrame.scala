@@ -57,7 +57,7 @@ import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.EventQueue
 import org.scalatest.prop.PropertyTestFailedException
-import org.scalatest.events.Event
+import org.scalatest.events._
 
 /**
  * The main class for Runner's GUI.
@@ -691,6 +691,40 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
   private class GraphicRunReporter extends Reporter {
 
+    override def apply(event: Event) {
+      event match {
+        case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) =>
+          // Create the Report outside of the event handler thread, because otherwise
+          // the event handler thread shows up as the originating thread of this report,
+          // and that looks bad and is wrong to boot.
+          val stringToReport: String = Resources("runStarting", testCount.toString)
+          val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          val reportHolder: ReportHolder = new ReportHolder(report, ReporterOpts.PresentRunStarting)
+
+          usingEventDispatchThread {
+            testsCompletedCount = 0
+            progressBar.setMax(testCount)
+            progressBar.setValue(0)
+            progressBar.setGreen()
+  
+            statusJPanel.reset()
+            statusJPanel.setTestsExpected(testCount)
+  
+            // This should already have been cleared by prepUIForStarting, but
+            // doing it again here for the heck of it.
+            collectedReports = reportHolder :: Nil
+            reportsListModel.clear()
+  
+            detailsJEditorPane.setText("")
+
+            if (viewOptions.contains(ReporterOpts.PresentRunStarting))
+              reportsListModel.addElement(reportHolder)
+          }
+
+        case _ =>
+      }
+    }
+
     override def testFailed(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")
@@ -713,12 +747,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       }
     }
   
-/* Dropping under theory I'll simply have two running schemes for two releases
-    override def apply(event: Event) {
-      super.apply(event)
-    }
-*/
-
     override def testSucceeded(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")
@@ -755,40 +783,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentInfoProvided)
-      }
-    }
-  
-    override def runStarting(testCount: Int) {
-  
-      if (testCount < 0)
-        throw new IllegalArgumentException()
-  
-      // Create the Report outside of the event handler thread, because otherwise
-      // the event handler thread shows up as the originating thread of this report,
-      // and that looks bad and is wrong to boot.
-      val stringToReport: String = Resources("runStarting", testCount.toString)
-      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
-      val reportHolder: ReportHolder = new ReportHolder(report, ReporterOpts.PresentRunStarting)
-
-      usingEventDispatchThread {
-        testsCompletedCount = 0
-        progressBar.setMax(testCount)
-        progressBar.setValue(0)
-        progressBar.setGreen()
-  
-        statusJPanel.reset()
-        statusJPanel.setTestsExpected(testCount)
-  
-        // This should already have been cleared by prepUIForStarting, but
-        // doing it again here for the heck of it.
-        collectedReports = reportHolder :: Nil
-        reportsListModel.clear()
-  
-        detailsJEditorPane.setText("")
-  
-        if (viewOptions.contains(ReporterOpts.PresentRunStarting))
-          reportsListModel.addElement(reportHolder)
       }
     }
   
@@ -1215,39 +1209,31 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
     // work to do.
     var anErrorHasOccurredAlready = false
 
-/* Dropping under theory I'll simply have two running schemes for two releases
-    override def apply(event: Event) {
-      super.apply(event)
-    }
-*/
+    def apply(event: Event) {
 
-    override def runStarting(testCount: Int) {
-      if (testCount < 0)
-        throw new IllegalArgumentException()
-  
-      // Create the Report outside of the event handler thread, because otherwise
-      // the event handler thread shows up as the originating thread of this report,
-      // and that looks bad and is actually wrong.
-      val stringToReport: String = Resources("rerunStarting", testCount.toString)
-      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+      event match {
+        case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) =>
 
-      usingEventDispatchThread {
-        rerunTestsCompletedCount = 0
-        rerunColorBox.setMax(testCount)
-        rerunColorBox.setValue(0)
-        rerunColorBox.setGreen()
+          // Create the Report outside of the event handler thread, because otherwise
+          // the event handler thread shows up as the originating thread of this report,
+          // and that looks bad and is actually wrong.
+          val stringToReport: String = Resources("rerunStarting", testCount.toString)
+          val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
   
-        registerRerunReport(report, ReporterOpts.PresentRunStarting)
-        anErrorHasOccurredAlready = false;
-/*
-        val indexOfLastReport = reportsListModel.getSize - 1
-        if (reportHolder == reportsListModel.get(indexOfLastReport)) // Should always be true
-          reportsJList.setSelectedValue(reportHolder, true)
-*/
+          usingEventDispatchThread {
+            rerunTestsCompletedCount = 0
+            rerunColorBox.setMax(testCount)
+            rerunColorBox.setValue(0)
+            rerunColorBox.setGreen()
+  
+            registerRerunReport(report, ReporterOpts.PresentRunStarting)
+            anErrorHasOccurredAlready = false;
+          }
+
+        case _ =>
       }
     }
-  
+
     override def testStarting(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")
@@ -1409,7 +1395,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         (loader, dispatchReporter) => {
           try {
             rerun(dispatchReporter, stopper, includes, Runner.excludesWithIgnore(excludes), propertiesMap,
-                distributor, loader) // I deleted passing of nextRunStamp here
+                distributor, new Ordinal(nextRunStamp), loader)
           }
           catch {
             case ex: Throwable => {

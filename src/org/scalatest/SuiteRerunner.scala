@@ -17,6 +17,9 @@ package org.scalatest
 
 import org.scalatest.Suite.checkForPublicNoArgConstructor
 
+import org.scalatest.events.RunStarting
+import org.scalatest.events.Ordinal
+
 /**
  * A Rerunner for Suites.
  *
@@ -27,8 +30,8 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
   if (suiteClassName == null)
     throw new NullPointerException
 
-  def apply(reporter: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
-            goodies: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader) {
+  def apply(report: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
+            goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal, loader: ClassLoader) {
 
     try {
       val suiteClass = loader.loadClass(suiteClassName)
@@ -36,83 +39,87 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
       val expectedTestCount = suite.expectedTestCount(includes, excludes)
 
       // Create a Rerunner if the Suite has a public no-arg constructor
-      val rerunnable = if (Suite.checkForPublicNoArgConstructor(suite.getClass))
-                         Some(new SuiteRerunner(suite.getClass.getName))
-                       else
-                         None
+      val rerunnable =
+        if (Suite.checkForPublicNoArgConstructor(suite.getClass))
+          Some(new SuiteRerunner(suite.getClass.getName))
+        else
+          None
 
-      reporter.runStarting(expectedTestCount)
+      var ordinal = firstOrdinal
+
+      report(RunStarting(ordinal, expectedTestCount))
+      ordinal = ordinal.next
 
       try {
 
         val rawString = Resources("suiteExecutionStarting")
-        val report =
+        val rpt =
           suite match {
             case spec: Spec =>
               new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
             case _ =>
               new Report(suite.suiteName, rawString, None, rerunnable)
           }
-        reporter.suiteStarting(report)
+        report.suiteStarting(rpt)
 
-        suite.run(None, reporter, stopRequested, includes, excludes, goodies, distributor)
+        suite.run(None, report, stopRequested, includes, excludes, goodies, distributor, ordinal)
 
         val rawString2 = Resources("suiteCompletedNormally")
-        val report2 =
+        val rpt2 =
           suite match {
             case spec: Spec =>
               new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, None, rerunnable)
             case _ =>
               new Report(suite.suiteName, rawString2, None, rerunnable)
           }
-        reporter.suiteCompleted(report2)
+        report.suiteCompleted(rpt2)
       }
       catch {
         case e: RuntimeException => {
           val rawString3 = Resources("executeException")
-          val report3 =
+          val rpt3 =
             suite match {
               case spec: Spec =>
                 new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
               case _ =>
                 new Report(suite.suiteName, rawString3, Some(e), rerunnable)
             }
-          reporter.suiteAborted(report3)
+          report.suiteAborted(rpt3)
         }
       }
       
       if (stopRequested()) {
-        reporter.runStopped()
+        report.runStopped()
       }
       else
-        reporter.runCompleted()
+        report.runCompleted()
     }
     catch {
       case ex: ClassNotFoundException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite", ex.getMessage), Some(ex), None)
-        reporter.runAborted(report)
+        val rpt = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite", ex.getMessage), Some(ex), None)
+        report.runAborted(rpt)
       }
       case ex: InstantiationException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
-        reporter.runAborted(report)
+        val rpt = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
+        report.runAborted(rpt)
       }
       case ex: IllegalAccessException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
-        reporter.runAborted(report)
+        val rpt = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
+        report.runAborted(rpt)
       }
       case e: SecurityException => {
-        val report = new Report("org.scalatest.tools.Runner", Resources("securityWhenRerruning", e.getMessage), Some(e), None)
-        reporter.runAborted(report)
+        val rpt = new Report("org.scalatest.tools.Runner", Resources("securityWhenRerruning", e.getMessage), Some(e), None)
+        report.runAborted(rpt)
       }
       case ex: NoClassDefFoundError => {
             // Suggest the problem might be a bad runpath
             // Maybe even print out the current runpath
-        val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass", ex.getMessage), Some(ex), None)
-        reporter.runAborted(report)
+        val rpt = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass", ex.getMessage), Some(ex), None)
+        report.runAborted(rpt)
       }
       case ex: Throwable => {
-        val report = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), Some(ex), None)
-        reporter.runAborted(report)
+        val rpt = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), Some(ex), None)
+        report.runAborted(rpt)
       }
     }
   }
