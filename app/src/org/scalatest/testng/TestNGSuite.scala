@@ -18,6 +18,7 @@ package org.scalatest.testng
 import org.scalatest.Suite
 import org.scalatest.Report
 import org.scalatest.TestRerunner
+import org.scalatest.events.Ordinal
 
 import org.testng.TestNG
 import org.testng.TestListenerAdapter
@@ -90,9 +91,11 @@ trait TestNGSuite extends Suite {
    * <br><br>
    */
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
     
-    runTestNG(testName, reporter, groupsToInclude, groupsToExclude);
+    runTestNG(testName, reporter, groupsToInclude, groupsToExclude) // TODO Handle ordinals
+
+    firstOrdinal
   }
   
   /**
@@ -100,7 +103,7 @@ trait TestNGSuite extends Suite {
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
   private[testng] def runTestNG(reporter: Reporter) : TestListenerAdapter = {
-    runTestNG( None, reporter, Set(), Set() )
+    runTestNG(None, reporter, Set(), Set())
   }
  
   /**

@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import org.scalatest.events.Ordinal
+
 /**
  * Function trait whose instances facilitate concurrent and/or distributed execution of <code>Suite</code>s.
  * An optional <code>DistributeFunction</code> is passed to the <code>run</code> method of <code>Suite</code>. If a
@@ -44,7 +46,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait Distributor extends (Suite => Unit) {
+trait Distributor extends ((Suite, Ordinal) => Unit) {
 
   /**
    * Puts a <code>Suite</code> into the <code>Distributor</code>.
@@ -53,7 +55,7 @@ trait Distributor extends (Suite => Unit) {
    *
    * @throws NullPointerException if <code>suite</code> is <code>null</code>.
    */
-  override def apply(suite: Suite)
+  override def apply(suite: Suite, firstOrdinal: Ordinal)
 }
 
 /*

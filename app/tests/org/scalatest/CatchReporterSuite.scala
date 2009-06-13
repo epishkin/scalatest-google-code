@@ -17,14 +17,14 @@ package org.scalatest
 
 import java.io.PrintStream
 import java.io.ByteArrayOutputStream
-import org.scalatest.events.Event
+import org.scalatest.events._
 
 class CatchReporterSuite extends Suite {
 
   def testCatching() {
 
     val buggyReporter = new Reporter {
-      override def runStarting(testCount: Int) {
+      override def apply(event: Event) {
         throw new RuntimeException
       }
       override def testStarting(report: Report) {
@@ -75,9 +75,9 @@ class CatchReporterSuite extends Suite {
     catchReporter.testStarting(report)
 
     intercept[RuntimeException] {
-      buggyReporter.runStarting(1)
+      buggyReporter(RunStarting(new Ordinal(99), 1))
     }
-    catchReporter.runStarting(1)
+    catchReporter(RunStarting(new Ordinal(99), 1))
 
     intercept[RuntimeException] {
       buggyReporter.testStarting(report)

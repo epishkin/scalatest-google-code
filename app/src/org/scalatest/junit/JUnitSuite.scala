@@ -21,6 +21,8 @@ import org.junit.runner.notification.RunListener
 import org.junit.runner.notification.Failure
 import org.junit.runner.Description
 import org.junit.runner.Result
+import org.scalatest.events.Ordinal
+import org.scalatest.events.RunStarting
 
 /**
  * A suite of tests that can be run with either JUnit or ScalaTest. This trait allows you to write JUnit 4 tests
@@ -70,18 +72,25 @@ import org.junit.runner.Result
  */
 trait JUnitSuite extends Suite {
 
-  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor]) {
+  // TODO: put this in an atomic
+  private var ordinal = new Ordinal(99)
+
+  override def run(testName: Option[String], report: Reporter, stopper: Stopper, groupsToInclude: Set[String],
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
+
+    ordinal = firstOrdinal
 
     val jUnitCore = new JUnitCore
-    jUnitCore.addListener(new MyRunListener(reporter))
+    jUnitCore.addListener(new MyRunListener(report, firstOrdinal))
     val myClass = getClass
     jUnitCore.run(myClass)
+
+    ordinal
   }
 
 // verifySomething(org.scalatest.junit.helpers.HappySuite)
 // Description.displayName of a test report has the form <testMethodName>(<suiteClassName>)
-  private class MyRunListener(reporter: Reporter) extends RunListener {
+  private class MyRunListener(report: Reporter, firstOrdinal: Ordinal) extends RunListener {
 
 /*
     override def testAssumptionFailure(failure: Failure) {
@@ -91,36 +100,32 @@ trait JUnitSuite extends Suite {
     // For now, at least, pass Nones for suiteName, suiteClassName, and testName. Possibly
     // later enhance this so that I'm grabbing this info out of JUnit's stupid displayName string.
     override def testFailure(failure: Failure) {
-      //val report = new Report(failure.getDescription.getDisplayName, "", None, None, None)
-      val report = new Report(failure.getDescription.getDisplayName, "")
-      reporter.testFailed(report)
+      val rpt = new Report(failure.getDescription.getDisplayName, "")
+      report.testFailed(rpt)
     }
 
     override def testFinished(description: Description) {
-      //val report = new Report(description.getDisplayName, "", None, None, None)
-      val report = new Report(description.getDisplayName, "")
-      reporter.testSucceeded(report)
+      val rpt = new Report(description.getDisplayName, "")
+      report.testSucceeded(rpt)
     }
 
     override def testIgnored(description: Description) {
-      //val report = new Report(description.getDisplayName, "", None, None, None)
-      val report = new Report(description.getDisplayName, "")
-      reporter.testIgnored(report)
+      val rpt = new Report(description.getDisplayName, "")
+      report.testIgnored(rpt)
     }
 
     override def testRunFinished(result: Result) {
-      reporter.runCompleted()
+      report.runCompleted()
     }
 
     override def testRunStarted(description: Description) {
-      // Not sure what to do here with respect to ordinal and apply. Will have to see when it is called.
-      reporter.runStarting(description.testCount)
+      report(RunStarting(ordinal, description.testCount))
+      ordinal = ordinal.next
     }
 
     override def testStarted(description: Description) {
-      //val report = new Report(description.getDisplayName, "", None, None, None)
-      val report = new Report(description.getDisplayName, "")
-      reporter.testStarting(report)
+      val rpt = new Report(description.getDisplayName, "")
+      report.testStarting(rpt)
     }
   }
 }

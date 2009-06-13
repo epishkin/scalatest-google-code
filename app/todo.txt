@@ -1,11 +1,5 @@
 
-drop most deprecated things
-
-make group annotations on Suite require to be extend GroupAnnotation
-
-make a Pending annotation for Suite
-
-add testPending to Reporter
+make tag annotations on Suite require extension of TagAnnotation
 
 add pending functionality to Suite
 
@@ -25,14 +19,6 @@ add it/ignore methods that take a pending, and implement pending functionality
 
 add info functionality to Spec
 
-change have key/value to contain key/value DONE?
-
-show actual better in error message for matchers DONE
-
-add a stackDepth location for the likelyLine number, where the error occurred to Report. Add a line showing that probably. DONE
-
-For assertions and matchers, fill in that new Report info. I think it hsould be an OPtion, because tough to do for JUnit/TestNG assertions, etc. DONE
-
 add GivenWhenThen trait
 
 Add FeatureSuite trait. Title goes to constructor? I think I have this more figured out somewhere else. But where?
@@ -41,10 +27,4 @@ Add FeatureSuite trait. Title goes to constructor? I think I have this more figu
 
 Scenarios are like FuNSuite, but with scenario instead of test. Could use a code gen from FunSuite to Scenarios trait, but I don't
 think I'll have a Scenarios trait, just a FeatureSuite one. FeatureSuite will extend GivenWhenThen.
-
-Modify GUI to look nice with Spec Reports. DONE
-
-Use code gen from ShouldMatchers to MustMatchers.
-
-
 

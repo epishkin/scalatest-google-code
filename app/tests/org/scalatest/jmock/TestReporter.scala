@@ -15,6 +15,8 @@
  */
 package org.scalatest.jmock;
 
+import org.scalatest.events.Event
+
 class TestReporter extends Reporter {
 
   var report: Report = null;
@@ -40,4 +42,7 @@ class TestReporter extends Reporter {
   }
   
   def errorMessage = report.throwable.get.getMessage
+
+  def apply(event: Event) {
+  }
 }

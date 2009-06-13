@@ -20,6 +20,8 @@ import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 import org.scalatest.TestFailedExceptionHelper.getStackDepth
 
+import org.scalatest.events.Ordinal
+
 /**
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands for functional.
  * Here's an example <code>FunSuite</code>:
@@ -814,7 +816,7 @@ trait FunSuite extends Suite { thisSuite =>
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-      goodies: Map[String, Any], distributor: Option[Distributor]) {
+      goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
 
     // Set the flag that indicates run has been invoked, which will disallow any further
     // invocations of "test" with an IllegalStateException.
@@ -823,8 +825,11 @@ trait FunSuite extends Suite { thisSuite =>
     if (!runHasBeenInvoked)
       updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, true))
 
+    var ordinal = firstOrdinal
+
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
+    // This guy will need to capture ordinal
     currentInformer =
       new Informer {
         val nameForReport: String = suiteName
@@ -836,17 +841,18 @@ trait FunSuite extends Suite { thisSuite =>
         def apply(message: String) {
           if (message == null)
             throw new NullPointerException
-          //val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), None)
           val report = new Report(nameForReport, message)
           wrappedReporter.infoProvided(report)
         }
       }
 
     try {
-      super.run(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)
+      ordinal = super.run(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, ordinal)
     }
     finally {
       currentInformer = zombieInformer
     }
+
+    ordinal
   }
 }

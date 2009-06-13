@@ -26,6 +26,7 @@ import java.util.Iterator
 import java.util.Set
 import java.io.StringWriter
 import org.scalatest.events.Event
+import org.scalatest.events.RunStarting
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -63,29 +64,23 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   def this(filename: String) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), PrintReporter.BufferSize)))
 
-/* Dropping under theory I'll simply have two running schemes for two releases
-  override def apply(event: Event) {
-    super.apply(event)
-  }
-*/
+  def apply(event: Event) {
 
-  /**
-  * Prints information indicating that a run with an expected <code>testCount</code>
-  * number of tests is starting.
-  *
-  * @param report a <code>Report</code> that encapsulates the run starting event to report.
-  * @throws IllegalArgumentException if <code>testCount</code> is less than zero.
-  */
-  override def runStarting(testCount: Int) {
+    event match {
 
-    if (testCount < 0)
-      throw new IllegalArgumentException
+      case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => 
+
+        if (testCount < 0)
+          throw new IllegalArgumentException
   
-    testsCompletedCount = 0
-    testsFailedCount = 0
-    suitesAbortedCount = 0
+        testsCompletedCount = 0
+        testsFailedCount = 0
+        suitesAbortedCount = 0
 
-    printResourceStringWithInt("runStarting", testCount)
+        printResourceStringWithInt("runStarting", testCount)
+
+      case _ => throw new RuntimeException("Unhandled event")
+    }
   }
 
   /**

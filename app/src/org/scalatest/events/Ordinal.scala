@@ -89,7 +89,7 @@ import java.util.Arrays
  * </p>
  *
  * <pre>
- * val (nextForNewSuite, nextForThisRunner) thirdOrdinal.nextNewOldPair
+ * val (nextForNewSuite, nextForThisRunner) = thirdOrdinal.nextNewOldPair
  * nextForNewSuite.toList   // results in: (99, 2, 0)
  * nextForThisRunner.toList // results in: (99, 3)
  * </pre>

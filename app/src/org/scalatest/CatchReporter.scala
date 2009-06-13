@@ -19,50 +19,47 @@ import java.io.PrintStream
 import org.scalatest.events.Event
 
 /**
- * This reporter just catches exceptions thrown by the passed reporter and
+ * This report just catches exceptions thrown by the passed report and
  * prints info about them to the standard error stream. This is because people
- * can pass in custom reporters that may have bugs. I want the test run to continue
+ * can pass in custom reports that may have bugs. I want the test run to continue
  * in case one of them throws back an exception.
  *
  * @author Bill Venners
  */
-private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) extends Reporter {
+private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) extends Reporter {
 
-  def this(reporter: Reporter) = this(reporter, System.err)
+  def this(report: Reporter) = this(report, System.err)
 
-/* Dropping under theory I'll simply have two running schemes for two releases
-  override def apply(event: Event) {
+  def apply(event: Event) {
     try {
-      reporter(event)
+      report(event)
     }
     catch {
       case e: Exception => 
-        val stringToPrint = Resources("reportFunctionThrew", event)
+        val stringToPrint = Resources("reportThrew", event)
         out.println(stringToPrint)
         e.printStackTrace(out)
     }
   }
-*/
 
-  // Won't need the rest of this class after phase II of the reporter refactor is done, probably 0.9.8
-  override def runStarting(testCount: Int) = dispatch("runStarting", (reporter: Reporter) => reporter.runStarting(testCount))
-  override def testSucceeded(report: Report) = dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(report))
-  override def testIgnored(report: Report) = dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(report))
-  override def testFailed(report: Report) = dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(report))
-  override def infoProvided(report: Report) = dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(report))
-  override def testStarting(report: Report) = dispatch("testStarting", (reporter: Reporter) => reporter.testStarting(report))
-  override def suiteStarting(report: Report) = dispatch("suiteStarting", (reporter: Reporter) => reporter.suiteStarting(report))
-  override def suiteCompleted(report: Report) = dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(report))
-  override def suiteAborted(report: Report)  = dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(report))
-  override def runStopped() = dispatch("runStopped", (reporter: Reporter) => reporter.runStopped())
-  override def runAborted(report: Report) = dispatch("runAborted", (reporter: Reporter) => reporter.runAborted(report))
-  override def runCompleted() = dispatch("runCompleted", (reporter: Reporter) => reporter.runCompleted())
-  override def dispose() = dispatch("dispose", (reporter: Reporter) => reporter.dispose())
+  // Won't need the rest of this class after phase II of the report refactor is done, probably 0.9.8
+  override def testSucceeded(rpt: Report) = dispatch("testSucceeded", (report: Reporter) => report.testSucceeded(rpt))
+  override def testIgnored(rpt: Report) = dispatch("testIgnored", (report: Reporter) => report.testIgnored(rpt))
+  override def testFailed(rpt: Report) = dispatch("testFailed", (report: Reporter) => report.testFailed(rpt))
+  override def infoProvided(rpt: Report) = dispatch("infoProvided", (report: Reporter) => report.infoProvided(rpt))
+  override def testStarting(rpt: Report) = dispatch("testStarting", (report: Reporter) => report.testStarting(rpt))
+  override def suiteStarting(rpt: Report) = dispatch("suiteStarting", (report: Reporter) => report.suiteStarting(rpt))
+  override def suiteCompleted(rpt: Report) = dispatch("suiteCompleted", (report: Reporter) => report.suiteCompleted(rpt))
+  override def suiteAborted(rpt: Report)  = dispatch("suiteAborted", (report: Reporter) => report.suiteAborted(rpt))
+  override def runStopped() = dispatch("runStopped", (report: Reporter) => report.runStopped())
+  override def runAborted(rpt: Report) = dispatch("runAborted", (report: Reporter) => report.runAborted(rpt))
+  override def runCompleted() = dispatch("runCompleted", (report: Reporter) => report.runCompleted())
+  override def dispose() = dispatch("dispose", (report: Reporter) => report.dispose())
 
   private[scalatest] def dispatch(methodName: String, methodCall: (Reporter) => Unit) {
 
     try {
-      methodCall(reporter)
+      methodCall(report)
     }
     catch {
       case e: Exception => CatchReporter.handleReporterException(e, methodName, out)
@@ -70,12 +67,12 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
   }
 }
 
-// Won't need this after phase II of the reporter refactor is done, probably 0.9.8
+// Won't need this after phase II of the report refactor is done, probably 0.9.8
 private[scalatest] object CatchReporter {
 
   def handleReporterException(e: Exception, methodName: String, out: PrintStream) {
 
-    val stringToPrint = Resources("reporterThrew", methodName)
+    val stringToPrint = Resources("reportThrew", methodName)
 
     out.println(stringToPrint)
     e.printStackTrace(out)
