@@ -1552,7 +1552,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  @deprecated protected def runNestedSuites(reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected def runNestedSuites(reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
                                 goodies: Map[String, Any], distributor: Option[Distributor]) {
 
     if (reporter == null)
