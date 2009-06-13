@@ -146,6 +146,10 @@ trait BeforeAndAfter extends ExecuteAndRun {
     finally {
       try {
         afterEach() // Make sure that afterEach is called even if runTest completes abruptly.
+        thrownException match {
+          case Some(e) => throw e
+          case None => 
+        }
       }
       catch {
         case laterException: Exception =>
@@ -191,6 +195,10 @@ trait BeforeAndAfter extends ExecuteAndRun {
     finally {
       try {
         afterAll() // Make sure that afterAll is called even if run completes abruptly.
+        thrownException match {
+          case Some(e) => throw e
+          case None => 
+        }
       }
       catch {
         case laterException: Exception =>
