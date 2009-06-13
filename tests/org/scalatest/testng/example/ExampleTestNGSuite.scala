@@ -23,12 +23,8 @@ import org.testng.annotations.AfterMethod
 import org.testng.annotations.AfterClass
 import org.testng.annotations.AfterSuite
 import org.testng.annotations.DataProvider
-import org.specs.mock._
 
-class ExampleTestNGSuite extends TestNGSuite with JMocker{
-
-  // I have no idea what this is for. No documentation. Want to dump this stuff.
-  def addExpectation: org.specs.specification.Example = null
+class ExampleTestNGSuite extends TestNGSuite {
 
   @AfterSuite
   def failAfterSuite(){ throw new Exception("fail in before method") }
@@ -41,27 +37,26 @@ class ExampleTestNGSuite extends TestNGSuite with JMocker{
   @AfterClass def passAfterClass(){}
   @AfterSuite def passAfterSuite(){}
   
-  @Test{val invocationCount=10} def thisTestRunsTenTimes = {}
+  @Test{val invocationCount = 10} def thisTestRunsTenTimes = {}
   
-  @Test{val groups=Array("runMe")} 
+  @Test{val groups = Array("runMe")} 
   def testWithException(){ 
     throw new Exception("exception!!!") 
-   }
+  }
   
-  @Test{val groups=Array("runMe")} def testWithAssertFail = assert( 1 === 2, "assert fail!!!" )
+  @Test{val groups = Array("runMe")} def testWithAssertFail = assert( 1 === 2, "assert fail!!!" )
   
-  @Test{val dependsOnMethods=Array("testWithException")} def testToGetSkipped = {}
+  @Test{val dependsOnMethods = Array("testWithException")} def testToGetSkipped = {}
   
-  @DataProvider{val name="andValues"}
+  @DataProvider{val name = "andValues"}
   def andValues = { 
     val and = Array("0", "1")
     for( x <- and; y <- and ) yield Array(x,y)
   }
   
-  @Test{ val dataProvider="andValues" }
+  @Test{val dataProvider = "andValues"}
   def testAndStates(a: String, b: String){
     println("a=" + a + ", b=" + b)
   }
-  
 }
 
