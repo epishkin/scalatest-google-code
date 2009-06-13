@@ -223,11 +223,8 @@ trait Assertions {
    */
   implicit def convertToEqualizer(left: Any) = new Equalizer(left)
 
-  /**
-   * <b>Deprecated: use the more concise version of <code>intercept</code>, which uses an implicit manifest. Note: there is currently
-no version of the "implicit manifest" form of <code>intercept</code> that takes a string message. The reason is it won't overload while
-these older forms are still in the API. Once these deprecated forms are removed, an overloaded version of <code>intercept</code> that takes a string
-message and implicit manifest will be added.</b> Intercept and return an instance of the passed exception class (or an instance of a subclass of the
+  /*
+   * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
    * subclasses, this method returns that exception. Else, whether the passed function returns normally
@@ -241,15 +238,13 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
    * for example), this method will complete abruptly with a <code>TestFailedException</code>.
    * </p>
    *
-   * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
-   * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
+   * @param message An object whose <code>toString</code> method returns a message to include in a failure report.
    * @param f the function value that should throw the expected exception
-   * @return the intercepted exception, if
+   * @return the intercepted exception, if it is of the expected type
    * @throws TestFailedException if the passed function does not result in a value equal to the
    *     passed <code>expected</code> value.
-   */
-  @deprecated
-  def intercept[T <: AnyRef](clazz: java.lang.Class[T], message: Any)(f: => Any): T = {
+  def intercept[T <: AnyRef](message: Any)(f: => Any)(implicit manifest: Manifest[T]): T = {
+    val clazz = manifest.erasure.asInstanceOf[Class[T]]
     val messagePrefix = if (message.toString.trim.isEmpty) "" else (message +"\n")
     val caught = try {
       f
@@ -273,54 +268,8 @@ message and implicit manifest will be added.</b> Intercept and return an instanc
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
-
-  /**
-   * <b>Deprecated: use the more concise version of <code>intercept</code>, which uses an implicit manifest.</b> Intercept and return an instance of the passed exception class (or an instance of a subclass of the
-   * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
-   * function. If it throws an exception that's an instance of the passed class or one of its
-   * subclasses, this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>.
-   *
-   * <p>
-   * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
-   * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
-   * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
-   * </p>
-   *
-   * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
-   * @param f the function value that should throw the expected exception
-   * @return the intercepted exception, if
-   * @throws TestFailedException if the passed function does not complete abruptly with an exception that is assignable to the
-   *     passed <code>Class</code>.
-   * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
-   *     one of its subclasses.
+THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR JUST LEAVE IT OUT. FOR NOW I'LL LEAVE IT OUT.
    */
-  @deprecated
-  def intercept[T <: AnyRef](clazz: java.lang.Class[T])(f: => Any): T = {
-    val caught = try {
-      f
-      None
-    }
-    catch {
-      case u: Throwable => {
-        if (!clazz.isAssignableFrom(u.getClass)) {
-          val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          throw new TestFailedException(s, u, 2)
-        }
-        else {
-          Some(u)
-        }
-      }
-    }
-    caught match {
-      case None =>
-        val message = Resources("exceptionExpected", clazz.getName)
-        throw new TestFailedException(message, 2)
-      case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
-    }
-  }
-
 
   /**
    * Intercept and return an exception that's expected to
