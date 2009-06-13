@@ -693,7 +693,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
     override def apply(event: Event) {
       event match {
+
         case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) =>
+
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this report,
           // and that looks bad and is wrong to boot.
@@ -721,6 +723,17 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
               reportsListModel.addElement(reportHolder)
           }
 
+        case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
+
+          // Create the Report outside of the event handler thread, because otherwise
+          // the event handler thread shows up as the originating thread of this report,
+          // and that looks bad and is wrong to boot.
+          val stringToReport: String = Resources("runCompleted", testsCompletedCount.toString)
+          val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          usingEventDispatchThread {
+            registerReport(report, ReporterOpts.PresentRunCompleted)
+          }
+ 
         case _ =>
       }
     }
@@ -783,18 +796,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentInfoProvided)
-      }
-    }
-  
-    override def runCompleted() {
-      // Create the Report outside of the event handler thread, because otherwise
-      // the event handler thread shows up as the originating thread of this report,
-      // and that looks bad and is wrong to boot.
-      val stringToReport: String = Resources("runCompleted", testsCompletedCount.toString)
-      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
-      usingEventDispatchThread {
-        registerReport(report, ReporterOpts.PresentRunCompleted)
       }
     }
   
@@ -1230,6 +1231,19 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             anErrorHasOccurredAlready = false;
           }
 
+        case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
+
+          // Create the Report outside of the event handler thread, because otherwise
+          // the event handler thread shows up as the originating thread of this report,
+          // and that looks bad and is actually wrong.
+          val stringToReport: String = Resources("rerunCompleted", rerunTestsCompletedCount.toString)
+          val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+
+          usingEventDispatchThread {
+            registerRerunReport(report, ReporterOpts.PresentRunCompleted)
+            scrollTheRerunStartingReportToTheTopOfVisibleReports()
+          }
+
         case _ =>
       }
     }
@@ -1336,20 +1350,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
           selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
           anErrorHasOccurredAlready = true
         }
-      }
-    }
-  
-    override def runCompleted() {
-      // Create the Report outside of the event handler thread, because otherwise
-      // the event handler thread shows up as the originating thread of this report,
-      // and that looks bad and is actually wrong.
-      val stringToReport: String = Resources("rerunCompleted", rerunTestsCompletedCount.toString)
-      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
-
-      usingEventDispatchThread {
-        registerRerunReport(report, ReporterOpts.PresentRunCompleted)
-        scrollTheRerunStartingReportToTheTopOfVisibleReports()
       }
     }
   }

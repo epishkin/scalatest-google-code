@@ -53,7 +53,6 @@ private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) exten
   override def suiteAborted(rpt: Report)  = dispatch("suiteAborted", (report: Reporter) => report.suiteAborted(rpt))
   override def runStopped() = dispatch("runStopped", (report: Reporter) => report.runStopped())
   override def runAborted(rpt: Report) = dispatch("runAborted", (report: Reporter) => report.runAborted(rpt))
-  override def runCompleted() = dispatch("runCompleted", (report: Reporter) => report.runCompleted())
   override def dispose() = dispatch("dispose", (report: Reporter) => report.dispose())
 
   private[scalatest] def dispatch(methodName: String, methodCall: (Reporter) => Unit) {

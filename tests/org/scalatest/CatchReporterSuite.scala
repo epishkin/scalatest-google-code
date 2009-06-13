@@ -57,9 +57,6 @@ class CatchReporterSuite extends Suite {
       override def runAborted(report: Report) {
         throw new RuntimeException
       }
-      override def runCompleted() {
-        throw new RuntimeException
-      }
       override def dispose() {
         throw new RuntimeException
       }
@@ -130,9 +127,9 @@ class CatchReporterSuite extends Suite {
     catchReporter.runAborted(report)
 
     intercept[RuntimeException] {
-      buggyReporter.runCompleted()
+      buggyReporter(RunCompleted(new Ordinal(99)))
     }
-    catchReporter.runCompleted()
+    catchReporter(RunCompleted(new Ordinal(99)))
 
     intercept[RuntimeException] {
       buggyReporter.dispose()

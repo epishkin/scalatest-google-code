@@ -21,8 +21,7 @@ import org.junit.runner.notification.RunListener
 import org.junit.runner.notification.Failure
 import org.junit.runner.Description
 import org.junit.runner.Result
-import org.scalatest.events.Ordinal
-import org.scalatest.events.RunStarting
+import org.scalatest.events._
 
 /**
  * A suite of tests that can be run with either JUnit or ScalaTest. This trait allows you to write JUnit 4 tests
@@ -115,7 +114,8 @@ trait JUnitSuite extends Suite {
     }
 
     override def testRunFinished(result: Result) {
-      report.runCompleted()
+      report(RunCompleted(ordinal))
+      ordinal = ordinal.next // In theory, don't need this, but who knows what JUnit will do
     }
 
     override def testRunStarted(description: Description) {

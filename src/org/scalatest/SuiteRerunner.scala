@@ -17,8 +17,7 @@ package org.scalatest
 
 import org.scalatest.Suite.checkForPublicNoArgConstructor
 
-import org.scalatest.events.RunStarting
-import org.scalatest.events.Ordinal
+import org.scalatest.events._
 
 /**
  * A Rerunner for Suites.
@@ -91,8 +90,10 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
       if (stopRequested()) {
         report.runStopped()
       }
-      else
-        report.runCompleted()
+      else {
+        report(RunCompleted(ordinal)) // TODO: pass a duration
+      // Don't need to increment ordinal, because it isn't used after this
+      }
     }
     catch {
       case ex: ClassNotFoundException => {

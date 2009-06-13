@@ -59,11 +59,14 @@ package org.scalatest.junit {
 
       var runStartingCount = 0
       var testCountPassedToRunStarting = -1
+      var runCompletedCount = 0
       def apply(event: Event) {
         event match {
           case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) =>
             testCountPassedToRunStarting = testCount
             runStartingCount += 1
+          case event: RunCompleted =>
+            runCompletedCount += 1
           case _ => 
         }
       }
@@ -90,11 +93,6 @@ package org.scalatest.junit {
       var testIgnoredReport: Option[Report] = None
       override def testIgnored(report: Report) {
         testIgnoredReport = Some(report)
-      }
-
-      var runCompletedCount = 0
-      override def runCompleted() {
-        runCompletedCount += 1
       }
     }
 

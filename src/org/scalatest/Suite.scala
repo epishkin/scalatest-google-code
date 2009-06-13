@@ -785,16 +785,17 @@ import org.scalatest.events._
  * </p>
  * 
  * <p>
- * <strong>Test groups</strong>
+ * <strong>Tagging tests</strong>
  * </p>
  *
  * <p>
- * A <code>Suite</code>'s tests may be classified into named <em>groups</em>. When executing
+ * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
  * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
- * trait's implementation, groups are indicated by annotations attached to the test method. To
- * create a group, simply define a new Java annotation. (Currently, for annotations to be
+ * trait's implementation, tags are indicated by annotations attached to the test method. To
+ * create a tags, simply define a new Java annotation that extends the <code>org.scalatest.TagAnnotation</code> marker trait.
+ * (Currently, for annotations to be
  * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
- * to create a group named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
+ * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
  * write in Java:
  * </p>
  *
@@ -803,12 +804,12 @@ import org.scalatest.events._
  * 
  * @Retention(RetentionPolicy.RUNTIME)
  * @Target({ElementType.METHOD, ElementType.TYPE})
- * public @interface SlowAsMolasses {}
+ * public @interface SlowAsMolasses extends org.scalatest.TagAnnotation {}
  * </pre>
  *
  * <p>
  * Given this new annotation, you could place methods into the <code>SlowAsMolasses</code> group
- * like this:
+ * (<em>i.e.</em, tag them as being <code>SlowAsMolasses</code>) like this:
  * </p>
  *
  * <pre>
@@ -817,8 +818,9 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * The primary <code>run</code> method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
- * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be run
+ * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code>s called <code>groupsToInclude</code> and a <code>Set[String]</code> called
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is not defined, all tests will be run
  * except those those belonging to groups listed in the
  * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
  * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
