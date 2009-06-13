@@ -13,32 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.jmock
-
-import org.scalatest.events.Event
+package org.scalatest.jmock;
 
 class TestReporter extends Reporter {
 
-  var report: Report = null
-  var successCount = 0
-  var failureCount = 0
+  var report: Report = null;
+  var successCount = 0;
+  var failureCount = 0;
   
-  var ignoreReport: Report = null
-  var ignoreCount = 0
+  var ignoreReport: Report = null;
+  var ignoreCount = 0;
   
-  override def testSucceeded(report: Report) { 
+  override def testSucceeded(report: Report){ 
     successCount = successCount + 1 
-    this.report = report
+    this.report = report;
   }
   
-  override def testFailed(report: Report) { 
+  override def testFailed(report: Report){ 
     failureCount = failureCount + 1 
-    this.report = report
+    this.report = report;
   }
 
-  override def testIgnored(report: Report) { 
+  override def testIgnored(report: Report){ 
     ignoreCount = ignoreCount + 1 
-    this.report = report
+    this.report = report;
   }
   
   def errorMessage = report.throwable.get.getMessage

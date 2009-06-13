@@ -15,158 +15,178 @@
  */
 package org.scalatest.testng {
 
-   import org.scalatest.TestRerunner
-   import org.scalatest.jmock._
-   import testng.test._
+  import org.scalatest.TestRerunner
+  import org.scalatest.jmock._
+  import testng.testpackage._
+  import org.jmock.Mockery
+  import org.jmock.Expectations
+  import org.hamcrest.core.IsAnything
 
-   class TestNGSuiteSuite extends SMockFunSuite with SuiteExpectations {
+   class TestNGSuiteSuite extends FunSuite with SuiteExpectations {
 
-     mockTest("Reporter Should Be Notified When Test Passes") {
+    test("Reporter should be notified when test passes") {
+ 
+      val context = new Mockery
+      val reporter = context.mock(classOf[Reporter])
+
+      context.checking(
+        new Expectations() {
+          expectSingleTestToPass(this, reporter)
+        }
+      )
+      
+      (new SuccessTestNGSuite()).runTestNG(reporter)
+
+      context.assertIsSatisfied()
+    }
+
+    test("Reporter should be notified when test fails") {
+   
+      val context = new Mockery
+      val reporter = context.mock(classOf[Reporter])
+
+      context.checking(
+        new Expectations() {
+          expectSingleTestToFail(this, reporter)
+        }
+      )
+
+      (new FailureTestNGSuite()).runTestNG(reporter)
+
+      context.assertIsSatisfied()
+    }
+
+    test("If a test fails due to an exception, Report should have the exception") {
+      
+      val testReporter = new TestReporter
+
+      // when
+      (new FailureTestNGSuite()).runTestNG(testReporter)
+
+      // then
+      assert(testReporter.errorMessage === "fail") // detail message in exception thrown by FailureTestNGSuite
+    }
+
+    test("Report should be generated for each invocation") {
+      
+      val context = new Mockery
+      val reporter = context.mock(classOf[Reporter])
+
+      // expect reporter gets 10 passing reports because invocationCount = 10
+      context.checking(
+        new Expectations() {
+          expectNTestsToPass(this, 10, reporter)
+        }
+      )
+
+      // when runnning the suite with method that has invocationCount = 10") {
+      (new TestNGSuiteWithInvocationCount()).runTestNG(reporter)
+
+      context.assertIsSatisfied()
+    }
+
+    test("Reporter should be notified when test is skipped") {
+
+      val context = new Mockery
+      val reporter = context.mock(classOf[Reporter])
+
+      // expect a single test should fail, followed by a single test being skipped
+      context.checking(
+        new Expectations() {
+          one(reporter).suiteStarting(`with`(new IsAnything[Report]))
+          one(reporter).testStarting(`with`(new IsAnything[Report]))
+          one(reporter).testFailed(`with`(new IsAnything[Report]))
+          one(reporter).testIgnored(`with`(new IsAnything[Report]))
+          one(reporter).suiteCompleted(`with`(new IsAnything[Report]))
+        }
+      )
+
+      // when runnning the suite with a test that should fail and a test that should be skipped
+      (new SuiteWithSkippedTest()).runTestNG(reporter)
+
+      context.assertIsSatisfied()
+    }
     
-       val reporter = mock[Reporter]
+    test("Only the correct method should be run when specifying a single method to run") {
+      
+      val context = new Mockery
+      val reporter = context.mock(classOf[Reporter])
 
-       expecting {
-         singleTestToPass( reporter )
-       }
-       
-       when {
-         new SuccessTestNGSuite().runTestNG(reporter)
-       }
-     }
+      context.checking(
+        new Expectations() {
+          expectSingleTestToPass(this, reporter)
+        }
+      )
+      
+      (new SuiteWithTwoTests()).runTestNG("testThatPasses", reporter)
 
-     mockTest("Reporter Should Be Notified When Test Fails") {
+      context.assertIsSatisfied()
+    }
+
+    test("Report for failing tests should include rerunner") {
+      
+      val testReporter = new TestReporter
+
+      // when - run the failing suite
+      new FailureTestNGSuite().runTestNG(testReporter)
+
+      // then get rerunnable from report 
+      val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
+      // TODO we need a better assertion here
+    }
+
     
-       val reporter = mock[Reporter]
+    test("Report for passing tests should include rerunner") {
+      
+      val testReporter = new TestReporter
 
-       expecting { 
-         singleTestToFail( reporter )
-       }
+      // when - run the passing suite
+      new SuccessTestNGSuite().runTestNG(testReporter)
 
-       when {
-         new FailureTestNGSuite().runTestNG(reporter)
-       }
-     }
+      // then get rerunnable from report 
+      val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
+      // TODO we need a better assertion here
+    }
+    
+    
+    test("infoProvided should be available for BeforeMethod/Class/Suite annotations") {
+      // this needs to be written after i figure out the mock integration
+    }     
+    
+    test("infoProvided should be available for AfterMethod/Class/Suite annotations") {
+      // this needs to be written after i figure out the mock integration
+    }     
+  }
 
-     test("If a test fails due to an exception, Report should have the exception") {
-       
-       val testReporter = new TestReporter
+  package testpackage {
+    
+    import org.testng.annotations._
+    
+    class FailureTestNGSuite extends TestNGSuite {
+      @Test def testThatFails() { throw new Exception("fail") }
+    }
+    
+    class SuccessTestNGSuite extends TestNGSuite {
+      @Test def testThatPasses() {}
+    }
+    
+    class TestNGSuiteWithInvocationCount extends TestNGSuite {
+      @Test{val invocationCount = 10} def testThatPassesTenTimes() {}
+    }
+    
+    class SuiteWithSkippedTest extends TestNGSuite {
+      @Test{val groups = Array("run")} def dependeeThatFails() { throw new Exception("fail") }
+      @Test{val dependsOnGroups = Array("run")} def depender() {}
+    } 
 
-       // when
-       new FailureTestNGSuite().runTestNG(testReporter)
-
-       // then
-       assert(testReporter.errorMessage === "fail")
-     }
-
-     mockTest("Report should be generated for each invocation") {
-       
-       val reporter = mock[Reporter]
-
-       expecting("reporter gets 10 passing reports because invocationCount=10") {
-         nTestsToPass(10, reporter)
-       }
-
-       when ("run the suite with method that has invocationCount=10") {
-        new TestNGSuiteWithInvocationCount().runTestNG(reporter)
-       }
-     }
-     
-     mockTest("Reporter should be notified when test is skipped") {
-       
-       val reporter = mock[Reporter]
-
-       expecting ("a single test should fail, followed by a single test being skipped") {
-         one(reporter).suiteStarting(any[Report]) 
-         one(reporter).testStarting(any[Report]) 
-         one(reporter).testFailed(any[Report]) 
-         one(reporter).testIgnored(any[Report])
-         one(reporter).suiteCompleted(any[Report]) 
-       }
-
-       when ("run the suite with a test that should fail and a test that should be skipped") {
-         new SuiteWithSkippedTest().runTestNG(reporter)
-       }
-     }
-     
-     mockTest("Only the correct method should be run when specifying a single method to run") {
-       
-       val reporter = mock[Reporter]
-
-       expecting { 
-         singleTestToPass( reporter )
-       }
-       
-       when {
-         new SuiteWithTwoTests().runTestNG("testThatPasses", reporter)
-       }
-     }
-
-     test("Report for failing tests should include rerunner") {
-       
-       val testReporter = new TestReporter
-
-       // when - run the failing suite
-       new FailureTestNGSuite().runTestNG(testReporter)
-
-       // then get rerunnable from report 
-       val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
-       // TODO we need a better assertion here
-     }
-
-     
-     test("Report for passing tests should include rerunner") {
-       
-       val testReporter = new TestReporter
-
-       // when - run the passing suite
-       new SuccessTestNGSuite().runTestNG(testReporter)
-
-       // then get rerunnable from report 
-       val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
-       // TODO we need a better assertion here
-     }
-     
-     
-     test("infoProvided should be available for BeforeMethod/Class/Suite annotations") {
-       // this needs to be written after i figure out the mock integration
-     }     
-     
-     test("infoProvided should be available for AfterMethod/Class/Suite annotations") {
-       // this needs to be written after i figure out the mock integration
-     }     
-
-     
-   }
-
-   package test {
-     
-     import org.testng.annotations._
-     
-     class FailureTestNGSuite extends TestNGSuite {
-       @Test def testThatFails() { throw new Exception("fail") }
-     }
-     
-     class SuccessTestNGSuite extends TestNGSuite {
-       @Test def testThatPasses() {}
-     }
-     
-     class TestNGSuiteWithInvocationCount extends TestNGSuite {
-       @Test{val invocationCount=10} def testThatPassesTenTimes() {}
-     }
-     
-     class SuiteWithSkippedTest extends TestNGSuite {
-       @Test{val groups=Array("run")} def dependeeThatFails() { throw new Exception("fail") }
-       @Test{val dependsOnGroups=Array("run")} def depender() {}
-     } 
-
-     class SuiteWithTwoTests extends TestNGSuite {
-       @Test def testThatPasses() {}
-       @Test def anotherTestThatPasses() {}
-     }      
-     
-     class SuiteWithBeforeAndAfterAnnotations extends TestNGSuite {
-     }
-   }
+    class SuiteWithTwoTests extends TestNGSuite {
+      @Test def testThatPasses() {}
+      @Test def anotherTestThatPasses() {}
+    }      
+    
+    class SuiteWithBeforeAndAfterAnnotations extends TestNGSuite {
+    }
+  }
 }
 
 

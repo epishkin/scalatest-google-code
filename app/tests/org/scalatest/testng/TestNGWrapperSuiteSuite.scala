@@ -17,10 +17,12 @@ import org.scalatest.testng._
 import org.scalatest.jmock._
 import java.io.File
 import org.apache.commons.io.FileUtils
+import org.jmock.Mockery
+import org.jmock.Expectations
 
-package org.scalatest.testng{
+package org.scalatest.testng {
 
-  class TestNGWrapperSuiteSuite extends SMockFunSuite with SuiteExpectations {
+  class TestNGWrapperSuiteSuite extends FunSuite with SuiteExpectations {
   
     val XML_SUITES_PROPERTY = "xml_suites"
       
@@ -28,45 +30,56 @@ package org.scalatest.testng{
       <suite name="Simple Suite">
         <test verbose="10" name="org.scalatest.testng.test" annotations="JDK">
           <classes>
-            <class name="org.scalatest.testng.test.LegacySuite"/>
+            <class name="org.scalatest.testng.testpackage.LegacySuite"/>
           </classes>
         </test>
       </suite>
       
-    mockTest("wrapper suite properly notifies reporter when tests start, and pass"){
+    test("wrapper suite properly notifies reporter when tests start, and pass") {
     
       val xmlSuiteFile = this.createSuite( legacySuiteXml )
           
-      val reporter = mock[Reporter]
+      val context = new Mockery
+      val reporter = context.mock(classOf[Reporter])
 
-      expecting { singleTestToPass( reporter ) }
+      context.checking(
+        new Expectations() {
+          expectSingleTestToPass(this, reporter)
+        }
+      )
       
-      when { new TestNGWrapperSuite(List(xmlSuiteFile)).runTestNG(reporter) }
+      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter)
+
+      context.assertIsSatisfied()
     }
 
     val legacySuiteWithThreeTestsXml = 
       <suite name="Simple Suite">
         <test verbose="10" name="org.scalatest.testng.test" annotations="JDK">
           <classes>
-            <class name="org.scalatest.testng.test.LegacySuite"/>
-            <class name="org.scalatest.testng.test.LegacySuiteWithTwoTests"/>
+            <class name="org.scalatest.testng.testpackage.LegacySuite"/>
+            <class name="org.scalatest.testng.testpackage.LegacySuiteWithTwoTests"/>
           </classes>
         </test>
       </suite>
     
-    mockTest("wrapper suite should be notified for all tests"){
+    test("wrapper suite should be notified for all tests") {
       
-      val xmlSuiteFile = this.createSuite( legacySuiteWithThreeTestsXml )
+      val xmlSuiteFile = this.createSuite(legacySuiteWithThreeTestsXml)
           
-      val reporter = mock[Reporter]
+      val context = new Mockery
+      val reporter = context.mock(classOf[Reporter])
 
-      expecting { 
-        nTestsToPass( 3, reporter ) 
-      }
+      context.checking(
+        new Expectations() {
+          expectNTestsToPass(this, 3, reporter) 
+        }
+      )
       
-      when{ new TestNGWrapperSuite(List(xmlSuiteFile)).runTestNG(reporter) }
+      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter)
+
+      context.assertIsSatisfied()
     }
-    
     
     def createSuite( suiteNode: scala.xml.Elem ) : String = {
       val tmp = File.createTempFile("testng", "wrapper")
@@ -75,7 +88,7 @@ package org.scalatest.testng{
     }
   }
   
-  package test{
+  package testpackage {
     import org.testng.annotations._
   
     class LegacySuite extends TestNGSuite {
@@ -86,5 +99,4 @@ package org.scalatest.testng{
       @Test def anotherLegacyTestThatPasses2() {}
     }
   }
-
 }

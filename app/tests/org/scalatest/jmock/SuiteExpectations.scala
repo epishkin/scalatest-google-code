@@ -16,31 +16,33 @@
 package org.scalatest.jmock
 
 import scala.reflect.Manifest
+import org.jmock.Expectations
+import org.hamcrest.core.IsAnything
 
-trait SuiteExpectations extends SMocker{
+trait SuiteExpectations {
 
-  def singleTestToPass( reporter: Reporter ) = nTestsToPass( 1, reporter )
-  def singleTestToFail( reporter: Reporter ) = nTestsToFail( 1, reporter )
+  def expectSingleTestToPass(expectations: Expectations, reporter: Reporter) = expectNTestsToPass(expectations, 1, reporter)
+  def expectSingleTestToFail(expectations: Expectations, reporter: Reporter) = expectNTestsToFail(expectations, 1, reporter)
   
-  def nTestsToPass( n: int, reporter: Reporter ) = {
-    expectNTestsToRun( n, reporter ){ 
-      one(reporter).testSucceeded(any[Report]) 
+  def expectNTestsToPass(expectations: Expectations, n: int, reporter: Reporter) = {
+    expectNTestsToRun(expectations, n, reporter) { 
+      expectations.one(reporter).testSucceeded(expectations.`with`(new IsAnything[Report]))
     }
   }
   
-  def nTestsToFail( n: int, reporter: Reporter ) = {
-    expectNTestsToRun( n, reporter ){ 
-      one(reporter).testFailed(any[Report]) 
+  def expectNTestsToFail(expectations: Expectations, n: int, reporter: Reporter) = {
+    expectNTestsToRun(expectations, n, reporter) { 
+      expectations.one(reporter).testFailed(expectations.`with`(new IsAnything[Report]))
     }
   }
 
-  def expectNTestsToRun(n: int, reporter: Reporter)(f: => Unit) = {
-    one(reporter).suiteStarting(any[Report]) 
+  def expectNTestsToRun(expectations: Expectations, n: int, reporter: Reporter)(f: => Unit) = {
+    expectations.one(reporter).suiteStarting(expectations.`with`(new IsAnything[Report]))
     for( i <- 1 to n ){
-      one(reporter).testStarting(any[Report]) 
+      expectations.one(reporter).testStarting(expectations.`with`(new IsAnything[Report]))
       f
     }
-    one(reporter).suiteCompleted(any[Report]) 
+    expectations.one(reporter).suiteCompleted(expectations.`with`(new IsAnything[Report]))
   }
-  
 }
+
