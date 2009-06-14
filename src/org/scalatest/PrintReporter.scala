@@ -73,7 +73,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
               Resources("printedReportPlusLineNumber", stringToPrint, lineNumberString)
             case None => stringToPrint
           }
-        case None => stringToPrint
+        case _ => stringToPrint
       }
     }
 
@@ -119,32 +119,27 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
               def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
                 val className = throwable.getClass.getName 
                 val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
-                val message = if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) Some(throwable.getMessage) else None
-                val labeledMessage =
-                  message match {
-                    case Some(msg) => Some(Resources("DetailsMessage") + ":" + msg)
-                    case None => None
-                  }
-                val stackTraceElements = throwable.getStackTrace.toList map { _.toString }
+                val labeledClassNameWithMessage =
+                  if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
+                    labeledClassName + ": " + throwable.getMessage.trim
+                  else
+                    labeledClassName
+
+                val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
                 val cause = throwable.getCause
 
-                val elementsWithOptionalMessage: List[String] =
-                  labeledMessage match {
-                    case Some(msg) => msg :: stackTraceElements
-                    case None => stackTraceElements
-                  }
-
-                val stackTraceThisThrowable = "" :: labeledClassName :: elementsWithOptionalMessage
+                val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
                 if (cause == null)
                   stackTraceThisThrowable
                 else
-                  stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
+                  stackTraceThisThrowable ::: "" :: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
               }
               stackTrace(throwable, false)
             case None => List()
           }
 
         for (line <- getStackTrace(throwable)) pw.println(line)
+        pw.flush()
 
       case _ => throw new RuntimeException("Unhandled event")
     }
