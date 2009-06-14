@@ -16,8 +16,7 @@
 package org.scalatest
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.events.Event
-import org.scalatest.events.Ordinal
+import org.scalatest.events._
 
 class SpecSuite extends FunSuite {
 
@@ -1261,14 +1260,19 @@ class SpecSuite extends FunSuite {
     
   test("Specs should send SpecReports") {
     class MyReporter extends Reporter {
+
       var gotANonSpecReport = false
       var lastNonSpecReport: Option[Report] = None
+
+      var gotAnUndefinedFormatter = false
+      var lastEventWithUndefinedFormatter: Option[Event] = None
+
       override def testStarting(report: Report) {
         ensureSpecReport(report)
       }
 
       private def ensureSpecReport(report: Report) {
-	    report match {
+        report match {
           case sr: SpecReport => 
           case r: Report => {
             gotANonSpecReport = true
@@ -1276,6 +1280,14 @@ class SpecSuite extends FunSuite {
           }
         }
       }
+     
+      private def ensureFormatterIsDefined(event: Event) {
+        if (event.formatter.isDefined) {
+          gotAnUndefinedFormatter = true
+          lastEventWithUndefinedFormatter = Some(event)
+        }
+      }
+     
       override def testSucceeded(report: Report) {
         ensureSpecReport(report)
       }
@@ -1304,13 +1316,14 @@ class SpecSuite extends FunSuite {
         ensureSpecReport(report)
       }
 	
-      override def runAborted(report: Report) {
-        ensureSpecReport(report)
-      }
-
       def apply(event: Event) {
+        event match {
+          case event: RunAborted => ensureFormatterIsDefined(event)
+          case _ =>
+        }
       }
     }
+
     class MySpec extends Spec with ShouldMatchers {
       it("it should send SpecReports") {
         assert(true)
@@ -1323,6 +1336,7 @@ class SpecSuite extends FunSuite {
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
     assert(!myRep.gotANonSpecReport)
+    assert(!myRep.gotAnUndefinedFormatter)
   }
 
   test("SpecText should come through correctly in a SpecReport when registering with it") {

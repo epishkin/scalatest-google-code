@@ -65,6 +65,18 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
   def apply(event: Event) {
 
+    def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
+      throwable match {
+        case Some(testFailedException: TestFailedException) =>
+          testFailedException.failedTestCodeFileNameAndLineNumberString match {
+            case Some(lineNumberString) =>
+              Resources("printedReportPlusLineNumber", stringToPrint, lineNumberString)
+            case None => stringToPrint
+          }
+        case None => stringToPrint
+      }
+    }
+
     event match {
 
       case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => 
@@ -81,6 +93,54 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => 
 
         makeFinalReport("runCompleted") // TODO: use Summary info
+
+      case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
+
+        val stringToPrint =
+          formatter match {
+            case Some(IndentedText(formattedText, _, _)) =>
+              Resources("specTextAndNote", formattedText, Resources("abortedNote"))
+            case _ =>
+              // Deny MotionToSuppress directives in RunAborted events, because RunAborted info needs to be seen by users
+              PrintReporter.messageToPrint(message, throwable)
+          }
+
+        val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
+
+        pw.println(stringToPrintWithPossibleLineNumber)
+
+        def getStackTrace(throwable: Option[Throwable]): List[String] =
+          throwable match {
+            case Some(throwable) =>
+              def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
+                val className = throwable.getClass.getName 
+                val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
+                val message = if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) Some(throwable.getMessage) else None
+                val labeledMessage =
+                  message match {
+                    case Some(msg) => Some(Resources("DetailsMessage") + ":" + msg)
+                    case None => None
+                  }
+                val stackTraceElements = throwable.getStackTrace.toList map { _.toString }
+                val cause = throwable.getCause
+
+                val elementsWithOptionalMessage: List[String] =
+                  labeledMessage match {
+                    case Some(msg) => msg :: stackTraceElements
+                    case None => stackTraceElements
+                  }
+
+                val stackTraceThisThrowable = "" :: labeledClassName :: elementsWithOptionalMessage
+                if (cause == null)
+                  stackTraceThisThrowable
+                else
+                  stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
+              }
+              stackTrace(throwable, false)
+            case None => List()
+          }
+
+        for (line <- getStackTrace(throwable)) pw.println(line)
 
       case _ => throw new RuntimeException("Unhandled event")
     }
@@ -179,16 +239,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   override def runStopped() {
     makeFinalReport("runStopped")
-  }
-
-  /**
-  * Prints information indicating a run has aborted prior to completion.
-  *
-  * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
-  * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-  */
-  override def runAborted(report: Report) {
-    makeReport(report, "runAborted")
   }
 
   /**
@@ -328,6 +378,26 @@ private object PrintReporter {
     val withTabsZapped = stackTrace.replaceAll("\t", "  ")
     val withInitialIndent = indentation + withTabsZapped
     withInitialIndent.replaceAll("\n", "\n" + indentation) // I wonder if I need to worry about alternate line endings. Probably.
+  }
+
+  // In the unlikely event that a message is blank, use the throwable's detail message
+  private[scalatest] def messageOrThrowablesDetailMessage(message: String, throwable: Option[Throwable]): String = {
+    val trimmedMessage = message.trim
+    if (!trimmedMessage.isEmpty)
+      trimmedMessage
+    else
+      throwable match {
+        case Some(t) => t.getMessage.trim
+        case None => ""
+      }
+  }
+
+  private[scalatest] def messageToPrint(message: String, throwable: Option[Throwable]): String = {
+    val msgToPrint = messageOrThrowablesDetailMessage(message, throwable)
+    if (msgToPrint.isEmpty)
+      Resources("runAbortedNoMessage")
+    else
+      Resources("runAborted", msgToPrint)
   }
 }
 

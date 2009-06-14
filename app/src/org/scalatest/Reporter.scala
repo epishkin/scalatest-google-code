@@ -332,20 +332,6 @@ trait Reporter extends (Event => Unit) {
     def runStopped() = ()
 
     /**
-     * Indicates a runner encountered an error while attempting to run a suite of tests.
-     *
-     * <P>
-     * Object <code>Runner</code> invokes <code>runAborted</code> if the
-     * <code>execute</code> method of any of the run's starting <code>Suite</code>s completes
-     * abruptly with a <code>Throwable</code>.
-     *
-     * @param report a <code>Report</code> that encapsulates the run aborted event to report.
-     * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-     */
-
-    def runAborted(report: Report) = ()
-
-    /**
      * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
      * call this method when they no longer need the <code>Reporter</code>, before releasing the last reference
      * to the <code>Reporter</code>. After this method is invoked, the <code>Reporter</code> may be defunct,

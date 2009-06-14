@@ -406,10 +406,6 @@ object Runner {
     override def testFailed(report: Report) {
       failedAbortedOrStopped = true
     }
-    override def runAborted(report: Report) {
-      failedAbortedOrStopped = true
-      runDoneSemaphore.release()
-    }
     override def suiteAborted(report: Report) {
       failedAbortedOrStopped = true
     }
@@ -1068,15 +1064,16 @@ object Runner {
     if (doneListener == null)
       throw new NullPointerException
 
+    var ordinal = new Ordinal(runStamp)
+
     try {
       val loadProblemsExist =
         try {
           val unassignableList = suitesList.filter(className => !classOf[Suite].isAssignableFrom(loader.loadClass(className)))
           if (!unassignableList.isEmpty) {
             val names = for (className <- unassignableList) yield " " + className
-            //val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names, None, None, None)
-            val report = new Report("org.scalatest.tools.Runner", Resources("nonSuite") + names)
-            dispatchReporter.runAborted(report)
+            dispatchReporter.apply(RunAborted(ordinal, Resources("nonSuite") + names, None))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
             true
           }
           else {
@@ -1085,8 +1082,8 @@ object Runner {
         }
         catch {
           case e: ClassNotFoundException => {
-            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadSuite", e.getMessage), Some(e), None)
-            dispatchReporter.runAborted(report)
+            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotLoadSuite", e.getMessage), Some(e)))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
             true
           }
         }
@@ -1153,7 +1150,6 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          var ordinal = new Ordinal(runStamp)
           dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
           ordinal = ordinal.next
 
@@ -1182,24 +1178,18 @@ object Runner {
             dispatchReporter.apply(RunCompleted(ordinal)) // Don't need to increment ordinal, because it won't be used anymore
         }
         catch {
-          case ex: InstantiationException => {
-            val report =
-                new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
-            dispatchReporter.runAborted(report)
-          }
-          case ex: IllegalAccessException => {
-            val report
-                = new Report("org.scalatest.tools.Runner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
-            dispatchReporter.runAborted(report)
-          }
-          case ex: NoClassDefFoundError => {
-            val report = new Report("org.scalatest.tools.Runner", Resources("cannotLoadClass", ex.getMessage), Some(ex), None)
-            dispatchReporter.runAborted(report)
-          }
-          case ex: Throwable => {
-            val report = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), Some(ex), None)
-            dispatchReporter.runAborted(report)
-          }
+          case e: InstantiationException =>
+            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
+          case e: IllegalAccessException =>
+            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
+          case e: NoClassDefFoundError =>
+            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotLoadClass", e.getMessage), Some(e)))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
+          case e: Throwable =>
+            dispatchReporter.apply(RunAborted(ordinal, Resources.bigProblems(e), Some(e)))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
         }
       }
     }

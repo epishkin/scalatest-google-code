@@ -32,11 +32,11 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
   def apply(report: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String], goodies: Map[String, Any],
             distributor: Option[Distributor], firstOrdinal: Ordinal, loader: ClassLoader) {
 
+    var ordinal = firstOrdinal
+
     try {
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance.asInstanceOf[Suite]
-
-      var ordinal = firstOrdinal
 
       report(RunStarting(ordinal, 1))
       ordinal = ordinal.next
@@ -47,35 +47,35 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
       // Don't need to increment ordinal, because it isn't used after this
     }
     catch {
-      case ex: ClassNotFoundException => {
-        val rpt = new Report("org.scalatest.TestRerunner", Resources("cannotLoadSuite", ex.getMessage), Some(ex), None)
-        report.runAborted(rpt)
+      case e: ClassNotFoundException => {
+        report(RunAborted(ordinal, Resources("cannotLoadSuite", e.getMessage), Some(e)))
+        // Don't need to increment ordinal, because it isn't used after this
       }
-      case ex: InstantiationException => {
-        val rpt = new Report("org.scalatest.TestRerunner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
-        report.runAborted(rpt)
+      case e: InstantiationException => {
+        report(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+        // Don't need to increment ordinal, because it isn't used after this
       }
-      case ex: IllegalAccessException => {
-        val rpt = new Report("org.scalatest.TestRerunner", Resources("cannotInstantiateSuite", ex.getMessage), Some(ex), None)
-        report.runAborted(rpt)
+      case e: IllegalAccessException => {
+        report(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+        // Don't need to increment ordinal, because it isn't used after this
       }
       case e: NoSuchMethodException => {
-        val rpt = new Report("org.scalatest.TestRerunner", Resources("cannotFindMethod", e.getMessage), Some(e), None)
-        report.runAborted(rpt)
+        report(RunAborted(ordinal, Resources("cannotFindMethod", e.getMessage), Some(e)))
+        // Don't need to increment ordinal, because it isn't used after this
       }
       case e: SecurityException => {
-        val rpt = new Report("org.scalatest.TestRerunner", Resources("securityWhenRerunning", e.getMessage), Some(e), None)
-        report.runAborted(rpt)
+        report(RunAborted(ordinal, Resources("securityWhenRerruning", e.getMessage), Some(e)))
+        // Don't need to increment ordinal, because it isn't used after this
       }
-      case ex: NoClassDefFoundError => {
+      case e: NoClassDefFoundError => {
         // Suggest the problem might be a bad runpath
         // Maybe even print out the current runpath
-        val rpt = new Report("org.scalatest.TestRerunner", Resources("cannotLoadClass", ex.getMessage), Some(ex), None)
-        report.runAborted(rpt)
+        report(RunAborted(ordinal, Resources("cannotLoadClass", e.getMessage), Some(e)))
+        // Don't need to increment ordinal, because it isn't used after this
       }
-      case ex: Throwable => {
-        val rpt = new Report("org.scalatest.TestRerunner", Resources.bigProblems(ex), Some(ex), None)
-        report.runAborted(rpt)
+      case e: Throwable => {
+        report(RunAborted(ordinal, Resources.bigProblems(e), Some(e)))
+        // Don't need to increment ordinal, because it isn't used after this
       }
     }
   }

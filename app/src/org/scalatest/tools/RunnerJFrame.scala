@@ -734,6 +734,23 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerReport(report, ReporterOpts.PresentRunCompleted)
           }
  
+  
+        case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
+
+          val report = new Report("org.scalatest.tools.Runner", message, throwable, None)
+
+          usingEventDispatchThread {
+            progressBar.setRed()
+            registerReport(report, ReporterOpts.PresentRunAborted)
+            // Must do this here, not in RunningState.runFinished, because the runFinished
+            // invocation can happen before this runCompleted invocation, which means that 
+            // the first error in the run may not be in the JList model yet. So must wait until
+            // a run completes. I was doing it in runCompleted, which works, but for long runs
+            // you must wait a long time for that thing to be selected. Nice if it gets selected
+            // right away.
+            selectFirstFailureIfExistsAndNothingElseAlreadySelected()
+          }
+
         case _ =>
       }
     }
@@ -840,22 +857,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
       val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentRunStopped)
-      }
-    }
-  
-    override def runAborted(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        progressBar.setRed()
-        registerReport(report, ReporterOpts.PresentRunAborted)
-        // Must do this here, not in RunningState.runFinished, because the runFinished
-        // invocation can happen before this runCompleted invocation, which means that 
-        // the first error in the run may not be in the JList model yet. So must wait until
-        // a run completes. I was doing it in runCompleted, which works, but for long runs
-        // you must wait a long time for that thing to be selected. Nice if it gets selected
-        // right away.
-        selectFirstFailureIfExistsAndNothingElseAlreadySelected()
       }
     }
   }
@@ -1244,6 +1245,20 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             scrollTheRerunStartingReportToTheTopOfVisibleReports()
           }
 
+  
+        case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
+
+          val report = new Report("org.scalatest.tools.Runner", message, throwable, None)
+
+          usingEventDispatchThread {
+            rerunColorBox.setRed()
+            val reportHolder = registerRerunReport(report, ReporterOpts.PresentRunAborted)
+            if (!anErrorHasOccurredAlready) {
+              selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+              anErrorHasOccurredAlready = true
+            }
+          }
+
         case _ =>
       }
     }
@@ -1339,19 +1354,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         scrollTheRerunStartingReportToTheTopOfVisibleReports()
       }
     }
-  
-    override def runAborted(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        rerunColorBox.setRed()
-        val reportHolder = registerRerunReport(report, ReporterOpts.PresentRunAborted)
-        if (!anErrorHasOccurredAlready) {
-          selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
-          anErrorHasOccurredAlready = true
-        }
-      }
-    }
   }
 
   // Invoked by ReadyState if can't run when the Run or Rerun buttons
@@ -1398,9 +1400,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
                 distributor, new Ordinal(nextRunStamp), loader)
           }
           catch {
-            case ex: Throwable => {
-              val report: Report = new Report("org.scalatest.tools.Runner", Resources.bigProblems(ex), Some(ex), None)
-              dispatchReporter.runAborted(report)
+            case e: Throwable => {
+              // TODO: There's no way currently to do this ordinal correctly
+              dispatchReporter.apply(RunAborted(new Ordinal(nextRunStamp), Resources.bigProblems(e), Some(e)))
             }
           }
           finally {
