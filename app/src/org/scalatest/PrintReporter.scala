@@ -94,6 +94,10 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
         makeFinalReport("runCompleted") // TODO: use Summary info
 
+      case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
+
+        makeFinalReport("runStopped") // TODO: use Summary info
+
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
         val stringToPrint =
@@ -232,13 +236,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   override def suiteAborted(report: Report) {
     suitesAbortedCount += 1
     makeReport(report, "suiteAborted")
-  }
-
-  /**
-  * Prints information indicating a runner has stopped running a suite of tests prior to completion.
-  */
-  override def runStopped() {
-    makeFinalReport("runStopped")
   }
 
   /**

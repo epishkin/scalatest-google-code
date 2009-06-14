@@ -64,7 +64,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
         case SuiteCompletedMsg(rpt) => dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(rpt))
         case SuiteAbortedMsg(rpt) => dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(rpt))
         case InfoProvidedMsg(rpt) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(rpt))
-        case RunStoppedMsg() => dispatch("runStopped", (reporter: Reporter) => reporter.runStopped())
         case DisposeMsg() => {
           dispatch("dispose", (reporter: Reporter) => reporter.dispose())
           alive = false
@@ -219,20 +218,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @throws NullPointerException if <code>report</code> reference is <code>null</code>
    */
   override def suiteAborted(report: Report) = julia ! SuiteAbortedMsg(report)
-
-  /**
-   * Indicates a runner has stopped running a suite of tests prior to completion.
-   * Invokes <code>runStopped</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list.
-   *
-   * <P>
-   * This method attempts to invoke <code>runStopped</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>runStopped</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>runStopped</code> method and handles it by printing an error message to the
-   * standard error stream.
-   */
-  override def runStopped() = julia ! RunStoppedMsg()
 
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this
