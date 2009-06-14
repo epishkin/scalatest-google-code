@@ -88,7 +88,8 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
       }
       
       if (stopRequested()) {
-        report.runStopped()
+        report(RunStopped(ordinal))
+        // Don't need to increment ordinal, because it isn't used after this
       }
       else {
         report(RunCompleted(ordinal)) // TODO: pass a duration

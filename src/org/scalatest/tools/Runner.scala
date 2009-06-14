@@ -409,10 +409,6 @@ object Runner {
     override def suiteAborted(report: Report) {
       failedAbortedOrStopped = true
     }
-    override def runStopped() {
-      failedAbortedOrStopped = true
-      runDoneSemaphore.release()
-    }
 
     def allTestsPassed = {
       runDoneSemaphore.acquire()
@@ -1172,10 +1168,14 @@ object Runner {
             }
           }
 
-          if (stopRequested())
-            dispatchReporter.runStopped()
-          else
-            dispatchReporter.apply(RunCompleted(ordinal)) // Don't need to increment ordinal, because it won't be used anymore
+          if (stopRequested()) {
+            dispatchReporter.apply(RunStopped(ordinal))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
+          }
+          else {
+            dispatchReporter.apply(RunCompleted(ordinal))
+            ordinal = ordinal.next // Probably don't need to do this, but just in case
+          }
         }
         catch {
           case e: InstantiationException =>

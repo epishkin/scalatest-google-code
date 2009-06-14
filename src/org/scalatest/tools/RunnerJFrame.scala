@@ -751,6 +751,18 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             selectFirstFailureIfExistsAndNothingElseAlreadySelected()
           }
 
+  
+        case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
+
+          // Create the Report outside of the event handler thread, because otherwise
+          // the event handler thread shows up as the originating thread of this report,
+          // and that looks bad and is actually wrong.
+          val stringToReport: String = Resources("runStopped", testsCompletedCount.toString)
+          val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          usingEventDispatchThread {
+            registerReport(report, ReporterOpts.PresentRunStopped)
+          }
+
         case _ =>
       }
     }
@@ -845,18 +857,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         // you must wait a long time for that thing to be selected. Nice if it gets selected
         // right away.
         selectFirstFailureIfExistsAndNothingElseAlreadySelected()
-      }
-    }
-  
-    override def runStopped() {
-      // Create the Report outside of the event handler thread, because otherwise
-      // the event handler thread shows up as the originating thread of this report,
-      // and that looks bad and is actually wrong.
-      val stringToReport: String = Resources("runStopped", testsCompletedCount.toString)
-      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
-      usingEventDispatchThread {
-        registerReport(report, ReporterOpts.PresentRunStopped)
       }
     }
   }
@@ -1244,7 +1244,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerRerunReport(report, ReporterOpts.PresentRunCompleted)
             scrollTheRerunStartingReportToTheTopOfVisibleReports()
           }
-
   
         case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
@@ -1257,6 +1256,18 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
               selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
               anErrorHasOccurredAlready = true
             }
+          }
+
+        case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
+  
+          // Create the Report outside of the event handler thread, because otherwise
+          // the event handler thread shows up as the originating thread of this report,
+          // and that looks bad and is actually wrong.
+          val stringToReport: String = Resources("rerunStopped", rerunTestsCompletedCount.toString)
+          val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          usingEventDispatchThread {
+            registerRerunReport(report, ReporterOpts.PresentRunStopped)
+            scrollTheRerunStartingReportToTheTopOfVisibleReports()
           }
 
         case _ =>
@@ -1339,19 +1350,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
           selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
           anErrorHasOccurredAlready = true
         }
-      }
-    }
-  
-    override def runStopped() {
-      // Create the Report outside of the event handler thread, because otherwise
-      // the event handler thread shows up as the originating thread of this report,
-      // and that looks bad and is actually wrong.
-      val stringToReport: String = Resources("rerunStopped", rerunTestsCompletedCount.toString)
-      //val report: Report = new Report("org.scalatest.tools.Runner", stringToReport, None, None, None)
-      val report: Report = new Report("org.scalatest.tools.Runner", stringToReport)
-      usingEventDispatchThread {
-        registerRerunReport(report, ReporterOpts.PresentRunStopped)
-        scrollTheRerunStartingReportToTheTopOfVisibleReports()
       }
     }
   }
