@@ -160,7 +160,7 @@ class RunNotifierSuite extends FunSuite {
   }
 
   // fireTestFailure is the best we could do given the RunNotifier interface
-  test("report.suiteAborted generates a fireTestFailure invocation") {
+  test("report(SuiteAborted) generates a fireTestFailure invocation") {
 
     val runNotifier =
       new RunNotifier {
@@ -172,21 +172,19 @@ class RunNotifierSuite extends FunSuite {
         }
       }
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
-    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
-    reporter.suiteAborted(report)
+    val otherException = new NullPointerException
+
+    reporter(SuiteAborted(ordinal, "some message", "SuiteClassName", Some("fully.qualified.SuiteClassName"), Some(exception)))
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "fully.qualified.SuiteClassName")
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
-    val report2 = new Report("name", "message", Some(exception), None)
-    reporter.suiteAborted(report2)
+    reporter(SuiteAborted(ordinal, "a different message", "SuiteClassName", Some("fully.qualified.SuiteClassName"), Some(otherException)))
     assert(runNotifier.methodInvocationCount === 2)
-    assert(runNotifier.passed.get.getException === exception)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "name")
+    assert(runNotifier.passed.get.getException === otherException)
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "fully.qualified.SuiteClassName")
 
     reporter(SuiteAborted(ordinal, "No msg", "SuiteClassName", Some("fully.qualified.SuiteClassName"), Some(exception)))
     assert(runNotifier.passed.get.getDescription.getDisplayName === "fully.qualified.SuiteClassName")

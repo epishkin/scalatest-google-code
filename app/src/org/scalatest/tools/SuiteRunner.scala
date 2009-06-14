@@ -17,7 +17,7 @@ package org.scalatest.tools
 
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
-import org.scalatest.events.Ordinal
+import org.scalatest.events._
 
 private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchReporter, stopRequested: Stopper, includes: Set[String],
     excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal) extends Runnable {
@@ -75,6 +75,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
         case e: RuntimeException => {
           val rawString3 = Resources("executeException")
   
+/*
           val report3 =
             suite match {
               case spec: Spec =>
@@ -84,8 +85,16 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
                 //new Report(suite.suiteName, rawString3, Some(suite.suiteName), Some(suite.getClass.getName), None, Some(e), rerunnable)
                 new Report(suite.suiteName, rawString3, Some(e), rerunnable)
             }
+*/
   
-          dispatchReporter.suiteAborted(report3)
+          // Hmm, this is the same code as in org.scalatest.SuiteRerunner. Sounds like a refactoring opportunity
+          val formatter =
+            suite match {
+              case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
+              case _ => None
+            }
+          dispatchReporter.apply(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
+          ordinal = ordinal.next
         }
       }
     }

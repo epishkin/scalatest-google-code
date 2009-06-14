@@ -406,9 +406,6 @@ object Runner {
     override def testFailed(report: Report) {
       failedAbortedOrStopped = true
     }
-    override def suiteAborted(report: Report) {
-      failedAbortedOrStopped = true
-    }
 
     def allTestsPassed = {
       runDoneSemaphore.acquire()

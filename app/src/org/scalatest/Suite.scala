@@ -1648,6 +1648,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 
             val rawString = Resources("executeException")
 
+/*
             val report =
               nestedSuite match {
                 case spec: Spec =>
@@ -1661,11 +1662,15 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
                     //new Report(nestedSuite.suiteName, rawString, Some(suiteName), Some(thisSuite.getClass.getName), None, Some(e), None)
                     new Report(nestedSuite.suiteName, rawString, Some(e), None)
               }
+*/
 
-            wrappedReporter.suiteAborted(report)
-
-            // Don't continue onto the next Suite here, because first must
-            // attempt to invoke tearDownSuite.
+            val formatter =
+              nestedSuite match {
+                case spec: Spec => Some(IndentedText(rawString, rawString, 0))
+                case _ => None
+              }
+            wrappedReporter(SuiteAborted(ordinal, rawString, suiteName, Some(thisSuite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
+            ordinal = ordinal.next
           }
         }
       }
