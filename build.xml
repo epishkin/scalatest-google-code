@@ -304,7 +304,7 @@
             <reporter type="graphic" />
             <reporter type="stdout" />
             <reporter type="file" filename="delme.txt" />
-            <suite classname="org.scalatest.Delme2Suite" />
+            <suite classname="org.scalatest.DelmeSuite" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">

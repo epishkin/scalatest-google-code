@@ -733,7 +733,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
           usingEventDispatchThread {
             registerReport(report, ReporterOpts.PresentRunCompleted)
           }
- 
   
         case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
@@ -751,7 +750,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             selectFirstFailureIfExistsAndNothingElseAlreadySelected()
           }
 
-  
         case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
 
           // Create the Report outside of the event handler thread, because otherwise
@@ -762,6 +760,23 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
           usingEventDispatchThread {
             registerReport(report, ReporterOpts.PresentRunStopped)
           }
+
+  
+      case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+        val report: Report = new Report(suiteName, message, throwable, rerunnable)
+
+        usingEventDispatchThread {
+          progressBar.setRed()
+          registerReport(report, ReporterOpts.PresentSuiteAborted)
+          // Must do this here, not in RunningState.runFinished, because the runFinished
+          // invocation can happen before this runCompleted invocation, which means that 
+          // the first error in the run may not be in the JList model yet. So must wait until
+          // a run completes. I was doing it in runCompleted, which works, but for long runs
+          // you must wait a long time for that thing to be selected. Nice if it gets selected
+          // right away.
+          selectFirstFailureIfExistsAndNothingElseAlreadySelected()
+        }
 
         case _ =>
       }
@@ -841,22 +856,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         throw new NullPointerException("report is null")
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentSuiteCompleted)
-      }
-    }
-  
-    override def suiteAborted(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        progressBar.setRed()
-        registerReport(report, ReporterOpts.PresentSuiteAborted)
-        // Must do this here, not in RunningState.runFinished, because the runFinished
-        // invocation can happen before this runCompleted invocation, which means that 
-        // the first error in the run may not be in the JList model yet. So must wait until
-        // a run completes. I was doing it in runCompleted, which works, but for long runs
-        // you must wait a long time for that thing to be selected. Nice if it gets selected
-        // right away.
-        selectFirstFailureIfExistsAndNothingElseAlreadySelected()
       }
     }
   }
@@ -1270,6 +1269,19 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             scrollTheRerunStartingReportToTheTopOfVisibleReports()
           }
 
+        case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+          val report: Report = new Report(suiteName, message, throwable, rerunnable)
+
+          usingEventDispatchThread {
+            rerunColorBox.setRed()
+            val reportHolder = registerRerunReport(report, ReporterOpts.PresentSuiteAborted)
+            if (!anErrorHasOccurredAlready) {
+              selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+              anErrorHasOccurredAlready = true
+            }
+          }
+ 
         case _ =>
       }
     }
@@ -1337,19 +1349,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         throw new NullPointerException("report is null")
       usingEventDispatchThread {
         registerRerunReport(report, ReporterOpts.PresentSuiteCompleted)
-      }
-    }
-  
-    override def suiteAborted(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        rerunColorBox.setRed()
-        val reportHolder = registerRerunReport(report, ReporterOpts.PresentSuiteAborted)
-        if (!anErrorHasOccurredAlready) {
-          selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
-          anErrorHasOccurredAlready = true
-        }
       }
     }
   }

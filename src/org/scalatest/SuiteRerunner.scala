@@ -76,6 +76,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
       catch {
         case e: RuntimeException => {
           val rawString3 = Resources("executeException")
+/*
           val rpt3 =
             suite match {
               case spec: Spec =>
@@ -83,7 +84,14 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
               case _ =>
                 new Report(suite.suiteName, rawString3, Some(e), rerunnable)
             }
-          report.suiteAborted(rpt3)
+*/
+          val formatter =
+            suite match {
+              case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
+              case _ => None
+            }
+          report(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
+          ordinal = ordinal.next
         }
       }
       

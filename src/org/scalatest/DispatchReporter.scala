@@ -62,7 +62,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
         case TestFailedMsg(rpt) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(rpt))
         case SuiteStartingMsg(rpt) => dispatch("suiteStarting", (reporter: Reporter) => reporter.suiteStarting(rpt))
         case SuiteCompletedMsg(rpt) => dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(rpt))
-        case SuiteAbortedMsg(rpt) => dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(rpt))
         case InfoProvidedMsg(rpt) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(rpt))
         case DisposeMsg() => {
           dispatch("dispose", (reporter: Reporter) => reporter.dispose())
@@ -200,24 +199,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @throws NullPointerException if <code>report</code> reference is <code>null</code>
    */
   override def suiteCompleted(report: Report) = julia ! SuiteCompletedMsg(report)
-
-  /**
-   * Indicates the execution of a suite of tests has aborted prior to completion.
-   * Invokes <code>suiteAborted</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list, passing the specified
-   * <code>report</code>.
-   *
-   * <P>
-   * This method attempts to invoke <code>suiteAborted</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>suiteAborted</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>suiteAborted</code> method and handles it by printing an error message to the
-   * standard error stream.
-   *
-   * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
-   * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-   */
-  override def suiteAborted(report: Report) = julia ! SuiteAbortedMsg(report)
 
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this

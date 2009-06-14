@@ -287,20 +287,6 @@ trait Reporter extends (Event => Unit) {
     def suiteCompleted(report: Report) = ()
 
     /**
-     * Indicates the execution of a suite of tests has aborted, likely because of an error, prior
-     * to completion.
-     *
-     * <p>
-     * Trait <code>Suite</code> and Object <code>Runner</code> use <code>suiteAborted</code> to report
-     * that the <code>execute</code> method of a <code>Suite</code>
-     * has completed abruptly with a <code>RuntimeException</code>.
-     *
-     * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
-     * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-     */
-    def suiteAborted(report: Report) = ()
-
-    /**
      * Provides information that is not appropriate to report via any other
      * <code>Reporter</code> method.
      *

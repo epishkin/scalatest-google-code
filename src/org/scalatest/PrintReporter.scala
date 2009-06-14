@@ -63,19 +63,60 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   def this(filename: String) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), PrintReporter.BufferSize)))
 
-  def apply(event: Event) {
-
-    def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
-      throwable match {
-        case Some(testFailedException: TestFailedException) =>
-          testFailedException.failedTestCodeFileNameAndLineNumberString match {
-            case Some(lineNumberString) =>
-              Resources("printedReportPlusLineNumber", stringToPrint, lineNumberString)
-            case None => stringToPrint
-          }
-        case _ => stringToPrint
-      }
+  private def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
+    throwable match {
+      case Some(testFailedException: TestFailedException) =>
+        testFailedException.failedTestCodeFileNameAndLineNumberString match {
+          case Some(lineNumberString) =>
+            Resources("printedReportPlusLineNumber", stringToPrint, lineNumberString)
+          case None => stringToPrint
+        }
+      case _ => stringToPrint
     }
+  }
+
+  private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable], formatter: Option[Formatter]): List[String] = {
+
+    val stringToPrint =
+      formatter match {
+        case Some(IndentedText(formattedText, _, _)) =>
+          Resources("specTextAndNote", formattedText, Resources(noteResourceName))
+        case _ =>
+          // Deny MotionToSuppress directives in error events, because error info needs to be seen by users
+          PrintReporter.messageToPrint(errorResourceName, message, throwable)
+      }
+
+    val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
+
+    def getStackTrace(throwable: Option[Throwable]): List[String] =
+      throwable match {
+        case Some(throwable) =>
+          def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
+            val className = throwable.getClass.getName 
+            val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
+            val labeledClassNameWithMessage =
+              if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
+                labeledClassName + ": " + throwable.getMessage.trim
+              else
+                labeledClassName
+
+            val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
+            val cause = throwable.getCause
+
+            val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
+            if (cause == null)
+              stackTraceThisThrowable
+            else
+              stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
+          }
+          stackTrace(throwable, false)
+        case None => List()
+      }
+
+    stringToPrintWithPossibleLineNumber :: getStackTrace(throwable)
+  }
+
+  def apply(event: Event) {
 
     event match {
 
@@ -100,49 +141,19 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
-        val stringToPrint =
-          formatter match {
-            case Some(IndentedText(formattedText, _, _)) =>
-              Resources("specTextAndNote", formattedText, Resources("abortedNote"))
-            case _ =>
-              // Deny MotionToSuppress directives in RunAborted events, because RunAborted info needs to be seen by users
-              PrintReporter.messageToPrint(message, throwable)
-          }
+        val lines = stringsToPrintOnError("abortedNote", "runAborted", message, throwable, formatter)
+        for (line <- lines) pw.println(line)
 
-        val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
+      case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        pw.println(stringToPrintWithPossibleLineNumber)
-
-        def getStackTrace(throwable: Option[Throwable]): List[String] =
-          throwable match {
-            case Some(throwable) =>
-              def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
-                val className = throwable.getClass.getName 
-                val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
-                val labeledClassNameWithMessage =
-                  if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
-                    labeledClassName + ": " + throwable.getMessage.trim
-                  else
-                    labeledClassName
-
-                val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
-                val cause = throwable.getCause
-
-                val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
-                if (cause == null)
-                  stackTraceThisThrowable
-                else
-                  stackTraceThisThrowable ::: "" :: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
-              }
-              stackTrace(throwable, false)
-            case None => List()
-          }
-
-        for (line <- getStackTrace(throwable)) pw.println(line)
-        pw.flush()
+        suitesAbortedCount += 1
+        val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter)
+        for (line <- lines) pw.println(line)
 
       case _ => throw new RuntimeException("Unhandled event")
     }
+
+    pw.flush()
   }
 
   /**
@@ -220,17 +231,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   override def suiteCompleted(report: Report) {
     makeReport(report, "suiteCompleted")
-  }
-
-  /**
-  * Prints information indicating the execution of a suite of tests has aborted prior to completion.
-  *
-  * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
-  * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-  */
-  override def suiteAborted(report: Report) {
-    suitesAbortedCount += 1
-    makeReport(report, "suiteAborted")
   }
 
   /**
@@ -384,12 +384,12 @@ private object PrintReporter {
       }
   }
 
-  private[scalatest] def messageToPrint(message: String, throwable: Option[Throwable]): String = {
+  private[scalatest] def messageToPrint(resourceName: String, message: String, throwable: Option[Throwable]): String = {
     val msgToPrint = messageOrThrowablesDetailMessage(message, throwable)
     if (msgToPrint.isEmpty)
-      Resources("runAbortedNoMessage")
+      Resources(resourceName + "NoMessage")
     else
-      Resources("runAborted", msgToPrint)
+      Resources(resourceName, msgToPrint)
   }
 }
 
