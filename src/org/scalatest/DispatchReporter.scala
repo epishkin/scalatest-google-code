@@ -65,7 +65,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
         case SuiteAbortedMsg(rpt) => dispatch("suiteAborted", (reporter: Reporter) => reporter.suiteAborted(rpt))
         case InfoProvidedMsg(rpt) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(rpt))
         case RunStoppedMsg() => dispatch("runStopped", (reporter: Reporter) => reporter.runStopped())
-        case RunAbortedMsg(rpt) => dispatch("runAborted", (reporter: Reporter) => reporter.runAborted(rpt))
         case DisposeMsg() => {
           dispatch("dispose", (reporter: Reporter) => reporter.dispose())
           alive = false
@@ -235,24 +234,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    */
   override def runStopped() = julia ! RunStoppedMsg()
 
-  /**
-   * Indicates a run has aborted prior to completion.
-   * Invokes <code>runAborted</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list, passing the specified
-   * <code>report</code>.
-   *
-   * <P>
-   * This method attempts to invoke <code>runAborted</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>runAborted</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>runAborted</code> method and handles it by printing an error message to the
-   * standard error stream.
-   *
-   * @param report a <code>Report</code> that encapsulates the suite aborted event to report.
-   * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-   */
-  override def runAborted(report: Report) = julia ! RunAbortedMsg(report)
-     
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this
    * <code>DispatchReporter</code>'s reporters list.

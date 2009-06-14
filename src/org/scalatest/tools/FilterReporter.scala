@@ -32,12 +32,13 @@ private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpt
 
       case event: RunStarting => if (configSet.contains(ReporterOpts.PresentRunStarting)) report(event)
       case event: RunCompleted => if (configSet.contains(ReporterOpts.PresentRunCompleted)) report(event)
+      case event: RunAborted => if (configSet.contains(ReporterOpts.PresentRunAborted)) report(event)
+
       case _ => throw new RuntimeException("Unhandled event")
     }
   }
 
   // Have some methods that translate chars & strings to Opts things, and vice versa
- 
 
   override def testStarting(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentTestStarting))
@@ -74,10 +75,6 @@ private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpt
   override def runStopped() =
     if (configSet.contains(ReporterOpts.PresentRunStopped))
       report.runStopped()
-
-  override def runAborted(rpt: Report) =
-    if (configSet.contains(ReporterOpts.PresentRunAborted))
-      report.runAborted(rpt)
 
   override def dispose() = report.dispose()
 }

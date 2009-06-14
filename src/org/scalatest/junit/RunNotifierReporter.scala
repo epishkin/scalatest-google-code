@@ -83,7 +83,7 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
             case Some(t) => t
             case None => null // Yuck. Not sure if the exception passed to new Failure can be null, but it could be given this code. Usually throwable would be defined.
           }
-        val description = Description.createSuiteDescription("org.scalatest.tools.Runner")
+        val description = Description.createSuiteDescription(PrintReporter.messageToPrint(message, throwable))
         runNotifier.fireTestFailure(new Failure(description, throwableOrNull)) // Best we can do in JUnit, as far as I know
         runNotifier.fireTestFinished(description)
 
@@ -117,11 +117,6 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
   }
 
   override def suiteAborted(report: Report) {
-    testFailed(report) // Best we can do in JUnit, as far as I know
-  }
-
-  // Not sure if the exception passed to new Failure can be null, but it will be
-  override def runAborted(report: Report) {
     testFailed(report) // Best we can do in JUnit, as far as I know
   }
 }

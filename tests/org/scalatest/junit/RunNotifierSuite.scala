@@ -195,7 +195,7 @@ class RunNotifierSuite extends FunSuite {
   }
 
   // fireTestFailure is the best we could do given the RunNotifier interface
-  test("report.runAborted generates a fireTestFailure invocation") {
+  test("report(RunAborted) generates a fireTestFailure invocation") {
 
     val runNotifier =
       new RunNotifier {
@@ -209,23 +209,17 @@ class RunNotifierSuite extends FunSuite {
 
     val reporter = new RunNotifierReporter(runNotifier)
     val exception = new IllegalArgumentException
+    val otherException = new NullPointerException
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
-    val report = new Report("some test name", "test starting just fine we think", Some(exception), None)
-    reporter.runAborted(report)
+    reporter(RunAborted(ordinal, "some message", Some(exception)))
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "some test name")
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "*** RUN ABORTED - some message ***")
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
-    val report2 = new Report("name", "message", Some(exception), None)
-    reporter.runAborted(report2)
+    reporter(RunAborted(ordinal, "a different message", Some(otherException)))
     assert(runNotifier.methodInvocationCount === 2)
-    assert(runNotifier.passed.get.getException === exception)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "name")
-
-    reporter(RunAborted(ordinal, "No msg", Some(exception)))
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "org.scalatest.tools.Runner")
+    assert(runNotifier.passed.get.getException === otherException)
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "*** RUN ABORTED - a different message ***")
   }
 }
 
