@@ -217,7 +217,6 @@ trait TestNGSuite extends Suite { thisSuite =>
      * and/or chat with Cedric to determine if its possible to get this number from TestNG.
      */
     override def onStart(itc: ITestContext) = {
-      val message = Resources("suiteExecutionStarting")
       reporter(SuiteStarting(ordinal, thisSuite.suiteName, Some(thisSuite.getClass.getName)))
       ordinal = ordinal.next
     }
@@ -228,9 +227,8 @@ trait TestNGSuite extends Suite { thisSuite =>
      * in the ITestContext object into ScalaTest Reports and call reporter.infoProvided.
      */
     override def onFinish(itc: ITestContext) = {
-      val message = Resources("suiteCompletedNormally")
-      //reporter.suiteCompleted(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
-      reporter.suiteCompleted(new Report(getTestNameForReport(itc.getName), message))
+      reporter(SuiteCompleted(ordinal, thisSuite.suiteName, Some(thisSuite.getClass.getName)))
+      ordinal = ordinal.next
     }
     
     /**

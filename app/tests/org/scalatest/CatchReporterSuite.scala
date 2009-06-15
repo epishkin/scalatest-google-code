@@ -39,9 +39,6 @@ class CatchReporterSuite extends Suite {
       override def testFailed(report: Report) {
         throw new RuntimeException
       }
-      override def suiteCompleted(report: Report) {
-        throw new RuntimeException
-      }
       override def infoProvided(report: Report) {
         throw new RuntimeException
       }
@@ -90,9 +87,9 @@ class CatchReporterSuite extends Suite {
     catchReporter(SuiteStarting(new Ordinal(99), "suite name", None))
 
     intercept[RuntimeException] {
-      buggyReporter.suiteCompleted(report)
+      buggyReporter(SuiteCompleted(new Ordinal(99), "suite name", None))
     }
-    catchReporter.suiteCompleted(report)
+    catchReporter(SuiteCompleted(new Ordinal(99), "suite name", None))
 
     intercept[RuntimeException] {
       buggyReporter(SuiteAborted(new Ordinal(99), "msg", "suiteName", None, None))

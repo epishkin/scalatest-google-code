@@ -260,19 +260,6 @@ trait Reporter extends (Event => Unit) {
     def testFailed(report: Report) = ()
 
     /**
-     * Indicates a suite of tests has completed executing.
-     *
-     * <p>
-     * Trait <code>Suite</code> and Object <code>Runner</code> use <code>suiteCompleted</code> to report
-     * that the <code>execute</code> method of a <code>Suite</code>
-     * has returned normally (without throwing a <code>RuntimeException</code>).
-     *
-     * @param report a <code>Report</code> that encapsulates the suite completed event to report.
-     * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-     */
-    def suiteCompleted(report: Report) = ()
-
-    /**
      * Provides information that is not appropriate to report via any other
      * <code>Reporter</code> method.
      *

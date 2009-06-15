@@ -1304,15 +1304,12 @@ class SpecSuite extends FunSuite {
         ensureSpecReport(report)
       }
 	
-      override def suiteCompleted(report: Report) {
-        ensureSpecReport(report)
-      }
-	
       def apply(event: Event) {
         event match {
           case event: RunAborted => ensureFormatterIsDefined(event)
           case event: SuiteAborted => ensureFormatterIsDefined(event)
           case event: SuiteStarting => ensureFormatterIsDefined(event)
+          case event: SuiteCompleted => ensureFormatterIsDefined(event)
           case _ =>
         }
       }

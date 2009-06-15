@@ -71,6 +71,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
         suite.run(None, report, stopRequested, includes, excludes, goodies, distributor, ordinal)
 
         val rawString2 = Resources("suiteCompletedNormally")
+/*
         val rpt2 =
           suite match {
             case spec: Spec =>
@@ -78,7 +79,13 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
             case _ =>
               new Report(suite.suiteName, rawString2, None, rerunnable)
           }
-        report.suiteCompleted(rpt2)
+*/
+        val formatter2 =
+          suite match {
+            case spec: Spec => Some(MotionToSuppress)
+            case _ => None
+          }
+        report(SuiteCompleted(ordinal, suite.suiteName, Some(suite.getClass.getName), None, formatter2, rerunnable)) // TODO: add a duration
       }
       catch {
         case e: RuntimeException => {
