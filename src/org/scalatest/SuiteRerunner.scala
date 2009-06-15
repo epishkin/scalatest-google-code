@@ -52,6 +52,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
       try {
 
         val rawString = Resources("suiteExecutionStarting")
+/*
         val rpt =
           suite match {
             case spec: Spec =>
@@ -59,7 +60,13 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
             case _ =>
               new Report(suite.suiteName, rawString, None, rerunnable)
           }
-        report.suiteStarting(rpt)
+*/
+        val formatter =
+          suite match {
+            case spec: Spec => Some(IndentedText(rawString, rawString, 0))
+            case _ => None
+          }
+        report(SuiteStarting(ordinal, suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
 
         suite.run(None, report, stopRequested, includes, excludes, goodies, distributor, ordinal)
 
@@ -85,12 +92,12 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
                 new Report(suite.suiteName, rawString3, Some(e), rerunnable)
             }
 */
-          val formatter =
+          val formatter3 =
             suite match {
               case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
               case _ => None
             }
-          report(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
+          report(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
           ordinal = ordinal.next
         }
       }

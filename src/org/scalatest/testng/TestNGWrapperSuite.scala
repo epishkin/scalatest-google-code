@@ -48,7 +48,7 @@ import org.testng.TestListenerAdapter
  *
  * @author Josh Cough
  */
-class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
+class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
 
 // Probably mention FileNotFoundException here
 // If any files contained in the property cannot be found, a FileNotFoundException will be thrown.
@@ -72,17 +72,15 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
       groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
     
-    runTestNG(reporter, groupsToInclude, groupsToExclude) // TODO: Handle ordinals
-
-    firstOrdinal
+    runTestNG(reporter, groupsToInclude, groupsToExclude, firstOrdinal)
   }
 
   /**
    * Runs all tests in the xml suites.
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
-  override private[testng] def runTestNG(reporter: Reporter): TestListenerAdapter = {
-    runTestNG( reporter, Set(), Set() )
+  override private[testng] def runTestNG(reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
+    runTestNG(reporter, Set(), Set(), firstOrdinal: Ordinal)
   }
 
   /**
@@ -97,13 +95,13 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
    * @param   groupsToExclude    tests in groups in this Set will not be executed
    */ 
   private[testng] def runTestNG(reporter: Reporter, groupsToInclude: Set[String], 
-      groupsToExclude: Set[String]) : TestListenerAdapter = {
+      groupsToExclude: Set[String], firstOrdinal: Ordinal): Ordinal = {
     
-    val testng = new TestNG()
-    handleGroups( groupsToInclude, groupsToExclude, testng )
-    addXmlSuitesToTestNG( testng )
+    val testng = new TestNG
+    handleGroups(groupsToInclude, groupsToExclude, testng)
+    addXmlSuitesToTestNG(testng)
     
-    run( testng, reporter )
+    run(testng, reporter, firstOrdinal)
   }
   
   /**
@@ -120,7 +118,7 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite{
    *
    * TODO: We should probably do this checking in the constructor.    
    */
-  private def addXmlSuitesToTestNG( testng: TestNG ){
+  private def addXmlSuitesToTestNG(testng: TestNG) {
     import java.io.File
     import java.io.FileNotFoundException
     

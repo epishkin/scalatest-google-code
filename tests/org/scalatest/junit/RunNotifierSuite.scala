@@ -21,11 +21,11 @@ import org.junit.runner.Description
 import org.junit.runner.notification.Failure
 import org.scalatest.events._
 
-// There's no way to really pass along a suiteStarting or suiteCompleted
-// report. They have a dumb comment to "Do not invoke" fireTestRunStarted
+// There's no way to really pass along a SuiteStarting or SuiteCompleted
+// event. They have a dumb comment to "Do not invoke" fireTestRunStarted
 // and fireTestRunFinished, so I think they must be doing that themselves.
-// This means we don't have a way to really forward runStarting and
-// runCompleted reports either. But runAborted reports should be sent
+// This means we don't have a way to really forward RunStarting and
+// RunCompleted reports either. But RunAborted and SuiteAborted events should be sent
 // out the door somehow, so we report them with yet another fireTestFailure.
 class RunNotifierSuite extends FunSuite {
 

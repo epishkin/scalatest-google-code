@@ -21,8 +21,9 @@ package org.scalatest.testng {
   import org.jmock.Mockery
   import org.jmock.Expectations
   import org.hamcrest.core.IsAnything
+  import org.scalatest.events._
 
-   class TestNGSuiteSuite extends FunSuite with SuiteExpectations {
+  class TestNGSuiteSuite extends FunSuite with SuiteExpectations {
 
     test("Reporter should be notified when test passes") {
  
@@ -35,7 +36,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new SuccessTestNGSuite()).runTestNG(reporter)
+      (new SuccessTestNGSuite()).runTestNG(reporter, new Ordinal(99))
 
       context.assertIsSatisfied()
     }
@@ -51,7 +52,7 @@ package org.scalatest.testng {
         }
       )
 
-      (new FailureTestNGSuite()).runTestNG(reporter)
+      (new FailureTestNGSuite()).runTestNG(reporter, new Ordinal(99))
 
       context.assertIsSatisfied()
     }
@@ -61,7 +62,7 @@ package org.scalatest.testng {
       val testReporter = new TestReporter
 
       // when
-      (new FailureTestNGSuite()).runTestNG(testReporter)
+      (new FailureTestNGSuite()).runTestNG(testReporter, new Ordinal(99))
 
       // then
       assert(testReporter.errorMessage === "fail") // detail message in exception thrown by FailureTestNGSuite
@@ -80,7 +81,7 @@ package org.scalatest.testng {
       )
 
       // when runnning the suite with method that has invocationCount = 10") {
-      (new TestNGSuiteWithInvocationCount()).runTestNG(reporter)
+      (new TestNGSuiteWithInvocationCount()).runTestNG(reporter, new Ordinal(99))
 
       context.assertIsSatisfied()
     }
@@ -93,7 +94,7 @@ package org.scalatest.testng {
       // expect a single test should fail, followed by a single test being skipped
       context.checking(
         new Expectations() {
-          one(reporter).suiteStarting(`with`(new IsAnything[Report]))
+          one(reporter).apply(`with`(new IsAnything[SuiteStarting]))
           one(reporter).testStarting(`with`(new IsAnything[Report]))
           one(reporter).testFailed(`with`(new IsAnything[Report]))
           one(reporter).testIgnored(`with`(new IsAnything[Report]))
@@ -102,7 +103,7 @@ package org.scalatest.testng {
       )
 
       // when runnning the suite with a test that should fail and a test that should be skipped
-      (new SuiteWithSkippedTest()).runTestNG(reporter)
+      (new SuiteWithSkippedTest()).runTestNG(reporter, new Ordinal(99))
 
       context.assertIsSatisfied()
     }
@@ -118,7 +119,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new SuiteWithTwoTests()).runTestNG("testThatPasses", reporter)
+      (new SuiteWithTwoTests()).runTestNG("testThatPasses", reporter, new Ordinal(99))
 
       context.assertIsSatisfied()
     }
@@ -128,7 +129,7 @@ package org.scalatest.testng {
       val testReporter = new TestReporter
 
       // when - run the failing suite
-      new FailureTestNGSuite().runTestNG(testReporter)
+      new FailureTestNGSuite().runTestNG(testReporter, new Ordinal(99))
 
       // then get rerunnable from report 
       val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
@@ -141,7 +142,7 @@ package org.scalatest.testng {
       val testReporter = new TestReporter
 
       // when - run the passing suite
-      new SuccessTestNGSuite().runTestNG(testReporter)
+      new SuccessTestNGSuite().runTestNG(testReporter, new Ordinal(99))
 
       // then get rerunnable from report 
       val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];

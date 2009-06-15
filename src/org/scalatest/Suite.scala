@@ -1596,8 +1596,9 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
           else
             None
 
-    val rawString = Resources("suiteExecutionStarting")
+        val rawString = Resources("suiteExecutionStarting")
 
+/*
         val report =
           nestedSuite match {
             case spec: Spec =>
@@ -1608,8 +1609,14 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
               else
                 new Report(nestedSuite.suiteName, rawString)
           }
+*/
 
-        wrappedReporter.suiteStarting(report)
+        val formatter =
+          nestedSuite match {
+            case spec: Spec => Some(IndentedText(rawString, rawString, 0))
+            case _ => None
+          }
+        wrappedReporter(SuiteStarting(ordinal, nestedSuite.suiteName, Some(nestedSuite.getClass.getName), formatter, rerunnable))
 
 /*
         val formatter = 

@@ -139,6 +139,20 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
         makeFinalReport("runStopped") // TODO: use Summary info
 
+      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+
+        val stringToPrint =
+          formatter match {
+            case Some(IndentedText(formattedText, _, _)) => Some(formattedText)
+            case Some(MotionToSuppress) => None
+            case _ => Some(Resources("suiteStartingNoMessage"))
+          }
+
+        stringToPrint match {
+          case Some(string) => pw.println(string)
+          case None =>
+        }
+
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
         val lines = stringsToPrintOnError("abortedNote", "runAborted", message, throwable, formatter)
@@ -211,16 +225,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   */
   override def infoProvided(report: Report) {
     makeReport(report, "infoProvided")
-  }
-
-  /**
-  * Prints information indicating a suite of tests is about to start executing.
-  *
-  * @param report a <code>Report</code> that encapsulates the suite starting event to report.
-  * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-   */
-  override def suiteStarting(report: Report) {
-    makeReport(report, "suiteStarting")
   }
 
   /**

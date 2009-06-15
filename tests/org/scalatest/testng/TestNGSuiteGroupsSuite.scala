@@ -19,6 +19,7 @@ package org.scalatest.testng {
    import org.scalatest.jmock.TestReporter
    import org.testng.annotations.Test
    import testng.test._
+   import org.scalatest.events.Ordinal
 
    //execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
    class TestNGSuiteGroupsSuite extends FunSuite {
@@ -101,7 +102,7 @@ package org.scalatest.testng {
        val testReporter = new TestReporter
 
        // when
-       new TestNGSuiteWithGroups().runTestNG(None, testReporter, groupsToInclude, groupsToExclude)
+       new TestNGSuiteWithGroups().runTestNG(None, testReporter, groupsToInclude, groupsToExclude, new Ordinal(99))
 
        // then
        assert(testReporter.successCount === successCount)

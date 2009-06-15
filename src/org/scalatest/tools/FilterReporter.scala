@@ -35,6 +35,7 @@ private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpt
       case event: RunAborted => if (configSet.contains(ReporterOpts.PresentRunAborted)) report(event)
       case event: RunStopped => if (configSet.contains(ReporterOpts.PresentRunStopped)) report(event)
       case event: SuiteAborted => if (configSet.contains(ReporterOpts.PresentSuiteAborted)) report(event)
+      case event: SuiteStarting => if (configSet.contains(ReporterOpts.PresentSuiteStarting)) report(event)
 
       case _ => throw new RuntimeException("Unhandled event")
     }
@@ -57,10 +58,6 @@ private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpt
   override def testFailed(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentTestFailed))
       report.testFailed(rpt)
-
-  override def suiteStarting(rpt: Report) =
-    if (configSet.contains(ReporterOpts.PresentSuiteStarting))
-      report.suiteStarting(rpt)
 
   override def suiteCompleted(rpt: Report) =
     if (configSet.contains(ReporterOpts.PresentSuiteCompleted))
