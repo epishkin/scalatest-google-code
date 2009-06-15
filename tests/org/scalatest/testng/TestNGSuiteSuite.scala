@@ -98,7 +98,7 @@ package org.scalatest.testng {
           one(reporter).testStarting(`with`(new IsAnything[Report]))
           one(reporter).testFailed(`with`(new IsAnything[Report]))
           one(reporter).testIgnored(`with`(new IsAnything[Report]))
-          one(reporter).suiteCompleted(`with`(new IsAnything[Report]))
+          one(reporter).apply(`with`(new IsAnything[SuiteCompleted]))
         }
       )
 

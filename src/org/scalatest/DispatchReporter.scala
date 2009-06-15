@@ -60,7 +60,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
         case TestIgnoredMsg(rpt) => dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(rpt))
         case TestSucceededMsg(rpt) => dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(rpt))
         case TestFailedMsg(rpt) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(rpt))
-        case SuiteCompletedMsg(rpt) => dispatch("suiteCompleted", (reporter: Reporter) => reporter.suiteCompleted(rpt))
         case InfoProvidedMsg(rpt) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(rpt))
         case DisposeMsg() => {
           dispatch("dispose", (reporter: Reporter) => reporter.dispose())
@@ -164,23 +163,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
   */
   override def testStarting(report: Report) = julia ! TestStartingMsg(report)
   
-  /**
-   * Invokes <code>suiteCompleted</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list, passing the specified
-   * <code>report</code>.
-   *
-   * <P>
-   * This method attempts to invoke <code>suiteCompleted</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>suiteCompleted</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>suiteCompleted</code> method and handles it by printing an error message to the
-   * standard error stream.
-   *
-   * @param report a <code>Report</code> that encapsulates the suite completed event to report.
-   * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-   */
-  override def suiteCompleted(report: Report) = julia ! SuiteCompletedMsg(report)
-
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this
    * <code>DispatchReporter</code>'s reporters list.

@@ -66,6 +66,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
   
         val rawString2 = Resources("suiteCompletedNormally")
   
+/*
         val report2 =
           suite match {
             case spec: Spec =>
@@ -75,8 +76,14 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
               // new Report(suite.suiteName, rawString2, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
               new Report(suite.suiteName, rawString2, None, rerunnable)
           }
-  
-        dispatch.suiteCompleted(report2)
+*/
+
+        val formatter =
+          suite match {
+            case spec: Spec => Some(MotionToSuppress)
+            case _ => None
+          }
+        dispatch(SuiteCompleted(ordinal, suite.suiteName, Some(suite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
       }
       catch {
         case e: RuntimeException => {

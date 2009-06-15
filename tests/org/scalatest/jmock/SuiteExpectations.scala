@@ -43,7 +43,7 @@ trait SuiteExpectations {
       expectations.one(reporter).testStarting(expectations.`with`(new IsAnything[Report]))
       f
     }
-    expectations.one(reporter).suiteCompleted(expectations.`with`(new IsAnything[Report]))
+    expectations.one(reporter).apply(expectations.`with`(new IsAnything[SuiteCompleted]))
   }
 }
 
