@@ -18,7 +18,7 @@ package org.scalatest.testng
 import org.scalatest.Suite
 import org.scalatest.Report
 import org.scalatest.TestRerunner
-import org.scalatest.events.Ordinal
+import org.scalatest.events._
 
 import org.testng.TestNG
 import org.testng.TestListenerAdapter
@@ -70,7 +70,7 @@ import org.testng.TestListenerAdapter
  *
  * @author Josh Cough
  */
-trait TestNGSuite extends Suite {
+trait TestNGSuite extends Suite { thisSuite =>
 
   /**
    * Execute this <code>TestNGSuite</code>.
@@ -93,17 +93,15 @@ trait TestNGSuite extends Suite {
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
       groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
     
-    runTestNG(testName, reporter, groupsToInclude, groupsToExclude) // TODO Handle ordinals
-
-    firstOrdinal
+    runTestNG(testName, reporter, groupsToInclude, groupsToExclude, firstOrdinal)
   }
   
   /**
    * Runs TestNG with no test name, no groups. All tests in the class will be executed.
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
-  private[testng] def runTestNG(reporter: Reporter) : TestListenerAdapter = {
-    runTestNG(None, reporter, Set(), Set())
+  private[testng] def runTestNG(reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
+    runTestNG(None, reporter, Set(), Set(), firstOrdinal)
   }
  
   /**
@@ -111,8 +109,8 @@ trait TestNGSuite extends Suite {
    * @param   testName   the name of the method to run
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
-  private[testng] def runTestNG(testName: String, reporter: Reporter) : TestListenerAdapter = {
-    runTestNG( Some(testName), reporter, Set(), Set() )
+  private[testng] def runTestNG(testName: String, reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
+    runTestNG(Some(testName), reporter, Set(), Set(), firstOrdinal)
   }
   
   /**
@@ -124,7 +122,7 @@ trait TestNGSuite extends Suite {
    * @param   groupsToExclude    tests in groups in this Set will not be executed
    */  
   private[testng] def runTestNG(testName: Option[String], reporter: Reporter, groupsToInclude: Set[String], 
-      groupsToExclude: Set[String]) : TestListenerAdapter = {
+      groupsToExclude: Set[String], firstOrdinal: Ordinal): Ordinal = {
     
     val testng = new TestNG()
     
@@ -137,22 +135,22 @@ trait TestNGSuite extends Suite {
       case None => handleGroups(groupsToInclude, groupsToExclude, testng)
     }
 
-    this.run(testng, reporter)
+    this.run(testng, reporter, firstOrdinal)
   }
   
   /**
    * Runs the TestNG object which calls back to the given Reporter.
    */
-  private[testng] def run(testng: TestNG, reporter: Reporter): TestListenerAdapter = {
+  private[testng] def run(testng: TestNG, reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
     
     // setup the callback mechanism
-    val tla = new MyTestListenerAdapter(reporter)
+    val tla = new MyTestListenerAdapter(reporter, firstOrdinal)
     testng.addListener(tla)
     
-    //finally, run TestNG
+    // finally, run TestNG
     testng.run()
     
-    tla
+    tla.ordinal
   }
   
   /**
@@ -203,8 +201,10 @@ trait TestNGSuite extends Suite {
    * (12:02:27 AM) bvenners: onTestFailedButWithinSuccessPercentage(ITestResult tr) 
    * (12:02:34 AM) bvenners: maybe a testSucceeded with some extra info in the report
    */
-  private[testng] class MyTestListenerAdapter(reporter: Reporter) extends TestListenerAdapter {
+  private[testng] class MyTestListenerAdapter(reporter: Reporter, firstOrdinal: Ordinal) extends TestListenerAdapter {
     
+    var ordinal = firstOrdinal // TODO: Put this in an atomic, because TestNG can go multithreaded I think
+
     import org.testng.ITestContext
     import org.testng.ITestResult
     
@@ -218,8 +218,8 @@ trait TestNGSuite extends Suite {
      */
     override def onStart(itc: ITestContext) = {
       val message = Resources("suiteExecutionStarting")
-      //reporter.suiteStarting(new Report(getTestNameForReport(itc.getName), message, Some(suiteName), Some(className), Some(itc.getName)))
-      reporter.suiteStarting(new Report(getTestNameForReport(itc.getName), message))
+      reporter(SuiteStarting(ordinal, thisSuite.suiteName, Some(thisSuite.getClass.getName)))
+      ordinal = ordinal.next
     }
 
     /**

@@ -1304,10 +1304,6 @@ class SpecSuite extends FunSuite {
         ensureSpecReport(report)
       }
 	
-      override def suiteStarting(report: Report) {
-        ensureSpecReport(report)
-      }
-	
       override def suiteCompleted(report: Report) {
         ensureSpecReport(report)
       }
@@ -1316,6 +1312,7 @@ class SpecSuite extends FunSuite {
         event match {
           case event: RunAborted => ensureFormatterIsDefined(event)
           case event: SuiteAborted => ensureFormatterIsDefined(event)
+          case event: SuiteStarting => ensureFormatterIsDefined(event)
           case _ =>
         }
       }

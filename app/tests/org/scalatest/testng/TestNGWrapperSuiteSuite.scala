@@ -19,6 +19,7 @@ import java.io.File
 import org.apache.commons.io.FileUtils
 import org.jmock.Mockery
 import org.jmock.Expectations
+import org.scalatest.events.Ordinal
 
 package org.scalatest.testng {
 
@@ -48,7 +49,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter)
+      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter, new Ordinal(99))
 
       context.assertIsSatisfied()
     }
@@ -76,7 +77,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter)
+      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter, new Ordinal(99))
 
       context.assertIsSatisfied()
     }

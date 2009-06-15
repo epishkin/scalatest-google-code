@@ -761,6 +761,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerReport(report, ReporterOpts.PresentRunStopped)
           }
 
+      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+
+        // TODO: Oh, this kills the formatting too. Because that was being done with SpecReports. Will need to 
+        // fix that in the GUI. And the way to do it is store events. But that's a later step.
+        val report: Report = new Report(suiteName, "suite starting, dude", None, rerunnable)
+
+        usingEventDispatchThread {
+          registerReport(report, ReporterOpts.PresentSuiteStarting)
+        }
   
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
@@ -840,14 +849,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentInfoProvided)
-      }
-    }
-  
-    override def suiteStarting(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        registerReport(report, ReporterOpts.PresentSuiteStarting)
       }
     }
   
@@ -1269,6 +1270,14 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             scrollTheRerunStartingReportToTheTopOfVisibleReports()
           }
 
+        case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+
+          val report: Report = new Report(suiteName, "suite starting, dude", None, rerunnable)
+
+          usingEventDispatchThread {
+            registerRerunReport(report, ReporterOpts.PresentSuiteStarting)
+          }
+  
         case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
           val report: Report = new Report(suiteName, message, throwable, rerunnable)
@@ -1333,14 +1342,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         throw new NullPointerException("report is null")
       usingEventDispatchThread {
         registerRerunReport(report, ReporterOpts.PresentInfoProvided)
-      }
-    }
-  
-    override def suiteStarting(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        registerRerunReport(report, ReporterOpts.PresentSuiteStarting)
       }
     }
   

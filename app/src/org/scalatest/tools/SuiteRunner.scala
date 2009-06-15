@@ -19,7 +19,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 import org.scalatest.events._
 
-private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchReporter, stopRequested: Stopper, includes: Set[String],
+private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, stopRequested: Stopper, includes: Set[String],
     excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal) extends Runnable {
 
   def run() {
@@ -44,6 +44,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
           None
   
       val rawString = Resources("suiteExecutionStarting")
+/*
       val report =
         suite match {
           case spec: Spec =>
@@ -51,11 +52,17 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
           case _ =>
             new Report(suite.suiteName, rawString, None, rerunnable)
         }
+*/
+      val formatter =
+        suite match {
+          case spec: Spec => Some(IndentedText(rawString, rawString, 0))
+          case _ => None
+        }
   
-      dispatchReporter.suiteStarting(report)
+      dispatch(SuiteStarting(ordinal, suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
   
       try {
-        ordinal = suite.run(None, dispatchReporter, stopRequested, includes, excludes, propertiesMap, distributor, ordinal)
+        ordinal = suite.run(None, dispatch, stopRequested, includes, excludes, propertiesMap, distributor, ordinal)
   
         val rawString2 = Resources("suiteCompletedNormally")
   
@@ -69,7 +76,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
               new Report(suite.suiteName, rawString2, None, rerunnable)
           }
   
-        dispatchReporter.suiteCompleted(report2)
+        dispatch.suiteCompleted(report2)
       }
       catch {
         case e: RuntimeException => {
@@ -88,12 +95,12 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatchReporter: DispatchRep
 */
   
           // Hmm, this is the same code as in org.scalatest.SuiteRerunner. Sounds like a refactoring opportunity
-          val formatter =
+          val formatter3 =
             suite match {
               case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
               case _ => None
             }
-          dispatchReporter.apply(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
+          dispatch(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
           ordinal = ordinal.next
         }
       }
