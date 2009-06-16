@@ -1244,7 +1244,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  protected def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any]) {
+  protected def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null || reporter == null || stopRequested == null || goodies == null)
       throw new NullPointerException
@@ -1386,7 +1386,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * used by all the methods of this <code>Suite</code>.
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-                             goodies: Map[String, Any]) {
+                             goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1409,7 +1409,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
+      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
       case None => {
         for (tn <- testNames) {
           if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
@@ -1418,7 +1418,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
               wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopRequested, goodies)
+              runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
             }
           }
         }
@@ -1480,7 +1480,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       case None => runNestedSuites(wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
       case Some(_) =>
     }
-    runTests(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies)
+    runTests(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
 
     if (stopRequested()) {
       val rawString = Resources("executeStopping")

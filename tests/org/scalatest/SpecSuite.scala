@@ -1129,9 +1129,9 @@ class SpecSuite extends FunSuite {
   test("Goodies should make it through to runTest") {
     var foundMyGoodie = false
     class MySpec extends Spec with ShouldMatchers {
-      override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any]) {
+      override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
         foundMyGoodie = goodies.contains("my goodie")
-        super.runTest(testName, reporter, stopper, goodies)
+        super.runTest(testName, reporter, stopper, goodies, tracker)
       }
       it("it should find my goodie") {}
     }

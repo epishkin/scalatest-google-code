@@ -643,7 +643,7 @@ trait Spec extends Suite { thisSuite =>
    */
   override def groups: Map[String, Set[String]] = groupsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any]) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
     branch match {
       case desc @ Description(_, descriptionName, level) => {
 
@@ -693,11 +693,11 @@ trait Spec extends Suite { thisSuite =>
               wrappedReporter.testIgnored(report)
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopRequested, goodies)
+              runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
             }
           }
         }
-        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
       }
     )
   }
@@ -715,7 +715,7 @@ trait Spec extends Suite { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  override def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any]) {
+  override def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null || reporter == null || stopRequested == null || goodies == null)
       throw new NullPointerException
@@ -851,7 +851,7 @@ trait Spec extends Suite { thisSuite =>
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
   override def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-      goodies: Map[String, Any]) {
+      goodies: Map[String, Any], tracker: Tracker) {
     
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -867,8 +867,8 @@ trait Spec extends Suite { thisSuite =>
       throw new NullPointerException("goodies was null")
 
     testName match {
-      case None => runTestsInBranch(trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies)
-      case Some(exampleName) => runTest(exampleName, reporter, stopRequested, goodies)
+      case None => runTestsInBranch(trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
+      case Some(exampleName) => runTest(exampleName, reporter, stopRequested, goodies, tracker)
     }
   }
 

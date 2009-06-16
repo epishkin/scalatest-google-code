@@ -192,7 +192,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
    * @throws NullPointerException if any of <code>scenarioName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>properties</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(scenarioName: String, reporter: Reporter, stopRequested: Stopper, properties: Map[String, Any]) {
+  protected override def runTest(scenarioName: String, reporter: Reporter, stopRequested: Stopper, properties: Map[String, Any], tracker: Tracker) {
 
     if (scenarioName == null || reporter == null || stopRequested == null || properties == null)
       throw new NullPointerException
@@ -285,7 +285,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
   }
   
   protected override def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
-      goodies: Map[String, Any]) {
+      goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -308,7 +308,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
+      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
       case None => {
         val doList = atomic.get.doList.reverse
         for (node <- doList) {
@@ -321,7 +321,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
                   wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
                 }
                 else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
-                  runTest(tn, wrappedReporter, stopRequested, goodies)
+                  runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
                 }
               }
           }
