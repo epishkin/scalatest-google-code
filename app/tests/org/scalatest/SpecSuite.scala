@@ -40,7 +40,7 @@ class SpecSuite extends FunSuite {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testFailedAdExpected)
   }
 
@@ -67,7 +67,7 @@ class SpecSuite extends FunSuite {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testFailedAdExpected)
   }
 
@@ -92,7 +92,7 @@ class SpecSuite extends FunSuite {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testFailedAdExpected)
   }
 
@@ -117,7 +117,7 @@ class SpecSuite extends FunSuite {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testFailedAdExpected)
   }
 
@@ -142,7 +142,7 @@ class SpecSuite extends FunSuite {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testFailedAdExpected)
   }
 
@@ -167,7 +167,7 @@ class SpecSuite extends FunSuite {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testFailedAdExpected)
   }
 
@@ -279,7 +279,7 @@ class SpecSuite extends FunSuite {
     }
 
     val repA = new MyReporter
-    a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(!repA.testIgnoredCalled)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
@@ -292,7 +292,7 @@ class SpecSuite extends FunSuite {
     }
 
     val repB = new MyReporter
-    b.run(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Ordinal(99))
+    b.run(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
     assert(repB.testIgnoredCalled)
     assert(repB.lastReport.name endsWith "test this")
     assert(!b.theTestThisCalled)
@@ -306,7 +306,7 @@ class SpecSuite extends FunSuite {
     }
 
     val repC = new MyReporter
-    c.run(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Ordinal(99))
+    c.run(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
     assert(repC.testIgnoredCalled)
     assert(repC.lastReport.name endsWith "test that", repC.lastReport.name)
     assert(c.theTestThisCalled)
@@ -322,7 +322,7 @@ class SpecSuite extends FunSuite {
     }
 
     val repD = new MyReporter
-    d.run(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Ordinal(99))
+    d.run(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
     assert(repD.testIgnoredCalled)
     assert(repD.lastReport.name endsWith "test that") // last because should be in order of appearance
     assert(!d.theTestThisCalled)
@@ -338,7 +338,7 @@ class SpecSuite extends FunSuite {
     }
 
     val repE = new MyReporter
-    e.run(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    e.run(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(!repE.testIgnoredCalled)
     assert(e.theTestThisCalled)
   }
@@ -482,7 +482,7 @@ class SpecSuite extends FunSuite {
       it("must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -512,7 +512,7 @@ class SpecSuite extends FunSuite {
       it("must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -542,7 +542,7 @@ class SpecSuite extends FunSuite {
       it("must start with proper words") { fail() }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -598,7 +598,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -656,7 +656,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -714,7 +714,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -776,7 +776,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -836,7 +836,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -896,7 +896,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -933,7 +933,7 @@ class SpecSuite extends FunSuite {
       1 should behave like myBehavior
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -966,7 +966,7 @@ class SpecSuite extends FunSuite {
       1 should behave like myBehavior
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -999,7 +999,7 @@ class SpecSuite extends FunSuite {
       1 should behave like myBehavior
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -1032,7 +1032,7 @@ class SpecSuite extends FunSuite {
       1 should behave like myBehavior
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -1091,7 +1091,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -1121,7 +1121,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(Some("it should be invoked"), StubReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(Some("it should be invoked"), StubReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(correctTestWasInvoked)
     assert(!wrongTestWasInvoked)
   }
@@ -1136,7 +1136,7 @@ class SpecSuite extends FunSuite {
       it("it should find my goodie") {}
     }
     val a = new MySpec
-    a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map("my goodie" -> "hi"), None, new Ordinal(99))
+    a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map("my goodie" -> "hi"), None, new Tracker)
     assert(foundMyGoodie)  
   }
   
@@ -1160,7 +1160,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectTestName)
   }
   
@@ -1194,7 +1194,7 @@ class SpecSuite extends FunSuite {
       it("this thing must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectTestName)
   }
 
@@ -1213,7 +1213,7 @@ class SpecSuite extends FunSuite {
       it("this thing must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectTestName)
   }
 
@@ -1232,7 +1232,7 @@ class SpecSuite extends FunSuite {
       it("this thing must start with proper words") { fail() }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testFailedReportHadCorrectTestName)
   }
   
@@ -1254,7 +1254,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectTestName)
   }
     
@@ -1325,7 +1325,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(!myRep.gotANonSpecReport)
     assert(!myRep.gotAnUndefinedFormatter)
   }
@@ -1351,7 +1351,7 @@ class SpecSuite extends FunSuite {
       it("My spec text must have the proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
@@ -1378,7 +1378,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
@@ -1407,7 +1407,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
@@ -1445,7 +1445,7 @@ class SpecSuite extends FunSuite {
     }
     
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
   }
 
   test("Should get infoProvided with description if one and only one describe clause") {
@@ -1479,7 +1479,7 @@ class SpecSuite extends FunSuite {
     
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(myRep.infoProvidedCalled)
     assert(myRep.expectedMessageReceived)
   }
@@ -1528,7 +1528,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(myRep.testSucceededCalled)
     assert(myRep.testFailedCalled)
     assert(myRep.expectedLevelReceivedByTestSucceeded)
@@ -1595,7 +1595,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(myRep.testSucceededCalled)
     assert(myRep.testFailedCalled)
     assert(myRep.infoProvidedCalled)
@@ -1734,7 +1734,7 @@ class SpecSuite extends FunSuite {
       1 should behave like invocationVerifier
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectTestName)
   }
   
@@ -1762,7 +1762,7 @@ class SpecSuite extends FunSuite {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(testStartingReportHadCorrectTestName)
   }
  
@@ -1874,7 +1874,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Ordinal(99))
+    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(myRep.infoProvidedCalled)
     assert(myRep.expectedMessageReceived)
   }

@@ -64,8 +64,8 @@ trait ExecuteAndRun {
     groupsToExclude: Set[String],
     goodies: Map[String, Any],
     distributor: Option[Distributor],
-    firstOrdinal: Ordinal
-  ): Ordinal
+    tracker: Tracker
+  )
 
   /**
    * Run a test.

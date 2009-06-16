@@ -65,31 +65,33 @@ import org.scalatest.events._
  * This version of <code>JUnitSuite</code> was tested with JUnit version 4.4.
  * </p>
  *
+ * <p>
+ * Instances of this trait are not thread safe.
+ * </p>
+ *
  * @author Bill Venners
  * @author Daniel Watson
  * @author Joel Neely
  */
 trait JUnitSuite extends Suite {
 
-  // TODO: put this in an atomic
-  private var ordinal = new Ordinal(99)
+  // TODO: This may need to be made thread safe, because who knows what Thread JUnit will fire through this
+  private var theTracker = new Tracker
 
   override def run(testName: Option[String], report: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    ordinal = firstOrdinal
+    theTracker = tracker
 
     val jUnitCore = new JUnitCore
-    jUnitCore.addListener(new MyRunListener(report, firstOrdinal))
+    jUnitCore.addListener(new MyRunListener(report, tracker))
     val myClass = getClass
     jUnitCore.run(myClass)
-
-    ordinal
   }
 
 // verifySomething(org.scalatest.junit.helpers.HappySuite)
 // Description.displayName of a test report has the form <testMethodName>(<suiteClassName>)
-  private class MyRunListener(report: Reporter, firstOrdinal: Ordinal) extends RunListener {
+  private class MyRunListener(report: Reporter, tracker: Tracker) extends RunListener {
 
 /*
     override def testAssumptionFailure(failure: Failure) {
@@ -114,13 +116,11 @@ trait JUnitSuite extends Suite {
     }
 
     override def testRunFinished(result: Result) {
-      report(RunCompleted(ordinal))
-      ordinal = ordinal.next // In theory, don't need this, but who knows what JUnit will do
+      report(RunCompleted(theTracker.nextOrdinal()))
     }
 
     override def testRunStarted(description: Description) {
-      report(RunStarting(ordinal, description.testCount))
-      ordinal = ordinal.next
+      report(RunStarting(theTracker.nextOrdinal(), description.testCount))
     }
 
     override def testStarted(description: Description) {

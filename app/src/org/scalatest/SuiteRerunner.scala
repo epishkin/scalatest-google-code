@@ -30,9 +30,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
     throw new NullPointerException
 
   def apply(report: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
-            goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal, loader: ClassLoader) {
-
-    var ordinal = firstOrdinal
+            goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader) {
 
     try {
       val suiteClass = loader.loadClass(suiteClassName)
@@ -46,104 +44,67 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
         else
           None
 
-      report(RunStarting(ordinal, expectedTestCount))
-      ordinal = ordinal.next
+      report(RunStarting(tracker.nextOrdinal(), expectedTestCount))
 
       try {
 
         val rawString = Resources("suiteExecutionStarting")
-/*
-        val rpt =
-          suite match {
-            case spec: Spec =>
-              new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
-            case _ =>
-              new Report(suite.suiteName, rawString, None, rerunnable)
-          }
-*/
         val formatter =
           suite match {
             case spec: Spec => Some(IndentedText(rawString, rawString, 0))
             case _ => None
           }
-        report(SuiteStarting(ordinal, suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
+        report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
 
-        suite.run(None, report, stopRequested, includes, excludes, goodies, distributor, ordinal)
+        suite.run(None, report, stopRequested, includes, excludes, goodies, distributor, tracker)
 
         val rawString2 = Resources("suiteCompletedNormally")
-/*
-        val rpt2 =
-          suite match {
-            case spec: Spec =>
-              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, None, rerunnable)
-            case _ =>
-              new Report(suite.suiteName, rawString2, None, rerunnable)
-          }
-*/
         val formatter2 =
           suite match {
             case spec: Spec => Some(MotionToSuppress)
             case _ => None
           }
-        report(SuiteCompleted(ordinal, suite.suiteName, Some(suite.getClass.getName), None, formatter2, rerunnable)) // TODO: add a duration
+        report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), None, formatter2, rerunnable)) // TODO: add a duration
       }
       catch {
         case e: RuntimeException => {
           val rawString3 = Resources("executeException")
-/*
-          val rpt3 =
-            suite match {
-              case spec: Spec =>
-                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
-              case _ =>
-                new Report(suite.suiteName, rawString3, Some(e), rerunnable)
-            }
-*/
           val formatter3 =
             suite match {
               case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
               case _ => None
             }
-          report(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
-          ordinal = ordinal.next
+          report(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
         }
       }
       
       if (stopRequested()) {
-        report(RunStopped(ordinal))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunStopped(tracker.nextOrdinal()))
       }
       else {
-        report(RunCompleted(ordinal)) // TODO: pass a duration
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunCompleted(tracker.nextOrdinal())) // TODO: pass a duration
       }
     }
     catch {
       case e: ClassNotFoundException => {
-        report(RunAborted(ordinal, Resources("cannotLoadSuite", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e)))
       }
       case e: InstantiationException => {
-        report(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
       }
       case e: IllegalAccessException => {
-        report(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
       }
       case e: SecurityException => {
-        report(RunAborted(ordinal, Resources("securityWhenRerruning", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("securityWhenRerruning", e.getMessage), Some(e)))
       }
       case e: NoClassDefFoundError => {
         // Suggest the problem might be a bad runpath
         // Maybe even print out the current runpath
-        report(RunAborted(ordinal, Resources("cannotLoadClass", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e)))
       }
       case e: Throwable => {
-        report(RunAborted(ordinal, Resources.bigProblems(e), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e)))
       }
     }
   }

@@ -1057,7 +1057,7 @@ object Runner {
     if (doneListener == null)
       throw new NullPointerException
 
-    var ordinal = new Ordinal(runStamp)
+    var tracker = new Tracker(new Ordinal(runStamp))
 
     try {
       val loadProblemsExist =
@@ -1065,8 +1065,7 @@ object Runner {
           val unassignableList = suitesList.filter(className => !classOf[Suite].isAssignableFrom(loader.loadClass(className)))
           if (!unassignableList.isEmpty) {
             val names = for (className <- unassignableList) yield " " + className
-            dispatchReporter.apply(RunAborted(ordinal, Resources("nonSuite") + names, None))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("nonSuite") + names, None))
             true
           }
           else {
@@ -1075,8 +1074,7 @@ object Runner {
         }
         catch {
           case e: ClassNotFoundException => {
-            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotLoadSuite", e.getMessage), Some(e)))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e)))
             true
           }
         }
@@ -1143,50 +1141,39 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          dispatchReporter.apply(RunStarting(ordinal, expectedTestCount))
-          ordinal = ordinal.next
+          dispatchReporter.apply(RunStarting(tracker.nextOrdinal(), expectedTestCount))
 
           if (concurrent) {
             val distributor = new ConcurrentDistributor(dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes), propertiesMap)
             for (suite <- suiteInstances) {
-              val (nextForNewSuite, nextForThisRunner) = ordinal.nextNewOldPair
-              ordinal = nextForThisRunner
-              distributor.apply(suite, nextForNewSuite)
+              distributor.apply(suite, tracker.nextTracker())
             }
             distributor.waitUntilDone()
           }
           else {
             for (suite <- suiteInstances) {
-              val (nextForNewSuite, nextForThisRunner) = ordinal.nextNewOldPair
-              ordinal = nextForThisRunner
               val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes),
-                  propertiesMap, None, nextForNewSuite)
+                  propertiesMap, None, tracker)
               suiteRunner.run()
             }
           }
 
           if (stopRequested()) {
-            dispatchReporter.apply(RunStopped(ordinal))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunStopped(tracker.nextOrdinal()))
           }
           else {
-            dispatchReporter.apply(RunCompleted(ordinal))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunCompleted(tracker.nextOrdinal()))
           }
         }
         catch {
           case e: InstantiationException =>
-            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
           case e: IllegalAccessException =>
-            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
           case e: NoClassDefFoundError =>
-            dispatchReporter.apply(RunAborted(ordinal, Resources("cannotLoadClass", e.getMessage), Some(e)))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e)))
           case e: Throwable =>
-            dispatchReporter.apply(RunAborted(ordinal, Resources.bigProblems(e), Some(e)))
-            ordinal = ordinal.next // Probably don't need to do this, but just in case
+            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e)))
         }
       }
     }

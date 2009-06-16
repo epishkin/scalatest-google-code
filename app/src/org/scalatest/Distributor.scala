@@ -46,16 +46,17 @@ import org.scalatest.events.Ordinal
  *
  * @author Bill Venners
  */
-trait Distributor extends ((Suite, Ordinal) => Unit) {
+trait Distributor extends ((Suite, Tracker) => Unit) {
 
   /**
    * Puts a <code>Suite</code> into the <code>Distributor</code>.
    *
    * @param suite the <code>Suite</code> to put into the <code>Distributor</code>.
+   * @param tracker a <code>Tracker</code> to pass to the <code>Suite</code>'s <code>run</code> method.
    *
-   * @throws NullPointerException if <code>suite</code> is <code>null</code>.
+   * @throws NullPointerException if either <code>suite</code> or <code>tracker</code> is <code>null</code>.
    */
-  override def apply(suite: Suite, firstOrdinal: Ordinal)
+  override def apply(suite: Suite, tracker: Tracker)
 }
 
 /*

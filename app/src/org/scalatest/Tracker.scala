@@ -21,6 +21,7 @@ import org.scalatest.events.Ordinal
  * Instances of this class are not thread safe. It should be used by only one thread. Anytime a new
  * thread will be involved in sending events, a new Tracker should be obtained by invoking <code>nextTracker()</code>.
  * 
+ * <p>
  * The reason Tracker is not immutable is that methods would have to pass back, and that's hard because exceptions can
  * also be thrown. So this mutable object is how methods invoked "returns" updates to the current ordinal whether those
  * methods return normally or complete abruptly with an exception. Also, sometimes with closures capturing free variables,
@@ -28,13 +29,23 @@ import org.scalatest.events.Ordinal
  * some other method. So in other words the calling method may need to know the "current ordinal" even before the method
  * it calls has completed in any manner, i.e., while it is running. (The example is the info stuff in FunSuite, which sets
  * up an info that's useful during a run, then calls super.run(...).
+ * </p>
  */
 class Tracker(firstOrdinal: Ordinal) {
+
   private var currentOrdinal = firstOrdinal
+
+  /**
+   * Constructs a new <code>Tracker</code> with a new <code>Ordinal</code> initialized with a run stamp of 0.
+   */
+  def this() = this(new Ordinal(0))
+
   def nextOrdinal(): Ordinal = {
+    val ordinalToReturn = currentOrdinal
     currentOrdinal = currentOrdinal.next
-    currentOrdinal
+    ordinalToReturn
   }
+
   def nextTracker(): Tracker = {
     val (nextForNewThread, nextForThisThread) = currentOrdinal.nextNewOldPair
     currentOrdinal = nextForThisThread
