@@ -659,7 +659,7 @@ trait FunSuite extends Suite { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any]) {
+  protected override def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null || reporter == null || stopRequested == null || goodies == null)
       throw new NullPointerException
@@ -768,7 +768,7 @@ trait FunSuite extends Suite { thisSuite =>
   }
   
   protected override def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-      goodies: Map[String, Any]) {
+      goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -791,7 +791,7 @@ trait FunSuite extends Suite { thisSuite =>
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies)
+      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
       case None => {
         val doList = atomic.get.doList.reverse
         for (node <- doList) {
@@ -804,7 +804,7 @@ trait FunSuite extends Suite { thisSuite =>
                   wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
                 }
                 else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-                  runTest(tn, wrappedReporter, stopRequested, goodies)
+                  runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
                 }
               }
           }

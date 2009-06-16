@@ -81,6 +81,7 @@ trait ExecuteAndRun {
     testName: String,
     reporter: Reporter,
     stopper: Stopper,
-    goodies: Map[String, Any]
+    goodies: Map[String, Any],
+    tracker: Tracker
   )
 }
