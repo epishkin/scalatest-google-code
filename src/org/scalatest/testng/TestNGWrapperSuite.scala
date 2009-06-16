@@ -15,7 +15,6 @@
  */
 package org.scalatest.testng
 
-import org.scalatest.events.Ordinal
 import org.testng.TestNG
 import org.testng.TestListenerAdapter
 
@@ -70,17 +69,17 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
    * <br><br>
    */
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
-    runTestNG(reporter, groupsToInclude, groupsToExclude, firstOrdinal)
+    runTestNG(reporter, groupsToInclude, groupsToExclude, tracker)
   }
 
   /**
    * Runs all tests in the xml suites.
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
-  override private[testng] def runTestNG(reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
-    runTestNG(reporter, Set(), Set(), firstOrdinal: Ordinal)
+  override private[testng] def runTestNG(reporter: Reporter, tracker: Tracker) {
+    runTestNG(reporter, Set(), Set(), tracker)
   }
 
   /**
@@ -95,13 +94,13 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
    * @param   groupsToExclude    tests in groups in this Set will not be executed
    */ 
   private[testng] def runTestNG(reporter: Reporter, groupsToInclude: Set[String], 
-      groupsToExclude: Set[String], firstOrdinal: Ordinal): Ordinal = {
+      groupsToExclude: Set[String], tracker: Tracker) {
     
     val testng = new TestNG
     handleGroups(groupsToInclude, groupsToExclude, testng)
     addXmlSuitesToTestNG(testng)
     
-    run(testng, reporter, firstOrdinal)
+    run(testng, reporter, tracker)
   }
   
   /**

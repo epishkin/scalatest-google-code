@@ -30,52 +30,41 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
 
   // [bv: I wasn't sure if I need to say override here.]
   def apply(report: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String], goodies: Map[String, Any],
-            distributor: Option[Distributor], firstOrdinal: Ordinal, loader: ClassLoader) {
-
-    var ordinal = firstOrdinal
+            distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader) {
 
     try {
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance.asInstanceOf[Suite]
 
-      report(RunStarting(ordinal, 1))
-      ordinal = ordinal.next
+      report(RunStarting(tracker.nextOrdinal(), 1))
 
-      ordinal = suite.run(Some(testName), report, stopper, includes, excludes, goodies, distributor, ordinal) 
+      suite.run(Some(testName), report, stopper, includes, excludes, goodies, distributor, tracker) 
 
-      report(RunCompleted(ordinal)) // TODO: pass a duration
-      // Don't need to increment ordinal, because it isn't used after this
+      report(RunCompleted(tracker.nextOrdinal())) // TODO: pass a duration
     }
     catch {
       case e: ClassNotFoundException => {
-        report(RunAborted(ordinal, Resources("cannotLoadSuite", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e)))
       }
       case e: InstantiationException => {
-        report(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
       }
       case e: IllegalAccessException => {
-        report(RunAborted(ordinal, Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
       }
       case e: NoSuchMethodException => {
-        report(RunAborted(ordinal, Resources("cannotFindMethod", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotFindMethod", e.getMessage), Some(e)))
       }
       case e: SecurityException => {
-        report(RunAborted(ordinal, Resources("securityWhenRerruning", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("securityWhenRerruning", e.getMessage), Some(e)))
       }
       case e: NoClassDefFoundError => {
         // Suggest the problem might be a bad runpath
         // Maybe even print out the current runpath
-        report(RunAborted(ordinal, Resources("cannotLoadClass", e.getMessage), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e)))
       }
       case e: Throwable => {
-        report(RunAborted(ordinal, Resources.bigProblems(e), Some(e)))
-        // Don't need to increment ordinal, because it isn't used after this
+        report(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e)))
       }
     }
   }

@@ -1391,16 +1391,17 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
       val distributor: Option[Distributor] = None
 
+      val tracker = new Tracker(new Ordinal(nextRunStamp))
+
       withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, Some(graphicRerunReporter), None) {
         (loader, dispatchReporter) => {
           try {
             rerun(dispatchReporter, stopper, includes, Runner.excludesWithIgnore(excludes), propertiesMap,
-                distributor, new Ordinal(nextRunStamp), loader)
+                distributor, tracker, loader)
           }
           catch {
             case e: Throwable => {
-              // TODO: There's no way currently to do this ordinal correctly
-              dispatchReporter.apply(RunAborted(new Ordinal(nextRunStamp), Resources.bigProblems(e), Some(e)))
+              dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e)))
             }
           }
           finally {

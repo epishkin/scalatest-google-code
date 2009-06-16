@@ -49,7 +49,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter, new Ordinal(99))
+      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter, new Tracker)
 
       context.assertIsSatisfied()
     }
@@ -77,7 +77,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter, new Ordinal(99))
+      (new TestNGWrapperSuite(List(xmlSuiteFile))).runTestNG(reporter, new Tracker)
 
       context.assertIsSatisfied()
     }

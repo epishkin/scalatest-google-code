@@ -15,8 +15,6 @@
  */
 package org.scalatest
 
-import org.scalatest.events.Ordinal
-
 /**
  * Trait that can be mixed into suites that need methods invoked before and after executing the
  * suite, and/or before and after running each test. This trait facilitates a style of testing in which mutable
@@ -180,14 +178,12 @@ trait BeforeAndAfter extends ExecuteAndRun {
    * </p>
   */
   abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
-                       goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
-    // wierd I must do it this way
-    var ordinal = firstOrdinal
+                       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     var thrownException: Option[Throwable] = None
 
     beforeAll()
     try {
-      ordinal = super.run(testName, reporter, stopper, includes, excludes, goodies, distributor, ordinal)
+      super.run(testName, reporter, stopper, includes, excludes, goodies, distributor, tracker)
     }
     catch {
       case e: Exception => thrownException = Some(e)
@@ -208,7 +204,5 @@ trait BeforeAndAfter extends ExecuteAndRun {
           }
       }
     }
-
-    ordinal
   }
 }

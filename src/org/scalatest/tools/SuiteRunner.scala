@@ -20,11 +20,9 @@ import java.lang.reflect.Modifier
 import org.scalatest.events._
 
 private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, stopRequested: Stopper, includes: Set[String],
-    excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal) extends Runnable {
+    excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) extends Runnable {
 
   def run() {
-
-    var ordinal = firstOrdinal
 
     if (!stopRequested()) {
       // Create a Rerunner if the Suite has a no-arg constructor
@@ -59,10 +57,10 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
           case _ => None
         }
   
-      dispatch(SuiteStarting(ordinal, suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
+      dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
   
       try {
-        ordinal = suite.run(None, dispatch, stopRequested, includes, excludes, propertiesMap, distributor, ordinal)
+        suite.run(None, dispatch, stopRequested, includes, excludes, propertiesMap, distributor, tracker)
   
         val rawString2 = Resources("suiteCompletedNormally")
   
@@ -83,7 +81,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
             case spec: Spec => Some(MotionToSuppress)
             case _ => None
           }
-        dispatch(SuiteCompleted(ordinal, suite.suiteName, Some(suite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
+        dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
       }
       catch {
         case e: RuntimeException => {
@@ -107,8 +105,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
               case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
               case _ => None
             }
-          dispatch(SuiteAborted(ordinal, rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
-          ordinal = ordinal.next
+          dispatch(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
         }
       }
     }

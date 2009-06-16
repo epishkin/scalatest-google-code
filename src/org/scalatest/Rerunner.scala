@@ -25,7 +25,7 @@ import org.scalatest.events.Ordinal
  *
  * @author Bill Venners
  */
-trait Rerunner extends ((Reporter, Stopper, Set[String], Set[String], Map[String, Any], Option[Distributor], Ordinal, ClassLoader) => Unit) {
+trait Rerunner extends ((Reporter, Stopper, Set[String], Set[String], Map[String, Any], Option[Distributor], Tracker, ClassLoader) => Unit) {
 
   /**
    * Rerun a test or other entity (such as a suite), reporting results to the specified <code>Reporter</code>.
@@ -43,5 +43,5 @@ trait Rerunner extends ((Reporter, Stopper, Set[String], Set[String], Map[String
    * @throws NullPointerException if any of the passed values are <code>null</code>.
    */
   def apply(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
-            goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal, loader: ClassLoader): Unit
+            goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader): Unit
 }

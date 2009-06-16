@@ -36,7 +36,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new SuccessTestNGSuite()).runTestNG(reporter, new Ordinal(99))
+      (new SuccessTestNGSuite()).runTestNG(reporter, new Tracker)
 
       context.assertIsSatisfied()
     }
@@ -52,7 +52,7 @@ package org.scalatest.testng {
         }
       )
 
-      (new FailureTestNGSuite()).runTestNG(reporter, new Ordinal(99))
+      (new FailureTestNGSuite()).runTestNG(reporter, new Tracker)
 
       context.assertIsSatisfied()
     }
@@ -62,7 +62,7 @@ package org.scalatest.testng {
       val testReporter = new TestReporter
 
       // when
-      (new FailureTestNGSuite()).runTestNG(testReporter, new Ordinal(99))
+      (new FailureTestNGSuite()).runTestNG(testReporter, new Tracker)
 
       // then
       assert(testReporter.errorMessage === "fail") // detail message in exception thrown by FailureTestNGSuite
@@ -81,7 +81,7 @@ package org.scalatest.testng {
       )
 
       // when runnning the suite with method that has invocationCount = 10") {
-      (new TestNGSuiteWithInvocationCount()).runTestNG(reporter, new Ordinal(99))
+      (new TestNGSuiteWithInvocationCount()).runTestNG(reporter, new Tracker)
 
       context.assertIsSatisfied()
     }
@@ -103,7 +103,7 @@ package org.scalatest.testng {
       )
 
       // when runnning the suite with a test that should fail and a test that should be skipped
-      (new SuiteWithSkippedTest()).runTestNG(reporter, new Ordinal(99))
+      (new SuiteWithSkippedTest()).runTestNG(reporter, new Tracker)
 
       context.assertIsSatisfied()
     }
@@ -119,7 +119,7 @@ package org.scalatest.testng {
         }
       )
       
-      (new SuiteWithTwoTests()).runTestNG("testThatPasses", reporter, new Ordinal(99))
+      (new SuiteWithTwoTests()).runTestNG("testThatPasses", reporter, new Tracker)
 
       context.assertIsSatisfied()
     }
@@ -129,7 +129,7 @@ package org.scalatest.testng {
       val testReporter = new TestReporter
 
       // when - run the failing suite
-      new FailureTestNGSuite().runTestNG(testReporter, new Ordinal(99))
+      new FailureTestNGSuite().runTestNG(testReporter, new Tracker)
 
       // then get rerunnable from report 
       val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
@@ -142,7 +142,7 @@ package org.scalatest.testng {
       val testReporter = new TestReporter
 
       // when - run the passing suite
-      new SuccessTestNGSuite().runTestNG(testReporter, new Ordinal(99))
+      new SuccessTestNGSuite().runTestNG(testReporter, new Tracker)
 
       // then get rerunnable from report 
       val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];

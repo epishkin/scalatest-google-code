@@ -91,17 +91,17 @@ trait TestNGSuite extends Suite { thisSuite =>
    * <br><br>
    */
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
+      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
-    runTestNG(testName, reporter, groupsToInclude, groupsToExclude, firstOrdinal)
+    runTestNG(testName, reporter, groupsToInclude, groupsToExclude, tracker)
   }
   
   /**
    * Runs TestNG with no test name, no groups. All tests in the class will be executed.
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
-  private[testng] def runTestNG(reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
-    runTestNG(None, reporter, Set(), Set(), firstOrdinal)
+  private[testng] def runTestNG(reporter: Reporter, tracker: Tracker) {
+    runTestNG(None, reporter, Set(), Set(), tracker)
   }
  
   /**
@@ -109,8 +109,8 @@ trait TestNGSuite extends Suite { thisSuite =>
    * @param   testName   the name of the method to run
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
-  private[testng] def runTestNG(testName: String, reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
-    runTestNG(Some(testName), reporter, Set(), Set(), firstOrdinal)
+  private[testng] def runTestNG(testName: String, reporter: Reporter, tracker: Tracker) {
+    runTestNG(Some(testName), reporter, Set(), Set(), tracker)
   }
   
   /**
@@ -122,7 +122,7 @@ trait TestNGSuite extends Suite { thisSuite =>
    * @param   groupsToExclude    tests in groups in this Set will not be executed
    */  
   private[testng] def runTestNG(testName: Option[String], reporter: Reporter, groupsToInclude: Set[String], 
-      groupsToExclude: Set[String], firstOrdinal: Ordinal): Ordinal = {
+      groupsToExclude: Set[String], tracker: Tracker) {
     
     val testng = new TestNG()
     
@@ -135,22 +135,20 @@ trait TestNGSuite extends Suite { thisSuite =>
       case None => handleGroups(groupsToInclude, groupsToExclude, testng)
     }
 
-    this.run(testng, reporter, firstOrdinal)
+    this.run(testng, reporter, tracker)
   }
   
   /**
    * Runs the TestNG object which calls back to the given Reporter.
    */
-  private[testng] def run(testng: TestNG, reporter: Reporter, firstOrdinal: Ordinal): Ordinal = {
+  private[testng] def run(testng: TestNG, reporter: Reporter, tracker: Tracker) {
     
     // setup the callback mechanism
-    val tla = new MyTestListenerAdapter(reporter, firstOrdinal)
+    val tla = new MyTestListenerAdapter(reporter, tracker)
     testng.addListener(tla)
     
     // finally, run TestNG
     testng.run()
-    
-    tla.ordinal
   }
   
   /**
@@ -201,9 +199,9 @@ trait TestNGSuite extends Suite { thisSuite =>
    * (12:02:27 AM) bvenners: onTestFailedButWithinSuccessPercentage(ITestResult tr) 
    * (12:02:34 AM) bvenners: maybe a testSucceeded with some extra info in the report
    */
-  private[testng] class MyTestListenerAdapter(reporter: Reporter, firstOrdinal: Ordinal) extends TestListenerAdapter {
+  private[testng] class MyTestListenerAdapter(reporter: Reporter, tracker: Tracker) extends TestListenerAdapter {
     
-    var ordinal = firstOrdinal // TODO: Put this in an atomic, because TestNG can go multithreaded I think
+    // TODO: Put the tracker in an atomic, because TestNG can go multithreaded?
 
     import org.testng.ITestContext
     import org.testng.ITestResult
@@ -217,8 +215,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      * and/or chat with Cedric to determine if its possible to get this number from TestNG.
      */
     override def onStart(itc: ITestContext) = {
-      reporter(SuiteStarting(ordinal, thisSuite.suiteName, Some(thisSuite.getClass.getName)))
-      ordinal = ordinal.next
+      reporter(SuiteStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName)))
     }
 
     /**
@@ -227,8 +224,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      * in the ITestContext object into ScalaTest Reports and call reporter.infoProvided.
      */
     override def onFinish(itc: ITestContext) = {
-      reporter(SuiteCompleted(ordinal, thisSuite.suiteName, Some(thisSuite.getClass.getName)))
-      ordinal = ordinal.next
+      reporter(SuiteCompleted(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName)))
     }
     
     /**

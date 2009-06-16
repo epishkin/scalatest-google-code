@@ -19,8 +19,6 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
-import org.scalatest.events.Ordinal
-
 /**
  *
  *
@@ -333,9 +331,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
-      goodies: Map[String, Any], distributor: Option[Distributor], firstOrdinal: Ordinal): Ordinal = {
-
-    var ordinal = firstOrdinal
+      goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     // Set the flag that indicates run has been invoked, which will disallow any further
     // invocations of "test" with an IllegalStateException.
@@ -363,12 +359,10 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
       }
 
     try {
-      ordinal = super.run(testName, wrappedReporter, stopRequested, includes, excludes, goodies, distributor, ordinal)
+      super.run(testName, wrappedReporter, stopRequested, includes, excludes, goodies, distributor, tracker)
     }
     finally {
       currentInformer = zombieInformer
     }
-
-    ordinal
   }
 }
