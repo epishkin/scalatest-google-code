@@ -70,6 +70,8 @@ package org.scalatest.junit {
           case event: TestStarting =>
             testStartingEvent = Some(event)
             testStartingCount += 1
+          case event: TestIgnored =>
+            testIgnoredEvent = Some(event)
           case _ => 
         }
       }
@@ -89,10 +91,7 @@ package org.scalatest.junit {
         testFailedReport = Some(report)
       }
 
-      var testIgnoredReport: Option[Report] = None
-      override def testIgnored(report: Report) {
-        testIgnoredReport = Some(report)
-      }
+      var testIgnoredEvent: Option[TestIgnored] = None
     }
 
     test("A JUnitSuite with a JUnit 4 Test annotation will cause TestStarting event to be fired") {
@@ -124,13 +123,15 @@ package org.scalatest.junit {
       assert(repA.testFailedReport.get.name === "verifySomething(org.scalatest.junit.helpers.BitterSuite)")
     }
 
-    test("A JUnitSuite with JUnit 4 Ignore and Test annotations will cause testIgnored to be invoked") {
+    test("A JUnitSuite with JUnit 4 Ignore and Test annotations will cause TestIgnored to be fired") {
 
       val ignored = new IgnoredSuite
       val repA = new MyReporter
       ignored.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-      assert(repA.testIgnoredReport.isDefined)
-      assert(repA.testIgnoredReport.get.name === "verifySomething(org.scalatest.junit.helpers.IgnoredSuite)")
+      assert(repA.testIgnoredEvent.isDefined)
+      assert(repA.testIgnoredEvent.get.testName === "verifySomething")
+      assert(repA.testIgnoredEvent.get.suiteName === "IgnoredSuite")
+      assert(repA.testIgnoredEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.IgnoredSuite")
     }
 
     test("A JUnitSuite with two JUnit 4 Test annotations will cause TestStarting and TestSucceeded events to be fired twice each") {

@@ -259,13 +259,15 @@ class SpecSuite extends FunSuite {
   }
 
   class MyReporter extends Reporter {
-    var testIgnoredCalled = false
-    var lastReport: Report = null
-    override def testIgnored(report: Report) {
-      testIgnoredCalled = true
-      lastReport = report
-    }
+    var testIgnoredReceived = false
+    var lastEvent: TestIgnored = null
     def apply(event: Event) {
+      event match {
+        case event: TestIgnored =>
+          testIgnoredReceived = true
+          lastEvent = event
+        case _ =>
+      }
     }
   }
 
@@ -280,7 +282,7 @@ class SpecSuite extends FunSuite {
 
     val repA = new MyReporter
     a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(!repA.testIgnoredCalled)
+    assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
 
@@ -293,8 +295,8 @@ class SpecSuite extends FunSuite {
 
     val repB = new MyReporter
     b.run(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repB.testIgnoredCalled)
-    assert(repB.lastReport.name endsWith "test this")
+    assert(repB.testIgnoredReceived)
+    assert(repB.lastEvent.testName endsWith "test this")
     assert(!b.theTestThisCalled)
     assert(b.theTestThatCalled)
 
@@ -307,8 +309,8 @@ class SpecSuite extends FunSuite {
 
     val repC = new MyReporter
     c.run(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repC.testIgnoredCalled)
-    assert(repC.lastReport.name endsWith "test that", repC.lastReport.name)
+    assert(repC.testIgnoredReceived)
+    assert(repC.lastEvent.testName endsWith "test that", repC.lastEvent.testName)
     assert(c.theTestThisCalled)
     assert(!c.theTestThatCalled)
 
@@ -323,8 +325,8 @@ class SpecSuite extends FunSuite {
 
     val repD = new MyReporter
     d.run(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repD.testIgnoredCalled)
-    assert(repD.lastReport.name endsWith "test that") // last because should be in order of appearance
+    assert(repD.testIgnoredReceived)
+    assert(repD.lastEvent.testName endsWith "test that") // last because should be in order of appearance
     assert(!d.theTestThisCalled)
     assert(!d.theTestThatCalled)
 
@@ -339,7 +341,7 @@ class SpecSuite extends FunSuite {
 
     val repE = new MyReporter
     e.run(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(!repE.testIgnoredCalled)
+    assert(!repE.testIgnoredReceived)
     assert(e.theTestThisCalled)
   }
 
@@ -1290,10 +1292,6 @@ class SpecSuite extends FunSuite {
         ensureSpecReport(report)
       }
 	    
-      override def testIgnored(report: Report) {
-        ensureSpecReport(report)
-      }
-	
       override def testFailed(report: Report) {
         ensureSpecReport(report)
       }
@@ -1309,6 +1307,7 @@ class SpecSuite extends FunSuite {
           case event: SuiteStarting => ensureFormatterIsDefined(event)
           case event: SuiteCompleted => ensureFormatterIsDefined(event)
           case event: TestStarting => ensureFormatterIsDefined(event)
+          case event: TestIgnored => ensureFormatterIsDefined(event)
           case _ =>
         }
       }

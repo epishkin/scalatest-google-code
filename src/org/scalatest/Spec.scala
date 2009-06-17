@@ -691,8 +691,8 @@ trait Spec extends Suite { thisSuite =>
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
               val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
               //val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-              val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true)
-              wrappedReporter.testIgnored(report)
+              //val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true)
+              wrappedReporter(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, wrappedReporter, stopRequested, goodies, tracker)

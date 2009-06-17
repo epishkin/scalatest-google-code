@@ -1416,8 +1416,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
         for (tn <- testNames) {
           if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (groupsToExclude.contains(IgnoreAnnotation) && groups.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
-              //wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
-              wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
+              wrappedReporter(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, wrappedReporter, stopRequested, goodies, tracker)

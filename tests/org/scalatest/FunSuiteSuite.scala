@@ -15,8 +15,7 @@
  */
 package org.scalatest
 
-import org.scalatest.events.Event
-import org.scalatest.events.Ordinal
+import org.scalatest.events._
 
 // Group classes used in tests
 package mygroups {
@@ -149,13 +148,15 @@ class FunSuiteSuite extends Suite {
   }
 
   class MyReporter extends Reporter {
-    var testIgnoredCalled = false
-    var lastReport: Report = null
-    override def testIgnored(report: Report) {
-      testIgnoredCalled = true
-      lastReport = report
-    }
+    var testIgnoredReceived = false
+    var lastEvent: TestIgnored = null
     def apply(event: Event) {
+      event match {
+        case event: TestIgnored =>
+          testIgnoredReceived = true
+          lastEvent = event
+        case _ =>
+      }
     }
   }
 
@@ -170,7 +171,7 @@ class FunSuiteSuite extends Suite {
 
     val repA = new MyReporter
     a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(!repA.testIgnoredCalled)
+    assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
 
@@ -183,8 +184,8 @@ class FunSuiteSuite extends Suite {
 
     val repB = new MyReporter
     b.run(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repB.testIgnoredCalled)
-    assert(repB.lastReport.name endsWith "test this")
+    assert(repB.testIgnoredReceived)
+    assert(repB.lastEvent.testName endsWith "test this")
     assert(!b.theTestThisCalled)
     assert(b.theTestThatCalled)
 
@@ -197,8 +198,8 @@ class FunSuiteSuite extends Suite {
 
     val repC = new MyReporter
     c.run(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repC.testIgnoredCalled)
-    assert(repC.lastReport.name endsWith "test that", repC.lastReport.name)
+    assert(repC.testIgnoredReceived)
+    assert(repC.lastEvent.testName endsWith "test that", repC.lastEvent.testName)
     assert(c.theTestThisCalled)
     assert(!c.theTestThatCalled)
 
@@ -213,8 +214,8 @@ class FunSuiteSuite extends Suite {
 
     val repD = new MyReporter
     d.run(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repD.testIgnoredCalled)
-    assert(repD.lastReport.name endsWith "test that") // last because should be in order of appearance
+    assert(repD.testIgnoredReceived)
+    assert(repD.lastEvent.testName endsWith "test that") // last because should be in order of appearance
     assert(!d.theTestThisCalled)
     assert(!d.theTestThatCalled)
 
@@ -229,7 +230,7 @@ class FunSuiteSuite extends Suite {
 
     val repE = new MyReporter
     e.run(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(!repE.testIgnoredCalled)
+    assert(!repE.testIgnoredReceived)
     assert(e.theTestThisCalled)
   }
 
@@ -243,7 +244,7 @@ class FunSuiteSuite extends Suite {
     }
     val repA = new MyReporter
     a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(!repA.testIgnoredCalled)
+    assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
 
@@ -255,7 +256,7 @@ class FunSuiteSuite extends Suite {
     }
     val repB = new MyReporter
     b.run(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None, new Tracker)
-    assert(!repB.testIgnoredCalled)
+    assert(!repB.testIgnoredReceived)
     assert(b.theTestThisCalled)
     assert(!b.theTestThatCalled)
 
@@ -267,7 +268,7 @@ class FunSuiteSuite extends Suite {
     }
     val repC = new MyReporter
     c.run(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None, new Tracker)
-    assert(!repC.testIgnoredCalled)
+    assert(!repC.testIgnoredReceived)
     assert(c.theTestThisCalled)
     assert(c.theTestThatCalled)
 
@@ -279,7 +280,7 @@ class FunSuiteSuite extends Suite {
     }
     val repD = new MyReporter
     d.run(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repD.testIgnoredCalled)
+    assert(repD.testIgnoredReceived)
     assert(!d.theTestThisCalled)
     assert(d.theTestThatCalled)
 
@@ -294,7 +295,7 @@ class FunSuiteSuite extends Suite {
     val repE = new MyReporter
     e.run(None, repE, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None, new Tracker)
-    assert(!repE.testIgnoredCalled)
+    assert(!repE.testIgnoredReceived)
     assert(!e.theTestThisCalled)
     assert(e.theTestThatCalled)
     assert(!e.theTestTheOtherCalled)
@@ -310,7 +311,7 @@ class FunSuiteSuite extends Suite {
     val repF = new MyReporter
     f.run(None, repF, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None, new Tracker)
-    assert(!repF.testIgnoredCalled)
+    assert(!repF.testIgnoredReceived)
     assert(!f.theTestThisCalled)
     assert(f.theTestThatCalled)
     assert(!f.theTestTheOtherCalled)
@@ -326,7 +327,7 @@ class FunSuiteSuite extends Suite {
     val repG = new MyReporter
     g.run(None, repG, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
               Map(), None, new Tracker)
-    assert(!repG.testIgnoredCalled)
+    assert(!repG.testIgnoredReceived)
     assert(!g.theTestThisCalled)
     assert(g.theTestThatCalled)
     assert(!g.theTestTheOtherCalled)
@@ -341,7 +342,7 @@ class FunSuiteSuite extends Suite {
     }
     val repH = new MyReporter
     h.run(None, repH, new Stopper {}, Set(), Set("org.scalatest.FastAsLight"), Map(), None, new Tracker)
-    assert(!repH.testIgnoredCalled)
+    assert(!repH.testIgnoredReceived)
     assert(!h.theTestThisCalled)
     assert(h.theTestThatCalled)
     assert(h.theTestTheOtherCalled)
@@ -356,7 +357,7 @@ class FunSuiteSuite extends Suite {
     }
     val repI = new MyReporter
     i.run(None, repI, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None, new Tracker)
-    assert(!repI.testIgnoredCalled)
+    assert(!repI.testIgnoredReceived)
     assert(!i.theTestThisCalled)
     assert(!i.theTestThatCalled)
     assert(i.theTestTheOtherCalled)
@@ -371,7 +372,7 @@ class FunSuiteSuite extends Suite {
     }
     val repJ = new MyReporter
     j.run(None, repJ, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None, new Tracker)
-    assert(!repI.testIgnoredCalled)
+    assert(!repI.testIgnoredReceived)
     assert(!j.theTestThisCalled)
     assert(!j.theTestThatCalled)
     assert(j.theTestTheOtherCalled)
@@ -386,7 +387,7 @@ class FunSuiteSuite extends Suite {
     }
     val repK = new MyReporter
     k.run(None, repK, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None, new Tracker)
-    assert(repK.testIgnoredCalled)
+    assert(repK.testIgnoredReceived)
     assert(!k.theTestThisCalled)
     assert(!k.theTestThatCalled)
     assert(!k.theTestTheOtherCalled)

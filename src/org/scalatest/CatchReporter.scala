@@ -44,7 +44,6 @@ private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) exten
 
   // Won't need the rest of this class after phase II of the report refactor is done, probably 0.9.8
   override def testSucceeded(rpt: Report) = dispatch("testSucceeded", (report: Reporter) => report.testSucceeded(rpt))
-  override def testIgnored(rpt: Report) = dispatch("testIgnored", (report: Reporter) => report.testIgnored(rpt))
   override def testFailed(rpt: Report) = dispatch("testFailed", (report: Reporter) => report.testFailed(rpt))
   override def infoProvided(rpt: Report) = dispatch("infoProvided", (report: Reporter) => report.infoProvided(rpt))
   override def dispose() = dispatch("dispose", (report: Reporter) => report.dispose())

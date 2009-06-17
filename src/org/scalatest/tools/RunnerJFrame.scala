@@ -803,6 +803,14 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerReport(report, ReporterOpts.PresentTestStarting)
           }
 
+        case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+
+          val report: Report = new Report(suiteName + " - " + testName, "test ignored, dude", None, None)
+
+          usingEventDispatchThread {
+            registerReport(report, ReporterOpts.PresentTestIgnored)
+          }
+  
         case _ =>
       }
     }
@@ -838,15 +846,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         statusJPanel.setTestsRun(testsCompletedCount, true)
         progressBar.setValue(testsCompletedCount)
         registerReport(report, ReporterOpts.PresentTestSucceeded)
-      }
-    }
-  
-    override def testIgnored(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-  
-      usingEventDispatchThread {
-        registerReport(report, ReporterOpts.PresentTestIgnored)
       }
     }
   
@@ -1306,6 +1305,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerRerunReport(report, ReporterOpts.PresentTestStarting)
           }
   
+        case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+
+          val report: Report = new Report(suiteName + " - " + testName, "test ignored, dude", None, None)
+
+          usingEventDispatchThread {
+            rerunColorBox.setValue(rerunTestsCompletedCount)
+            registerRerunReport(report, ReporterOpts.PresentTestIgnored)
+          }
+  
         case _ =>
       }
     }
@@ -1317,15 +1325,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         rerunTestsCompletedCount += 1
         rerunColorBox.setValue(rerunTestsCompletedCount)
         registerRerunReport(report, ReporterOpts.PresentTestSucceeded)
-      }
-    }
-  
-    override def testIgnored(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        rerunColorBox.setValue(rerunTestsCompletedCount)
-        registerRerunReport(report, ReporterOpts.PresentTestIgnored)
       }
     }
   

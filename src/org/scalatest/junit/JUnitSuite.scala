@@ -111,8 +111,8 @@ trait JUnitSuite extends Suite { thisSuite =>
     }
 
     override def testIgnored(description: Description) {
-      val rpt = new Report(description.getDisplayName, "")
-      report.testIgnored(rpt)
+      val testName = getTestNameFromDescription(description)
+      report(TestIgnored(theTracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
     }
 
     override def testRunFinished(result: Result) {
@@ -124,10 +124,14 @@ trait JUnitSuite extends Suite { thisSuite =>
     }
 
     override def testStarted(description: Description) {
+      val testName = getTestNameFromDescription(description)
+      report(TestStarting(theTracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
+    }
+
+    private def getTestNameFromDescription(description: Description): String = {
       val displayName = description.getDisplayName
       val index = displayName.indexOf('(')
-      val testName = if (index >= 0) displayName.substring(0, index) else displayName
-      report(TestStarting(theTracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
+      if (index >= 0) displayName.substring(0, index) else displayName
     }
   }
 }

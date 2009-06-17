@@ -56,7 +56,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
               out.println(stringToPrint)
               e.printStackTrace(out)
           }
-        case TestIgnoredMsg(rpt) => dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(rpt))
         case TestSucceededMsg(rpt) => dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(rpt))
         case TestFailedMsg(rpt) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(rpt))
         case InfoProvidedMsg(rpt) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(rpt))
@@ -95,21 +94,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @throws NullPointerException if <code>report</code> is <code>null</code>
    */
   override def testSucceeded(report: Report) = julia ! TestSucceededMsg(report)
-
-  /**
-   * Invokes <code>testIgnored</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list, passing the specified
-   * <code>report</code>
-   * 
-   * <P>
-   * This method attempts to invoke <code>testIgnored</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>testIgnored</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>testIgnored</code> method and handles it by printing an error message to the
-   * standard error stream.
-   * 
-   */
-  override def testIgnored(report: Report) = julia ! TestIgnoredMsg(report)
 
   /**
    * Invokes <code>testFailed</code> on each <code>Reporter</code> in this

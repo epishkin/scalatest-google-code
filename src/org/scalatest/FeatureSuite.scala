@@ -324,8 +324,7 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
             case Test(tn, _) =>
               if (!stopRequested() && (includes.isEmpty || !(includes ** groups.getOrElse(tn, Set())).isEmpty)) {
                 if (excludes.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
-                  //wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
-                  wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
+                  wrappedReporter(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn)) // For now, no formatter
                 }
                 else if ((excludes ** groups.getOrElse(tn, Set())).isEmpty) {
                   runTest(tn, wrappedReporter, stopRequested, goodies, tracker)

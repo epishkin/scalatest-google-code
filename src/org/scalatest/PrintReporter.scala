@@ -186,6 +186,20 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
           case None =>
         }
 
+      case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+
+        val stringToPrint =
+          formatter match {
+            case Some(IndentedText(formattedText, _, _)) => Some(Resources("specTextAndNote", formattedText, Resources("ignoredNote")))
+            case Some(MotionToSuppress) => None
+            case _ => Some(Resources("testIgnoredNoMessage"))
+          }
+
+        stringToPrint match {
+          case Some(string) => pw.println(string)
+          case None =>
+        }
+
       case _ => throw new RuntimeException("Unhandled event")
     }
 
@@ -204,17 +218,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     testsCompletedCount += 1
   }
     
-  /**
-  * Prints information extracted from the specified <code>Report</code>
-  * about a test that succeeded.
-  *
-  * @param report a <code>Report</code> that encapsulates the test succeeded event to report.
-  * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-  */
-  override def testIgnored(report: Report) {
-    makeReport(report, "testIgnored")
-  }
-
   /**
   * Prints information extracted from the specified <code>Report</code>
   * about a test that failed.
