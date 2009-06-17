@@ -220,19 +220,6 @@ trait Reporter extends (Event => Unit) {
     def testSucceeded(report: Report) = ()
     
     /**
-     * Indicates a suite (or other entity) is annotated as a ignore test.
-     * 
-     * <p>
-     * Trait <code>Suite</code> uses <code>testIgnored</code> to report 
-     * that a test method of a <code>Suite</code> is annotated as @Ignore.
-     * Ignored test will not be run, but will be reported as reminder to fix the broken test.
-     * 
-     * @param report a <code>Report</code> that encapsulates the ignored test event to report.
-     * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-     */
-    def testIgnored(report: Report) = ()
-
-    /**
      * Indicates a suite (or other entity) has completed running a test that failed.
      *
      * <p>

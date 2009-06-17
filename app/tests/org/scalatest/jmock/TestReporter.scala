@@ -15,34 +15,36 @@
  */
 package org.scalatest.jmock;
 
-import org.scalatest.events.Event
+import org.scalatest.events._
 
 class TestReporter extends Reporter {
 
-  var report: Report = null;
-  var successCount = 0;
-  var failureCount = 0;
+  var lastEvent: Option[Event] = None
+
+  var report: Report = null
+  var successCount = 0
+  var failureCount = 0
   
-  var ignoreReport: Report = null;
-  var ignoreCount = 0;
+  var ignoreCount = 0
   
   override def testSucceeded(report: Report){ 
     successCount = successCount + 1 
-    this.report = report;
+    this.report = report
   }
   
   override def testFailed(report: Report){ 
     failureCount = failureCount + 1 
-    this.report = report;
+    this.report = report
   }
 
-  override def testIgnored(report: Report){ 
-    ignoreCount = ignoreCount + 1 
-    this.report = report;
-  }
-  
   def errorMessage = report.throwable.get.getMessage
 
   def apply(event: Event) {
+    event match {
+      case event: TestIgnored =>
+        ignoreCount = ignoreCount + 1 
+        lastEvent = Some(event)
+      case _ =>
+    }
   }
 }

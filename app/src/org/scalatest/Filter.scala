@@ -117,23 +117,3 @@ final class Filter(tagsToInclude: Option[Set[String]], tagsToExclude: Set[String
 private object Filter {
   private final val IgnoreTag = "org.scalatest.Ignore"
 }
-
-/*
-    val tns =
-      for (tn <- testNames; if (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)
-         && ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) && (!(groups.getOrElse(tn, Set()).contains(IgnoreAnnotation))))
-        yield tn
-
-
-        for (tn <- testNames) {
-          if (!stopper.stopRequested && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
-            if (groupsToExclude.contains(IgnoreAnnotation) && groups.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
-              //wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(tn)))
-              wrappedReporter.testIgnored(new Report(getTestNameForReport(tn), ""))
-            }
-            else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopper, goodies)
-            }
-          }
-        }
-*/

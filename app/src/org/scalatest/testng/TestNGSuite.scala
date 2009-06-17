@@ -245,11 +245,11 @@ trait TestNGSuite extends Suite { thisSuite =>
     }
 
     /**
-     * TestNG's onTestSkipped maps cleanly to testIgnored. Again, simply build
+     * TestNG's onTestSkipped maps cleanly to TestIgnored. Again, simply build
      * a report and pass it to the Reporter.
      */
-    override def onTestSkipped(itr: ITestResult) = {
-      reporter.testIgnored( buildReport( itr, None ) )
+    override def onTestSkipped(result: ITestResult) = {
+      reporter(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result)))
     }
 
     /**
@@ -269,7 +269,7 @@ trait TestNGSuite extends Suite { thisSuite =>
      * 
      * Calling testFailed isn't really a clean one-to-one mapping between TestNG and ScalaTest
      * and somewhat exposes a ScalaTest implementation detail. By default, ScalaTest only shows
-     * failing tests in red in the UI, and does not show additional information such as testIgnored,
+     * failing tests in red in the UI, and does not show additional information such as TestIgnored,
      * and infoProvided. Had I chose to use either of those calls here, the user wouldn't 
      * immediately know what the root cause of the problem is. They might not even know there
      * was a problem at all. 

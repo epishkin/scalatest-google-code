@@ -122,7 +122,7 @@ class RunNotifierSuite extends FunSuite {
     assert(runNotifier.passed.get.getDisplayName === "theTestName(SuiteClassName)")
   }
 
-  test("report.testIgnored generates a fireTestIgnored invocation") {
+  test("report(TestIgnored) generates a fireTestIgnored invocation") {
 
     val runNotifier =
       new RunNotifier {
@@ -134,18 +134,15 @@ class RunNotifierSuite extends FunSuite {
         }
       }
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val reporter = new RunNotifierReporter(runNotifier)
-    val report = new Report("some test name", "test starting just fine we think")
-    reporter.testIgnored(report)
+    reporter(TestIgnored(new Ordinal(99), "suite name", Some("suite class name"), "some test name"))
     assert(runNotifier.methodInvocationCount === 1)
-    assert(runNotifier.passed.get.getDisplayName === "some test name")
+    assert(runNotifier.passed.get.getDisplayName === "some test name(suite class name)")
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val report2 = new Report("name", "message", None, None)
-    reporter.testIgnored(report2)
+    reporter(TestIgnored(new Ordinal(99), "suiteName2", Some("suite.class.name"), "testName"))
     assert(runNotifier.methodInvocationCount === 2)
-    assert(runNotifier.passed.get.getDisplayName === "name")
+    assert(runNotifier.passed.get.getDisplayName === "testName(suite.class.name)")
 
     reporter(TestIgnored(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
