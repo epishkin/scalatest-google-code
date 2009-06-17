@@ -73,7 +73,7 @@ import org.scalatest.events._
  * @author Daniel Watson
  * @author Joel Neely
  */
-trait JUnitSuite extends Suite {
+trait JUnitSuite extends Suite { thisSuite =>
 
   // TODO: This may need to be made thread safe, because who knows what Thread JUnit will fire through this
   private var theTracker = new Tracker
@@ -124,8 +124,10 @@ trait JUnitSuite extends Suite {
     }
 
     override def testStarted(description: Description) {
-      val rpt = new Report(description.getDisplayName, "")
-      report.testStarting(rpt)
+      val displayName = description.getDisplayName
+      val index = displayName.indexOf('(')
+      val testName = if (index >= 0) displayName.substring(0, index) else displayName
+      report(TestStarting(theTracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
     }
   }
 }

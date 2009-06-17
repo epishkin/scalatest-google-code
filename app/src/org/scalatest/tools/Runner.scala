@@ -179,18 +179,18 @@ import org.scalatest.events._
  * </p>
  *
  * <ul>
- * <li> <code><b>Y</b></code> - present <code>runStarting</code> method invocations
- * <li> <code><b>Z</b></code> - present <code>testStarting</code> method invocations
- * <li> <code><b>T</b></code> - present <code>testSucceeded</code> method invocations
- * <li> <code><b>F</b></code> - present <code>testFailed</code> method invocations
- * <li> <code><b>G</b></code> - present <code>testIgnored</code> method invocations
- * <li> <code><b>U</b></code> - present <code>suiteStarting</code> method invocations
- * <li> <code><b>P</b></code> - present <code>suiteCompleted</code> method invocations
- * <li> <code><b>B</b></code> - present <code>suiteAborted</code> method invocations
- * <li> <code><b>I</b></code> - present <code>infoProvided</code> method invocations
- * <li> <code><b>S</b></code> - present <code>runStopped</code> method invocations
- * <li> <code><b>A</b></code> - present <code>runAborted</code> method invocations
- * <li> <code><b>R</b></code> - present <code>runCompleted</code> method invocations
+ * <li> <code><b>Y</b></code> - present <code>RunStarting</code> events
+ * <li> <code><b>Z</b></code> - present <code>TestStarting</code> events
+ * <li> <code><b>T</b></code> - present <code>TestSucceeded</code> events
+ * <li> <code><b>F</b></code> - present <code>TestFailed</code> events
+ * <li> <code><b>G</b></code> - present <code>TestIgnored</code> events
+ * <li> <code><b>U</b></code> - present <code>SuiteStarting</code> events
+ * <li> <code><b>P</b></code> - present <code>SuiteCompleted</code> events
+ * <li> <code><b>B</b></code> - present <code>SuiteAborted</code> events
+ * <li> <code><b>I</b></code> - present <code>InfoProvided</code> events
+ * <li> <code><b>S</b></code> - present <code>RunStopped</code> events
+ * <li> <code><b>A</b></code> - present <code>RunAborted</code> events
+ * <li> <code><b>R</b></code> - present <code>RunCompleted</code> events
  * </ul>
  *
  * <p>

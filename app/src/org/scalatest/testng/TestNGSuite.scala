@@ -228,13 +228,14 @@ trait TestNGSuite extends Suite { thisSuite =>
     }
     
     /**
-     * TestNG's onTestStart maps cleanly to testStarting. Simply build a report 
+     * TestNG's onTestStart maps cleanly to TestStarting. Simply build a report 
      * and pass it to the Reporter.
      */
     override def onTestStart(result: ITestResult) = {
-      reporter.testStarting( buildReport( result, None ) )
+      reporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result),
+          None, Some(new TestRerunner(className, result.getName))))
     }
-    
+
     /**
      * TestNG's onTestSuccess maps cleanly to testSucceeded. Again, simply build
      * a report and pass it to the Reporter.
@@ -295,7 +296,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     }
     
     /**
-     * Constructs the report ojbect.
+     * Constructs the report object.
      */
     private def buildReport( itr: ITestResult, t: Option[Throwable] ): Report = {
       
@@ -306,6 +307,13 @@ trait TestNGSuite extends Suite { thisSuite =>
         }
       
       new Report(itr.getName + params, className, t, Some(new TestRerunner(className, itr.getName)) )
+    }
+
+    private def params(itr: ITestResult): String = {
+      itr.getParameters match {   
+        case Array() => ""
+        case _ => "(" + itr.getParameters.mkString(",") + ")"
+      }
     }
   }
   

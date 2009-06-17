@@ -19,6 +19,8 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 
+import org.scalatest.events._
+
 /**
  *
  *
@@ -199,11 +201,14 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
 
     val wrappedReporter = wrapReporterIfNecessary(reporter)
 
-    val specText = Resources("scenario", scenarioName)
+    // I decided I'd bottle up the things being sent during the test and only output them after the 
+    // testSucceeded or testFailed invocation, and bottle them up in the informer. So that means I'd actually
+    // suppress TestStarting.
+/*
     //val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
     val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "\n  " + specText, true)
-
-    wrappedReporter.testStarting(report)
+*/
+    wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), scenarioName, Some(MotionToSuppress)))
 
     try {
 
@@ -233,6 +238,8 @@ private[scalatest] class FeatureSuite(override val suiteName: String) extends Su
         currentInformer = oldInformer
       }
 
+      val specText = Resources("scenario", scenarioName)
+      // Will not supress this anymore, but instead will bottle up the infoProvided stuff until after this is done.
       // Supress this report in the spec output. (Will show it if there was a failure, though.)
       //val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false, Some(suiteName), Some(thisSuite.getClass.getName), Some(scenarioName))
       val report = new SpecReport(getTestNameForReport(scenarioName), specText, specText, "  " + specText, false)

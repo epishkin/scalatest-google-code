@@ -43,7 +43,7 @@ package org.scalatest.junit {
       }
     }
 
-    // Used to make sure testStarting gets invoked twice
+    // Used to make sure TestStarting gets fired twice
     class ManySuite extends JUnitSuite {
 
       @Test def verifySomething() = ()
@@ -67,16 +67,15 @@ package org.scalatest.junit {
             runStartingCount += 1
           case event: RunCompleted =>
             runCompletedCount += 1
+          case event: TestStarting =>
+            testStartingEvent = Some(event)
+            testStartingCount += 1
           case _ => 
         }
       }
 
       var testStartingCount = 0
-      var testStartingReport: Option[Report] = None
-      override def testStarting(report: Report) {
-        testStartingReport = Some(report)
-        testStartingCount += 1
-      }
+      var testStartingEvent: Option[TestStarting] = None
 
       var testSucceededCount = 0
       var testSucceededReport: Option[Report] = None
@@ -96,13 +95,15 @@ package org.scalatest.junit {
       }
     }
 
-    test("A JUnitSuite with a JUnit 4 Test annotation will cause testStarting to be invoked") {
+    test("A JUnitSuite with a JUnit 4 Test annotation will cause TestStarting event to be fired") {
 
       val happy = new HappySuite
       val repA = new MyReporter
       happy.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-      assert(repA.testStartingReport.isDefined)
-      assert(repA.testStartingReport.get.name === "verifySomething(org.scalatest.junit.helpers.HappySuite)")
+      assert(repA.testStartingEvent.isDefined)
+      assert(repA.testStartingEvent.get.testName === "verifySomething")
+      assert(repA.testStartingEvent.get.suiteName === "HappySuite")
+      assert(repA.testStartingEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.HappySuite")
     }
 
     test("A JUnitSuite with a JUnit 4 Test annotation will cause testSucceeded to be invoked") {
@@ -132,14 +133,16 @@ package org.scalatest.junit {
       assert(repA.testIgnoredReport.get.name === "verifySomething(org.scalatest.junit.helpers.IgnoredSuite)")
     }
 
-    test("A JUnitSuite with two JUnit 4 Test annotations will cause testStarting and testSucceeded to be invoked twice each") {
+    test("A JUnitSuite with two JUnit 4 Test annotations will cause TestStarting and TestSucceeded events to be fired twice each") {
 
       val many = new ManySuite
       val repA = new MyReporter
       many.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
 
-      assert(repA.testStartingReport.isDefined)
-      assert(repA.testStartingReport.get.name === "verifySomethingElse(org.scalatest.junit.helpers.ManySuite)")
+      assert(repA.testStartingEvent.isDefined)
+      assert(repA.testStartingEvent.get.testName === "verifySomethingElse")
+      assert(repA.testStartingEvent.get.suiteName === "ManySuite")
+      assert(repA.testStartingEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.ManySuite")
       assert(repA.testStartingCount === 2)
 
       assert(repA.testSucceededReport.isDefined)

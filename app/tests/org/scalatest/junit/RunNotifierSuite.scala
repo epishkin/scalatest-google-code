@@ -31,7 +31,7 @@ class RunNotifierSuite extends FunSuite {
 
   val ordinal = new Ordinal(99)
 
-  test("report.testStarting generates a fireTestStarted invocation") {
+  test("report(TestStarting) generates a fireTestStarted invocation") {
 
     val runNotifier =
       new RunNotifier {
@@ -44,22 +44,16 @@ class RunNotifierSuite extends FunSuite {
       }
 
     val reporter = new RunNotifierReporter(runNotifier)
-    val report = new Report("some test name", "test starting just fine we think")
-    reporter.testStarting(report)
+    reporter(TestStarting(new Ordinal(99), "suite name", Some("suite.class.name"), "some test name"))
     assert(runNotifier.fireTestStartedInvocationCount === 1)
-    assert(runNotifier.passedDesc.get.getDisplayName === "some test name")
+    assert(runNotifier.passedDesc.get.getDisplayName === "some test name(suite.class.name)")
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
-    val report2 = new Report("name", "message", None, None)
-    reporter.testStarting(report2)
+    reporter(TestStarting(new Ordinal(99), "suiteName", Some("suite.class.name"), "someTestName"))
     assert(runNotifier.fireTestStartedInvocationCount === 2)
-    assert(runNotifier.passedDesc.get.getDisplayName === "name")
+    assert(runNotifier.passedDesc.get.getDisplayName === "someTestName(suite.class.name)")
 
-    reporter(TestStarting(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
-    assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
-
-    reporter(TestStarting(ordinal, "SuiteClassName", None, "theTestName"))
-    assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(SuiteClassName)")
+    reporter(TestStarting(ordinal, "suiteName", None, "theTestName"))
+    assert(runNotifier.passedDesc.get.getDisplayName === "theTestName(suiteName)")
   }
 
   test("report.testFailed generates a fireTestFailure invocation") {

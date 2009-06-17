@@ -27,9 +27,6 @@ class CatchReporterSuite extends Suite {
       override def apply(event: Event) {
         throw new RuntimeException
       }
-      override def testStarting(report: Report) {
-        throw new RuntimeException
-      }
       override def testSucceeded(report: Report) {
         throw new RuntimeException
       }
@@ -52,19 +49,14 @@ class CatchReporterSuite extends Suite {
     val report = new Report("name", "msg")
 
     intercept[RuntimeException] {
-      buggyReporter.testStarting(report)
-    }
-    catchReporter.testStarting(report)
-
-    intercept[RuntimeException] {
       buggyReporter(RunStarting(new Ordinal(99), 1))
     }
     catchReporter(RunStarting(new Ordinal(99), 1))
 
     intercept[RuntimeException] {
-      buggyReporter.testStarting(report)
+      buggyReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
     }
-    catchReporter.testStarting(report)
+    catchReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
 
     intercept[RuntimeException] {
       buggyReporter.testSucceeded(report)
