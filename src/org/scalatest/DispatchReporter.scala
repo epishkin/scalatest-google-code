@@ -56,7 +56,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
               out.println(stringToPrint)
               e.printStackTrace(out)
           }
-        case TestStartingMsg(rpt) => dispatch("testStarting", (reporter: Reporter) => reporter.testStarting(rpt))
         case TestIgnoredMsg(rpt) => dispatch("testIgnored", (reporter: Reporter) => reporter.testIgnored(rpt))
         case TestSucceededMsg(rpt) => dispatch("testSucceeded", (reporter: Reporter) => reporter.testSucceeded(rpt))
         case TestFailedMsg(rpt) => dispatch("testFailed", (reporter: Reporter) => reporter.testFailed(rpt))
@@ -146,23 +145,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    */
   override def infoProvided(report: Report) = julia ! InfoProvidedMsg(report)
 
- /**
-  * Invokes <code>testStarting</code> on each <code>Reporter</code> in this
-  * <code>DispatchReporter</code>'s reporters list, passing the specified
-  * <code>report</code>.
-  *
-  * <P>
-  * This method attempts to invoke <code>testStarting</code> on each contained <code>Reporter</code>,
-  * even if some <code>Reporter</code>'s <code>testStarting</code> methods throw
-  * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-  * a <code>testStarting</code> method and handles it by printing an error message to the
-  * standard error stream.
-  *
-  * @param report the <code>Report</code> encapsulating this test starting event
-  * @throws NullPointerException if <code>report</code> is <code>null</code>
-  */
-  override def testStarting(report: Report) = julia ! TestStartingMsg(report)
-  
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this
    * <code>DispatchReporter</code>'s reporters list.

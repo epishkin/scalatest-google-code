@@ -207,20 +207,6 @@ import org.scalatest.events._
 trait Reporter extends (Event => Unit) {
 
     /**
-     * Indicates a suite (or other entity) is about to start a test.
-     *
-     * <p>
-     * Trait <code>Suite</code> uses <code>testStarting</code> to report
-     * that a test method of a <code>Suite</code> is about to be invoked.
-     *
-     * @param report a <code>Report</code> that encapsulates the test starting event to report.
-     *
-     * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-     */
-    def testStarting(report: Report) = ()
-
-
-    /**
      * Indicates a suite (or other entity) has completed running a test that succeeded.
      *
      * <p>

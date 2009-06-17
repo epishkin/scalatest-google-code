@@ -141,9 +141,9 @@ trait Informer {
    * For example, in an <code>Informer</code> passed to a test method in
    * trait <code>Suite</code>, this method will return from this method a
    * user-friendly name for the test (the same name used for the test by <code>Suite</code>
-   * when making <code>testStarting</code>, <code>testSucceeded</code>, etc., reports).
+   * when making <code>TestStarting</code>, <code>TestSucceeded</code>, etc., reports).
    *
    * @return a name suitable for passing to a <code>Report</code> constructor.
    */
-  def nameForReport: String
+  def nameForReport: String // TODO: Change this to an Option[NameInfo]
 }

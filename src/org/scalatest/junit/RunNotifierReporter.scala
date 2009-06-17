@@ -32,6 +32,16 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
 
   private def getNameFromReport(report: Report): String = report.name
 
+  // This form isn't clearly specified in JUnit docs, but some tools may assume it, so why rock the boat.
+  // Here's what JUnit code does:
+  //   public static Description createTestDescription(Class<?> clazz, String name, Annotation... annotations) {
+  //       return new Description(String.format("%s(%s)", name, clazz.getName()), annotations);
+  //   }
+  // So you can see the test name shows up, which is normally a test method name, followed by the fully qualified class name in parens
+  // We put test name and suite class name (or suite name if no class) in parens, but don't try and do anything to get rid of spaces or
+  // parens the test or suite names themselves, since it is unclear if this format is used by anyone anyway. If actual bug reports come
+  // in, then we can fix each actual problem once it is understood.
+  //
   private def testDescriptionName(suiteName: String, suiteClassName: Option[String], testName: String) =
     suiteClassName match {
       case Some(suiteClassName) => testName + "(" + suiteClassName + ")"
@@ -87,12 +97,9 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
         runNotifier.fireTestFailure(new Failure(description, throwableOrNull)) // Best we can do in JUnit, as far as I know
         runNotifier.fireTestFinished(description)
 
+
       case _ =>
     }
-  }
-
-  override def testStarting(report: Report) {
-    runNotifier.fireTestStarted(Description.createSuiteDescription(getNameFromReport(report)))
   }
 
   override def testSucceeded(report: Report) {

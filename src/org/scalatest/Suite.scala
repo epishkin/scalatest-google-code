@@ -1261,6 +1261,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       else
         None
      
+/*
     val report =
       if (hasPublicNoArgConstructor)
         //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
@@ -1268,8 +1269,9 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       else
         //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
         new Report(getTestNameForReport(testName), "")
+*/
 
-    wrappedReporter.testStarting(report)
+    wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     val args: Array[Object] =
       if (testMethodTakesInformer(testName)) {

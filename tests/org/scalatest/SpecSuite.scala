@@ -458,12 +458,12 @@ class SpecSuite extends FunSuite {
   }
   
   // Test for good strings in report for top-level examples  
-  test("Top-level plain-old specifiers should yield good strings in a testStarting report") {
+  test("Top-level plain-old specifiers should yield good strings in a TestSucceeded report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
@@ -549,7 +549,7 @@ class SpecSuite extends FunSuite {
   }
 
   // Tests for good strings in report for nested-one-level examples
-  test("Nested-one-level plain-old specifiers should yield good strings in a testStarting report") {
+  test("Nested-one-level plain-old specifiers should yield good strings in a TestSucceeded report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -574,7 +574,7 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         // infoProvided should be invoked before the this method
         assert(infoProvidedHasBeenInvoked)
         theOtherMethodHasBeenInvoked = true
@@ -725,7 +725,7 @@ class SpecSuite extends FunSuite {
 
   
   // Tests for good strings in report for nested-two-levels examples
-  test("Nested-two-levels plain-old specifiers should yield good strings in a testStarting report") {
+  test("Nested-two-levels plain-old specifiers should yield good strings in a TestSucceeded report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -750,7 +750,7 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         // infoProvided should be invoked before the this method
         assert(infoProvidedHasBeenInvoked)
         theOtherMethodHasBeenInvoked = true
@@ -906,12 +906,12 @@ class SpecSuite extends FunSuite {
   }
 
     // Test for good strings in report for top-level shared behavior examples
-  test("Top-level 'shared behavior - fancy specifiers' should yield good strings in a testStarting report") {
+  test("Top-level 'shared behavior - fancy specifiers' should yield good strings in a TestSucceeded report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         if (report.name.indexOf("it should start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
@@ -939,12 +939,12 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
   
-  test("Top-level 'shared behavior - plain-old specifiers' should yield good strings in a testStarting report") {
+  test("Top-level 'shared behavior - plain-old specifiers' should yield good strings in a TestSucceeded report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         if (report.name.indexOf("must start with proper words") != -1)
           reportHadCorrectTestName = true
         report match {
@@ -1039,7 +1039,7 @@ class SpecSuite extends FunSuite {
   }
 
   // Tests for good strings in report for shared-behavior, nested-one-level specifiers
-  test("Nested-one-level 'shared behavior' should yield good strings in a testStarting report") {
+  test("Nested-one-level 'shared behavior' should yield good strings in a TestSucceeded report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -1064,7 +1064,7 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         // infoProvided should be invoked before the this method
         assert(infoProvidedHasBeenInvoked)
         theOtherMethodHasBeenInvoked = true
@@ -1141,12 +1141,12 @@ class SpecSuite extends FunSuite {
   }
   
   // I think delete this one. Repeat.
-  test("In a testStarting report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
-    var testStartingReportHadCorrectTestName = false
+  test("In a TestSucceeded report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
+    var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         if (report.name.indexOf("A Stack (when working right) should push and pop properly") != -1) {
-          testStartingReportHadCorrectTestName = true
+          testSucceededReportHadCorrectTestName = true
         }  
       }
       def apply(event: Event) {
@@ -1161,7 +1161,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectTestName)
+    assert(testSucceededReportHadCorrectTestName)
   }
   
   test("expectedTestCount is the number of plain-old specifiers if no shares") {
@@ -1179,12 +1179,12 @@ class SpecSuite extends FunSuite {
   }
 
   // Testing strings sent in reports
-  test("In a testStarting report, the example name should be verbatim if top level if example registered with it") {
-    var testStartingReportHadCorrectTestName = false
+  test("In a TestSucceeded report, the example name should be verbatim if top level if example registered with it") {
+    var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         if (report.name.indexOf("this thing must start with proper words") != -1) {
-          testStartingReportHadCorrectTestName = true
+          testSucceededReportHadCorrectTestName = true
         }  
       }
       def apply(event: Event) {
@@ -1195,7 +1195,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectTestName)
+    assert(testSucceededReportHadCorrectTestName)
   }
 
   test("In a testSucceeded report, the example name should be verbatim if top level if example registered with it") {
@@ -1236,16 +1236,18 @@ class SpecSuite extends FunSuite {
     assert(testFailedReportHadCorrectTestName)
   }
   
-  test("In a testStarting report, the example name should start with '<description> ' if nested one level " +
+  test("In a TestStarting report, the example name should start with '<description> ' if nested one level " +
         "inside a describe clause and registered with it") {
-    var testStartingReportHadCorrectTestName = false
+    var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
-        if (report.name.indexOf("A Stack needs to push and pop properly") != -1) {
-          testStartingReportHadCorrectTestName = true
-        }  
-      }
       def apply(event: Event) {
+        event match {
+          case TestStarting(_, _, _, testName, _, _, _, _, _) =>
+            if (testName == "A Stack needs to push and pop properly") {
+              testSucceededReportHadCorrectTestName = true
+            }
+          case _ => 
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1255,10 +1257,10 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectTestName)
+    assert(testSucceededReportHadCorrectTestName)
   }
     
-  test("Specs should send SpecReports") {
+  test("Specs should send defined formatters") {
     class MyReporter extends Reporter {
 
       var gotANonSpecReport = false
@@ -1266,10 +1268,6 @@ class SpecSuite extends FunSuite {
 
       var gotAnUndefinedFormatter = false
       var lastEventWithUndefinedFormatter: Option[Event] = None
-
-      override def testStarting(report: Report) {
-        ensureSpecReport(report)
-      }
 
       private def ensureSpecReport(report: Report) {
         report match {
@@ -1282,7 +1280,7 @@ class SpecSuite extends FunSuite {
       }
      
       private def ensureFormatterIsDefined(event: Event) {
-        if (event.formatter.isDefined) {
+        if (!event.formatter.isDefined) {
           gotAnUndefinedFormatter = true
           lastEventWithUndefinedFormatter = Some(event)
         }
@@ -1310,6 +1308,7 @@ class SpecSuite extends FunSuite {
           case event: SuiteAborted => ensureFormatterIsDefined(event)
           case event: SuiteStarting => ensureFormatterIsDefined(event)
           case event: SuiteCompleted => ensureFormatterIsDefined(event)
+          case event: TestStarting => ensureFormatterIsDefined(event)
           case _ =>
         }
       }
@@ -1327,18 +1326,18 @@ class SpecSuite extends FunSuite {
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(!myRep.gotANonSpecReport)
-    assert(!myRep.gotAnUndefinedFormatter)
+    assert(!myRep.gotAnUndefinedFormatter, myRep.lastEventWithUndefinedFormatter.toString)
   }
 
   test("SpecText should come through correctly in a SpecReport when registering with it") {
-    var testStartingReportHadCorrectSpecText = false
+    var testSucceededReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         report match {
           case specReport: SpecReport =>
             if (specReport.plainSpecText == "My spec text must have the proper words")
-              testStartingReportHadCorrectSpecText = true
+              testSucceededReportHadCorrectSpecText = true
             else
               lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
@@ -1352,18 +1351,18 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
+    assert(testSucceededReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
   test("Spec text should come through correctly in a SpecReport when registering with it when nested in one describe") {
-    var testStartingReportHadCorrectSpecText = false
+    var testSucceededReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         report match {
           case specReport: SpecReport =>
             if (specReport.plainSpecText == "My short name must have the proper words")
-              testStartingReportHadCorrectSpecText = true
+              testSucceededReportHadCorrectSpecText = true
             else
               lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
@@ -1379,18 +1378,18 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
+    assert(testSucceededReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
   test("Spec text should come through correctly in a SpecReport when registering with it when nested in two describes") {
-    var testStartingReportHadCorrectSpecText = false
+    var testSucceededReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         report match {
           case specReport: SpecReport =>
             if (specReport.plainSpecText == "My short name must have the proper words")
-              testStartingReportHadCorrectSpecText = true
+              testSucceededReportHadCorrectSpecText = true
             else
               lastSpecText = Some(specReport.plainSpecText)
           case _ => throw new RuntimeException("Got a non-SpecReport")
@@ -1408,7 +1407,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
+    assert(testSucceededReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
   ignore("A specifyGivenReporter clause should be able to send info to the reporter") {
@@ -1713,12 +1712,12 @@ class SpecSuite extends FunSuite {
   
   // Probably delete
   test("The test name for a shared specifier invoked with 'should behave like a' should be verbatim if top level") {
-    var testStartingReportHadCorrectTestName = false
+    var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
 
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         if (report.name.indexOf("it should be invoked") != -1) {
-          testStartingReportHadCorrectTestName = true
+          testSucceededReportHadCorrectTestName = true
         }  
       }
       def apply(event: Event) {
@@ -1735,16 +1734,16 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectTestName)
+    assert(testSucceededReportHadCorrectTestName)
   }
   
   ignore("The example name for a shared example invoked with 'it should behave like' should start with '<description> should' if nested one level in a describe clause") {
-    var testStartingReportHadCorrectTestName = false
+    var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
 
-      override def testStarting(report: Report) {
+      override def testSucceeded(report: Report) {
         if (report.name.indexOf("A Stack should pop properly") != -1) {
-          testStartingReportHadCorrectTestName = true
+          testSucceededReportHadCorrectTestName = true
         }  
       }
       def apply(event: Event) {
@@ -1763,7 +1762,7 @@ class SpecSuite extends FunSuite {
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testStartingReportHadCorrectTestName)
+    assert(testSucceededReportHadCorrectTestName)
   }
  
   test("expectedTestCount should not include tests in shares if never called") {

@@ -95,7 +95,7 @@ package org.scalatest.testng {
       context.checking(
         new Expectations() {
           one(reporter).apply(`with`(new IsAnything[SuiteStarting]))
-          one(reporter).testStarting(`with`(new IsAnything[Report]))
+          one(reporter).apply(`with`(new IsAnything[TestStarting]))
           one(reporter).testFailed(`with`(new IsAnything[Report]))
           one(reporter).testIgnored(`with`(new IsAnything[Report]))
           one(reporter).apply(`with`(new IsAnything[SuiteCompleted]))

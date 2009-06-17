@@ -761,39 +761,47 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerReport(report, ReporterOpts.PresentRunStopped)
           }
 
-      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
 
-        // TODO: Oh, this kills the formatting too. Because that was being done with SpecReports. Will need to 
-        // fix that in the GUI. And the way to do it is store events. But that's a later step.
-        val report: Report = new Report(suiteName, "suite starting, dude", None, rerunnable)
+          // TODO: Oh, this kills the formatting too. Because that was being done with SpecReports. Will need to 
+          // fix that in the GUI. And the way to do it is store events. But that's a later step.
+          val report: Report = new Report(suiteName, "suite starting, dude", None, rerunnable)
 
-        usingEventDispatchThread {
-          registerReport(report, ReporterOpts.PresentSuiteStarting)
-        }
+          usingEventDispatchThread {
+            registerReport(report, ReporterOpts.PresentSuiteStarting)
+          }
   
-      case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
   
-        val report: Report = new Report(suiteName, "suite completed, dude", None, rerunnable)
+          val report: Report = new Report(suiteName, "suite completed, dude", None, rerunnable)
 
-        usingEventDispatchThread {
-          registerReport(report, ReporterOpts.PresentSuiteCompleted)
-        }
+          usingEventDispatchThread {
+            registerReport(report, ReporterOpts.PresentSuiteCompleted)
+          }
 
-      case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        val report: Report = new Report(suiteName, message, throwable, rerunnable)
+          val report: Report = new Report(suiteName, message, throwable, rerunnable)
 
-        usingEventDispatchThread {
-          progressBar.setRed()
-          registerReport(report, ReporterOpts.PresentSuiteAborted)
-          // Must do this here, not in RunningState.runFinished, because the runFinished
-          // invocation can happen before this runCompleted invocation, which means that 
-          // the first error in the run may not be in the JList model yet. So must wait until
-          // a run completes. I was doing it in runCompleted, which works, but for long runs
-          // you must wait a long time for that thing to be selected. Nice if it gets selected
-          // right away.
-          selectFirstFailureIfExistsAndNothingElseAlreadySelected()
-        }
+          usingEventDispatchThread {
+            progressBar.setRed()
+            registerReport(report, ReporterOpts.PresentSuiteAborted)
+            // Must do this here, not in RunningState.runFinished, because the runFinished
+            // invocation can happen before this runCompleted invocation, which means that 
+            // the first error in the run may not be in the JList model yet. So must wait until
+            // a run completes. I was doing it in runCompleted, which works, but for long runs
+            // you must wait a long time for that thing to be selected. Nice if it gets selected
+            // right away.
+            selectFirstFailureIfExistsAndNothingElseAlreadySelected()
+          }
+
+        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+  
+          val report: Report = new Report(suiteName + " - " + testName, "test starting, dude", None, rerunnable)
+
+          usingEventDispatchThread {
+            registerReport(report, ReporterOpts.PresentTestStarting)
+          }
 
         case _ =>
       }
@@ -839,15 +847,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
       usingEventDispatchThread {
         registerReport(report, ReporterOpts.PresentTestIgnored)
-      }
-    }
-  
-    override def testStarting(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-  
-      usingEventDispatchThread {
-        registerReport(report, ReporterOpts.PresentTestStarting)
       }
     }
   
@@ -1299,18 +1298,18 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             }
           }
  
+        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+
+          val report: Report = new Report(suiteName + " - " + testName, "test starting, dude", None, rerunnable)
+
+          usingEventDispatchThread {
+            registerRerunReport(report, ReporterOpts.PresentTestStarting)
+          }
+  
         case _ =>
       }
     }
 
-    override def testStarting(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        registerRerunReport(report, ReporterOpts.PresentTestStarting)
-      }
-    }
-  
     override def testSucceeded(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")

@@ -19,6 +19,7 @@ import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 import org.scalatest.TestFailedExceptionHelper.getStackDepth
+import org.scalatest.events._
 
 /**
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands for functional.
@@ -675,6 +676,7 @@ trait FunSuite extends Suite { thisSuite =>
       else
         None
      
+/*
     val report =
       if (hasPublicNoArgConstructor)
         //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
@@ -682,8 +684,9 @@ trait FunSuite extends Suite { thisSuite =>
       else
         //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
         new Report(getTestNameForReport(testName), "")
+*/
 
-    wrappedReporter.testStarting(report)
+    wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     try {
 

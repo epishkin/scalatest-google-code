@@ -47,7 +47,6 @@ private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) exten
   override def testIgnored(rpt: Report) = dispatch("testIgnored", (report: Reporter) => report.testIgnored(rpt))
   override def testFailed(rpt: Report) = dispatch("testFailed", (report: Reporter) => report.testFailed(rpt))
   override def infoProvided(rpt: Report) = dispatch("infoProvided", (report: Reporter) => report.infoProvided(rpt))
-  override def testStarting(rpt: Report) = dispatch("testStarting", (report: Reporter) => report.testStarting(rpt))
   override def dispose() = dispatch("dispose", (report: Reporter) => report.dispose())
 
   private[scalatest] def dispatch(methodName: String, methodCall: (Reporter) => Unit) {

@@ -40,7 +40,7 @@ trait SuiteExpectations {
   def expectNTestsToRun(expectations: Expectations, n: int, reporter: Reporter)(f: => Unit) = {
     expectations.one(reporter).apply(expectations.`with`(new IsAnything[SuiteStarting]))
     for( i <- 1 to n ){
-      expectations.one(reporter).testStarting(expectations.`with`(new IsAnything[Report]))
+      expectations.one(reporter).apply(expectations.`with`(new IsAnything[TestStarting]))
       f
     }
     expectations.one(reporter).apply(expectations.`with`(new IsAnything[SuiteCompleted]))
