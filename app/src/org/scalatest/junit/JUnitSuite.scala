@@ -106,8 +106,8 @@ trait JUnitSuite extends Suite { thisSuite =>
     }
 
     override def testFinished(description: Description) {
-      val rpt = new Report(description.getDisplayName, "")
-      report.testSucceeded(rpt)
+      val testName = getTestNameFromDescription(description)
+      report(TestSucceeded(theTracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName)) // TODO: can I add a duration?
     }
 
     override def testIgnored(description: Description) {

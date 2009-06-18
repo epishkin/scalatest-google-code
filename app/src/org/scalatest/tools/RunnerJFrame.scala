@@ -811,6 +811,17 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerReport(report, ReporterOpts.PresentTestIgnored)
           }
   
+        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+  
+          val report: Report = new Report(suiteName + " - " + testName, "test succeeded, dude", None, rerunnable)
+
+          usingEventDispatchThread {
+            testsCompletedCount += 1
+            statusJPanel.setTestsRun(testsCompletedCount, true)
+            progressBar.setValue(testsCompletedCount)
+            registerReport(report, ReporterOpts.PresentTestSucceeded)
+          }
+  
         case _ =>
       }
     }
@@ -834,18 +845,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
         // you must wait a long time for that thing to be selected. Nice if it gets selected
         // right away.
         selectFirstFailureIfExistsAndNothingElseAlreadySelected()
-      }
-    }
-  
-    override def testSucceeded(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-  
-      usingEventDispatchThread {
-        testsCompletedCount += 1
-        statusJPanel.setTestsRun(testsCompletedCount, true)
-        progressBar.setValue(testsCompletedCount)
-        registerReport(report, ReporterOpts.PresentTestSucceeded)
       }
     }
   
@@ -1313,21 +1312,21 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             rerunColorBox.setValue(rerunTestsCompletedCount)
             registerRerunReport(report, ReporterOpts.PresentTestIgnored)
           }
-  
+
+        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+          val report: Report = new Report(suiteName + " - " + testName, "test succeeded, dude", None, rerunnable)
+
+          usingEventDispatchThread {
+            rerunTestsCompletedCount += 1
+            rerunColorBox.setValue(rerunTestsCompletedCount)
+            registerRerunReport(report, ReporterOpts.PresentTestSucceeded)
+          }
+
         case _ =>
       }
     }
 
-    override def testSucceeded(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        rerunTestsCompletedCount += 1
-        rerunColorBox.setValue(rerunTestsCompletedCount)
-        registerRerunReport(report, ReporterOpts.PresentTestSucceeded)
-      }
-    }
-  
     override def testFailed(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")

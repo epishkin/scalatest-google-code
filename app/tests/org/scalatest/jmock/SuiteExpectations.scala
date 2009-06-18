@@ -27,7 +27,7 @@ trait SuiteExpectations {
   
   def expectNTestsToPass(expectations: Expectations, n: int, reporter: Reporter) = {
     expectNTestsToRun(expectations, n, reporter) { 
-      expectations.one(reporter).testSucceeded(expectations.`with`(new IsAnything[Report]))
+      expectations.one(reporter).apply(expectations.`with`(new IsAnything[TestSucceeded]))
     }
   }
   

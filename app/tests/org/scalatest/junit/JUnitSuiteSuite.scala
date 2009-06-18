@@ -72,6 +72,9 @@ package org.scalatest.junit {
             testStartingCount += 1
           case event: TestIgnored =>
             testIgnoredEvent = Some(event)
+          case event: TestSucceeded =>
+            testSucceededEvent = Some(event)
+            testSucceededCount += 1
           case _ => 
         }
       }
@@ -80,11 +83,7 @@ package org.scalatest.junit {
       var testStartingEvent: Option[TestStarting] = None
 
       var testSucceededCount = 0
-      var testSucceededReport: Option[Report] = None
-      override def testSucceeded(report: Report) {
-        testSucceededReport = Some(report)
-        testSucceededCount += 1
-      }
+      var testSucceededEvent: Option[TestSucceeded] = None
 
       var testFailedReport: Option[Report] = None
       override def testFailed(report: Report) {
@@ -105,13 +104,15 @@ package org.scalatest.junit {
       assert(repA.testStartingEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.HappySuite")
     }
 
-    test("A JUnitSuite with a JUnit 4 Test annotation will cause testSucceeded to be invoked") {
+    test("A JUnitSuite with a JUnit 4 Test annotation will cause TestSucceeded to be fired") {
 
       val happy = new HappySuite
       val repA = new MyReporter
       happy.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-      assert(repA.testSucceededReport.isDefined)
-      assert(repA.testSucceededReport.get.name === "verifySomething(org.scalatest.junit.helpers.HappySuite)")
+      assert(repA.testSucceededEvent.isDefined)
+      assert(repA.testSucceededEvent.get.testName === "verifySomething")
+      assert(repA.testSucceededEvent.get.suiteName === "HappySuite")
+      assert(repA.testSucceededEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.HappySuite")
     }
 
     test("A JUnitSuite with a JUnit 4 Test annotation on a bad test will cause testFailed to be invoked") {
@@ -146,8 +147,10 @@ package org.scalatest.junit {
       assert(repA.testStartingEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.ManySuite")
       assert(repA.testStartingCount === 2)
 
-      assert(repA.testSucceededReport.isDefined)
-      assert(repA.testSucceededReport.get.name === "verifySomethingElse(org.scalatest.junit.helpers.ManySuite)")
+      assert(repA.testSucceededEvent.isDefined)
+      assert(repA.testSucceededEvent.get.testName === "verifySomethingElse")
+      assert(repA.testSucceededEvent.get.suiteName === "ManySuite")
+      assert(repA.testSucceededEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.ManySuite")
       assert(repA.testSucceededCount === 2)
     }
 

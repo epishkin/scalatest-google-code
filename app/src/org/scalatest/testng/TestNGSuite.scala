@@ -197,7 +197,7 @@ trait TestNGSuite extends Suite { thisSuite =>
    * 
    * TODO: 
    * (12:02:27 AM) bvenners: onTestFailedButWithinSuccessPercentage(ITestResult tr) 
-   * (12:02:34 AM) bvenners: maybe a testSucceeded with some extra info in the report
+   * (12:02:34 AM) bvenners: maybe a TestSucceeded with some extra info in the report
    */
   private[testng] class MyTestListenerAdapter(reporter: Reporter, tracker: Tracker) extends TestListenerAdapter {
     
@@ -237,11 +237,12 @@ trait TestNGSuite extends Suite { thisSuite =>
     }
 
     /**
-     * TestNG's onTestSuccess maps cleanly to testSucceeded. Again, simply build
+     * TestNG's onTestSuccess maps cleanly to TestSucceeded. Again, simply build
      * a report and pass it to the Reporter.
      */
-    override def onTestSuccess(itr: ITestResult) = {
-      reporter.testSucceeded( buildReport( itr, None ) )
+    override def onTestSuccess(result: ITestResult) = {
+      reporter(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result),
+          None, None, Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
     /**
@@ -320,6 +321,6 @@ trait TestNGSuite extends Suite { thisSuite =>
   /**
      TODO
     (12:02:27 AM) bvenners: onTestFailedButWithinSuccessPercentage(ITestResult tr)
-    (12:02:34 AM) bvenners: maybe a testSucceeded with some extra info in the report
+    (12:02:34 AM) bvenners: maybe a TestSucceeded with some extra info in the report
   **/    
 }

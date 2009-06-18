@@ -145,7 +145,7 @@ package org.scalatest.testng {
       new SuccessTestNGSuite().runTestNG(testReporter, new Tracker)
 
       // then get rerunnable from report 
-      val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
+      val rerunner = testReporter.lastEvent.get.asInstanceOf[TestSucceeded].rerunnable.get.asInstanceOf[TestRerunner];
       // TODO we need a better assertion here
     }
     
