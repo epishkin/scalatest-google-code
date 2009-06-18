@@ -822,32 +822,31 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerReport(report, ReporterOpts.PresentTestSucceeded)
           }
   
+        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+          val report: Report = new Report(suiteName + " - " + testName, "test failed, dude", throwable, rerunnable)
+
+          usingEventDispatchThread {
+            testsCompletedCount += 1
+            // Passing in false here increments the test failed count
+            // in the statusJPanel, which updates the counter on the GUI
+            statusJPanel.setTestsRun(testsCompletedCount, false)
+            progressBar.setValue(testsCompletedCount)
+            progressBar.setRed()
+            registerReport(report, ReporterOpts.PresentTestFailed)
+            // Must do this here, not in RunningState.runFinished, because the runFinished
+            // invocation can happen before this runCompleted invocation, which means that 
+            // the first error in the run may not be in the JList model yet. So must wait until
+            // a run completes. I was doing it in runCompleted, which works, but for long runs
+            // you must wait a long time for that thing to be selected. Nice if it gets selected
+            // right away.
+            selectFirstFailureIfExistsAndNothingElseAlreadySelected()
+          }
+
         case _ =>
       }
     }
 
-    override def testFailed(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-  
-      usingEventDispatchThread {
-        testsCompletedCount += 1
-        // Passing in false here increments the test failed count
-        // in the statusJPanel, which updates the counter on the GUI
-        statusJPanel.setTestsRun(testsCompletedCount, false)
-        progressBar.setValue(testsCompletedCount)
-        progressBar.setRed()
-        registerReport(report, ReporterOpts.PresentTestFailed)
-        // Must do this here, not in RunningState.runFinished, because the runFinished
-        // invocation can happen before this runCompleted invocation, which means that 
-        // the first error in the run may not be in the JList model yet. So must wait until
-        // a run completes. I was doing it in runCompleted, which works, but for long runs
-        // you must wait a long time for that thing to be selected. Nice if it gets selected
-        // right away.
-        selectFirstFailureIfExistsAndNothingElseAlreadySelected()
-      }
-    }
-  
     override def infoProvided(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")
@@ -1323,25 +1322,25 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             registerRerunReport(report, ReporterOpts.PresentTestSucceeded)
           }
 
+        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+          val report: Report = new Report(suiteName + " - " + testName, "test failed, dude", throwable, rerunnable)
+
+          usingEventDispatchThread {
+            rerunTestsCompletedCount += 1
+            rerunColorBox.setValue(rerunTestsCompletedCount)
+            rerunColorBox.setRed()
+            val reportHolder = registerRerunReport(report, ReporterOpts.PresentTestFailed)
+            if (!anErrorHasOccurredAlready) {
+              selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
+              anErrorHasOccurredAlready = true
+            }
+          }
+  
         case _ =>
       }
     }
 
-    override def testFailed(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        rerunTestsCompletedCount += 1
-        rerunColorBox.setValue(rerunTestsCompletedCount)
-        rerunColorBox.setRed()
-        val reportHolder = registerRerunReport(report, ReporterOpts.PresentTestFailed)
-        if (!anErrorHasOccurredAlready) {
-          selectFirstErrorInLastRerunIfThisIsThatError(reportHolder)
-          anErrorHasOccurredAlready = true
-        }
-      }
-    }
-  
     override def infoProvided(report: Report) {
       if (report == null)
         throw new NullPointerException("report is null")

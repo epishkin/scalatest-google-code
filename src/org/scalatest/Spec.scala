@@ -761,9 +761,9 @@ trait Spec extends Suite { thisSuite =>
           }
           catch { 
             case e: Exception => 
-              handleFailedTest(e, false, example.testName, example.specText, rerunnable, wrappedReporter)
+              handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, wrappedReporter, tracker)
             case ae: AssertionError =>
-              handleFailedTest(ae, false, example.testName, example.specText, rerunnable, wrappedReporter)
+              handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, wrappedReporter, tracker)
           }
         }
       }
@@ -781,19 +781,20 @@ trait Spec extends Suite { thisSuite =>
     suiteName + ", " + testName
   }
 
-  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      specText: String, rerunnable: Option[Rerunner], reporter: Reporter) {
+  private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+      specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker) {
 
-    val msg =
-      if (t.getMessage != null) // [bv: this could be factored out into a helper method]
-        t.getMessage
+    val message =
+      if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
+        throwable.getMessage
       else
-        t.toString
+        throwable.toString
 
     //val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), rerunnable)
-    val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(t), rerunnable)
+    // val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(t), rerunnable)
 
-    reporter.testFailed(report)
+    val formatter = IndentedText(formattedSpecText, specText, 1)
+    reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, Some(formatter), rerunnable)) // TODO: Add a duration
   }
 
   /**
@@ -917,7 +918,7 @@ trait Spec extends Suite { thisSuite =>
 Here's one way to do pending. I'll need to add a testPending message to Reporter. The pending methods
 that take a testFun would execute the function, catch any exception that comes out and probably throw
 it away, then throw a pending exception. The caller would catch PendingException and report it with
-a testPending rather than a TestSucceeded or testFailed message:
+a testPending rather than a TestSucceeded or TestFailed message:
 
 Actually I changed my mind. Won't do this. Will just make a
 
@@ -1030,7 +1031,7 @@ class MySpec extends Spec {
 }
 
 The other thought I had was that runTests can wrap the passed reporter in a SpecReporter, which would
- hold onto infoProvided messages until after the next TestSucceeded or testFailed message, at which
+ hold onto infoProvided messages until after the next TestSucceeded or TestFailed message, at which
  point it would release them. This would also be done in FeatureSuite. That way the given, when, then stuff
  would show up under the line about the test itself:
 

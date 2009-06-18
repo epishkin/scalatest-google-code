@@ -98,11 +98,12 @@ trait JUnitSuite extends Suite { thisSuite =>
     }
 */
 
-    // For now, at least, pass Nones for suiteName, suiteClassName, and testName. Possibly
-    // later enhance this so that I'm grabbing this info out of JUnit's stupid displayName string.
     override def testFailure(failure: Failure) {
-      val rpt = new Report(failure.getDescription.getDisplayName, "")
-      report.testFailed(rpt)
+      val testName = getTestNameFromDescription(failure.getDescription)
+      val throwableOrNull = failure.getException
+      val throwable = if (throwableOrNull != null) Some(throwableOrNull) else None
+      val message = if (throwableOrNull != null) throwableOrNull.getMessage else Resources("jUnitTestFailed")
+      report(TestFailed(theTracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, throwable)) // TODO: can I add a duration?
     }
 
     override def testFinished(description: Description) {

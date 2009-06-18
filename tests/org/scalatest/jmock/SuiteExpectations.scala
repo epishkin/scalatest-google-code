@@ -33,7 +33,7 @@ trait SuiteExpectations {
   
   def expectNTestsToFail(expectations: Expectations, n: int, reporter: Reporter) = {
     expectNTestsToRun(expectations, n, reporter) { 
-      expectations.one(reporter).testFailed(expectations.`with`(new IsAnything[Report]))
+      expectations.one(reporter).apply(expectations.`with`(new IsAnything[TestFailed]))
     }
   }
 

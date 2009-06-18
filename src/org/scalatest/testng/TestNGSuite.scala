@@ -254,35 +254,26 @@ trait TestNGSuite extends Suite { thisSuite =>
     }
 
     /**
-     * TestNG's onTestFailure maps cleanly to testFailed. This differs slighly from
-     * the other calls however. An expection is available on the ITestResult,
-     * and it gets put into the Report object that is given to the Reporter.
+     * TestNG's onTestFailure maps cleanly to TestFailed.
      */
-    override def onTestFailure(itr: ITestResult) = {
-      reporter.testFailed( buildReport( itr, Some(itr.getThrowable)) )
+    override def onTestFailure(result: ITestResult) = {
+      val throwableOrNull = result.getThrowable
+      val throwable = if (throwableOrNull != null) Some(throwableOrNull) else None
+      val message = if (throwableOrNull != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
+      reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result), throwable, None, None, Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
     /**
      * A TestNG setup method resulted in an exception, and a test method will later fail to run. 
      * This TestNG callback method has the exception that caused the problem, as well
      * as the name of the method that failed. Create a Report with the method name and the
-     * exception and call reporter.testFailed. 
-     * 
-     * Calling testFailed isn't really a clean one-to-one mapping between TestNG and ScalaTest
-     * and somewhat exposes a ScalaTest implementation detail. By default, ScalaTest only shows
-     * failing tests in red in the UI, and does not show additional information such as TestIgnored,
-     * and infoProvided. Had I chose to use either of those calls here, the user wouldn't 
-     * immediately know what the root cause of the problem is. They might not even know there
-     * was a problem at all. 
-     * 
-     * In my opinion, we need an additional failure indicator available on the Reporter which
-     * also shows up in red on the UI. Something like, "reporter.failure", or "reporter.setupFailure".
-     * Something that differentiates between test's failing, and other types of failures such as a 
-     * setup method. TODO: This is probably a SuiteAborted.
+     * exception and call reporter(SuiteAborted).
      */
-    override def onConfigurationFailure(itr: ITestResult) = {
-      //reporter.testFailed(new Report(itr.getName, className, Some(itr.getThrowable), None))
-      reporter.testFailed(new Report(itr.getName, className, Some(itr.getThrowable), None))
+    override def onConfigurationFailure(result: ITestResult) = {
+      val throwableOrNull = result.getThrowable
+      val throwable = if (throwableOrNull != null) Some(throwableOrNull) else None
+      val message = if (throwableOrNull != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
+      reporter(SuiteAborted(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), throwable))
     }
 
     /**

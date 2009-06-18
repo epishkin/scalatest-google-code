@@ -211,23 +211,18 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
           case None =>
         }
 
+      case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+        testsCompletedCount += 1
+        testsFailedCount += 1
+
+        val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter)
+        for (line <- lines) pw.println(line)
+
       case _ => throw new RuntimeException("Unhandled event")
     }
 
     pw.flush()
-  }
-
-  /**
-  * Prints information extracted from the specified <code>Report</code>
-  * about a test that failed.
-  *
-  * @param report a <code>Report</code> that encapsulates the test failed event to report.
-  * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-  */
-  override def testFailed(report: Report) {
-    makeReport(report, "testFailed")
-    testsCompletedCount += 1
-    testsFailedCount += 1
   }
 
   /**

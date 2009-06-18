@@ -207,19 +207,6 @@ import org.scalatest.events._
 trait Reporter extends (Event => Unit) {
 
     /**
-     * Indicates a suite (or other entity) has completed running a test that failed.
-     *
-     * <p>
-     * Trait <code>Suite</code> uses <code>testFailed</code> to report
-     * that a test method of a <code>Suite</code>
-     * completed abruptly with an <code>Exception</code>.
-     *
-     * @param report a <code>Report</code> that encapsulates the test failed event to report.
-     * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-     */
-    def testFailed(report: Report) = ()
-
-    /**
      * Provides information that is not appropriate to report via any other
      * <code>Reporter</code> method.
      *

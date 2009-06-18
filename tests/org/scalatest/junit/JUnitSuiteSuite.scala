@@ -75,6 +75,8 @@ package org.scalatest.junit {
           case event: TestSucceeded =>
             testSucceededEvent = Some(event)
             testSucceededCount += 1
+          case event: TestFailed =>
+            testFailedEvent = Some(event)
           case _ => 
         }
       }
@@ -85,10 +87,7 @@ package org.scalatest.junit {
       var testSucceededCount = 0
       var testSucceededEvent: Option[TestSucceeded] = None
 
-      var testFailedReport: Option[Report] = None
-      override def testFailed(report: Report) {
-        testFailedReport = Some(report)
-      }
+      var testFailedEvent: Option[TestFailed] = None
 
       var testIgnoredEvent: Option[TestIgnored] = None
     }
@@ -120,8 +119,10 @@ package org.scalatest.junit {
       val bitter = new BitterSuite
       val repA = new MyReporter
       bitter.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-      assert(repA.testFailedReport.isDefined)
-      assert(repA.testFailedReport.get.name === "verifySomething(org.scalatest.junit.helpers.BitterSuite)")
+      assert(repA.testFailedEvent.isDefined)
+      assert(repA.testFailedEvent.get.testName === "verifySomething")
+      assert(repA.testFailedEvent.get.suiteName === "BitterSuite")
+      assert(repA.testFailedEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.BitterSuite")
     }
 
     test("A JUnitSuite with JUnit 4 Ignore and Test annotations will cause TestIgnored to be fired") {
