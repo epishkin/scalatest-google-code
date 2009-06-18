@@ -22,13 +22,15 @@ class SpecSuite extends FunSuite {
 
   test("calling a describe from within an it clause results in a TestFailedError at runtime") {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -41,18 +43,20 @@ class SpecSuite extends FunSuite {
 
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   test("calling a describe with a nested it from within an it clause results in a TestFailedError at runtime") {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -68,18 +72,20 @@ class SpecSuite extends FunSuite {
 
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   test("calling an it from within an it clause results in a TestFailedError at runtime") {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -93,18 +99,20 @@ class SpecSuite extends FunSuite {
 
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   test("calling an it from within an it with groups clause results in a TestFailedError at runtime") {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -118,18 +126,20 @@ class SpecSuite extends FunSuite {
 
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   test("calling an ignore from within an it clause results in a TestFailedError at runtime") {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -143,18 +153,20 @@ class SpecSuite extends FunSuite {
 
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   test("calling an ignore with groups from within an it clause results in a TestFailedError at runtime") {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -168,7 +180,7 @@ class SpecSuite extends FunSuite {
 
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   test("groups work correctly in Spec") {
@@ -523,25 +535,27 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
   }
-  
+
   test("Top-level plain-old specifiers should yield good strings in a testFailed report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            event.formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -675,7 +689,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-one-level plain-old specifiers should yield good strings in a testFailed report") {
+  test("Nested-one-level plain-old specifiers should yield good strings in a TestFailed report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -700,22 +714,24 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testFailed(report: Report) {
-        // infoProvided should be invoked before the this method
-        assert(infoProvidedHasBeenInvoked)
-        theOtherMethodHasBeenInvoked = true
-        if (report.name.indexOf("My Spec must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            // infoProvided should be invoked before the this method
+            assert(infoProvidedHasBeenInvoked)
+            theOtherMethodHasBeenInvoked = true
+            if (event.testName.indexOf("My Spec must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            event.formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -859,7 +875,7 @@ class SpecSuite extends FunSuite {
     assert(infoReportHadCorrectFormattedSpecText)
   }
 
-  test("Nested-two-levels plain-old specifiers should yield good strings in a testFailed report") {
+  test("Nested-two-levels plain-old specifiers should yield good strings in a TestFailed report") {
     var infoReportHadCorrectTestName = false
     var infoReportHadCorrectSpecText = false
     var infoReportHadCorrectFormattedSpecText = false
@@ -884,22 +900,24 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testFailed(report: Report) {
-        // infoProvided should be invoked before the this method
-        assert(infoProvidedHasBeenInvoked)
-        theOtherMethodHasBeenInvoked = true
-        if (report.name.indexOf("My Spec must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            // infoProvided should be invoked before the this method
+            assert(infoProvidedHasBeenInvoked)
+            theOtherMethodHasBeenInvoked = true
+            if (event.testName.indexOf("My Spec must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            event.formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1025,24 +1043,26 @@ class SpecSuite extends FunSuite {
     assert(reportHadCorrectFormattedSpecText)
   }
 
-  test("Top-level 'shared behavior - plain-old specifiers' should yield good strings in a testFailed report") {
+  test("Top-level 'shared behavior - plain-old specifiers' should yield good strings in a TestFailed report") {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            event.formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1245,15 +1265,16 @@ class SpecSuite extends FunSuite {
     assert(testSucceededReportHadCorrectTestName)
   }
 
-  test("In a testFailed report, the example name should be verbatim if top level if example registered with it") {
+  test("In a TestFailed report, the example name should be verbatim if top level if example registered with it") {
     var testFailedReportHadCorrectTestName = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this thing must start with proper words") != -1) {
-          testFailedReportHadCorrectTestName = true
-        }  
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this thing must start with proper words") != -1)
+              testFailedReportHadCorrectTestName = true
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1314,10 +1335,6 @@ class SpecSuite extends FunSuite {
         }
       }
      
-      override def testFailed(report: Report) {
-        ensureSpecReport(report)
-      }
-	
       override def infoProvided(report: Report) {
         ensureSpecReport(report)
       }
@@ -1331,6 +1348,7 @@ class SpecSuite extends FunSuite {
           case event: TestStarting => ensureFormatterIsDefined(event)
           case event: TestSucceeded => ensureFormatterIsDefined(event)
           case event: TestIgnored => ensureFormatterIsDefined(event)
+          case event: TestFailed => ensureFormatterIsDefined(event)
           case _ =>
         }
       }
@@ -1521,17 +1539,6 @@ class SpecSuite extends FunSuite {
       var expectedLevelReceivedByTestSucceeded = false
       var expectedLevelReceivedByTestFailed = false
  
-      override def testFailed(report: Report) {
-        report match {
-          case specReport: SpecReport => {
-            testFailedCalled = true
-            if (!expectedLevelReceivedByTestFailed) {
-              // expectedLevelReceivedByTestFailed = (specReport.level == ExpectedLevel)
-            }
-          }
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
@@ -1540,6 +1547,15 @@ class SpecSuite extends FunSuite {
                 testSucceededCalled = true
                 if (!expectedLevelReceivedByTestSucceeded) {
                   // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevel)
+                }
+              case _ =>
+            }
+          case event: TestFailed =>
+            event.formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                testFailedCalled = true
+                if (!expectedLevelReceivedByTestFailed) {
+                  // expectedLevelReceivedByTestFailed = (specReport.level == ExpectedLevel)
                 }
               case _ =>
             }
@@ -1574,18 +1590,6 @@ class SpecSuite extends FunSuite {
       var expectedLevelReceivedByTestFailed = false
       var expectedLevelReceivedByInfoProvided = false
  
-      override def testFailed(report: Report) {
-        report match {
-          case specReport: SpecReport => {
-            testFailedCalled = true
-            if (!expectedLevelReceivedByTestFailed) {
-              // expectedLevelReceivedByTestFailed = (specReport.level == ExpectedLevelForExamples)
-            }
-          }
-          case _ =>
-        }
-      }
- 
       override def infoProvided(report: Report) {
         report match {
           case specReport: SpecReport => {
@@ -1597,6 +1601,7 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
+
       def apply(event: Event) {
         event match {
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
@@ -1605,6 +1610,15 @@ class SpecSuite extends FunSuite {
                 testSucceededCalled = true
                 if (!expectedLevelReceivedByTestSucceeded) {
                   // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevelForExamples)
+                }
+              case _ =>
+            }
+          case event: TestFailed =>
+            event.formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                testFailedCalled = true
+                if (!expectedLevelReceivedByTestFailed) {
+                  // expectedLevelReceivedByTestFailed = (specReport.level == ExpectedLevelForExamples)
                 }
               case _ =>
             }

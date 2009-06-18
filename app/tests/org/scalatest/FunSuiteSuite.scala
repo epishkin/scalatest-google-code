@@ -606,13 +606,15 @@ class FunSuiteSuite extends Suite {
 
   def callingTestFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
 
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -626,18 +628,20 @@ class FunSuiteSuite extends Suite {
 
     val a = new MySuite
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   def callingTestFromWithinATestWithGroupsClauseResultsInATestFailedErrorAtRuntime() {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+          if (event.testName.indexOf("this test should blow up") != -1)
+            testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -651,18 +655,20 @@ class FunSuiteSuite extends Suite {
 
     val a = new MySuite
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   def callingIgnoreFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -676,18 +682,20 @@ class FunSuiteSuite extends Suite {
 
     val a = new MySuite
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 
   def callingIgnoreWithGroupsFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
     
-    var testFailedAdExpected = false
+    var testFailedAsExpected = false
     class MyReporter extends Reporter {
-      override def testFailed(report: Report) {
-        if (report.name.indexOf("this test should blow up") != -1)
-          testFailedAdExpected = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: TestFailed =>
+            if (event.testName.indexOf("this test should blow up") != -1)
+              testFailedAsExpected = true
+          case _ =>
+        }
       }
     }
 
@@ -701,7 +709,7 @@ class FunSuiteSuite extends Suite {
 
     val a = new MySuite
     a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(testFailedAdExpected)
+    assert(testFailedAsExpected)
   }
 }
 

@@ -1303,13 +1303,13 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     catch { 
       case ite: InvocationTargetException => {
         val t = ite.getTargetException
-        handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter)
+        handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter, tracker)
       }
       case e: Exception => {
-        handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter)
+        handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter, tracker)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter)
+        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter, tracker)
       }
     }
   }
@@ -1498,15 +1498,16 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
         }
         myReporter.testFailed(report);
 */
-  private def handleFailedTest(t: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunner], reporter: Reporter) {
+  private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+      rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker) {
 
-    val msg =
-      if (t.getMessage != null) // [bv: this could be factored out into a helper method]
-        t.getMessage
+    val message =
+      if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
+        throwable.getMessage
       else
-        t.toString
+        throwable.toString
 
+/*
     val report =
       if (hasPublicNoArgConstructor)
         //new Report(getTestNameForReport(testName), msg, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), rerunnable)
@@ -1514,8 +1515,9 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       else
         //new Report(getTestNameForReport(testName), msg, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), None)
         new Report(getTestNameForReport(testName), msg, Some(t), None)
+*/
 
-    reporter.testFailed(report)
+    reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, None, rerunnable)) // TODO: Add a duration
   }
 
   /**

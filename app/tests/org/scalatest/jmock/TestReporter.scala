@@ -21,18 +21,12 @@ class TestReporter extends Reporter {
 
   var lastEvent: Option[Event] = None
 
-  var report: Report = null
   var successCount = 0
   var failureCount = 0
   
   var ignoreCount = 0
   
-  override def testFailed(report: Report){ 
-    failureCount = failureCount + 1 
-    this.report = report
-  }
-
-  def errorMessage = report.throwable.get.getMessage
+  // def errorMessage = event.get.throwable.get.getMessage
 
   def apply(event: Event) {
     event match {
@@ -41,6 +35,9 @@ class TestReporter extends Reporter {
         lastEvent = Some(event)
       case event: TestSucceeded =>
         successCount = successCount + 1 
+        lastEvent = Some(event)
+      case event: TestFailed =>
+        failureCount = failureCount + 1 
         lastEvent = Some(event)
       case _ =>
     }

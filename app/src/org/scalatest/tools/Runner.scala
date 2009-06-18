@@ -198,8 +198,8 @@ import org.scalatest.events._
  * is specified on the command line for a particular reporter, that
  * reporter uses its default configuration. If a configuration is specified, <code>Runner</code> will present
  * to the configured reporter only those report types mentioned in the configuration characters. If the command
- * line includes argument <code>-oFAB</code>, for example, only <code>testFailed</code>, 
- * <code>runAborted</code>, and <code>suiteAborted</code> events will be reported to the standard output reporter.
+ * line includes argument <code>-oFAB</code>, for example, only <code>TestFailed</code>, 
+ * <code>RunAborted</code>, and <code>SuiteAborted</code> events will be reported to the standard output reporter.
  * </p>
  *
  * <p>
@@ -364,7 +364,7 @@ object Runner {
   // will take suites out of the distributor queue and execute them. The DispatchReporter
   // will serialize all reports via an actor, which because that actor uses receive
   // not react, will have its own thread. So the DispatchReporter actor's thread will
-  // be the one that actually invokes testFailed, runAborted, etc., on this PassFailReporter.
+  // be the one that actually invokes TestFailed, RunAborted, etc., on this PassFailReporter.
   // The thread that invoked Runner.run(), will be the one that calls allTestsPassed.
   //
   // The thread that invoked Runner.run() will be the one to instantiate the PassFailReporter
@@ -401,10 +401,6 @@ object Runner {
 
         case _ =>
       }
-    }
-
-    override def testFailed(report: Report) {
-      failedAbortedOrStopped = true
     }
 
     def allTestsPassed = {

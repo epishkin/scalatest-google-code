@@ -65,7 +65,11 @@ package org.scalatest.testng {
       (new FailureTestNGSuite()).runTestNG(testReporter, new Tracker)
 
       // then
-      assert(testReporter.errorMessage === "fail") // detail message in exception thrown by FailureTestNGSuite
+      testReporter.lastEvent match {
+        case Some(TestFailed(_, _, _, _, _, throwable, _, _, _, _, _, _)) =>
+          assert(throwable.get.getMessage === "fail")
+        case _ => fail()
+      }
     }
 
     test("Report should be generated for each invocation") {
@@ -96,7 +100,7 @@ package org.scalatest.testng {
         new Expectations() {
           one(reporter).apply(`with`(new IsAnything[SuiteStarting]))
           one(reporter).apply(`with`(new IsAnything[TestStarting]))
-          one(reporter).testFailed(`with`(new IsAnything[Report]))
+          one(reporter).apply(`with`(new IsAnything[TestFailed]))
           one(reporter).apply(`with`(new IsAnything[TestIgnored]))
           one(reporter).apply(`with`(new IsAnything[SuiteCompleted]))
         }
@@ -131,12 +135,14 @@ package org.scalatest.testng {
       // when - run the failing suite
       new FailureTestNGSuite().runTestNG(testReporter, new Tracker)
 
-      // then get rerunnable from report 
-      val rerunner = testReporter.report.rerunnable.get.asInstanceOf[TestRerunner];
-      // TODO we need a better assertion here
+      // then get rerunnable from the event 
+      testReporter.lastEvent match {
+        case Some(TestFailed(_, _, _, _, _, _, _, _, rerunnable, _, _, _)) =>
+          assert(rerunnable.isDefined)
+        case _ => fail()
+      }
     }
 
-    
     test("Report for passing tests should include rerunner") {
       
       val testReporter = new TestReporter
