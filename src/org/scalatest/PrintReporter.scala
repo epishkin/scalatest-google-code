@@ -186,6 +186,17 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
           case None =>
         }
 
+      case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+        val stringToPrint = stringToPrintWhenNoError("testStarting", formatter)
+
+        stringToPrint match {
+          case Some(string) => pw.println(string)
+          case None =>
+        }
+
+        testsCompletedCount += 1
+    
       case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
         val stringToPrint =
@@ -206,18 +217,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     pw.flush()
   }
 
-  /**
-  * Prints information extracted from the specified <code>Report</code>
-  * about a test that succeeded.
-  *
-  * @param report a <code>Report</code> that encapsulates the test succeeded event to report.
-  * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-  */
-  override def testSucceeded(report: Report) {
-    makeReport(report, "testSucceeded")
-    testsCompletedCount += 1
-  }
-    
   /**
   * Prints information extracted from the specified <code>Report</code>
   * about a test that failed.

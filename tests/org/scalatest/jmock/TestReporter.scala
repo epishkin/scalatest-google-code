@@ -27,11 +27,6 @@ class TestReporter extends Reporter {
   
   var ignoreCount = 0
   
-  override def testSucceeded(report: Report){ 
-    successCount = successCount + 1 
-    this.report = report
-  }
-  
   override def testFailed(report: Report){ 
     failureCount = failureCount + 1 
     this.report = report
@@ -43,6 +38,9 @@ class TestReporter extends Reporter {
     event match {
       case event: TestIgnored =>
         ignoreCount = ignoreCount + 1 
+        lastEvent = Some(event)
+      case event: TestSucceeded =>
+        successCount = successCount + 1 
         lastEvent = Some(event)
       case _ =>
     }

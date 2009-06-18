@@ -465,19 +465,21 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -495,19 +497,21 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -576,22 +580,24 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testSucceeded(report: Report) {
-        // infoProvided should be invoked before the this method
-        assert(infoProvidedHasBeenInvoked)
-        theOtherMethodHasBeenInvoked = true
-        if (report.name.indexOf("My Spec must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the this method
+            assert(infoProvidedHasBeenInvoked)
+            theOtherMethodHasBeenInvoked = true
+            if (testName.indexOf("My Spec must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -634,22 +640,24 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testSucceeded(report: Report) {
-        // infoProvided should be invoked before the this method
-        assert(infoProvidedHasBeenInvoked)
-        theOtherMethodHasBeenInvoked = true
-        if (report.name.indexOf("My Spec must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the this method
+            assert(infoProvidedHasBeenInvoked)
+            theOtherMethodHasBeenInvoked = true
+            if (testName.indexOf("My Spec must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -752,22 +760,24 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testSucceeded(report: Report) {
-        // infoProvided should be invoked before the this method
-        assert(infoProvidedHasBeenInvoked)
-        theOtherMethodHasBeenInvoked = true
-        if (report.name.indexOf("My Spec must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the this method
+            assert(infoProvidedHasBeenInvoked)
+            theOtherMethodHasBeenInvoked = true
+            if (testName.indexOf("My Spec must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -812,22 +822,24 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testSucceeded(report: Report) {
-        // infoProvided should be invoked before the this method
-        assert(infoProvidedHasBeenInvoked)
-        theOtherMethodHasBeenInvoked = true
-        if (report.name.indexOf("My Spec must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the this method
+            assert(infoProvidedHasBeenInvoked)
+            theOtherMethodHasBeenInvoked = true
+            if (testName.indexOf("My Spec must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -913,19 +925,21 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("it should start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "it should start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- it should start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("it should start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "it should start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- it should start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -946,19 +960,21 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -979,19 +995,21 @@ class SpecSuite extends FunSuite {
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("must start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "must start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- must start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("must start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "must start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- must start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1066,22 +1084,24 @@ class SpecSuite extends FunSuite {
           case _ =>
         }
       }
-      override def testSucceeded(report: Report) {
-        // infoProvided should be invoked before the this method
-        assert(infoProvidedHasBeenInvoked)
-        theOtherMethodHasBeenInvoked = true
-        if (report.name.indexOf("My Spec should start with proper words") != -1)
-          reportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "should start with proper words")
-              reportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "- should start with proper words")
-              reportHadCorrectFormattedSpecText = true
+      def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the this method
+            assert(infoProvidedHasBeenInvoked)
+            theOtherMethodHasBeenInvoked = true
+            if (testName.indexOf("My Spec should start with proper words") != -1)
+              reportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "should start with proper words")
+                  reportHadCorrectSpecText = true
+                if (formattedText == "- should start with proper words")
+                  reportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1146,12 +1166,14 @@ class SpecSuite extends FunSuite {
   test("In a TestSucceeded report, the example name should start with '<description> should' if nested two levels inside describe clauses") {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("A Stack (when working right) should push and pop properly") != -1) {
-          testSucceededReportHadCorrectTestName = true
-        }  
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("A Stack (when working right) should push and pop properly") != -1) {
+              testSucceededReportHadCorrectTestName = true
+            }  
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1184,12 +1206,14 @@ class SpecSuite extends FunSuite {
   test("In a TestSucceeded report, the example name should be verbatim if top level if example registered with it") {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("this thing must start with proper words") != -1) {
-          testSucceededReportHadCorrectTestName = true
-        }  
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("this thing must start with proper words") != -1) {
+              testSucceededReportHadCorrectTestName = true
+            }  
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1203,12 +1227,14 @@ class SpecSuite extends FunSuite {
   test("In a testSucceeded report, the example name should be verbatim if top level if example registered with it") {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("this thing must start with proper words") != -1) {
-          testSucceededReportHadCorrectTestName = true
-        }  
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("this thing must start with proper words") != -1) {
+              testSucceededReportHadCorrectTestName = true
+            }  
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1288,10 +1314,6 @@ class SpecSuite extends FunSuite {
         }
       }
      
-      override def testSucceeded(report: Report) {
-        ensureSpecReport(report)
-      }
-	    
       override def testFailed(report: Report) {
         ensureSpecReport(report)
       }
@@ -1307,6 +1329,7 @@ class SpecSuite extends FunSuite {
           case event: SuiteStarting => ensureFormatterIsDefined(event)
           case event: SuiteCompleted => ensureFormatterIsDefined(event)
           case event: TestStarting => ensureFormatterIsDefined(event)
+          case event: TestSucceeded => ensureFormatterIsDefined(event)
           case event: TestIgnored => ensureFormatterIsDefined(event)
           case _ =>
         }
@@ -1332,17 +1355,19 @@ class SpecSuite extends FunSuite {
     var testSucceededReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My spec text must have the proper words")
-              testSucceededReportHadCorrectSpecText = true
-            else
-              lastSpecText = Some(specReport.plainSpecText)
-          case _ => throw new RuntimeException("Got a non-SpecReport")
-        }
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My spec text must have the proper words")
+                  testSucceededReportHadCorrectSpecText = true
+                else
+                  lastSpecText = Some(rawText)
+              case _ => throw new RuntimeException("Got a non-SpecReport")
+            }
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1357,17 +1382,19 @@ class SpecSuite extends FunSuite {
     var testSucceededReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My short name must have the proper words")
-              testSucceededReportHadCorrectSpecText = true
-            else
-              lastSpecText = Some(specReport.plainSpecText)
-          case _ => throw new RuntimeException("Got a non-SpecReport")
-        }
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My short name must have the proper words")
+                  testSucceededReportHadCorrectSpecText = true
+                else
+                  lastSpecText = Some(rawText)
+              case _ => throw new RuntimeException("Got a non-SpecReport")
+            }
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1384,17 +1411,19 @@ class SpecSuite extends FunSuite {
     var testSucceededReportHadCorrectSpecText = false
     var lastSpecText: Option[String] = None
     class MyReporter extends Reporter {
-      override def testSucceeded(report: Report) {
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My short name must have the proper words")
-              testSucceededReportHadCorrectSpecText = true
-            else
-              lastSpecText = Some(specReport.plainSpecText)
-          case _ => throw new RuntimeException("Got a non-SpecReport")
-        }
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My short name must have the proper words")
+                  testSucceededReportHadCorrectSpecText = true
+                else
+                  lastSpecText = Some(rawText)
+              case _ => throw new RuntimeException("Got a non-SpecReport")
+            }
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {
@@ -1492,19 +1521,6 @@ class SpecSuite extends FunSuite {
       var expectedLevelReceivedByTestSucceeded = false
       var expectedLevelReceivedByTestFailed = false
  
-
-      override def testSucceeded(report: Report) {
-        report match {
-          case specReport: SpecReport => {
-            testSucceededCalled = true
-            if (!expectedLevelReceivedByTestSucceeded) {
-              // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevel)
-            }
-          }
-          case _ =>
-        }
-      }
- 
       override def testFailed(report: Report) {
         report match {
           case specReport: SpecReport => {
@@ -1517,6 +1533,18 @@ class SpecSuite extends FunSuite {
         }
       }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                testSucceededCalled = true
+                if (!expectedLevelReceivedByTestSucceeded) {
+                  // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevel)
+                }
+              case _ =>
+            }
+          case _ =>
+        }
       }
     }
 
@@ -1546,18 +1574,6 @@ class SpecSuite extends FunSuite {
       var expectedLevelReceivedByTestFailed = false
       var expectedLevelReceivedByInfoProvided = false
  
-      override def testSucceeded(report: Report) {
-        report match {
-          case specReport: SpecReport => {
-            testSucceededCalled = true
-            if (!expectedLevelReceivedByTestSucceeded) {
-              // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevelForExamples)
-            }
-          }
-          case _ =>
-        }
-      }
- 
       override def testFailed(report: Report) {
         report match {
           case specReport: SpecReport => {
@@ -1582,6 +1598,18 @@ class SpecSuite extends FunSuite {
         }
       }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                testSucceededCalled = true
+                if (!expectedLevelReceivedByTestSucceeded) {
+                  // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevelForExamples)
+                }
+              case _ =>
+            }
+          case _ =>
+        }
       }
     }
 
@@ -1714,12 +1742,14 @@ class SpecSuite extends FunSuite {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
 
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("it should be invoked") != -1) {
-          testSucceededReportHadCorrectTestName = true
-        }  
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("it should be invoked") != -1) {
+              testSucceededReportHadCorrectTestName = true
+            }  
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
@@ -1740,12 +1770,14 @@ class SpecSuite extends FunSuite {
     var testSucceededReportHadCorrectTestName = false
     class MyReporter extends Reporter {
 
-      override def testSucceeded(report: Report) {
-        if (report.name.indexOf("A Stack should pop properly") != -1) {
-          testSucceededReportHadCorrectTestName = true
-        }  
-      }
       def apply(event: Event) {
+        event match {
+          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
+            if (testName.indexOf("A Stack should pop properly") != -1) {
+              testSucceededReportHadCorrectTestName = true
+            }  
+          case _ =>
+        }
       }
     }
     class MySpec extends Spec with ShouldMatchers {

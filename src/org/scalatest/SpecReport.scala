@@ -60,7 +60,7 @@ import java.util.Date
  * The <code>includeInSpecOutput</code> <code>Boolean</code> flag is used to omit reports that
  * would detract from the readability of the specification-style output. For example, trait <code>Spec</code>
  * sets <code>includeInSpecOutput</code> to <code>false</code> for <code>TestStarting</code> reports, but to
- * <code>true</code> for <code>testSucceeded</code> and <code>testFailed</code> reports. This produces reports
+ * <code>true</code> for <code>TestSucceeded</code> and <code>testFailed</code> reports. This produces reports
  * that read more like specifications, for example:
  * </p>
  *

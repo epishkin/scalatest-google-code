@@ -91,7 +91,7 @@ class RunNotifierSuite extends FunSuite {
     assert(runNotifier.passed.get.getDescription.getDisplayName === "theTestName(SuiteClassName)")
   }
 
-  test("report.testSucceeded generates a fireTestFinished invocation") {
+  test("report(TestSucceeded) generates a fireTestFinished invocation") {
 
     val runNotifier =
       new RunNotifier {
@@ -103,19 +103,7 @@ class RunNotifierSuite extends FunSuite {
         }
       }
 
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
     val reporter = new RunNotifierReporter(runNotifier)
-    val report = new Report("some test name", "test starting just fine we think")
-    reporter.testSucceeded(report)
-    assert(runNotifier.methodInvocationCount === 1)
-    assert(runNotifier.passed.get.getDisplayName === "some test name")
-
-    // DELETE THIS AFTER REPORTER DEPRECATION PERIOD
-    val report2 = new Report("name", "message", None, None)
-    reporter.testSucceeded(report2)
-    assert(runNotifier.methodInvocationCount === 2)
-    assert(runNotifier.passed.get.getDisplayName === "name")
-
     reporter(TestSucceeded(ordinal, "SuiteClassName", Some("fully.qualified.SuiteClassName"), "theTestName"))
     assert(runNotifier.passed.get.getDisplayName === "theTestName(fully.qualified.SuiteClassName)")
     reporter(TestSucceeded(ordinal, "SuiteClassName", None, "theTestName"))

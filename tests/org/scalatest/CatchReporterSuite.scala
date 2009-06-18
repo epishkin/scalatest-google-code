@@ -27,9 +27,6 @@ class CatchReporterSuite extends Suite {
       override def apply(event: Event) {
         throw new RuntimeException
       }
-      override def testSucceeded(report: Report) {
-        throw new RuntimeException
-      }
       override def testFailed(report: Report) {
         throw new RuntimeException
       }
@@ -56,9 +53,9 @@ class CatchReporterSuite extends Suite {
     catchReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
 
     intercept[RuntimeException] {
-      buggyReporter.testSucceeded(report)
+      buggyReporter(TestSucceeded(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
     }
-    catchReporter.testSucceeded(report)
+    catchReporter(TestSucceeded(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
 
     intercept[RuntimeException] {
       buggyReporter(TestIgnored(new Ordinal(99), "suite name", Some("suite.className"), "test name"))

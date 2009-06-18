@@ -1298,15 +1298,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     try {
       method.invoke(this, args: _*)
 
-      val report =
-        if (hasPublicNoArgConstructor)
-          //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
-          new Report(getTestNameForReport(testName), "", None, rerunnable)
-        else 
-          //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-          new Report(getTestNameForReport(testName), "")
-
-      wrappedReporter.testSucceeded(report)
+      wrappedReporter(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, None, rerunnable)) // TODO: Add a duration
     }
     catch { 
       case ite: InvocationTargetException => {
