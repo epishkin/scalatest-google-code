@@ -652,7 +652,7 @@ trait FunSuite extends Suite { thisSuite =>
     if (testName == null || reporter == null || stopRequested == null || goodies == null)
       throw new NullPointerException
 
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+    val report = wrapReporterIfNecessary(reporter)
 
     // Create a Rerunner if the Spec has a no-arg constructor
     val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
@@ -663,7 +663,7 @@ trait FunSuite extends Suite { thisSuite =>
       else
         None
      
-    wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
+    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     try {
 
@@ -677,7 +677,7 @@ trait FunSuite extends Suite { thisSuite =>
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              wrappedReporter(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+              report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
             }
           }
         theTest.testFunction()
@@ -686,14 +686,14 @@ trait FunSuite extends Suite { thisSuite =>
         currentInformer = oldInformer
       }
 
-      wrappedReporter(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, None, rerunnable)) // TODO: Add a duration
+      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, None, rerunnable)) // TODO: Add a duration
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, testName, rerunnable, wrappedReporter, tracker)
+        handleFailedTest(e, false, testName, rerunnable, report, tracker)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, testName, rerunnable, wrappedReporter, tracker)
+        handleFailedTest(ae, false, testName, rerunnable, report, tracker)
       }
     }
   }
@@ -748,12 +748,12 @@ trait FunSuite extends Suite { thisSuite =>
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
     // so that exceptions are caught and transformed
     // into error messages on the standard error stream.
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+    val report = wrapReporterIfNecessary(reporter)
 
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
+      case Some(tn) => runTest(tn, report, stopRequested, goodies, tracker)
       case None => {
         val doList = atomic.get.doList.reverse
         for (node <- doList) {
@@ -762,10 +762,10 @@ trait FunSuite extends Suite { thisSuite =>
             case Test(tn, _) =>
               if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
                 if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
-                  wrappedReporter(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
+                  report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
                 }
                 else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-                  runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
+                  runTest(tn, report, stopRequested, goodies, tracker)
                 }
               }
           }
@@ -784,7 +784,7 @@ trait FunSuite extends Suite { thisSuite =>
     if (!runHasBeenInvoked)
       updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, true))
 
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+    val report = wrapReporterIfNecessary(reporter)
 
     // This guy will need to capture ordinal
     currentInformer =
@@ -792,12 +792,12 @@ trait FunSuite extends Suite { thisSuite =>
         def apply(message: String) {
           if (message == null)
             throw new NullPointerException
-          wrappedReporter(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
+          report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
         }
       }
 
     try {
-      super.run(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+      super.run(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
     }
     finally {
       currentInformer = zombieInformer

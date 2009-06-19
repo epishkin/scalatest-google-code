@@ -48,7 +48,7 @@ import org.scalatest.events._
  * <ul>
  * <li><code>Suite</code> - tests defined as methods that start with "<code>test</code>"</li>
  * <li><a href="FunSuite.html"><code>FunSuite</code></a> - tests defined as functions registered by invoking "<code>test</code>"</li>
- * <li><a href="Spec.html"><code>Spec</code></a> - supports behavior-driven development style, using "<code>describe</code>" and "</code>it</code>"</li>
+ * <li><a href="Spec.html"><code>Spec</code></a> - supports behavior-driven development style, using "<code>describe</code>" and "<code>it</code>"</li>
  * <li><a href="junit/JUnitSuite.html"><code>JUnitSuite</code></a> - facilitates writing JUnit tests in Scala</li>
  * <li><a href="testng/TestNGSuite.html"><code>TestNGSuite</code></a> - facilitates writing TestNG tests in Scala</li>
  * </ul>
@@ -809,7 +809,7 @@ import org.scalatest.events._
  *
  * <p>
  * Given this new annotation, you could place methods into the <code>SlowAsMolasses</code> group
- * (<em>i.e.</em, tag them as being <code>SlowAsMolasses</code>) like this:
+ * (<em>i.e.</em>, tag them as being <code>SlowAsMolasses</code>) like this:
  * </p>
  *
  * <pre>
@@ -1249,7 +1249,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     if (testName == null || reporter == null || stopRequested == null || goodies == null)
       throw new NullPointerException
 
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+    val report = wrapReporterIfNecessary(reporter)
     val method = getMethodForTestName(testName)
 
     // Create a Rerunner if the Suite has a no-arg constructor
@@ -1261,19 +1261,16 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       else
         None
      
-    wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
+    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     val args: Array[Object] =
       if (testMethodTakesInformer(testName)) {
         val informer =
           new Informer {
-            //val nameForReport: String = getTestNameForReport(testName)
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              //val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-              //val report = new Report(nameForReport, message)
-              wrappedReporter(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+              report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
             }
           }
         Array(informer)  
@@ -1283,18 +1280,18 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     try {
       method.invoke(this, args: _*)
 
-      wrappedReporter(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, None, rerunnable)) // TODO: Add a duration
+      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, None, rerunnable)) // TODO: Add a duration
     }
     catch { 
       case ite: InvocationTargetException => {
         val t = ite.getTargetException
-        handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter, tracker)
+        handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker)
       }
       case e: Exception => {
-        handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter, tracker)
+        handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, wrappedReporter, tracker)
+        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, report, tracker)
       }
     }
   }
@@ -1383,20 +1380,20 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
     // so that exceptions are caught and transformed
     // into error messages on the standard error stream.
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+    val report = wrapReporterIfNecessary(reporter)
 
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
+      case Some(tn) => runTest(tn, report, stopRequested, goodies, tracker)
       case None => {
         for (tn <- testNames) {
           if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (groupsToExclude.contains(IgnoreAnnotation) && groups.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
-              wrappedReporter(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
+              report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
+              runTest(tn, report, stopRequested, goodies, tracker)
             }
           }
         }
@@ -1411,8 +1408,8 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * calls these two methods on this object in this order:</p>
    *
    * <ol>
-   * <li><code>runNestedSuites(wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)</code></li>
-   * <li><code>runTests(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies)</code></li>
+   * <li><code>runNestedSuites(report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor)</code></li>
+   * <li><code>runTests(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies)</code></li>
    * </ol>
    *
    * <p>
@@ -1452,22 +1449,22 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     if (tracker == null)
       throw new NullPointerException("tracker was null")
 
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+    val report = wrapReporterIfNecessary(reporter)
 
     testName match {
-      case None => runNestedSuites(wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+      case None => runNestedSuites(report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
       case Some(_) =>
     }
-    runTests(testName, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
+    runTests(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
 
     if (stopRequested()) {
       val rawString = Resources("executeStopping")
-      wrappedReporter(InfoProvided(tracker.nextOrdinal(), rawString, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))))
+      report(InfoProvided(tracker.nextOrdinal(), rawString, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))))
     }
   }
 
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker) {
+      rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker) {
 
     val message =
       if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -1475,7 +1472,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       else
         throwable.toString
 
-    reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, None, rerunnable)) // TODO: Add a duration
+    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, None, rerunnable)) // TODO: Add a duration
   }
 
   /**
@@ -1525,7 +1522,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     if (tracker == null)
       throw new NullPointerException("tracker was null")
 
-    val wrappedReporter = wrapReporterIfNecessary(reporter)
+    val report = wrapReporterIfNecessary(reporter)
 
     def callExecuteOnSuite(nestedSuite: Suite) {
 
@@ -1547,11 +1544,11 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
             case spec: Spec => Some(IndentedText(rawString, rawString, 0))
             case _ => None
           }
-        wrappedReporter(SuiteStarting(tracker.nextOrdinal(), nestedSuite.suiteName, Some(nestedSuite.getClass.getName), formatter, rerunnable))
+        report(SuiteStarting(tracker.nextOrdinal(), nestedSuite.suiteName, Some(nestedSuite.getClass.getName), formatter, rerunnable))
 
         try {
           // Same thread, so OK to send same tracker
-          nestedSuite.run(None, wrappedReporter, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+          nestedSuite.run(None, report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
 
           val rawString = Resources("suiteCompletedNormally")
 
@@ -1560,7 +1557,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
               case spec: Spec => Some(MotionToSuppress)
               case _ => None
             }
-          wrappedReporter(SuiteCompleted(tracker.nextOrdinal(), suiteName, Some(thisSuite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
+          report(SuiteCompleted(tracker.nextOrdinal(), suiteName, Some(thisSuite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
         }
         catch {       
           case e: RuntimeException => {
@@ -1572,7 +1569,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
                 case spec: Spec => Some(IndentedText(rawString, rawString, 0))
                 case _ => None
               }
-            wrappedReporter(SuiteAborted(tracker.nextOrdinal(), rawString, suiteName, Some(thisSuite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
+            report(SuiteAborted(tracker.nextOrdinal(), rawString, suiteName, Some(thisSuite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
           }
         }
       }
