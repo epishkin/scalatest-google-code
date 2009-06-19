@@ -21,12 +21,6 @@ import org.scalatest.TestFailedExceptionHelper.getStackDepth
 
 import org.scalatest.events._
 
-/*
-Note: the info in this class will when the test is running, put it into cold storage, and send it after the test completes. This
-will be a bit odd though when a test fails. In the print report, the given when then things will show up after the stack trace. Perhaps
-when a test fails, it doesn't print them? No, I know, it .... No
-*/
-
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -743,11 +737,6 @@ trait Spec extends Suite { thisSuite =>
        
           // A TestStarting event won't normally show up in a specification-style output, but
           // will show up in a test-style output.
-/*
-          val report =
-            //new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
-            new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, false, None, rerunnable)
-*/
           wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
 
           try {

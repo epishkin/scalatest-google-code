@@ -663,16 +663,6 @@ trait FunSuite extends Suite { thisSuite =>
       else
         None
      
-/*
-    val report =
-      if (hasPublicNoArgConstructor)
-        //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
-        new Report(getTestNameForReport(testName), "", None, rerunnable)
-      else
-        //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-        new Report(getTestNameForReport(testName), "")
-*/
-
     wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     try {
@@ -716,9 +706,6 @@ trait FunSuite extends Suite { thisSuite =>
         throwable.getMessage
       else
         throwable.toString
-
-    //val report = new Report(getTestNameForReport(testName), msg, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), rerunnable)
-    //val report = new Report(getTestNameForReport(testName), msg, Some(t), rerunnable)
 
     reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, None, rerunnable)) // TODO: Add a duration
   }

@@ -409,11 +409,13 @@ private object PrintReporter {
       }
 
     val msgToPrint = messageOrThrowablesDetailMessage(message, throwable)
-    if (msgToPrint.isEmpty) {
+    if (msgToPrint.isEmpty)
       Resources(resourceName + "NoMessage", arg)
-    }
     else
-      Resources(resourceName, arg, msgToPrint)
+      if (resourceName == "runAborted")
+        Resources(resourceName, msgToPrint)
+      else
+        Resources(resourceName, arg, msgToPrint)
   }
 }
 
