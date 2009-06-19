@@ -2,7 +2,6 @@ name reporter reporter, distributor distributor, and stopper stopper in all thin
 Use filter in the run methods
 ask folks about run versus execute
 ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
-fix the print reporter output
 use events, not reports, in GUI reporter
 drop Report and SpecReport to make sure it is really gone
 Complete JUnitSuite, JUnitRunner
@@ -46,3 +45,8 @@ The eating error message problem. Make sure an exception message shows up in the
 
 I think WordSpec and FeatureSpec can be 0.9.7.
 
+Oh, and must fix the problem of counting tests when using config params.
+
+I'm not printing out the message in a formatted report, just the exception's detail message
+
+Drop ExecuteAndRun if it can indeed be done away with after getting ShouldBehaveLike in place.

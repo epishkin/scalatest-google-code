@@ -999,7 +999,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   private val InformerInParens = "(Informer)"
   private val IgnoreAnnotation = "org.scalatest.Ignore"
 
-    /*
+/*
 * @param nestedSuites A <CODE>List</CODE> of <CODE>Suite</CODE>
 * objects. The specified <code>List</code> must be non-empty. Each element must be non-<code>null</code> and an instance
 * of <CODE>org.scalatest.Suite</CODE>.
@@ -1261,16 +1261,6 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       else
         None
      
-/*
-    val report =
-      if (hasPublicNoArgConstructor)
-        //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
-        new Report(getTestNameForReport(testName), "", None, rerunnable)
-      else
-        //new Report(getTestNameForReport(testName), "", Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-        new Report(getTestNameForReport(testName), "")
-*/
-
     wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     val args: Array[Object] =
@@ -1476,22 +1466,6 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
     }
   }
 
-  /* [bv: This is a good example of that common refactor for initialization]
-        Report report;
-        String msg = t.getMessage();
-        if (msg == null) {
-            msg = t.toString();
-        }
-        if (hasPublicNoArgConstructor) {
-
-            report = new Report(getTestNameForReport(userFriendlyMethodName), msg, t, rerunnable);
-        }
-        else {
-
-            report = new Report(getTestNameForReport(userFriendlyMethodName), msg, t);
-        }
-        myReporter.testFailed(report);
-*/
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker) {
 
@@ -1500,16 +1474,6 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
         throwable.getMessage
       else
         throwable.toString
-
-/*
-    val report =
-      if (hasPublicNoArgConstructor)
-        //new Report(getTestNameForReport(testName), msg, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), rerunnable)
-        new Report(getTestNameForReport(testName), msg, Some(t), rerunnable)
-      else
-        //new Report(getTestNameForReport(testName), msg, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), None)
-        new Report(getTestNameForReport(testName), msg, Some(t), None)
-*/
 
     reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, None, rerunnable)) // TODO: Add a duration
   }
