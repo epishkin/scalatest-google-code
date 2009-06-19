@@ -43,7 +43,6 @@ private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) exten
   }
 
   // Won't need the rest of this class after phase II of the report refactor is done, probably 0.9.8
-  override def infoProvided(rpt: Report) = dispatch("infoProvided", (report: Reporter) => report.infoProvided(rpt))
   override def dispose() = dispatch("dispose", (report: Reporter) => report.dispose())
 
   private[scalatest] def dispatch(methodName: String, methodCall: (Reporter) => Unit) {

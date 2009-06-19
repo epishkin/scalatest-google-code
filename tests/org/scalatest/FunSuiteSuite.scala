@@ -509,13 +509,15 @@ class FunSuiteSuite extends Suite {
   
   def testThatInfoInsideATestMethodGetsOutTheDoor() {
     class MyReporter extends Reporter {
-      var infoProvidedCalled = false
-      var lastReport: Report = null
-      override def infoProvided(report: Report) {
-        infoProvidedCalled = true
-        lastReport = report
-      }
+      var infoProvidedReceived = false
+      var lastEvent: InfoProvided = null
       def apply(event: Event) {
+        event match {
+          case event: InfoProvided =>
+            infoProvidedReceived = true
+            lastEvent = event
+          case _ =>
+        }
       }
     }
     val msg = "hi there, dude"
@@ -527,19 +529,21 @@ class FunSuiteSuite extends Suite {
     val a = new MySuite
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(myRep.infoProvidedCalled)
-    assert(myRep.lastReport.message === msg)
+    assert(myRep.infoProvidedReceived)
+    assert(myRep.lastEvent.message === msg)
   }
   
   def testThatInfoInTheConstructorGetsOutTheDoor() {
     class MyReporter extends Reporter {
-      var infoProvidedCalled = false
-      var lastReport: Report = null
-      override def infoProvided(report: Report) {
-        infoProvidedCalled = true
-        lastReport = report
-      }
+      var infoProvidedReceived = false
+      var lastEvent: InfoProvided = null
       def apply(event: Event) {
+        event match {
+          case event: InfoProvided =>
+            infoProvidedReceived = true
+            lastEvent = event
+          case _ =>
+        }
       }
     }
     val msg = "hi there, dude"
@@ -551,57 +555,61 @@ class FunSuiteSuite extends Suite {
     val a = new MySuite
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(myRep.infoProvidedCalled)
-    assert(myRep.lastReport.message === msg)
+    assert(myRep.infoProvidedReceived)
+    assert(myRep.lastEvent.message === msg)
   }
-  
+
   def testThatInfoInTheConstructorBeforeATestHappensFirst() {
-    var infoProvidedCalled = false
-    var infoProvidedCalledBeforeTest = false
+    var infoProvidedReceived = false
+    var infoProvidedReceivedBeforeTest = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        infoProvidedCalled = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: InfoProvided =>
+            infoProvidedReceived = true
+          case _ =>
+        }
       }
     }
     val msg = "hi there, dude"
     class MySuite extends FunSuite {
       info(msg)
       test("test this") {
-        if (infoProvidedCalled)
-          infoProvidedCalledBeforeTest = true
+        if (infoProvidedReceived)
+          infoProvidedReceivedBeforeTest = true
       }
     }
     val a = new MySuite
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(infoProvidedCalledBeforeTest)
+    assert(infoProvidedReceivedBeforeTest)
   }
-  
+
   def testThatInfoInTheConstructorAfterATestHappensSecond() {
-    var infoProvidedCalled = false
-    var infoProvidedCalledAfterTest = true
+    var infoProvidedReceived = false
+    var infoProvidedReceivedAfterTest = true
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        infoProvidedCalled = true
-      }
       def apply(event: Event) {
+        event match {
+          case event: InfoProvided =>
+            infoProvidedReceived = true
+          case _ =>
+        }
       }
     }
     val msg = "hi there, dude"
     class MySuite extends FunSuite {
       test("test this") {
-        if (infoProvidedCalled)
-          infoProvidedCalledAfterTest = false
+        if (infoProvidedReceived)
+          infoProvidedReceivedAfterTest = false
       }
       info(msg)
     }
     val a = new MySuite
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(infoProvidedCalledAfterTest)
-    assert(infoProvidedCalled)
+    assert(infoProvidedReceivedAfterTest)
+    assert(infoProvidedReceived)
   }
 
   def callingTestFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {

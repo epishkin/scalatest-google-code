@@ -221,7 +221,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     /**
      * TestNG's onFinish maps cleanly to suiteCompleted.
      * TODO: TestNG does have some extra info here. One thing we could do is map the info
-     * in the ITestContext object into ScalaTest Reports and call reporter.infoProvided.
+     * in the ITestContext object into ScalaTest Reports and fire InfoProvided
      */
     override def onFinish(itc: ITestContext) = {
       reporter(SuiteCompleted(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName)))
@@ -278,15 +278,14 @@ trait TestNGSuite extends Suite { thisSuite =>
 
     /**
      * TestNG's onConfigurationSuccess doesn't have a clean mapping in ScalaTest.
-     * Simply create a Report and call infoProvided on the Reporter. This works well
-     * because there may be a large number of setup methods and infoProvided doesn't 
+     * Simply create a Report and fire InfoProvided. This works well
+     * because there may be a large number of setup methods and InfoProvided doesn't 
      * show up in your face on the UI, and so doesn't clutter the UI. 
      */
-    override def onConfigurationSuccess(itr: ITestResult) = { // TODO: Work on this report
-      //reporter.infoProvided(new Report(itr.getName, className, Some(suiteName), Some(className), Some(itr.getName)))
-      reporter.infoProvided(new Report(itr.getName, className))
+    override def onConfigurationSuccess(result: ITestResult) = { // TODO: Work on this report
+      reporter(InfoProvided(tracker.nextOrdinal(), result.getName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
     }
-    
+
     /**
      * Constructs the report object.
      */

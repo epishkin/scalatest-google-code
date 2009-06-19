@@ -579,23 +579,22 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        // infoProvided should be invoked before the other method
-        assert(!theOtherMethodHasBeenInvoked)
-        infoProvidedHasBeenInvoked = true
-        if (report.name.indexOf("My Spec") != -1)
-          infoReportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My Spec")
-              infoReportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "My Spec")
-              infoReportHadCorrectFormattedSpecText = true
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the other method
+            assert(!theOtherMethodHasBeenInvoked)
+            infoProvidedHasBeenInvoked = true
+            if (message.indexOf("My Spec") != -1)
+              infoReportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My Spec")
+                  infoReportHadCorrectSpecText = true
+                if (formattedText == "My Spec")
+                  infoReportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the this method
             assert(infoProvidedHasBeenInvoked)
@@ -639,23 +638,22 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        // infoProvided should be invoked before the other method
-        assert(!theOtherMethodHasBeenInvoked)
-        infoProvidedHasBeenInvoked = true
-        if (report.name.indexOf("My Spec") != -1)
-          infoReportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My Spec")
-              infoReportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "My Spec")
-              infoReportHadCorrectFormattedSpecText = true
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the other method
+            assert(!theOtherMethodHasBeenInvoked)
+            infoProvidedHasBeenInvoked = true
+            if (message.indexOf("My Spec") != -1)
+              infoReportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My Spec")
+                  infoReportHadCorrectSpecText = true
+                if (formattedText == "My Spec")
+                  infoReportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the this method
             assert(infoProvidedHasBeenInvoked)
@@ -699,23 +697,22 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        // infoProvided should be invoked before the other method
-        assert(!theOtherMethodHasBeenInvoked)
-        infoProvidedHasBeenInvoked = true
-        if (report.name.indexOf("My Spec") != -1)
-          infoReportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My Spec")
-              infoReportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "My Spec")
-              infoReportHadCorrectFormattedSpecText = true
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the other method
+            assert(!theOtherMethodHasBeenInvoked)
+            infoProvidedHasBeenInvoked = true
+            if (message.indexOf("My Spec") != -1)
+              infoReportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My Spec")
+                  infoReportHadCorrectSpecText = true
+                if (formattedText == "My Spec")
+                  infoReportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case event: TestFailed =>
             // infoProvided should be invoked before the this method
             assert(infoProvidedHasBeenInvoked)
@@ -761,23 +758,22 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        // infoProvided should be invoked before the other method
-        assert(!theOtherMethodHasBeenInvoked)
-        infoProvidedHasBeenInvoked = true
-        if (report.name.indexOf("My Spec") != -1)
-          infoReportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My Spec")
-              infoReportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "My Spec")
-              infoReportHadCorrectFormattedSpecText = true
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the other method
+            assert(!theOtherMethodHasBeenInvoked)
+            infoProvidedHasBeenInvoked = true
+            if (message.indexOf("My Spec") != -1)
+              infoReportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My Spec")
+                  infoReportHadCorrectSpecText = true
+                if (formattedText == "My Spec")
+                  infoReportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the this method
             assert(infoProvidedHasBeenInvoked)
@@ -823,23 +819,22 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        // infoProvided should be invoked before the other method
-        assert(!theOtherMethodHasBeenInvoked)
-        infoProvidedHasBeenInvoked = true
-        if (report.name.indexOf("My Spec") != -1)
-          infoReportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My Spec")
-              infoReportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "My Spec")
-              infoReportHadCorrectFormattedSpecText = true
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the other method
+            assert(!theOtherMethodHasBeenInvoked)
+            infoProvidedHasBeenInvoked = true
+            if (message.indexOf("My Spec") != -1)
+              infoReportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My Spec")
+                  infoReportHadCorrectSpecText = true
+                if (formattedText == "My Spec")
+                  infoReportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the this method
             assert(infoProvidedHasBeenInvoked)
@@ -885,23 +880,22 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        // infoProvided should be invoked before the other method
-        assert(!theOtherMethodHasBeenInvoked)
-        infoProvidedHasBeenInvoked = true
-        if (report.name.indexOf("My Spec") != -1)
-          infoReportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My Spec")
-              infoReportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "My Spec")
-              infoReportHadCorrectFormattedSpecText = true
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the other method
+            assert(!theOtherMethodHasBeenInvoked)
+            infoProvidedHasBeenInvoked = true
+            if (message.indexOf("My Spec") != -1)
+              infoReportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My Spec")
+                  infoReportHadCorrectSpecText = true
+                if (formattedText == "My Spec")
+                  infoReportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case event: TestFailed =>
             // infoProvided should be invoked before the this method
             assert(infoProvidedHasBeenInvoked)
@@ -1089,23 +1083,22 @@ class SpecSuite extends FunSuite {
     var infoProvidedHasBeenInvoked = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
-      override def infoProvided(report: Report) {
-        // infoProvided should be invoked before the other method
-        assert(!theOtherMethodHasBeenInvoked)
-        infoProvidedHasBeenInvoked = true
-        if (report.name.indexOf("My Spec") != -1)
-          infoReportHadCorrectTestName = true
-        report match {
-          case specReport: SpecReport =>
-            if (specReport.plainSpecText == "My Spec")
-              infoReportHadCorrectSpecText = true
-            if (specReport.formattedSpecText == "My Spec")
-              infoReportHadCorrectFormattedSpecText = true
-          case _ =>
-        }
-      }
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            // infoProvided should be invoked before the other method
+            assert(!theOtherMethodHasBeenInvoked)
+            infoProvidedHasBeenInvoked = true
+            if (message.indexOf("My Spec") != -1)
+              infoReportHadCorrectTestName = true
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                if (rawText == "My Spec")
+                  infoReportHadCorrectSpecText = true
+                if (formattedText == "My Spec")
+                  infoReportHadCorrectFormattedSpecText = true
+              case _ =>
+            }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the this method
             assert(infoProvidedHasBeenInvoked)
@@ -1334,11 +1327,7 @@ class SpecSuite extends FunSuite {
           lastEventWithUndefinedFormatter = Some(event)
         }
       }
-     
-      override def infoProvided(report: Report) {
-        ensureSpecReport(report)
-      }
-	
+
       def apply(event: Event) {
         event match {
           case event: RunAborted => ensureFormatterIsDefined(event)
@@ -1349,6 +1338,7 @@ class SpecSuite extends FunSuite {
           case event: TestSucceeded => ensureFormatterIsDefined(event)
           case event: TestIgnored => ensureFormatterIsDefined(event)
           case event: TestFailed => ensureFormatterIsDefined(event)
+          case event: InfoProvided => ensureFormatterIsDefined(event)
           case _ =>
         }
       }
@@ -1464,13 +1454,15 @@ class SpecSuite extends FunSuite {
       var infoProvidedCalled = false
       var expectedMessageReceived = false
       var lastReport: Report = null
-      override def infoProvided(report: Report) {
-        infoProvidedCalled = true
-        if (!expectedMessageReceived) {
-          expectedMessageReceived = report.message.indexOf(expectedMessage) != -1
-        }
-      }
       def apply(event: Event) {
+        event match {
+          case event: InfoProvided =>
+            infoProvidedCalled = true
+            if (!expectedMessageReceived) {
+              expectedMessageReceived = event.message.indexOf(expectedMessage) != -1
+            }
+          case _ =>
+        }
       }
     }
 
@@ -1501,18 +1493,19 @@ class SpecSuite extends FunSuite {
       var infoProvidedCalled = false
       var expectedMessageReceived = false
       var lastReport: Report = null
-      override def infoProvided(report: Report) {
-        report match {
-          case specReport: SpecReport => {
-            infoProvidedCalled = true
-            if (!expectedMessageReceived) {
-              expectedMessageReceived = (specReport.plainSpecText == expectedSpecText)
+      def apply(event: Event) {
+        event match {
+          case event: InfoProvided =>
+            event.formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                infoProvidedCalled = true
+                if (!expectedMessageReceived) {
+                  expectedMessageReceived = (rawText == expectedSpecText)
+                }
+              case _ =>
             }
-          }
           case _ =>
         }
-      }
-      def apply(event: Event) {
       }
     }
 
@@ -1590,20 +1583,17 @@ class SpecSuite extends FunSuite {
       var expectedLevelReceivedByTestFailed = false
       var expectedLevelReceivedByInfoProvided = false
  
-      override def infoProvided(report: Report) {
-        report match {
-          case specReport: SpecReport => {
-            infoProvidedCalled = true
-            if (!expectedLevelReceivedByInfoProvided) {
-              // expectedLevelReceivedByInfoProvided = (specReport.level == ExpectedLevelForDescribe)
-            }
-          }
-          case _ =>
-        }
-      }
-
       def apply(event: Event) {
         event match {
+          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+            formatter match {
+              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                infoProvidedCalled = true
+                if (!expectedLevelReceivedByInfoProvided) {
+                  // expectedLevelReceivedByInfoProvided = (specReport.level == ExpectedLevelForDescribe)
+                }
+              case _ =>
+            }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
             formatter match {
               case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
@@ -1892,13 +1882,15 @@ class SpecSuite extends FunSuite {
       var expectedMessageReceived = false
       var lastReport: Report = null
 
-      override def infoProvided(report: Report) {
-        infoProvidedCalled = true
-        if (!expectedMessageReceived) {
-          expectedMessageReceived = report.message.indexOf(expectedMessage) != -1
-        }
-      }
       def apply(event: Event) {
+        event match {
+          case event: InfoProvided =>
+            infoProvidedCalled = true
+            if (!expectedMessageReceived) {
+              expectedMessageReceived = event.message.indexOf(expectedMessage) != -1
+            }
+          case _ =>
+        }
       }
     }
 

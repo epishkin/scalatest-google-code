@@ -1277,18 +1277,13 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
       if (testMethodTakesInformer(testName)) {
         val informer =
           new Informer {
-            val nameForReport: String = getTestNameForReport(testName)
-            def apply(report: Report) {
-              if (report == null)
-                throw new NullPointerException
-              wrappedReporter.infoProvided(report)
-            }
+            //val nameForReport: String = getTestNameForReport(testName)
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
               //val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-              val report = new Report(nameForReport, message)
-              wrappedReporter.infoProvided(report)
+              //val report = new Report(nameForReport, message)
+              wrappedReporter(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
             }
           }
         Array(informer)  
@@ -1477,8 +1472,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 
     if (stopRequested()) {
       val rawString = Resources("executeStopping")
-      //wrappedReporter.infoProvided(new Report(suiteName, rawString, Some(suiteName), Some(thisSuite.getClass.getName), None))
-      wrappedReporter.infoProvided(new Report(suiteName, rawString))
+      wrappedReporter(InfoProvided(tracker.nextOrdinal(), rawString, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))))
     }
   }
 

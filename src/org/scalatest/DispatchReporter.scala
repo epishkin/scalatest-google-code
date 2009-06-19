@@ -56,7 +56,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
               out.println(stringToPrint)
               e.printStackTrace(out)
           }
-        case InfoProvidedMsg(rpt) => dispatch("infoProvided", (reporter: Reporter) => reporter.infoProvided(rpt))
         case DisposeMsg() => {
           dispatch("dispose", (reporter: Reporter) => reporter.dispose())
           alive = false
@@ -75,23 +74,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
    * @return a <code>List</code> of the <code>Reporter</code>s contained in this
    * <code>DispatchReporter</code>.
    */
-
-  /**
-   * Invokes <code>infoProvided</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list, passing the specified
-   * <code>report</code>.
-   *
-   * <P>
-   * This method attempts to invoke <code>infoProvided</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>infoProvided</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>infoProvided</code> method and handles it by printing an error message to the
-   * standard error stream.
-   *
-   * @param report the <code>Report</code> encapsulating this info provided event
-   * @throws NullPointerException if <code>report</code> is <code>null</code>
-   */
-  override def infoProvided(report: Report) = julia ! InfoProvidedMsg(report)
 
   /**
    * Invokes <code>dispose</code> on each <code>Reporter</code> in this
