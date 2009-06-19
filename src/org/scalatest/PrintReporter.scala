@@ -398,21 +398,22 @@ private object PrintReporter {
   private[scalatest] def messageToPrint(resourceName: String, message: String, throwable: Option[Throwable], suiteName: Option[String],
     testName: Option[String]): String = {
 
+    val arg =
+      suiteName match {
+        case Some(sn) =>
+          testName match {
+            case Some(tn) => sn + ": " + tn
+            case None => sn
+          }
+        case None => ""
+      }
+
     val msgToPrint = messageOrThrowablesDetailMessage(message, throwable)
     if (msgToPrint.isEmpty) {
-      val arg =
-        suiteName match {
-          case Some(sn) =>
-            testName match {
-              case Some(tn) => sn + ": " + tn
-              case None => sn
-            }
-          case None => ""
-        }
       Resources(resourceName + "NoMessage", arg)
     }
     else
-      Resources(resourceName, msgToPrint)
+      Resources(resourceName, arg, msgToPrint)
   }
 }
 
