@@ -797,7 +797,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
         case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
   
-          val report: Report = new Report(suiteName + " - " + testName, "test starting, dude", None, rerunnable)
+          val report: Report = new Report(suiteName + ": " + testName, "test starting, dude", None, rerunnable)
 
           usingEventDispatchThread {
             registerReport(report, ReporterOpts.PresentTestStarting)
@@ -805,7 +805,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
         case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
-          val report: Report = new Report(suiteName + " - " + testName, "test ignored, dude", None, None)
+          val report: Report = new Report(suiteName + ": " + testName, "test ignored, dude", None, None)
 
           usingEventDispatchThread {
             registerReport(report, ReporterOpts.PresentTestIgnored)
@@ -813,7 +813,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
         case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
   
-          val report: Report = new Report(suiteName + " - " + testName, "test succeeded, dude", None, rerunnable)
+          val report: Report = new Report(suiteName + ": " + testName, "test succeeded, dude", None, rerunnable)
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -824,7 +824,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
         case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-          val report: Report = new Report(suiteName + " - " + testName, "test failed, dude", throwable, rerunnable)
+          val report: Report = new Report(suiteName + ": " + testName, "test failed, dude", throwable, rerunnable)
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -1296,7 +1296,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
  
         case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
 
-          val report: Report = new Report(suiteName + " - " + testName, "test starting, dude", None, rerunnable)
+          val report: Report = new Report(suiteName + ": " + testName, "test starting, dude", None, rerunnable)
 
           usingEventDispatchThread {
             registerRerunReport(report, ReporterOpts.PresentTestStarting)
@@ -1304,7 +1304,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
         case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
-          val report: Report = new Report(suiteName + " - " + testName, "test ignored, dude", None, None)
+          val report: Report = new Report(suiteName + ": " + testName, "test ignored, dude", None, None)
 
           usingEventDispatchThread {
             rerunColorBox.setValue(rerunTestsCompletedCount)
@@ -1313,7 +1313,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
         case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-          val report: Report = new Report(suiteName + " - " + testName, "test succeeded, dude", None, rerunnable)
+          val report: Report = new Report(suiteName + ": " + testName, "test succeeded, dude", None, rerunnable)
 
           usingEventDispatchThread {
             rerunTestsCompletedCount += 1
@@ -1323,7 +1323,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
 
         case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-          val report: Report = new Report(suiteName + " - " + testName, "test failed, dude", throwable, rerunnable)
+          val report: Report = new Report(suiteName + ": " + testName, "test failed, dude", throwable, rerunnable)
 
           usingEventDispatchThread {
             rerunTestsCompletedCount += 1
