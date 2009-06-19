@@ -824,7 +824,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
   
         case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-          val report: Report = new Report(suiteName + ": " + testName, "test failed, dude", throwable, rerunnable)
+          val report: Report = new Report(suiteName + ": " + testName, message, throwable, rerunnable)
 
           usingEventDispatchThread {
             testsCompletedCount += 1
