@@ -1,3 +1,18 @@
+name reporter reporter, distributor distributor, and stopper stopper in all things
+Use filter in the run methods
+ask folks about run versus execute
+ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
+fix the print reporter output
+use events, not reports, in GUI reporter
+drop Report and SpecReport to make sure it is really gone
+Complete JUnitSuite, JUnitRunner
+Do JUnitWrapperSuite and the command line param
+Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work
+Drop dispose from Reporter. Make a Disposable instead. Have FileReporter implement Disposable, and I think the GUI one too, whichever ones needed it. Anyone that was calling dispose(), needs to do a pattern match for Disposable now first.
+Try sorting the GUI reports with the ordinal
+Add durations to the places that take them
+Change the name of groups to tags everywhere, can deprecate groups for two releases
+add the 'it should/must ""/describe a ""/describe it ""' style to Spec
 
 make tag annotations on Suite require extension of TagAnnotation
 
@@ -5,26 +20,29 @@ add pending functionality to Suite
 
 add a pending singleton or val to Suite
 
-add a pending singleton or val to FunSuite
-
-add test & ignore methods to FunSuite that take a testPending (after specText, before groups)
-
-implement pending functionality for FunSuite
-
 put info in FunSuite in Atomic
-
-add pending val/singleton to Spec
-
-add it/ignore methods that take a pending, and implement pending functionality
 
 add info functionality to Spec
 
-add GivenWhenThen trait
+try the GivenWhenThen trait, to see if indented text works
 
-Add FeatureSuite trait. Title goes to constructor? I think I have this more figured out somewhere else. But where?
+ask folks about the beforeAll and afterAll in BeforeAndAfter
 
-  As a "bla", I want "bla", So that "bla" plus scenarious
+make ShouldBehaveLike and MustBehaveLike traits
 
-Scenarios are like FuNSuite, but with scenario instead of test. Could use a code gen from FunSuite to Scenarios trait, but I don't
-think I'll have a Scenarios trait, just a FeatureSuite one. FeatureSuite will extend GivenWhenThen.
+Do the OneInstancePerTest and ConcurrentTestExecution traits
+
+Do the OneArgXXX traits
+
+Do a trait for SequentialNestedSuiteExecution
+
+Do the fixture package for Suite, FunSuite, and Spec
+
+Make a Goodies trait for getting the Goodies into a test
+
+Add the things for Property based testing displaying args nicely in the GUI (like empty strings should be "")
+
+The eating error message problem. Make sure an exception message shows up in the GUI/Print output.
+
+I think WordSpec and FeatureSpec can be 0.9.7.
 

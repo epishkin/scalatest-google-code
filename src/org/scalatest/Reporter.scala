@@ -15,23 +15,12 @@
  */
 package org.scalatest
 
-import java.util.Date
 import org.scalatest.events._
 
 /**
  * Trait whose instances collect the results of a running
  * suite of tests and presents those results in some way to the user. Instances of this trait can
  * be called "report functions" or "reporters."
- *
- * <p>
- * <strong>
- * All handler methods that existed in this trait in prior versions have been deprecated in 0.9.6. In 0.9.7 they will
- * be removed. In the meantime, any subclass implementations of this trait should override <code>apply(Event)</code> instead. 
- * During 0.9.6, two ways exist to run tests. The old way, which uses the old methods on <code>Reporter</code>, and the new way, which
- * uses the <code>apply</code> method. The only reason to use the old way of running tests during 0.9.6 is if you want to use
- * a custom 
- * </strong>
- * </p>
  *
  * <p>
  * Reporters receive test results via thirteen events.
@@ -117,93 +106,6 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-/*
- * Trait whose instances collect the results of a running
- * suite of tests and presents those results in some way to the user.
- *
- * <p>
- * <code>Reporter</code>s receive test results via twelve
- * <em>report methods</em>. Each report method is invoked to pass a particular kind of report to
- * the reporter. The report methods are:
- * </p>
- *
- * <ul>
- * <li><code>runStarting</code>
- * <li><code>testStarting</code>
- * <li><code>testSucceeded</code>
- * <li><code>testFailed</code>
- * <li><code>testIgnored</code>
- * <li><code>suiteStarting</code>
- * <li><code>suiteCompleted</code>
- * <li><code>suiteAborted</code>
- * <li><code>infoProvided</code>
- * <li><code>runStopped</code>
- * <li><code>runAborted</code>
- * <li><code>runCompleted</code>
- * </ul>
- *
- * <p>
- * <code>Reporter</code>s may be implemented such that they only present some of the reports to the user. For example, you could
- * define a reporter class whose <code>suiteStarting</code> method
- * does nothing. Such a class would always ignore <code>suiteStarting</code> reports.
- * </p>
- *
- * <p>
- * The term <em>test</em> as used in the <code>testStarting</code>, <code>testSucceeded</code>,
- * and <code>testFailed</code> method names
- * is defined abstractly to enable a wide range of test implementations.
- * Trait <code>Suite</code> invokes <code>testStarting</code> to indicate it is about to invoke one
- * of its test methods, <code>testSucceeded</code> to indicate a test method returned normally,
- * and <code>testFailed</code> to indicate a test method completed abruptly with an exception.
- * Although the execution of a <code>Suite</code>'s test methods will likely be a common event
- * reported via the
- * <code>testStarting</code>, <code>testSucceeded</code>, and <code>testFailed</code> methods, because
- * of the abstract definition of &#8220;test&#8221; used by this
- * interface, these methods are not limited to this use. Information about any conceptual test
- * may be reported via the <code>testStarting</code>, <code>testSucceeded</code>, and
- * <code>testFailed</code> methods.
- *
- * <p>
- * Likewise, the term <em>suite</em> as used in the <code>suiteStarting</code>, <code>suiteAborted</code>,
- * and <code>suiteCompleted</code> method names
- * is defined abstractly to enable a wide range of suite implementations.
- * Object <code>Runner</code> invokes <code>suiteStarting</code> to indicate it is about to invoke
- * <code>execute</code> on a
- * <code>Suite</code>, <code>suiteCompleted</code> to indicate a <code>Suite</code>'s
- * <code>execute</code> method returned normally,
- * and <code>suiteAborted</code> to indicate a <code>Suite</code>'s <code>execute</code>
- * method completed abruptly with an exception.
- * Similarly, class <code>Suite</code> invokes <code>suiteStarting</code> to indicate it is about to invoke
- * <code>execute</code> on a
- * nested <code>Suite</code>, <code>suiteCompleted</code> to indicate a nested <code>Suite</code>'s
- * <code>execute</code> method returned normally,
- * and <code>suiteAborted</code> to indicate a nested <code>Suite</code>'s <code>execute</code>
- * method completed abruptly with an exception.
- * Although the execution of a <code>Suite</code>'s <code>execute</code> method will likely be a
- * common event reported via the
- * <code>suiteStarting</code>, <code>suiteAborted</code>, and <code>suiteCompleted</code> methods, because
- * of the abstract definition of "suite" used by this
- * interface, these methods are not limited to this use. Information about any conceptual suite
- * may be reported via the <code>suiteStarting</code>, <code>suiteAborted</code>, and
- * <code>suiteCompleted</code> methods.
- *
- * <p>
- * <strong>Extensibility</strong>
- * </p>
- *
- * <p>
- * You can create classes that extend <code>Reporter</code> to report test results in custom ways, and to
- * report custom information passed to <code>Report</code> subclass instances. For more information on the latter
- * use case, see the <em>Extensibility</em> section of the <a href="Report.html"><code>Report</code> documentation</a>.
- * </p>
- *
- * <p>
- * <code>Reporter</code> classes can handle invocations of its report methods in any manner, including doing nothing.
- * For convenience, trait <code>Reporter</code> includes a default implentation of each report method that does nothing.
- * </p>
- *
- * @author Bill Venners
- */
 trait Reporter extends (Event => Unit) {
 
     /**
@@ -221,74 +123,6 @@ trait Reporter extends (Event => Unit) {
    * @param event the event being reported
    */
   def apply(event: Event)
-
-  /**
-   * Invoked to report an event that subclasses may wish to report in some way to the user.
-   *
-   * @param event the event being reported
-  def apply(event: Event) {
-
-    event match {
-
-      case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
-
-      case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        testStarting(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "", None, rerunnable, threadName, new Date(timeStamp)))
-
-      case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        testSucceeded(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "", None, rerunnable, threadName, new Date(timeStamp)))
-
-      case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        testFailed(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), message, throwable, rerunnable, threadName, new Date(timeStamp)))
-
-      case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
-        testIgnored(new Report(Resources("suiteAndTestNamesFormattedForDisplay", suiteName, testName), "", None, None, threadName, new Date(timeStamp)))
-
-      case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
-
-      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        suiteStarting(new Report(suiteName, "", None, rerunnable, threadName, new Date(timeStamp)))
-
-/*
-      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
-        formatter match {
-          case Some(formatter) =>
-            suiteStarting(new SpecReport(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
-
-          case None =>
-            suiteStarting(new Report(suiteName, "XXX suite starting", None, rerunnable, threadName, new Date(timeStamp)))
-        }
-*/
-
-      case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteCompleted(new Report(suiteName, "", None, rerunnable, threadName, new Date(timeStamp)))
-
-      case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-        suiteAborted(new Report(suiteName, message, throwable, rerunnable, threadName, new Date(timeStamp)))
-
-      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) => {
-        val name =
-          nameInfo match {
-            case Some(nameInfo) =>
-              nameInfo.testName match {
-                case Some(testName) => Resources("suiteAndTestNamesFormattedForDisplay", nameInfo.suiteName, testName)
-                case None => nameInfo.suiteName
-              }
-            case None => "org.scalatest.tools.Runner"
-          }
- 
-        infoProvided(new Report(name, message, throwable, None, threadName, new Date(timeStamp)))
-      }
-
-      case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runStopped()
-
-      case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
-        runAborted(new Report("org.scalatest.tools.Runner", message, throwable, None, threadName, new Date(timeStamp)))
-
-      case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
-    }
-  }
-   */
 }
 
 /*
@@ -325,4 +159,34 @@ I don't know the pattern matching syntax very well yet. But something like that.
 Todo: Make a ResourcefulReporter, a subclass of Reporter, that has the dispose method. Deprecate dispose in Reporter.
 Make FileReporter a ResourcefulReporter. Change my code that calls dispose to do a pattern match on the type. Ask anyone
 who has written a dispose method to make their reporter Resourceful. After 2 releases drop dispose() from Reporter.
+*/
+
+  /*
+      case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
+
+      case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+
+      case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+      case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+      case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+
+      case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+
+      case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+
+      case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+      case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+
+      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) => {
+
+      case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runStopped()
+
+      case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
+
+      case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
+    }
+  }
 */
