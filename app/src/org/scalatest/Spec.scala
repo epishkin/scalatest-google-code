@@ -648,14 +648,11 @@ trait Spec extends Suite { thisSuite =>
           // Call getPrefix and pass in this Desc, to get the full name
           val descriptionFullName = getPrefix(desc).trim
          
-          val wrappedReporter = wrapReporterIfNecessary(reporter)
+          val report = wrapReporterIfNecessary(reporter)
          
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
-          //val descriptionNameForReport = getTestNameForReport(descriptionFullName)
-          //val report = new SpecReport(descriptionNameForReport, descriptionFullName, descriptionFullName, descriptionFullName, true, Some(suiteName), Some(thisSuite.getClass.getName), None)
-          //val report = new SpecReport(descriptionNameForReport, descriptionFullName, descriptionFullName, descriptionFullName, true)
-          wrappedReporter(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
+          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
         }
         
         // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
@@ -677,19 +674,17 @@ trait Spec extends Suite { thisSuite =>
           // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
           // so that exceptions are caught and transformed
           // into error messages on the standard error stream.
-          val wrappedReporter = wrapReporterIfNecessary(reporter)
+          val report = wrapReporterIfNecessary(reporter)
 
           val tn = ex.testName
           if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
             if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
               val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
-              //val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-              //val report = new SpecReport(getTestNameForReport(tn), "", ex.specText, formattedSpecText, true)
-              wrappedReporter(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
+              report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
             }
             else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, wrappedReporter, stopRequested, goodies, tracker)
+              runTest(tn, report, stopRequested, goodies, tracker)
             }
           }
         }
@@ -721,7 +716,7 @@ trait Spec extends Suite { thisSuite =>
       examplesList.find(_.testName == testName) match {
         case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
         case Some(example) => {
-          val wrappedReporter = wrapReporterIfNecessary(reporter)
+          val report = wrapReporterIfNecessary(reporter)
   
           val exampleSucceededIcon = Resources("exampleSucceededIconChar")
           val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
@@ -737,22 +732,20 @@ trait Spec extends Suite { thisSuite =>
        
           // A TestStarting event won't normally show up in a specification-style output, but
           // will show up in a test-style output.
-          wrappedReporter(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
+          report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
 
           try {
             example.f()
 
-	    //val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), None, rerunnable)
-	    // val report = new SpecReport(getTestNameForReport(example.testName), "", example.specText, formattedSpecText, true, None, rerunnable)
  
             val formatter = IndentedText(formattedSpecText, example.specText, 1)
-            wrappedReporter(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, None, Some(formatter), rerunnable)) // TODO: add a duration
+            report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, None, Some(formatter), rerunnable)) // TODO: add a duration
           }
           catch { 
             case e: Exception => 
-              handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, wrappedReporter, tracker)
+              handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker)
             case ae: AssertionError =>
-              handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, wrappedReporter, tracker)
+              handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker)
           }
         }
       }
@@ -771,7 +764,7 @@ trait Spec extends Suite { thisSuite =>
   }
 
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker) {
+      specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker) {
 
     val message =
       if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -779,11 +772,8 @@ trait Spec extends Suite { thisSuite =>
       else
         throwable.toString
 
-    //val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName), Some(t), rerunnable)
-    // val report = new SpecReport(getTestNameForReport(testName), msg, specText, "- " + specText, true, Some(t), rerunnable)
-
     val formatter = IndentedText(formattedSpecText, specText, 1)
-    reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, Some(formatter), rerunnable)) // TODO: Add a duration
+    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, Some(formatter), rerunnable)) // TODO: Add a duration
   }
 
   /**
