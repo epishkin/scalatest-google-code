@@ -75,7 +75,8 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     }
   }
 
-  private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable], formatter: Option[Formatter]): List[String] = {
+  private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable],
+    formatter: Option[Formatter], suiteName: Option[String], testName: Option[String]): List[String] = {
 
     val stringToPrint =
       formatter match {
@@ -83,7 +84,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
           Resources("specTextAndNote", formattedText, Resources(noteResourceName))
         case _ =>
           // Deny MotionToSuppress directives in error events, because error info needs to be seen by users
-          PrintReporter.messageToPrint(errorResourceName, message, throwable)
+          PrintReporter.messageToPrint(errorResourceName, message, throwable, suiteName, testName)
       }
 
     val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
@@ -116,12 +117,18 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     stringToPrintWithPossibleLineNumber :: getStackTrace(throwable)
   }
 
-  private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter]): Option[String] = {
+  private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String]): Option[String] = {
 
     formatter match {
       case Some(IndentedText(formattedText, _, _)) => Some(formattedText)
       case Some(MotionToSuppress) => None
-      case _ => Some(Resources(resourceName + "NoMessage"))
+      case _ =>
+        val arg =
+          testName match {
+            case Some(tn) => suiteName + ": " + tn
+            case None => suiteName
+          }
+        Some(Resources(resourceName + "NoMessage", arg))
     }
   }
 
@@ -150,12 +157,12 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
-        val lines = stringsToPrintOnError("abortedNote", "runAborted", message, throwable, formatter)
+        val lines = stringsToPrintOnError("abortedNote", "runAborted", message, throwable, formatter, None, None)
         for (line <- lines) pw.println(line)
 
       case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
 
-        val stringToPrint = stringToPrintWhenNoError("suiteStarting", formatter)
+        val stringToPrint = stringToPrintWhenNoError("suiteStarting", formatter, suiteName, None)
 
         stringToPrint match {
           case Some(string) => pw.println(string)
@@ -164,7 +171,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
       case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        val stringToPrint = stringToPrintWhenNoError("suiteCompleted", formatter)
+        val stringToPrint = stringToPrintWhenNoError("suiteCompleted", formatter, suiteName, None)
 
         stringToPrint match {
           case Some(string) => pw.println(string)
@@ -174,12 +181,12 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
         suitesAbortedCount += 1
-        val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter)
+        val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter, Some(suiteName), None)
         for (line <- lines) pw.println(line)
 
       case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
 
-        val stringToPrint = stringToPrintWhenNoError("testStarting", formatter)
+        val stringToPrint = stringToPrintWhenNoError("testStarting", formatter, suiteName, Some(testName))
 
         stringToPrint match {
           case Some(string) => pw.println(string)
@@ -188,7 +195,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
 
       case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        val stringToPrint = stringToPrintWhenNoError("testStarting", formatter)
+        val stringToPrint = stringToPrintWhenNoError("testSucceeded", formatter, suiteName, Some(testName))
 
         stringToPrint match {
           case Some(string) => pw.println(string)
@@ -216,12 +223,17 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
         testsCompletedCount += 1
         testsFailedCount += 1
 
-        val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter)
+        val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName))
         for (line <- lines) pw.println(line)
 
       case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
 
-        val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter)
+        val (suiteName, testName) =
+          nameInfo match {
+            case Some(NameInfo(suiteName, _, testName)) => (Some(suiteName), testName)
+            case None => (None, None)
+          }
+        val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName)
         for (line <- lines) pw.println(line)
 
       case _ => throw new RuntimeException("Unhandled event")
@@ -383,10 +395,22 @@ private object PrintReporter {
       }
   }
 
-  private[scalatest] def messageToPrint(resourceName: String, message: String, throwable: Option[Throwable]): String = {
+  private[scalatest] def messageToPrint(resourceName: String, message: String, throwable: Option[Throwable], suiteName: Option[String],
+    testName: Option[String]): String = {
+
     val msgToPrint = messageOrThrowablesDetailMessage(message, throwable)
-    if (msgToPrint.isEmpty)
-      Resources(resourceName + "NoMessage")
+    if (msgToPrint.isEmpty) {
+      val arg =
+        suiteName match {
+          case Some(sn) =>
+            testName match {
+              case Some(tn) => sn + ": " + tn
+              case None => sn
+            }
+          case None => ""
+        }
+      Resources(resourceName + "NoMessage", arg)
+    }
     else
       Resources(resourceName, msgToPrint)
   }
