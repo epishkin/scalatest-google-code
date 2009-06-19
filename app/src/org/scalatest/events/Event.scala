@@ -2569,5 +2569,30 @@ object InfoProvided {
   ): InfoProvided = {
     apply(ordinal, message, nameInfo, throwable, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
+
+  /**
+   * Constructs a new <code>InfoProvided</code> event with the passed parameters, passing <code>None</code> for
+   * the <code>throwable</code>, <code>None</code> for
+   * <code>formatter</code>, <code>None</code> as the <code>payload</code>,
+   * the current threads name as <code>threadname</code>, and the current time as <code>timeStamp</code>.
+   *
+   * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
+   *        other events reported during the same run
+   * @param message a localized message suitable for presenting to the user
+   * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
+   *        in the context of which the information was provided
+   * @param throwable an optional <code>Throwable</code>
+   *
+   * @throws NullPointerException if any of the passed values are <code>null</code>
+   *
+   * @return a new <code>InfoProvided</code> instance initialized with the passed and default values
+   */
+  def apply(
+    ordinal: Ordinal,
+    message: String,
+    nameInfo: Option[NameInfo]
+  ): InfoProvided = {
+    apply(ordinal, message, nameInfo, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+  }
 }
 

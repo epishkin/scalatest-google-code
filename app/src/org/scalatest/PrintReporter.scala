@@ -219,20 +219,15 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
         val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter)
         for (line <- lines) pw.println(line)
 
+      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+
+        val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter)
+        for (line <- lines) pw.println(line)
+
       case _ => throw new RuntimeException("Unhandled event")
     }
 
     pw.flush()
-  }
-
-  /**
-  * Prints information extracted from the specified <code>Report</code>.
-  *
-  * @param report a <code>Report</code> that encapsulates the event to report.
-  * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-  */
-  override def infoProvided(report: Report) {
-    makeReport(report, "infoProvided")
   }
 
   /**
@@ -294,6 +289,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   // just indent two space to the left.  //  if (times <= 0) s 
   //  else Resources("indentOnce", indent(s, times - 1))
   
+/*
   private def makeReport(report: Report, resourceName: String) {
 
     if (report == null)
@@ -363,6 +359,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
       case None => // Don't print anything for TestStarting if a SpecReport (so long as there was no exception in the TestStarting report)
     }
   }
+*/
 }
  
 private object PrintReporter {

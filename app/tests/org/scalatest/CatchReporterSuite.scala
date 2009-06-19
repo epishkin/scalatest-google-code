@@ -27,9 +27,6 @@ class CatchReporterSuite extends Suite {
       override def apply(event: Event) {
         throw new RuntimeException
       }
-      override def infoProvided(report: Report) {
-        throw new RuntimeException
-      }
       override def dispose() {
         throw new RuntimeException
       }
@@ -80,9 +77,9 @@ class CatchReporterSuite extends Suite {
     catchReporter(SuiteAborted(new Ordinal(99), "msg", "suiteName", None, None))
 
     intercept[RuntimeException] {
-      buggyReporter.infoProvided(report)
+      buggyReporter(InfoProvided(new Ordinal(99), "msg", None))
     }
-    catchReporter.infoProvided(report)
+    catchReporter(InfoProvided(new Ordinal(99), "msg", None))
 
     intercept[RuntimeException] {
       buggyReporter(RunStopped(new Ordinal(99)))

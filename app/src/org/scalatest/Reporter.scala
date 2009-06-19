@@ -207,16 +207,6 @@ import org.scalatest.events._
 trait Reporter extends (Event => Unit) {
 
     /**
-     * Provides information that is not appropriate to report via any other
-     * <code>Reporter</code> method.
-     *
-     * @param report a <code>Report</code> that encapsulates the event to report.
-     *
-     * @throws NullPointerException if <code>report</code> reference is <code>null</code>
-     */
-    def infoProvided(report: Report) = ()
-
-    /**
      * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
      * call this method when they no longer need the <code>Reporter</code>, before releasing the last reference
      * to the <code>Reporter</code>. After this method is invoked, the <code>Reporter</code> may be defunct,

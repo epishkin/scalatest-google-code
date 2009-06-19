@@ -447,7 +447,7 @@ import org.scalatest.events._
  * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
  * is provided via the <code>info</code> parameterless method.
  * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
- * The <code>Informer</code> will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
  * Here's an example:
  * </p>
  *
@@ -482,7 +482,7 @@ trait FunSuite extends Suite { thisSuite =>
 
   private abstract class FunNode
   private case class Test(testName: String, testFunction: () => Unit) extends FunNode
-  private case class Info(report: Report) extends FunNode
+  private case class Info(message: String) extends FunNode
 
   // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
@@ -543,32 +543,19 @@ trait FunSuite extends Suite { thisSuite =>
   // an info outside a test. This solves the problem.
   private lazy val registrationInformer: Informer =
     new Informer {
-      def nameForReport: String = suiteName
-      def apply(report: Report) {
-        if (report == null)
-          throw new NullPointerException
-        val oldBundle = atomic.get
-        var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
-        doList ::= Info(report)
-        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
-      }
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
-        //apply(new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), None))
-        apply(new Report(nameForReport, message))
+        val oldBundle = atomic.get
+        var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
+        doList ::= Info(message)
+        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
       }
     }
     
   private val zombieInformer =
     new Informer {
       private val complaint = "Sorry, you can only use FunSuite's info when executing the suite."
-      def nameForReport: String = { throw new IllegalStateException(complaint) }
-      def apply(report: Report) {
-        if (report == null)
-          throw new NullPointerException
-        throw new IllegalStateException(complaint)
-      }
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
@@ -697,17 +684,10 @@ trait FunSuite extends Suite { thisSuite =>
         currentInformer =
           new Informer {
             val nameForReport: String = getTestNameForReport(testName)
-            def apply(report: Report) {
-              if (report == null)
-                throw new NullPointerException
-              wrappedReporter.infoProvided(report)
-            }
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              //val report = new Report(nameForReport, message, Some(suiteName), Some(thisSuite.getClass.getName), Some(testName))
-              val report = new Report(nameForReport, message)
-              wrappedReporter.infoProvided(report)
+              wrappedReporter(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
             }
           }
         theTest.testFunction()
@@ -822,17 +802,10 @@ trait FunSuite extends Suite { thisSuite =>
     // This guy will need to capture ordinal
     currentInformer =
       new Informer {
-        val nameForReport: String = suiteName
-        def apply(report: Report) {
-          if (report == null)
-            throw new NullPointerException
-          wrappedReporter.infoProvided(report)
-        }
         def apply(message: String) {
           if (message == null)
             throw new NullPointerException
-          val report = new Report(nameForReport, message)
-          wrappedReporter.infoProvided(report)
+          wrappedReporter(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
         }
       }
 

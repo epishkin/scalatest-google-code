@@ -41,16 +41,13 @@ private[scalatest] class FilterReporter(report: Reporter, configSet: ReporterOpt
       case event: TestSucceeded => if (configSet.contains(ReporterOpts.PresentTestSucceeded)) report(event)
       case event: TestIgnored => if (configSet.contains(ReporterOpts.PresentTestIgnored)) report(event)
       case event: TestFailed => if (configSet.contains(ReporterOpts.PresentTestFailed)) report(event)
+      case event: InfoProvided => if (configSet.contains(ReporterOpts.PresentInfoProvided)) report(event)
 
       case _ => throw new RuntimeException("Unhandled event")
     }
   }
 
   // Have some methods that translate chars & strings to Opts things, and vice versa
-
-  override def infoProvided(rpt: Report) =
-    if (configSet.contains(ReporterOpts.PresentInfoProvided))
-      report.infoProvided(rpt)
 
   override def dispose() = report.dispose()
 }

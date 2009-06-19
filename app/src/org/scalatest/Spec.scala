@@ -650,7 +650,7 @@ trait Spec extends Suite { thisSuite =>
       case desc @ Description(_, descriptionName, level) => {
 
         def sendInfoProvidedMessage() {
-          // Need to use the full name of the description, which groupsToInclude all the descriptions it is nested inside
+          // Need to use the full name of the description, which includes all the descriptions it is nested inside
           // Call getPrefix and pass in this Desc, to get the full name
           val descriptionFullName = getPrefix(desc).trim
          
@@ -658,10 +658,10 @@ trait Spec extends Suite { thisSuite =>
          
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
-          val descriptionNameForReport = getTestNameForReport(descriptionFullName)
+          //val descriptionNameForReport = getTestNameForReport(descriptionFullName)
           //val report = new SpecReport(descriptionNameForReport, descriptionFullName, descriptionFullName, descriptionFullName, true, Some(suiteName), Some(thisSuite.getClass.getName), None)
-          val report = new SpecReport(descriptionNameForReport, descriptionFullName, descriptionFullName, descriptionFullName, true)
-          wrappedReporter.infoProvided(report)
+          //val report = new SpecReport(descriptionNameForReport, descriptionFullName, descriptionFullName, descriptionFullName, true)
+          wrappedReporter(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
         }
         
         // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,

@@ -843,16 +843,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             selectFirstFailureIfExistsAndNothingElseAlreadySelected()
           }
 
-        case _ =>
-      }
-    }
+        case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
 
-    override def infoProvided(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-  
-      usingEventDispatchThread {
-        registerReport(report, ReporterOpts.PresentInfoProvided)
+          val report: Report = new Report("some name", "info provided, dude", throwable, None)
+
+          usingEventDispatchThread {
+            registerReport(report, ReporterOpts.PresentInfoProvided)
+          }
+
+        case _ =>
       }
     }
   }
@@ -1337,15 +1336,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val reportType
             }
           }
   
-        case _ =>
-      }
-    }
+        case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
 
-    override def infoProvided(report: Report) {
-      if (report == null)
-        throw new NullPointerException("report is null")
-      usingEventDispatchThread {
-        registerRerunReport(report, ReporterOpts.PresentInfoProvided)
+          val report: Report = new Report("some name", "info provided, dude", throwable, None)
+
+          usingEventDispatchThread {
+            registerRerunReport(report, ReporterOpts.PresentInfoProvided)
+          }
+
+        case _ =>
       }
     }
   }
