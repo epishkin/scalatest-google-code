@@ -15,8 +15,8 @@
  */
 package org.scalatest.tools
 
-import java.util.HashSet
-import java.util.Set
+
+import events.{IndentedText, Event}
 
 /**
  * Used to hold Reports in the GUI, so that I can keep track of which report method was called
@@ -24,13 +24,23 @@ import java.util.Set
  *
  * @author Bill Venners
  */
-private[scalatest] class EventHolder(val event: Report, val eventType: ReporterOpts.Value, val isRerun: Boolean) {
+private[scalatest] class EventHolder(val event: Event, val message: Option[String], val throwable: Option[Throwable],
+    val rerunner: Option[Rerunner], val eventType: ReporterOpts.Value, val isRerun: Boolean) {
 
   if (event == null || eventType == null)
     throw new NullPointerException()
  
-  def this(report: Report, eventType: ReporterOpts.Value) = this(report, eventType, false)
+  def this(event: Event, message: Option[String], throwable: Option[Throwable], rerunner: Option[Rerunner],
+           eventType: ReporterOpts.Value) = this(event, message, throwable, rerunner, eventType, false)
 
+  override def toString = {
+    event.formatter match {
+      case Some(IndentedText(_, rawText, indentationLevel)) => rawText
+      case _ => event.toString
+    }
+  }
+
+/*
   override def toString(): String = {
 
     event match {
@@ -59,4 +69,5 @@ private[scalatest] class EventHolder(val event: Report, val eventType: ReporterO
         }
     }
   }
+*/
 }

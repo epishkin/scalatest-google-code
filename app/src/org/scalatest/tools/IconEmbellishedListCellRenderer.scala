@@ -19,6 +19,7 @@ import javax.swing._
 import java.awt._
 import java.net.URL
 import javax.swing.border.EmptyBorder
+import org.scalatest.events.IndentedText
 
 /**
  * A ListCellRenderer for the event List in the GUI.
@@ -200,24 +201,9 @@ private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRendere
 
     val event = value.asInstanceOf[EventHolder].event
  
-    event match {
+    event.formatter match {
 
-      case sr: SpecReport =>
-        val indentationLevel =
-          eventType match {
-            case ReporterOpts.PresentRunStarting => 0
-            case ReporterOpts.PresentTestStarting => 2
-            case ReporterOpts.PresentTestSucceeded => 2
-            case ReporterOpts.PresentTestIgnored => 2
-            case ReporterOpts.PresentTestFailed => 2
-            case ReporterOpts.PresentRunAborted => 0
-            case ReporterOpts.PresentSuiteAborted => 0
-            case ReporterOpts.PresentSuiteStarting => 0
-            case ReporterOpts.PresentSuiteCompleted => 0
-            case ReporterOpts.PresentInfoProvided => 1
-            case ReporterOpts.PresentRunCompleted => 0
-            case ReporterOpts.PresentRunStopped => 0
-          }
+      case Some(IndentedText(_, _, indentationLevel)) =>
 
         if (indentationLevel > 0) {
           val panel = new JPanel(new BorderLayout)
