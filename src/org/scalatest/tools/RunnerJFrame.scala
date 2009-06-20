@@ -330,6 +330,25 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                   }
               }
 
+            import EventHolder.suiteAndTestName
+
+            val name =
+              holder.event match {
+                case event: RunStarting => None
+                case event: RunStopped => None
+                case event: RunAborted => None
+                case event: RunCompleted => None
+                case event: InfoProvided => Some(event.message)
+                case event: SuiteStarting => Some(event.suiteName)
+                case event: SuiteCompleted => Some(event.suiteName)
+                case event: SuiteAborted => Some(event.suiteName)
+                case event: TestStarting => Some(suiteAndTestName(event.suiteName, event.testName))
+                case event: TestPending => Some(suiteAndTestName(event.suiteName, event.testName))
+                case event: TestIgnored => Some(suiteAndTestName(event.suiteName, event.testName))
+                case event: TestSucceeded => Some(suiteAndTestName(event.suiteName, event.testName))
+                case event: TestFailed => Some(suiteAndTestName(event.suiteName, event.testName))
+              }
+
             val propCheckArgs: List[Any] =
               holder.throwable match {
                 case Some(ex: PropertyTestFailedException) => ex.args
@@ -355,7 +374,12 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                 <body>
                   <table>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsEvent") + ":" }</span></td><td align="left"><span>{ title }</span></td></tr>
-                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsName") + ":" }</span></td><td align="left">{ "THE NAME" /*event.name TODOBIGTIME */ }</td></tr>
+                  {
+                    if (name.isDefined) {
+                      <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsName") + ":" }</span></td><td align="left">{ name.get }</td></tr>
+                    }
+                    else <!-- -->
+                  }
                   {
                     if (mainMessage.isDefined) {
                       <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td><td align="left">
