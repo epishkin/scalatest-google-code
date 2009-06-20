@@ -41,6 +41,8 @@ import org.scalatest.events.Event
  */
 private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: PrintStream) extends Reporter {
 
+  private case class DisposeMsg
+
   private val julia = actor {
     var alive = true // local variable, right? Only used by the Actor's thread, so no need for synchronization
     while (alive) {

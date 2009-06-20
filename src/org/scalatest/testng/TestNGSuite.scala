@@ -16,7 +16,6 @@
 package org.scalatest.testng
 
 import org.scalatest.Suite
-import org.scalatest.Report
 import org.scalatest.TestRerunner
 import org.scalatest.events._
 
@@ -284,20 +283,6 @@ trait TestNGSuite extends Suite { thisSuite =>
      */
     override def onConfigurationSuccess(result: ITestResult) = { // TODO: Work on this report
       reporter(InfoProvided(tracker.nextOrdinal(), result.getName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
-    }
-
-    /**
-     * Constructs the report object.
-     */
-    private def buildReport( itr: ITestResult, t: Option[Throwable] ): Report = {
-      
-      val params =
-        itr.getParameters match {   
-          case Array() => ""
-          case _ => "(" + itr.getParameters.mkString(",") + ")"
-        }
-      
-      new Report(itr.getName + params, className, t, Some(new TestRerunner(className, itr.getName)) )
     }
 
     private def params(itr: ITestResult): String = {
