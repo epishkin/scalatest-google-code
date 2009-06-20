@@ -15,8 +15,8 @@
  */
 package org.scalatest.tools
 
-
 import org.scalatest.events._
+import EventHolder.suiteAndTestName
 
 /**
  * Used to hold Reports in the GUI, so that I can keep track of which report method was called
@@ -45,7 +45,6 @@ private[scalatest] class EventHolder(val event: Event, val message: Option[Strin
             Resources(ReporterOpts.getUpperCaseName(eventType))
 
         def firstAndSecondString(first: String, second: String) = first + " - " + second
-        def suiteAndTestName(suiteName: String, testName: String) = suiteName + ": " + testName
 
         event match {
           case event: RunStarting => firstString
@@ -66,34 +65,6 @@ private[scalatest] class EventHolder(val event: Event, val message: Option[Strin
   }
 }
 
-/*
-  override def toString(): String = {
-
-    event match {
-      case sr: SpecReport =>
-        if (eventType == ReporterOpts.PresentSuiteStarting)
-          sr.plainSpecText + ":"
-        else 
-          sr.plainSpecText
-      case _ => 
-        val firstString: String =
-          if (isRerun)
-            Resources("RERUN_" + ReporterOpts.getUpperCaseName(eventType))
-          else
-            Resources(ReporterOpts.getUpperCaseName(eventType))
-
-        if (eventType == ReporterOpts.PresentRunStarting || eventType == ReporterOpts.PresentRunStopped ||
-            eventType == ReporterOpts.PresentRunAborted || eventType == ReporterOpts.PresentRunCompleted) {
-
-          firstString 
-        }
-        else if (eventType == ReporterOpts.PresentInfoProvided) {
-          firstString + " - " + event.message
-        }
-        else {
-          firstString + " - " + event.name
-        }
-    }
-  }
+private[tools] object EventHolder {
+  def suiteAndTestName(suiteName: String, testName: String) = suiteName + ": " + testName
 }
-*/
