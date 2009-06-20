@@ -1305,22 +1305,9 @@ class SpecSuite extends FunSuite {
   test("Specs should send defined formatters") {
     class MyReporter extends Reporter {
 
-      var gotANonSpecReport = false
-      var lastNonSpecReport: Option[Report] = None
-
       var gotAnUndefinedFormatter = false
       var lastEventWithUndefinedFormatter: Option[Event] = None
 
-      private def ensureSpecReport(report: Report) {
-        report match {
-          case sr: SpecReport => 
-          case r: Report => {
-            gotANonSpecReport = true
-            lastNonSpecReport = Some(report)
-          }
-        }
-      }
-     
       private def ensureFormatterIsDefined(event: Event) {
         if (!event.formatter.isDefined) {
           gotAnUndefinedFormatter = true
@@ -1345,17 +1332,16 @@ class SpecSuite extends FunSuite {
     }
 
     class MySpec extends Spec with ShouldMatchers {
-      it("it should send SpecReports") {
+      it("it should send defined formatters") {
         assert(true)
       }
-      it("it should also send SpecReports") {
+      it("it should also send defined formatters") {
         assert(false)
       }
     }
     val a = new MySpec
     val myRep = new MyReporter
     a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(!myRep.gotANonSpecReport)
     assert(!myRep.gotAnUndefinedFormatter, myRep.lastEventWithUndefinedFormatter.toString)
   }
 

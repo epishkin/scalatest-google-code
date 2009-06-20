@@ -132,7 +132,6 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
 
-fail("Home of the free")
     val repA = new MyReporter
     a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
     assert(!repA.testIgnoredReceived)
