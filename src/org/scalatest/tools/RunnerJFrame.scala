@@ -235,9 +235,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
       new ListSelectionListener() {
         def valueChanged(e: ListSelectionEvent) {
 
-          val rh: EventHolder = eventsJList.getSelectedValue().asInstanceOf[EventHolder]
+          val holder: EventHolder = eventsJList.getSelectedValue().asInstanceOf[EventHolder]
 
-          if (rh == null) {
+          if (holder == null) {
 
             // This means nothing is currently selected
             detailsJEditorPane.setText("")
@@ -245,9 +245,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
           }
           else {
 
-            val event: Report = rh.event
-            val eventType: ReporterOpts.Value = rh.eventType
-            val isRerun: Boolean = rh.isRerun
+            val event: Event = holder.event
+            val eventType: ReporterOpts.Value = holder.eventType
+            val isRerun: Boolean = holder.isRerun
   
             val fontSize = eventsJList.getFont.getSize
 
@@ -261,8 +261,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
               eventType == ReporterOpts.PresentTestFailed || eventType == ReporterOpts.PresentSuiteAborted ||
                   eventType == ReporterOpts.PresentRunAborted
 
-            val fileAndLineOption: Option[String] =
-              event.throwable match {
+            val fileAndLineOption: Option[String] = 
+              holder.throwable match {
                 case Some(throwable) =>
                   throwable match {
                     case tfe: TestFailedException =>
@@ -272,8 +272,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                 case None => None
               }
 
-              val throwableTitle =
-                event.throwable match {
+              val throwableTitle = 
+                holder.throwable match {
                   case Some(throwable) => throwable.getClass.getName
                   case None => Resources("None")
                 }
@@ -282,7 +282,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
               // will show up as gray in the displayed stack trace, because those are ScalaTest methods.
               // The rest will show up as black.
               val (grayStackTraceElements, blackStackTraceElements) =
-                event.throwable match {
+                holder.throwable match {
                   case Some(throwable) =>
                     val stackTraceElements = throwable.getStackTrace.toList
                     throwable match {
@@ -319,19 +319,25 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
             }
 
             val mainMessage =
-              event.throwable match {
-                case Some(ex: PropertyTestFailedException) => ex.undecoratedMessage
-                case _ => event.message.trim
+              holder.throwable match {
+                case Some(ex: PropertyTestFailedException) => Some(ex.undecoratedMessage)
+                case _ =>
+                  holder.message match {
+                    case Some(msg) =>
+                      val trimmed = msg.trim
+                      if (trimmed.length > 0) Some(trimmed) else None
+                    case _ => None
+                  }
               }
 
             val propCheckArgs: List[Any] =
-              event.throwable match {
+              holder.throwable match {
                 case Some(ex: PropertyTestFailedException) => ex.args
                 case _ => List()
               }
 
             val propCheckLabels: List[String] =
-              event.throwable match {
+              holder.throwable match {
                 case Some(ex: PropertyTestFailedException) => ex.labels
                 case _ => List()
               }
@@ -349,15 +355,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                 <body>
                   <table>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsEvent") + ":" }</span></td><td align="left"><span>{ title }</span></td></tr>
-                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsName") + ":" }</span></td><td align="left">{ event.name }</td></tr>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsName") + ":" }</span></td><td align="left">{ "THE NAME" /*event.name TODOBIGTIME */ }</td></tr>
                   {
-                    if (event.message.trim.length != 0) {
+                    if (mainMessage.isDefined) {
                       <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td><td align="left">
                       {
                         if (isFailureEvent) {
-                          <span class="dark">{ mainMessage }</span>
+                          <span class="dark">{ mainMessage.get }</span>
                         } else {
-                          <span>{ mainMessage }</span>
+                          <span>{ mainMessage.get }</span>
                         }
                       }
                       </td></tr>
@@ -388,7 +394,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                     }
                     else new scala.xml.NodeBuffer
                   }
-                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ event.date }</td></tr>
+                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ new java.util.Date(event.timeStamp) }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ event.threadName }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
                   </table>
@@ -399,7 +405,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                   </td></tr>
                   </table>
                   {
-                    event.throwable match {
+                    holder.throwable match {
                       case Some(t) => getHTMLForCause(t)
                       case None =>
                     }
@@ -648,12 +654,12 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
     eventsListModel.clear()
     detailsJEditorPane.setText("")
 
-    for (rh <- collectedEvents.reverse; if viewOptions.contains(rh.eventType)) {
-      val shouldAddElement = rh.event match {
-        case sr: SpecReport => sr.includeInSpecOutput
+    for (holder <- collectedEvents.reverse; if viewOptions.contains(holder.eventType)) {
+      val shouldAddElement = holder.event.formatter match {
+        case Some(MotionToSuppress) => false
         case _ => true
       }
-      if (shouldAddElement) eventsListModel.addElement(rh)
+      if (shouldAddElement) eventsListModel.addElement(holder)
     }
 
     // Isn't there a risk that the formerly selected item will no longer exist in the list?
@@ -662,23 +668,43 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
     eventsJList.setSelectedValue(formerlySelectedItem, true)
   }
 
-  private def registerEvent(event: Report, eventType: ReporterOpts.Value): EventHolder = {
+  private def registerEvent(event: Event, eventType: ReporterOpts.Value): EventHolder = {
     registerRunOrRerunEvent(event, eventType, false)
   }
 
-  private def registerRerunEvent(event: Report, eventType: ReporterOpts.Value): EventHolder = {
+  private def registerRerunEvent(event: Event, eventType: ReporterOpts.Value): EventHolder = {
     registerRunOrRerunEvent(event, eventType, true)
   }
 
-  private def registerRunOrRerunEvent(event: Report, eventType: ReporterOpts.Value, isRerun: Boolean): EventHolder = {
+  private def registerRunOrRerunEvent(event: Event, eventType: ReporterOpts.Value, isRerun: Boolean): EventHolder = {
 
-    val eventHolder: EventHolder = new EventHolder(event, eventType, isRerun)
+    val (message, throwable) =
+      event match {
+        case e: TestFailed => (Some(e.message), e.throwable)
+        case e: SuiteAborted => (Some(e.message), e.throwable)
+        case e: RunAborted => (Some(e.message), e.throwable)
+        case e: InfoProvided => (Some(e.message), e.throwable)
+        case _ => (None, None)
+      }
+
+    val rerunner =
+      event match {
+        case e: TestStarting => e.rerunner
+        case e: TestSucceeded => e.rerunner
+        case e: TestFailed => e.rerunner
+        case e: SuiteStarting => e.rerunner
+        case e: SuiteCompleted => e.rerunner
+        case e: SuiteAborted => e.rerunner
+        case _ => None
+      }
+
+    val eventHolder: EventHolder = new EventHolder(event, message, throwable, rerunner, eventType, isRerun)
 
     if (eventTypesToCollect.contains(eventType)) {
       collectedEvents = eventHolder :: collectedEvents
       if (viewOptions.contains(eventType)) {
-        val shouldAddElement = event match {
-          case sr: SpecReport => sr.includeInSpecOutput
+        val shouldAddElement = event.formatter match {
+          case Some(MotionToSuppress) => false
           case _ => true
         }
         if (shouldAddElement) eventsListModel.addElement(eventHolder)
@@ -698,9 +724,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
           // Create the Event outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
           // and that looks bad and is wrong to boot.
-          val stringToReport: String = Resources("runStarting", testCount.toString)
-          val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
-          val eventHolder: EventHolder = new EventHolder(event, ReporterOpts.PresentRunStarting)
+          //val stringToReport: String = Resources("runStarting", testCount.toString)
+          //val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          val eventHolder: EventHolder = new EventHolder(event, None, None, None, ReporterOpts.PresentRunStarting)
 
           usingEventDispatchThread {
             testsCompletedCount = 0
@@ -727,15 +753,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
           // and that looks bad and is wrong to boot.
-          val stringToReport: String = Resources("runCompleted", testsCompletedCount.toString)
-          val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          //val stringToReport: String = Resources("runCompleted", testsCompletedCount.toString)
+          //val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
           usingEventDispatchThread {
             registerEvent(event, ReporterOpts.PresentRunCompleted)
           }
   
         case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
-          val event = new Report("org.scalatest.tools.Runner", message, throwable, None)
+          //val event = new Report("org.scalatest.tools.Runner", message, throwable, None)
 
           usingEventDispatchThread {
             progressBar.setRed()
@@ -754,33 +780,31 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
           // and that looks bad and is actually wrong.
-          val stringToReport: String = Resources("runStopped", testsCompletedCount.toString)
-          val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          //val stringToReport: String = Resources("runStopped", testsCompletedCount.toString)
+          //val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
           usingEventDispatchThread {
             registerEvent(event, ReporterOpts.PresentRunStopped)
           }
 
-        case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunner, payload, threadName, timeStamp) =>
 
-          // TODO: Oh, this kills the formatting too. Because that was being done with SpecReports. Will need to 
-          // fix that in the GUI. And the way to do it is store events. But that's a later step.
-          val event: Report = new Report(suiteName, "suite starting, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName, "suite starting, dude", None, rerunner)
 
           usingEventDispatchThread {
             registerEvent(event, ReporterOpts.PresentSuiteStarting)
           }
   
-        case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunner, payload, threadName, timeStamp) => 
   
-          val event: Report = new Report(suiteName, "suite completed, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName, "suite completed, dude", None, rerunner)
 
           usingEventDispatchThread {
             registerEvent(event, ReporterOpts.PresentSuiteCompleted)
           }
 
-        case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunner, payload, threadName, timeStamp) => 
 
-          val event: Report = new Report(suiteName, message, throwable, rerunnable)
+          //val event: Report = new Report(suiteName, message, throwable, rerunner)
 
           usingEventDispatchThread {
             progressBar.setRed()
@@ -794,9 +818,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
             selectFirstFailureIfExistsAndNothingElseAlreadySelected()
           }
 
-        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunner, payload, threadName, timeStamp) =>
   
-          val event: Report = new Report(suiteName + ": " + testName, "test starting, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName + ": " + testName, "test starting, dude", None, rerunner)
 
           usingEventDispatchThread {
             registerEvent(event, ReporterOpts.PresentTestStarting)
@@ -804,15 +828,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
 
         case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
-          val event: Report = new Report(suiteName + ": " + testName, "test ignored, dude", None, None)
+          //val event: Report = new Report(suiteName + ": " + testName, "test ignored, dude", None, None)
 
           usingEventDispatchThread {
             registerEvent(event, ReporterOpts.PresentTestIgnored)
           }
   
-        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunner, payload, threadName, timeStamp) => 
   
-          val event: Report = new Report(suiteName + ": " + testName, "test succeeded, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName + ": " + testName, "test succeeded, dude", None, rerunner)
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -821,9 +845,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
             registerEvent(event, ReporterOpts.PresentTestSucceeded)
           }
   
-        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunner, payload, threadName, timeStamp) => 
 
-          val event: Report = new Report(suiteName + ": " + testName, message, throwable, rerunnable)
+          //val event: Report = new Report(suiteName + ": " + testName, message, throwable, rerunner)
 
           usingEventDispatchThread {
             testsCompletedCount += 1
@@ -844,7 +868,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
 
         case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
 
-          val event: Report = new Report("some name", "info provided, dude", throwable, None)
+          //val event: Report = new Report("some name", "info provided, dude", throwable, None)
 
           usingEventDispatchThread {
             registerEvent(event, ReporterOpts.PresentInfoProvided)
@@ -870,8 +894,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
   }
 
   // Must be called from event handler thread
-  override def rerunFromGUI(rerunnable: Rerunner) {
-    (new RerunnerThread(rerunnable)).start()
+  override def rerunFromGUI(rerunner: Rerunner) {
+    (new RerunnerThread(rerunner)).start()
   }
 
   // This must be called by the event handler thread
@@ -933,8 +957,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
     runJButton.setText(runText)
     rerunJButton.setText(rerunText)
     runJButton.setEnabled(true)
-    val rh: EventHolder = eventsJList.getSelectedValue.asInstanceOf[EventHolder]
-    rerunJButton.setEnabled(rh != null && rh.event.rerunnable.isDefined)
+    val holder: EventHolder = eventsJList.getSelectedValue.asInstanceOf[EventHolder]
+    rerunJButton.setEnabled(holder != null && holder.rerunner.isDefined)
   }
 
   // This must be called by the event handler thread
@@ -1014,8 +1038,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
       var i = eventsListModel.getSize - 1
       var found = false
       while (i >= 0 && !found) {
-        val rh = eventsListModel.getElementAt(i).asInstanceOf[EventHolder]
-        if (rh.eventType == ReporterOpts.PresentRunStarting) {
+        val holder = eventsListModel.getElementAt(i).asInstanceOf[EventHolder]
+        if (holder.eventType == ReporterOpts.PresentRunStarting) {
           found = true
         }
         if (!found) i -= 1
@@ -1049,7 +1073,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
 
             // Select one event after the rerun starting event, if it is a test starting, test succeeded, or suite starting event,
             // because this should be the one they requested was rerun. So that's the most intuitive one to select
-            // after a run if there was no error. (Test succeeded is possible because Spec's will send SpecReports that
+            // after a run if there was no error. (Test succeeded is possible because Spec's will send MotionToSupress formatters that
             // say not to display test starting events.)
             val indexOfSecondEventInRerun = indexOfRunStartingEventForLastRerun + 1
             if (indexOfSecondEventInRerun <= indexOfLastEvent) { // Should always be true, but an if is better than an assert
@@ -1073,9 +1097,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
   // This must be called by the event handler thread
   private def selectFirstFailureIfExistsAndNothingElseAlreadySelected() {
 
-    val rh: EventHolder = eventsJList.getSelectedValue.asInstanceOf[EventHolder]
+    val holder: EventHolder = eventsJList.getSelectedValue.asInstanceOf[EventHolder]
 
-    if (rh == null) { // Only do this if something isn't already selected
+    if (holder == null) { // Only do this if something isn't already selected
 
       // First get the model into a List
       val modelList = getModelAsList
@@ -1089,11 +1113,11 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
   }
 
   def getSelectedRerunner(): Option[Rerunner] = {
-    val rh: EventHolder = eventsJList.getSelectedValue().asInstanceOf[EventHolder]
-    if (rh == null)
+    val holder: EventHolder = eventsJList.getSelectedValue().asInstanceOf[EventHolder]
+    if (holder == null)
       None
     else
-      rh.event.rerunnable
+      holder.rerunner
   }
 
   private class GraphicRerunReporter extends Reporter {
@@ -1112,8 +1136,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
           // and that looks bad and is actually wrong.
-          val stringToReport: String = Resources("rerunStarting", testCount.toString)
-          val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          //val stringToReport: String = Resources("rerunStarting", testCount.toString)
+          //val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
   
           usingEventDispatchThread {
             rerunTestsCompletedCount = 0
@@ -1130,8 +1154,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
           // and that looks bad and is actually wrong.
-          val stringToReport: String = Resources("rerunCompleted", rerunTestsCompletedCount.toString)
-          val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          //val stringToReport: String = Resources("rerunCompleted", rerunTestsCompletedCount.toString)
+          //val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
 
           usingEventDispatchThread {
             registerRerunEvent(event, ReporterOpts.PresentRunCompleted)
@@ -1140,7 +1164,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
   
         case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
-          val event = new Report("org.scalatest.tools.Runner", message, throwable, None)
+          //val event = new Report("org.scalatest.tools.Runner", message, throwable, None)
 
           usingEventDispatchThread {
             rerunColorBox.setRed()
@@ -1156,32 +1180,32 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
           // and that looks bad and is actually wrong.
-          val stringToReport: String = Resources("rerunStopped", rerunTestsCompletedCount.toString)
-          val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
+          //val stringToReport: String = Resources("rerunStopped", rerunTestsCompletedCount.toString)
+          //val event: Report = new Report("org.scalatest.tools.Runner", stringToReport)
           usingEventDispatchThread {
             registerRerunEvent(event, ReporterOpts.PresentRunStopped)
             scrollTheRerunStartingEventToTheTopOfVisibleEvents()
           }
 
-        case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunner, payload, threadName, timeStamp) =>
 
-          val event: Report = new Report(suiteName, "suite starting, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName, "suite starting, dude", None, rerunner)
 
           usingEventDispatchThread {
             registerRerunEvent(event, ReporterOpts.PresentSuiteStarting)
           }
   
-        case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunner, payload, threadName, timeStamp) => 
   
-          val event: Report = new Report(suiteName, "suite completed, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName, "suite completed, dude", None, rerunner)
 
           usingEventDispatchThread {
             registerRerunEvent(event, ReporterOpts.PresentSuiteCompleted)
           }
 
-        case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunner, payload, threadName, timeStamp) => 
 
-          val event: Report = new Report(suiteName, message, throwable, rerunnable)
+          //val event: Report = new Report(suiteName, message, throwable, rerunner)
 
           usingEventDispatchThread {
             rerunColorBox.setRed()
@@ -1192,9 +1216,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
             }
           }
  
-        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
+        case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunner, payload, threadName, timeStamp) =>
 
-          val event: Report = new Report(suiteName + ": " + testName, "test starting, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName + ": " + testName, "test starting, dude", None, rerunner)
 
           usingEventDispatchThread {
             registerRerunEvent(event, ReporterOpts.PresentTestStarting)
@@ -1202,16 +1226,16 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
   
         case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
-          val event: Report = new Report(suiteName + ": " + testName, "test ignored, dude", None, None)
+          //val event: Report = new Report(suiteName + ": " + testName, "test ignored, dude", None, None)
 
           usingEventDispatchThread {
             rerunColorBox.setValue(rerunTestsCompletedCount)
             registerRerunEvent(event, ReporterOpts.PresentTestIgnored)
           }
 
-        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunner, payload, threadName, timeStamp) => 
 
-          val event: Report = new Report(suiteName + ": " + testName, "test succeeded, dude", None, rerunnable)
+          //val event: Report = new Report(suiteName + ": " + testName, "test succeeded, dude", None, rerunner)
 
           usingEventDispatchThread {
             rerunTestsCompletedCount += 1
@@ -1219,9 +1243,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
             registerRerunEvent(event, ReporterOpts.PresentTestSucceeded)
           }
 
-        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
+        case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunner, payload, threadName, timeStamp) => 
 
-          val event: Report = new Report(suiteName + ": " + testName, "test failed, dude", throwable, rerunnable)
+          //val event: Report = new Report(suiteName + ": " + testName, "test failed, dude", throwable, rerunner)
 
           usingEventDispatchThread {
             rerunTestsCompletedCount += 1
@@ -1236,7 +1260,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
   
         case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
 
-          val event: Report = new Report("some name", "info provided, dude", throwable, None)
+          //val event: Report = new Report("some name", "info provided, dude", throwable, None)
 
           usingEventDispatchThread {
             registerRerunEvent(event, ReporterOpts.PresentInfoProvided)

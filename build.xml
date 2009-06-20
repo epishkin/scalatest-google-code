@@ -256,8 +256,9 @@
     </target>
 
     <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
-        <scalatest runpath="${build.tests.jar}" concurrent="true" haltonfailure="true">
+        <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="graphic"/>
+            <reporter type="stdout"/>
             <reporter type="file" filename="delme.txt" />
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.matchers" />
