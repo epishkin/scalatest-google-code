@@ -1541,7 +1541,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
 
         val formatter =
           nestedSuite match {
-            case spec: Spec => Some(IndentedText(rawString, rawString, 0))
+            case spec: Spec => Some(IndentedText(thisSuite.suiteName, thisSuite.suiteName, 0))
             case _ => None
           }
         report(SuiteStarting(tracker.nextOrdinal(), nestedSuite.suiteName, Some(nestedSuite.getClass.getName), formatter, rerunnable))
