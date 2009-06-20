@@ -1432,45 +1432,6 @@ class SpecSuite extends FunSuite {
     assert(testSucceededReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
-  ignore("A specifyGivenReporter clause should be able to send info to the reporter") {
-
-    val expectedMessage = "this is the expected message"
-
-    class MyReporter extends Reporter {
-      var infoProvidedCalled = false
-      var expectedMessageReceived = false
-      var lastReport: Report = null
-      def apply(event: Event) {
-        event match {
-          case event: InfoProvided =>
-            infoProvidedCalled = true
-            if (!expectedMessageReceived) {
-              expectedMessageReceived = event.message.indexOf(expectedMessage) != -1
-            }
-          case _ =>
-        }
-      }
-    }
-
-    class MySpec extends Spec with ShouldMatchers {
-      describe("A Stack") {
-        describe("(when not empty)") {
-          it("might allow me to pop") {
-            val report = new Report("myName", expectedMessage)
-            // info(report)
-            ()
-          }
-        }
-        describe("(when not full)") {
-          it("allow me to push") {}
-        }
-      }
-    }
-    
-    val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-  }
-
   test("Should get infoProvided with description if one and only one describe clause") {
 
     val expectedSpecText = "A Stack"
@@ -1478,7 +1439,6 @@ class SpecSuite extends FunSuite {
     class MyReporter extends Reporter {
       var infoProvidedCalled = false
       var expectedMessageReceived = false
-      var lastReport: Report = null
       def apply(event: Event) {
         event match {
           case event: InfoProvided =>
@@ -1859,14 +1819,13 @@ class SpecSuite extends FunSuite {
   }
 
   // End of Share stuff
-  ignore("A given reporter clause should be able to send info to the reporter") {
+  ignore("should be able to send info to the reporter") { // Can't do this yet, no info in Spec yet
 
     val expectedMessage = "this is the expected message"
 
     class MyReporter extends Reporter {
       var infoProvidedCalled = false
       var expectedMessageReceived = false
-      var lastReport: Report = null
 
       def apply(event: Event) {
         event match {
@@ -1884,8 +1843,7 @@ class SpecSuite extends FunSuite {
       describe("A Stack") {
         describe("(when not empty)") {
           it("should allow me to pop") {
-            val report = new Report("myName", expectedMessage)
-            // info(report)
+            info(expectedMessage)
             ()
           }
         }

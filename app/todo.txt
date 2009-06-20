@@ -1,4 +1,3 @@
-use events, not reports, in GUI reporter
 drop Report and SpecReport to make sure it is really gone
 name reporter reporter, distributor distributor, and stopper stopper in all things
 Use filter in the run methods

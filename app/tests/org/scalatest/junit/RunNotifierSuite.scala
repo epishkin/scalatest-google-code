@@ -113,7 +113,6 @@ class RunNotifierSuite extends FunSuite {
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getDisplayName === "some test name(suite class name)")
 
-    val report2 = new Report("name", "message", None, None)
     reporter(TestIgnored(new Ordinal(99), "suiteName2", Some("suite.class.name"), "testName"))
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getDisplayName === "testName(suite.class.name)")

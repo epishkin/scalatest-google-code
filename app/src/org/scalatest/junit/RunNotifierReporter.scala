@@ -30,8 +30,6 @@ import org.scalatest.events._
 // out the door somehow, so we report them with yet another fireTestFailure.
 private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Reporter {
 
-  private def getNameFromReport(report: Report): String = report.name
-
   // This form isn't clearly specified in JUnit docs, but some tools may assume it, so why rock the boat.
   // Here's what JUnit code does:
   //   public static Description createTestDescription(Class<?> clazz, String name, Annotation... annotations) {
