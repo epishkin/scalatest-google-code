@@ -35,7 +35,9 @@ private[scalatest] object Resources {
 
   def apply(resourceName: String, o1: AnyRef*): String = makeString(resourceName, o1.toArray)
 
-  def bigProblems(ex: Throwable) =
-    if (ex.getMessage.trim.length > 0) Resources("bigProblemsWithMessage", ex.getMessage) else Resources("bigProblems")
+  def bigProblems(ex: Throwable) = {
+    val message = if (ex.getMessage == null) "" else ex.getMessage.trim
+    if (message.length > 0) Resources("bigProblemsWithMessage", message) else Resources("bigProblems")
+  }
 }
 
