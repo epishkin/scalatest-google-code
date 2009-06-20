@@ -24,38 +24,38 @@ import java.util.Set
  *
  * @author Bill Venners
  */
-private[scalatest] class ReportHolder(val report: Report, val reportType: ReporterOpts.Value, val isRerun: Boolean) {
+private[scalatest] class EventHolder(val event: Report, val eventType: ReporterOpts.Value, val isRerun: Boolean) {
 
-  if (report == null || reportType == null)
+  if (event == null || eventType == null)
     throw new NullPointerException()
  
-  def this(report: Report, reportType: ReporterOpts.Value) = this(report, reportType, false)
+  def this(report: Report, eventType: ReporterOpts.Value) = this(report, eventType, false)
 
   override def toString(): String = {
 
-    report match {
+    event match {
       case sr: SpecReport =>
-        if (reportType == ReporterOpts.PresentSuiteStarting)
+        if (eventType == ReporterOpts.PresentSuiteStarting)
           sr.plainSpecText + ":"
         else 
           sr.plainSpecText
       case _ => 
         val firstString: String =
           if (isRerun)
-            Resources("RERUN_" + ReporterOpts.getUpperCaseName(reportType))
+            Resources("RERUN_" + ReporterOpts.getUpperCaseName(eventType))
           else
-            Resources(ReporterOpts.getUpperCaseName(reportType))
+            Resources(ReporterOpts.getUpperCaseName(eventType))
 
-        if (reportType == ReporterOpts.PresentRunStarting || reportType == ReporterOpts.PresentRunStopped ||
-            reportType == ReporterOpts.PresentRunAborted || reportType == ReporterOpts.PresentRunCompleted) {
+        if (eventType == ReporterOpts.PresentRunStarting || eventType == ReporterOpts.PresentRunStopped ||
+            eventType == ReporterOpts.PresentRunAborted || eventType == ReporterOpts.PresentRunCompleted) {
 
           firstString 
         }
-        else if (reportType == ReporterOpts.PresentInfoProvided) {
-          firstString + " - " + report.message
+        else if (eventType == ReporterOpts.PresentInfoProvided) {
+          firstString + " - " + event.message
         }
         else {
-          firstString + " - " + report.name
+          firstString + " - " + event.name
         }
     }
   }
