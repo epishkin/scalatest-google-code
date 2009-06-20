@@ -21,7 +21,7 @@ import java.net.URL
 import javax.swing.border.EmptyBorder
 
 /**
- * A ListCellRenderer for the report List in the GUI.
+ * A ListCellRenderer for the event List in the GUI.
  *
  * @author Bill Venners
  */
@@ -117,9 +117,9 @@ private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRendere
     if (isSelected)
       renderer.setBackground(BACKGROUND_BLUE)
 
-    val reportType: ReporterOpts.Value = value.asInstanceOf[ReportHolder].reportType
+    val eventType: ReporterOpts.Value = value.asInstanceOf[EventHolder].eventType
 
-    reportType match {
+    eventType match {
       case ReporterOpts.PresentRunStarting => {
         if (isSelected)
           renderer.setIcon(Icons.runStartingSelIcon)
@@ -198,13 +198,13 @@ private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRendere
       }
     }
 
-    val report = value.asInstanceOf[ReportHolder].report
+    val event = value.asInstanceOf[EventHolder].event
  
-    report match {
+    event match {
 
       case sr: SpecReport =>
         val indentationLevel =
-          reportType match {
+          eventType match {
             case ReporterOpts.PresentRunStarting => 0
             case ReporterOpts.PresentTestStarting => 2
             case ReporterOpts.PresentTestSucceeded => 2
