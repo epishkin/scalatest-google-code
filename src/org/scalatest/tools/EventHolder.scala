@@ -16,7 +16,7 @@
 package org.scalatest.tools
 
 
-import events.{IndentedText, Event}
+import org.scalatest.events._
 
 /**
  * Used to hold Reports in the GUI, so that I can keep track of which report method was called
@@ -35,10 +35,36 @@ private[scalatest] class EventHolder(val event: Event, val message: Option[Strin
 
   override def toString = {
     event.formatter match {
-      case Some(IndentedText(_, rawText, indentationLevel)) => rawText
-      case _ => event.toString
+      case Some(IndentedText(_, rawText, indentationLevel)) =>
+        if (eventType == ReporterOpts.PresentSuiteStarting) rawText + ":" else rawText
+      case _ => 
+        val firstString: String =
+          if (isRerun)
+            Resources("RERUN_" + ReporterOpts.getUpperCaseName(eventType))
+          else
+            Resources(ReporterOpts.getUpperCaseName(eventType))
+
+        def firstAndSecondString(first: String, second: String) = first + " - " + second
+        def suiteAndTestName(suiteName: String, testName: String) = suiteName + ": " + testName
+
+        event match {
+          case event: RunStarting => firstString
+          case event: RunStopped => firstString
+          case event: RunAborted => firstString
+          case event: RunCompleted => firstString
+          case event: InfoProvided => firstString + " - " + event.message
+          case event: SuiteStarting => firstAndSecondString(firstString, event.suiteName)
+          case event: SuiteCompleted => firstAndSecondString(firstString, event.suiteName)
+          case event: SuiteAborted => firstAndSecondString(firstString, event.suiteName)
+          case event: TestStarting => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
+          case event: TestPending => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
+          case event: TestIgnored => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
+          case event: TestSucceeded => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
+          case event: TestFailed => firstAndSecondString(firstString, suiteAndTestName(event.suiteName, event.testName))
+        }
     }
   }
+}
 
 /*
   override def toString(): String = {
@@ -69,5 +95,5 @@ private[scalatest] class EventHolder(val event: Event, val message: Option[Strin
         }
     }
   }
-*/
 }
+*/
