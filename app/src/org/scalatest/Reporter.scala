@@ -126,6 +126,51 @@ trait Reporter extends (Event => Unit) {
    */
 }
 
+private[scalatest] object Reporter {
+
+  private[scalatest] def indentStackTrace(stackTrace: String, level: Int): String = {
+    val indentation = if (level > 0) "  " * level else ""
+    val withTabsZapped = stackTrace.replaceAll("\t", "  ")
+    val withInitialIndent = indentation + withTabsZapped
+    withInitialIndent.replaceAll("\n", "\n" + indentation) // I wonder if I need to worry about alternate line endings. Probably.
+  }
+
+  // In the unlikely event that a message is blank, use the throwable's detail message
+  private[scalatest] def messageOrThrowablesDetailMessage(message: String, throwable: Option[Throwable]): String = {
+    val trimmedMessage = message.trim
+    if (!trimmedMessage.isEmpty)
+      trimmedMessage
+    else
+      throwable match {
+        case Some(t) => t.getMessage.trim
+        case None => ""
+      }
+  }
+
+  private[scalatest] def messageToPrint(resourceName: String, message: String, throwable: Option[Throwable], suiteName: Option[String],
+    testName: Option[String]): String = {
+
+    val arg =
+      suiteName match {
+        case Some(sn) =>
+          testName match {
+            case Some(tn) => sn + ": " + tn
+            case None => sn
+          }
+        case None => ""
+      }
+
+    val msgToPrint = messageOrThrowablesDetailMessage(message, throwable)
+    if (msgToPrint.isEmpty)
+      Resources(resourceName + "NoMessage", arg)
+    else
+      if (resourceName == "runAborted")
+        Resources(resourceName, msgToPrint)
+      else
+        Resources(resourceName, arg, msgToPrint)
+  }
+}
+
   /*
       case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
 
@@ -153,3 +198,4 @@ trait Reporter extends (Event => Unit) {
 
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
 */
+

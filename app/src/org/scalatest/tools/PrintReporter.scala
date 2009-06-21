@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.tools
 
 import java.io.BufferedOutputStream
 import java.io.File
@@ -83,7 +83,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
           Resources("specTextAndNote", formattedText, Resources(noteResourceName))
         case _ =>
           // Deny MotionToSuppress directives in error events, because error info needs to be seen by users
-          PrintReporter.messageToPrint(errorResourceName, message, throwable, suiteName, testName)
+          Reporter.messageToPrint(errorResourceName, message, throwable, suiteName, testName)
       }
 
     val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
@@ -370,47 +370,5 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
 }
  
 private object PrintReporter {
-  val BufferSize = 4096
-  private[scalatest] def indentStackTrace(stackTrace: String, level: Int): String = {
-    val indentation = if (level > 0) "  " * level else ""
-    val withTabsZapped = stackTrace.replaceAll("\t", "  ")
-    val withInitialIndent = indentation + withTabsZapped
-    withInitialIndent.replaceAll("\n", "\n" + indentation) // I wonder if I need to worry about alternate line endings. Probably.
-  }
-
-  // In the unlikely event that a message is blank, use the throwable's detail message
-  private[scalatest] def messageOrThrowablesDetailMessage(message: String, throwable: Option[Throwable]): String = {
-    val trimmedMessage = message.trim
-    if (!trimmedMessage.isEmpty)
-      trimmedMessage
-    else
-      throwable match {
-        case Some(t) => t.getMessage.trim
-        case None => ""
-      }
-  }
-
-  private[scalatest] def messageToPrint(resourceName: String, message: String, throwable: Option[Throwable], suiteName: Option[String],
-    testName: Option[String]): String = {
-
-    val arg =
-      suiteName match {
-        case Some(sn) =>
-          testName match {
-            case Some(tn) => sn + ": " + tn
-            case None => sn
-          }
-        case None => ""
-      }
-
-    val msgToPrint = messageOrThrowablesDetailMessage(message, throwable)
-    if (msgToPrint.isEmpty)
-      Resources(resourceName + "NoMessage", arg)
-    else
-      if (resourceName == "runAborted")
-        Resources(resourceName, msgToPrint)
-      else
-        Resources(resourceName, arg, msgToPrint)
-  }
+  final val BufferSize = 4096
 }
-
