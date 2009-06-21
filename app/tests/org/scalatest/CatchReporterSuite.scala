@@ -23,7 +23,7 @@ class CatchReporterSuite extends Suite {
 
   def testCatching() {
 
-    val buggyReporter = new Reporter {
+    val buggyReporter = new ResourcefulReporter {
       override def apply(event: Event) {
         throw new RuntimeException
       }
@@ -98,6 +98,6 @@ class CatchReporterSuite extends Suite {
     intercept[RuntimeException] {
       buggyReporter.dispose()
     }
-    catchReporter.dispose()
+    catchReporter.catchDispose()
   }
 }

@@ -17,6 +17,7 @@ package org.scalatest
 
 import java.io.PrintStream
 import org.scalatest.events.Event
+import DispatchReporter.propagateDispose
 
 /**
  * This report just catches exceptions thrown by the passed report and
@@ -44,9 +45,9 @@ private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) ext
     }
   }
 
-  override def dispose() {
+  def catchDispose() {
     try {
-      reporter.dispose()
+      propagateDispose(reporter)
     }
     catch {
       case e: Exception =>

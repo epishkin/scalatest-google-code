@@ -1174,7 +1174,7 @@ object Runner {
       }
     }
     finally {
-      dispatchReporter.dispose()
+      dispatchReporter.dispatchDispose()
       doneListener.done()
     }
   }
@@ -1193,7 +1193,7 @@ object Runner {
           f(loader, dispatchReporter)
         }
         finally {
-          dispatchReporter.dispose()
+          dispatchReporter.dispatchDispose()
         }
       }
       catch {

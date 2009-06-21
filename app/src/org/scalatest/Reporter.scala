@@ -115,15 +115,15 @@ trait Reporter extends (Event => Unit) {
    */
   def apply(event: Event)
 
-  /**
+  /*
    * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
    * call this method when they no longer need the <code>Reporter</code>, before releasing the last reference
    * to the <code>Reporter</code>. After this method is invoked, the <code>Reporter</code> may be defunct,
    * and therefore not usable anymore. If the <code>Reporter</code> holds no resources, it may do nothing when
    * this method is invoked. This trait's implementation of this method does nothing, so that <code>Reporter</code>
    * subclasses that hold no non-memory, finite resources can simply inherit this trait's implementation.
-   */
   def dispose() = ()
+   */
 }
 
   /*

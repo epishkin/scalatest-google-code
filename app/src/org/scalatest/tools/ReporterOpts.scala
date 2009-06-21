@@ -16,18 +16,19 @@
 package org.scalatest.tools
 
 /**
- * An enumeration of the 12 possible confiuration options accepted
+ * An enumeration of the 13 possible confiuration options accepted
  * the Runner for Reporters.
  *
  * @author Bill Venners
  */
 private[scalatest] object ReporterOpts extends Enumeration {
-   
+
   val PresentRunStarting,
     PresentTestStarting,
     PresentTestFailed,
     PresentTestSucceeded,
     PresentTestIgnored,
+    PresentTestPending,
     PresentSuiteStarting,
     PresentSuiteAborted,
     PresentSuiteCompleted,
@@ -35,7 +36,7 @@ private[scalatest] object ReporterOpts extends Enumeration {
     PresentRunStopped,
     PresentRunAborted,
     PresentRunCompleted = Value
-       
+
   // allOptions contains all possible ReporterOpts
   val allOptions =
     new ReporterOpts.Set32(
@@ -44,6 +45,7 @@ private[scalatest] object ReporterOpts extends Enumeration {
       | ReporterOpts.PresentTestSucceeded.mask32
       | ReporterOpts.PresentTestFailed.mask32
       | ReporterOpts.PresentTestIgnored.mask32
+      | ReporterOpts.PresentTestPending.mask32
       | ReporterOpts.PresentSuiteStarting.mask32
       | ReporterOpts.PresentSuiteCompleted.mask32
       | ReporterOpts.PresentSuiteAborted.mask32
@@ -59,6 +61,7 @@ private[scalatest] object ReporterOpts extends Enumeration {
     case ReporterOpts.PresentTestFailed => "REPORT_TEST_FAILED"
     case ReporterOpts.PresentTestSucceeded => "REPORT_TEST_SUCCEEDED"
     case ReporterOpts.PresentTestIgnored => "REPORT_TEST_IGNORED"
+    case ReporterOpts.PresentTestPending => "REPORT_TEST_PENDING"
     case ReporterOpts.PresentSuiteStarting => "REPORT_SUITE_STARTING"
     case ReporterOpts.PresentSuiteAborted => "REPORT_SUITE_ABORTED"
     case ReporterOpts.PresentSuiteCompleted => "REPORT_SUITE_COMPLETED"

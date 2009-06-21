@@ -12,6 +12,11 @@ Complete JUnitSuite, JUnitRunner GEORGE?
 Do JUnitWrapperSuite and the command line param GEORGE?
 Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?
 
+have dispose() on DispatchReporter and CatchReporter throw an exception explaining that Runner will do the disposing
+around here thank you very much. Then put dispatchDispose on those types and call that instead from Runner. The
+dispatchDispose method will do a pattern match looking for DispatchReporter or CatchReporter, in which case it invokes
+dispatchDispose on them, else it invokes dispose.
+
 Add durations to the places that take them GEORGE?
 
 Change the name of groups to tags everywhere, can deprecate groups for two releases
@@ -22,13 +27,11 @@ make tag annotations on Suite require extension of TagAnnotation
 
 add pending functionality to Suite
 
-add a pending singleton or val to Suite
+add a pending singleton or val to Suite (support both (pending) and { *** pending *** } styles
 
-put info in FunSuite in Atomic
+Change info in FunSuite to probably use an actor so multiple threads can fire infos. Oh and maybe you need to put the var that holds the current one in an atomic. Because only one thread should be writing to that.
 
-add info functionality to Spec
-
-try the GivenWhenThen trait, to see if indented text works
+add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
 
 maybe move Ordinal up to the org.scalatest package? Because it shows up in those signatures and it is a pain, actualy it doesn't sho
 up in those signatures anymore, I don't think, because Tracker does.
@@ -36,6 +39,7 @@ up in those signatures anymore, I don't think, because Tracker does.
 ask folks about the beforeAll and afterAll in BeforeAndAfter
 
 make ShouldBehaveLike and MustBehaveLike traits
+Drop ExecuteAndRun if it can indeed be done away with after getting ShouldBehaveLike in place.
 
 Do the OneInstancePerTest and ConcurrentTestExecution traits
 
@@ -51,13 +55,14 @@ Add the things for Property based testing displaying args nicely in the GUI (lik
 
 The eating error message problem. Make sure an exception message shows up in the GUI/Print output.
 
-I think WordSpec and FeatureSpec can be 0.9.7.
+Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, which would then give it the same kind of output.
 
 Oh, and must fix the problem of counting tests when using config params.
 
 I'm not printing out the message in a formatted report, just the exception's detail message
 
-Drop ExecuteAndRun if it can indeed be done away with after getting ShouldBehaveLike in place.
-
 Add more overloaded methods to Informer that take optional throwable, formatter, payload, etc.
 
+Do an xml reporter and an html reporter
+
+Put optional colors on standard output or maybe PrintReporter ones.

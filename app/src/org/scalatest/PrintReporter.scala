@@ -33,7 +33,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporter {
+private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends ResourcefulReporter {
 
   // This is only modified by the actor thread that serializes reports, so no need for synchronization.
   private var testsCompletedCount = 0
@@ -62,7 +62,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
   * @throws IOException if unable to open the specified file for writing
   */
   def this(filename: String) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), PrintReporter.BufferSize)))
-
   private def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
     throwable match {
       case Some(testFailedException: TestFailedException) =>
@@ -242,12 +241,8 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Reporte
     pw.flush()
   }
 
-  /**
-  * Releases any resources, such as file handles, held by this <code>PrintReporter</code>. Clients should
-  * call this method when they no longer need the <code>PrintReporter</code>, before releasing the last reference
-  * to the <code>PrintReporter</code>. After this method is invoked, the <code>PrintReporter</code> is defunct,
-  * and not usable anymore.
-  */
+  // Closes the print writer. Subclasses StandardOutReporter and StandardErrReporter override dispose to do nothing
+  // so that those aren't closed.
   override def dispose() {
     pw.close()
   }
