@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-import org.scalatest.events._
+import org.scalatest.events.Event
 
 /**
  * Trait whose instances collect the results of a running
@@ -108,58 +108,23 @@ import org.scalatest.events._
  */
 trait Reporter extends (Event => Unit) {
 
-    /**
-     * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
-     * call this method when they no longer need the <code>Reporter</code>, before releasing the last reference
-     * to the <code>Reporter</code>. After this method is invoked, the <code>Reporter</code> may be defunct,
-     * and therefore not usable anymore. If the <code>Reporter</code> holds no resources, it may do nothing when
-     * this method is invoked.
-     */
-    def dispose() = ()
-
   /**
    * Invoked to report an event that subclasses may wish to report in some way to the user.
    *
    * @param event the event being reported
    */
   def apply(event: Event)
+
+  /**
+   * Release any non-memory finite resources, such as file handles, held by this <code>Reporter</code>. Clients should
+   * call this method when they no longer need the <code>Reporter</code>, before releasing the last reference
+   * to the <code>Reporter</code>. After this method is invoked, the <code>Reporter</code> may be defunct,
+   * and therefore not usable anymore. If the <code>Reporter</code> holds no resources, it may do nothing when
+   * this method is invoked. This trait's implementation of this method does nothing, so that <code>Reporter</code>
+   * subclasses that hold no non-memory, finite resources can simply inherit this trait's implementation.
+   */
+  def dispose() = ()
 }
-
-/*
-So I remember, this is why I decided not to make case class subclasses of
-Report, and then have Reporter just have a submit(report: Report) method.
-I considered doing that, because it is more Scala like and I thought it might
-make implementing the Reporter interface easier. One thing I thought about was
-LavaLampReporter, which turns the red lava lamp on if there's a failure, else it
-turns the green one on. It would be a pain for such an implementer to have to
-implement empty methods for all the other methods in Reporter. But then I realized
-that I could put empty definitions, = (), in the Reporter trait itself. I'm about
-to do that. Also, the tradeoff is that suddenly the API would have a lot more surface
-area visible in all those case classes. I was struggling whether to call them
-InfoProvided and RunStarting or InfoProvidedReport and RunStartingReport, etc. I
-felt it was a tradeoff between making implementation of Reporter easier, which is
-someting people rarely want to do, versus making the surface area of the API smaller,
-which is something everyone who uses ScalaTest will look at.
-
-The other thing is that I was thinking you could just fire a new Report subclass
-into Reporter, and that would be easier than doing instanceof and downcasting, but
-then I realized that wasn't using the type system to prevent errors. If I fired a
-NewFangledReport into a plain old StandardOutReporter, it would choke on it. So I
-need to check anyway, so I may as well model this Reporter extensions the old way,
-but subtyping Reporter and adding a method. But now we could use pattern matching:
-
-reporter match {
-  case nfr: NewFangledReporter => nfr.newFangledHappened(report)
-  case r: _ => r.infoProvided(report)
-}
-
-I don't know the pattern matching syntax very well yet. But something like that.
-*/
-/*
-Todo: Make a ResourcefulReporter, a subclass of Reporter, that has the dispose method. Deprecate dispose in Reporter.
-Make FileReporter a ResourcefulReporter. Change my code that calls dispose to do a pattern match on the type. Ask anyone
-who has written a dispose method to make their reporter Resourceful. After 2 releases drop dispose() from Reporter.
-*/
 
   /*
       case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => runStarting(testCount)
@@ -187,6 +152,4 @@ who has written a dispose method to make their reporter Resourceful. After 2 rel
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => runCompleted()
-    }
-  }
 */

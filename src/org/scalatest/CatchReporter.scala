@@ -26,9 +26,11 @@ import org.scalatest.events.Event
  *
  * @author Bill Venners
  */
-private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) extends Reporter {
+private[scalatest] class CatchReporter(reporter: Reporter, out: PrintStream) extends Reporter {
 
-  def this(report: Reporter) = this(report, System.err)
+  private val report = reporter
+
+  def this(reporter: Reporter) = this(reporter, System.err)
 
   def apply(event: Event) {
     try {
@@ -42,29 +44,15 @@ private[scalatest] class CatchReporter(report: Reporter, out: PrintStream) exten
     }
   }
 
-  // Won't need the rest of this class after phase II of the report refactor is done, probably 0.9.8
-  override def dispose() = dispatch("dispose", (report: Reporter) => report.dispose())
-
-  private[scalatest] def dispatch(methodName: String, methodCall: (Reporter) => Unit) {
-
+  override def dispose() {
     try {
-      methodCall(report)
+      reporter.dispose()
     }
     catch {
-      case e: Exception => CatchReporter.handleReporterException(e, methodName, out)
+      case e: Exception =>
+        val stringToPrint = Resources("reporterDisposeThrew")
+        out.println(stringToPrint)
+        e.printStackTrace(out)
     }
   }
 }
-
-// Won't need this after phase II of the report refactor is done, probably 0.9.8
-private[scalatest] object CatchReporter {
-
-  def handleReporterException(e: Exception, methodName: String, out: PrintStream) {
-
-    val stringToPrint = Resources("reporterThrew", methodName)
-
-    out.println(stringToPrint)
-    e.printStackTrace(out)
-  }
-}
-
