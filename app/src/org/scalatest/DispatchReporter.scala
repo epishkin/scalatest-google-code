@@ -20,7 +20,6 @@ import scala.actors.Actor
 import scala.actors.Actor.actor
 import scala.actors.Actor.loop
 import scala.actors.Actor.receive
-import org.scalatest.CatchReporter.handleReporterException
 import java.io.PrintStream
 import org.scalatest.events.Event
 
@@ -41,7 +40,7 @@ import org.scalatest.events.Event
  */
 private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: PrintStream) extends Reporter {
 
-  private case class DisposeMsg
+  private case object Dispose
 
   private val julia = actor {
     var alive = true // local variable, right? Only used by the Actor's thread, so no need for synchronization
@@ -58,10 +57,18 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
               out.println(stringToPrint)
               e.printStackTrace(out)
           }
-        case DisposeMsg() => {
-          dispatch("dispose", (reporter: Reporter) => reporter.dispose())
+        case Dispose =>
+          try {
+            for (reporter <- reporters)
+              reporter.dispose()
+          }
+          catch {
+            case e: Exception =>
+              val stringToPrint = Resources("reporterDisposeThrew")
+              out.println(stringToPrint)
+              e.printStackTrace(out)
+          }
           alive = false
-        }
       }
     }
   }
@@ -69,31 +76,22 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
   def this(reporters: List[Reporter]) = this(reporters, System.out)
   def this(reporter: Reporter) = this(List(reporter), System.out)
 
-  /* where do I put this Scaladoc?
-   * Returns a <code>List</code> of the <code>Reporter</code>s contained in this
-   * <code>DispatchReporter</code>.
-   *
-   * @return a <code>List</code> of the <code>Reporter</code>s contained in this
-   * <code>DispatchReporter</code>.
-   */
-
-  /**
-   * Invokes <code>dispose</code> on each <code>Reporter</code> in this
-   * <code>DispatchReporter</code>'s reporters list.
-   *
-   * <P>
-   * This method attempts to invoke <code>dispose</code> on each contained <code>Reporter</code>,
-   * even if some <code>Reporter</code>'s <code>dispose</code> methods throw
-   * <code>Exception</code>s. This method catches any <code>Exception</code> thrown by
-   * a <code>dispose</code> method and handles it by printing an error message to the
-   * standard error stream.
-   */
-  override def dispose() = julia ! DisposeMsg()
+  // Invokes dispose on each Reporter in this
+  // DispatchReporter's reporters list.
+  //
+  // This method attempts to invoke dispose on each contained Reporter,
+  // even if some Reporter's dispose methods throw
+  // Exceptions. This method catches any Exception thrown by
+  // a dispose method and handles it by printing an error message to the
+  // standard error stream.
+  //
+  override def dispose() = julia ! Dispose
 
   def apply(event: Event) {
     julia ! event
   }
 
+/*
   private def dispatch(methodName: String, methodCall: (Reporter) => Unit) {
  
     try {
@@ -103,5 +101,6 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
       case e: Exception => handleReporterException(e, methodName, out)
     }
   }
+*/
 }
 

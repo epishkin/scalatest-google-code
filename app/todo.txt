@@ -1,7 +1,7 @@
 Use filter in the run methods
-Drop dispose from Reporter. Make a Disposable instead. Have FileReporter implement Disposable, and I think the GUI one too, whichever ones needed it. Anyone that was calling dispose(), needs to do a pattern match for Disposable now first.
+
 Try sorting the GUI reports with the ordinal
-move the checking for Spec stuff in Suite's run methods, etc., out and put those methods down in Spec itself. Factor our common code in helper methods and call those to minimize redundancy.
+
 Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest, because
 it is also used by Distributor and will be used by SuiteRerunner.
 
