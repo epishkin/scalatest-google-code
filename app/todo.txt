@@ -1,8 +1,9 @@
-drop Report and SpecReport to make sure it is really gone
-name reporter reporter, distributor distributor, and stopper stopper in all things
 Use filter in the run methods
 Drop dispose from Reporter. Make a Disposable instead. Have FileReporter implement Disposable, and I think the GUI one too, whichever ones needed it. Anyone that was calling dispose(), needs to do a pattern match for Disposable now first.
 Try sorting the GUI reports with the ordinal
+move the checking for Spec stuff in Suite's run methods, etc., out and put those methods down in Spec itself. Factor our common code in helper methods and call those to minimize redundancy.
+Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest, because
+it is also used by Distributor and will be used by SuiteRerunner.
 
 ask folks about run versus execute
 ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
@@ -10,7 +11,6 @@ ask folks about TestCase/Suite compatibility (check about testNames, because if 
 Complete JUnitSuite, JUnitRunner GEORGE?
 Do JUnitWrapperSuite and the command line param GEORGE?
 Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?
-
 
 Add durations to the places that take them GEORGE?
 
@@ -29,6 +29,9 @@ put info in FunSuite in Atomic
 add info functionality to Spec
 
 try the GivenWhenThen trait, to see if indented text works
+
+maybe move Ordinal up to the org.scalatest package? Because it shows up in those signatures and it is a pain, actualy it doesn't sho
+up in those signatures anymore, I don't think, because Tracker does.
 
 ask folks about the beforeAll and afterAll in BeforeAndAfter
 
@@ -57,3 +60,4 @@ I'm not printing out the message in a formatted report, just the exception's det
 Drop ExecuteAndRun if it can indeed be done away with after getting ShouldBehaveLike in place.
 
 Add more overloaded methods to Informer that take optional throwable, formatter, payload, etc.
+

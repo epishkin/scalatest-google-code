@@ -80,17 +80,17 @@ class ExamplesSuite extends FunSuite {
     new MySpec
   }
 
-  test("groups work correctly in Examples") {
+  test("tags work correctly in Examples") {
 
     val a = new Spec {
       def aExamples() {
-        it("test this", mygroups.SlowAsMolasses) {}
-        ignore("test that", mygroups.SlowAsMolasses) {}
+        it("test this", mytags.SlowAsMolasses) {}
+        ignore("test that", mytags.SlowAsMolasses) {}
       }
       aExamples()
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-      a.groups
+      a.tags
     }
 
     val b = new Spec {
@@ -98,18 +98,18 @@ class ExamplesSuite extends FunSuite {
       bExamples()
     }
     expect(Map()) {
-      b.groups
+      b.tags
     }
 
     val c = new Spec {
       def cExamples() {
-        it("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
-        it("test that", mygroups.SlowAsMolasses) {}
+        it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
+        it("test that", mytags.SlowAsMolasses) {}
       }
       cExamples()
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-      c.groups
+      c.tags
     }
   }
 }

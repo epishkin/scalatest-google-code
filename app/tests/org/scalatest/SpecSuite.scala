@@ -102,7 +102,7 @@ class SpecSuite extends FunSuite {
     assert(testFailedAsExpected)
   }
 
-  test("calling an it from within an it with groups clause results in a TestFailedError at runtime") {
+  test("calling an it from within an it with tags clause results in a TestFailedError at runtime") {
     
     var testFailedAsExpected = false
     class MyReporter extends Reporter {
@@ -118,7 +118,7 @@ class SpecSuite extends FunSuite {
 
     class MySpec extends Spec {
       it("this test should blow up") {
-        it("is in the wrong place also", mygroups.SlowAsMolasses) {
+        it("is in the wrong place also", mytags.SlowAsMolasses) {
           assert(1 === 1)
         }
       }
@@ -156,7 +156,7 @@ class SpecSuite extends FunSuite {
     assert(testFailedAsExpected)
   }
 
-  test("calling an ignore with groups from within an it clause results in a TestFailedError at runtime") {
+  test("calling an ignore with tags from within an it clause results in a TestFailedError at runtime") {
     
     var testFailedAsExpected = false
     class MyReporter extends Reporter {
@@ -172,7 +172,7 @@ class SpecSuite extends FunSuite {
 
     class MySpec extends Spec {
       it("this test should blow up") {
-        ignore("is in the wrong place also", mygroups.SlowAsMolasses) {
+        ignore("is in the wrong place also", mytags.SlowAsMolasses) {
           assert(1 === 1)
         }
       }
@@ -183,27 +183,27 @@ class SpecSuite extends FunSuite {
     assert(testFailedAsExpected)
   }
 
-  test("groups work correctly in Spec") {
+  test("tags work correctly in Spec") {
     
     val d = new Spec {
-      it("test this", mygroups.SlowAsMolasses) {}
-      ignore("test that", mygroups.SlowAsMolasses) {}
+      it("test this", mytags.SlowAsMolasses) {}
+      ignore("test that", mytags.SlowAsMolasses) {}
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-      d.groups
+      d.tags
     }
 
     val e = new Spec {}
     expect(Map()) {
-      e.groups
+      e.tags
     }
 
     val f = new Spec {
-      it("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
-      it("test that", mygroups.SlowAsMolasses) {}
+      it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
+      it("test that", mytags.SlowAsMolasses) {}
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-      f.groups
+      f.tags
     }
   }
 
@@ -235,14 +235,14 @@ class SpecSuite extends FunSuite {
     }
   }
 
-  test("make sure ignored examples show up in groups list") {
+  test("make sure ignored examples show up in tags list") {
 
     val a = new Spec {
       ignore("test this") {}
       it("test that") {}
     }
     expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-      a.groups
+      a.tags
     }
 
     val b = new Spec {
@@ -250,7 +250,7 @@ class SpecSuite extends FunSuite {
       ignore("test that") {}
     }
     expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-      b.groups
+      b.tags
     }
 
     val c = new Spec {
@@ -258,7 +258,7 @@ class SpecSuite extends FunSuite {
       ignore("test that") {}
     }
     expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-      c.groups
+      c.tags
     }
 
     val d = new Spec {
@@ -266,7 +266,7 @@ class SpecSuite extends FunSuite {
       it("test that") {}
     }
     expect(Map()) {
-      d.groups
+      d.tags
     }
   }
 
@@ -1881,13 +1881,13 @@ class SpecSuite extends FunSuite {
     }
     val caught = intercept[NullPointerException] {
       new Spec {
-        it("hi", mygroups.SlowAsMolasses, null) {}
+        it("hi", mytags.SlowAsMolasses, null) {}
       }
     }
     assert(caught.getMessage === "a test group was null")
     intercept[NullPointerException] {
       new Spec {
-        it("hi", mygroups.SlowAsMolasses, null, mygroups.WeakAsAKitten) {}
+        it("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
       }
     }
     // ignore
@@ -1898,13 +1898,13 @@ class SpecSuite extends FunSuite {
     }
     val caught2 = intercept[NullPointerException] {
       new Spec {
-        ignore("hi", mygroups.SlowAsMolasses, null) {}
+        ignore("hi", mytags.SlowAsMolasses, null) {}
       }
     }
     assert(caught2.getMessage === "a test group was null")
     intercept[NullPointerException] {
       new Spec {
-        ignore("hi", mygroups.SlowAsMolasses, null, mygroups.WeakAsAKitten) {}
+        ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
       }
     }
   }
