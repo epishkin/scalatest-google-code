@@ -22,6 +22,7 @@ import scala.actors.Actor.loop
 import scala.actors.Actor.receive
 import java.io.PrintStream
 import org.scalatest.events.Event
+import DispatchReporter.propagateDispose
 
 /**
  * A <code>Reporter</code> that dispatches test results to other <code>Reporter</code>s.
@@ -60,7 +61,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
         case Dispose =>
           try {
             for (reporter <- reporters)
-              reporter.dispose()
+              propagateDispose(reporter)
           }
           catch {
             case e: Exception =>
@@ -76,16 +77,14 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
   def this(reporters: List[Reporter]) = this(reporters, System.out)
   def this(reporter: Reporter) = this(List(reporter), System.out)
 
-  // Invokes dispose on each Reporter in this
-  // DispatchReporter's reporters list.
-  //
+  // Invokes dispose on each Reporter in this DispatchReporter's reporters list.
   // This method attempts to invoke dispose on each contained Reporter,
   // even if some Reporter's dispose methods throw
   // Exceptions. This method catches any Exception thrown by
   // a dispose method and handles it by printing an error message to the
   // standard error stream.
   //
-  override def dispose() = julia ! Dispose
+  def dispatchDispose() = julia ! Dispose
 
   def apply(event: Event) {
     julia ! event
@@ -104,3 +103,14 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
 */
 }
 
+private[scalatest] object DispatchReporter {
+
+  def propagateDispose(reporter: Reporter) {
+    reporter match {
+      case dispatchReporter: DispatchReporter => dispatchReporter.dispatchDispose()
+      case catchReporter: CatchReporter => catchReporter.catchDispose()
+      case resourcefulReporter: ResourcefulReporter => resourcefulReporter.dispose()
+      case _ =>
+    }
+  }
+}
