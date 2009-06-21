@@ -8,14 +8,13 @@ it is also used by Distributor and will be used by SuiteRerunner.
 ask folks about run versus execute
 ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
 
+do I put Ordinal in the scalatest package, or what?
+
+Move the PrintReporter and StandardOutReporter to the tools package.
+
 Complete JUnitSuite, JUnitRunner GEORGE?
 Do JUnitWrapperSuite and the command line param GEORGE?
 Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?
-
-have dispose() on DispatchReporter and CatchReporter throw an exception explaining that Runner will do the disposing
-around here thank you very much. Then put dispatchDispose on those types and call that instead from Runner. The
-dispatchDispose method will do a pattern match looking for DispatchReporter or CatchReporter, in which case it invokes
-dispatchDispose on them, else it invokes dispose.
 
 Add durations to the places that take them GEORGE?
 
@@ -57,7 +56,9 @@ The eating error message problem. Make sure an exception message shows up in the
 
 Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, which would then give it the same kind of output.
 
-Oh, and must fix the problem of counting tests when using config params.
+Oh, and must fix the problem of counting tests when using config params. RunStopped, RunCompleted, and RunAborted all take an optional Summary. When fired from Runner, SuiteRerunner, and TestRerunner, these are Nones. So maybe I enhance DispatchReporter to count these? To reset the count to zero when a RunCompleted, RunStopped, or RunAborted comes through? It would be counted by the actor thread. And if the summary field was a None, it would replace it with a Some that has these counts in it.
+
+Print out the summary info, once it is getting sent.
 
 I'm not printing out the message in a formatted report, just the exception's detail message
 

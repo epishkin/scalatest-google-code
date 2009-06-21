@@ -32,6 +32,7 @@ import java.lang.annotation.Target
 import java.lang.annotation.ElementType
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
+import org.scalatest.tools.StandardOutReporter
 
 /**
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
