@@ -203,7 +203,7 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       }
     }
 
-    it("bla bla bla") {
+    //it("bla bla bla") {
       // fail("message")
       // fail(new Throwable)
       // fail("message", new Throwable)
@@ -213,7 +213,7 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       // val cause1 = new IllegalStateException("this is cause 1", cause0)
       // intercept[IllegalArgumentException] { if (false) 1 else throw new RuntimeException(cause1) }
       // intercept[IllegalArgumentException] {}
-    }
+    //}
   }
 }
  

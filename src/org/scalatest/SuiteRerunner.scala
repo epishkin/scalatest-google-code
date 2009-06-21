@@ -18,6 +18,9 @@ package org.scalatest
 import org.scalatest.Suite.checkForPublicNoArgConstructor
 
 import org.scalatest.events._
+import Suite.formatterForSuiteStarting
+import Suite.formatterForSuiteCompleted
+import Suite.formatterForSuiteAborted
 
 /**
  * A Rerunner for Suites.
@@ -49,31 +52,22 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
       try {
 
         val rawString = Resources("suiteExecutionStarting")
-        val formatter =
-          suite match {
-            case spec: Spec => Some(IndentedText(rawString, rawString, 0))
-            case _ => None
-          }
+        val formatter = formatterForSuiteStarting(suite)
+
         report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
 
         suite.run(None, report, stopRequested, includes, excludes, goodies, distributor, tracker)
 
         val rawString2 = Resources("suiteCompletedNormally")
-        val formatter2 =
-          suite match {
-            case spec: Spec => Some(MotionToSuppress)
-            case _ => None
-          }
+        val formatter2 = formatterForSuiteCompleted(suite)
+
         report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), None, formatter2, rerunnable)) // TODO: add a duration
       }
       catch {
         case e: RuntimeException => {
           val rawString3 = Resources("executeException")
-          val formatter3 =
-            suite match {
-              case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
-              case _ => None
-            }
+          val formatter3 = formatterForSuiteAborted(suite, rawString3)
+
           report(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
         }
       }

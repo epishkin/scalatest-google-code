@@ -57,7 +57,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) = ()
     }
 
-    assert(a.groups === Map("testThis" -> Set("org.scalatest.Ignore")))
+    assert(a.tags === Map("testThis" -> Set("org.scalatest.Ignore")))
 
     val b = new Suite {
       def testThis() = ()
@@ -65,7 +65,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) = ()
     }
 
-    assert(b.groups === Map("testThat(Informer)" -> Set("org.scalatest.Ignore")))
+    assert(b.tags === Map("testThat(Informer)" -> Set("org.scalatest.Ignore")))
 
     val c = new Suite {
       @Ignore
@@ -74,7 +74,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) = ()
     }
 
-    assert(c.groups === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat(Informer)" -> Set("org.scalatest.Ignore")))
+    assert(c.tags === Map("testThis" -> Set("org.scalatest.Ignore"), "testThat(Informer)" -> Set("org.scalatest.Ignore")))
 
     val d = new Suite {
       @SlowAsMolasses
@@ -84,10 +84,10 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) = ()
     }
 
-    assert(d.groups === Map("testThis" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
+    assert(d.tags === Map("testThis" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
 
     val e = new Suite {}
-    assert(e.groups === Map())
+    assert(e.tags === Map())
   }
 
   def testExecuteOneTest() {
@@ -456,7 +456,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
     assert(a.expectedTestCount(Set(), Set()) === 1)
     val tnResult: Set[String] = a.testNames
-    val gResult: Map[String, Set[String]] = a.groups
+    val gResult: Map[String, Set[String]] = a.tags
     assert(tnResult.size === 1)
     assert(gResult.keySet.size === 0)
   }
@@ -466,7 +466,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     val a = new Suite {
       def testNotInAGroup() = ()
     }
-    assert(a.groups.keySet.size === 0)
+    assert(a.tags.keySet.size === 0)
   }
 
   def testThatTestMethodsThatReturnNonUnitAreDiscovered() {
@@ -476,7 +476,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
     assert(a.testNames.size === 2)
-    assert(a.groups.keySet.size === 0)
+    assert(a.tags.keySet.size === 0)
   }
 
   def testThatOverloadedTestMethodsAreDiscovered() {
@@ -486,7 +486,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
     assert(a.testNames.size === 2)
-    assert(a.groups.keySet.size === 0)
+    assert(a.tags.keySet.size === 0)
   }
 
   def testThatInterceptCatchesSubtypes() {

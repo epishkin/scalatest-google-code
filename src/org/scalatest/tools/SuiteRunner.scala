@@ -18,9 +18,14 @@ package org.scalatest.tools
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 import org.scalatest.events._
+import Suite.formatterForSuiteStarting
+import Suite.formatterForSuiteCompleted
+import Suite.formatterForSuiteAborted
 
-private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, stopRequested: Stopper, includes: Set[String],
+private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, stopper: Stopper, includes: Set[String],
     excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) extends Runnable {
+
+  private val stopRequested = stopper
 
   def run() {
 
@@ -42,20 +47,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
           None
   
       val rawString = Resources("suiteExecutionStarting")
-/*
-      val report =
-        suite match {
-          case spec: Spec =>
-            new SpecReport(suite.suiteName, rawString, suite.suiteName, suite.suiteName, true, None, rerunnable)
-          case _ =>
-            new Report(suite.suiteName, rawString, None, rerunnable)
-        }
-*/
-      val formatter =
-        suite match {
-          case spec: Spec => Some(IndentedText(rawString, rawString, 0))
-          case _ => None
-        }
+      val formatter = formatterForSuiteStarting(suite)
   
       dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
   
@@ -63,48 +55,16 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
         suite.run(None, dispatch, stopRequested, includes, excludes, propertiesMap, distributor, tracker)
   
         val rawString2 = Resources("suiteCompletedNormally")
-  
-/*
-        val report2 =
-          suite match {
-            case spec: Spec =>
-              //new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
-              new SpecReport(suite.suiteName, rawString2, suite.suiteName, suite.suiteName, false, None, rerunnable)
-            case _ =>
-              // new Report(suite.suiteName, rawString2, Some(suite.suiteName), Some(suite.getClass.getName), None, None, rerunnable)
-              new Report(suite.suiteName, rawString2, None, rerunnable)
-          }
-*/
+        val formatter = formatterForSuiteCompleted(suite)
 
-        val formatter =
-          suite match {
-            case spec: Spec => Some(MotionToSuppress)
-            case _ => None
-          }
         dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
       }
       catch {
         case e: RuntimeException => {
+
           val rawString3 = Resources("executeException")
-  
-/*
-          val report3 =
-            suite match {
-              case spec: Spec =>
-                //new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(suite.suiteName), Some(suite.getClass.getName), None, Some(e), rerunnable)
-                new SpecReport(suite.suiteName, rawString3, suite.suiteName, suite.suiteName, true, Some(e), rerunnable)
-              case _ =>
-                //new Report(suite.suiteName, rawString3, Some(suite.suiteName), Some(suite.getClass.getName), None, Some(e), rerunnable)
-                new Report(suite.suiteName, rawString3, Some(e), rerunnable)
-            }
-*/
-  
-          // Hmm, this is the same code as in org.scalatest.SuiteRerunner. Sounds like a refactoring opportunity
-          val formatter3 =
-            suite match {
-              case spec: Spec => Some(IndentedText(rawString3, rawString3, 0))
-              case _ => None
-            }
+          val formatter3 = formatterForSuiteAborted(suite, rawString3)
+
           dispatch(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
         }
       }

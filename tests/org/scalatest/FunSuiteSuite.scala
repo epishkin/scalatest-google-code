@@ -18,7 +18,7 @@ package org.scalatest
 import org.scalatest.events._
 
 // Group classes used in tests
-package mygroups {
+package mytags {
   object SlowAsMolasses extends Group("org.scalatest.SlowAsMolasses")
   object FastAsLight extends Group("org.scalatest.FastAsLight")
   object WeakAsAKitten extends Group("org.scalatest.WeakAsAKitten")
@@ -86,7 +86,7 @@ class FunSuiteSuite extends Suite {
       test("test that") {}
     }
     expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-      a.groups
+      a.tags
     }
 
     val b = new FunSuite {
@@ -94,7 +94,7 @@ class FunSuiteSuite extends Suite {
       ignore("test that") {}
     }
     expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-      b.groups
+      b.tags
     }
 
     val c = new FunSuite {
@@ -102,28 +102,28 @@ class FunSuiteSuite extends Suite {
       ignore("test that") {}
     }
     expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-      c.groups
+      c.tags
     }
 
     val d = new FunSuite {
-      test("test this", mygroups.SlowAsMolasses) {}
-      ignore("test that", mygroups.SlowAsMolasses) {}
+      test("test this", mytags.SlowAsMolasses) {}
+      ignore("test that", mytags.SlowAsMolasses) {}
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-      d.groups
+      d.tags
     }
 
     val e = new FunSuite {}
     expect(Map()) {
-      e.groups
+      e.tags
     }
 
     val f = new FunSuite {
-      test("test this", mygroups.SlowAsMolasses, mygroups.WeakAsAKitten) {}
-      test("test that", mygroups.SlowAsMolasses) {}
+      test("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
+      test("test that", mytags.SlowAsMolasses) {}
     }
     expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-      f.groups
+      f.tags
     }
   }
 
@@ -239,7 +239,7 @@ class FunSuiteSuite extends Suite {
     val a = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      test("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
+      test("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
       test("test that") { theTestThatCalled = true }
     }
     val repA = new MyReporter
@@ -251,7 +251,7 @@ class FunSuiteSuite extends Suite {
     val b = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      test("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
+      test("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
       test("test that") { theTestThatCalled = true }
     }
     val repB = new MyReporter
@@ -263,8 +263,8 @@ class FunSuiteSuite extends Suite {
     val c = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      test("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
-      test("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      test("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
+      test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
     }
     val repC = new MyReporter
     c.run(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None, new Tracker)
@@ -275,8 +275,8 @@ class FunSuiteSuite extends Suite {
     val d = new FunSuite {
       var theTestThisCalled = false
       var theTestThatCalled = false
-      ignore("test this", mygroups.SlowAsMolasses) { theTestThisCalled = true }
-      test("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      ignore("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
+      test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
     }
     val repD = new MyReporter
     d.run(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
@@ -288,8 +288,8 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      test("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      test("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+      test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
     val repE = new MyReporter
@@ -304,8 +304,8 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      ignore("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      test("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      ignore("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+      test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
     val repF = new MyReporter
@@ -320,8 +320,8 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      test("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      test("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+      test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       ignore("test the other") { theTestTheOtherCalled = true }
     }
     val repG = new MyReporter
@@ -336,8 +336,8 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      test("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      test("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+      test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
     val repH = new MyReporter
@@ -351,8 +351,8 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      test("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      test("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      test("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+      test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
     val repI = new MyReporter
@@ -366,8 +366,8 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      ignore("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      ignore("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      ignore("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+      ignore("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
     val repJ = new MyReporter
@@ -381,8 +381,8 @@ class FunSuiteSuite extends Suite {
       var theTestThisCalled = false
       var theTestThatCalled = false
       var theTestTheOtherCalled = false
-      ignore("test this", mygroups.SlowAsMolasses, mygroups.FastAsLight) { theTestThisCalled = true }
-      ignore("test that", mygroups.SlowAsMolasses) { theTestThatCalled = true }
+      ignore("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+      ignore("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       ignore("test the other") { theTestTheOtherCalled = true }
     }
     val repK = new MyReporter
@@ -408,15 +408,15 @@ class FunSuiteSuite extends Suite {
     assert(b.expectedTestCount(Set(), Set()) === 1)
 
     val c = new FunSuite {
-      test("test this", mygroups.FastAsLight) {}
+      test("test this", mytags.FastAsLight) {}
       test("test that") {}
     }
     assert(c.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
     assert(c.expectedTestCount(Set(), Set("org.scalatest.FastAsLight")) === 1)
 
     val d = new FunSuite {
-      test("test this", mygroups.FastAsLight, mygroups.SlowAsMolasses) {}
-      test("test that", mygroups.SlowAsMolasses) {}
+      test("test this", mytags.FastAsLight, mytags.SlowAsMolasses) {}
+      test("test that", mytags.SlowAsMolasses) {}
       test("test the other thing") {}
     }
     assert(d.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
@@ -425,8 +425,8 @@ class FunSuiteSuite extends Suite {
     assert(d.expectedTestCount(Set(), Set()) === 3)
 
     val e = new FunSuite {
-      test("test this", mygroups.FastAsLight, mygroups.SlowAsMolasses) {}
-      test("test that", mygroups.SlowAsMolasses) {}
+      test("test this", mytags.FastAsLight, mytags.SlowAsMolasses) {}
+      test("test that", mytags.SlowAsMolasses) {}
       ignore("test the other thing") {}
     }
     assert(e.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
@@ -443,7 +443,7 @@ class FunSuiteSuite extends Suite {
     val a = new FunSuite {
       test("test not in a group") {}
     }
-    assert(a.groups.keySet.size === 0)
+    assert(a.tags.keySet.size === 0)
   }
 
   def testThatTestFunctionsThatResultInNonUnitAreRegistered() {
@@ -453,7 +453,7 @@ class FunSuiteSuite extends Suite {
     }
     assert(a.expectedTestCount(Set(), Set()) === 2)
     assert(a.testNames.size === 2)
-    assert(a.groups.keySet.size === 0)
+    assert(a.tags.keySet.size === 0)
   }
 
   def testThatTestNameCantBeReused() {
@@ -655,7 +655,7 @@ class FunSuiteSuite extends Suite {
 
     class MySuite extends FunSuite {
       test("this test should blow up") {
-        test("is in the wrong place also", mygroups.SlowAsMolasses) {
+        test("is in the wrong place also", mytags.SlowAsMolasses) {
           assert(1 === 1)
         }
       }
@@ -709,7 +709,7 @@ class FunSuiteSuite extends Suite {
 
     class MySuite extends FunSuite {
       test("this test should blow up") {
-        ignore("is in the wrong place also", mygroups.SlowAsMolasses) {
+        ignore("is in the wrong place also", mytags.SlowAsMolasses) {
           assert(1 === 1)
         }
       }

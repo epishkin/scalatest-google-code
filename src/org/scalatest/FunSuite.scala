@@ -642,19 +642,20 @@ trait FunSuite extends Suite { thisSuite =>
    *
    * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param goodies a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>goodies</code>
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any], tracker: Tracker) {
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopRequested == null || goodies == null)
+    if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
+    val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
 
-    // Create a Rerunner if the Spec has a no-arg constructor
+    // Create a Rerunner if the FunSuite has a no-arg constructor
     val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
 
     val rerunnable =
@@ -719,7 +720,7 @@ trait FunSuite extends Suite { thisSuite =>
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
-  override def groups: Map[String, Set[String]] = atomic.get.groupsMap
+  override def tags: Map[String, Set[String]] = atomic.get.groupsMap
 
   private[scalatest] override def getTestNameForReport(testName: String) = {
 
@@ -729,21 +730,23 @@ trait FunSuite extends Suite { thisSuite =>
     suiteName + ", " + testName
   }
   
-  protected override def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
-    if (stopRequested == null)
-      throw new NullPointerException("stopRequested was null")
+    if (stopper == null)
+      throw new NullPointerException("stopper was null")
     if (groupsToInclude == null)
       throw new NullPointerException("groupsToInclude was null")
     if (groupsToExclude == null)
       throw new NullPointerException("groupsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
+
+    val stopRequested = stopper
 
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
     // so that exceptions are caught and transformed
@@ -760,11 +763,11 @@ trait FunSuite extends Suite { thisSuite =>
           node match {
             case Info(message) => info(message)
             case Test(tn, _) =>
-              if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
-                if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
+              if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
+                if (groupsToExclude.contains(IgnoreGroupName) && tags.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
                   report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
                 }
-                else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
+                else if ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
                   runTest(tn, report, stopRequested, goodies, tracker)
                 }
               }
@@ -774,8 +777,10 @@ trait FunSuite extends Suite { thisSuite =>
     }
   }
 
-  override def run(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    val stopRequested = stopper
 
     // Set the flag that indicates run has been invoked, which will disallow any further
     // invocations of "test" with an IllegalStateException.

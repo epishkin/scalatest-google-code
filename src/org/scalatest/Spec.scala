@@ -637,9 +637,10 @@ trait Spec extends Suite { thisSuite =>
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
-  override def groups: Map[String, Set[String]] = groupsMap
+  override def tags: Map[String, Set[String]] = groupsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
+    val stopRequested = stopper
     branch match {
       case desc @ Description(_, descriptionName, level) => {
 
@@ -677,13 +678,13 @@ trait Spec extends Suite { thisSuite =>
           val report = wrapReporterIfNecessary(reporter)
 
           val tn = ex.testName
-          if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** groups.getOrElse(tn, Set())).isEmpty)) {
-            if (groupsToExclude.contains(IgnoreGroupName) && groups.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
+          if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
+            if (groupsToExclude.contains(IgnoreGroupName) && tags.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
               val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
               report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
             }
-            else if ((groupsToExclude ** groups.getOrElse(tn, Set())).isEmpty) {
+            else if ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, report, stopRequested, goodies, tracker)
             }
           }
@@ -701,14 +702,14 @@ trait Spec extends Suite { thisSuite =>
    *
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param goodies a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, or <code>goodies</code>
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  override def runTest(testName: String, reporter: Reporter, stopRequested: Stopper, goodies: Map[String, Any], tracker: Tracker) {
+  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopRequested == null || goodies == null)
+    if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
     runningATest = true
@@ -791,7 +792,7 @@ trait Spec extends Suite { thisSuite =>
    * <li><code>testName</code> - the <code>String</code> value of the <code>testName</code> <code>Option</code> passed
    *   to this method</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>stopRequested</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
@@ -820,35 +821,37 @@ trait Spec extends Suite { thisSuite =>
    * <ul>
    * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>stopRequested</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
-   * @param stopRequested the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Spec</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Spec</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopRequested</code>, <code>groupsToInclude</code>,
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
-  override def runTests(testName: Option[String], reporter: Reporter, stopRequested: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any], tracker: Tracker) {
     
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
-    if (stopRequested == null)
-      throw new NullPointerException("stopRequested was null")
+    if (stopper == null)
+      throw new NullPointerException("stopper was null")
     if (groupsToInclude == null)
       throw new NullPointerException("groupsToInclude was null")
     if (groupsToExclude == null)
       throw new NullPointerException("groupsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
+
+    val stopRequested = stopper
 
     testName match {
       case None => runTestsInBranch(trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
