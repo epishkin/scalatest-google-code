@@ -796,7 +796,7 @@ import org.scalatest.tools.StandardOutReporter
  * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
  * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
  * trait's implementation, tags are indicated by annotations attached to the test method. To
- * create a tags, simply define a new Java annotation that extends the <code>org.scalatest.TagAnnotation</code> marker trait.
+ * create a tags, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
  * (Currently, for annotations to be
  * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
  * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
@@ -805,10 +805,12 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <pre>
  * import java.lang.annotation.*; 
+ * import org.scalatest.TagAnnotation
  * 
+ * @TagAnnotation
  * @Retention(RetentionPolicy.RUNTIME)
  * @Target({ElementType.METHOD, ElementType.TYPE})
- * public @interface SlowAsMolasses extends org.scalatest.TagAnnotation {}
+ * public @interface SlowAsMolasses {}
  * </pre>
  *
  * <p>
@@ -823,14 +825,22 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code>s called <code>groupsToInclude</code> and a <code>Set[String]</code> called
- * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is not defined, all tests will be run
- * except those those belonging to groups listed in the
- * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
- * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
+ * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is not defined, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is non-empty, only tests
+ * belonging to tags mentioned in <code>tagsToInclude</code>, and not mentioned in <code>tagsToExclude</code>,
  * will be run.
  * </p>
  *
+ * <p>
+ * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 0.9.6, when "groups" were renamed
+ * to "tags." In 0.9.6 and 0.9.7, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
+ * method. Any annotation on a <code>Suite</code> method will be considered a tag until 0.9.8, to give users time to add
+ * <code>TagAnnotation</code>s on any tag annotations they made prior to the 0.9.6 release. From 0.9.8 onward, only annotations
+ * themsleves annotatted by <code>TagAnnotation</code> will be considered tag annotations.</strong>
+ * </p>
+ * 
  * <p>
  * <strong>Ignored tests</strong>
  * </p>
@@ -1142,6 +1152,14 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   def tags: Map[String, Set[String]] = {
 
     def getTags(testName: String) =
+/* AFTER THE DEPRECATION CYCLE FOR GROUPS TO TAGS (0.9.8), REPLACE THE FOLLOWING FOR LOOP WITH THIS COMMENTED OUT ONE
+   THAT MAKES SURE ANNOTATIONS ARE TAGGED WITH TagAnnotation.
+      for {
+        a <- getMethodForTestName(testName).getDeclaredAnnotations
+        annotationClass = a.annotationType
+        if annotationClass.isAnnotationPresent(classOf[TagAnnotation])
+      } yield annotationClass.getName
+*/
       for (a <- getMethodForTestName(testName).getDeclaredAnnotations)
         yield a.annotationType.getName
 

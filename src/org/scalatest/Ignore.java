@@ -17,6 +17,7 @@ package org.scalatest;
 
 import java.lang.annotation.*; 
 
+@TagAnnotation
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface Ignore {
