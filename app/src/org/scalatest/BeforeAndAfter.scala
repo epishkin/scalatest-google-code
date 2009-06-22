@@ -75,7 +75,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait BeforeAndAfter extends ExecuteAndRun {
+trait BeforeAndAfter extends TwoRunMethods {
 
   this: Suite =>
   

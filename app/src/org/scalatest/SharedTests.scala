@@ -80,7 +80,7 @@ package org.scalatest
  * </p>
  *
  * <p>
- * For example, here the <code>nonEmptyStack</code> behavior function (here a behavior <em>method</em>) is defined in a trait along with another
+ * <a name="StackBehaviors">For</a> example, here the <code>nonEmptyStack</code> behavior function (here a behavior <em>method</em>) is defined in a trait along with another
  * method containing shared tests for non-full stacks:
  * </p>
  * 
