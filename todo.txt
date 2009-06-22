@@ -42,7 +42,7 @@ Do a trait for SequentialNestedSuiteExecution
 
 Do the fixture package for Suite, FunSuite, and Spec
 
-Make a Goodies trait for getting the Goodies into a test
+Make a GoodiesFixture trait for getting the goodies into a test
 
 Add the things for Property based testing displaying args nicely in the GUI (like empty strings should be "")
 
@@ -61,3 +61,8 @@ Add more overloaded methods to Informer that take optional throwable, formatter,
 Do an xml reporter and an html reporter
 
 Put optional colors on standard output or maybe PrintReporter ones.
+
+Add testsFor to FunSuite. Use same data structure as Spec. Otherwise SharedTests would be a pain. In FeatureSpec,
+will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to one level, but seems artificial.
+
+Selfless traitify PrivateMethodTester

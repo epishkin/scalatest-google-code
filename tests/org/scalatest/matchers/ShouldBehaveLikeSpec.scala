@@ -20,7 +20,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldBehaveLikeSpec extends Spec with ShouldMatchers with ShouldStackBehaviors with StackFixtureCreationMethods {
+class ShouldBehaveLikeSpec extends Spec with SharedTests with ShouldStackBehaviors with StackFixtureCreationMethods {
 
   def myFirstBehavior(i: Int) {
     it("This one is should blow up") {}
@@ -29,7 +29,7 @@ class ShouldBehaveLikeSpec extends Spec with ShouldMatchers with ShouldStackBeha
   describe("The 'should behave like' syntax should throw an exception inside an it clause") {
     it("the code in here should fail with an exception") {
       intercept[TestFailedException] {
-        1 should behave like myFirstBehavior
+        ensure (1) behaves like (myFirstBehavior)
       }
     }
   }
@@ -37,18 +37,18 @@ class ShouldBehaveLikeSpec extends Spec with ShouldMatchers with ShouldStackBeha
   // Checking for a specific size
   describe("The 'should behave like' syntax should work in a describe") {
 
-    stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
+    ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
 
     describe(", and in a nested describe") {
 
-      stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
+      ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
     }
   }
 
   def myBehavior(i: Int) {
     it("This one is solo") {}
   }
-  1 should behave like myBehavior
+  ensure (1) behaves like (myBehavior)
 
   // TODO: Make these into real tests. I looked at it and heck they work. So I can indeed put describe clauses in
   // the shared behaviors. Cool.
@@ -58,9 +58,9 @@ class ShouldBehaveLikeSpec extends Spec with ShouldMatchers with ShouldStackBeha
     }
   }
 
-  1 should behave like myNestedBehavior
+  ensure (1) behaves like (myNestedBehavior)
   describe("And outer describe...") {
-    1 should behave like myNestedBehavior
+    ensure (1) behaves like (myNestedBehavior)
   }
 
 /* Correct, none of these compiled
