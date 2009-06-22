@@ -1867,14 +1867,6 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  private[scalatest] class BehaveWord
-
-  /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL.
-   *
-   * @author Bill Venners
-   */
   class ContainWord {
 
     /**
@@ -5643,8 +5635,6 @@ trait Matchers extends Assertions { matchers =>
    */
   val not = new NotWord
 
-  private[scalatest] val behave = new BehaveWord
-
   /**
    * This method enables syntax such as the following:
    *
@@ -5654,18 +5644,6 @@ trait Matchers extends Assertions { matchers =>
    * </pre>
    */
   val be = new BeWord
-
-  /**
-   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
-   * the matchers DSL.
-   *
-   * @author Bill Venners
-   */
-  private [scalatest] class ResultOfBehaveWord[T](left: T) {
-    def like(fun: (T) => Unit) {
-      fun(left)
-    }
-  }
 
 /*
     In HaveWord's methods key, value, length, and size, I can give type parameters.

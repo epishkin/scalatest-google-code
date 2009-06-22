@@ -60,7 +60,7 @@ trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>
   }
 }
 
-class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreationMethods with ShouldStackBehaviors {
+class ShouldStackSpec extends Spec with ShouldMatchers with SharedTests with StackFixtureCreationMethods with ShouldStackBehaviors {
 
   describe("A Stack") {
 
@@ -84,13 +84,13 @@ class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreation
     }
 
     describe("(with one item)") {
-      stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
-      stackWithOneItem should behave like (nonFullStack)
+      ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+      ensure (stackWithOneItem) behaves like (nonFullStack)
     }
     
     describe("(with one item less than capacity)") {
-      stackWithOneItemLessThanCapacity should behave like (nonEmptyStack(lastValuePushed))
-      stackWithOneItemLessThanCapacity should behave like (nonFullStack)
+      ensure (stackWithOneItemLessThanCapacity) behaves like (nonEmptyStack(lastValuePushed))
+      ensure (stackWithOneItemLessThanCapacity) behaves like (nonFullStack)
     }
 
     describe("(full)") {
@@ -100,7 +100,7 @@ class ShouldStackSpec extends Spec with ShouldMatchers with StackFixtureCreation
         fullStack should be (full)
       }
       
-      fullStack should behave like nonEmptyStack(lastValuePushed)
+      ensure (fullStack) behaves like (nonEmptyStack(lastValuePushed))
 
       it("should complain on a push") {
         intercept[IllegalStateException] {

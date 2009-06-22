@@ -18,31 +18,6 @@ package org.scalatest.matchers
 import scala.reflect.Manifest
 import Helper.newTestFailedException
 
-/* PUT IN a ShouldBehaveLike trait
- * <h2>Shared behaviors</h2>
- *
- * <p>
- * <code>ShouldMatchers</code> provides syntax that allows you to import <em>shared behavior</em> into a <code>FunSuite</code> or <code>Spec</code>,
- * where shared
- * behavior consists of tests that you want to run multiple times with different instances of certain fixture objects each time. For example, you may have
- * a set of tests that verify that given <code>Stack</code> object behaves like a non-empty stack. Rather than duplicating the code of
- * these tests for different instances of <code>Stack</code>, you can factor out the commonality into a method or function
- * and import those tests when needed. If you define a shared behavior method named <code>nonEmptyStack</code>, and want to run those
- * tests on a <code>Stack</code> that has one item, the object referred to <code>lastValuePushed</code>, you could write:
- * </p>
- *
- * <pre>
- * stackWithOneItem should behave like (nonEmptyStack(lastValuePushed))
- * </pre>
- *
- * <p>
- * This <code>behave like</code> works only as shown here. It can't be used with <code>not</code> or combined with <code>and</code>
- * or <code>or</code>. For more information on shared behavior, see the documentation for traits <a href="FunSuite.html"><code>FunSuite</code></a> and
- * <a href="Spec.html"><code>Spec</code></a>.
- * </p>
- *
-*/
-
 /**
  * Trait that provides a domain specific language (DSL) for expressing assertions in tests
  * using the word <code>should</code>. (If you prefer the word <code>must</code>, you can alternatively
@@ -853,8 +828,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -894,9 +867,6 @@ trait ShouldMatchers extends Matchers {
     def should(rightMatcher: Matcher[A]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
     /**
      * This method enables syntax such as the following:
@@ -957,9 +927,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1018,9 +985,6 @@ trait ShouldMatchers extends Matchers {
     def should(rightMatcher: Matcher[String]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
     /**
      * This method enables syntax such as the following:
@@ -1130,8 +1094,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Double](left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1169,8 +1131,6 @@ trait ShouldMatchers extends Matchers {
     def should(rightMatcher: Matcher[Float]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Float](left)
 
     /**
      * This method enables syntax such as the following:
@@ -1210,8 +1170,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Long](left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1249,8 +1207,6 @@ trait ShouldMatchers extends Matchers {
     def should(rightMatcher: Matcher[Int]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Int](left)
 
     /**
      * This method enables syntax such as the following:
@@ -1290,8 +1246,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Short](left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1330,8 +1284,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Byte](left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1369,9 +1321,6 @@ trait ShouldMatchers extends Matchers {
     def should(rightMatcher: Matcher[scala.collection.Map[K, V]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
     /**
      * This method enables syntax such as the following:
@@ -1445,9 +1394,6 @@ trait ShouldMatchers extends Matchers {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1505,9 +1451,6 @@ trait ShouldMatchers extends Matchers {
      */
     def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] =
       new ResultOfHaveWordForCollection(left, true)
-
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
     /**
      * This method enables syntax such as the following:
@@ -1567,9 +1510,6 @@ trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaCollection[T] =
       new ResultOfHaveWordForJavaCollection(left, true)
 
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1616,8 +1556,6 @@ trait ShouldMatchers extends Matchers {
     def should(rightMatcher: Matcher[java.util.Map[K, V]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
     /**
      * This method enables syntax such as the following:
@@ -1702,9 +1640,6 @@ trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForSeq[T] =
       new ResultOfHaveWordForSeq(left, true)
 
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
-
 /* TODO: This is what I think it should be. But it was the AnyRef one, or maybe even not that.
     def should(notWord: NotWord): ResultOfNotWordForSeq[T, List[T]] =
       new ResultOfNotWordForSeq(left, false)
@@ -1768,8 +1703,6 @@ trait ShouldMatchers extends Matchers {
       new ResultOfHaveWordForSeq(left, true)
     }
 
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[Array[T]](left)
-
     /**
      * This method enables syntax such as the following:
      *
@@ -1808,9 +1741,6 @@ trait ShouldMatchers extends Matchers {
     def should(rightMatcher: Matcher[List[T]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
-
-    // This one supports it should behave like
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord(left)
 
     /**
      * This method enables syntax such as the following:
@@ -1881,9 +1811,6 @@ trait ShouldMatchers extends Matchers {
     def should(haveWord: HaveWord): ResultOfHaveWordForJavaList[T] = {
       new ResultOfHaveWordForJavaList(left, true)
     }
-
-    // TODO: Check all the type parameters for ResultOfBehaveWord. Do some of them say T still?
-    private[scalatest] def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[java.util.List[T]](left)
 
     /**
      * This method enables syntax such as the following:
@@ -2176,8 +2103,6 @@ THIS DOESN'T WORK BECAUSE...
       }
     }
 
-    // This one supports it should behave like
-    def should(behaveWord: BehaveWord) = new ResultOfBehaveWord[T](leftOperand)
     // I don't think there's a be on Any, because a (symbol) and an (symbol), pluse
     // theSameInstanceAs only work on AnyRefs
     // def should(beWord: BeWord): ResultOfBeWord[T] = new ResultOfBeWord(leftOperand, true)
