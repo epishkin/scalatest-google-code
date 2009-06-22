@@ -16,11 +16,7 @@ Create a command line param that takes regular "classpath" style runpath, so pat
 
 Add durations to the places that take them GEORGE?
 
-Change the name of groups to tags everywhere, can deprecate groups for two releases
-
 add the 'it should/must ""/describe a ""/describe it ""' style to Spec
-
-make tag annotations on Suite require extension of TagAnnotation
 
 add pending functionality to Suite
 
