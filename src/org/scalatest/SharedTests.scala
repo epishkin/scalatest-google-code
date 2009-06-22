@@ -327,34 +327,117 @@ package org.scalatest
  */
 trait SharedTests { this: TestRegistration =>
 
+  /**
+   * This class is part of the ScalaTest shared tests DSL. Please see the documentation for <a href="SharedTests.html"><code>SharedTests</code></a> for an overview of the shared tests DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfLikeApplication[T](val function: (T) => Unit)
 
+    /**
+     * This method enables the following syntax, where, for example, <code>badBook</code> is of type <code>Book</code> and <code>goodRead</code>
+     * is a <code>BePropertyMatcher[Book]</code>:
+     *
+     * <pre>
+     * badBook should not be a (goodRead)
+     *                         ^
+     * </pre>
+     */
   def like[T](function: (T) => Unit): ResultOfLikeApplication[T] = new ResultOfLikeApplication(function)
 
+  /**
+   * This class is part of the ScalaTest shared tests DSL. Please see the documentation for <a href="SharedTests.html"><code>SharedTests</code></a> for an overview of the shared tests DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfEnsureWordApplication[T](left: T) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+     *                           ^
+     * </pre>
+     */
     def behaves(resultOfLikeApplication: ResultOfLikeApplication[T]) {
       resultOfLikeApplication.function(left)
     }
   }
 
+  /**
+   * This class is part of the ScalaTest shared tests DSL. Please see the documentation for <a href="SharedTests.html"><code>SharedTests</code></a> for an overview of the shared tests DSL.
+   *
+   * @author Bill Venners
+   */
   class ResultOfEnsureItBehaves {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+     *                                   ^
+     * </pre>
+     */
     def like(function: () => Unit) {
       function()
     }
   }
 
+  /**
+   * This class is part of the ScalaTest shared tests DSL. Please see the documentation for <a href="SharedTests.html"><code>SharedTests</code></a> for an overview of the shared tests DSL.
+   *
+   * @author Bill Venners
+   */
   class BehavesWord
 
+  /**
+   * This class is part of the ScalaTest shared tests DSL. Please see the documentation for <a href="SharedTests.html"><code>SharedTests</code></a> for an overview of the shared tests DSL.
+   *
+   * @author Bill Venners
+   */
   class EnsureWord {
 
-    // ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+     *        ^
+     * </pre>
+     */
     def apply[T](left: T): ResultOfEnsureWordApplication[T] = new ResultOfEnsureWordApplication(left)
 
-    // ensure it behaves like (nonEmptyStack(lastValuePushed))
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * ensure it behaves like (nonEmptyStack(lastValuePushed))
+     *        ^
+     * </pre>
+     */
     def it(behaves: BehavesWord): ResultOfEnsureItBehaves = new ResultOfEnsureItBehaves
   }
 
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+   * ^
+   * </pre>
+   */
   val ensure = new EnsureWord
+
+  /**
+   * This field enables the following syntax: 
+   *
+   * <pre>
+   * ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+   *                           ^
+   * </pre>
+   */
   val behaves = new BehavesWord
 }
 
