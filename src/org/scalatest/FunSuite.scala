@@ -476,7 +476,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait FunSuite extends Suite { thisSuite =>
+trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
