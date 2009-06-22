@@ -359,20 +359,20 @@ import org.scalatest.events._
  * A <code>Spec</code>'s tests may be classified into named <em>groups</em>.
  * As with any suite, when executing a <code>Spec</code>, groups of tests can
  * optionally be included and/or excluded. To place <code>Spec</code> tests into
- * groups, you pass objects that extend abstract class <code>org.scalatest.Group</code> to the methods
- * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Group</code> takes one parameter,
+ * groups, you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
+ * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
  * a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
  * create matching groups for <code>Spec</code>s like this:
  * </p>
  * <pre>
- * import org.scalatest.Group
+ * import org.scalatest.Tag
  *
- * object SlowTest extends Group("com.mycompany.groups.SlowTest")
- * object DBTest extends Group("com.mycompany.groups.DBTest")
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DBTest extends Tag("com.mycompany.groups.DBTest")
  * </pre>
  * <p>
  * Given these definitions, you could place <code>Spec</code> tests into groups like this:
@@ -479,7 +479,7 @@ import org.scalatest.events._
  */
 trait Spec extends Suite { thisSuite =>
 
-  private val IgnoreGroupName = "org.scalatest.Ignore"
+  private val IgnoreTagName = "org.scalatest.Ignore"
 
   private val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
@@ -516,20 +516,20 @@ trait Spec extends Suite { thisSuite =>
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
-   * @param testGroups the optional list of groups to which this test belongs
+   * @param testTags the optional list of groups to which this test belongs
    * @param testFun the test function
    * @throws TestFailedException if a test with the same name has been registered previously
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
-  protected def it(specText: String, testGroups: Group*)(testFun: => Unit) {
+  protected def it(specText: String, testTags: Tag*)(testFun: => Unit) {
     if (runningATest)
       throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     if (specText == null)
       throw new NullPointerException("specText was null")
-    if (testGroups.exists(_ == null))
+    if (testTags.exists(_ == null))
       throw new NullPointerException("a test group was null")
     val testName = registerExample(specText, testFun)
-    val groupNames = Set[String]() ++ testGroups.map(_.name)
+    val groupNames = Set[String]() ++ testTags.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
   }
@@ -553,7 +553,7 @@ trait Spec extends Suite { thisSuite =>
   protected def it(specText: String)(testFun: => Unit) {
     if (runningATest)
       throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
-    it(specText, Array[Group](): _*)(testFun)
+    it(specText, Array[Tag](): _*)(testFun)
   }
 
   /**
@@ -568,21 +568,21 @@ trait Spec extends Suite { thisSuite =>
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
-   * @param testGroups the optional list of groups to which this test belongs
+   * @param testTags the optional list of groups to which this test belongs
    * @param testFun the test function
    * @throws TestFailedException if a test with the same name has been registered previously
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
-  protected def ignore(specText: String, testGroups: Group*)(testFun: => Unit) {
+  protected def ignore(specText: String, testTags: Tag*)(testFun: => Unit) {
     if (runningATest)
       throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
-    if (testGroups.exists(_ == null))
+    if (testTags.exists(_ == null))
       throw new NullPointerException("a test group was null")
     val testName = registerExample(specText, testFun)
-    val groupNames = Set[String]() ++ testGroups.map(_.name)
-    groupsMap += (testName -> (groupNames + IgnoreGroupName))
+    val groupNames = Set[String]() ++ testTags.map(_.name)
+    groupsMap += (testName -> (groupNames + IgnoreTagName))
   }
 
   /**
@@ -604,7 +604,7 @@ trait Spec extends Suite { thisSuite =>
   protected def ignore(specText: String)(testFun: => Unit) {
     if (runningATest)
       throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
-    ignore(specText, Array[Group](): _*)(testFun)
+    ignore(specText, Array[Tag](): _*)(testFun)
   }
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
@@ -633,7 +633,7 @@ trait Spec extends Suite { thisSuite =>
    * the <code>Set</code> of test names that belong to each group. If this <code>FunSuite</code> contains no groups, this method returns an empty <code>Map</code>.
    *
    * <p>
-   * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
+   * This trait's implementation returns groups that were passed as strings contained in <code>Tag</code> objects passed to 
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
@@ -679,7 +679,7 @@ trait Spec extends Suite { thisSuite =>
 
           val tn = ex.testName
           if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-            if (groupsToExclude.contains(IgnoreGroupName) && tags.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
+            if (groupsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
               val exampleSucceededIcon = Resources("exampleSucceededIconChar")
               val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
               report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
@@ -960,7 +960,7 @@ Or just the first letter upper case?
 Nah, that's too subtle
 
 I can have an @Pending annotation for Suite, and this can be when
-I make a requirement that the group annotations must extend GroupAnnotation
+I make a requirement that the group annotations must extend TagAnnotation
 interface.
 
 class Spec {

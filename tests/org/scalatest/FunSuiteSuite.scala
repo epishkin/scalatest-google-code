@@ -17,11 +17,11 @@ package org.scalatest
 
 import org.scalatest.events._
 
-// Group classes used in tests
+// Tag classes used in tests
 package mytags {
-  object SlowAsMolasses extends Group("org.scalatest.SlowAsMolasses")
-  object FastAsLight extends Group("org.scalatest.FastAsLight")
-  object WeakAsAKitten extends Group("org.scalatest.WeakAsAKitten")
+  object SlowAsMolasses extends Tag("org.scalatest.SlowAsMolasses")
+  object FastAsLight extends Tag("org.scalatest.FastAsLight")
+  object WeakAsAKitten extends Tag("org.scalatest.WeakAsAKitten")
 }
 
 class FunSuiteSuite extends Suite {
@@ -79,7 +79,7 @@ class FunSuiteSuite extends Suite {
     }
   }
 
-  def testTestGroups() {
+  def testTestTags() {
     
     val a = new FunSuite {
       ignore("test this") {}
@@ -438,7 +438,7 @@ class FunSuiteSuite extends Suite {
     assert(f.expectedTestCount(Set(), Set()) === 10)
   }
 
-  def testThatTestMethodsWithNoGroupsDontShowUpInGroupsMap() {
+  def testThatTestMethodsWithNoTagsDontShowUpInTagsMap() {
     
     val a = new FunSuite {
       test("test not in a group") {}
@@ -639,7 +639,7 @@ class FunSuiteSuite extends Suite {
     assert(testFailedAsExpected)
   }
 
-  def callingTestFromWithinATestWithGroupsClauseResultsInATestFailedErrorAtRuntime() {
+  def callingTestFromWithinATestWithTagsClauseResultsInATestFailedErrorAtRuntime() {
     
     var testFailedAsExpected = false
     class MyReporter extends Reporter {
@@ -693,7 +693,7 @@ class FunSuiteSuite extends Suite {
     assert(testFailedAsExpected)
   }
 
-  def callingIgnoreWithGroupsFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
+  def callingIgnoreWithTagsFromWithinATestClauseResultsInATestFailedErrorAtRuntime() {
     
     var testFailedAsExpected = false
     class MyReporter extends Reporter {

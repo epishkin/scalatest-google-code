@@ -17,12 +17,12 @@ package org.scalatest
 
 /**
  * Abstract class whose subclasses can be passed to <code>FunSuite</code> and <code>Spec</code> test
- * registration methods to place tests into groups. For example, if you define:
+ * registration methods to tag tests. For example, if you define:
  * <pre>
- * object SlowTest extends Group("SlowTest")
+ * object SlowTest extends Tag("SlowTest")
  * </pre>
  *
- * then you can place a test into the <code>SlowTest</code> group like this:
+ * then you can tag a test as a <code>SlowTest</code> in a <code>FunSuite</code> like this:
  * <pre>
  * import org.scalatest.FunSuite
  *
@@ -49,16 +49,23 @@ package org.scalatest
  * }
  * </pre>
 
- * If you have created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
- * defined a Java annotation interface with fully qualified name, <code>com.mycompany.groups.SlowTest</code>, then you could
+ * If you have created Java annotation interfaces for use as tag names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you may want to use group names on your <code>FunSuite</code>s and <code>Spec</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interface to the <code>Tag</code> constructor. For example, if you've
+ * defined a Java annotation interface with fully qualified name, <code>com.mycompany.testtags.SlowTest</code>, then you could
  * create a matching group for <code>FunSuite</code>s like this:
  * <pre>
- * object SlowTest extends Group("com.mycompany.groups.SlowTest")
+ * object SlowTest extends Tag("com.mycompany.testtags.SlowTest")
  * </pre>
  *
  * @author Bill Venners
  */
-abstract class Group(val name: String)
+abstract class Tag(val name: String)
+
+/**
+ * <strong>Group has been deprecated. It will be removed in a future release of ScalaTest. Please change any
+ * <code>Group</code> subclasses you have created so that they extend class <code>Tag</code> directly instead.</strong>
+ */
+@deprecated
+abstract class Group(name: String) extends Tag(name)
 

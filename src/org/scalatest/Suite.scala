@@ -1153,6 +1153,12 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
   }
 
   /**
+   * <strong>The <code>groups</code> methods has been deprecated and will be removed in a future version of ScalaTest.
+   * Please call <code>tags</code> instead.</strong>
+   */
+  def groups: Map[String, Set[String]] = tags
+
+  /**
   * An immutable <code>Set</code> of test names. If this <code>Suite</code> contains no tests, this method returns an empty <code>Set</code>.
   *
   * <p>
