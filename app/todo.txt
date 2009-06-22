@@ -10,8 +10,6 @@ ask folks about TestCase/Suite compatibility (check about testNames, because if 
 
 do I put Ordinal in the scalatest package, or what?
 
-Move the PrintReporter and StandardOutReporter to the tools package.
-
 Complete JUnitSuite, JUnitRunner GEORGE?
 Do JUnitWrapperSuite and the command line param GEORGE?
 Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?

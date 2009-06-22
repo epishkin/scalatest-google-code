@@ -326,19 +326,19 @@ import org.scalatest.events._
  * A <code>FunSuite</code>'s tests may be classified into named <em>groups</em>.
  * As with any suite, when executing a <code>FunSuite</code>, groups of tests can
  * optionally be included and/or excluded. To place <code>FunSuite</code> tests into
- * groups, you pass objects that extend abstract class <code>org.scalatest.Group</code> to methods
- * that register tests. Class <code>Group</code> takes one parameter, a string name.  If you have
+ * groups, you pass objects that extend abstract class <code>org.scalatest.Tag</code> to methods
+ * that register tests. Class <code>Tag</code> takes one parameter, a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>FunSuite</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Group</code> constructor. For example, if you've
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
  * create matching groups for <code>FunSuite</code>s like this:
  * </p>
  * <pre>
- * import org.scalatest.Group
+ * import org.scalatest.Tag
  *
- * object SlowTest extends Group("com.mycompany.groups.SlowTest")
- * object DBTest extends Group("com.mycompany.groups.DBTest")
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DBTest extends Tag("com.mycompany.groups.DBTest")
  * </pre>
  * <p>
  * Given these definitions, you could place <code>FunSuite</code> tests into groups like this:
@@ -478,7 +478,7 @@ import org.scalatest.events._
  */
 trait FunSuite extends Suite { thisSuite =>
 
-  private val IgnoreGroupName = "org.scalatest.Ignore"
+  private val IgnoreTagName = "org.scalatest.Ignore"
 
   private abstract class FunNode
   private case class Test(testName: String, testFunction: () => Unit) extends FunNode
@@ -571,7 +571,7 @@ trait FunSuite extends Suite { thisSuite =>
      *
      * @throws TestFailedException if <code>testName</code> had been registered previously
      */
-  protected def test(testName: String, testGroups: Group*)(f: => Unit) {
+  protected def test(testName: String, testTags: Tag*)(f: => Unit) {
 
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
@@ -587,7 +587,7 @@ trait FunSuite extends Suite { thisSuite =>
     testsMap += (testName -> testNode)
     testNamesList ::= testName
     doList ::= testNode
-    val groupNames = Set[String]() ++ testGroups.map(_.name)
+    val groupNames = Set[String]() ++ testTags.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
@@ -604,7 +604,7 @@ trait FunSuite extends Suite { thisSuite =>
    *
    * @throws TestFailedException if <code>testName</code> had been registered previously
    */
-  protected def ignore(testName: String, testGroups: Group*)(f: => Unit) {
+  protected def ignore(testName: String, testTags: Tag*)(f: => Unit) {
 
     val oldBundle = atomic.get
     val (_, _, _, _, runHasBeenInvoked) = oldBundle.unpack
@@ -617,8 +617,8 @@ trait FunSuite extends Suite { thisSuite =>
     val oldBundle2 = atomic.get
     var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvokedFlag) = oldBundle2.unpack
 
-    val groupNames = Set[String]() ++ testGroups.map(_.name)
-    groupsMap += (testName -> (groupNames + IgnoreGroupName))
+    val groupNames = Set[String]() ++ testTags.map(_.name)
+    groupsMap += (testName -> (groupNames + IgnoreTagName))
 
     updateAtomic(oldBundle2, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvokedFlag))
   }
@@ -716,7 +716,7 @@ trait FunSuite extends Suite { thisSuite =>
    * the <code>Set</code> of test names that belong to each group. If this <code>FunSuite</code> contains no groups, this method returns an empty <code>Map</code>.
    *
    * <p>
-   * This trait's implementation returns groups that were passed as strings contained in <code>Group</code> objects passed to 
+   * This trait's implementation returns groups that were passed as strings contained in <code>Tag</code> objects passed to 
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
@@ -764,7 +764,7 @@ trait FunSuite extends Suite { thisSuite =>
             case Info(message) => info(message)
             case Test(tn, _) =>
               if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-                if (groupsToExclude.contains(IgnoreGroupName) && tags.getOrElse(tn, Set()).contains(IgnoreGroupName)) {
+                if (groupsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
                   report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
                 }
                 else if ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
