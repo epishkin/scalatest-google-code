@@ -1007,7 +1007,7 @@ import org.scalatest.tools.StandardOutReporter
  * @author Bill Venners
  */
 @serializable
-trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
+trait Suite extends Assertions with TwoRunMethods { thisSuite =>
 
   private val TestMethodPrefix = "test"
   private val InformerInParens = "(Informer)"
@@ -1382,6 +1382,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
    * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    *
@@ -1457,6 +1458,7 @@ trait Suite extends Assertions with ExecuteAndRun { thisSuite =>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */

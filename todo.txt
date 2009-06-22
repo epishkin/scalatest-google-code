@@ -31,7 +31,7 @@ up in those signatures anymore, I don't think, because Tracker does.
 
 ask folks about the beforeAll and afterAll in BeforeAndAfter
 
-make ShouldBehaveLike and MustBehaveLike traits
+Add more sugar forms in SharedTests.
 Drop ExecuteAndRun if it can indeed be done away with after getting ShouldBehaveLike in place.
 
 Do the OneInstancePerTest and ConcurrentTestExecution traits
