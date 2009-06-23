@@ -279,70 +279,70 @@ class RunnerSuite() extends Suite {
 
   def testParseReporterArgsIntoSpecs() {
     intercept[NullPointerException] {
-      Runner.parseReporterArgsIntoSpecs(null)
+      Runner.parseReporterArgsIntoConfigurations(null)
     }
     intercept[NullPointerException] {
-      Runner.parseReporterArgsIntoSpecs(List("Hello", null, "World"))
+      Runner.parseReporterArgsIntoConfigurations(List("Hello", null, "World"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("Hello", "-", "World"))
+      Runner.parseReporterArgsIntoConfigurations(List("Hello", "-", "World"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("Hello", "", "World"))
+      Runner.parseReporterArgsIntoConfigurations(List("Hello", "", "World"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("-g", "-x", "-o"))
+      Runner.parseReporterArgsIntoConfigurations(List("-g", "-x", "-o"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("Hello", " there", " world!"))
+      Runner.parseReporterArgsIntoConfigurations(List("Hello", " there", " world!"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("-g", "-o", "-g", "-e"))
+      Runner.parseReporterArgsIntoConfigurations(List("-g", "-o", "-g", "-e"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("-o", "-o", "-g", "-e"))
+      Runner.parseReporterArgsIntoConfigurations(List("-o", "-o", "-g", "-e"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("-e", "-o", "-g", "-e"))
+      Runner.parseReporterArgsIntoConfigurations(List("-e", "-o", "-g", "-e"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("-f")) // Can't have -f last, because need a file name
+      Runner.parseReporterArgsIntoConfigurations(List("-f")) // Can't have -f last, because need a file name
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoSpecs(List("-r")) // Can't have -r last, because need a reporter class
+      Runner.parseReporterArgsIntoConfigurations(List("-r")) // Can't have -r last, because need a reporter class
     }
-    expect(new ReporterSpecs(None, Nil, None, None, Nil)) {
-      Runner.parseReporterArgsIntoSpecs(Nil)
+    expect(new ReporterConfigurations(None, Nil, None, None, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(Nil)
     }
-    expect(new ReporterSpecs(Some(new GraphicReporterSpec(ReporterOpts.Set32(0))), Nil, None, None, Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-g"))
+    expect(new ReporterConfigurations(Some(new GraphicReporterConfiguration(ReporterOpts.Set32(0))), Nil, None, None, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-g"))
     }
-    expect(new ReporterSpecs(Some(new GraphicReporterSpec(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32))), Nil, None, None, Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-gF"))
+    expect(new ReporterConfigurations(Some(new GraphicReporterConfiguration(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32))), Nil, None, None, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-gF"))
     }
-    expect(new ReporterSpecs(None, Nil, Some(new StandardOutReporterSpec(ReporterOpts.Set32(0))), None, Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-o"))
+    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(ReporterOpts.Set32(0))), None, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-o"))
     }
-    expect(new ReporterSpecs(None, Nil, Some(new StandardOutReporterSpec(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32))), None, Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-oF"))
+    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32))), None, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-oF"))
     }
-    expect(new ReporterSpecs(None, Nil, None, Some(new StandardErrReporterSpec(ReporterOpts.Set32(0))), Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-e"))
+    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(ReporterOpts.Set32(0))), Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-e"))
     }
-    expect(new ReporterSpecs(None, Nil, None, Some(new StandardErrReporterSpec(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32))), Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-eF"))
+    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32))), Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-eF"))
     }
-    expect(new ReporterSpecs(None, List(new FileReporterSpec(ReporterOpts.Set32(0), "theFilename")), None, None, Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-f", "theFilename"))
+    expect(new ReporterConfigurations(None, List(new FileReporterConfiguration(ReporterOpts.Set32(0), "theFilename")), None, None, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-f", "theFilename"))
     }
-    expect(new ReporterSpecs(None, List(new FileReporterSpec(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32), "theFilename")), None, None, Nil)) {
-      Runner.parseReporterArgsIntoSpecs(List("-fF", "theFilename"))
+    expect(new ReporterConfigurations(None, List(new FileReporterConfiguration(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32), "theFilename")), None, None, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-fF", "theFilename"))
     }
-    expect(new ReporterSpecs(None, Nil, None, None, List(new CustomReporterSpec(ReporterOpts.Set32(0), "the.reporter.Class")))) {
-      Runner.parseReporterArgsIntoSpecs(List("-r", "the.reporter.Class"))
+    expect(new ReporterConfigurations(None, Nil, None, None, List(new CustomReporterConfiguration(ReporterOpts.Set32(0), "the.reporter.Class")))) {
+      Runner.parseReporterArgsIntoConfigurations(List("-r", "the.reporter.Class"))
     }
-    expect(new ReporterSpecs(None, Nil, None, None, List(new CustomReporterSpec(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32), "the.reporter.Class")))) {
-      Runner.parseReporterArgsIntoSpecs(List("-rF", "the.reporter.Class"))
+    expect(new ReporterConfigurations(None, Nil, None, None, List(new CustomReporterConfiguration(ReporterOpts.Set32(ReporterOpts.PresentTestFailed.mask32), "the.reporter.Class")))) {
+      Runner.parseReporterArgsIntoConfigurations(List("-rF", "the.reporter.Class"))
     }
   }
 

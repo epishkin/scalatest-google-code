@@ -33,7 +33,7 @@ class StackSpec extends Spec with StackFixtureCreationMethods with StackBehavior
         }
       }
 
-      it("should complain on pop") {
+      ignore("should complain on pop") {
         intercept[IllegalStateException] {
           emptyStack.pop
         }
@@ -65,5 +65,13 @@ class StackSpec extends Spec with StackFixtureCreationMethods with StackBehavior
       }
     }
   }
+
+/*
+override protected def runNestedSuites(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+                                goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+  throw new RuntimeException("Should abort the suite")
+}
+*/
+
 }
  
