@@ -1771,7 +1771,7 @@ private[scalatest] object Suite {
 
   private[scalatest] def formatterForSuiteStarting(suite: Suite): Option[Formatter] =
     suite match {
-      case spec: Spec => Some(IndentedText(suite.suiteName, suite.suiteName, 0))
+      case spec: Spec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
       case _ => None
     }
 

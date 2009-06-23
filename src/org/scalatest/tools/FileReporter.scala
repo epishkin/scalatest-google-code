@@ -31,5 +31,7 @@ import java.io.IOException
  *
  * @author Bill Venners
  */
-private[scalatest] class FileReporter(val filename: String) extends PrintReporter(filename) {
+private[scalatest] class FileReporter(val filename: String, verbose: Boolean, color: Boolean)
+    extends PrintReporter(filename, verbose, color) {
+  def this(filename: String) = this(filename, false, false)
 }

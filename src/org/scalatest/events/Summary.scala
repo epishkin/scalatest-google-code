@@ -9,7 +9,14 @@ package org.scalatest.events
  * @param testsPendingCount the number of tests that were reported as pending during the run
  */
 final case class Summary(testsSucceededCount: Int, testsFailedCount: Int, testsIgnoredCount: Int, testsPendingCount: Int,
-  suitesAbortedCount: Int)
+  suitesCompletedCount: Int, suitesAbortedCount: Int) {
+
+  /**
+   * The number of tests completed, which is the sum of the number of tests that succeeded and failed, excluding any
+   * tests that were ignored or reported as pending.
+   */
+  val testsCompletedCount = testsSucceededCount + testsFailedCount
+}
 
 /**
  * Companion object for case class <a href="Summary.html"><code>Summary</code></a>.
