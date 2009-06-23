@@ -35,10 +35,13 @@ private[scalatest] object ReporterOpts extends Enumeration {
     PresentInfoProvided,
     PresentRunStopped,
     PresentRunAborted,
-    PresentRunCompleted = Value
+    PresentRunCompleted,
+    Verbose,
+    Color = Value
 
-  // allOptions contains all possible ReporterOpts
-  val allOptions =
+  // allPresentationOpts contains all possible PresentX ReporterOpts. It doesn't
+  // include the command line options for verbose (V) or color (C)
+  val allPresentationOpts =
     new ReporterOpts.Set32(
       ReporterOpts.PresentRunStarting.mask32
       | ReporterOpts.PresentTestStarting.mask32

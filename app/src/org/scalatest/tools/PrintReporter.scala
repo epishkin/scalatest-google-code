@@ -26,6 +26,8 @@ import java.util.Iterator
 import java.util.Set
 import java.io.StringWriter
 import org.scalatest.events._
+import PrintReporter._
+
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -33,7 +35,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends ResourcefulReporter {
+private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolean, color: Boolean) extends ResourcefulReporter {
 
   /**
   * Construct a <code>PrintReporter</code> with passed
@@ -44,7 +46,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
   * @param os the <code>OutputStream</code> to which to print reported info
   * @throws NullPointerException if passed <code>os</code> reference is <code>null</code>
   */
-  def this(os: OutputStream) = this(new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(os, PrintReporter.BufferSize))))
+  def this(os: OutputStream, verbose: Boolean, color: Boolean) = this(new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(os, BufferSize))), verbose, color)
 
   /**
   * Construct a <code>PrintReporter</code> with passed
@@ -56,7 +58,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
   * @throws NullPointerException if passed <code>filename</code> reference is <code>null</code>
   * @throws IOException if unable to open the specified file for writing
   */
-  def this(filename: String) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), PrintReporter.BufferSize)))
+  def this(filename: String, verbose: Boolean, color: Boolean) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), BufferSize)), verbose, color)
   private def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
     throwable match {
       case Some(testFailedException: TestFailedException) =>
@@ -67,6 +69,10 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
         }
       case _ => stringToPrint
     }
+  }
+
+  private def printPossiblyInColor(text: String, ansiColor: String) {
+    pw.println(if (color) ansiColor + text + ansiReset else text)
   }
 
   private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable],
@@ -135,7 +141,8 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
         if (testCount < 0)
           throw new IllegalArgumentException
   
-        printResourceStringWithInt("runStarting", testCount)
+        val string = Resources("runStarting", testCount.toString)
+        printPossiblyInColor(string, ansiCyan)
 
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => 
 
@@ -148,14 +155,14 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
         val lines = stringsToPrintOnError("abortedNote", "runAborted", message, throwable, formatter, None, None)
-        for (line <- lines) pw.println(line)
+        for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
 
         val stringToPrint = stringToPrintWhenNoError("suiteStarting", formatter, suiteName, None)
 
         stringToPrint match {
-          case Some(string) => pw.println(string)
+          case Some(string) => printPossiblyInColor(string, ansiGreen)
           case None =>
         }
 
@@ -164,21 +171,21 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
         val stringToPrint = stringToPrintWhenNoError("suiteCompleted", formatter, suiteName, None)
 
         stringToPrint match {
-          case Some(string) => pw.println(string)
+          case Some(string) => printPossiblyInColor(string, ansiGreen)
           case None =>
         }
 
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
         val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter, Some(suiteName), None)
-        for (line <- lines) pw.println(line)
+        for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
 
         val stringToPrint = stringToPrintWhenNoError("testStarting", formatter, suiteName, Some(testName))
 
         stringToPrint match {
-          case Some(string) => pw.println(string)
+          case Some(string) => printPossiblyInColor(string, ansiGreen)
           case None =>
         }
 
@@ -187,7 +194,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
         val stringToPrint = stringToPrintWhenNoError("testSucceeded", formatter, suiteName, Some(testName))
 
         stringToPrint match {
-          case Some(string) => pw.println(string)
+          case Some(string) => printPossiblyInColor(string, ansiGreen)
           case None =>
         }
     
@@ -201,14 +208,14 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
           }
 
         stringToPrint match {
-          case Some(string) => pw.println(string)
+          case Some(string) => printPossiblyInColor(string, ansiYellow)
           case None =>
         }
 
       case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
         val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName))
-        for (line <- lines) pw.println(line)
+        for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
 
@@ -218,7 +225,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
             case None => (None, None)
           }
         val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName)
-        for (line <- lines) pw.println(line)
+        for (line <- lines) printPossiblyInColor(line, ansiGreen)
 
       case _ => throw new RuntimeException("Unhandled event")
     }
@@ -232,14 +239,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
     pw.close()
   }
 
-  private def printResourceStringWithInt(resourceName: String, testCount: Int) {
-
-    val stringToReport = Resources(resourceName, testCount.toString)
-
-    pw.println(stringToReport)
-    pw.flush()
-  }
-
   private def printResourceString(resourceName: String) {
 
     pw.println(Resources(resourceName))
@@ -251,26 +250,37 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
     summaryOption match {
       case Some(summary) =>
 
-        printResourceStringWithInt(resourceName, summary.testsSucceededCount + summary.testsFailedCount)
+        import summary._
+
+        printPossiblyInColor(Resources(resourceName), ansiCyan)
+
+        // totalNumberOfTestsRun=Total number of tests run was: {0}
+        printPossiblyInColor(Resources("totalNumberOfTestsRun", testsCompletedCount.toString), ansiCyan)
+
+        // Suite Summary: completed {0}, aborted {1}
+        printPossiblyInColor(Resources("suiteSummary", suitesCompletedCount.toString, suitesAbortedCount.toString), ansiCyan)
+
+        // Test Summary: succeeded {0}, failed {1}, ignored, {2}, pending {3}
+        printPossiblyInColor(Resources("testSummary", testsSucceededCount.toString, testsFailedCount.toString, testsIgnoredCount.toString, testsPendingCount.toString), ansiCyan)
 
         // *** 1 SUITE ABORTED ***
-        if (summary.suitesAbortedCount == 1)
-          printResourceString("oneSuiteAborted") 
+        if (suitesAbortedCount == 1)
+          printPossiblyInColor(Resources("oneSuiteAborted"), ansiCyan)
 
         // *** {0} SUITES ABORTED ***
-        else if (summary.suitesAbortedCount > 1)
-          printResourceStringWithInt("multipleSuitesAborted", summary.suitesAbortedCount) 
+        else if (suitesAbortedCount > 1)
+          printPossiblyInColor(Resources("multipleSuitesAborted", suitesAbortedCount.toString), ansiCyan)
 
         // *** 1 TEST FAILED ***
-        if (summary.testsFailedCount == 1)
-          printResourceString("oneTestFailed") 
+        if (testsFailedCount == 1)
+          printPossiblyInColor(Resources("oneTestFailed"), ansiCyan)
 
         // *** {0} TESTS FAILED ***
-        else if (summary.testsFailedCount > 1)
-          printResourceStringWithInt("multipleTestsFailed", summary.testsFailedCount) 
+        else if (testsFailedCount > 1)
+          printPossiblyInColor(Resources("multipleTestsFailed", testsFailedCount.toString), ansiCyan)
 
-        else if (summary.suitesAbortedCount == 0)
-          printResourceString("allTestsPassed")
+        else if (suitesAbortedCount == 0) // Maybe don't want to say this if the run aborted or stopped because "all"
+          printPossiblyInColor(Resources("allTestsPassed"), ansiCyan)
 
       case None =>
     }
@@ -285,80 +295,15 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
   // "  {0}" comes out as "{0}", so I can't do indenting in a localizable way. For now
   // just indent two space to the left.  //  if (times <= 0) s 
   //  else Resources("indentOnce", indent(s, times - 1))
-  
-/*
-  private def makeReport(report: Report, resourceName: String) {
-
-    if (report == null)
-      throw new NullPointerException("report is null")
-
-    val stringToPrintOption: Option[String] = 
-      report match {
-        case specReport: SpecReport =>
-          resourceName match {
-            case "testFailed" =>
-              if (specReport.includeInSpecOutput)
-                Some(Resources("specTextAndNote", specReport.formattedSpecText, Resources("failedNote")))
-              else
-                None
-            case "testIgnored" =>
-              if (specReport.includeInSpecOutput)
-                Some(Resources("specTextAndNote", specReport.formattedSpecText, Resources("ignoredNote")))
-              else
-                None
-            case _ => 
-              if (specReport.includeInSpecOutput)
-                Some(specReport.formattedSpecText)
-              else
-                None
-          }
-        case _ => {
-          val resName = if (report.message.trim.isEmpty) resourceName + "NoMessage" else resourceName
-          Some(Resources(resName, report.name, report.message))
-        }
-      }
-
-    val stringToPrintWithPossibleLineNumberOption: Option[String] = 
-      stringToPrintOption match {
-        case Some(stringToPrint) =>
-          report.throwable match {
-            case Some(t: TestFailedException) =>
-              t.failedTestCodeFileNameAndLineNumberString match {
-                case Some(lineNumberString) =>
-                  Some(Resources("printedReportPlusLineNumber", stringToPrint, lineNumberString))
-                case None => stringToPrintOption
-              }
-            case _ => stringToPrintOption
-          }
-        case None => None
-      }
-
-    stringToPrintWithPossibleLineNumberOption match {
-      case Some(stringToPrint) => {
-        pw.println(stringToPrint)
-        report.throwable match {
-          case Some(t) => {
-            report match {
-              case specReport: SpecReport => {
-                val sw = new StringWriter
-                t.printStackTrace(new PrintWriter(sw))
-                val stackTrace = sw.toString
-                val indentedStackTrace = PrintReporter.indentStackTrace(stackTrace, 1) // Darn forgot about indenting stack traces
-                pw.print(indentedStackTrace) // Do I need a println here? Eyeball it.
-              }  
-              case _ => t.printStackTrace(pw)
-            }
-          }
-          case None => // do nothing
-        }
-        pw.flush()
-      }
-      case None => // Don't print anything for TestStarting if a SpecReport (so long as there was no exception in the TestStarting report)
-    }
-  }
-*/
 }
  
 private object PrintReporter {
+
   final val BufferSize = 4096
+
+  final val ansiReset = "\033[0m"
+  final val ansiGreen = "\033[32m"
+  final val ansiCyan = "\033[36m"
+  final val ansiYellow = "\033[33m"
+  final val ansiRed = "\033[31m"
 }

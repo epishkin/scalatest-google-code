@@ -52,6 +52,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
       var testsFailedCount = 0
       var testsIgnoredCount = 0
       var testsPendingCount = 0
+      var suitesCompletedCount = 0
       var suitesAbortedCount = 0
     }
 
@@ -85,6 +86,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
                 counter.testsFailedCount,
                 counter.testsIgnoredCount,
                 counter.testsPendingCount,
+                counter.suitesCompletedCount,
                 counter.suitesAbortedCount
               )
             )
@@ -112,6 +114,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
                 case _: TestFailed => incrementCount(event, _.testsFailedCount += 1); event
                 case _: TestIgnored => incrementCount(event, _.testsIgnoredCount += 1); event
                 case _: TestPending => incrementCount(event, _.testsPendingCount += 1); event
+                case _: SuiteCompleted => incrementCount(event, _.suitesCompletedCount += 1); event
                 case _: SuiteAborted => incrementCount(event, _.suitesAbortedCount += 1); event
 
                 case oldRunCompleted @ RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>

@@ -21,7 +21,10 @@ package org.scalatest.tools
  *
  * @author Bill Venners
  */
-private[scalatest] class StandardOutReporter extends PrintReporter(Console.out) {
+private[scalatest] class StandardOutReporter(verbose: Boolean, color: Boolean)
+    extends PrintReporter(Console.out, verbose, color) {
+
+  def this() = this(false, false)
 
   /**
    * Does nothing, because don't want to dispose the standard output stream.

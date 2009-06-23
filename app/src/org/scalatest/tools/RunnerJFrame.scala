@@ -71,7 +71,7 @@ import org.scalatest.events._
  * @author Bill Venners
  */
 private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypesToCollect: ReporterOpts.Set32,
-    reporterSpecs: ReporterSpecs, suitesList: List[String], runpathList: List[String], includes: Set[String],
+    reporterSpecs: ReporterConfigurations, suitesList: List[String], runpathList: List[String], includes: Set[String],
     excludes: Set[String], propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
     testNGList: List[String], passFailReporter: Option[Reporter]) extends
     JFrame(RunnerJFrame.getTitle(recipeName)) with RunDoneListener with RunnerGUI {
@@ -601,7 +601,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
     // TODO: Why am I using an immutable map here. Better a val with a mutable map I'd think.
     var map: Map[ReporterOpts.Value, JCheckBoxMenuItem] = Map()
 
-    for (option <- ReporterOpts.allOptions) {
+    for (option <- ReporterOpts.allPresentationOpts) {
 
       val rawOptionName = ReporterOpts.getUpperCaseName(option)
       val menuItemText: String = Resources("MENU_" + rawOptionName)
@@ -648,7 +648,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
 
   private def updateViewOptionsAndEventsList() {
 
-    for (option <- ReporterOpts.allOptions) {
+    for (option <- ReporterOpts.allPresentationOpts) {
 
       val box: JCheckBoxMenuItem = optionsMap(option)
 
