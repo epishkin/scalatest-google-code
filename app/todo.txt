@@ -1,37 +1,48 @@
+Add more sugar forms in SharedTests.
+
+Actually, I think I should change the reporter configuration to be filtered ones, and not allow people to filter out
+any RunX events or SuiteAborted or TestFailed events. So they an only filter out the ones that aren't important. Otherwise,
+users can make mistakes. In Ant file, leave config= for two releases, but add filterEvents="xxx" and on the command line
+just drop support for those and add the others. Then also in the ant file say verbose="true" and color="true" as separate
+options. To make it explicit, could say filterEvents="TestStarting, TestFailed, TestSucceeded" etc. Can have a
+filterAllExpendableEvents="true". Think about this.
+
 Use filter in the run methods
 
 Try sorting the GUI reports with the ordinal
 
-Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest, because
-it is also used by Distributor and will be used by SuiteRerunner.
+Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest,
+because it is also used by Distributor and will be used by SuiteRerunner.
 
 Complete JUnitSuite, JUnitRunner GEORGE?
 Do JUnitWrapperSuite and the command line param GEORGE?
 Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?
 
-Add durations to the places that take them GEORGE?
+Add durations to the places that take them
 
 add the 'it should/must ""/describe a ""/describe it ""' style to Spec
 
 add pending functionality to Suite
 
-add a pending singleton or val to Suite (support both (pending) and { *** pending *** } styles
+add a pending singleton or val to Suite (support both (pending) and { *** pending *** } styles)
+
+add a RandomTestOrder trait
 
 Change info in FunSuite to probably use an actor so multiple threads can fire infos. Oh and maybe you need to put the var that holds the current one in an atomic. Because only one thread should be writing to that.
 
 add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
 
-Add more sugar forms in SharedTests.
-
 Do the OneInstancePerTest and ConcurrentTestExecution traits
 
 Do the OneArgXXX traits
 
-Do a trait for SequentialNestedSuiteExecution
-
 Do the fixture package for Suite, FunSuite, and Spec
 
 Make a GoodiesFixture trait for getting the goodies into a test
+
+put goodies in ant task as well as properties for two releases, then drop properties
+Change description of user-defined properties in Runner to "goodies". Do same thing includes --> tagsToInclude,
+excludes --> tagsToExclude. Leave old one in for two releases.
 
 Add the things for Property based testing displaying args nicely in the GUI (like empty strings should be "")
 
@@ -57,4 +68,111 @@ will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to o
 Ask folks about run versus execute
 Ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
 Ask folks about the beforeAll and afterAll in BeforeAndAfter
+
+There may be several (the non RunX ones) event classes for which there is no comment on the
+apply factory method that takes all params.
+
+1234 tests succeeded, 0 failed, 51 tests ignored, 22 tests pending, 0 suites aborted
+Suites completed 35; Tests succeeded 1234, ignored 22, pending 19
+All tests passed.
+
+[scalatest] Run completed in 2 minutes, 28 seconds.
+[scalatest] Suite Summary: completed 45, aborted 0
+[scalatest] Test Summary: succeeded 1501, failed 1, ignored, 22, pending 19
+[scalatest] Total number of tests run was: 1501
+[scalatest] *** 1 SUITE ABORTED ***
+[scalatest] *** 1 TEST FAILED ***
+
+scala org.scalatest.tools.Runner
+
+Goodies:
+[-D<key>=<value> [...]]
+
+Space separated runpath
+[-p <runpath>]
+
+[reporter [...]]
+-g[configs...] - causes display of a graphical user interface that allows tests to be run and results to be investigated
+-f[configs...] <filename> - causes test results to be written to the named file
+-o[configs...] - causes test results to be written to the standard output
+-e[configs...] - causes test results to be written to the standard error
+-r[configs...] <reporterclass> - causes test results to be reported to an instance of the specified fully qualified Reporter class name
+
+tags to include and exclude
+[-n <includes>]
+[-x <excludes>]
+
+Concurrent
+[-c]
+
+Suite class name
+[-s <suite class name> [...]]
+
+Members only paths
+[-m <members-only suite path> [...]]
+
+Wildcard paths
+[-w <wildcard suite path> [...]]
+
+TestNG
+[-t <TestNG config file path> [...]]
+
+Lone ones: c,
+Requires operand: r(reporter name, optional configs), t, s, w, m, f(requires filename, optional configs), n(tags to include), -x(tags to exclude)
+Optional operand: e(the config options), o(config opts), g(configs)
+
+a *** file-system separator separated runpath (platform-runpath)
+b
+c - concurrent execution (--concurrent)
+d
+e - standard error reporter (--stderr-reporter)
+f - file reporter
+g - graphical reporter
+h *** HTML Reporter
+i
+j *** some way to run existing Java JUnit tests from command line
+k
+l
+m - members only path
+n - tags to include
+o - standard out reporter
+p - space-separated runpath
+q
+r - custom reporter
+s - suite class name
+t - testNG XML config file
+u
+v *** xml reporter (v for verbose!)
+w - wildcard path
+x - tags to exclude
+y
+z
+
+D - goodie pair
+
+Was thinking of a verbose form for the print reporters
+
+Y - present runStarting method invocations
+Z - present testStarting method invocations
+T - present testSucceeded method invocations
+F - present testFailed method invocations
+G - present testIgnored method invocations
+U - present suiteStarting method invocations
+P - present suiteCompleted method invocations
+B - present suiteAborted method invocations
+I - present infoProvided method invocations
+S - present runStopped method invocations
+A - present runAborted method invocations
+R - present runCompleted method invocations
+
+Need to add:
+E *** present TestPending events
+
+Could have V mean verbose, which could optionally get you more info, such as test durations
+
+For HTML reporter, can pick a style sheet? How is that done usually? Could be -hC for Colorful or -hP for Pretty
+
+-w and -m could take an option "Q" for quick discovery that uses naming conventions. It would only load
+classes whose names end in Spec or Suite.
+
 
