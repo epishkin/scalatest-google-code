@@ -15,8 +15,6 @@
  */
 package org.scalatest
 
-import org.scalatest.events.Ordinal
-
 /**
  * Trait whose instances can rerun tests or other entities (such as suites). An object extending
  * this trait can be passed to a <code>Reporter</code> as part of a <code>Report</code>. The

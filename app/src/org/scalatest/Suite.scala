@@ -1007,7 +1007,7 @@ import org.scalatest.tools.StandardOutReporter
  * @author Bill Venners
  */
 @serializable
-trait Suite extends Assertions with TwoRunMethods { thisSuite =>
+trait Suite extends Assertions with RunMethods { thisSuite =>
 
   private val TestMethodPrefix = "test"
   private val InformerInParens = "(Informer)"
@@ -1326,9 +1326,7 @@ trait Suite extends Assertions with TwoRunMethods { thisSuite =>
   }
 
   /**
-   * <p>
    * Run zero to many of this <code>Suite</code>'s tests.
-   * </p>
    *
    * <p>
    * This method takes a <code>testName</code> parameter that optionally specifies a test to invoke.

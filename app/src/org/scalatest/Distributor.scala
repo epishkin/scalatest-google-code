@@ -15,8 +15,6 @@
  */
 package org.scalatest
 
-import org.scalatest.events.Ordinal
-
 /**
  * Function trait whose instances facilitate concurrent and/or distributed execution of <code>Suite</code>s.
  * An optional <code>DistributeFunction</code> is passed to the <code>run</code> method of <code>Suite</code>. If a
@@ -26,20 +24,12 @@ import org.scalatest.events.Ordinal
  * to execute those <code>Suite</code>s.
  *
  * <p>
- * If you have a set of nested <code>Suite</code>s that must be executed sequentially, you can override <code>runNestedSuites</code> and
- * call this trait's implementation, passing in <code>None</code> for the <code>Distributor</code>. For example:
+ * If you have a set of nested <code>Suite</code>s that must be executed sequentially, mix in trait
+ * <code>SequentialNestedSuiteExecution</code>, which overrides <code>runNestedSuites</code> and
+ * calls <code>super</code>'s <code>runNestedSuites</code> implementation, passing in <code>None</code> for the
+ * <code>Distributor</code>. For example:
  * </p>
  * 
- * <pre>
- * override protected def runNestedSuites(reporter: Reporter, stopper: Stopper,
- *     includes: Set[String], excludes: Set[String], properties: Map[String, Any],
- *     distributor: Option[Distributor]) {
- *
- *   // Execute nested suites sequentially
- *   super.runNestedSuites(reporter, stopper, includes, excludes, properties, None)
- * }
- * </pre>
- *
  * <p>
  * Implementations of this trait must be thread safe.
  * </p>
