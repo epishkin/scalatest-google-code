@@ -8,7 +8,8 @@ package org.scalatest.events
  * @param testsIgnoredCount the number of tests that were were reported as ignored during the run
  * @param testsPendingCount the number of tests that were reported as pending during the run
  */
-final case class Summary private (testsSucceededCount: Int, testsFailedCount: Int, testsIgnoredCount: Int, testsPendingCount: Int)
+final case class Summary(testsSucceededCount: Int, testsFailedCount: Int, testsIgnoredCount: Int, testsPendingCount: Int,
+  suitesAbortedCount: Int)
 
 /**
  * Companion object for case class <a href="Summary.html"><code>Summary</code></a>.

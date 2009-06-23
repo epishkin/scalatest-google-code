@@ -38,7 +38,7 @@ sealed abstract class Event extends Ordered[Event] {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="TestStarting$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestStarting</code> event like this:
  * </p>
@@ -70,7 +70,7 @@ sealed abstract class Event extends Ordered[Event] {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class TestStarting private (
+final case class TestStarting (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
@@ -233,7 +233,7 @@ object TestStarting {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="TestSucceeded$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestSucceeded</code> event like this:
  * </p>
@@ -266,7 +266,7 @@ object TestStarting {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class TestSucceeded private (
+final case class TestSucceeded (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
@@ -462,7 +462,7 @@ object TestSucceeded {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="TestFailed$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestFailed</code> event like this:
  * </p>
@@ -498,7 +498,7 @@ object TestSucceeded {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class TestFailed private (
+final case class TestFailed (
   ordinal: Ordinal,
   message: String,
   suiteName: String,
@@ -726,7 +726,7 @@ object TestFailed {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="TestIgnored$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestIgnored</code> event like this:
  * </p>
@@ -756,7 +756,7 @@ object TestFailed {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class TestIgnored private (
+final case class TestIgnored (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
@@ -876,7 +876,7 @@ object TestIgnored {
  * Event that indicates a test is pending, <em>i.e.</em>, it hasn't yet been implemented.
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="TestPending$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>TestPending</code> event like this:
  * </p>
@@ -906,7 +906,7 @@ object TestIgnored {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class TestPending private (
+final case class TestPending (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
@@ -1031,7 +1031,7 @@ object TestPending {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="SuiteStarting$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>SuiteStarting</code> event like this:
  * </p>
@@ -1063,7 +1063,7 @@ object TestPending {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class SuiteStarting private (
+final case class SuiteStarting (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
@@ -1218,7 +1218,7 @@ object SuiteStarting {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="SuiteCompleted$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>SuiteCompleted</code> event like this:
  * </p>
@@ -1250,7 +1250,7 @@ object SuiteStarting {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class SuiteCompleted private (
+final case class SuiteCompleted (
   ordinal: Ordinal,
   suiteName: String,
   suiteClassName: Option[String],
@@ -1437,7 +1437,7 @@ object SuiteCompleted {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="SuiteAborted$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>SuiteAborted</code> event like this:
  * </p>
@@ -1474,7 +1474,7 @@ object SuiteCompleted {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class SuiteAborted private (
+final case class SuiteAborted (
   ordinal: Ordinal,
   message: String,
   suiteName: String,
@@ -1691,7 +1691,7 @@ object SuiteAborted {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="RunStarting$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunStarting</code> event like this:
  * </p>
@@ -1712,7 +1712,7 @@ object SuiteAborted {
  *
  * @throws IllegalArgumentException if <code>testCount</code> is less than zero.
  */
-final case class RunStarting private (
+final case class RunStarting (
   ordinal: Ordinal,
   testCount: Int,
   formatter: Option[Formatter],
@@ -1839,7 +1839,7 @@ object RunStarting {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="RunCompleted$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunCompleted</code> event like this:
  * </p>
@@ -1859,7 +1859,7 @@ object RunStarting {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class RunCompleted private (
+final case class RunCompleted (
   ordinal: Ordinal,
   duration: Option[Long],
   summary: Option[Summary],
@@ -2032,7 +2032,7 @@ object RunCompleted {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="RunStopped$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunStopped</code> event like this:
  * </p>
@@ -2052,7 +2052,7 @@ object RunCompleted {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class RunStopped private (
+final case class RunStopped (
   ordinal: Ordinal,
   duration: Option[Long],
   summary: Option[Summary],
@@ -2215,7 +2215,7 @@ object RunStopped {
  * </p>
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="RunAborted$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>RunAborted</code> event like this:
  * </p>
@@ -2238,7 +2238,7 @@ object RunStopped {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class RunAborted private (
+final case class RunAborted (
   ordinal: Ordinal,
   message: String,
   throwable: Option[Throwable],
@@ -2419,7 +2419,7 @@ object RunAborted {
  * Event used to provide information that is not appropriate to report via any other <code>Event</code>.
  *
  * <p>
- * This class has a private constructor. To create instances of this class you must
+ * To create instances of this class you may
  * use one of the factory methods provided in its <a href="InfoProvided$object.html">companion object</a>. For example, given a
  * report function named <code>report</code>, you could fire a <code>InfoProvided</code> event like this:
  * </p>
@@ -2450,7 +2450,7 @@ object RunAborted {
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  */
-final case class InfoProvided private (
+final case class InfoProvided (
   ordinal: Ordinal,
   message: String,
   nameInfo: Option[NameInfo],
