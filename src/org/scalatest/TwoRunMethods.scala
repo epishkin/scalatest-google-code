@@ -15,11 +15,10 @@
  */
 package org.scalatest
 
-import org.scalatest.events.Ordinal
-
 /**
- * Trait that abstracts out the <code>run</code> and <code>runTest</code> methods of <code>Suite</code>. This
- * trait exists to support the use of trait <code>BeforeAndAfter</code>, which is a direct subtrait of this trait. The
+ * Trait that abstracts out the <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>
+ * methods of <code>Suite</code>. This
+ * trait exists primarily to support the use of trait <code>BeforeAndAfter</code>, which is a direct subtrait of this trait. The
  * <code>BeforeAndAfter</code> trait's implementation of <code>runTest</code> surrounds an invocation of
  * <code>super.runTest</code> in calls to <code>beforeEach</code> and <code>afterEach</code>. Similarly, the
  * <code>BeforeAndAfter</code> trait's implementation of <code>run</code> surrounds an invocation of
@@ -28,7 +27,7 @@ import org.scalatest.events.Ordinal
  * (See documentation for trait <a href="SharedTests.html"><code>SharedTests</code></a>).
  *
  * <p>
- * The main purpose of <code>TwoRunMethods</code> is to render a compiler error any attempt
+ * The main purpose of <code>RunMethods</code> is to render a compiler error any attempt
  * to mix <code>BeforeAndAfter</code> into a trait containing shared tests. (An example of such a trait is the
  * <a href="SharedTests.html#StackBehaviors"><code>StackBehaviors</code></a> trait shown in the documentation for <code>SharedTests</code>.)
  * If <code>BeforeAndAfter</code> extended
@@ -47,12 +46,16 @@ import org.scalatest.events.Ordinal
  * The goal of making <code>BeforeAndAfter</code> incompatible with shared tests traits can't be achieved solely by making the
  * self type of <code>BeforeAndAfter</code> <code>Suite</code>, because
  * in that case <code>BeforeAndAfter</code> couldn't wrap calls to the mixed into <code>Suite</code>,
- * given <code>Suite</code> would not be <code>super</code>.
+ * given <code>Suite</code> would not be <code>super</code>. The two run methods not called by <code>BeforeAndAfter</code>,
+ * <code>runNestedSuites</code> and <code>runTests</code>, are included in this trait both for completeness and also to
+ * enable other traits that override these methods to be made incompatible with shared test traits. For example, 
+ * <code>SequentialNestedSuiteExecution</code> extends <code>RunMethods</code> instead of <code>Suite</code> so that
+ * it doesn't end up mixed into shared tests traits.
  * </p>
  *
  * @author Bill Venners
  */
-trait TwoRunMethods { this: Suite =>
+trait RunMethods { this: Suite =>
 
   /**
    * Run this suite of tests.
@@ -80,6 +83,46 @@ trait TwoRunMethods { this: Suite =>
     distributor: Option[Distributor],
     tracker: Tracker
   )
+
+  /**
+   *
+   * Run zero to many of this suite's nested suites.
+   *
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
+   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
+   *         
+   * @throws NullPointerException if any passed parameter is <code>null</code>.
+   */
+  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+                                goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
+
+  /**
+   * Run zero to many of this suite's tests.
+   *
+   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
+   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
+   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
+   *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
+   *
+   * This trait's implementation of this method runs tests
+   * in the manner described in detail in the following paragraphs, but subclasses may override the method to provide different
+   * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
+   * used by all the methods of this <code>Suite</code>.
+   */
+  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+                             goodies: Map[String, Any], tracker: Tracker)
 
   /**
    * Run a test.

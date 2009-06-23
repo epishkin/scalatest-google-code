@@ -5,11 +5,6 @@ Try sorting the GUI reports with the ordinal
 Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest, because
 it is also used by Distributor and will be used by SuiteRerunner.
 
-ask folks about run versus execute
-ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
-
-do I put Ordinal in the scalatest package, or what?
-
 Complete JUnitSuite, JUnitRunner GEORGE?
 Do JUnitWrapperSuite and the command line param GEORGE?
 Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?
@@ -25,11 +20,6 @@ add a pending singleton or val to Suite (support both (pending) and { *** pendin
 Change info in FunSuite to probably use an actor so multiple threads can fire infos. Oh and maybe you need to put the var that holds the current one in an atomic. Because only one thread should be writing to that.
 
 add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
-
-maybe move Ordinal up to the org.scalatest package? Because it shows up in those signatures and it is a pain, actualy it doesn't sho
-up in those signatures anymore, I don't think, because Tracker does.
-
-ask folks about the beforeAll and afterAll in BeforeAndAfter
 
 Add more sugar forms in SharedTests.
 
@@ -63,3 +53,8 @@ Put optional colors on standard output or maybe PrintReporter ones.
 
 Add testsFor to FunSuite. Use same data structure as Spec. Otherwise SharedTests would be a pain. In FeatureSpec,
 will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to one level, but seems artificial.
+
+Ask folks about run versus execute
+Ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
+Ask folks about the beforeAll and afterAll in BeforeAndAfter
+
