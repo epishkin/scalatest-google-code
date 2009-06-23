@@ -35,11 +35,6 @@ import org.scalatest.events._
  */
 private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends ResourcefulReporter {
 
-  // This is only modified by the actor thread that serializes reports, so no need for synchronization.
-  private var testsCompletedCount = 0
-  private var testsFailedCount = 0
-  private var suitesAbortedCount = 0
-
   /**
   * Construct a <code>PrintReporter</code> with passed
   * <code>OutputStream</code>. Information about events reported to instances of this
@@ -140,19 +135,15 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
         if (testCount < 0)
           throw new IllegalArgumentException
   
-        testsCompletedCount = 0
-        testsFailedCount = 0
-        suitesAbortedCount = 0
-
         printResourceStringWithInt("runStarting", testCount)
 
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => 
 
-        makeFinalReport("runCompleted") // TODO: use Summary info
+        makeFinalReport("runCompleted", summary)
 
       case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
 
-        makeFinalReport("runStopped") // TODO: use Summary info
+        makeFinalReport("runStopped", summary)
 
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
@@ -179,7 +170,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
 
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        suitesAbortedCount += 1
         val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter, Some(suiteName), None)
         for (line <- lines) pw.println(line)
 
@@ -200,8 +190,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
           case Some(string) => pw.println(string)
           case None =>
         }
-
-        testsCompletedCount += 1
     
       case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
 
@@ -218,9 +206,6 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
         }
 
       case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
-
-        testsCompletedCount += 1
-        testsFailedCount += 1
 
         val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName))
         for (line <- lines) pw.println(line)
@@ -261,32 +246,37 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter) extends Resourc
     pw.flush()
   }
 
-  private def makeFinalReport(resourceName: String) {
+  private def makeFinalReport(resourceName: String, summaryOption: Option[Summary]) {
 
-    printResourceStringWithInt(resourceName, testsCompletedCount)
+    summaryOption match {
+      case Some(summary) =>
 
-    // *** 1 SUITE ABORTED ***
-    if (suitesAbortedCount == 1)
-      printResourceString("oneSuiteAborted") 
+        printResourceStringWithInt(resourceName, summary.testsSucceededCount + summary.testsFailedCount)
 
-    // *** {0} SUITES ABORTED ***
-    else if (suitesAbortedCount > 1)
-      printResourceStringWithInt("multipleSuitesAborted", suitesAbortedCount) 
+        // *** 1 SUITE ABORTED ***
+        if (summary.suitesAbortedCount == 1)
+          printResourceString("oneSuiteAborted") 
 
-    // *** 1 TEST FAILED ***
-    if (testsFailedCount == 1)
-      printResourceString("oneTestFailed") 
+        // *** {0} SUITES ABORTED ***
+        else if (summary.suitesAbortedCount > 1)
+          printResourceStringWithInt("multipleSuitesAborted", summary.suitesAbortedCount) 
 
-    // *** {0} TESTS FAILED ***
-    else if (testsFailedCount > 1)
-      printResourceStringWithInt("multipleTestsFailed", testsFailedCount) 
+        // *** 1 TEST FAILED ***
+        if (summary.testsFailedCount == 1)
+          printResourceString("oneTestFailed") 
 
-    else if (suitesAbortedCount == 0)
-      printResourceString("allTestsPassed")
+        // *** {0} TESTS FAILED ***
+        else if (summary.testsFailedCount > 1)
+          printResourceStringWithInt("multipleTestsFailed", summary.testsFailedCount) 
+
+        else if (summary.suitesAbortedCount == 0)
+          printResourceString("allTestsPassed")
+
+      case None =>
+    }
 
     pw.flush()
   }
-
 
   // We subtract one from test reports because we add "- " in front, so if one is actually zero, it will come here as -1
   // private def indent(s: String, times: Int) = if (times <= 0) s else ("  " * times) + s
