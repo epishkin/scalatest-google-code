@@ -1,11 +1,28 @@
 Add more sugar forms in SharedTests.
 
-Actually, I think I should change the reporter configuration to be filtered ones, and not allow people to filter out
-any RunX events or SuiteAborted or TestFailed events. So they an only filter out the ones that aren't important. Otherwise,
-users can make mistakes. In Ant file, leave config= for two releases, but add filterEvents="xxx" and on the command line
-just drop support for those and add the others. Then also in the ant file say verbose="true" and color="true" as separate
-options. To make it explicit, could say filterEvents="TestStarting, TestFailed, TestSucceeded" etc. Can have a
-filterAllExpendableEvents="true". Think about this.
+-----------
+Change the reporter configuration to be filters, and don't allow people to filter out
+any RunX events or SuiteAborted or TestFailed events. So they an only filter out the events that aren't important. Otherwise,
+users can make mistakes. In Ant file, I'm not sure whether to stick with config="..." or do something like filterEvents=,
+verbose="true", color="true". Damn XML always has verbose="true" on. Let's stick with config="...".
+
+The former config params for reporters were:
+
+Y Z T F G U P B I S A R
+
+There will for two releases be completely ignored, but allowed. After two releases, they will generate an error.
+Instead, these params will do something:
+
+V - verbose (on print reporters only, which would cause it to print test and suite durations too)
+C - color (on print reporters only)
+N - filter testStarting events
+D - filter testSucceeded events
+X - filter testIgnored events
+E - filter testPending events
+H - filter suiteStarting events
+L - filter suiteCompleted events
+O - filter infoProvided events
+------------
 
 Use filter in the run methods
 
@@ -14,8 +31,6 @@ Try sorting the GUI reports with the ordinal
 Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest,
 because it is also used by Distributor and will be used by SuiteRerunner.
 
-Complete JUnitSuite, JUnitRunner GEORGE?
-Do JUnitWrapperSuite and the command line param GEORGE?
 Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?
 
 Add durations to the places that take them
@@ -60,66 +75,12 @@ Add more overloaded methods to Informer that take optional throwable, formatter,
 
 Do an xml reporter and an html reporter
 
-Put optional colors on standard output or maybe PrintReporter ones.
-
 Add testsFor to FunSuite. Use same data structure as Spec. Otherwise SharedTests would be a pain. In FeatureSpec,
 will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to one level, but seems artificial.
 
 Ask folks about run versus execute
 Ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
 Ask folks about the beforeAll and afterAll in BeforeAndAfter
-
-There may be several (the non RunX ones) event classes for which there is no comment on the
-apply factory method that takes all params.
-
-1234 tests succeeded, 0 failed, 51 tests ignored, 22 tests pending, 0 suites aborted
-Suites completed 35; Tests succeeded 1234, ignored 22, pending 19
-All tests passed.
-
-[scalatest] Run completed in 2 minutes, 28 seconds.
-[scalatest] Suite Summary: completed 45, aborted 0
-[scalatest] Test Summary: succeeded 1501, failed 1, ignored, 22, pending 19
-[scalatest] Total number of tests run was: 1501
-[scalatest] *** 1 SUITE ABORTED ***
-[scalatest] *** 1 TEST FAILED ***
-
-scala org.scalatest.tools.Runner
-
-Goodies:
-[-D<key>=<value> [...]]
-
-Space separated runpath
-[-p <runpath>]
-
-[reporter [...]]
--g[configs...] - causes display of a graphical user interface that allows tests to be run and results to be investigated
--f[configs...] <filename> - causes test results to be written to the named file
--o[configs...] - causes test results to be written to the standard output
--e[configs...] - causes test results to be written to the standard error
--r[configs...] <reporterclass> - causes test results to be reported to an instance of the specified fully qualified Reporter class name
-
-tags to include and exclude
-[-n <includes>]
-[-x <excludes>]
-
-Concurrent
-[-c]
-
-Suite class name
-[-s <suite class name> [...]]
-
-Members only paths
-[-m <members-only suite path> [...]]
-
-Wildcard paths
-[-w <wildcard suite path> [...]]
-
-TestNG
-[-t <TestNG config file path> [...]]
-
-Lone ones: c,
-Requires operand: r(reporter name, optional configs), t, s, w, m, f(requires filename, optional configs), n(tags to include), -x(tags to exclude)
-Optional operand: e(the config options), o(config opts), g(configs)
 
 a *** file-system separator separated runpath (platform-runpath)
 b
@@ -150,29 +111,84 @@ z
 
 D - goodie pair
 
-Was thinking of a verbose form for the print reporters
-
-Y - present runStarting method invocations
-Z - present testStarting method invocations
-T - present testSucceeded method invocations
-F - present testFailed method invocations
-G - present testIgnored method invocations
-U - present suiteStarting method invocations
-P - present suiteCompleted method invocations
-B - present suiteAborted method invocations
-I - present infoProvided method invocations
-S - present runStopped method invocations
-A - present runAborted method invocations
-R - present runCompleted method invocations
-
-Need to add:
-E *** present TestPending events
-
-Could have V mean verbose, which could optionally get you more info, such as test durations
-
-For HTML reporter, can pick a style sheet? How is that done usually? Could be -hC for Colorful or -hP for Pretty
+For HTML reporter, can pick a style sheet? Could be -hC for Colorful, else get pretty one like cobertura
 
 -w and -m could take an option "Q" for quick discovery that uses naming conventions. It would only load
 classes whose names end in Spec or Suite.
 
+George list:
 
+1. Update build.xml. Right now compile and test only builds and tests
+ShouldMatchers. You have to run gencode by hand and then recompile and
+test to get MustMatchers, because MustMatchers is generated from
+ShouldMatchers. Please modify the ant file so default task builds all
+(test builds and tests all, compile compiles all, including the
+MustMatchers). Then add a qbuild and qcompile that skips the gencode
+so I can do quicker builds. It takes 5 minutes to do a full build
+without MustMatchers, so that's long enough. Also, if it will work,
+can you make a clean target that doesn't delete the matcher tests,
+because that's what takes forever to compile. Maybe a qclean?
+
+2. Modify ant task
+- Add goodies to the ant task (leaving in properties as "deprecated"
+for two releases) I renamed properties to goodies because there are
+two other things called properties in ScalaTest (HavePropertyMatchers
+and ScalaCheck property checks). Also, one guy thought properties
+specified that way should be Java system properties. Calling them
+goodies should avoid that confusion as well.
+- Add tagsToInclude to the ant task (leaving in includes as
+"deprecated" for two releases), to bring ant task in line with new
+name.
+- Add tagsToExclude to the ant task (leaving in excludes as
+"deprecated" for two releases), to bring ant task in line with new
+name.
+- Add a -a runpath command line option, (also in the ant task but I'm
+not sure under what name). Idea is that -p takes a space-separated
+runpath, which works fine except when people have spaces in their
+paths. I want to keep -p as is, because you can specify jar files with
+URLs in there, but also provide another way to specify the runpath -s,
+that uses the traditional path separated by platform-specific
+separator character. (On Unix, a :, on Windows, a;, etc.) Please
+suggest a name for this, maybe platformRunpath or something.
+- Create a JUnitWrapperSuite, which can wrap an existing set of JUnit
+tests, probably written in Java, but already compiled to binary
+- Recommend something to do with -j. What I'd like people to be able
+to do is use -j to point ScalaTest's Runner to some existing JUnit
+tests, and have it create the JUnitWrapperSuite necessary to run them
+from within ScalaTest.
+- The JUnit Ant task does some discovery. I think it relies on things
+being named Test. I'd like to be able to tell people they can do the
+exact same discovery of JUnit tests with ScalaTest's ant task as they
+can with JUnit's ant task. That way it is a migration path forward.
+They should be able to run those old JUnit tests with similar stuff in
+the ScalaTest ant task that they now put in the JUnit ant task.
+- Add a "quick" option for suite discovery. Suite discovery takes a
+long time already for ScalaTest testing itself, because Scala
+generates so many darn class files. We're opening every single one
+looking for suites. I think if they add a Q to their -w or -m's, like
+-wQ or -mQ, then that batch should be done based on naming convention.
+ScalaTest will only even open class files that end in either "Spec" or
+"Suite" looking for classes that extend org.scalatest.Suite. We could
+add Test in there if people request it, but frankly these classes
+represent suites of tests not single tests usually, so I'd like to try
+and get them out of the JUnit habit of calling the classes XTest. Plus
+it helps differentiate when discovering in packages that have mixed
+JUnit tests and ScalaTest Suites, which would speed up both kinds of
+discovery.
+
+3. Surefire support.
+- Maven uses something called SureFire to run tests. A fellow named
+Jan has started some integration here. Once you get to this point, let
+me know and I'll find out where Jan is at so you can see if you want
+to start there. I don't know much about SureFire, but I think we need
+to support Maven as well as Ant to get Maven people to use ScalaTest.
+
+4. HTML and XML reporters
+- Dianne is doing an HTML reporter, so when you get to this one, let
+me know and I'll see where she's at. But one thing is we want a -h
+command line param to run the HTML reporter, and also add this to the
+ant task.
+- Do an XML reporter that always prints out everything no matter what
+it is configured with. Print out the ordinal and everything. The
+reason is this can be used as an output during concurrent tests which
+can be read in and then sorted to produce other output.
