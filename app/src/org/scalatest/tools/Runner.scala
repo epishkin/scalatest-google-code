@@ -32,8 +32,8 @@ import org.scalatest.events._
 /**
  * <p>
  * Application that runs a suite of tests.
- * The application accepts command line arguments that specify optional <em>user-defined properties</em>, an optional 
- * <em>runpath</em>, zero to many <code>Reporter</code>s, optional lists of test groups to include and/or exclude, zero to many
+ * The application accepts command line arguments that specify optional <em>goodies</em> (key-value pairs), an optional 
+ * <em>runpath</em>, zero to many <code>Reporter</code>s, optional lists of tags to include and/or exclude, zero to many
  * <code>Suite</code> class names, zero to many "members-only" <code>Suite</code> paths, zero to many "wildcard" <code>Suite</code> paths,
  * and zero to many TestNG XML config file paths.
  * All of these arguments are described in more detail below. Here's a summary:
@@ -57,18 +57,25 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <strong>Specifying user-defined properties</strong>
+ * <strong>Specifying goodies</strong>
  * </p>
  *
  * <p>
- * A user-defined property consists of a key and a value. The key may not begin with
- * &quot;org.scalatest.&quot;. User-defined properties may be specified on the command line.
- * Each property is denoted with a "-D", followed immediately by the key string, an &quot;=&quot;, and the value string.
+ * A <em>goodie</em> consists of a key and a value. The key may not begin with
+ * &quot;org.scalatest.&quot;. Goodies may be specified on the command line.
+ * Each goodie is denoted with a "-D", followed immediately by the key string, an &quot;=&quot;, and the value string.
  * For example:
  * </p>
  *
  * <p>
  * <code>-Ddbname=testdb -Dserver=192.168.1.188</code>
+ * </p>
+ *
+ * <p>
+ * The reasons these key-value pairs are called "goodies" in ScalaTest instead of "properties," is that the word property
+ * already has two other meanings in ScalaTest. Objects can have properties that may be retrieved and sometimes set, which
+ * can be tested with HavePropertyMatchers. And ScalaCheck allows you to test by specifying properties of the objects you
+ * are testing.
  * </p>
  *
  * <p>
@@ -171,28 +178,34 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * Each reporter specification on the command line can include configuration characters. Configuration
+ * Each reporter option on the command line can include configuration characters. Configuration
  * characters
  * are specified immediately following the <code><b>-g</b></code>, <code><b>-o</b></code>,
- * <code><b>-e</b></code>, <code><b>-f</b></code>, or <code><b>-r</b></code>. Valid configuration
- * characters are:
+ * <code><b>-e</b></code>, <code><b>-f</b></code>, or <code><b>-r</b></code>. The following configuration
+ * characters, which cause reports to be filtered out, are valid for any reporter:
  * </p>
  *
  * <ul>
- * <li> <code><b>Y</b></code> - present <code>RunStarting</code> events
- * <li> <code><b>Z</b></code> - present <code>TestStarting</code> events
- * <li> <code><b>T</b></code> - present <code>TestSucceeded</code> events
- * <li> <code><b>F</b></code> - present <code>TestFailed</code> events
- * <li> <code><b>G</b></code> - present <code>TestIgnored</code> events
- * <li> <code><b>E</b></code> - present <code>TestPending</code> events
- * <li> <code><b>U</b></code> - present <code>SuiteStarting</code> events
- * <li> <code><b>P</b></code> - present <code>SuiteCompleted</code> events
- * <li> <code><b>B</b></code> - present <code>SuiteAborted</code> events
- * <li> <code><b>I</b></code> - present <code>InfoProvided</code> events
- * <li> <code><b>S</b></code> - present <code>RunStopped</code> events
- * <li> <code><b>A</b></code> - present <code>RunAborted</code> events
- * <li> <code><b>R</b></code> - present <code>RunCompleted</code> events
+ * <li> <code><b>N</b></code> - filter <code>TestStarting</code> events
+ * <li> <code><b>D</b></code> - filter <code>TestSucceeded</code> events
+ * <li> <code><b>X</b></code> - filter <code>TestIgnored</code> events
+ * <li> <code><b>E</b></code> - filter <code>TestPending</code> events
+ * <li> <code><b>H</b></code> - filter <code>SuiteStarting</code> events
+ * <li> <code><b>L</b></code> - filter <code>SuiteCompleted</code> events
+ * <li> <code><b>O</b></code> - filter <code>InfoProvided</code> events
  * </ul>
+ *
+ * <p>
+ * <strong>Prior to 0.9.6, ScalaTest's <code>Runner</code> allowed you specify config parameters on reports that
+ * indicated a particular event should be <em>presented</em>. This meant that people could opt to not show
+ * test failures, suite aborted events, <em>etc</em>. To prevent important events from being dropped accidentally,
+ * starting in 0.9.6 the config parameters indicate which events should <em>not</em> be presented, and important
+ * events can't be filtered out at all. For two releases,
+ * the old config parameters will be tolerated, but have no effect. Only the new parameters will have any effect,
+ * and none of the new ones overlap with any of the old ones. So you have two releases to change your scripts to
+ * use the new config parameters. Starting with 0.9.8, using the old parameters&mdash;Y, Z, T, F, G, U, P, B, I, S, A, R&mdash;will
+ * cause <code>Runner</code> to abort with an error message and not run the tests.</strong>
+ * </p>
  *
  * <p>
  * Each reporter class has a default configuration. If no configuration
