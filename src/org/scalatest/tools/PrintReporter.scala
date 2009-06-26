@@ -97,18 +97,21 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val labeledClassNameWithMessage =
               if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
-                labeledClassName + ": " + throwable.getMessage.trim
+                "  " + labeledClassName + ": " + throwable.getMessage.trim
               else
-                labeledClassName
+                "  " + labeledClassName
 
-            val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
-            val cause = throwable.getCause
+            if (verbose || !throwable.isInstanceOf[TestFailedException]) {
+              val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
+              val cause = throwable.getCause
 
-            val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
-            if (cause == null)
-              stackTraceThisThrowable
-            else
-              stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
+              val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
+              if (cause == null)
+                stackTraceThisThrowable
+              else
+                stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
+            }
+            else List(labeledClassNameWithMessage)
           }
           stackTrace(throwable, false)
         case None => List()
