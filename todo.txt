@@ -1,5 +1,13 @@
 Add more sugar forms in SharedTests.
 
+Put an Option[Nothing] in the run methods as a placeholder for the OutErrTester kind of stuff. Whatever that object is
+that's getting passed around. OutErrManager maybe. Wierd, could even provide overloaded versions. Wait, I could do that
+anyway. Just add it at the end later, and make.., no because then it would have to be final.
+OutputManager, OutputTester. Those seem nicer. Anyway, it is for another day.
+
+Someone complained that it they configured the graphic reporter, that it should show that configuration by default not
+just runs and failures. Not sure.
+
 -----------
 Change the reporter configuration to be filters, and don't allow people to filter out
 any RunX events or SuiteAborted or TestFailed events. So they an only filter out the events that aren't important. Otherwise,
@@ -23,6 +31,11 @@ H - filter suiteStarting events
 L - filter suiteCompleted events
 O - filter infoProvided events
 ------------
+
+Create  JUnit3ComfortSuite in place that is a class that extends Suite, adds setup and tearDown methods, and has a @RunWith(JUnitRunner)
+annotation so it can be run with JUnit 4. Later I'll add in OneInstancePerTest. For two releases, extend it with a deprecated JUnit3Suite
+class. Explain it's name was changed because it no longer extends TestCase. Drop JUnit3Suite in 0.9.8. Or call it JUnitComfortSuite, because
+it doesn't run with JUnit 3 anymore, and it was also JUnit 1 and 2 probably.
 
 Use filter in the run methods
 
@@ -67,7 +80,7 @@ Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, w
 
 Oh, and must fix the problem of counting tests when using config params. RunStopped, RunCompleted, and RunAborted all take an optional Summary. When fired from Runner, SuiteRerunner, and TestRerunner, these are Nones. So maybe I enhance DispatchReporter to count these? To reset the count to zero when a RunCompleted, RunStopped, or RunAborted comes through? It would be counted by the actor thread. And if the summary field was a None, it would replace it with a Some that has these counts in it.
 
-Print out the summary info, once it is getting sent.
+Print out the summary info, once it is getting sent. (It is in printreporter, but not yet in GUI.)
 
 I'm not printing out the message in a formatted report, just the exception's detail message
 
@@ -114,7 +127,7 @@ D - goodie pair
 For HTML reporter, can pick a style sheet? Could be -hC for Colorful, else get pretty one like cobertura
 
 -w and -m could take an option "Q" for quick discovery that uses naming conventions. It would only load
-classes whose names end in Spec or Suite.
+classes whose .class file names end in Spec or Suite.
 
 George list:
 

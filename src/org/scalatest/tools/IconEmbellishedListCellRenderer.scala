@@ -16,17 +16,20 @@
 package org.scalatest.tools
 
 import javax.swing._
-import java.awt._
+import java.awt.Color
+import java.awt.Font
+import java.awt.Component
+import java.awt.BorderLayout
 import java.net.URL
 import javax.swing.border.EmptyBorder
-import org.scalatest.events.IndentedText
+import org.scalatest.events._
 
 /**
  * A ListCellRenderer for the event List in the GUI.
  *
  * @author Bill Venners
  */
-private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRenderer {
+private[tools] class IconEmbellishedListCellRenderer extends ListCellRenderer {
 
   private val defaultRenderer: DefaultListCellRenderer = new DefaultListCellRenderer()
 
@@ -118,80 +121,86 @@ private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRendere
     if (isSelected)
       renderer.setBackground(BACKGROUND_BLUE)
 
-    val eventType: ReporterOpts.Value = value.asInstanceOf[EventHolder].eventType
+    val event: Event = value.asInstanceOf[EventHolder].event
 
-    eventType match {
-      case ReporterOpts.PresentRunStarting => {
+    event match {
+      case _: RunStarting => {
         if (isSelected)
           renderer.setIcon(Icons.runStartingSelIcon)
         else
           renderer.setIcon(Icons.runStartingIcon)
       }
-      case ReporterOpts.PresentTestStarting => {
+      case _: TestStarting => {
         if (isSelected)
           renderer.setIcon(Icons.testStartingSelIcon)
         else
           renderer.setIcon(Icons.testStartingIcon)
       }
-      case ReporterOpts.PresentTestSucceeded => {
+      case _: TestSucceeded => {
         if (isSelected)
           renderer.setIcon(Icons.testSucceededSelIcon)
         else
           renderer.setIcon(Icons.testSucceededIcon)
       }
-      case ReporterOpts.PresentTestIgnored => {
+      case _: TestIgnored => {
         if (isSelected)
           renderer.setIcon(Icons.testIgnoredSelIcon)
         else
           renderer.setIcon(Icons.testIgnoredIcon)
         setRendererFont(renderer, UNCOMFORTABLE_GRAY)
       }
-      case ReporterOpts.PresentTestFailed => {
+      case _: TestPending => {
+        if (isSelected)
+          renderer.setIcon(Icons.testIgnoredSelIcon)
+        else
+          renderer.setIcon(Icons.testIgnoredIcon)
+      }
+      case _: TestFailed => {
         if (isSelected)
           renderer.setIcon(Icons.testFailedSelIcon)
         else
           renderer.setIcon(Icons.testFailedIcon)
         setRendererFont(renderer, DEEP_RED)
       }
-      case ReporterOpts.PresentRunAborted => {
+      case _: RunAborted => {
         if (isSelected)
           renderer.setIcon(Icons.runAbortedSelIcon)
         else
           renderer.setIcon(Icons.runAbortedIcon)
         setRendererFont(renderer, DEEP_RED)
       }
-      case ReporterOpts.PresentSuiteAborted => {
+      case _: SuiteAborted => {
         if (isSelected)
           renderer.setIcon(Icons.suiteAbortedSelIcon)
         else
           renderer.setIcon(Icons.suiteAbortedIcon)
         setRendererFont(renderer, DEEP_RED)
       }
-      case ReporterOpts.PresentSuiteStarting => {
+      case _: SuiteStarting => {
         if (isSelected)
           renderer.setIcon(Icons.suiteStartingSelIcon)
         else
           renderer.setIcon(Icons.suiteStartingIcon)
       }
-      case ReporterOpts.PresentSuiteCompleted => {
+      case _: SuiteCompleted => {
         if (isSelected)
           renderer.setIcon(Icons.suiteCompletedSelIcon)
         else
           renderer.setIcon(Icons.suiteCompletedIcon)
       }
-      case ReporterOpts.PresentInfoProvided => {
+      case _: InfoProvided => {
         if (isSelected)
           renderer.setIcon(Icons.infoProvidedSelIcon)
         else
           renderer.setIcon(Icons.infoProvidedIcon)
       }
-      case ReporterOpts.PresentRunCompleted => {
+      case _: RunCompleted => {
         if (isSelected)
           renderer.setIcon(Icons.runCompletedSelIcon)
         else
           renderer.setIcon(Icons.runCompletedIcon)
       }
-      case ReporterOpts.PresentRunStopped => {
+      case _: RunStopped => {
         if (isSelected)
           renderer.setIcon(Icons.runStoppedSelIcon)
         else
@@ -199,8 +208,6 @@ private[scalatest] class IconEmbellishedListCellRenderer extends ListCellRendere
       }
     }
 
-    val event = value.asInstanceOf[EventHolder].event
- 
     event.formatter match {
 
       case Some(IndentedText(_, _, indentationLevel)) =>
