@@ -501,7 +501,7 @@ object Runner {
     val fullReporterConfigurations: ReporterConfigurations =
       if (reporterArgsList.isEmpty)
         // If no reporters specified, just give them a graphic reporter
-        new ReporterConfigurations(Some(GraphicReporterConfiguration(ReporterOpts.Set32(0))), Nil, None, None, Nil)
+        new ReporterConfigurations(Some(GraphicReporterConfiguration(Set())), Nil, None, None, Nil)
       else
         parseReporterArgsIntoConfigurations(reporterArgsList)
 
@@ -522,7 +522,7 @@ object Runner {
     // reporterSpecs, because we want to pass all reporterSpecs except
     // the graphic reporter's to the RunnerJFrame (because RunnerJFrame *is*
     // the graphic reporter).
-    val reporterSpecs: ReporterConfigurations =
+    val reporterConfigs: ReporterConfigurations =
       fullReporterConfigurations.graphicReporterConfiguration match {
         case None => fullReporterConfigurations
         case Some(grs) => {
@@ -540,10 +540,18 @@ object Runner {
 
     fullReporterConfigurations.graphicReporterConfiguration match {
       case Some(GraphicReporterConfiguration(configSet)) => {
-        val graphicConfigSet = if (configSet.isEmpty) ReporterOpts.allPresentationOpts else configSet
+        val graphicEventsToPresent: Set[EventToPresent] = EventToPresent.allEventsToPresent filter
+          (if (configSet.contains(FilterTestStarting)) {_ != PresentTestStarting} else etp => true) filter
+          (if (configSet.contains(FilterTestSucceeded)) {_ != PresentTestSucceeded} else etp => true) filter
+          (if (configSet.contains(FilterTestIgnored)) {_ != PresentTestIgnored} else etp => true) filter
+          (if (configSet.contains(FilterTestPending)) {_ != PresentTestPending} else etp => true) filter
+          (if (configSet.contains(FilterSuiteStarting)) {_ != PresentSuiteStarting} else etp => true) filter
+          (if (configSet.contains(FilterSuiteCompleted)) {_ != PresentSuiteCompleted} else etp => true) filter
+          (if (configSet.contains(FilterInfoProvided)) {_ != PresentInfoProvided} else etp => true) 
+
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
-          val rjf = new RunnerJFrame(recipeName, graphicConfigSet, reporterSpecs, suitesList, runpathList,
+          val rjf = new RunnerJFrame(recipeName, graphicEventsToPresent, reporterConfigs, suitesList, runpathList,
             includes, excludes, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter)
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
@@ -557,7 +565,7 @@ object Runner {
         rjf.blockUntilWindowClosed()
       }
       case None => { // Run the test without a GUI
-        withClassLoaderAndDispatchReporter(runpathList, reporterSpecs, None, passFailReporter) {
+        withClassLoaderAndDispatchReporter(runpathList, reporterConfigs, None, passFailReporter) {
           (loader, dispatchReporter) => {
             doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, includes, excludesWithIgnore(excludes),
                 propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1) 
@@ -711,7 +719,7 @@ object Runner {
    * If no configuration options are specified, this method returns an
    * empty ConfigSet. This method never returns null.
    */
-  private[scalatest] def parseConfigSet(reporterArg: String): ReporterOpts.Set32 = {
+  private def parseConfigSet(reporterArg: String): Set[ReporterConfigParam] = {
 
     if (reporterArg == null)
       throw new NullPointerException("reporterArg was null")
@@ -723,24 +731,30 @@ object Runner {
     // so the first config param will be at index 2
     val configString = reporterArg.substring(2)
     val it = configString.elements
-    var mask = 0
+    var set = Set[ReporterConfigParam]()
     while (it.hasNext) 
       it.next match {
-        case 'Y' => mask = mask | ReporterOpts.PresentRunStarting.mask32
-        case 'Z' => mask = mask | ReporterOpts.PresentTestStarting.mask32
-        case 'T' => mask = mask | ReporterOpts.PresentTestSucceeded.mask32
-        case 'F' => mask = mask | ReporterOpts.PresentTestFailed.mask32
-        case 'U' => mask = mask | ReporterOpts.PresentSuiteStarting.mask32
-        case 'P' => mask = mask | ReporterOpts.PresentSuiteCompleted.mask32
-        case 'B' => mask = mask | ReporterOpts.PresentSuiteAborted.mask32
-        case 'I' => mask = mask | ReporterOpts.PresentInfoProvided.mask32
-        case 'S' => mask = mask | ReporterOpts.PresentRunStopped.mask32
-        case 'A' => mask = mask | ReporterOpts.PresentRunAborted.mask32
-        case 'R' => mask = mask | ReporterOpts.PresentRunCompleted.mask32
-        case 'G' => mask = mask | ReporterOpts.PresentTestIgnored.mask32
-        case 'E' => mask = mask | ReporterOpts.PresentTestPending.mask32
-        case 'V' => mask = mask | ReporterOpts.Verbose.mask32
-        case 'C' => mask = mask | ReporterOpts.Color.mask32
+        case 'Y' => // Allow the old ones for the two-release deprecation cycle, starting in 0.9.6
+        case 'Z' => // But they have no effect. After that, drop these cases so these will generate an error.
+        case 'T' =>
+        case 'F' =>
+        case 'U' =>
+        case 'P' =>
+        case 'B' =>
+        case 'I' =>
+        case 'S' =>
+        case 'A' =>
+        case 'R' =>
+        case 'G' =>
+        case 'N' => set += FilterTestStarting
+        case 'D' => set += FilterTestSucceeded
+        case 'X' => set += FilterTestIgnored
+        case 'E' => set += FilterTestPending
+        case 'H' => set += FilterSuiteStarting
+        case 'L' => set += FilterSuiteCompleted
+        case 'O' => set += FilterInfoProvided
+        case 'C' => set += PresentColor
+        case 'V' => set += PresentVerbose
         case c: Char => {
 
           // this should be moved to the checker, and just throw an exception here with a debug message. Or allow a MatchError.
@@ -750,7 +764,7 @@ object Runner {
           throw new IllegalArgumentException(msg1 + msg2)
         }
       }
-    ReporterOpts.Set32(mask)
+    set
   }
 
   private[scalatest] def parseReporterArgsIntoConfigurations(args: List[String]) = {
@@ -794,9 +808,9 @@ object Runner {
       args.find(arg => arg.substring(0, 2) == "-g") match {
         case Some(dashGString) =>
           val configSet = parseConfigSet(dashGString)
-          if (configSet.contains(ReporterOpts.Verbose))
+          if (configSet.contains(PresentVerbose))
             throw new IllegalArgumentException("Cannot specify a V (verbose) configuration parameter for the graphic reporter: " + dashGString)
-          if (configSet.contains(ReporterOpts.Color))
+          if (configSet.contains(PresentColor))
             throw new IllegalArgumentException("Cannot specify a C (color) configuration parameter for the graphic reporter: " + dashGString)
           Some(new GraphicReporterConfiguration(configSet))
         case None => None
@@ -838,9 +852,9 @@ object Runner {
             val dashRString = arg
             val customReporterClassName = it.next
             val configSet = parseConfigSet(dashRString)
-            if (configSet.contains(ReporterOpts.Verbose))
+            if (configSet.contains(PresentVerbose))
               throw new IllegalArgumentException("Cannot specify a V (verbose) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
-            if (configSet.contains(ReporterOpts.Color))
+            if (configSet.contains(PresentColor))
               throw new IllegalArgumentException("Cannot specify a C (color) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
             lb += new CustomReporterConfiguration(configSet, customReporterClassName)
           case _ => 
@@ -959,30 +973,30 @@ object Runner {
 
   // For debugging.
 /*
-  private[scalatest] def printOpts(opt: ReporterOpts.Set32) {
-    if (opt.contains(ReporterOpts.PresentRunStarting))
+  private[scalatest] def printOpts(opt: EventToPresent.Set32) {
+    if (opt.contains(EventToPresent.PresentRunStarting))
       println("PresentRunStarting")
-    if (opt.contains(ReporterOpts.PresentTestStarting))
+    if (opt.contains(EventToPresent.PresentTestStarting))
       println("PresentTestStarting")
-    if (opt.contains(ReporterOpts.PresentTestSucceeded))
+    if (opt.contains(EventToPresent.PresentTestSucceeded))
       println("PresentTestSucceeded")
-    if (opt.contains(ReporterOpts.PresentTestFailed))
+    if (opt.contains(EventToPresent.PresentTestFailed))
       println("PresentTestFailed")
-    if (opt.contains(ReporterOpts.PresentTestIgnored))
+    if (opt.contains(EventToPresent.PresentTestIgnored))
       println("PresentTestIgnored")
-    if (opt.contains(ReporterOpts.PresentSuiteStarting))
+    if (opt.contains(EventToPresent.PresentSuiteStarting))
       println("PresentSuiteStarting")
-    if (opt.contains(ReporterOpts.PresentSuiteCompleted))
+    if (opt.contains(EventToPresent.PresentSuiteCompleted))
       println("PresentSuiteCompleted")
-    if (opt.contains(ReporterOpts.PresentSuiteAborted))
+    if (opt.contains(EventToPresent.PresentSuiteAborted))
       println("PresentSuiteAborted")
-    if (opt.contains(ReporterOpts.PresentInfoProvided))
+    if (opt.contains(EventToPresent.PresentInfoProvided))
       println("PresentInfoProvided")
-    if (opt.contains(ReporterOpts.PresentRunStopped))
+    if (opt.contains(EventToPresent.PresentRunStopped))
       println("PresentRunStopped")
-    if (opt.contains(ReporterOpts.PresentRunCompleted))
+    if (opt.contains(EventToPresent.PresentRunCompleted))
       println("PresentRunCompleted")
-    if (opt.contains(ReporterOpts.PresentRunAborted))
+    if (opt.contains(EventToPresent.PresentRunAborted))
       println("PresentRunAborted")
   }
 */
@@ -990,22 +1004,22 @@ object Runner {
   private[scalatest] def getDispatchReporter(reporterSpecs: ReporterConfigurations, graphicReporter: Option[Reporter], passFailReporter: Option[Reporter], loader: ClassLoader) = {
     def getReporterFromConfiguration(configuration: ReporterConfiguration): Reporter = configuration match {
       case StandardOutReporterConfiguration(configSet) => {
-        if (((configSet - ReporterOpts.Verbose) - ReporterOpts.Color).isEmpty)
-          new StandardOutReporter(configSet.contains(ReporterOpts.Verbose), configSet.contains(ReporterOpts.Color))
+        if (((configSet - PresentVerbose) - PresentColor).isEmpty)
+          new StandardOutReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor))
         else
-          new FilterReporter(new StandardOutReporter(configSet.contains(ReporterOpts.Verbose), configSet.contains(ReporterOpts.Color)), configSet)
+          new FilterReporter(new StandardOutReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor)), configSet)
       }
       case StandardErrReporterConfiguration(configSet) => {
-        if (((configSet - ReporterOpts.Verbose) - ReporterOpts.Color).isEmpty)
-          new StandardErrReporter(configSet.contains(ReporterOpts.Verbose), configSet.contains(ReporterOpts.Color))
+        if (((configSet - PresentVerbose) - PresentColor).isEmpty)
+          new StandardErrReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor))
         else
-          new FilterReporter(new StandardErrReporter(configSet.contains(ReporterOpts.Verbose), configSet.contains(ReporterOpts.Color)), configSet)
+          new FilterReporter(new StandardErrReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor)), configSet)
       }
       case FileReporterConfiguration(configSet, fileName) => {
-        if (((configSet - ReporterOpts.Verbose) - ReporterOpts.Color).isEmpty)
-          new FileReporter(fileName, configSet.contains(ReporterOpts.Verbose), configSet.contains(ReporterOpts.Color))
+        if (((configSet - PresentVerbose) - PresentColor).isEmpty)
+          new FileReporter(fileName, configSet.contains(PresentVerbose), configSet.contains(PresentColor))
         else
-          new FilterReporter(new FileReporter(fileName, configSet.contains(ReporterOpts.Verbose), configSet.contains(ReporterOpts.Color)), configSet)
+          new FilterReporter(new FileReporter(fileName, configSet.contains(PresentVerbose), configSet.contains(PresentColor)), configSet)
       }
       case CustomReporterConfiguration(configSet, reporterClassName) => {
         val customReporter = getCustomReporter(reporterClassName, loader, "-r... " + reporterClassName)

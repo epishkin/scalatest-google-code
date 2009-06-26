@@ -20,17 +20,17 @@ package org.scalatest.tools
  *
  * @author Bill Venners
  */
-private[scalatest] abstract class ReporterConfiguration(configSet: ReporterOpts.Set32)
+private[tools] sealed abstract class ReporterConfiguration
 
-private[scalatest] case class GraphicReporterConfiguration(configSet: ReporterOpts.Set32) extends ReporterConfiguration(configSet)
-private[scalatest] case class StandardOutReporterConfiguration(configSet: ReporterOpts.Set32) extends ReporterConfiguration(configSet)
-private[scalatest] case class StandardErrReporterConfiguration(configSet: ReporterOpts.Set32) extends ReporterConfiguration(configSet)
-private[scalatest] case class FileReporterConfiguration(configSet: ReporterOpts.Set32, fileName: String) extends ReporterConfiguration(configSet)
-private[scalatest] case class CustomReporterConfiguration(configSet: ReporterOpts.Set32, reporterClass: String) extends ReporterConfiguration(configSet)
+private[tools] case class GraphicReporterConfiguration(configSet: Set[ReporterConfigParam]) extends ReporterConfiguration
+private[tools] case class StandardOutReporterConfiguration(configSet: Set[ReporterConfigParam]) extends ReporterConfiguration
+private[tools] case class StandardErrReporterConfiguration(configSet: Set[ReporterConfigParam]) extends ReporterConfiguration
+private[tools] case class FileReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
+private[tools] case class CustomReporterConfiguration(configSet: Set[ReporterConfigParam], reporterClass: String) extends ReporterConfiguration
 
 // If there were no fileReporterSpecList or customReporterSpecList specified, you get Nil
 // If there were no graphicReporterSpec, standardOutReporterSpec, or standardErrReporterSpec, you get None
-private[scalatest] case class ReporterConfigurations(val graphicReporterConfiguration: Option[GraphicReporterConfiguration],
+private[tools] case class ReporterConfigurations(val graphicReporterConfiguration: Option[GraphicReporterConfiguration],
     val fileReporterConfigurationList: List[FileReporterConfiguration], val standardOutReporterConfiguration: Option[StandardOutReporterConfiguration],
     val standardErrReporterConfiguration: Option[StandardErrReporterConfiguration], val customReporterConfigurationList: List[CustomReporterConfiguration])
     extends Seq[ReporterConfiguration] {

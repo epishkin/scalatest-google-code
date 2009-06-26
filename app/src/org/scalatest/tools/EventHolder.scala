@@ -24,25 +24,25 @@ import EventHolder.suiteAndTestName
  *
  * @author Bill Venners
  */
-private[scalatest] class EventHolder(val event: Event, val message: Option[String], val throwable: Option[Throwable],
-    val rerunner: Option[Rerunner], val eventType: ReporterOpts.Value, val isRerun: Boolean) {
+private[tools] class EventHolder(val event: Event, val message: Option[String], val throwable: Option[Throwable],
+    val rerunner: Option[Rerunner], val isRerun: Boolean) {
 
-  if (event == null || eventType == null)
+  if (event == null || message == null || throwable == null || rerunner == null)
     throw new NullPointerException()
  
-  def this(event: Event, message: Option[String], throwable: Option[Throwable], rerunner: Option[Rerunner],
-           eventType: ReporterOpts.Value) = this(event, message, throwable, rerunner, eventType, false)
+  def this(event: Event, message: Option[String], throwable: Option[Throwable],
+      rerunner: Option[Rerunner]) = this(event, message, throwable, rerunner, false)
 
   override def toString = {
     event.formatter match {
       case Some(IndentedText(_, rawText, indentationLevel)) =>
-        if (eventType == ReporterOpts.PresentSuiteStarting) rawText + ":" else rawText
+        if (event.isInstanceOf[SuiteStarting]) rawText + ":" else rawText
       case _ => 
         val firstString: String =
           if (isRerun)
-            Resources("RERUN_" + ReporterOpts.getUpperCaseName(eventType))
+            Resources("RERUN_" + RunnerJFrame.getUpperCaseName(event))
           else
-            Resources(ReporterOpts.getUpperCaseName(eventType))
+            Resources(RunnerJFrame.getUpperCaseName(event))
 
         def firstAndSecondString(first: String, second: String) = first + " - " + second
 
