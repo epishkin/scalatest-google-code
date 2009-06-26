@@ -268,22 +268,22 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
 
         // *** 1 SUITE ABORTED ***
         if (suitesAbortedCount == 1)
-          printPossiblyInColor(Resources("oneSuiteAborted"), ansiCyan)
+          printPossiblyInColor(Resources("oneSuiteAborted"), ansiRed)
 
         // *** {0} SUITES ABORTED ***
         else if (suitesAbortedCount > 1)
-          printPossiblyInColor(Resources("multipleSuitesAborted", suitesAbortedCount.toString), ansiCyan)
+          printPossiblyInColor(Resources("multipleSuitesAborted", suitesAbortedCount.toString), ansiRed)
 
         // *** 1 TEST FAILED ***
         if (testsFailedCount == 1)
-          printPossiblyInColor(Resources("oneTestFailed"), ansiCyan)
+          printPossiblyInColor(Resources("oneTestFailed"), ansiRed)
 
         // *** {0} TESTS FAILED ***
         else if (testsFailedCount > 1)
-          printPossiblyInColor(Resources("multipleTestsFailed", testsFailedCount.toString), ansiCyan)
+          printPossiblyInColor(Resources("multipleTestsFailed", testsFailedCount.toString), ansiRed)
 
         else if (suitesAbortedCount == 0) // Maybe don't want to say this if the run aborted or stopped because "all"
-          printPossiblyInColor(Resources("allTestsPassed"), ansiCyan)
+          printPossiblyInColor(Resources("allTestsPassed"), ansiGreen)
 
       case None =>
     }
