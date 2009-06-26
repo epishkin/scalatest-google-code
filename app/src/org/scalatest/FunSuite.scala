@@ -518,7 +518,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
     if (!atomic.compareAndSet(oldBundle, newBundle))
-      throw new ConcurrentModificationException
+      throw new ConcurrentModificationException // TODO: put a helpful message explaining why
   }
   
   // later will initialize with an informer that registers things between tests for later passing to the informer

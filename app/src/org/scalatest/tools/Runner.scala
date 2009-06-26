@@ -178,8 +178,7 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * Each reporter option on the command line can include configuration characters. Configuration
- * characters
+ * Each reporter option on the command line can include configuration characters. Configuration characters
  * are specified immediately following the <code><b>-g</b></code>, <code><b>-o</b></code>,
  * <code><b>-e</b></code>, <code><b>-f</b></code>, or <code><b>-r</b></code>. The following configuration
  * characters, which cause reports to be filtered out, are valid for any reporter:
@@ -196,7 +195,7 @@ import org.scalatest.events._
  * </ul>
  *
  * <p>
- * <strong>Prior to 0.9.6, ScalaTest's <code>Runner</code> allowed you specify config parameters on reports that
+ * <strong>Deprecation Note: Prior to 0.9.6, ScalaTest's <code>Runner</code> allowed you specify config parameters on reports that
  * indicated a particular event should be <em>presented</em>. This meant that people could opt to not show
  * test failures, suite aborted events, <em>etc</em>. To prevent important events from being dropped accidentally,
  * starting in 0.9.6 the config parameters indicate which events should <em>not</em> be presented, and important
@@ -208,43 +207,71 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * Each reporter class has a default configuration. If no configuration
- * is specified on the command line for a particular reporter, that
- * reporter uses its default configuration. If a configuration is specified, <code>Runner</code> will present
- * to the configured reporter only those report types mentioned in the configuration characters. If the command
- * line includes argument <code>-oFAB</code>, for example, only <code>TestFailed</code>, 
- * <code>RunAborted</code>, and <code>SuiteAborted</code> events will be reported to the standard output reporter.
+ * The following two reporter configuration parameters may additionally be used on standard output (-o), standard error (-e),
+ * and file (-f) reporters: 
+ * </p>
+ *
+ * <ul>
+ * <li> <code><b>V</b></code> - verbose mode
+ * <li> <code><b>C</b></code> - color output
+ * </ul>
+ *
+ * <p>
+ * If you specify a V or C for any reporter other than standard output, standard error, or file reporters, <code>Runner</code>
+ * will complain with an error message and not perform the run.
  * </p>
  *
  * <p>
- * For example, to run a suite using two reporters, the graphical reporter (using its default
- * configuration) and a standard error reporter configured to print only test failures, run aborts, and
- * suite aborts, you would type:
+ * Configuring a standard output, error, or file reporter into
+ * verbose mode (V) will cause that reporter to print a duration for each test and suite and full stack traces for all exceptions,
+ * including <code>TestFailedExceptions</code>. Every <code>TestFailedException</code> contains a stack depth of the
+ * line of test code that failed so that users won't need to search through a stack trace to find it. When running in the default,
+ * non-verbose mode, these reporters will only show full stack traces when other exceptions are thrown, such as an exception thrown
+ * by production code. When a <code>TestFailedException</code> is thrown in default, non-verbose mode, only the source filename and
+ * line number of the line of test code that caused the test to fail are printed along with the error message, not the full stack
+ * trace. 
  * </p>
  *
  * <p>
- * <code>scala -classpath scalatest-&lt;version&gt;.jar -p mydir <strong>-g -eFAB</strong> -s MySuite</code>
+ * Configuring a standard output, error, or file reporter into color mode (C) will cause it to insert ansi escape codes
+ * to change and later reset terminal colors. Information printed as a result of run starting, completed, and stopped events
+ * is printed in cyan. Information printed as a result of ignored or pending test events is shown in yellow. Information printed
+ * as a result of test failed, suite aborted, or run aborted events is printed in red. All other information is printed in green.
+ * The purpose of these colors is to facilitate speedy reading of the output, especially the finding of failed tests, which can
+ * get lost in a sea of passing tests.
+ * </p>
+ *
+ * <p>
+ * For example, to run a suite using two reporters, the graphical reporter configured to present every reported event
+ * and a standard error reporter configured to present everything but test starting, test succeeded, test ignored, test
+ * pending, suite starting, suite completed, and info provided events, you would type:
+ * </p>
+ *
+ * <p>
+ * <code>scala -classpath scalatest-&lt;version&gt;.jar -p mydir <strong>-g -eNDXEHLO</strong> -s MySuite</code>
  * </p>
  *
  * <p>
  * Note that no white space is allowed between the reporter option and the initial configuration
- * parameters. So <code>"-e FAB"</code> will not work,
- * <code>"-eFAB"</code> will work.
+ * parameters. So <code>"-e NDXEHLO"</code> will not work,
+ * <code>"-eNDXEHLO"</code> will work.
  * </p>
  *
  * <p>
- * <strong>Specifying includes and excludes</strong>
+ * <strong>Specifying tags to include and exclude</strong>
  * </p>
  *
  * <p>
- * You can specify named groups of tests to include or exclude from a run. To specify includes,
- * use <code>-n</code> followed by a white-space-separated list of group names to include, surrounded by
- * double quotes. (The double quotes are not needed if specifying just one group.)  Similarly, to specify excludes, use <code>-x</code> followed by a white-space-separated
- * list of group names to exclude, surrounded by double quotes. (As before, the double quotes are not needed if specifying just one group.) If includes is not specified, then all tests
- * except those mentioned in the excludes group (and in the <code>Ignore</code> group), will be executed.
- * (In other words, an empty includes list is like a wildcard, indicating all tests be included.)
- * If includes is specified, then only those tests in groups mentioned in the argument following <code>-n</code>
- * and not mentioned in the excludes group, will be executed. For more information on test groups, see
+ * You can specify tag names of tests to include or exclude from a run. To specify tags to include,
+ * use <code>-n</code> followed by a white-space-separated list of tag names to include, surrounded by
+ * double quotes. (The double quotes are not needed if specifying just one tag.)  Similarly, to specify tags
+ * to exclude, use <code>-x</code> followed by a white-space-separated
+ * list of tag names to exclude, surrounded by double quotes. (As before, the double quotes are not needed
+ * if specifying just one tag.) If tags to include is not specified, then all tests
+ * except those mentioned in the tags to exclude (and in the <code>org.scalatest.Ignore</code> tag), will be executed.
+ * (In other words, the absence of a <code>-n</code> option is like a wildcard, indicating all tests be included.)
+ * If tags to include is specified, then only those tests whose tags are mentioned in the argument following <code>-n</code>
+ * and not mentioned in the tags to exclude, will be executed. For more information on test tags, see
  * the <a href="Suite.html">documentation for <code>Suite</code></a>. Here are some examples:
  * </p>
  *
