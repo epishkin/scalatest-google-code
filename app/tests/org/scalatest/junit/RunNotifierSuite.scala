@@ -176,12 +176,12 @@ class RunNotifierSuite extends FunSuite {
     reporter(RunAborted(ordinal, "some message", Some(exception)))
     assert(runNotifier.methodInvocationCount === 1)
     assert(runNotifier.passed.get.getException === exception)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "*** RUN ABORTED - some message ***")
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "*** RUN ABORTED *** some message")
 
     reporter(RunAborted(ordinal, "a different message", Some(otherException)))
     assert(runNotifier.methodInvocationCount === 2)
     assert(runNotifier.passed.get.getException === otherException)
-    assert(runNotifier.passed.get.getDescription.getDisplayName === "*** RUN ABORTED - a different message ***")
+    assert(runNotifier.passed.get.getDescription.getDisplayName === "*** RUN ABORTED *** a different message")
   }
 }
 

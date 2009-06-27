@@ -8,43 +8,20 @@ OutputManager, OutputTester. Those seem nicer. Anyway, it is for another day.
 Someone complained that it they configured the graphic reporter, that it should show that configuration by default not
 just runs and failures. Not sure.
 
------------
-Change the reporter configuration to be filters, and don't allow people to filter out
-any RunX events or SuiteAborted or TestFailed events. So they an only filter out the events that aren't important. Otherwise,
-users can make mistakes. In Ant file, I'm not sure whether to stick with config="..." or do something like filterEvents=,
-verbose="true", color="true". Damn XML always has verbose="true" on. Let's stick with config="...".
+Do more testing on the FilterReporter config stuff.
 
-The former config params for reporters were:
-
-Y Z T F G U P B I S A R
-
-There will for two releases be completely ignored, but allowed. After two releases, they will generate an error.
-Instead, these params will do something:
-
-V - verbose (on print reporters only, which would cause it to print test and suite durations too)
-C - color (on print reporters only)
-N - filter testStarting events
-D - filter testSucceeded events
-X - filter testIgnored events
-E - filter testPending events
-H - filter suiteStarting events
-L - filter suiteCompleted events
-O - filter infoProvided events
-------------
-
-Create  JUnit3ComfortSuite in place that is a class that extends Suite, adds setup and tearDown methods, and has a @RunWith(JUnitRunner)
-annotation so it can be run with JUnit 4. Later I'll add in OneInstancePerTest. For two releases, extend it with a deprecated JUnit3Suite
-class. Explain it's name was changed because it no longer extends TestCase. Drop JUnit3Suite in 0.9.8. Or call it JUnitComfortSuite, because
-it doesn't run with JUnit 3 anymore, and it was also JUnit 1 and 2 probably.
+Write tests for JUnitComfort Suite.
+Document JUnitComfortSuite.
 
 Use filter in the run methods
 
 Try sorting the GUI reports with the ordinal
 
+I think I want to deprecate the use of -x for tags to exclude, to use it for XML Reporter. So in 0.9.6, -x should
+still work, but so will some new one. And I'll warn folks that probably in 0.9.7, -x will start meaning xml reporter.
+
 Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest,
 because it is also used by Distributor and will be used by SuiteRerunner.
-
-Create a command line param that takes regular "classpath" style runpath, so path names with spaces will work GEORGE?
 
 Add durations to the places that take them
 
