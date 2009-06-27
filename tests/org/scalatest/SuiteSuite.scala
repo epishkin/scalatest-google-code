@@ -616,5 +616,29 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       FailureMessages invokePrivate decorateToStringValue(new AnyRef { override def toString = "Hey!"})
     }
   }
+
+  def testTestDurations() {
+    class MyReporter extends Reporter {
+      var testSucceededWasFiredAndHadADuration = false
+      var testFailedWasFiredAndHadADuration = false
+      override def apply(event: Event) {
+        event match {
+          case event: TestSucceeded => testSucceededWasFiredAndHadADuration = event.duration.isDefined
+          case event: TestFailed => testFailedWasFiredAndHadADuration = event.duration.isDefined
+          case _ =>
+        }
+      }
+    }
+    class MySuite extends Suite {
+      def testSucceeds() = ()
+      def testFails() { fail() }
+    }
+
+    val mySuite = new MySuite
+    val myReporter = new MyReporter
+    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.testSucceededWasFiredAndHadADuration)
+    assert(myReporter.testFailedWasFiredAndHadADuration)  
+  }
 }
 
