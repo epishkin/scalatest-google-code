@@ -33,6 +33,7 @@ import java.lang.annotation.ElementType
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 import org.scalatest.tools.StandardOutReporter
+import java.util.Date
 
 /**
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
@@ -1289,7 +1290,9 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
         Some(new TestRerunner(getClass.getName, testName))
       else
         None
-     
+
+    val testStartTime = (new Date).getTime
+
     report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     val args: Array[Object] =
@@ -1309,18 +1312,22 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     try {
       method.invoke(this, args: _*)
 
-      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, None, rerunnable)) // TODO: Add a duration
+      val duration = (new Date).getTime - testStartTime
+      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
     }
     catch { 
       case ite: InvocationTargetException => {
         val t = ite.getTargetException
-        handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker)
+        val duration = (new Date).getTime - testStartTime
+        handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       }
       case e: Exception => {
-        handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker)
+        val duration = (new Date).getTime - testStartTime
+        handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, report, tracker)
+        val duration = (new Date).getTime - testStartTime
+        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       }
     }
   }
@@ -1496,7 +1503,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   }
 
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker) {
+      rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
     val message =
       if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -1504,7 +1511,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       else
         throwable.toString
 
-    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, None, rerunnable)) // TODO: Add a duration
+    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), None, rerunnable))
   }
 
   /**
