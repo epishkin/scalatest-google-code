@@ -75,6 +75,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
     pw.println(if (color) ansiColor + text + ansiReset else text)
   }
 
+  // Called for TestFailed, InfoProvided (because it can have a throwable in it), and SuiteAborted
   private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable],
     formatter: Option[Formatter], suiteName: Option[String], testName: Option[String]): List[String] = {
 
@@ -84,10 +85,29 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
           Resources("specTextAndNote", formattedText, Resources(noteResourceName))
         case _ =>
           // Deny MotionToSuppress directives in error events, because error info needs to be seen by users
-          Reporter.messageToPrint(errorResourceName, message, throwable, suiteName, testName)
-      }
+            suiteName match {
+              case Some(sn) =>
+                testName match {
+                  case Some(tn) => Resources(errorResourceName, sn + ": " + tn)
+                  case None => Resources(errorResourceName, sn)
+                }
+              // Should not get here with built-in ScalaTest stuff, but custom stuff could get here.
+              case None => Resources(errorResourceName, Resources("noNameSpecified"))
+            }
+    }
 
     val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
+
+    // If there's a message, put it on the next line, indented two spaces
+    val possiblyEmptyMessage = Reporter.messageOrThrowablesDetailMessage(message, throwable)
+
+    val throwableIsATestFailedExceptionWithRedundantMessage =
+      throwable match {
+        case Some(t) =>
+          t.isInstanceOf[TestFailedException] && t.getMessage != null &&
+          !t.getMessage.trim.isEmpty && possiblyEmptyMessage.indexOf(t.getMessage.trim) != -1
+        case None => false
+      }
 
     def getStackTrace(throwable: Option[Throwable]): List[String] =
       throwable match {
@@ -113,11 +133,16 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
             }
             else List(labeledClassNameWithMessage)
           }
-          stackTrace(throwable, false)
+          if (!throwableIsATestFailedExceptionWithRedundantMessage)
+            stackTrace(throwable, false)
+          else List()
         case None => List()
       }
 
-    stringToPrintWithPossibleLineNumber :: getStackTrace(throwable)
+    if (possiblyEmptyMessage.isEmpty)
+      stringToPrintWithPossibleLineNumber :: getStackTrace(throwable)
+    else
+      stringToPrintWithPossibleLineNumber :: "  " + possiblyEmptyMessage :: getStackTrace(throwable)
   }
 
   private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String]): Option[String] = {
@@ -131,7 +156,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
             case Some(tn) => suiteName + ": " + tn
             case None => suiteName
           }
-        Some(Resources(resourceName + "NoMessage", arg))
+        Some(Resources(resourceName, arg))
     }
   }
 
@@ -149,11 +174,11 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
 
       case RunCompleted(ordinal, duration, summary, formatter, payload, threadName, timeStamp) => 
 
-        makeFinalReport("runCompleted", summary)
+        makeFinalReport("runCompleted", duration, summary)
 
       case RunStopped(ordinal, duration, summary, formatter, payload, threadName, timeStamp) =>
 
-        makeFinalReport("runStopped", summary)
+        makeFinalReport("runStopped", duration, summary)
 
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
@@ -207,9 +232,9 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
           formatter match {
             case Some(IndentedText(formattedText, _, _)) => Some(Resources("specTextAndNote", formattedText, Resources("ignoredNote")))
             case Some(MotionToSuppress) => None
-            case _ => Some(Resources("testIgnoredNoMessage"))
+            case _ => Some(Resources("testIgnored", suiteName + ": " + testName))
           }
-
+ 
         stringToPrint match {
           case Some(string) => printPossiblyInColor(string, ansiYellow)
           case None =>
@@ -248,14 +273,19 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
     pw.flush()
   }
 
-  private def makeFinalReport(resourceName: String, summaryOption: Option[Summary]) {
+  private def makeFinalReport(resourceName: String, duration: Option[Long], summaryOption: Option[Summary]) {
 
     summaryOption match {
       case Some(summary) =>
 
         import summary._
 
-        printPossiblyInColor(Resources(resourceName), ansiCyan)
+        duration match {
+          case Some(msSinceEpoch) =>
+            printPossiblyInColor(Resources(resourceName + "In", makeDurationString(msSinceEpoch)), ansiCyan)
+          case None =>
+            printPossiblyInColor(Resources(resourceName), ansiCyan)
+        }     
 
         // totalNumberOfTestsRun=Total number of tests run was: {0}
         printPossiblyInColor(Resources("totalNumberOfTestsRun", testsCompletedCount.toString), ansiCyan)
@@ -300,7 +330,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
   //  else Resources("indentOnce", indent(s, times - 1))
 }
  
-private object PrintReporter {
+private[tools] object PrintReporter {
 
   final val BufferSize = 4096
 
@@ -309,4 +339,98 @@ private object PrintReporter {
   final val ansiCyan = "\033[36m"
   final val ansiYellow = "\033[33m"
   final val ansiRed = "\033[31m"
+
+  def makeDurationString(duration: Long) = {
+
+    val milliseconds = duration % 1000
+    val seconds = ((duration - milliseconds) / 1000) % 60
+    val minutes = ((duration - milliseconds) / 60000) % 60
+    val hours = (duration - milliseconds) / 3600000
+    val hoursInSeconds = hours * 3600
+    val hoursInMinutes = hours * 60
+
+    val durationInSeconds = duration / 1000
+    val durationInMinutes = durationInSeconds / 60
+
+    if (duration == 1)
+      Resources("oneMillisecond")
+    else if (duration < 1000)
+      Resources("milliseconds", duration.toString)
+    else if (duration == 1000)
+      Resources("oneSecond")
+    else if (duration == 1001)
+      Resources("oneSecondOneMillisecond")
+    else if (duration % 1000 == 0 && duration < 60000) // 2 seconds, 10 seconds, etc.
+      Resources("seconds", seconds.toString)
+    else if (duration > 1001 && duration < 2000)// 1 second, 45 milliseconds, etc.
+      Resources("oneSecondMilliseconds", milliseconds.toString)
+    else if (durationInSeconds < 60)// 3 seconds, 45 milliseconds, etc.
+      Resources("secondsMilliseconds", seconds.toString, milliseconds.toString)
+    else if (durationInSeconds < 61)
+      Resources("oneMinute")
+    else if (durationInSeconds < 62)
+      Resources("oneMinuteOneSecond")
+    else if (durationInSeconds < 120)
+      Resources("oneMinuteSeconds", seconds.toString)
+    else if (durationInSeconds < 121)
+      Resources("minutes", minutes.toString) // 
+    else if (durationInSeconds < 3600 && (durationInSeconds % 60) == 1)
+      Resources("minutesOneSecond", minutes.toString)
+    else if (durationInSeconds < 3600)
+      Resources("minutesSeconds", minutes.toString, seconds.toString)
+    else if (durationInSeconds < hoursInSeconds + 1) {
+      if (hours == 1)
+        Resources("oneHour")
+      else
+        Resources("hours", hours.toString)
+    }
+    else if (durationInSeconds < hoursInSeconds + 2) {
+      if (hours == 1)
+        Resources("oneHourOneSecond")
+      else
+        Resources("hoursOneSecond", hours.toString)
+    }
+    else if (durationInSeconds < hoursInSeconds + 60) {
+      if (hours == 1)
+        Resources("oneHourSeconds", seconds.toString)
+      else
+        Resources("hoursSeconds", hours.toString, seconds.toString)
+    }
+    else if (durationInSeconds == hoursInSeconds + 60) {
+      if (hours == 1)
+        Resources("oneHourOneMinute")
+      else
+        Resources("hoursOneMinute", hours.toString)
+    }
+    else if (durationInSeconds == hoursInSeconds + 61) {
+      if (hours == 1)
+        Resources("oneHourOneMinuteOneSecond")
+      else
+        Resources("hoursOneMinuteOneSecond", hours.toString)
+    }
+    else if (durationInSeconds < hoursInSeconds + 120) {
+      if (hours == 1)
+        Resources("oneHourOneMinuteSeconds", seconds.toString)
+      else
+        Resources("hoursOneMinuteSeconds", hours.toString, seconds.toString)
+    }
+    else if (durationInSeconds % 60 == 0) {
+      if (hours == 1)
+        Resources("oneHourMinutes", minutes.toString)
+      else
+        Resources("hoursMinutes", hours.toString, minutes.toString)
+    }
+    else if (durationInMinutes % 60 != 1 && durationInSeconds % 60 == 1) {
+      if (hours == 1)
+        Resources("oneHourMinutesOneSecond", minutes.toString)
+      else
+        Resources("hoursMinutesOneSecond", hours.toString, minutes.toString)
+    }
+    else {
+      if (hours == 1)
+        Resources("oneHourMinutesSeconds", minutes.toString, seconds.toString)
+      else
+        Resources("hoursMinutesSeconds", hours.toString, minutes.toString, seconds.toString)
+    }
+  }
 }

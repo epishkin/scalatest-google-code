@@ -28,6 +28,7 @@ import java.util.concurrent.ArrayBlockingQueue
 import org.scalatest.testng.TestNGWrapperSuite
 import java.util.concurrent.Semaphore
 import org.scalatest.events._
+import java.util.Date
 
 /**
  * <p>
@@ -1090,7 +1091,7 @@ object Runner {
   }
 
   private[scalatest] def doRunRunRunADoRunRun(
-    dispatchReporter: DispatchReporter,
+    dispatch: DispatchReporter,
     suitesList: List[String],
     stopRequested: Stopper,
     includes: Set[String],
@@ -1107,7 +1108,7 @@ object Runner {
   ) = {
 
     // TODO: add more, and to RunnerThread too
-    if (dispatchReporter == null)
+    if (dispatch == null)
       throw new NullPointerException
     if (suitesList == null)
       throw new NullPointerException
@@ -1132,13 +1133,15 @@ object Runner {
 
     var tracker = new Tracker(new Ordinal(runStamp))
 
+    val runStartTime = (new Date).getTime
+
     try {
       val loadProblemsExist =
         try {
           val unassignableList = suitesList.filter(className => !classOf[Suite].isAssignableFrom(loader.loadClass(className)))
           if (!unassignableList.isEmpty) {
             val names = for (className <- unassignableList) yield " " + className
-            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("nonSuite") + names, None))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("nonSuite") + names, None))
             true
           }
           else {
@@ -1147,7 +1150,7 @@ object Runner {
         }
         catch {
           case e: ClassNotFoundException => {
-            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e)))
             true
           }
         }
@@ -1214,10 +1217,10 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          dispatchReporter.apply(RunStarting(tracker.nextOrdinal(), expectedTestCount))
+          dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes), propertiesMap)
+            val distributor = new ConcurrentDistributor(dispatch, stopRequested, includes, excludesWithIgnore(excludes), propertiesMap)
             for (suite <- suiteInstances) {
               distributor.apply(suite, tracker.nextTracker())
             }
@@ -1225,33 +1228,34 @@ object Runner {
           }
           else {
             for (suite <- suiteInstances) {
-              val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopRequested, includes, excludesWithIgnore(excludes),
+              val suiteRunner = new SuiteRunner(suite, dispatch, stopRequested, includes, excludesWithIgnore(excludes),
                   propertiesMap, None, tracker)
               suiteRunner.run()
             }
           }
 
+          val duration = (new Date).getTime - runStartTime
           if (stopRequested()) {
-            dispatchReporter.apply(RunStopped(tracker.nextOrdinal()))
+            dispatch(RunStopped(tracker.nextOrdinal(), Some(duration)))
           }
           else {
-            dispatchReporter.apply(RunCompleted(tracker.nextOrdinal()))
+            dispatch(RunCompleted(tracker.nextOrdinal(), Some(duration)))
           }
         }
         catch {
           case e: InstantiationException =>
-            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some((new Date).getTime - runStartTime)))
           case e: IllegalAccessException =>
-            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some((new Date).getTime - runStartTime)))
           case e: NoClassDefFoundError =>
-            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e), Some((new Date).getTime - runStartTime)))
           case e: Throwable =>
-            dispatchReporter.apply(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e), Some((new Date).getTime - runStartTime)))
         }
       }
     }
     finally {
-      dispatchReporter.dispatchDispose()
+      dispatch.dispatchDispose()
       doneListener.done()
     }
   }
