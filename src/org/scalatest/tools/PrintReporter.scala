@@ -145,10 +145,21 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
       stringToPrintWithPossibleLineNumber :: "  " + possiblyEmptyMessage :: getStackTrace(throwable)
   }
 
-  private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String]): Option[String] = {
+  private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String]): Option[String] =
+    stringToPrintWhenNoError(resourceName, formatter, suiteName, testName, None)
+
+  private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String], duration: Option[Long]): Option[String] = {
 
     formatter match {
-      case Some(IndentedText(formattedText, _, _)) => Some(formattedText)
+      case Some(IndentedText(formattedText, _, _)) =>
+        duration match {
+          case Some(milliseconds) =>
+            if (verbose)
+              Some(Resources("withDuration", formattedText, makeDurationString(milliseconds)))
+            else
+              Some(formattedText)
+          case None => Some(formattedText)
+        }
       case Some(MotionToSuppress) => None
       case _ =>
         val arg =
@@ -156,7 +167,16 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
             case Some(tn) => suiteName + ": " + tn
             case None => suiteName
           }
-        Some(Resources(resourceName, arg))
+        val unformattedText = Resources(resourceName, arg)
+        duration match {
+          case Some(milliseconds) =>
+            if (verbose)
+              Some(Resources("withDuration", unformattedText, makeDurationString(milliseconds)))
+            else
+              Some(unformattedText)
+          case None => Some(unformattedText)
+        }
+
     }
   }
 
@@ -219,7 +239,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
 
       case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        val stringToPrint = stringToPrintWhenNoError("testSucceeded", formatter, suiteName, Some(testName))
+        val stringToPrint = stringToPrintWhenNoError("testSucceeded", formatter, suiteName, Some(testName), duration)
 
         stringToPrint match {
           case Some(string) => printPossiblyInColor(string, ansiGreen)
