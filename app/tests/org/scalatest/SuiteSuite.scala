@@ -653,6 +653,9 @@ class SuiteSuite extends Suite with PrivateMethodTester {
         }
       }
     }
+
+    // the suite duration is sent by runNestedSuites, so MySuite needs a
+    // nested suite
     class MySuite extends Suite {
       override def nestedSuites = List(new Suite {})
       def testSucceeds() = ()
@@ -663,6 +666,26 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     val myReporter = new MyReporter
     mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.suiteCompletedWasFiredAndHadADuration)
+
+    class SuiteThatAborts extends Suite {
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+              goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+        throw new RuntimeException("Aborting for testing purposes")
+      }
+    }
+
+    // the suite duration is sent by runNestedSuites, so MySuite needs a
+    // nested suite
+    class MyOtherSuite extends Suite {
+      override def nestedSuites = List(new SuiteThatAborts)
+      def testSucceeds() = ()
+      def testFails() { fail() }
+    }
+
+    val myOtherSuite = new MyOtherSuite
+    val myOtherReporter = new MyReporter
+    myOtherSuite.run(None, myOtherReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myOtherReporter.suiteCompletedWasFiredAndHadADuration)
   }
 }
 
