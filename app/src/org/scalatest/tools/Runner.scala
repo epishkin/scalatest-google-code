@@ -28,7 +28,6 @@ import java.util.concurrent.ArrayBlockingQueue
 import org.scalatest.testng.TestNGWrapperSuite
 import java.util.concurrent.Semaphore
 import org.scalatest.events._
-import java.util.Date
 
 /**
  * <p>
@@ -1133,7 +1132,7 @@ object Runner {
 
     var tracker = new Tracker(new Ordinal(runStamp))
 
-    val runStartTime = (new Date).getTime
+    val runStartTime = System.currentTimeMillis
 
     try {
       val loadProblemsExist =
@@ -1234,7 +1233,7 @@ object Runner {
             }
           }
 
-          val duration = (new Date).getTime - runStartTime
+          val duration = System.currentTimeMillis - runStartTime
           if (stopRequested()) {
             dispatch(RunStopped(tracker.nextOrdinal(), Some(duration)))
           }
@@ -1244,13 +1243,13 @@ object Runner {
         }
         catch {
           case e: InstantiationException =>
-            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some((new Date).getTime - runStartTime)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
           case e: IllegalAccessException =>
-            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some((new Date).getTime - runStartTime)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
           case e: NoClassDefFoundError =>
-            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e), Some((new Date).getTime - runStartTime)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
           case e: Throwable =>
-            dispatch(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e), Some((new Date).getTime - runStartTime)))
+            dispatch(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e), Some(System.currentTimeMillis - runStartTime)))
         }
       }
     }

@@ -101,11 +101,14 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
     // If there's a message, put it on the next line, indented two spaces
     val possiblyEmptyMessage = Reporter.messageOrThrowablesDetailMessage(message, throwable)
 
+    // I don't want to put a second line out there if the event's message contains the throwable's message,
+    // or if niether the event message or throwable message has any message in it.
     val throwableIsATestFailedExceptionWithRedundantMessage =
       throwable match {
         case Some(t) =>
-          t.isInstanceOf[TestFailedException] && t.getMessage != null &&
-          !t.getMessage.trim.isEmpty && possiblyEmptyMessage.indexOf(t.getMessage.trim) != -1
+          t.isInstanceOf[TestFailedException] && ((t.getMessage != null &&
+          !t.getMessage.trim.isEmpty && possiblyEmptyMessage.indexOf(t.getMessage.trim) != -1) || // This part is where a throwable message exists
+          (possiblyEmptyMessage.isEmpty && (t.getMessage == null || t.getMessage.trim.isEmpty))) // This part detects when both have no message
         case None => false
       }
 

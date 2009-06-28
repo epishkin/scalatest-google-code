@@ -1,3 +1,37 @@
+Add durations to the places that take them
+
+Probably change V for verbose into a separate one for showing all durations D and one for showing all stack traces.
+
+Print out the summary info, once it is getting sent. (It is in printreporter, but not yet in GUI.)
+
+add a pending singleton or val to Suite (support both (pending) and { *** pending *** } styles). Maybe I'll use !!! pending !!! in
+a MoreObviousPendingStyle trait or something, because I say !!! IGNORED !!! in the output.
+
+add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
+
+Add testsFor to FunSuite. Use same data structure as Spec. Otherwise SharedTests would be a pain. In FeatureSpec,
+will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to one level, but seems artificial. It may be I want
+to factor out implementation into a private helper class that both FunSuite and Spec use, especially since this stuff will need
+to be repeated in WordSpec and FeatureSpec.
+
+Use "drop" instead of "filter" when talking about configuring events to be "dropped" and not sent to the reporters, so that filter
+just means one thing.
+
+Use filter in the run methods
+
+add the 'it should/must ""/describe a ""/describe it ""' style to Spec
+
+Do the fixture package for Suite, FunSuite, and Spec
+
+Make a GoodiesFixture trait for getting the goodies into a test
+
+Do the OneInstancePerTest and ConcurrentTestExecution traits
+
+Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, which would then give it the same kind of output.
+
+Write tests for JUnitComfort Suite.
+Document JUnitComfortSuite.
+
 Add more sugar forms in SharedTests.
 
 Put an Option[Nothing] in the run methods as a placeholder for the OutErrTester kind of stuff. Whatever that object is
@@ -10,11 +44,6 @@ just runs and failures. Not sure.
 
 Do more testing on the FilterReporter config stuff.
 
-Write tests for JUnitComfort Suite.
-Document JUnitComfortSuite.
-
-Use filter in the run methods
-
 Try sorting the GUI reports with the ordinal
 
 I think I want to deprecate the use of -x for tags to exclude, to use it for XML Reporter. So in 0.9.6, -x should
@@ -23,27 +52,11 @@ still work, but so will some new one. And I'll warn folks that probably in 0.9.7
 Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest,
 because it is also used by Distributor and will be used by SuiteRerunner.
 
-Add durations to the places that take them
-
-add the 'it should/must ""/describe a ""/describe it ""' style to Spec
-
-add pending functionality to Suite
-
-add a pending singleton or val to Suite (support both (pending) and { *** pending *** } styles)
-
 add a RandomTestOrder trait
 
 Change info in FunSuite to probably use an actor so multiple threads can fire infos. Oh and maybe you need to put the var that holds the current one in an atomic. Because only one thread should be writing to that.
 
-add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
-
-Do the OneInstancePerTest and ConcurrentTestExecution traits
-
 Do the OneArgXXX traits
-
-Do the fixture package for Suite, FunSuite, and Spec
-
-Make a GoodiesFixture trait for getting the goodies into a test
 
 put goodies in ant task as well as properties for two releases, then drop properties
 Change description of user-defined properties in Runner to "goodies". Do same thing includes --> tagsToInclude,
@@ -53,20 +66,13 @@ Add the things for Property based testing displaying args nicely in the GUI (lik
 
 The eating error message problem. Make sure an exception message shows up in the GUI/Print output.
 
-Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, which would then give it the same kind of output.
-
 Oh, and must fix the problem of counting tests when using config params. RunStopped, RunCompleted, and RunAborted all take an optional Summary. When fired from Runner, SuiteRerunner, and TestRerunner, these are Nones. So maybe I enhance DispatchReporter to count these? To reset the count to zero when a RunCompleted, RunStopped, or RunAborted comes through? It would be counted by the actor thread. And if the summary field was a None, it would replace it with a Some that has these counts in it.
-
-Print out the summary info, once it is getting sent. (It is in printreporter, but not yet in GUI.)
 
 I'm not printing out the message in a formatted report, just the exception's detail message
 
 Add more overloaded methods to Informer that take optional throwable, formatter, payload, etc.
 
 Do an xml reporter and an html reporter
-
-Add testsFor to FunSuite. Use same data structure as Spec. Otherwise SharedTests would be a pain. In FeatureSpec,
-will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to one level, but seems artificial.
 
 Ask folks about run versus execute
 Ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
