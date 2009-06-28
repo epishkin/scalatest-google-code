@@ -33,7 +33,6 @@ import java.lang.annotation.ElementType
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 import org.scalatest.tools.StandardOutReporter
-import java.util.Date
 
 /**
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
@@ -1291,7 +1290,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       else
         None
 
-    val testStartTime = (new Date).getTime
+    val testStartTime = System.currentTimeMillis
 
     report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
@@ -1312,21 +1311,21 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     try {
       method.invoke(this, args: _*)
 
-      val duration = (new Date).getTime - testStartTime
+      val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
     }
     catch { 
       case ite: InvocationTargetException => {
         val t = ite.getTargetException
-        val duration = (new Date).getTime - testStartTime
+        val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       }
       case e: Exception => {
-        val duration = (new Date).getTime - testStartTime
+        val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       }
       case ae: AssertionError => {
-        val duration = (new Date).getTime - testStartTime
+        val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       }
     }
@@ -1580,6 +1579,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
         val rawString = Resources("suiteExecutionStarting")
         val formatter = formatterForSuiteStarting(nestedSuite)
 
+        val suiteStartTime = System.currentTimeMillis
+
         report(SuiteStarting(tracker.nextOrdinal(), nestedSuite.suiteName, Some(nestedSuite.getClass.getName), formatter, rerunnable))
 
         try {
@@ -1589,7 +1590,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
           val rawString = Resources("suiteCompletedNormally")
           val formatter = formatterForSuiteCompleted(nestedSuite)
 
-          report(SuiteCompleted(tracker.nextOrdinal(), suiteName, Some(thisSuite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
+          val duration = System.currentTimeMillis - suiteStartTime
+          report(SuiteCompleted(tracker.nextOrdinal(), suiteName, Some(thisSuite.getClass.getName), Some(duration), formatter, rerunnable))
         }
         catch {       
           case e: RuntimeException => {
@@ -1597,7 +1599,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
             val rawString = Resources("executeException")
             val formatter = formatterForSuiteAborted(nestedSuite, rawString)
 
-            report(SuiteAborted(tracker.nextOrdinal(), rawString, suiteName, Some(thisSuite.getClass.getName), Some(e), None, formatter, rerunnable)) // TODO: add a duration
+            val duration = System.currentTimeMillis - suiteStartTime
+            report(SuiteAborted(tracker.nextOrdinal(), rawString, suiteName, Some(thisSuite.getClass.getName), Some(e), Some(duration), formatter, rerunnable))
           }
         }
       }

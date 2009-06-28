@@ -301,7 +301,7 @@
 
     <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
-            <reporter type="stdout" config="CNV"/>
+            <reporter type="stdout" config="CN"/>
             <reporter type="file" filename="delme.txt" />
             <suite classname="org.scalatest.SuiteSuite" />
         </scalatest>

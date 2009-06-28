@@ -638,7 +638,31 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     val myReporter = new MyReporter
     mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.testSucceededWasFiredAndHadADuration)
-    assert(myReporter.testFailedWasFiredAndHadADuration)  
+    assert(myReporter.testFailedWasFiredAndHadADuration)
+  }
+
+  def testSuiteDurations() {
+    class MyReporter extends Reporter {
+      var suiteCompletedWasFiredAndHadADuration = false
+      var suiteAbortedWasFiredAndHadADuration = false
+      override def apply(event: Event) {
+        event match {
+          case event: SuiteCompleted => suiteCompletedWasFiredAndHadADuration = event.duration.isDefined
+          case event: SuiteAborted => suiteAbortedWasFiredAndHadADuration = event.duration.isDefined
+          case _ =>
+        }
+      }
+    }
+    class MySuite extends Suite {
+      override def nestedSuites = List(new Suite {})
+      def testSucceeds() = ()
+      def testFails() { fail() }
+    }
+
+    val mySuite = new MySuite
+    val myReporter = new MyReporter
+    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.suiteCompletedWasFiredAndHadADuration)
   }
 }
 
