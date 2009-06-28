@@ -685,7 +685,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
     val myOtherSuite = new MyOtherSuite
     val myOtherReporter = new MyReporter
     myOtherSuite.run(None, myOtherReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
-    assert(myOtherReporter.suiteCompletedWasFiredAndHadADuration)
+    assert(myOtherReporter.suiteAbortedWasFiredAndHadADuration)
   }
 }
 
