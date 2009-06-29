@@ -31,7 +31,8 @@ import java.io.IOException
  *
  * @author Bill Venners
  */
-private[scalatest] class FileReporter(val filename: String, verbose: Boolean, color: Boolean)
-    extends PrintReporter(filename, verbose, color) {
-  def this(filename: String) = this(filename, false, false)
+private[scalatest] class FileReporter(val filename: String, presentAllDurations: Boolean,
+    presentInColor: Boolean, presentTestFailedExceptionStackTraces: Boolean)
+    extends PrintReporter(filename, presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) {
+  def this(filename: String) = this(filename, false, true, false)
 }

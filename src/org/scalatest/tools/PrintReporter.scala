@@ -35,7 +35,8 @@ import PrintReporter._
  *
  * @author Bill Venners
  */
-private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolean, color: Boolean) extends ResourcefulReporter {
+private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurations: Boolean,
+        presentInColor: Boolean, presentTestFailedExceptionStackTraces: Boolean) extends ResourcefulReporter {
 
   /**
   * Construct a <code>PrintReporter</code> with passed
@@ -46,7 +47,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
   * @param os the <code>OutputStream</code> to which to print reported info
   * @throws NullPointerException if passed <code>os</code> reference is <code>null</code>
   */
-  def this(os: OutputStream, verbose: Boolean, color: Boolean) = this(new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(os, BufferSize))), verbose, color)
+  def this(os: OutputStream, presentAllDurations: Boolean, presentInColor: Boolean, presentTestFailedExceptionStackTraces: Boolean) = this(new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(os, BufferSize))), presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces)
 
   /**
   * Construct a <code>PrintReporter</code> with passed
@@ -58,7 +59,19 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
   * @throws NullPointerException if passed <code>filename</code> reference is <code>null</code>
   * @throws IOException if unable to open the specified file for writing
   */
-  def this(filename: String, verbose: Boolean, color: Boolean) = this(new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), BufferSize)), verbose, color)
+  def this(
+    filename: String,
+    presentAllDurations: Boolean,
+    presentInColor: Boolean,
+    presentTestFailedExceptionStackTraces: Boolean
+  ) =
+    this(
+      new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), BufferSize)),
+      presentAllDurations,
+      presentInColor,
+      presentTestFailedExceptionStackTraces
+    )
+
   private def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
     throwable match {
       case Some(testFailedException: TestFailedException) =>
@@ -72,7 +85,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
   }
 
   private def printPossiblyInColor(text: String, ansiColor: String) {
-    pw.println(if (color) ansiColor + text + ansiReset else text)
+    pw.println(if (presentInColor) ansiColor + text + ansiReset else text)
   }
 
   // Called for TestFailed, InfoProvided (because it can have a throwable in it), and SuiteAborted
@@ -124,7 +137,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
               else
                 "  " + labeledClassName
 
-            if (verbose || !throwable.isInstanceOf[TestFailedException]) {
+            if (presentAllDurations || !throwable.isInstanceOf[TestFailedException]) {
               val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
               val cause = throwable.getCause
 
@@ -157,7 +170,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
       case Some(IndentedText(formattedText, _, _)) =>
         duration match {
           case Some(milliseconds) =>
-            if (verbose)
+            if (presentAllDurations)
               Some(Resources("withDuration", formattedText, makeDurationString(milliseconds)))
             else
               Some(formattedText)
@@ -173,7 +186,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, verbose: Boolea
         val unformattedText = Resources(resourceName, arg)
         duration match {
           case Some(milliseconds) =>
-            if (verbose)
+            if (presentAllDurations)
               Some(Resources("withDuration", unformattedText, makeDurationString(milliseconds)))
             else
               Some(unformattedText)

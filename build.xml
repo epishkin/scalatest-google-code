@@ -258,7 +258,7 @@
     <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="graphic"/>
-            <reporter type="stdout" config="C"/>
+            <reporter type="stdout"/>
             <reporter type="file" filename="delme.txt" />
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.matchers" />
@@ -301,7 +301,7 @@
 
     <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
-            <reporter type="stdout" config="CN"/>
+            <reporter type="stdout" config="ND"/>
             <reporter type="file" filename="delme.txt" />
             <suite classname="org.scalatest.SuiteSuite" />
         </scalatest>
