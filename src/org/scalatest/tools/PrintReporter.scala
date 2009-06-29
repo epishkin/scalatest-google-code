@@ -92,7 +92,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
   private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable],
     formatter: Option[Formatter], suiteName: Option[String], testName: Option[String], duration: Option[Long]): List[String] = {
 
-    val stringToPrintWithoutDuration =
+    val stringToPrint =
       formatter match {
         case Some(IndentedText(formattedText, _, _)) =>
           Resources("specTextAndNote", formattedText, Resources(noteResourceName))
@@ -109,14 +109,14 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             }
     }
 
-    val stringToPrint =
+    val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
+
+    val stringToPrintWithPossibleLineNumberAndDuration =
       duration match {
         case Some(milliseconds) =>
-          Resources("withDuration", stringToPrintWithoutDuration, makeDurationString(milliseconds))
-        case None => stringToPrintWithoutDuration
+          Resources("withDuration", stringToPrintWithPossibleLineNumber, makeDurationString(milliseconds))
+        case None => stringToPrintWithPossibleLineNumber
       }
-
-    val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
 
     // If there's a message, put it on the next line, indented two spaces
     val possiblyEmptyMessage = Reporter.messageOrThrowablesDetailMessage(message, throwable)
@@ -163,9 +163,9 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
       }
 
     if (possiblyEmptyMessage.isEmpty)
-      stringToPrintWithPossibleLineNumber :: getStackTrace(throwable)
+      stringToPrintWithPossibleLineNumberAndDuration :: getStackTrace(throwable)
     else
-      stringToPrintWithPossibleLineNumber :: "  " + possiblyEmptyMessage :: getStackTrace(throwable)
+      stringToPrintWithPossibleLineNumberAndDuration :: "  " + possiblyEmptyMessage :: getStackTrace(throwable)
   }
 
   private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String]): Option[String] =
