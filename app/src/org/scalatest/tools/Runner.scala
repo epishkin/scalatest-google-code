@@ -185,22 +185,31 @@ import org.scalatest.events._
  * </p>
  *
  * <ul>
- * <li> <code><b>N</b></code> - filter <code>TestStarting</code> events
- * <li> <code><b>C</b></code> - filter <code>TestSucceeded</code> events
- * <li> <code><b>X</b></code> - filter <code>TestIgnored</code> events
- * <li> <code><b>E</b></code> - filter <code>TestPending</code> events
- * <li> <code><b>H</b></code> - filter <code>SuiteStarting</code> events
- * <li> <code><b>L</b></code> - filter <code>SuiteCompleted</code> events
- * <li> <code><b>O</b></code> - filter <code>InfoProvided</code> events
+ * <li> <code><b>N</b></code> - drop <code>TestStarting</code> events
+ * <li> <code><b>C</b></code> - drop <code>TestSucceeded</code> events
+ * <li> <code><b>X</b></code> - drop <code>TestIgnored</code> events
+ * <li> <code><b>E</b></code> - drop <code>TestPending</code> events
+ * <li> <code><b>H</b></code> - drop <code>SuiteStarting</code> events
+ * <li> <code><b>L</b></code> - drop <code>SuiteCompleted</code> events
+ * <li> <code><b>O</b></code> - drop <code>InfoProvided</code> events
  * </ul>
+ *
+ * <p>
+ * A dropped event will not be delivered to the reporter at all. So the reporter will not know about it and therefore not
+ * present information about the event in its report. For example, if you specify <code>-oN</code>, the standard output reporter
+ * will never receive any <code>TestStarting</code> events and will therefore never report them. The purpose of these
+ * configuration parameters is to allow users to selectively remove events they find add clutter to the report without
+ * providing essential information.
+ * </p>
  *
  * <p>
  * <strong>Deprecation Note: Prior to 0.9.6, ScalaTest's <code>Runner</code> allowed you specify config parameters on reports that
  * indicated a particular event should be <em>presented</em>. This meant that people could opt to not show
  * test failures, suite aborted events, <em>etc</em>. To prevent important events from being dropped accidentally,
  * starting in 0.9.6 the config parameters indicate which events should <em>not</em> be presented, and important
- * events can't be filtered out at all. For two releases,
- * the old config parameters will be tolerated, but have no effect. Only the new parameters will have any effect,
+ * events can't be dropped at all. For two releases,
+ * the old config parameters will be tolerated, but have no effect (except for F, which turns on printing of <code>TestFailedException</code>
+ * stack traces). Only the new parameters will have any effect,
  * and none of the new ones overlap with any of the old ones. So you have two releases to change your scripts to
  * use the new config parameters. Starting with 0.9.8, using the old parameters&mdash;Y, Z, T, F, G, U, P, B, I, S, A, R&mdash;will
  * cause <code>Runner</code> to abort with an error message and not run the tests.</strong>
