@@ -223,7 +223,7 @@ import org.scalatest.events._
  * <ul>
  * <li> <code><b>W</b></code> - without color
  * <li> <code><b>D</b></code> - show all durations
- * <li> <code><b>F</b></code> - show TestFailedException stack traces
+ * <li> <code><b>F</b></code> - show <code>TestFailedException</code> stack traces
  * </ul>
  *
  * <p>
