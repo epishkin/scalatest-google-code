@@ -90,9 +90,9 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
   // Called for TestFailed, InfoProvided (because it can have a throwable in it), and SuiteAborted
   private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable],
-    formatter: Option[Formatter], suiteName: Option[String], testName: Option[String]): List[String] = {
+    formatter: Option[Formatter], suiteName: Option[String], testName: Option[String], duration: Option[Long]): List[String] = {
 
-    val stringToPrint =
+    val stringToPrintWithoutDuration =
       formatter match {
         case Some(IndentedText(formattedText, _, _)) =>
           Resources("specTextAndNote", formattedText, Resources(noteResourceName))
@@ -108,6 +108,13 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
               case None => Resources(errorResourceName, Resources("noNameSpecified"))
             }
     }
+
+    val stringToPrint =
+      duration match {
+        case Some(milliseconds) =>
+          Resources("withDuration", stringToPrintWithoutDuration, makeDurationString(milliseconds))
+        case None => stringToPrintWithoutDuration
+      }
 
     val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
 
@@ -218,7 +225,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
       case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
 
-        val lines = stringsToPrintOnError("abortedNote", "runAborted", message, throwable, formatter, None, None)
+        val lines = stringsToPrintOnError("abortedNote", "runAborted", message, throwable, formatter, None, None, duration)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case SuiteStarting(ordinal, suiteName, suiteClassName, formatter, rerunnable, payload, threadName, timeStamp) =>
@@ -241,7 +248,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter, Some(suiteName), None)
+        val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter, Some(suiteName), None, duration)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
@@ -278,7 +285,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
       case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName))
+        val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName), duration)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
@@ -288,7 +295,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             case Some(NameInfo(suiteName, _, testName)) => (Some(suiteName), testName)
             case None => (None, None)
           }
-        val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName)
+        val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName, None)
         for (line <- lines) printPossiblyInColor(line, ansiGreen)
 
       case _ => throw new RuntimeException("Unhandled event")

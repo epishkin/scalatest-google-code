@@ -57,6 +57,7 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) = ()
     }
 
+fail()
     assert(a.tags === Map("testThis" -> Set("org.scalatest.Ignore")))
 
     val b = new Suite {
