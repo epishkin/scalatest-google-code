@@ -1,7 +1,5 @@
 Add durations to the places that take them
 
-Probably change V for verbose into a separate one for showing all durations D and one for showing all stack traces.
-
 Print out the summary info, once it is getting sent. (It is in printreporter, but not yet in GUI.)
 
 add a pending singleton or val to Suite (support both (pending) and { *** pending *** } styles). Maybe I'll use !!! pending !!! in

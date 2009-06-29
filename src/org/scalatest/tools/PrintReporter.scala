@@ -149,7 +149,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             }
             else List(labeledClassNameWithMessage)
           }
-          if (!throwableIsATestFailedExceptionWithRedundantMessage)
+          if (!throwableIsATestFailedExceptionWithRedundantMessage || presentTestFailedExceptionStackTraces)
             stackTrace(throwable, false)
           else List()
         case None => List()
