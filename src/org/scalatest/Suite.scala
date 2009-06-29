@@ -1009,9 +1009,7 @@ import org.scalatest.tools.StandardOutReporter
 @serializable
 trait Suite extends Assertions with RunMethods { thisSuite =>
 
-  private val TestMethodPrefix = "test"
-  private val InformerInParens = "(Informer)"
-  private val IgnoreAnnotation = "org.scalatest.Ignore"
+  import Suite.TestMethodPrefix, Suite.InformerInParens, Suite.IgnoreAnnotation
 
 /*
 * @param nestedSuites A <CODE>List</CODE> of <CODE>Suite</CODE>
@@ -1683,6 +1681,10 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 }
 
 private[scalatest] object Suite {
+
+  private val TestMethodPrefix = "test"
+  private val InformerInParens = "(Informer)"
+  private val IgnoreAnnotation = "org.scalatest.Ignore"
 
   // [bv: this is a good example of the expression type refactor. I moved this from SuiteClassNameListCellRenderer]
   // this will be needed by the GUI classes, etc.

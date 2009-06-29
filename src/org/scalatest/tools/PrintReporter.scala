@@ -137,7 +137,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
               else
                 "  " + labeledClassName
 
-            if (presentAllDurations || !throwable.isInstanceOf[TestFailedException]) {
+            if (presentTestFailedExceptionStackTraces || !throwable.isInstanceOf[TestFailedException]) {
               val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
               val cause = throwable.getCause
 
@@ -232,7 +232,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
       case SuiteCompleted(ordinal, suiteName, suiteClassName, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
-        val stringToPrint = stringToPrintWhenNoError("suiteCompleted", formatter, suiteName, None)
+        val stringToPrint = stringToPrintWhenNoError("suiteCompleted", formatter, suiteName, None, duration)
 
         stringToPrint match {
           case Some(string) => printPossiblyInColor(string, ansiGreen)

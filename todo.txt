@@ -12,9 +12,6 @@ will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to o
 to factor out implementation into a private helper class that both FunSuite and Spec use, especially since this stuff will need
 to be repeated in WordSpec and FeatureSpec.
 
-Use "drop" instead of "filter" when talking about configuring events to be "dropped" and not sent to the reporters, so that filter
-just means one thing.
-
 Use filter in the run methods
 
 add the 'it should/must ""/describe a ""/describe it ""' style to Spec
