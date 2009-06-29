@@ -325,13 +325,13 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(Set())), None, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-o"))
     }
-    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(Set(PresentColor,FilterTestIgnored))), None, Nil)) {
+    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(Set(PresentWithoutColor,FilterTestIgnored))), None, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-oCX"))
     }
     expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(Set())), Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-e"))
     }
-    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(Set(PresentVerbose))), Nil)) {
+    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(Set(PresentTestFailedExceptionStackTraces))), Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-eV"))
     }
     expect(new ReporterConfigurations(None, List(new FileReporterConfiguration(Set(), "theFilename")), None, None, Nil)) {

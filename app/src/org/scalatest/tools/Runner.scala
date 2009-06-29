@@ -181,12 +181,12 @@ import org.scalatest.events._
  * Each reporter option on the command line can include configuration characters. Configuration characters
  * are specified immediately following the <code><b>-g</b></code>, <code><b>-o</b></code>,
  * <code><b>-e</b></code>, <code><b>-f</b></code>, or <code><b>-r</b></code>. The following configuration
- * characters, which cause reports to be filtered out, are valid for any reporter:
+ * characters, which cause reports to be dropped, are valid for any reporter:
  * </p>
  *
  * <ul>
  * <li> <code><b>N</b></code> - filter <code>TestStarting</code> events
- * <li> <code><b>D</b></code> - filter <code>TestSucceeded</code> events
+ * <li> <code><b>C</b></code> - filter <code>TestSucceeded</code> events
  * <li> <code><b>X</b></code> - filter <code>TestIgnored</code> events
  * <li> <code><b>E</b></code> - filter <code>TestPending</code> events
  * <li> <code><b>H</b></code> - filter <code>SuiteStarting</code> events
@@ -207,38 +207,45 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * The following two reporter configuration parameters may additionally be used on standard output (-o), standard error (-e),
+ * The following three reporter configuration parameters may additionally be used on standard output (-o), standard error (-e),
  * and file (-f) reporters: 
  * </p>
  *
  * <ul>
- * <li> <code><b>V</b></code> - verbose mode
- * <li> <code><b>C</b></code> - color output
+ * <li> <code><b>W</b></code> - without color
+ * <li> <code><b>D</b></code> - show all durations
+ * <li> <code><b>F</b></code> - show TestFailedException stack traces
  * </ul>
  *
  * <p>
- * If you specify a V or C for any reporter other than standard output, standard error, or file reporters, <code>Runner</code>
+ * If you specify a W, D, or F for any reporter other than standard output, standard error, or file reporters, <code>Runner</code>
  * will complain with an error message and not perform the run.
  * </p>
  *
  * <p>
- * Configuring a standard output, error, or file reporter into
- * verbose mode (V) will cause that reporter to print a duration for each test and suite and full stack traces for all exceptions,
+ * Configuring a standard output, error, or file reporter with <code>D</code> will cause that reporter to
+ * print a duration for each test and suite.  When running in the default mode, a duration will only be printed for
+ * the entire run.
+ * </p>
+ *
+ * <p>
+ * Configuring a standard output, error, or file reporter with <code>F</code> will cause that reporter to print full stack traces for all exceptions,
  * including <code>TestFailedExceptions</code>. Every <code>TestFailedException</code> contains a stack depth of the
  * line of test code that failed so that users won't need to search through a stack trace to find it. When running in the default,
- * non-verbose mode, these reporters will only show full stack traces when other exceptions are thrown, such as an exception thrown
- * by production code. When a <code>TestFailedException</code> is thrown in default, non-verbose mode, only the source filename and
+ * mode, these reporters will only show full stack traces when other exceptions are thrown, such as an exception thrown
+ * by production code. When a <code>TestFailedException</code> is thrown in default mode, only the source filename and
  * line number of the line of test code that caused the test to fail are printed along with the error message, not the full stack
  * trace. 
  * </p>
  *
  * <p>
- * Configuring a standard output, error, or file reporter into color mode (C) will cause it to insert ansi escape codes
- * to change and later reset terminal colors. Information printed as a result of run starting, completed, and stopped events
+ * By default, a standard output, error, or file reporter inserts ansi escape codes into the output printed to change and later reset
+ * terminal colors. Information printed as a result of run starting, completed, and stopped events
  * is printed in cyan. Information printed as a result of ignored or pending test events is shown in yellow. Information printed
  * as a result of test failed, suite aborted, or run aborted events is printed in red. All other information is printed in green.
  * The purpose of these colors is to facilitate speedy reading of the output, especially the finding of failed tests, which can
- * get lost in a sea of passing tests.
+ * get lost in a sea of passing tests. Configuring a standard output, error, or file reporter into without-color mode ('W') will
+ * turn off this behavior. No ansi codes will be inserted.
  * </p>
  *
  * <p>
@@ -737,7 +744,7 @@ object Runner {
         case 'Y' => // Allow the old ones for the two-release deprecation cycle, starting in 0.9.6
         case 'Z' => // But they have no effect. After that, drop these cases so these will generate an error.
         case 'T' =>
-        case 'F' =>
+        // case 'F' => I decided to reuse F already, but not for a filter so it is OK
         case 'U' =>
         case 'P' =>
         case 'B' =>
@@ -747,14 +754,15 @@ object Runner {
         case 'R' =>
         case 'G' =>
         case 'N' => set += FilterTestStarting
-        case 'D' => set += FilterTestSucceeded
+        case 'C' => set += FilterTestSucceeded
         case 'X' => set += FilterTestIgnored
         case 'E' => set += FilterTestPending
         case 'H' => set += FilterSuiteStarting
         case 'L' => set += FilterSuiteCompleted
         case 'O' => set += FilterInfoProvided
-        case 'C' => set += PresentColor
-        case 'V' => set += PresentVerbose
+        case 'W' => set += PresentWithoutColor
+        case 'F' => set += PresentTestFailedExceptionStackTraces
+        case 'D' => set += PresentAllDurations
         case c: Char => {
 
           // this should be moved to the checker, and just throw an exception here with a debug message. Or allow a MatchError.
@@ -808,10 +816,12 @@ object Runner {
       args.find(arg => arg.substring(0, 2) == "-g") match {
         case Some(dashGString) =>
           val configSet = parseConfigSet(dashGString)
-          if (configSet.contains(PresentVerbose))
-            throw new IllegalArgumentException("Cannot specify a V (verbose) configuration parameter for the graphic reporter: " + dashGString)
-          if (configSet.contains(PresentColor))
-            throw new IllegalArgumentException("Cannot specify a C (color) configuration parameter for the graphic reporter: " + dashGString)
+          if (configSet.contains(PresentTestFailedExceptionStackTraces))
+            throw new IllegalArgumentException("Cannot specify an F (present TestFailedException stack traces) configuration parameter for the graphic reporter (because it shows them anyway): " + dashGString)
+          if (configSet.contains(PresentWithoutColor))
+            throw new IllegalArgumentException("Cannot specify a W (present without color) configuration parameter for the graphic reporter: " + dashGString)
+          if (configSet.contains(PresentAllDurations))
+            throw new IllegalArgumentException("Cannot specify a D (present all durations) configuration parameter for the graphic reporter (because it shows them all anyway): " + dashGString)
           Some(new GraphicReporterConfiguration(configSet))
         case None => None
       }
@@ -852,10 +862,12 @@ object Runner {
             val dashRString = arg
             val customReporterClassName = it.next
             val configSet = parseConfigSet(dashRString)
-            if (configSet.contains(PresentVerbose))
-              throw new IllegalArgumentException("Cannot specify a V (verbose) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
-            if (configSet.contains(PresentColor))
-              throw new IllegalArgumentException("Cannot specify a C (color) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
+            if (configSet.contains(PresentTestFailedExceptionStackTraces))
+              throw new IllegalArgumentException("Cannot specify an F (present TestFailedException stack traces) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
+            if (configSet.contains(PresentWithoutColor))
+              throw new IllegalArgumentException("Cannot specify a W (without color) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
+            if (configSet.contains(PresentAllDurations))
+              throw new IllegalArgumentException("Cannot specify a D (present all durations) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
             lb += new CustomReporterConfiguration(configSet, customReporterClassName)
           case _ => 
         }
@@ -1001,26 +1013,67 @@ object Runner {
   }
 */
 
+  private def configSetMinusNonFilterParams(configSet: Set[ReporterConfigParam]) =
+    ((configSet - PresentTestFailedExceptionStackTraces) - PresentWithoutColor) - PresentAllDurations
+
   private[scalatest] def getDispatchReporter(reporterSpecs: ReporterConfigurations, graphicReporter: Option[Reporter], passFailReporter: Option[Reporter], loader: ClassLoader) = {
-    def getReporterFromConfiguration(configuration: ReporterConfiguration): Reporter = configuration match {
-      case StandardOutReporterConfiguration(configSet) => {
-        if (((configSet - PresentVerbose) - PresentColor).isEmpty)
-          new StandardOutReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor))
+
+    def getReporterFromConfiguration(configuration: ReporterConfiguration): Reporter =
+
+      configuration match {
+        case StandardOutReporterConfiguration(configSet) =>
+          if (configSetMinusNonFilterParams(configSet).isEmpty)
+            new StandardOutReporter(
+              configSet.contains(PresentAllDurations),
+              !configSet.contains(PresentWithoutColor),
+              configSet.contains(PresentTestFailedExceptionStackTraces)
+            )
+          else
+            new FilterReporter(
+              new StandardOutReporter(
+                configSet.contains(PresentAllDurations),
+                !configSet.contains(PresentWithoutColor),
+                configSet.contains(PresentTestFailedExceptionStackTraces)
+              ),
+              configSet
+            )
+
+      case StandardErrReporterConfiguration(configSet) =>
+        if (configSetMinusNonFilterParams(configSet).isEmpty)
+          new StandardErrReporter(
+            configSet.contains(PresentAllDurations),
+            !configSet.contains(PresentWithoutColor),
+            configSet.contains(PresentTestFailedExceptionStackTraces)
+          )
         else
-          new FilterReporter(new StandardOutReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor)), configSet)
-      }
-      case StandardErrReporterConfiguration(configSet) => {
-        if (((configSet - PresentVerbose) - PresentColor).isEmpty)
-          new StandardErrReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor))
+          new FilterReporter(
+            new StandardErrReporter(
+              configSet.contains(PresentAllDurations),
+              !configSet.contains(PresentWithoutColor),
+              configSet.contains(PresentTestFailedExceptionStackTraces)
+            ),
+            configSet
+          )
+
+      case FileReporterConfiguration(configSet, fileName) =>
+        if (configSetMinusNonFilterParams(configSet).isEmpty)
+          new FileReporter(
+            fileName,
+            configSet.contains(PresentAllDurations),
+            !configSet.contains(PresentWithoutColor),
+            configSet.contains(PresentTestFailedExceptionStackTraces)
+          )
         else
-          new FilterReporter(new StandardErrReporter(configSet.contains(PresentVerbose), configSet.contains(PresentColor)), configSet)
-      }
-      case FileReporterConfiguration(configSet, fileName) => {
-        if (((configSet - PresentVerbose) - PresentColor).isEmpty)
-          new FileReporter(fileName, configSet.contains(PresentVerbose), configSet.contains(PresentColor))
-        else
-          new FilterReporter(new FileReporter(fileName, configSet.contains(PresentVerbose), configSet.contains(PresentColor)), configSet)
-      }
+          new FilterReporter(
+            new FileReporter(
+              fileName,
+              configSet.contains(PresentAllDurations),
+              !configSet.contains(PresentWithoutColor),
+              configSet.contains(PresentTestFailedExceptionStackTraces)
+            ),
+            configSet
+          )
+
       case CustomReporterConfiguration(configSet, reporterClassName) => {
         val customReporter = getCustomReporter(reporterClassName, loader, "-r... " + reporterClassName)
         if (configSet.isEmpty)
