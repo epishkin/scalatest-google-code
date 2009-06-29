@@ -49,6 +49,8 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
       val rawString = Resources("suiteExecutionStarting")
       val formatter = formatterForSuiteStarting(suite)
   
+      val suiteStartTime = System.currentTimeMillis
+
       dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
   
       try {
@@ -57,7 +59,8 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
         val rawString2 = Resources("suiteCompletedNormally")
         val formatter = formatterForSuiteCompleted(suite)
 
-        dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), None, formatter, rerunnable)) // TODO: add a duration
+        val duration = System.currentTimeMillis - suiteStartTime
+        dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), Some(duration), formatter, rerunnable))
       }
       catch {
         case e: RuntimeException => {
@@ -65,7 +68,8 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
           val rawString3 = Resources("executeException")
           val formatter3 = formatterForSuiteAborted(suite, rawString3)
 
-          dispatch(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
+          val duration = System.currentTimeMillis - suiteStartTime
+          dispatch(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), Some(duration), formatter3, rerunnable))
         }
       }
     }
