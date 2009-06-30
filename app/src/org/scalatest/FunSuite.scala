@@ -434,6 +434,71 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
+ * <strong>Pending tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, the before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality, has not yet been implemented.
+ * </p>
+ *
+ * <p>
+ * Although pending tests may be used more often in specification-style suites, such as
+ * <code>org.scalatest.Spec</code>, you can also use it in <code>FunSuite</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FunSuite
+ *
+ * class MySuite extends FunSuite {
+ *
+ *   def test("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   def test("subtraction") (pending)
+ * }
+ * </pre>
+ *
+ * <p>
+ * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
+ * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
+ * If you run this version of <code>MySuite</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new MySuite).run()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests, but report that <code>subtraction</code> is pending. You'll see:
+ * </p>
+ *
+ * <pre>
+ * Test Starting - MySuite: addition
+ * Test Succeeded - MySuite: addition
+ * Test Starting - MySuite: subtraction
+ * Test Pending - MySuite: subtraction
+ * </pre>
+ * 
+ * <p>
  * <strong>Informers</strong>
  * </p>
  *

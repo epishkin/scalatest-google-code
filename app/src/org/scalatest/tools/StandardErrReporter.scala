@@ -26,7 +26,7 @@ private[scalatest] class StandardErrReporter(presentAllDurations: Boolean,
     extends PrintReporter(Console.err, presentAllDurations,
       presentInColor, presentTestFailedExceptionStackTraces) {
 
-  def this() = this(false, true, false)
+  // def this() = this(false, true, false)
 
   /**
    * Does nothing, because don't want to dispose the standard error stream.

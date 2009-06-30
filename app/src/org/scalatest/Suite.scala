@@ -100,10 +100,10 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <pre>
- * Test Starting - MySuite.testAddition
- * Test Succeeded - MySuite.testAddition
- * Test Starting - MySuite.testSubtraction
- * Test Succeeded - MySuite.testSubtraction
+ * Test Starting - MySuite: testAddition
+ * Test Succeeded - MySuite: testAddition
+ * Test Starting - MySuite: testSubtraction
+ * Test Succeeded - MySuite: testSubtraction
  * </pre>
  *
  * <p>
@@ -119,8 +119,8 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <pre>
- * Test Starting - MySuite.testAddition
- * Test Succeeded - MySuite.testAddition
+ * Test Starting - MySuite: testAddition
+ * Test Succeeded - MySuite: testAddition
  * </pre>
  *
  * <p>
@@ -885,9 +885,9 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <pre>
- * Test Starting - MySuite.testAddition
- * Test Succeeded - MySuite.testAddition
- * Test Ignored - MySuite.testSubtraction
+ * Test Starting - MySuite: testAddition
+ * Test Succeeded - MySuite: testAddition
+ * Test Ignored - MySuite: testSubtraction
  * </pre>
  * 
  * <p>
@@ -899,6 +899,69 @@ import org.scalatest.tools.StandardOutReporter
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
+ * <p>
+ * <strong>Pending tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, the before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality, has not yet been implemented.
+ * </p>
+ *
+ * <p>
+ * Although pending tests may be used more often in specification-style suites, such as
+ * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Suite
+ *
+ * class MySuite extends Suite {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   def testSubtraction() { pending }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>MySuite</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new MySuite).run()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
+ * </p>
+ *
+ * <pre>
+ * Test Starting - MySuite: testAddition
+ * Test Succeeded - MySuite: testAddition
+ * Test Starting - MySuite: testSubtraction
+ * Test Pending - MySuite: testSubtraction
+ * </pre>
+ * 
  * <p>
  * <strong>Informers</strong>
  * </p>
@@ -932,9 +995,9 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <pre>
  * scala> (new MySuite).run()
- * Test Starting - MySuite.testAddition(Reporter)
- * Info Provided - MySuite.testAddition(Reporter): Addition seems to work
- * Test Succeeded - MySuite.testAddition(Reporter)
+ * Test Starting - MySuite: testAddition(Reporter)
+ * Info Provided - MySuite: testAddition(Reporter): Addition seems to work
+ * Test Succeeded - MySuite: testAddition(Reporter)
  * </pre>
  *
  * <p>
@@ -1630,6 +1693,44 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
   /**
    * Throws <code>TestPendingException</code> to indicate a test is pending.
+   *
+   * <p>
+   * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+   * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+   * out before tests are written to verify that behavior (and often, the before the behavior of
+   * the system being tested is itself implemented). Such sketches form a kind of specification of
+   * what tests and functionality to implement later.
+   * </p>
+   *
+   * <p>
+   * To support this style of testing, a test can be given a name that specifies one
+   * bit of behavior required by the system being tested. The test can also include some code that
+   * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+   * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+   * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+   * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+   * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+   * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+   * the actual test, and possibly the functionality, has not yet been implemented.
+   * </p>
+   *
+   * <p>
+   * Note: This method always completes abruptly with a <code>TestPendingException</code>. Thus it always has a side
+   * effect. Methods with side effects are usually invoked with parentheses, as in <code>pending()</code>. This
+   * method is defined as a parameterless method, in flagrant contradiction to recommended Scala style, because it 
+   * forms a kind of DSL for pending tests. It enables tests in suites such as <code>FunSuite</code> or <code>Spec</code>
+   * to be denoted by placing "<code>(pending)</code>" after the test name, as in:
+   * </p>
+   *
+   * <pre>
+   * test("that style rules are not laws") (pending)
+   * </pre>
+   *
+   * <p>
+   * Readers of the code see "pending" in parentheses, which looks like a little note attached to the test name to indicate
+   * it is pending. Whereas "<code>(pending())</code> looks more like a method call, "<code>(pending)</code>" lets readers
+   * stay at a higher level, forgetting how it is implemented and just focusing on the intent of the programmer who wrote the code.
+   * </p>
    */
   def pending { throw new TestPendingException }
 
