@@ -440,6 +440,27 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                     else new scala.xml.NodeBuffer
                   }
                   {
+                    holder.summary match {
+                      case Some(summary) => 
+
+                        <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsSummary") + ":" }</span></td><td align="left"><strong>{ Resources("totalNumberOfTestsRun", summary.testsCompletedCount.toString) }</strong></td></tr>
+                        <tr valign="top"><td align="right"><span class="label">&nbsp;</span></td><td align="left"><strong>{ Resources("suiteSummary", summary.suitesCompletedCount.toString, summary.suitesAbortedCount.toString) }</strong></td></tr>
+                        <tr valign="top"><td align="right"><span class="label">&nbsp;</span></td><td align="left"><strong>
+                          {
+                            Resources(
+                              "testSummary",
+                              summary.testsSucceededCount.toString,
+                              summary.testsFailedCount.toString,
+                              summary.testsIgnoredCount.toString,
+                              summary.testsPendingCount.toString
+                            )
+                          }
+                        </strong></td></tr>
+
+                      case None => new scala.xml.NodeBuffer
+                    }
+                  }
+                  {
                     duration match {
                       case Some(milliseconds) =>
                         <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDuration") + ":" }</span></td><td align="left">{ PrintReporter.makeDurationString(milliseconds) }</td></tr>
@@ -756,7 +777,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
         case _ => None
       }
 
-    val eventHolder: EventHolder = new EventHolder(event, message, throwable, rerunner, isRerun)
+    val summary =
+      event match {
+        case e: RunCompleted => e.summary
+        case e: RunAborted => e.summary
+        case e: RunStopped => e.summary
+        case _ => None
+      }
+
+    val eventHolder: EventHolder = new EventHolder(event, message, throwable, rerunner, summary, isRerun)
 
     if (eventTypesToCollect.contains(eventToEventToPresent(event))) {
       collectedEvents = eventHolder :: collectedEvents
