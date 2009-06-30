@@ -70,7 +70,7 @@ import EventToPresent.eventToEventToPresent
  * events that would take up a lot of memory.
  *
  * @author Bill Venners
- */
+ */                 
 private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypesToCollect: Set[EventToPresent],
     reporterConfigurations: ReporterConfigurations, suitesList: List[String], runpathList: List[String], includes: Set[String],
     excludes: Set[String], propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
@@ -353,6 +353,23 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                 case event: TestFailed => Some(suiteAndTestName(event.suiteName, event.testName))
               }
 
+            val duration =
+              holder.event match {
+                case event: RunStarting => None
+                case event: RunStopped => event.duration
+                case event: RunAborted => event.duration
+                case event: RunCompleted => event.duration
+                case event: InfoProvided => None
+                case event: SuiteStarting => None
+                case event: SuiteCompleted => event.duration
+                case event: SuiteAborted => event.duration
+                case event: TestStarting => None
+                case event: TestPending => None
+                case event: TestIgnored => None
+                case event: TestSucceeded => event.duration
+                case event: TestFailed => event.duration
+              }
+
             val propCheckArgs: List[Any] =
               holder.throwable match {
                 case Some(ex: PropertyTestFailedException) => ex.args
@@ -421,6 +438,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                       <tr valign="top"><td align="right"><span class="label">{ labelOrLabels + ":" }</span></td><td align="left"><span class="dark">{ labelHTML }</span></td></tr>
                     }
                     else new scala.xml.NodeBuffer
+                  }
+                  {
+                    duration match {
+                      case Some(milliseconds) =>
+                        <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDuration") + ":" }</span></td><td align="left">{ PrintReporter.makeDurationString(milliseconds) }</td></tr>
+                      case None => new scala.xml.NodeBuffer
+                    }
                   }
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ new java.util.Date(event.timeStamp) }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ event.threadName }</td></tr>
