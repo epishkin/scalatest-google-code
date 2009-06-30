@@ -18,7 +18,7 @@ package org.scalatest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.events._
 
-class SpecSuite extends FunSuite {
+class SpecSuite extends FunSuite with HandyReporters {
 
   test("calling a describe from within an it clause results in a TestFailedError at runtime") {
     
@@ -1916,5 +1916,50 @@ class SpecSuite extends FunSuite {
       }
     }
   } */
+
+  test("test durations are included in TestFailed and TestSucceeded events fired from Spec") {
+
+    class MySpec extends Spec {
+      it("should succeed") {}
+      it("should fail") { fail() }
+    }
+
+    val mySpec = new MySpec
+    val myReporter = new TestDurationReporter
+    mySpec.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.testSucceededWasFiredAndHadADuration)
+    assert(myReporter.testFailedWasFiredAndHadADuration)
+  }
+
+  test("suite durations are included in SuiteCompleted events fired from Spec") {
+
+    class MySpec extends Spec {
+      override def nestedSuites = List(new Suite {})
+    }
+
+    val mySuite = new MySpec
+    val myReporter = new SuiteDurationReporter
+    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.suiteCompletedWasFiredAndHadADuration)
+  }
+
+  test("suite durations are included in SuiteAborted events fired from Spec") {
+
+    class SuiteThatAborts extends Suite {
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+              goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+        throw new RuntimeException("Aborting for testing purposes")
+      }
+    }
+
+    class MySpec extends Spec {
+      override def nestedSuites = List(new SuiteThatAborts {})
+    }
+
+    val mySuite = new MySpec
+    val myReporter = new SuiteDurationReporter
+    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.suiteAbortedWasFiredAndHadADuration)
+  }
 }
 
