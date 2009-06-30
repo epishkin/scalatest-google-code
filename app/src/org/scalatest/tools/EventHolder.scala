@@ -25,13 +25,16 @@ import EventHolder.suiteAndTestName
  * @author Bill Venners
  */
 private[tools] class EventHolder(val event: Event, val message: Option[String], val throwable: Option[Throwable],
-    val rerunner: Option[Rerunner], val isRerun: Boolean) {
+    val rerunner: Option[Rerunner], val summary: Option[Summary], val isRerun: Boolean) {
 
-  if (event == null || message == null || throwable == null || rerunner == null)
+  if (event == null || message == null || throwable == null || rerunner == null || summary == null)
     throw new NullPointerException()
  
   def this(event: Event, message: Option[String], throwable: Option[Throwable],
-      rerunner: Option[Rerunner]) = this(event, message, throwable, rerunner, false)
+      rerunner: Option[Rerunner]) = this(event, message, throwable, rerunner, None, false)
+
+  def this(event: Event, message: Option[String], throwable: Option[Throwable],
+      rerunner: Option[Rerunner], summary: Option[Summary]) = this(event, message, throwable, rerunner, summary, false)
 
   override def toString = {
     event.formatter match {
