@@ -20,4 +20,4 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-class PendingException extends RuntimeException
+class TestPendingException extends RuntimeException

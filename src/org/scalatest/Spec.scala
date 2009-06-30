@@ -903,7 +903,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 /*
 Here's one way to do pending. I'll need to add a testPending message to Reporter. The pending methods
 that take a testFun would execute the function, catch any exception that comes out and probably throw
-it away, then throw a pending exception. The caller would catch PendingException and report it with
+it away, then throw a pending exception. The caller would catch TestPendingException and report it with
 a testPending rather than a TestSucceeded or TestFailed message:
 
 Actually I changed my mind. Won't do this. Will just make a
@@ -969,11 +969,11 @@ interface.
 
 class Spec {
 
-  class PendingException(msg: String) extends RuntimeException(msg)
+  class TestPendingException(msg: String) extends RuntimeException(msg)
 
   def pending(msg: String)(testFun: => Unit) {
     testFun
-    throw new PendingException(msg)
+    throw new TestPendingException(msg)
   }
 
   def pending: Unit = pending("Not Yet Implemented") {}
