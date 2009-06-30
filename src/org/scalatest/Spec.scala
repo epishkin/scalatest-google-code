@@ -731,6 +731,8 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
             else
               None
        
+          val testStartTime = System.currentTimeMillis
+
           // A TestStarting event won't normally show up in a specification-style output, but
           // will show up in a test-style output.
           report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
@@ -738,15 +740,17 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           try {
             example.f()
 
- 
             val formatter = IndentedText(formattedSpecText, example.specText, 1)
-            report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, None, Some(formatter), rerunnable)) // TODO: add a duration
+            val duration = System.currentTimeMillis - testStartTime
+            report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(duration), Some(formatter), rerunnable))
           }
           catch { 
             case e: Exception => 
-              handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker)
+              val duration = System.currentTimeMillis - testStartTime
+              handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
             case ae: AssertionError =>
-              handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker)
+              val duration = System.currentTimeMillis - testStartTime
+              handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
           }
         }
       }
@@ -765,7 +769,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   }
 
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker) {
+      specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
     val message =
       if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -774,7 +778,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
         throwable.toString
 
     val formatter = IndentedText(formattedSpecText, specText, 1)
-    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, Some(formatter), rerunnable)) // TODO: Add a duration
+    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
   }
 
   /**

@@ -27,7 +27,7 @@ class SuiteFriend(suite: Suite) {
   }
 }
 
-class SuiteSuite extends Suite with PrivateMethodTester {
+class SuiteSuite extends Suite with PrivateMethodTester with HandyReporters {
 
   def testSimpleNameForTest() {
     val s = new SuiteFriend(new Suite {})
@@ -57,7 +57,6 @@ class SuiteSuite extends Suite with PrivateMethodTester {
       def testThat(info: Informer) = ()
     }
 
-fail()
     assert(a.tags === Map("testThis" -> Set("org.scalatest.Ignore")))
 
     val b = new Suite {
@@ -526,13 +525,13 @@ fail()
 
   def testStripDollars() {
     expect("MySuite") {
-     Suite.stripDollars("line8$object$$iw$$iw$$iw$$iw$$iw$MySuite") 
+     Suite.stripDollars("line8$object$$iw$$iw$$iw$$iw$$iw$MySuite")
     }
     expect("MySuite") {
-     Suite.stripDollars("MySuite") 
+     Suite.stripDollars("MySuite")
     }
     expect("nested.MySuite") {
-     Suite.stripDollars("nested.MySuite") 
+     Suite.stripDollars("nested.MySuite")
     }
     expect("$$$") {
      Suite.stripDollars("$$$") 
@@ -619,41 +618,20 @@ fail()
   }
 
   def testTestDurations() {
-    class MyReporter extends Reporter {
-      var testSucceededWasFiredAndHadADuration = false
-      var testFailedWasFiredAndHadADuration = false
-      override def apply(event: Event) {
-        event match {
-          case event: TestSucceeded => testSucceededWasFiredAndHadADuration = event.duration.isDefined
-          case event: TestFailed => testFailedWasFiredAndHadADuration = event.duration.isDefined
-          case _ =>
-        }
-      }
-    }
+
     class MySuite extends Suite {
       def testSucceeds() = ()
       def testFails() { fail() }
     }
 
     val mySuite = new MySuite
-    val myReporter = new MyReporter
+    val myReporter = new TestDurationReporter
     mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.testSucceededWasFiredAndHadADuration)
     assert(myReporter.testFailedWasFiredAndHadADuration)
   }
 
   def testSuiteDurations() {
-    class MyReporter extends Reporter {
-      var suiteCompletedWasFiredAndHadADuration = false
-      var suiteAbortedWasFiredAndHadADuration = false
-      override def apply(event: Event) {
-        event match {
-          case event: SuiteCompleted => suiteCompletedWasFiredAndHadADuration = event.duration.isDefined
-          case event: SuiteAborted => suiteAbortedWasFiredAndHadADuration = event.duration.isDefined
-          case _ =>
-        }
-      }
-    }
 
     // the suite duration is sent by runNestedSuites, so MySuite needs a
     // nested suite
@@ -664,7 +642,7 @@ fail()
     }
 
     val mySuite = new MySuite
-    val myReporter = new MyReporter
+    val myReporter = new SuiteDurationReporter
     mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.suiteCompletedWasFiredAndHadADuration)
 
@@ -684,7 +662,7 @@ fail()
     }
 
     val myOtherSuite = new MyOtherSuite
-    val myOtherReporter = new MyReporter
+    val myOtherReporter = new SuiteDurationReporter
     myOtherSuite.run(None, myOtherReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myOtherReporter.suiteAbortedWasFiredAndHadADuration)
   }
