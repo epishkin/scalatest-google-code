@@ -906,6 +906,9 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
         case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) =>
 
           usingEventDispatchThread {
+            testsCompletedCount += 1
+            statusJPanel.setTestsRun(testsCompletedCount, true)
+            progressBar.setValue(testsCompletedCount)
             registerEvent(event)
           }
 
