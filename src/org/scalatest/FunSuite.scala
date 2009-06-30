@@ -664,6 +664,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
       else
         None
      
+    val testStartTime = System.currentTimeMillis
     report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     try {
@@ -687,20 +688,23 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
         currentInformer = oldInformer
       }
 
-      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, None, rerunnable)) // TODO: Add a duration
+      val duration = System.currentTimeMillis - testStartTime
+      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
     }
     catch { 
       case e: Exception => {
-        handleFailedTest(e, false, testName, rerunnable, report, tracker)
+        val duration = System.currentTimeMillis - testStartTime
+        handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
       }
       case ae: AssertionError => {
-        handleFailedTest(ae, false, testName, rerunnable, report, tracker)
+        val duration = System.currentTimeMillis - testStartTime
+        handleFailedTest(ae, false, testName, rerunnable, report, tracker, duration)
       }
     }
   }
 
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker) {
+      rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker, duration: Long) {
 
     val message =
       if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -708,7 +712,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
       else
         throwable.toString
 
-    reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), None, None, rerunnable)) // TODO: Add a duration
+    reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), None, rerunnable))
   }
 
   /**

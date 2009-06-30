@@ -302,9 +302,7 @@
     <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="stdout" config="ND"/>
-            <suite classname="org.scalatest.SuiteSuite" />
-            <suite classname="org.scalatest.SpecSuite" />
-            <suite classname="org.scalatest.StackSpec" />
+            <suite classname="org.scalatest.FunSuiteSuite" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
