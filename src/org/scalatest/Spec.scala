@@ -75,7 +75,7 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).execute()
+ * scala> (new StackSpec).run()
  * </pre>
  *
  * <p>
@@ -452,7 +452,7 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).execute()
+ * scala> (new StackSpec).run()
  * </pre>
  *
  * <p>
@@ -475,6 +475,76 @@ import org.scalatest.events._
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
+ * <p>
+ * <strong>Pending tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, the before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality, has not yet been implemented.
+ * </p>
+ *
+ * <p>
+ * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
+ * test name, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends Spec {
+ *
+ *   describe("A Stack") {
+ *
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
+ * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).run()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
+ * </p>
+ *
+ * <pre>
+ * A Stack 
+ * - should pop values in last-in-first-out order
+ * - should throw NoSuchElementException if an empty stack is popped (pending)
+ * </pre>
+ * 
  * @author Bill Venners
  */
 trait Spec extends Suite with TestRegistration { thisSuite =>
@@ -1246,7 +1316,7 @@ the should behave like stuff, and really I question how much 'should behave like
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).execute()
+ * scala> (new StackSpec).run()
  * A Stack (when empty)
  * - should be empty
  * - should complain on peek

@@ -18,7 +18,7 @@ package org.scalatest
 /**
  * Exception that indicates a test failed. The purpose of this exception is to encapsulate information about
  * the stack depth at which the line of test code that failed resides, so that information can be presented to
- * the user that makes it quick to find the failing line of test code. (I.e., the user need not scan through the
+ * the user that makes it quick to find the failing line of test code. (In other words, the user need not scan through the
  * stack trace to find the correct filename and line number of the failing test.)
  *
  * @param message an optional detail message for this <code>TestFailedException</code>.

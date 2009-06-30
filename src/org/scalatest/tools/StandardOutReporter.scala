@@ -26,7 +26,7 @@ private[scalatest] class StandardOutReporter(presentAllDurations: Boolean,
     extends PrintReporter(Console.out, presentAllDurations, presentInColor,
     presentTestFailedExceptionStackTraces) {
 
-  def this() = this(false, true, false)
+  def this() = this(false, false, false)
 
   /**
    * Does nothing, because don't want to dispose the standard output stream.
