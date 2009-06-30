@@ -305,7 +305,7 @@
             <reporter type="graphic"/>
             <suite classname="org.scalatest.FunSuiteSuite" />
             <suite classname="org.scalatest.SpecSuite" />
-            <suite classname="org.scalatest.StackSpec" />
+	    <suite classname="org.scalatest.StackSpec" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
