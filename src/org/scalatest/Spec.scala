@@ -737,15 +737,17 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           // will show up in a test-style output.
           report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
 
+          val formatter = IndentedText(formattedSpecText, example.specText, 1)
           try {
             example.f()
 
-            val formatter = IndentedText(formattedSpecText, example.specText, 1)
             val duration = System.currentTimeMillis - testStartTime
             report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(duration), Some(formatter), rerunnable))
           }
           catch { 
-            case e: Exception => 
+            case _: TestPendingException =>
+              report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(formatter)))
+            case e: Exception =>
               val duration = System.currentTimeMillis - testStartTime
               handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
             case ae: AssertionError =>
