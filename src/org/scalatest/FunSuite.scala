@@ -692,6 +692,8 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
     }
     catch { 
+      case _: TestPendingException =>
+        report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
       case e: Exception => {
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
