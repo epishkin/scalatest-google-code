@@ -35,6 +35,8 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
   def apply(report: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
             goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader) {
 
+    val runStartTime = System.currentTimeMillis
+
     try {
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance().asInstanceOf[Suite]
@@ -49,6 +51,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
 
       report(RunStarting(tracker.nextOrdinal(), expectedTestCount))
 
+      val suiteStartTime = System.currentTimeMillis
       try {
 
         val rawString = Resources("suiteExecutionStarting")
@@ -60,45 +63,54 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
 
         val rawString2 = Resources("suiteCompletedNormally")
         val formatter2 = formatterForSuiteCompleted(suite)
+        val duration = System.currentTimeMillis - suiteStartTime
 
-        report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), None, formatter2, rerunnable)) // TODO: add a duration
+        report(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), Some(duration), formatter2, rerunnable))
       }
       catch {
         case e: RuntimeException => {
           val rawString3 = Resources("executeException")
           val formatter3 = formatterForSuiteAborted(suite, rawString3)
 
-          report(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), None, formatter3, rerunnable)) // TODO: add a duration
+          val duration = System.currentTimeMillis - suiteStartTime
+          report(SuiteAborted(tracker.nextOrdinal(), rawString3, suite.suiteName, Some(suite.getClass.getName), Some(e), Some(duration), formatter3, rerunnable))
         }
       }
-      
+
+      val duration = System.currentTimeMillis - runStartTime
       if (stopRequested()) {
-        report(RunStopped(tracker.nextOrdinal()))
+        report(RunStopped(tracker.nextOrdinal(), Some(duration)))
       }
       else {
-        report(RunCompleted(tracker.nextOrdinal())) // TODO: pass a duration
+        report(RunCompleted(tracker.nextOrdinal(), Some(duration)))
       }
     }
     catch {
       case e: ClassNotFoundException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e), Some(duration)))
       }
       case e: InstantiationException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(duration)))
       }
       case e: IllegalAccessException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(duration)))
       }
       case e: SecurityException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("securityWhenRerruning", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("securityWhenRerruning", e.getMessage), Some(e), Some(duration)))
       }
       case e: NoClassDefFoundError => {
         // Suggest the problem might be a bad runpath
         // Maybe even print out the current runpath
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e), Some(duration)))
       }
       case e: Throwable => {
-        report(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e), Some(duration)))
       }
     }
   }
