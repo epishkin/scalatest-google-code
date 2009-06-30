@@ -764,5 +764,17 @@ class FunSuiteSuite extends Suite with HandyReporters {
     myFunSuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.suiteAbortedWasFiredAndHadADuration)
   }
+
+  def testPendingWorksInFunSuite() {
+
+    class MyFunSuite extends FunSuite {
+      test("this test is pending") { pending }
+    }
+
+    val mySuite = new MyFunSuite
+    val myReporter = new PendingReporter
+    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.testPendingWasFired)
+  }
 }
 

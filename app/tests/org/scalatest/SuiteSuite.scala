@@ -678,7 +678,5 @@ class SuiteSuite extends Suite with PrivateMethodTester with HandyReporters {
     mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.testPendingWasFired)
   }
-
-  def testAAAAIsPending() { pending }
 }
 

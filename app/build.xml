@@ -303,7 +303,7 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="stdout" config="ND"/>
             <reporter type="graphic"/>
-            <suite classname="org.scalatest.SuiteSuite" />
+            <suite classname="org.scalatest.FunSuiteSuite" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
