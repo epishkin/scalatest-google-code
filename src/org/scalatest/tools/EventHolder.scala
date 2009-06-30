@@ -39,8 +39,12 @@ private[tools] class EventHolder(val event: Event, val message: Option[String], 
   override def toString = {
     event.formatter match {
       case Some(IndentedText(_, rawText, indentationLevel)) =>
-        if (event.isInstanceOf[SuiteStarting]) rawText + ":" else rawText
-      case _ => 
+        event match {
+          case _: SuiteStarting => rawText + ":"
+          case _: TestPending => Resources("specTextAndNote", rawText, Resources("pendingNote"))
+          case _ => rawText
+        }
+      case _ =>
         val firstString: String =
           if (isRerun)
             Resources("RERUN_" + RunnerJFrame.getUpperCaseName(event))
