@@ -42,5 +42,15 @@ trait HandyReporters {
       }
     }
   }
+
+  class PendingReporter extends Reporter {
+    var testPendingWasFired = false
+    override def apply(event: Event) {
+      event match {
+        case _: TestPending => testPendingWasFired = true
+        case _ =>
+      }
+    }
+  }
 }
 
