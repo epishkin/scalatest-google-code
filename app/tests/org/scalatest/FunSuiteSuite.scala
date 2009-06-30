@@ -768,7 +768,7 @@ class FunSuiteSuite extends Suite with HandyReporters {
   def testPendingWorksInFunSuite() {
 
     class MyFunSuite extends FunSuite {
-      test("this test is pending") { pending }
+      test("this test is pending") (pending)
     }
 
     val mySuite = new MyFunSuite

@@ -307,7 +307,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
         val stringToPrint =
           formatter match {
-            case Some(IndentedText(formattedText, _, _)) => Some(Resources("specTextAndNote", formattedText, Resources("ignoredNote")))
+            case Some(IndentedText(formattedText, _, _)) => Some(Resources("specTextAndNote", formattedText, Resources("pendingNote")))
             case Some(MotionToSuppress) => None
             case _ => Some(Resources("testPending", suiteName + ": " + testName))
           }

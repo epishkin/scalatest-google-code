@@ -1961,5 +1961,17 @@ class SpecSuite extends FunSuite with HandyReporters {
     mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.suiteAbortedWasFiredAndHadADuration)
   }
+
+  test("pending in a Spec should cause TestPending to be fired") {
+
+    class MySpec extends Spec {
+      it("should be pending") (pending)
+    }
+
+    val mySuite = new MySpec
+    val myReporter = new PendingReporter
+    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.testPendingWasFired)
+  }
 }
 

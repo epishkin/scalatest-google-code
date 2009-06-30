@@ -54,9 +54,10 @@ class StackSpec extends Spec with StackFixtureCreationMethods with StackBehavior
       
       it("should be full") {
         assert(fullStack.full)
-fail()
       }
 
+      it("should go to sleep soon") (pending)
+      
       nonEmptyStack(lastValuePushed)(fullStack)
 
       it("should complain on a push") {
