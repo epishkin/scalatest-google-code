@@ -1316,7 +1316,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       case ite: InvocationTargetException =>
         val t = ite.getTargetException
         t match {
-          case _: PendingException =>
+          case _: TestPendingException =>
             report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
           case _ =>
             val duration = System.currentTimeMillis - testStartTime
@@ -1629,9 +1629,9 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   def suiteName = getSimpleNameOfThisObjectsClass
 
   /**
-   * Throws <code>PendingException</code> to indicate a test is pending.
+   * Throws <code>TestPendingException</code> to indicate a test is pending.
    */
-  def pending { throw new PendingException }
+  def pending { throw new TestPendingException }
 
   private[scalatest] def getTestNameForReport(testName: String) = {
 
