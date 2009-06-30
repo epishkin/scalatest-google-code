@@ -666,5 +666,19 @@ class SuiteSuite extends Suite with PrivateMethodTester with HandyReporters {
     myOtherSuite.run(None, myOtherReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myOtherReporter.suiteAbortedWasFiredAndHadADuration)
   }
+
+  def testPending() {
+
+    class MySuite extends Suite {
+      def testPending() { pending }
+    }
+
+    val mySuite = new MySuite
+    val myReporter = new PendingReporter
+    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    assert(myReporter.testPendingWasFired)
+  }
+
+  def testAAAAIsPending() { pending }
 }
 

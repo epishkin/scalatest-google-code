@@ -303,7 +303,21 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
         val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName, None)
         for (line <- lines) printPossiblyInColor(line, ansiGreen)
 
-      case _ => throw new RuntimeException("Unhandled event")
+      case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) =>
+
+        val stringToPrint =
+          formatter match {
+            case Some(IndentedText(formattedText, _, _)) => Some(Resources("specTextAndNote", formattedText, Resources("ignoredNote")))
+            case Some(MotionToSuppress) => None
+            case _ => Some(Resources("testPending", suiteName + ": " + testName))
+          }
+
+        stringToPrint match {
+          case Some(string) => printPossiblyInColor(string, ansiYellow)
+          case None =>
+        }
+
+     // case _ => throw new RuntimeException("Unhandled event")
     }
 
     pw.flush()
