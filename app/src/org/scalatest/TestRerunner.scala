@@ -32,6 +32,8 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
   def apply(report: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String], goodies: Map[String, Any],
             distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader) {
 
+    val runStartTime = System.currentTimeMillis
+
     try {
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance.asInstanceOf[Suite]
@@ -40,31 +42,39 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
 
       suite.run(Some(testName), report, stopper, includes, excludes, goodies, distributor, tracker) 
 
-      report(RunCompleted(tracker.nextOrdinal())) // TODO: pass a duration
+      val duration = System.currentTimeMillis - runStartTime
+      report(RunCompleted(tracker.nextOrdinal(), Some(duration)))
     }
     catch {
       case e: ClassNotFoundException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadSuite", e.getMessage), Some(e), Some(duration)))
       }
       case e: InstantiationException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(duration)))
       }
       case e: IllegalAccessException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(duration)))
       }
       case e: NoSuchMethodException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotFindMethod", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotFindMethod", e.getMessage), Some(e), Some(duration)))
       }
       case e: SecurityException => {
-        report(RunAborted(tracker.nextOrdinal(), Resources("securityWhenRerruning", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("securityWhenRerruning", e.getMessage), Some(e), Some(duration)))
       }
       case e: NoClassDefFoundError => {
         // Suggest the problem might be a bad runpath
         // Maybe even print out the current runpath
-        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e), Some(duration)))
       }
       case e: Throwable => {
-        report(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e)))
+        val duration = System.currentTimeMillis - runStartTime
+        report(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e), Some(duration)))
       }
     }
   }
