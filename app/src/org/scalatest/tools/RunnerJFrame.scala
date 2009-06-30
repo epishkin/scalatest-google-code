@@ -278,8 +278,8 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
 
               val throwableTitle = 
                 holder.throwable match {
-                  case Some(throwable) => throwable.getClass.getName
-                  case None => Resources("None")
+                  case Some(throwable) => Some(throwable.getClass.getName)
+                  case None => None
                 }
 
               // Any stack trace elements lower than a TestFailedException's failedTestCodeStackDepth
@@ -448,7 +448,13 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                   }
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsDate") + ":" }</span></td><td align="left">{ new java.util.Date(event.timeStamp) }</td></tr>
                   <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThread") + ":" }</span></td><td align="left">{ event.threadName }</td></tr>
-                  <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
+                  {
+                    throwableTitle match {
+                      case Some(title) =>
+                        <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
+                      case None => new scala.xml.NodeBuffer
+                    }
+                  }
                   </table>
                   <table>
                   <tr valign="top"><td align="left" colspan="2">
