@@ -147,6 +147,8 @@ import java.util.Arrays
  * List(99, 4, 1)
  * List(99, 5)
  * </pre>
+ *
+ * @author Bill Venners
  */
 final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) extends Ordered[Ordinal] {
 

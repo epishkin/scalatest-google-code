@@ -1594,7 +1594,9 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * If the passed <code>distributor</code> is <code>Some</code>, this trait's implementation
    * puts each nested <code>Suite</code> 
    * into the <code>Distributor</code> contained in the <code>Some</code>, in the order in which the
-   * <code>Suite</code>s appear in the <code>List</code> returned by <code>nestedSuites</code>.
+   * <code>Suite</code>s appear in the <code>List</code> returned by <code>nestedSuites</code>, passing
+   * in a new <code>Tracker</code> obtained by invoking <code>nextTracker</code> on the <code>Tracker</code>
+   * passed to this method.
    * </p>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported

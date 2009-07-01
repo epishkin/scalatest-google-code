@@ -7,6 +7,8 @@ package org.scalatest.events
  * @param testsFailedCount the number of tests that were reported as failed during the run
  * @param testsIgnoredCount the number of tests that were were reported as ignored during the run
  * @param testsPendingCount the number of tests that were reported as pending during the run
+ *
+ * @author Bill Venners
  */
 final case class Summary(testsSucceededCount: Int, testsFailedCount: Int, testsIgnoredCount: Int, testsPendingCount: Int,
   suitesCompletedCount: Int, suitesAbortedCount: Int) {

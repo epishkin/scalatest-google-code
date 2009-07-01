@@ -38,6 +38,8 @@ sealed abstract class Formatter
  * In this case, the XML reporter would actually report events that were fired with a <code>MotionToSuppress</code>,
  * including indicating that the report included a motion to suppress.
  * </p>
+ *
+ * @author Bill Venners
  */
 final case object MotionToSuppress extends Formatter
 

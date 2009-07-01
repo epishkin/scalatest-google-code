@@ -9,13 +9,38 @@ import java.util.Date
  * Will have a sealed abstract InfoProvided message with three final concrete subclasses,
  * RunInfoProvided, SuiteInfoProvided, TestInfoProvided. Anything that starts with Run just
  * has runStamp and ordinal; Suite has those plus suiteStamp; Test has those plus testStamp.
+ *
+ * @author Bill Venners
  */
 sealed abstract class Event extends Ordered[Event] {
 
+  /**
+   * An <code>Ordinal</code> that can be used to place this event in order in the context of
+   * other events reported during the same run.
+   */
   val ordinal: Ordinal
+
+  /**
+   * An optional formatter that provides extra information that can be used by reporters in determining
+   * how to present this event to the user.
+   */
   val formatter: Option[Formatter]
+
+  /**
+   * An optional object that can be used to pass custom information to the reporter about this event.
+   */
   val payload: Option[Any]
+
+  /**
+   * A name for the <code>Thread</code> about whose activity this event was reported.
+   */
   val threadName: String
+
+  /**
+   * A <code>Long</code> indicating the time this event was reported, expressed in terms of the
+   * number of milliseconds since the standard base time known as "the epoch":
+   * January 1, 1970, 00:00:00 GMT.
+   */
   val timeStamp: Long
 
   /**
@@ -69,6 +94,8 @@ sealed abstract class Event extends Ordered[Event] {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class TestStarting (
   ordinal: Ordinal,
@@ -107,6 +134,8 @@ final case class TestStarting (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object TestStarting {
 
@@ -265,6 +294,8 @@ object TestStarting {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class TestSucceeded (
   ordinal: Ordinal,
@@ -306,6 +337,8 @@ final case class TestSucceeded (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object TestSucceeded {
 
@@ -497,6 +530,8 @@ object TestSucceeded {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class TestFailed (
   ordinal: Ordinal,
@@ -544,6 +579,8 @@ final case class TestFailed (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object TestFailed {
 
@@ -755,6 +792,8 @@ object TestFailed {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class TestIgnored (
   ordinal: Ordinal,
@@ -790,6 +829,8 @@ final case class TestIgnored (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object TestIgnored {
 
@@ -905,6 +946,8 @@ object TestIgnored {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class TestPending (
   ordinal: Ordinal,
@@ -940,6 +983,8 @@ final case class TestPending (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object TestPending {
 
@@ -1062,6 +1107,8 @@ object TestPending {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class SuiteStarting (
   ordinal: Ordinal,
@@ -1097,6 +1144,8 @@ final case class SuiteStarting (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object SuiteStarting {
 
@@ -1249,6 +1298,8 @@ object SuiteStarting {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class SuiteCompleted (
   ordinal: Ordinal,
@@ -1287,6 +1338,8 @@ final case class SuiteCompleted (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object SuiteCompleted {
 
@@ -1473,6 +1526,8 @@ object SuiteCompleted {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class SuiteAborted (
   ordinal: Ordinal,
@@ -1517,6 +1572,8 @@ final case class SuiteAborted (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object SuiteAborted {
 
@@ -1711,6 +1768,8 @@ object SuiteAborted {
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
  *
  * @throws IllegalArgumentException if <code>testCount</code> is less than zero.
+ *
+ * @author Bill Venners
  */
 final case class RunStarting (
   ordinal: Ordinal,
@@ -1741,6 +1800,8 @@ final case class RunStarting (
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>, and <code>IllegalArgumentException</code> if
  * <code>testCount</code> is less than zero.
  * </p>
+ *
+ * @author Bill Venners
  */
 object RunStarting {
 
@@ -1858,6 +1919,8 @@ object RunStarting {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class RunCompleted (
   ordinal: Ordinal,
@@ -1890,6 +1953,8 @@ final case class RunCompleted (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object RunCompleted {
 
@@ -2051,6 +2116,8 @@ object RunCompleted {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class RunStopped (
   ordinal: Ordinal,
@@ -2083,6 +2150,8 @@ final case class RunStopped (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object RunStopped {
 
@@ -2237,6 +2306,8 @@ object RunStopped {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class RunAborted (
   ordinal: Ordinal,
@@ -2275,6 +2346,8 @@ final case class RunAborted (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object RunAborted {
 
@@ -2449,6 +2522,8 @@ object RunAborted {
  * @param threadName a name for the <code>Thread</code> about whose activity this event was reported
  * @param timeStamp a <code>Long</code> indicating the time this event was reported, expressed in terms of the
  *        number of milliseconds since the standard base time known as "the epoch":  January 1, 1970, 00:00:00 GMT
+ *
+ * @author Bill Venners
  */
 final case class InfoProvided (
   ordinal: Ordinal,
@@ -2484,6 +2559,8 @@ final case class InfoProvided (
  * <p>
  * All factory methods throw <code>NullPointerException</code> if any of the passed values are <code>null</code>.
  * </p>
+ *
+ * @author Bill Venners
  */
 object InfoProvided {
 
