@@ -556,7 +556,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   private var groupsMap: Map[String, Set[String]] = Map()
 
   // All examples, in reverse order of registration
-  private var examplesList = List[Example]()
+  private var examplesList = List[TestLeaf]()
 
   // Used to detect at runtime that they've stuck a describe or an it inside an it,
   // which should result in a TestFailedException
@@ -568,7 +568,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       throw new TestFailedException(Resources("duplicateTestName", testName), getStackDepth("Spec.scala", "it"))
     }
     val exampleShortName = specText
-    val example = Example(currentBranch, testName, specText, currentBranch.level + 1, f _)
+    val example = TestLeaf(currentBranch, testName, specText, currentBranch.level + 1, f _)
     currentBranch.subNodes ::= example
     examplesList ::= example
     testName
@@ -695,7 +695,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       currentBranch = oldBranch
     }
 
-    insertBranch(Description(currentBranch, description, currentBranch.level + 1), f _)
+    insertBranch(DescriptionBranch(currentBranch, description, currentBranch.level + 1), f _)
   }
 
   /**
@@ -712,7 +712,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
     val stopRequested = stopper
     branch match {
-      case desc @ Description(_, descriptionName, level) => {
+      case desc @ DescriptionBranch(_, descriptionName, level) => {
 
         def sendInfoProvidedMessage() {
           // Need to use the full name of the description, which includes all the descriptions it is nested inside
@@ -733,7 +733,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           sendInfoProvidedMessage() 
         else
           desc.subNodes.reverse.head match {
-            case ex: Example => sendInfoProvidedMessage()           
+            case ex: TestLeaf => sendInfoProvidedMessage()
             case _ => // Do nothing in this case
           }
       }
@@ -741,7 +741,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ Example(parent, testName, specText, level, f) => {
+        case ex @ TestLeaf(parent, testName, specText, level, f) => {
           // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
           // so that exceptions are caught and transformed
           // into error messages on the standard error stream.

@@ -17,8 +17,6 @@ package org.scalatest
 
 private[scalatest] object NodeFamily {
   
-  //case class SharedExample(specText: String, f: () => Unit)
-  
   sealed abstract class Node(parentOption: Option[Branch], val level: Int)
 
   abstract class Branch(parentOption: Option[Branch], override val level: Int) extends Node(parentOption, level) {
@@ -27,7 +25,7 @@ private[scalatest] object NodeFamily {
 
   case class Trunk extends Branch(None, -1)
 
-  case class Example(
+  case class TestLeaf(
     parent: Branch,
     testName: String,
     specText: String,
@@ -35,7 +33,7 @@ private[scalatest] object NodeFamily {
     f: () => Unit
   ) extends Node(Some(parent), level)
 
-  case class Description(
+  case class DescriptionBranch(
     parent: Branch,
     descriptionName: String,
     override val level: Int
@@ -43,9 +41,11 @@ private[scalatest] object NodeFamily {
 
   protected[scalatest] def getPrefix(branch: Branch): String = {
     branch match {
-       case Trunk() => ""
-      // Call to getPrefix is not tail recursive, but I don't expect the describe nesting to be very deep
-      case Description(parent, descriptionName, level) => Resources("prefixSuffix", getPrefix(parent), descriptionName)
+      case Trunk() => ""
+      // Call to getPrefix is not tail recursive, but I don't expect
+      // the describe nesting to be very deep (famous last words).
+      case DescriptionBranch(parent, descriptionName, level) =>
+        Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
   }
   
@@ -69,11 +69,3 @@ private[scalatest] object NodeFamily {
     }
   }
 }
-
-/*
- * The exampleRawName is now stored in Example because when I import a
- * shared example, I recalculate the exampleFullName and specText. This is needed because
- * when a shared behavior is instantiated, it doesn't know what describe clauses it might
- * be nested in yet. When it is passed to like, though, at the point it is known, so the
- * Example is transformed into one that has recalculated these strings.
- */
