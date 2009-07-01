@@ -301,10 +301,10 @@
 
     <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
-            <reporter type="file" filename="three.txt" config="NW"/>
-            <suite classname="org.scalatest.SuiteSuite" />
-            <suite classname="org.scalatest.FunSuiteSuite" />
-            <suite classname="org.scalatest.SpecSuite" />
+            <reporter type="stdout" config="N"/>
+            <suite classname="org.scalatest.SuiteSpec" />
+            <suite classname="org.scalatest.FunSuiteSpec" />
+            <suite classname="org.scalatest.SpecSpec" />
         </scalatest>
 <!--
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">

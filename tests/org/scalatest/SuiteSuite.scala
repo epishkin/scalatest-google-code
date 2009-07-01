@@ -18,15 +18,6 @@ package org.scalatest
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 
-/*class SuiteFriend(suite: Suite) {
-
-  def simpleNameForTest(testName: String) = {
-    val m = Class.forName("org.scalatest.Suite$class").getDeclaredMethod("simpleNameForTest", Array(classOf[org.scalatest.Suite], classOf[String]): _*)
-    m.setAccessible(true)
-    m.invoke(suite, Array[Object](suite, testName): _*).asInstanceOf[String]
-  }
-} */
-
 class SuiteSuite extends Suite with PrivateMethodTester with HandyReporters {
 
   def testSimpleNameForTest() {
