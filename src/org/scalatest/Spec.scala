@@ -931,7 +931,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
     testName match {
       case None => runTestsInBranch(trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
-      case Some(exampleName) => runTest(exampleName, reporter, stopRequested, goodies, tracker)
+      case Some(tn) => runTest(tn, reporter, stopRequested, goodies, tracker)
     }
   }
 

@@ -17,7 +17,7 @@ package org.scalatest
 
 private[scalatest] object NodeFamily {
   
-  case class SharedExample(specText: String, f: () => Unit)
+  //case class SharedExample(specText: String, f: () => Unit)
   
   sealed abstract class Node(parentOption: Option[Branch], val level: Int)
 

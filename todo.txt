@@ -1,6 +1,3 @@
-add a pending singleton or val to Suite (support both (pending) and { *** pending *** } styles). Maybe I'll use !!! pending !!! in
-a MoreObviousPendingStyle trait or InYourFacePendingStyle trait or something, because I say !!! IGNORED !!! in the output.
-
 add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
 
 Add testsFor to FunSuite. Use same data structure as Spec. Otherwise SharedTests would be a pain. In FeatureSpec,

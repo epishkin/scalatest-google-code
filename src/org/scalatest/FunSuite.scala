@@ -581,26 +581,34 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
   private val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
 
+  private val shouldRarelyIfEverBeSeen = """
+    Two threads attempted to modify FunSuite's internal data, which should only be
+    modified by the thread that constructs the object. This likely means that a subclass
+    has allowed the this reference to escape during construction, and some other thread
+    attempted to invoke the "testsFor" or "test" method on the object before the first
+    thread completed its construction.
+  """
+  
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
     if (!atomic.compareAndSet(oldBundle, newBundle))
-      throw new ConcurrentModificationException // TODO: put a helpful message explaining why
+      throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
   
   // later will initialize with an informer that registers things between tests for later passing to the informer
-  private var currentInformer = zombieInformer
+  private val atomicInformer = new AtomicReference[Informer](zombieInformer)
 
   /**
-   * Returns an <code>Informer</code> that during test execution will forward strings (or reports) passed to its
+   * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
    * apply method to the current reporter. If invoked inside a test function, it will forward the information to
    * the current reporter immediately. If invoked outside a test function, but in the primary constructor, it
    * will register the info for forwarding later during test execution. If invoked at any other time, it will
-   * throw an exception.
+   * throw an exception. This method can be called safely by any thread.
    */
   implicit def info: Informer = {
-    if (currentInformer == null)
+    if (atomicInformer == null || atomicInformer.get == null)
       registrationInformer
     else
-      currentInformer
+      atomicInformer.get
   }
   
   // Hey, my first lazy val. Turns out classes must be initialized before
@@ -736,21 +744,28 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
       val theTest = atomic.get.testsMap(testName)
 
-      val oldInformer = info
-      try {
-        currentInformer =
-          new Informer {
-            val nameForReport: String = getTestNameForReport(testName)
-            def apply(message: String) {
-              if (message == null)
-                throw new NullPointerException
-              report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
-            }
+      val oldInformer = atomicInformer.get
+      val informerForThisTest =
+        new Informer {
+          def apply(message: String) {
+            if (message == null)
+              throw new NullPointerException
+            report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
           }
+        }
+
+      atomicInformer.set(informerForThisTest)
+      try {
         theTest.testFunction()
       }
       finally {
-        currentInformer = oldInformer
+        val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
+        val rarelyIfEverSeen = """
+          Two threads have apparently attempted to run tests at the same time. This has
+          resulted in both threads attempting to change the current informer.
+        """
+        if (!success)
+          throw new ConcurrentModificationException(rarelyIfEverSeen)
       }
 
       val duration = System.currentTimeMillis - testStartTime
@@ -863,7 +878,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     val report = wrapReporterIfNecessary(reporter)
 
     // This guy will need to capture ordinal
-    currentInformer =
+    val informerForThisSuite =
       new Informer {
         def apply(message: String) {
           if (message == null)
@@ -872,11 +887,18 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
         }
       }
 
+    atomicInformer.set(informerForThisSuite)
     try {
       super.run(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
     }
     finally {
-      currentInformer = zombieInformer
+      val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
+      val rarelyIfEverSeen = """
+        Two threads have apparently attempted to run suite at the same time. This has
+        resulted in both threads attempting to concurrently change the current informer.
+      """
+      if (!success)
+        throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
     }
   }
 }
