@@ -18,23 +18,23 @@ package org.scalatest
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 
-class SuiteFriend(suite: Suite) {
+/*class SuiteFriend(suite: Suite) {
 
   def simpleNameForTest(testName: String) = {
     val m = Class.forName("org.scalatest.Suite$class").getDeclaredMethod("simpleNameForTest", Array(classOf[org.scalatest.Suite], classOf[String]): _*)
     m.setAccessible(true)
     m.invoke(suite, Array[Object](suite, testName): _*).asInstanceOf[String]
   }
-}
+} */
 
 class SuiteSuite extends Suite with PrivateMethodTester with HandyReporters {
 
   def testSimpleNameForTest() {
-    val s = new SuiteFriend(new Suite {})
-    assert(s.simpleNameForTest("testThis") === "testThis")
-    assert(s.simpleNameForTest("testThis(Informer)") === "testThis")
-    assert(s.simpleNameForTest("test(Informer)") === "test")
-    assert(s.simpleNameForTest("test") === "test")
+    val simpleNameForTest = PrivateMethod[String]('simpleNameForTest)
+    assert((Suite invokePrivate simpleNameForTest("testThis")) === "testThis")
+    assert((Suite invokePrivate simpleNameForTest("testThis(Informer)")) === "testThis")
+    assert((Suite invokePrivate simpleNameForTest("test(Informer)")) === "test")
+    assert((Suite invokePrivate simpleNameForTest("test")) === "test")
   }
 
   def testTestNames() {
@@ -49,7 +49,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with HandyReporters {
     assert(b.testNames === TreeSet[String]())
   }
 
-  def testTestGroups() {
+  def testTestTags() {
     
     val a = new Suite {
       @Ignore
