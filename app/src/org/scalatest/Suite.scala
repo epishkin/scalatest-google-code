@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import Suite.simpleNameForTest
 import Suite.parseSimpleName
 import Suite.stripDollars
 import Suite.formatterForSuiteStarting
@@ -1309,12 +1310,6 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     TreeSet[String]() ++ testNameArray
   }
 
-  private def simpleNameForTest(testName: String) = 
-    if (testName.endsWith(InformerInParens))
-      testName.substring(0, testName.length - InformerInParens.length)
-    else
-      testName
-
   private def testMethodTakesInformer(testName: String) = testName.endsWith(InformerInParens)
 
   private def getMethodForTestName(testName: String) =
@@ -1912,4 +1907,10 @@ private[scalatest] object Suite {
       case _ => None
     }
   }
+
+  private def simpleNameForTest(testName: String) =
+    if (testName.endsWith(InformerInParens))
+      testName.substring(0, testName.length - InformerInParens.length)
+    else
+      testName
 }
