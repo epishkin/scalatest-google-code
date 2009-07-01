@@ -39,6 +39,7 @@ import java.lang.reflect.Modifier
  * targetObject invokePrivate decorateToStringValue(1)
  * </pre>
  *
+ * <p>
  * Here, <code>targetObject</code> is a variable or singleton object name referring to the object whose
  * private method you want to test. You pass the arguments to the private method in the parentheses after
  * the <code>PrivateMethod</code> object.
@@ -48,6 +49,18 @@ import java.lang.reflect.Modifier
  * looks like a regular method invocation, but with the dot (<code>.</code>) replaced by <code>invokePrivate</code>.
  * The private method is invoked dynamically via reflection, so if you have a typo in the method name symbol, specify the wrong result type,
  * or pass invalid parameters, the <code>invokePrivate</code> operation will compile, but throw an exception at runtime.
+ * </p>
+ *
+ * <p>
+ * One limitation to be aware of is that you can't use <code>PrivateMethodTester</code> to test a private method
+ * declared in a trait, because the class the trait gets mixed into will not declare that private method. Only the
+ * class generated to hold method implementations for the trait will have that private method. If you want to
+ * test a private method declared in a trait, and that method does not use any state of that trait, you can move
+ * the private method to a companion object for the trait and test it using <code>PrivateMethodTester</code> that
+ * way. If the private trait method you want to test uses the trait's state, your best options are to test it
+ * indirectly via a non-private trait method that calls the private method, or make the private method package access
+ * and test it directly via regular static method invocations. 
+ * </p>
  *
  * @author Bill Venners
  */
@@ -237,12 +250,12 @@ trait PrivateMethodTester {
  * scala> import org.scalatest.PrivateMethodTester._                 
  * import org.scalatest.PrivateMethodTester._
  * 
- * scala> class Example {                             
+ * scala> class Example {
  *      |   private def addSesame(prefix: String) = prefix + " sesame"
  *      | }
  * defined class Example
  * 
- * scala> val example = new Example                                   
+ * scala> val example = new Example
  * example: Example = Example@d8b6fe
  * 
  * scala> val addSesame = PrivateMethod[String]('addSesame)           
