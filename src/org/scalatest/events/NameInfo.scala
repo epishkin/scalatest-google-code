@@ -26,6 +26,8 @@ package org.scalatest.events
  * @param suiteName an optional name of the suite about which the information was provided
  * @param suiteClassName an optional fully qualifed <code>Suite</code> class name about which the information was provided
  * @param testName an optional name of the test about which the information was provided
+ *
+ * @author Bill Venners
  */
 final case class NameInfo(suiteName: String, suiteClassName: Option[String], testName: Option[String])
 

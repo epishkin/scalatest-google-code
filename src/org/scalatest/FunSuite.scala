@@ -625,7 +625,9 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
         updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
       }
     }
-    
+
+  // This must *not* be lazy, so that it will stay null while the class's constructors are being executed,
+  // because that's how I detect that construction is happenning (the registration phase) in the info method.
   private val zombieInformer =
     new Informer {
       private val complaint = "Sorry, you can only use FunSuite's info when executing the suite."
@@ -877,7 +879,6 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
     val report = wrapReporterIfNecessary(reporter)
 
-    // This guy will need to capture ordinal
     val informerForThisSuite =
       new Informer {
         def apply(message: String) {
