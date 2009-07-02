@@ -111,7 +111,7 @@ class SpecSpec extends Spec with SharedHelpers {
         assert(testStartingIndex < infoProvidedIndex)
         assert(infoProvidedIndex < testSucceededIndex)
       }
-      ignore("should, when the info appears in the body before a test, report the info before the test") {
+      it("should, when the info appears in the body before a test, report the info before the test") {
         val msg = "hi there, dude"
         val testName = "test name"
         class MySpec extends Spec {
@@ -123,7 +123,7 @@ class SpecSpec extends Spec with SharedHelpers {
         assert(infoProvidedIndex < testStartingIndex)
         assert(testStartingIndex < testSucceededIndex)
       }
-      ignore("should, when the info appears in the body after a test, report the info after the test runs") {
+      it("should, when the info appears in the body after a test, report the info after the test runs") {
         val msg = "hi there, dude"
         val testName = "test name"
         class MySpec extends Spec {
@@ -135,7 +135,7 @@ class SpecSpec extends Spec with SharedHelpers {
         assert(testStartingIndex < testSucceededIndex)
         assert(testSucceededIndex < infoProvidedIndex)
       }
-      ignore("should throw an IllegalStateException when info is called by a method invoked after the suite has been executed") {
+      it("should throw an IllegalStateException when info is called by a method invoked after the suite has been executed") {
         class MySpec extends Spec {
           callInfo() // This should work fine
           def callInfo() {

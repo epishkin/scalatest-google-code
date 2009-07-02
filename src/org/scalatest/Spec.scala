@@ -615,12 +615,6 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  /*
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
-
-   */
   private def registerTest(specText: String, f: => Unit) = {
 
     val oldBundle = atomic.get
@@ -665,7 +659,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
-        throw new RuntimeException("NOT YET IMPLEMENTED")
+
+        val oldBundle = atomic.get
+        var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+
+        currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
+
+        updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
       }
     }
 
@@ -803,20 +803,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       println("atomic: " + atomic)
     if (atomic.get.runningATest)
       throw new TestFailedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
-/*
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
 
-    def insertBranch(newBranch: Branch, f: () => Unit) {
-      val oldBranch = currentBranch
-      currentBranch.subNodes ::= newBranch
-      currentBranch = newBranch
-      f()
-      currentBranch = oldBranch
-    }
-
-    insertBranch(DescriptionBranch(currentBranch, description), f _)
-*/
     def createNewBranch() = {
       val oldBundle = atomic.get
       var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
@@ -854,16 +841,19 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
     val stopRequested = stopper
+    // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
+    // so that exceptions are caught and transformed
+    // into error messages on the standard error stream.
+    val report = wrapReporterIfNecessary(reporter)
     branch match {
-      case desc @ DescriptionBranch(_, descriptionName) => {
+      case desc @ DescriptionBranch(_, descriptionName) =>
 
         def sendInfoProvidedMessage() {
           // Need to use the full name of the description, which includes all the descriptions it is nested inside
           // Call getPrefix and pass in this Desc, to get the full name
           val descriptionFullName = getPrefix(desc).trim
          
-          val report = wrapReporterIfNecessary(reporter)
-         
+
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
           report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
@@ -879,17 +869,12 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
             case ex: TestLeaf => sendInfoProvidedMessage()
             case _ => // Do nothing in this case
           }
-      }
+
       case _ =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
         case ex @ TestLeaf(parent, testName, specText, f) => {
-          // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
-          // so that exceptions are caught and transformed
-          // into error messages on the standard error stream.
-          val report = wrapReporterIfNecessary(reporter)
-
           val tn = ex.testName
           if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
             if (groupsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
@@ -902,6 +887,8 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
             }
           }
         }
+        case InfoLeaf(parent, message) =>
+          report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
       }
     )
