@@ -32,7 +32,7 @@ private[scalatest] object NodeFamily {
     f: () => Unit
   ) extends Node(Some(parent))
 
-  //case class Info(parent: Branch, message: String) extends Node
+  case class Info(parent: Branch, message: String) extends Node(Some(parent))
 
   case class DescriptionBranch(
     parent: Branch,
