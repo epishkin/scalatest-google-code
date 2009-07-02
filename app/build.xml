@@ -302,11 +302,10 @@
     <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="stdout" config="N"/>
-            <suite classname="org.scalatest.ConcurrentInformerSpec" />
-<!--
-            <suite classname="org.scalatest.SuiteSpec" />
-            <suite classname="org.scalatest.FunSuiteSpec" />
             <suite classname="org.scalatest.SpecSpec" />
+<!--
+            <suite classname="org.scalatest.FunSuiteSpec" />
+            <suite classname="org.scalatest.SuiteSpec" />
 -->
         </scalatest>
 <!--

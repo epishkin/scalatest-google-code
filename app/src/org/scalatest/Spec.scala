@@ -18,7 +18,8 @@ package org.scalatest
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.TestFailedExceptionHelper.getStackDepth
-
+import java.util.concurrent.atomic.AtomicReference
+import java.util.ConcurrentModificationException
 import org.scalatest.events._
 
 /**
@@ -574,6 +575,47 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     testName
   }
 
+  // later will initialize with an informer that registers things between tests for later passing to the informer
+  private val atomicInformer = new AtomicReference[Informer](zombieInformer)
+
+  /**
+   * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
+   * apply method to the current reporter. If invoked inside a test function, it will forward the information to
+   * the current reporter immediately. If invoked outside a test function, but in the primary constructor, it
+   * will register the info for forwarding later during test execution. If invoked at any other time, it will
+   * throw an exception. This method can be called safely by any thread.
+   */
+  implicit def info: Informer = {
+    if (atomicInformer == null || atomicInformer.get == null)
+      registrationInformer
+    else
+      atomicInformer.get
+  }
+
+  // Must be a lazy val because classes are initialized before
+  // the traits they mix in. Thus currentInformer will be null if it is accessed via
+  // an info call outside a test. Making it lazy solves the problem.
+  private lazy val registrationInformer: Informer =
+    new Informer {
+      def apply(message: String) {
+        if (message == null)
+          throw new NullPointerException
+        throw new RuntimeException("NOT YET IMPLEMENTED")
+      }
+    }
+
+  // This must *not* be lazy, so that it will stay null while the class's constructors are being executed,
+  // because that's how I detect that construction is happenning (the registration phase) in the info method.
+  private val zombieInformer =
+    new Informer {
+      private val complaint = "Sorry, you can only use Spec's info when executing the suite."
+      def apply(message: String) {
+        if (message == null)
+          throw new NullPointerException
+        throw new IllegalStateException(complaint)
+      }
+    }
+
   /**
    * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
    * An invocation of this method is called an &#8220;example.&#8221;
@@ -809,7 +851,29 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
           val formatter = IndentedText(formattedSpecText, example.specText, 1)
           try {
-            example.f()
+            val oldInformer = atomicInformer.get
+            val informerForThisTest =
+              new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
+                def apply(message: String) {
+                  if (message == null)
+                    throw new NullPointerException
+                  report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
+                }
+              }
+
+            atomicInformer.set(informerForThisTest)
+            try {
+              example.f()
+            }
+            finally {
+              val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
+              val rarelyIfEverSeen = """
+                Two threads have apparently attempted to run tests at the same time. This has
+                resulted in both threads attempting to change the current informer.
+              """
+              if (!success)
+                throw new ConcurrentModificationException(rarelyIfEverSeen)
+            }
 
             val duration = System.currentTimeMillis - testStartTime
             report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(duration), Some(formatter), rerunnable))
@@ -970,4 +1034,42 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * </pre>
    */
   override def testNames: Set[String] = ListSet(examplesList.map(_.testName): _*)
+
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+      goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    val stopRequested = stopper
+
+    // Set the flag that indicates run has been invoked, which will disallow any further
+    // invocations of "test" with an IllegalStateException.
+/*    val oldBundle = atomic.get
+    val (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
+    if (!runHasBeenInvoked)
+      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, true))
+*/
+    val report = wrapReporterIfNecessary(reporter)
+
+    val informerForThisSuite =
+      new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)) {
+        def apply(message: String) {
+          if (message == null)
+            throw new NullPointerException
+          report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
+        }
+      }
+
+    atomicInformer.set(informerForThisSuite)
+    try {
+      super.run(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+    }
+    finally {
+      val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
+      val rarelyIfEverSeen = """
+        Two threads have apparently attempted to run suite at the same time. This has
+        resulted in both threads attempting to concurrently change the current informer.
+      """
+      if (!success)
+        throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
+    }
+  }
 }
