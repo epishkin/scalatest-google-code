@@ -71,6 +71,7 @@ class SpecSpec extends Spec with HandyReporters {
     }
 
     it("should throw TestFailedException if a duplicate test name registration is attempted") {
+      
       intercept[TestFailedException] {
         new Spec {
           it("test this") {}
