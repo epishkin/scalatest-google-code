@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events._
 
-class SpecSpec extends Spec with SharedHelpers {
+class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
   describe("A Spec") {
 
@@ -98,28 +98,30 @@ class SpecSpec extends Spec with SharedHelpers {
       }
     }
     describe("(with info calls)") {
-      it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
+      class InfoInsideTestSpec extends Spec {
         val msg = "hi there, dude"
         val testName = "test name"
-        class MySpec extends Spec {
-          it(testName) {
-            info(msg)
-          }
+        it(testName) {
+          info(msg)
         }
+      }
+      it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
+        val spec = new InfoInsideTestSpec
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
-          runCommonInformerTestCode(new MySpec, testName, msg)
+          getIndexesForInformerEventOrderTests(spec, spec.testName, spec.msg)
         assert(testStartingIndex < infoProvidedIndex)
         assert(infoProvidedIndex < testSucceededIndex)
       }
-      it("should, when the info appears in the body before a test, report the info before the test") {
+      class InfoBeforeTestSpec extends Spec {
         val msg = "hi there, dude"
         val testName = "test name"
-        class MySpec extends Spec {
-          info(msg)
-          it(testName) {}
-        }
+        info(msg)
+        it(testName) {}
+      }
+      it("should, when the info appears in the body before a test, report the info before the test") {
+        val spec = new InfoBeforeTestSpec
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
-          runCommonInformerTestCode(new MySpec, testName, msg)
+          getIndexesForInformerEventOrderTests(spec, spec.testName, spec.msg)
         assert(infoProvidedIndex < testStartingIndex)
         assert(testStartingIndex < testSucceededIndex)
       }
@@ -131,11 +133,15 @@ class SpecSpec extends Spec with SharedHelpers {
           info(msg)
         }
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
-          runCommonInformerTestCode(new MySpec, testName, msg)
+          getIndexesForInformerEventOrderTests(new MySpec, testName, msg)
         assert(testStartingIndex < testSucceededIndex)
         assert(testSucceededIndex < infoProvidedIndex)
       }
+      info("What's an info look like, anyway?")
       it("should throw an IllegalStateException when info is called by a method invoked after the suite has been executed") {
+        given("that a given is given")
+        when("a when comes along")
+        then("a then is sure to soon follow")
         class MySpec extends Spec {
           callInfo() // This should work fine
           def callInfo() {
@@ -151,6 +157,16 @@ class SpecSpec extends Spec with SharedHelpers {
         intercept[IllegalStateException] {
           spec.callInfo()
         }
+      }
+      it("should send an InfoProvided with an IndentedText formatter with level 1 when called outside a test") {
+        val spec = new InfoBeforeTestSpec
+        val indentedText = getIndentedTextFromInfoProvided(spec)
+        assert(indentedText === IndentedText("+ " + spec.msg, spec.msg, 1))
+      }
+      it("should send an InfoProvided with an IndentedText formatter with level 2 when called within a test") {
+        val spec = new InfoInsideTestSpec
+        val indentedText = getIndentedTextFromInfoProvided(spec)
+        assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
     }
   }

@@ -85,7 +85,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
           }
         }
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
-          runCommonInformerTestCode(new MySuite, testName, msg)
+          getIndexesForInformerEventOrderTests(new MySuite, testName, msg)
         assert(testStartingIndex < infoProvidedIndex)
         assert(infoProvidedIndex < testSucceededIndex)
       }
@@ -97,7 +97,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
           test(testName) {}
         }
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
-          runCommonInformerTestCode(new MySuite, testName, msg)
+          getIndexesForInformerEventOrderTests(new MySuite, testName, msg)
         assert(infoProvidedIndex < testStartingIndex)
         assert(testStartingIndex < testSucceededIndex)
       }
@@ -109,7 +109,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
           info(msg)
         }
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
-          runCommonInformerTestCode(new MySuite, testName, msg)
+          getIndexesForInformerEventOrderTests(new MySuite, testName, msg)
         assert(testStartingIndex < testSucceededIndex)
         assert(testSucceededIndex < infoProvidedIndex)
       }

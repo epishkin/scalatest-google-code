@@ -800,7 +800,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * description string and immediately invoke the passed function.
    */
   protected def describe(description: String)(f: => Unit) {
-      println("atomic: " + atomic)
+
     if (atomic.get.runningATest)
       throw new TestFailedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
 
@@ -878,8 +878,8 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           val tn = ex.testName
           if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
             if (groupsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
-              val exampleSucceededIcon = Resources("exampleSucceededIconChar")
-              val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, ex.specText)
+              val exampleSucceededIcon = Resources("testSucceededIconChar")
+              val formattedSpecText = Resources("iconPlusShortName", exampleSucceededIcon, ex.specText)
               report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
             }
             else if ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
@@ -888,7 +888,11 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           }
         }
         case InfoLeaf(parent, message) =>
-          report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
+          val infoProvidedIcon = Resources("infoProvidedIconChar")
+          val formattedText = Resources("iconPlusShortName", infoProvidedIcon, message)
+          report(InfoProvided(tracker.nextOrdinal(), message,
+            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)),
+              None, Some(IndentedText(formattedText, message, 1))))
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
       }
     )
@@ -923,8 +927,8 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
         case Some(example) => {
           val report = wrapReporterIfNecessary(reporter)
   
-          val exampleSucceededIcon = Resources("exampleSucceededIconChar")
-          val formattedSpecText = Resources("exampleIconPlusShortName", exampleSucceededIcon, example.specText)
+          val exampleSucceededIcon = Resources("testSucceededIconChar")
+          val formattedSpecText = Resources("iconPlusShortName", exampleSucceededIcon, example.specText)
   
           // Create a Rerunner if the Spec has a no-arg constructor
           val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
@@ -949,7 +953,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
                 def apply(message: String) {
                   if (message == null)
                     throw new NullPointerException
-                  report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
+                  val infoProvidedIcon = Resources("infoProvidedIconChar")
+                  val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
+                  report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
                 }
               }
 
@@ -1134,11 +1140,6 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
     // Set the flag that indicates run has been invoked, which will disallow any further
     // invocations of "test" with an IllegalStateException.
-/*    val oldBundle = atomic.get
-    val (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
-    if (!runHasBeenInvoked)
-      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, true))
-*/
     val report = wrapReporterIfNecessary(reporter)
 
     val informerForThisSuite =

@@ -61,7 +61,7 @@ trait SharedHelpers extends Assertions {
     }
   }
 
-  def runCommonInformerTestCode(suite: Suite, testName: String, infoMsg: String): (Int, Int, Int) = {
+  def getIndexesForInformerEventOrderTests(suite: Suite, testName: String, infoMsg: String): (Int, Int, Int) = {
 
     val myRep = new EventRecordingReporter
     suite.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
@@ -89,6 +89,23 @@ trait SharedHelpers extends Assertions {
     assert(testSucceeded.testName === testName)
 
     (infoProvidedIndex, testStartingIndex, testSucceededIndex)
+  }
+
+  def getIndentedTextFromInfoProvided(suite: Suite): IndentedText = {
+
+    val myRep = new EventRecordingReporter
+    suite.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+
+    val infoProvidedOption = myRep.eventsReceived.find(_.isInstanceOf[InfoProvided])
+
+    infoProvidedOption match {
+      case Some(infoProvided: InfoProvided) =>
+        infoProvided.formatter match {
+          case Some(indentedText: IndentedText) => indentedText
+          case _ => fail("An InfoProvided was received that didn't include an IndentedText formatter: " + infoProvided.formatter)
+        }
+      case _ => fail("No InfoProvided was received by the Reporter during the run.")
+    }
   }
 }
 
