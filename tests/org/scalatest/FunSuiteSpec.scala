@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events._
 
-class FunSuiteSpec extends Spec with HandyReporters {
+class FunSuiteSpec extends Spec with SharedHelpers {
 
   describe("A FunSuite") {
 

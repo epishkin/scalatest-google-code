@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events._
 
-class SuiteSpec extends Spec with HandyReporters {
+class SuiteSpec extends Spec with SharedHelpers {
   describe("A Suite") {
     it("should return the test names in alphabetical order from testNames") {
       val a = new Suite {

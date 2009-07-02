@@ -18,7 +18,7 @@ package org.scalatest
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 
-class SuiteSuite extends Suite with PrivateMethodTester with HandyReporters {
+class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
   def testSimpleNameForTest() {
     val simpleNameForTest = PrivateMethod[String]('simpleNameForTest)
