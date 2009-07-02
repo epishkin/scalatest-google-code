@@ -5,6 +5,10 @@ will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to o
 to factor out implementation into a private helper class that both FunSuite and Spec use, especially since this stuff will need
 to be repeated in WordSpec and FeatureSpec.
 
+A spec-style suite's testInformer will hold onto info provided's until after the test is done, then will print them all out. This
+way they show up later in the report, tucked under the line for that test, indented one level. GivenWhenThen will just indent
+1 level by default, but a spec-style testInformer will add one more indentation level to whatever level is passed in the event.
+
 Use filter in the run methods
 
 add the 'it should/must ""/describe a ""/describe it ""' style to Spec
