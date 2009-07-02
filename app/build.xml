@@ -301,6 +301,7 @@
 
     <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+            <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
             <suite classname="org.scalatest.SpecSpec" />
 <!--

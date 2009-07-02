@@ -1,12 +1,10 @@
-add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
+A spec-style suite's testInformer will hold onto info provided's until after the test is done, then will print them all out. This
+way they show up later in the report, tucked under the line for that test, indented one level. GivenWhenThen will just indent
+1 level by default, but a spec-style testInformer will add one more indentation level to whatever level is passed in the event.
 
 Spec is only dissallowing test registration while running a test. Actually, it kind of does make sense in that you can say can't nest
 a "test" inside another "test" when running a test. But also can't register after construction is done, which means after the first
 time run has been invoked. So could combine them, and have two different error messages.
-
-A spec-style suite's testInformer will hold onto info provided's until after the test is done, then will print them all out. This
-way they show up later in the report, tucked under the line for that test, indented one level. GivenWhenThen will just indent
-1 level by default, but a spec-style testInformer will add one more indentation level to whatever level is passed in the event.
 
 Use filter in the run methods
 
@@ -181,3 +179,4 @@ ant task.
 it is configured with. Print out the ordinal and everything. The
 reason is this can be used as an output during concurrent tests which
 can be read in and then sorted to produce other output.
+
