@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events._
 
-trait HandyReporters extends Assertions {
+trait SharedHelpers extends Assertions {
   
   class TestDurationReporter extends Reporter {
     var testSucceededWasFiredAndHadADuration = false

@@ -18,7 +18,7 @@ package org.scalatest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.events._
 
-class SpecSuite extends FunSuite with HandyReporters {
+class SpecSuite extends FunSuite with SharedHelpers {
 
   test("calling a describe from within an it clause results in a TestFailedError at runtime") {
     

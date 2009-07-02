@@ -24,7 +24,7 @@ package mytags {
   object WeakAsAKitten extends Tag("org.scalatest.WeakAsAKitten")
 }
 
-class FunSuiteSuite extends Suite with HandyReporters {
+class FunSuiteSuite extends Suite with SharedHelpers {
 
   def testTestNames() {
 

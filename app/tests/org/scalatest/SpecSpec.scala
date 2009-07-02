@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events._
 
-class SpecSpec extends Spec with HandyReporters {
+class SpecSpec extends Spec with SharedHelpers {
 
   describe("A Spec") {
 
