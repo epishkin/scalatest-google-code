@@ -552,7 +552,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
-  private val trunk: Trunk = new Trunk
+/*  private val trunk: Trunk = new Trunk
   private var currentBranch: Branch = trunk
   private var groupsMap: Map[String, Set[String]] = Map()
 
@@ -562,8 +562,70 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   // Used to detect at runtime that they've stuck a describe or an it inside an it,
   // which should result in a TestFailedException
   private var runningATest = false
+*/
+  private class Bundle private(
+    val trunk: Trunk,
+    val currentBranch: Branch,
+    val groupsMap: Map[String, Set[String]],
 
+    // All examples, in reverse order of registration
+    val examplesList: List[TestLeaf],
+
+    // Used to detect at runtime that they've stuck a describe or an it inside an it,
+    // which should result in a TestFailedException
+    val runningATest: Boolean
+  ) {
+    def unpack = (trunk, currentBranch, groupsMap, examplesList, runningATest)
+  }
+
+  private object Bundle {
+    def apply(
+      trunk: Trunk,
+      currentBranch: Branch,
+      groupsMap: Map[String, Set[String]],
+      examplesList: List[TestLeaf],
+      runningATest: Boolean
+    ): Bundle =
+      new Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest)
+
+    def initialize(
+      trunk: Trunk,
+      groupsMap: Map[String, Set[String]],
+      examplesList: List[TestLeaf],
+      runningATest: Boolean
+    ): Bundle =
+      new Bundle(trunk, trunk, groupsMap, examplesList, runningATest)
+  }
+
+  private val atomic =
+    new AtomicReference[Bundle](
+      Bundle.initialize(new Trunk, Map(), List[TestLeaf](), false)
+    )
+
+  private val shouldRarelyIfEverBeSeen = """
+    Two threads attempted to modify Spec's internal data, which should only be
+    modified by the thread that constructs the object. This likely means that a subclass
+    has allowed the this reference to escape during construction, and some other thread
+    attempted to invoke the "describe" or "it" method on the object before the first
+    thread completed its construction.
+  """
+
+  private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
+    if (!atomic.compareAndSet(oldBundle, newBundle))
+      throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
+  }
+
+  /*
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+
+   */
   private def registerTest(specText: String, f: => Unit) = {
+
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+
     val testName = getTestName(specText, currentBranch)
     if (examplesList.exists(_.testName == testName)) {
       throw new TestFailedException(Resources("duplicateTestName", testName), getStackDepth("Spec.scala", "it"))
@@ -572,6 +634,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val example = TestLeaf(currentBranch, testName, specText, f _)
     currentBranch.subNodes ::= example
     examplesList ::= example
+
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+
     testName
   }
 
@@ -634,16 +699,23 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String, testTags: Tag*)(testFun: => Unit) {
-    if (runningATest)
+
+    if (atomic.get.runningATest)
       throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
       throw new NullPointerException("a test group was null")
+
     val testName = registerTest(specText, testFun)
+
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, groupsMap, examplesList, runningATest2) = oldBundle.unpack
     val groupNames = Set[String]() ++ testTags.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
+
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest2))
   }
 
   /**
@@ -663,7 +735,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String)(testFun: => Unit) {
-    if (runningATest)
+    if (atomic.get.runningATest)
       throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     it(specText, Array[Tag](): _*)(testFun)
   }
@@ -686,7 +758,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: => Unit) {
-    if (runningATest)
+    if (atomic.get.runningATest)
       throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
@@ -694,7 +766,10 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       throw new NullPointerException("a test group was null")
     val testName = registerTest(specText, testFun)
     val groupNames = Set[String]() ++ testTags.map(_.name)
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
     groupsMap += (testName -> (groupNames + IgnoreTagName))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
   }
 
   /**
@@ -714,7 +789,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def ignore(specText: String)(testFun: => Unit) {
-    if (runningATest)
+    if (atomic.get.runningATest)
       throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
   }
@@ -725,9 +800,12 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * description string and immediately invoke the passed function.
    */
   protected def describe(description: String)(f: => Unit) {
-
-    if (runningATest)
+      println("atomic: " + atomic)
+    if (atomic.get.runningATest)
       throw new TestFailedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
+/*
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
 
     def insertBranch(newBranch: Branch, f: () => Unit) {
       val oldBranch = currentBranch
@@ -738,6 +816,29 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     }
 
     insertBranch(DescriptionBranch(currentBranch, description), f _)
+*/
+    def createNewBranch() = {
+      val oldBundle = atomic.get
+      var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+
+      val newBranch = DescriptionBranch(currentBranch, description)
+      val oldBranch = currentBranch
+      currentBranch.subNodes ::= newBranch
+      currentBranch = newBranch
+
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+
+      oldBranch
+    }
+
+    val oldBranch = createNewBranch()
+
+    f
+
+    val oldBundle = atomic.get
+    val (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+
+    updateAtomic(oldBundle, Bundle(trunk, oldBranch, groupsMap, examplesList, runningATest))
   }
 
   /**
@@ -749,7 +850,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
-  override def tags: Map[String, Set[String]] = groupsMap
+  override def tags: Map[String, Set[String]] = atomic.get.groupsMap
 
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
     val stopRequested = stopper
@@ -824,7 +925,11 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
     runningATest = true
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+    
     try {
       examplesList.find(_.testName == testName) match {
         case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
@@ -994,7 +1099,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val stopRequested = stopper
 
     testName match {
-      case None => runTestsInBranch(trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
+      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
       case Some(tn) => runTest(tn, reporter, stopRequested, goodies, tracker)
     }
   }
@@ -1033,7 +1138,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * "A Stack (when not full) must allow me to push"
    * </pre>
    */
-  override def testNames: Set[String] = ListSet(examplesList.map(_.testName): _*)
+  override def testNames: Set[String] = ListSet(atomic.get.examplesList.map(_.testName): _*)
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
