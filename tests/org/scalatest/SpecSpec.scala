@@ -97,6 +97,62 @@ class SpecSpec extends Spec with HandyReporters {
         }
       }
     }
+    describe("(with info calls)") {
+      it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
+        val msg = "hi there, dude"
+        val testName = "test name"
+        class MySpec extends Spec {
+          it(testName) {
+            info(msg)
+          }
+        }
+        val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
+          runCommonInformerTestCode(new MySpec, testName, msg)
+        assert(testStartingIndex < infoProvidedIndex)
+        assert(infoProvidedIndex < testSucceededIndex)
+      }
+      ignore("should, when the info appears in the body before a test, report the info before the test") {
+        val msg = "hi there, dude"
+        val testName = "test name"
+        class MySpec extends Spec {
+          info(msg)
+          it(testName) {}
+        }
+        val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
+          runCommonInformerTestCode(new MySpec, testName, msg)
+        assert(infoProvidedIndex < testStartingIndex)
+        assert(testStartingIndex < testSucceededIndex)
+      }
+      ignore("should, when the info appears in the body after a test, report the info after the test runs") {
+        val msg = "hi there, dude"
+        val testName = "test name"
+        class MySpec extends Spec {
+          it(testName) {}
+          info(msg)
+        }
+        val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
+          runCommonInformerTestCode(new MySpec, testName, msg)
+        assert(testStartingIndex < testSucceededIndex)
+        assert(testSucceededIndex < infoProvidedIndex)
+      }
+      ignore("should throw an IllegalStateException when info is called by a method invoked after the suite has been executed") {
+        class MySpec extends Spec {
+          callInfo() // This should work fine
+          def callInfo() {
+            info("howdy")
+          }
+          it("howdy also") {
+            callInfo() // This should work fine
+          }
+        }
+        val spec = new MySpec
+        val myRep = new EventRecordingReporter
+        spec.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+        intercept[IllegalStateException] {
+          spec.callInfo()
+        }
+      }
+    }
   }
 }
 

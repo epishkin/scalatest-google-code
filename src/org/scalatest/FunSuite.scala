@@ -748,11 +748,11 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
       val oldInformer = atomicInformer.get
       val informerForThisTest =
-        new Informer {
+        new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
           def apply(message: String) {
             if (message == null)
               throw new NullPointerException
-            report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+            report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
           }
         }
 
@@ -880,11 +880,11 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     val report = wrapReporterIfNecessary(reporter)
 
     val informerForThisSuite =
-      new Informer {
+      new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)) {
         def apply(message: String) {
           if (message == null)
             throw new NullPointerException
-          report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None))))
+          report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
         }
       }
 

@@ -17,7 +17,7 @@ package org.scalatest
 
 import org.scalatest.events._
 
-trait HandyReporters {
+trait HandyReporters extends Assertions {
   
   class TestDurationReporter extends Reporter {
     var testSucceededWasFiredAndHadADuration = false
@@ -51,6 +51,44 @@ trait HandyReporters {
         case _ =>
       }
     }
+  }
+
+  class EventRecordingReporter extends Reporter {
+    private var eventList: List[Event] = List()
+    def eventsReceived = eventList.reverse
+    def apply(event: Event) {
+      eventList ::= event
+    }
+  }
+
+  def runCommonInformerTestCode(suite: Suite, testName: String, infoMsg: String): (Int, Int, Int) = {
+
+    val myRep = new EventRecordingReporter
+    suite.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+
+    val indexedList = myRep.eventsReceived.zipWithIndex
+
+    val testStartingOption = indexedList.find(_._1.isInstanceOf[TestStarting])
+    val infoProvidedOption = indexedList.find(_._1.isInstanceOf[InfoProvided])
+    val testSucceededOption = indexedList.find(_._1.isInstanceOf[TestSucceeded])
+
+    assert(testStartingOption.isDefined)
+    assert(infoProvidedOption.isDefined)
+    assert(testSucceededOption.isDefined)
+
+    val testStartingIndex = testStartingOption.get._2
+    val infoProvidedIndex = infoProvidedOption.get._2
+    val testSucceededIndex = testSucceededOption.get._2
+
+    val testStarting = testStartingOption.get._1.asInstanceOf[TestStarting]
+    val infoProvided = infoProvidedOption.get._1.asInstanceOf[InfoProvided]
+    val testSucceeded = testSucceededOption.get._1.asInstanceOf[TestSucceeded]
+
+    assert(testStarting.testName === testName)
+    assert(infoProvided.message === infoMsg)
+    assert(testSucceeded.testName === testName)
+
+    (infoProvidedIndex, testStartingIndex, testSucceededIndex)
   }
 }
 

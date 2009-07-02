@@ -75,6 +75,63 @@ class FunSuiteSpec extends Spec with HandyReporters {
         }
       }
     }
+    describe("(with info calls)") {
+      it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
+        val msg = "hi there, dude"
+        val testName = "test name"
+        class MySuite extends FunSuite {
+          test(testName) {
+            info(msg)
+          }
+        }
+        val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
+          runCommonInformerTestCode(new MySuite, testName, msg)
+        assert(testStartingIndex < infoProvidedIndex)
+        assert(infoProvidedIndex < testSucceededIndex)
+      }
+      it("should, when the info appears in the body before a test, report the info before the test") {
+        val msg = "hi there, dude"
+        val testName = "test name"
+        class MySuite extends FunSuite {
+          info(msg)
+          test(testName) {}
+        }
+        val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
+          runCommonInformerTestCode(new MySuite, testName, msg)
+        assert(infoProvidedIndex < testStartingIndex)
+        assert(testStartingIndex < testSucceededIndex)
+      }
+      it("should, when the info appears in the body after a test, report the info after the test runs") {
+        val msg = "hi there, dude"
+        val testName = "test name"
+        class MySuite extends FunSuite {
+          test(testName) {}
+          info(msg)
+        }
+        val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
+          runCommonInformerTestCode(new MySuite, testName, msg)
+        assert(testStartingIndex < testSucceededIndex)
+        assert(testSucceededIndex < infoProvidedIndex)
+      }
+      it("should throw an IllegalStateException when info is called by a method invoked after the suite has been executed") {
+        class MySuite extends FunSuite {
+          callInfo() // This should work fine
+          def callInfo() {
+            info("howdy")
+          }
+          test("howdy also") {
+            callInfo() // This should work fine
+          }
+        }
+        val suite = new MySuite
+        val myRep = new EventRecordingReporter
+        suite.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+        intercept[IllegalStateException] {
+          suite.callInfo()
+        }
+      }
+    }
   }
 }
+
 

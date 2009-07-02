@@ -1,10 +1,5 @@
 add info functionality to Spec. Try the GivenWhenThen trait, to see if indented text works. Support both when("...") and --- when "..." styles.
 
-Add testsFor to FunSuite. Use same data structure as Spec. Otherwise SharedTests would be a pain. In FeatureSpec,
-will have scenariosFor. Could limit the nesting in FunSuite and FeatureSpec to one level, but seems artificial. It may be I want
-to factor out implementation into a private helper class that both FunSuite and Spec use, especially since this stuff will need
-to be repeated in WordSpec and FeatureSpec.
-
 A spec-style suite's testInformer will hold onto info provided's until after the test is done, then will print them all out. This
 way they show up later in the report, tucked under the line for that test, indented one level. GivenWhenThen will just indent
 1 level by default, but a spec-style testInformer will add one more indentation level to whatever level is passed in the event.
@@ -17,7 +12,9 @@ Do the fixture package for Suite, FunSuite, and Spec
 
 Make a GoodiesFixture trait for getting the goodies into a test
 
-Do the OneInstancePerTest and ConcurrentTestExecution traits
+Do the OneInstancePerTest and ParallelTestExecution traits
+
+Add BeforeAndAfterEach, BeforeAndAfterAll, AfterEach, with BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll.
 
 Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, which would then give it the same kind of output.
 
