@@ -17,34 +17,34 @@ package org.scalatest
 
 private[scalatest] object NodeFamily {
   
-  sealed abstract class Node(parentOption: Option[Branch], val level: Int)
+  sealed abstract class Node(parentOption: Option[Branch])
 
-  abstract class Branch(parentOption: Option[Branch], override val level: Int) extends Node(parentOption, level) {
+  abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
   }
 
-  case class Trunk extends Branch(None, -1)
+  case class Trunk extends Branch(None)
 
   case class TestLeaf(
     parent: Branch,
     testName: String,
     specText: String,
-    override val level: Int,
     f: () => Unit
-  ) extends Node(Some(parent), level)
+  ) extends Node(Some(parent))
+
+  //case class Info(parent: Branch, message: String) extends Node
 
   case class DescriptionBranch(
     parent: Branch,
-    descriptionName: String,
-    override val level: Int
-  ) extends Branch(Some(parent), level)
+    descriptionName: String
+  ) extends Branch(Some(parent))
 
   protected[scalatest] def getPrefix(branch: Branch): String = {
     branch match {
       case Trunk() => ""
       // Call to getPrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
-      case DescriptionBranch(parent, descriptionName, level) =>
+      case DescriptionBranch(parent, descriptionName) =>
         Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
   }
