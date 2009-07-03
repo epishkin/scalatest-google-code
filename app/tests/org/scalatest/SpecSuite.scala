@@ -46,8 +46,10 @@ class SpecSuite extends FunSuite with SharedHelpers {
     assert(testFailedAsExpected)
   }
 
+  info("This one is outside")
+
   test("calling a describe with a nested it from within an it clause results in a TestFailedError at runtime") {
-    
+    info("This one is inside")
     var testFailedAsExpected = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
