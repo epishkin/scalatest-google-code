@@ -105,12 +105,14 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           info(msg)
         }
       }
-      it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
+      // In a Spec, any InfoProvided's fired during the test should be cached and sent out after the test has
+      // suceeded or failed. This makes the report look nicer, because the info is tucked under the "specifier'
+      // text for that test.
+      it("should, when the info appears in the code of a successful test, report the info after the TestSucceeded") {
         val spec = new InfoInsideTestSpec
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
           getIndexesForInformerEventOrderTests(spec, spec.testName, spec.msg)
-        assert(testStartingIndex < infoProvidedIndex)
-        assert(infoProvidedIndex < testSucceededIndex)
+        assert(testSucceededIndex < infoProvidedIndex)
       }
       class InfoBeforeTestSpec extends Spec {
         val msg = "hi there, dude"

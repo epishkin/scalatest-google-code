@@ -946,32 +946,25 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
 
           val formatter = IndentedText(formattedSpecText, example.specText, 1)
-          try {
-            val oldInformer = atomicInformer.get
-            val informerForThisTest =
-              new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
-                def apply(message: String) {
-                  if (message == null)
-                    throw new NullPointerException
+          val oldInformer = atomicInformer.get
+          val informerForThisTest =
+            new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
+              def apply(message: String) {
+                if (message == null)
+                  throw new NullPointerException
+                if (shouldRecord)
+                  record(message)
+                else {
                   val infoProvidedIcon = Resources("infoProvidedIconChar")
                   val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
                   report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
                 }
               }
+            }
 
-            atomicInformer.set(informerForThisTest)
-            try {
-              example.f()
-            }
-            finally {
-              val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
-              val rarelyIfEverSeen = """
-                Two threads have apparently attempted to run tests at the same time. This has
-                resulted in both threads attempting to change the current informer.
-              """
-              if (!success)
-                throw new ConcurrentModificationException(rarelyIfEverSeen)
-            }
+          atomicInformer.set(informerForThisTest)
+          try {
+            example.f()
 
             val duration = System.currentTimeMillis - testStartTime
             report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(duration), Some(formatter), rerunnable))
@@ -985,6 +978,22 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
             case ae: AssertionError =>
               val duration = System.currentTimeMillis - testStartTime
               handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
+          }
+          finally {
+            // send out any recorded messages
+            for (message <- informerForThisTest.recordedMessages) {
+              val infoProvidedIcon = Resources("infoProvidedIconChar")
+              val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
+              report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
+            }
+
+            val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
+            val rarelyIfEverSeen = """
+              Two threads have apparently attempted to run tests at the same time. This has
+              resulted in both threads attempting to change the current informer.
+            """
+            if (!success)
+              throw new ConcurrentModificationException(rarelyIfEverSeen)
           }
         }
       }
