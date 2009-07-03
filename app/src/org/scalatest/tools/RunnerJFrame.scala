@@ -270,7 +270,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                 case Some(throwable) =>
                   throwable match {
                     case tfe: TestFailedException =>
-                      tfe.failedTestCodeFileNameAndLineNumberString 
+                      tfe.failedCodeFileNameAndLineNumberString 
                     case _ => None
                   }
                 case None => None
@@ -282,7 +282,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                   case None => None
                 }
 
-              // Any stack trace elements lower than a TestFailedException's failedTestCodeStackDepth
+              // Any stack trace elements lower than a TestFailedException's failedCodeStackDepth
               // will show up as gray in the displayed stack trace, because those are ScalaTest methods.
               // The rest will show up as black.
               val (grayStackTraceElements, blackStackTraceElements) =
@@ -291,7 +291,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                     val stackTraceElements = throwable.getStackTrace.toList
                     throwable match {
                       case tfe: TestFailedException =>
-                        (stackTraceElements.take(tfe.failedTestCodeStackDepth), stackTraceElements.drop(tfe.failedTestCodeStackDepth))
+                        (stackTraceElements.take(tfe.failedCodeStackDepth), stackTraceElements.drop(tfe.failedCodeStackDepth))
                       case _ => (List(), stackTraceElements)
                     } 
                   case None => (List(), List())
