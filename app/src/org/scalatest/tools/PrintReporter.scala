@@ -114,7 +114,10 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
     val stringToPrintWithPossibleLineNumberAndDuration =
       duration match {
         case Some(milliseconds) =>
-          Resources("withDuration", stringToPrintWithPossibleLineNumber, makeDurationString(milliseconds))
+          if (presentAllDurations)
+            Resources("withDuration", stringToPrintWithPossibleLineNumber, makeDurationString(milliseconds))
+          else
+            stringToPrintWithPossibleLineNumber
         case None => stringToPrintWithPossibleLineNumber
       }
 
@@ -145,7 +148,10 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val labeledClassNameWithMessage =
               if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
-                "  " + labeledClassName + ": " + throwable.getMessage.trim
+                if (presentTestFailedExceptionStackTraces)
+                  "  " + labeledClassName + ": " + throwable.getMessage.trim
+                else
+                  "  " + throwable.getMessage.trim // Don't show "org.scalatest.TestFailedException: " if no stack trace to follow
               else
                 "  " + labeledClassName
 
