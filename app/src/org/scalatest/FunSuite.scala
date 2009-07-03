@@ -549,11 +549,11 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
   private case class Test(testName: String, testFunction: () => Unit) extends FunNode
   private case class Info(message: String) extends FunNode
 
-  // Access to the testNamesList, testsMap, and groupsMap must be synchronized, because the test methods are invoked by
-  // the primary constructor, but testNames, groups, and runTest get invoked directly or indirectly
+  // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
+  // the primary constructor, but testNames, tags, and runTest get invoked directly or indirectly
   // by run. When running tests concurrently with ScalaTest Runner, different threads can
   // instantiate and run the suite. Instead of synchronizing, I put them in an immutable Bundle object (and
-  // all three collections--testNamesList, testsMap, and groupsMap--are immuable collections), then I put the Bundle
+  // all three collections--testNamesList, testsMap, and tagsMap--are immuable collections), then I put the Bundle
   // in an AtomicReference. Since the expected use case is the test method will be called
   // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
   // If two threads ever called test at the same time, they could get a ConcurrentModificationException.
@@ -562,10 +562,10 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     val testNamesList: List[String],
     val doList: List[FunNode],
     val testsMap: Map[String, Test],
-    val groupsMap: Map[String, Set[String]],
-    val runHasBeenInvoked: Boolean
+    val tagsMap: Map[String, Set[String]],
+    val registrationClosed: Boolean
   ) {
-    def unpack = (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked)
+    def unpack = (testNamesList, doList, testsMap, tagsMap, registrationClosed)
   }
 
   private object Bundle {
@@ -573,10 +573,10 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
       testNamesList: List[String],
       doList: List[FunNode],
       testsMap: Map[String, Test],
-      groupsMap: Map[String, Set[String]],
-      runHasBeenInvoked: Boolean
+      tagsMap: Map[String, Set[String]],
+      registrationClosed: Boolean
     ): Bundle =
-      new Bundle(testNamesList, doList,testsMap, groupsMap, runHasBeenInvoked)
+      new Bundle(testNamesList, doList,testsMap, tagsMap, registrationClosed)
   }
 
   private val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
@@ -620,9 +620,9 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
         if (message == null)
           throw new NullPointerException
         val oldBundle = atomic.get
-        var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
+        var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
         doList ::= Info(message)
-        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
+        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
       }
     }
 
@@ -639,7 +639,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     }
 
     /**
-     *  Register a test with the specified name, optional groups, and function value that takes no arguments.
+     *  Register a test with the specified name, optional tags, and function value that takes no arguments.
      * This method will register the test for later execution via an invocation of one of the <code>run</code>
      * methods. The passed test name must not have been registered previously on
      * this <code>FunSuite</code> instance.
@@ -649,9 +649,9 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
   protected def test(testName: String, testTags: Tag*)(f: => Unit) {
 
     val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
+    var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
 
-    if (runHasBeenInvoked)
+    if (registrationClosed)
       throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
     
     if (testsMap.keySet.contains(testName)) {
@@ -662,15 +662,15 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     testsMap += (testName -> testNode)
     testNamesList ::= testName
     doList ::= testNode
-    val groupNames = Set[String]() ++ testTags.map(_.name)
-    if (!groupNames.isEmpty)
-      groupsMap += (testName -> groupNames)
+    val tagNames = Set[String]() ++ testTags.map(_.name)
+    if (!tagNames.isEmpty)
+      tagsMap += (testName -> tagNames)
 
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked))
+    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
   }
 
   /**
-   * Register a test to ignore, which has the specified name, optional groups, and function value that takes no arguments.
+   * Register a test to ignore, which has the specified name, optional tags, and function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>run</code>
    * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>test</code>
    * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be run, but a
@@ -681,21 +681,18 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
    */
   protected def ignore(testName: String, testTags: Tag*)(f: => Unit) {
 
-    val oldBundle = atomic.get
-    val (_, _, _, _, runHasBeenInvoked) = oldBundle.unpack
-
-    if (runHasBeenInvoked)
+    if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth("FunSuite.scala", "ignore"))
 
-    test(testName)(f) // Call test without passing the groups
+    test(testName)(f) // Call test without passing the tags
 
-    val oldBundle2 = atomic.get
-    var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvokedFlag) = oldBundle2.unpack
+    val oldBundle = atomic.get
+    var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
 
-    val groupNames = Set[String]() ++ testTags.map(_.name)
-    groupsMap += (testName -> (groupNames + IgnoreTagName))
+    val tagNames = Set[String]() ++ testTags.map(_.name)
+    tagsMap += (testName -> (tagNames + IgnoreTagName))
 
-    updateAtomic(oldBundle2, Bundle(testNamesList, doList, testsMap, groupsMap, runHasBeenInvokedFlag))
+    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
   }
 
   /**
@@ -800,15 +797,15 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>FunSuite</code> belong, and values
-   * the <code>Set</code> of test names that belong to each group. If this <code>FunSuite</code> contains no groups, this method returns an empty <code>Map</code>.
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
-   * This trait's implementation returns groups that were passed as strings contained in <code>Tag</code> objects passed to 
+   * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to 
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
-  override def tags: Map[String, Set[String]] = atomic.get.groupsMap
+  override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
   private[scalatest] override def getTestNameForReport(testName: String) = {
 
@@ -818,7 +815,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     suiteName + ", " + testName
   }
   
-  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
       goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
@@ -827,10 +824,10 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (groupsToInclude == null)
-      throw new NullPointerException("groupsToInclude was null")
-    if (groupsToExclude == null)
-      throw new NullPointerException("groupsToExclude was null")
+    if (tagsToInclude == null)
+      throw new NullPointerException("tagsToInclude was null")
+    if (tagsToExclude == null)
+      throw new NullPointerException("tagsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
@@ -851,11 +848,11 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
           node match {
             case Info(message) => info(message)
             case Test(tn, _) =>
-              if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-                if (groupsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
+              if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
+                if (tagsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
                   report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
                 }
-                else if ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
+                else if ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
                   runTest(tn, report, stopRequested, goodies, tracker)
                 }
               }
@@ -865,7 +862,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     }
   }
 
-  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     val stopRequested = stopper
@@ -873,9 +870,9 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     // Set the flag that indicates run has been invoked, which will disallow any further
     // invocations of "test" with an IllegalStateException.
     val oldBundle = atomic.get
-    val (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
-    if (!runHasBeenInvoked)
-      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, groupsMap, true))
+    val (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+    if (!registrationClosed)
+      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, true))
 
     val report = wrapReporterIfNecessary(reporter)
 
@@ -890,7 +887,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+      super.run(testName, report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
