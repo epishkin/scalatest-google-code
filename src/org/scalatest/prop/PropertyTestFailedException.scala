@@ -23,7 +23,7 @@ package org.scalatest.prop
  *
  * @param message an optional detail message for this <code>TestFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
- * @param failedTestCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+ * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
  * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it
  * @param args the argument values, if any
  *
@@ -35,11 +35,11 @@ package org.scalatest.prop
 class PropertyTestFailedException(
   message: String,
   cause: Option[Throwable],
-  failedTestCodeStackDepth: Int,
+  failedCodeStackDepth: Int,
   val undecoratedMessage: String,
   val args: List[Any],
   val labels: List[String]
-) extends TestFailedException(Some(message), cause, failedTestCodeStackDepth) {
+) extends TestFailedException(Some(message), cause, failedCodeStackDepth) {
 
   if (message == null) throw new NullPointerException("message was null")
 
