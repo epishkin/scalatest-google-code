@@ -65,6 +65,8 @@ package org.scalatest
  *   def full: Boolean = buf.size == MAX
  *   def empty: Boolean = buf.size == 0
  *   def size = buf.size
+ *
+ *   override def toString = buf.mkString("Stack(", ", ", ")")
  * }
  * </pre>
  *
@@ -155,15 +157,6 @@ package org.scalatest
  * <pre>
  * ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
  * ensure (stackWithOneItem) behaves like (nonFullStack)
- * </pre>
- *
- * <p>
- * If you don't like the parentheses, you can alternatively invoke them like this:
- * <p>
- *
- * <pre>
- * ensure that stackWithOneItem behaves like a nonEmptyStack(lastValuePushed)
- * ensure that stackWithOneItem behaves like a nonFullStack
  * </pre>
  *
  * <p>
@@ -301,10 +294,9 @@ package org.scalatest
  * <p>
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
- * complaining that multiple tests are being registered with the same test name. The way to solve this problem is to surround
- * each invocation of a behavior function with a clause that will prepend a string to each test name. In <code>Spec</code>, for
- * example, this is done with <code>describe</code> clauses. For example, the following code in a <code>Spec</code> would register
- * a test with the name <code>"A Stack (when empty) should be empty"</code>:
+ * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>Spec</code> is to surround
+ * each invocation of a behavior function with a <code>describe</code> clause, which will prepend a string to each test name.
+ * For example, the following code in a <code>Spec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
  * </p>
  *
  * <pre>
@@ -320,10 +312,80 @@ package org.scalatest
  *
  * <p>
  * If the <code>"should be empty"</code> tests were factored out into a behavior function, it could be called repeatedly so long
- * as each invocation of the behavior function is inside a different set of <code>describe</code> clauses. You can achieve the same effect in <code>FunSuite</code>
- * by nesting invocations of the behavior function inside <code>testsFor</code> clauses, in <code>FeatureSpec</code> inside
- * <code>scenariosFor</code> clauses, <em>etc</em>.
+ * as each invocation of the behavior function is inside a different set of <code>describe</code> clauses. In a <code>FunSuite</code>
+ * there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause. If the duplicate test name problem shows up in a
+ * <code>FunSuite</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
+ * the same way you pass any other data needed by the shared tests, or just call <code>toString</code> on the shared fixture object.
+ * Here's an example of how <code>StackBehaviors</code> might look for a <code>FunSuite</code>:
  * </p>
+ *
+ * <pre>
+ * trait StackBehaviors { this: FunSuite =>
+ * 
+ *   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
+ * 
+ *     test(stack.toString + " should be non-empty") {
+ *       assert(!stack.empty)
+ *     }  
+ * 
+ *     test(stack.toString + " should return the top item on peek") {
+ *       assert(stack.peek === lastItemAdded)
+ *     }
+ *   
+ *     test(stack.toString + " should not remove the top item on peek") {
+ *       val size = stack.size
+ *       assert(stack.peek === lastItemAdded)
+ *       assert(stack.size === size)
+ *     }
+ *   
+ *     test(stack.toString + " should remove the top item on pop") {
+ *       val size = stack.size
+ *       assert(stack.pop === lastItemAdded)
+ *       assert(stack.size === size - 1)
+ *     }
+ *   }
+ *   
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * Given this <code>StackBahaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture:
+ * </p>
+ *
+ * <pre>
+ * ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+ * </pre>
+ *
+ * <p>
+ * would yield test names:
+ * </p>
+ *
+ * <ul>
+ * <li><code>Stack(9) should be non-empty</code></li>
+ * <li><code>Stack(9) should return the top item on peek</code></li>
+ * <li><code>Stack(9) should not remove the top item on peek</code></li>
+ * <li><code>Stack(9) should remove the top item on pop</code></li>
+ * </ul>
+ *
+ * <p>
+ * Whereas calling it with the <code>stackWithOneItemLessThanCapacity</code> fixture:
+ * </p>
+ *
+ * <pre>
+ * ensure (stackWithOneItemLessThanCapacity) behaves like (nonEmptyStack(lastValuePushed))
+ * </pre>
+ *
+ * <p>
+ * would yield different test names:
+ * </p>
+ *
+ * <ul>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should be non-empty</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should return the top item on peek</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should not remove the top item on peek</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should remove the top item on pop</code></li>
+ * </ul>
  */
 trait SharedTests { this: TestRegistration =>
 
