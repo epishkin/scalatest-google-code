@@ -304,8 +304,8 @@
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
             <suite classname="org.scalatest.SpecSpec" />
-<!--
             <suite classname="org.scalatest.FunSuiteSpec" />
+<!--
             <suite classname="org.scalatest.SuiteSpec" />
 -->
         </scalatest>

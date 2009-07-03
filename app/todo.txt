@@ -12,7 +12,14 @@ Make a GoodiesFixture trait for getting the goodies into a test
 
 Do the OneInstancePerTest and ParallelTestExecution traits
 
-Add BeforeAndAfterEach, BeforeAndAfterAll, AfterEach, with BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll.
+Add BeforeAndAfterEach, BeforeAndAfterAll, AfterEach. Make BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll and deprecate it.
+BeforeAndAfterAll will need to look for some object sent down in goodies from OneInstancePerTest, so it knows not to do it if it is an
+"isolated test instance" or something. And then it will also have to turn off the distributor. This would mean that DistributedTestExecution
+would not happen if there's an AfterAll right now. Later, what I could do is BeforeAndAfterAll wraps the distributor, if it is defined, in
+an AfterAllDistributor. And that guy would wrap the suites that are put into it in a SuiteWrapper that forwards the run invocation but when
+it completes (in a finally) it notifies an AfterAllActor. This react actor knows which notifications to wait for, and when they are all done, it
+executes the after all method. So my theory is that since I'm using react, these actors won't hold up threads. But what tangled complexity we weave when
+we first learn to parallelize.
 
 Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, which would then give it the same kind of output.
 

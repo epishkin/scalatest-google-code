@@ -75,6 +75,50 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         }
       }
     }
+
+    it("should throw TestFailedException if test registration is attempted after run has been invoked on a suite") {
+      class InvokedWhenNotRunningSuite extends FunSuite {
+        var fromMethodTestExecuted = false
+        var fromConstructorTestExecuted = false
+        test("from constructor") {
+          fromConstructorTestExecuted = true
+        }
+        def tryToRegisterATest() {
+          test("from method") {
+            fromMethodTestExecuted = true
+          }
+        }
+      }
+      val suite = new InvokedWhenNotRunningSuite
+      suite.run(None, SilentReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      assert(suite.fromConstructorTestExecuted)
+      assert(!suite.fromMethodTestExecuted)
+      intercept[TestFailedException] {
+        suite.tryToRegisterATest()
+      }
+      suite.run(None, SilentReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      assert(!suite.fromMethodTestExecuted)
+/*
+      class InvokedWhenRunningSuite extends FunSuite {
+        var fromMethodTestExecuted = false
+        var fromConstructorTestExecuted = false
+        test("from constructor") {
+          tryToRegisterATest()
+          fromConstructorTestExecuted = true
+        }
+        def tryToRegisterATest() {
+          test("from method") {
+            fromMethodTestExecuted = true
+          }
+        }
+      }
+      val a = new InvokedWhenNotRunningSuite
+      a.run()
+      intercept[TestFailedException] {
+        new InvokedWhenRunningSuite
+      } */
+    }
+
     describe("(with info calls)") {
       it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
         val msg = "hi there, dude"
