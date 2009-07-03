@@ -604,7 +604,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
    * will register the info for forwarding later during test execution. If invoked at any other time, it will
    * throw an exception. This method can be called safely by any thread.
    */
-  implicit def info: Informer = {
+  implicit protected def info: Informer = {
     if (atomicInformer == null || atomicInformer.get == null)
       registrationInformer
     else
@@ -644,7 +644,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
      * methods. The passed test name must not have been registered previously on
      * this <code>FunSuite</code> instance.
      *
-     * @throws TestFailedException if <code>testName</code> had been registered previously
+     * @throws NotAllowedException if <code>testName</code> had been registered previously
      */
   protected def test(testName: String, testTags: Tag*)(f: => Unit) {
 
@@ -652,10 +652,10 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     var (testNamesList, doList, testsMap, groupsMap, runHasBeenInvoked) = oldBundle.unpack
 
     if (runHasBeenInvoked)
-      throw new TestFailedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
+      throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
     
     if (testsMap.keySet.contains(testName)) {
-      throw new TestFailedException(Resources("duplicateTestName", testName), getStackDepth("FunSuite.scala", "test"))
+      throw new DuplicateTestNameException(Resources("duplicateTestName", testName), getStackDepth("FunSuite.scala", "test"))
     }
 
     val testNode = Test(testName, f _)
@@ -685,7 +685,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     val (_, _, _, _, runHasBeenInvoked) = oldBundle.unpack
 
     if (runHasBeenInvoked)
-      throw new TestFailedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth("FunSuite.scala", "ignore"))
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth("FunSuite.scala", "ignore"))
 
     test(testName)(f) // Call test without passing the groups
 

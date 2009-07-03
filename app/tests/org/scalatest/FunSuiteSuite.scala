@@ -53,25 +53,25 @@ class FunSuiteSuite extends Suite with SharedHelpers {
     }
 
     // Test duplicate names
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         test("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         ignore("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         ignore("test this") {}
         test("test this") {}
@@ -457,25 +457,25 @@ class FunSuiteSuite extends Suite with SharedHelpers {
   }
 
   def testThatTestNameCantBeReused() {
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         test("test this") {}
         test("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         ignore("test this") {}
         test("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         test("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new FunSuite {
         ignore("test this") {}
         ignore("test this") {}
@@ -500,7 +500,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
     a.run()
     assert(a.fromConstructorTestExecuted)
     assert(!a.fromMethodTestExecuted)
-    intercept[TestFailedException] {
+    intercept[TestRegistrationClosedException] {
       a.registerOne()
     }
     a.run()

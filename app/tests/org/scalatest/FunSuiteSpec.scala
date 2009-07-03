@@ -48,27 +48,27 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       }
     }
 
-    it("should throw TestFailedException if a duplicate test name registration is attempted") {
+    it("should throw NotAllowedException if a duplicate test name registration is attempted") {
 
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new FunSuite {
           test("test this") {}
           test("test this") {}
         }
       }
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new FunSuite {
           test("test this") {}
           ignore("test this") {}
         }
       }
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new FunSuite {
           ignore("test this") {}
           ignore("test this") {}
         }
       }
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new FunSuite {
           ignore("test this") {}
           test("test this") {}
@@ -76,7 +76,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       }
     }
 
-    it("should throw TestFailedException if test registration is attempted after run has been invoked on a suite") {
+    it("should throw NotAllowedException if test registration is attempted after run has been invoked on a suite") {
       class InvokedWhenNotRunningSuite extends FunSuite {
         var fromMethodTestExecuted = false
         var fromConstructorTestExecuted = false
@@ -93,7 +93,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       suite.run(None, SilentReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
       assert(suite.fromConstructorTestExecuted)
       assert(!suite.fromMethodTestExecuted)
-      intercept[TestFailedException] {
+      intercept[TestRegistrationClosedException] {
         suite.tryToRegisterATest()
       }
       suite.run(None, SilentReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
@@ -157,7 +157,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         assert(testStartingIndex < testSucceededIndex)
         assert(testSucceededIndex < infoProvidedIndex)
       }
-      it("should throw an IllegalStateException when info is called by a method invoked after the suite has been executed") {
+      it("should throw an NotAllowedException when info is called by a method invoked after the suite has been executed") {
         class MySuite extends FunSuite {
           callInfo() // This should work fine
           def callInfo() {
