@@ -2,8 +2,6 @@ Spec is only dissallowing test registration while running a test. Actually, it k
 a "test" inside another "test" when running a test. But also can't register after construction is done, which means after the first
 time run has been invoked. So could combine them, and have two different error messages.
 
-Info sent from a spec shows up with message and name the same in the GUI. This is a ReporterJFrame bug.
-
 Use filter in the run methods
 
 add the 'it should/must ""/describe a ""/describe it ""' style to Spec
@@ -21,7 +19,7 @@ Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, w
 Write tests for JUnitComfort Suite.
 Document JUnitComfortSuite.
 
-Add more sugar forms in SharedTests.
+Add the "it" form to SharedTest.
 
 Put an Option[Nothing] in the run methods as a placeholder for the OutErrTester kind of stuff. Whatever that object is
 that's getting passed around. OutErrManager maybe. Wierd, could even provide overloaded versions. Wait, I could do that
