@@ -18,7 +18,7 @@ package org.scalatest
 import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
-import org.scalatest.TestFailedExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 
 /**
