@@ -18,7 +18,11 @@ package org.scalatest
 import org.scalatest.events._
 
 trait SharedHelpers extends Assertions {
-  
+
+  object SilentReporter extends Reporter {
+    def apply(event: Event) = ()  
+  }
+
   class TestDurationReporter extends Reporter {
     var testSucceededWasFiredAndHadADuration = false
     var testFailedWasFiredAndHadADuration = false
