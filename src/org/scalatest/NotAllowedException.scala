@@ -16,21 +16,21 @@
 package org.scalatest
 
 /**
- * Exception that indicates a test failed. The purpose of this exception is to encapsulate information about
- * the stack depth at which the line of test code that failed resides, so that information can be presented to
- * the user that makes it quick to find the failing line of test code. (In other words, the user need not scan through the
- * stack trace to find the correct filename and line number of the failing test.)
+ * Exception that indicates an action was attemped when it was not allowed. The purpose of this exception is to encapsulate information about
+ * the stack depth at which the line of code that made this attempt resides, so that information can be presented to
+ * the user that makes it quick to find the failing line of code. (In other words, the user need not scan through the
+ * stack trace to find the correct filename and line number of the offending code.)
  *
- * @param message an optional detail message for this <code>TestFailedException</code>.
- * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
- * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+ * @param message an optional detail message for this <code>NotAllowedException</code>.
+ * @param cause an optional cause, the <code>Throwable</code> that caused this <code>NotAllowedException</code> to be thrown.
+ * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that failed resides.
  *
  * @throws NullPointerException if <code>message</code> is <code>null</code>, or <code>Some(null)</code>.
  * @throws NullPointerException if <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
  *
  * @author Bill Venners
  */
-class TestFailedException(message: Option[String], cause: Option[Throwable], failedCodeStackDepth: Int)
+class NotAllowedException(message: Option[String], cause: Option[Throwable], failedCodeStackDepth: Int)
     extends StackDepthException(message, cause, failedCodeStackDepth) {
   
   if (message == null) throw new NullPointerException("message was null")
@@ -46,18 +46,18 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
   }
 
   /**
-   * Create a <code>TestFailedException</code> with specified stack depth and no detail message or cause.
+   * Create a <code>NotAllowedException</code> with specified stack depth and no detail message or cause.
    *
-   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that failed resides.
    *
    */
   def this(failedCodeStackDepth: Int) = this(None, None, failedCodeStackDepth)
 
   /**
-   * Create a <code>TestFailedException</code> with a specified stack depth and detail message.
+   * Create a <code>NotAllowedException</code> with a specified stack depth and detail message.
    *
-   * @param message A detail message for this <code>TestFailedException</code>.
-   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   * @param message A detail message for this <code>NotAllowedException</code>.
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that failed resides.
    *
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
@@ -72,12 +72,12 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
     )
 
   /**
-   * Create a <code>TestFailedException</code> with the specified stack depth and cause.  The
+   * Create a <code>NotAllowedException</code> with the specified stack depth and cause.  The
    * <code>message</code> field of this exception object will be initialized to
    * <code>if (cause.getMessage == null) "" else cause.getMessage</code>.
    *
-   * @param cause the cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
-   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   * @param cause the cause, the <code>Throwable</code> that caused this <code>NotAllowedException</code> to be thrown.
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that failed resides.
    *
    * @throws NullPointerException if <code>cause</code> is <code>null</code>.
    */
@@ -92,16 +92,16 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
     )
 
   /**
-   * Create a <code>TestFailedException</code> with the specified stack depth, detail
+   * Create a <code>NotAllowedException</code> with the specified stack depth, detail
    * message, and cause.
    *
    * <p>Note that the detail message associated with cause is
    * <em>not</em> automatically incorporated in this throwable's detail
    * message.
    *
-   * @param message A detail message for this <code>TestFailedException</code>.
-   * @param cause the cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
-   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   * @param message A detail message for this <code>NotAllowedException</code>.
+   * @param cause the cause, the <code>Throwable</code> that caused this <code>NotAllowedException</code> to be thrown.
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that failed resides.
    *
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    * @throws NullPointerException if <code>cause</code> is <code>null</code>.

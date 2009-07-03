@@ -21,7 +21,7 @@ import org.scalacheck.Shrink
 import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
-import org.scalatest.TestFailedExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepth
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
