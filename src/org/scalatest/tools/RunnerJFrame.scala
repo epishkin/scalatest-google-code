@@ -342,7 +342,15 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
                 case event: RunStopped => None
                 case event: RunAborted => None
                 case event: RunCompleted => None
-                case event: InfoProvided => Some(event.message)
+                case event: InfoProvided =>
+                  event.nameInfo match {
+                    case Some(NameInfo(suiteName, suiteClassName, testName)) =>
+                      testName match {
+                        case Some(tn) => Some(suiteAndTestName(suiteName, tn))
+                        case None => Some(suiteName)
+                      }
+                    case None => None
+                  }
                 case event: SuiteStarting => Some(event.suiteName)
                 case event: SuiteCompleted => Some(event.suiteName)
                 case event: SuiteAborted => Some(event.suiteName)
