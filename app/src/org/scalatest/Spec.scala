@@ -557,14 +557,14 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val currentBranch: Branch,
     val tagsMap: Map[String, Set[String]],
 
-    // All examples, in reverse order of registration
-    val examplesList: List[TestLeaf],
+    // All tests, in reverse order of registration
+    val testsList: List[TestLeaf],
 
     // Used to detect at runtime that they've stuck a describe or an it inside an it,
     // which should result in a TestRegistrationClosedException
     val registrationClosed: Boolean
   ) {
-    def unpack = (trunk, currentBranch, tagsMap, examplesList, registrationClosed)
+    def unpack = (trunk, currentBranch, tagsMap, testsList, registrationClosed)
   }
 
   private object Bundle {
@@ -572,18 +572,18 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       trunk: Trunk,
       currentBranch: Branch,
       tagsMap: Map[String, Set[String]],
-      examplesList: List[TestLeaf],
+      testsList: List[TestLeaf],
       registrationClosed: Boolean
     ): Bundle =
-      new Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed)
+      new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
 
     def initialize(
       trunk: Trunk,
       tagsMap: Map[String, Set[String]],
-      examplesList: List[TestLeaf],
+      testsList: List[TestLeaf],
       registrationClosed: Boolean
     ): Bundle =
-      new Bundle(trunk, trunk, tagsMap, examplesList, registrationClosed)
+      new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
   }
 
   private val atomic =
@@ -607,18 +607,18 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   private def registerTest(specText: String, f: => Unit) = {
 
     val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
+    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
     val testName = getTestName(specText, currentBranch)
-    if (examplesList.exists(_.testName == testName)) {
+    if (testsList.exists(_.testName == testName)) {
       throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
     }
-    val exampleShortName = specText
-    val example = TestLeaf(currentBranch, testName, specText, f _)
-    currentBranch.subNodes ::= example
-    examplesList ::= example
+    val testShortName = specText
+    val test = TestLeaf(currentBranch, testName, specText, f _)
+    currentBranch.subNodes ::= test
+    testsList ::= test
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
 
     testName
   }
@@ -650,11 +650,11 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           throw new NullPointerException
 
         val oldBundle = atomic.get
-        var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
+        var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
         currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
 
-        updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
+        updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
       }
     }
 
@@ -700,17 +700,16 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val testName = registerTest(specText, testFun)
 
     val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed2) = oldBundle.unpack
+    var (trunk, currentBranch, tagsMap, testsList, registrationClosed2) = oldBundle.unpack
     val tagNames = Set[String]() ++ testTags.map(_.name)
     if (!tagNames.isEmpty)
       tagsMap += (testName -> tagNames)
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed2))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
   }
 
   /**
    * Register a test with the given spec text and test function value that takes no arguments.
-   * An invocation of this method is called an &#8220;example.&#8221;
    *
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
    * methods. The name of the test will be a concatenation of the text of all surrounding describers,
@@ -759,9 +758,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val testName = registerTest(specText, testFun)
     val tagNames = Set[String]() ++ testTags.map(_.name)
     val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
+    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
     tagsMap += (testName -> (tagNames + IgnoreTagName))
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
   }
 
   /**
@@ -788,7 +787,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   }
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
-   * passed function value may contain more describers (defined with <code>describe</code>) and/or examples
+   * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
@@ -799,14 +798,14 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
     def createNewBranch() = {
       val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
+      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
       val newBranch = DescriptionBranch(currentBranch, description)
       val oldBranch = currentBranch
       currentBranch.subNodes ::= newBranch
       currentBranch = newBranch
 
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
 
       oldBranch
     }
@@ -816,9 +815,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     f
 
     val oldBundle = atomic.get
-    val (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
+    val (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
-    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, examplesList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
   }
 
   /**
@@ -853,7 +852,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
         }
         
         // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
-        // it is an example, because otherwise we get a lame description that doesn't have any examples under it.
+        // it is a test, because otherwise we get a lame description that doesn't have any tests under it.
         // But send it if the list is empty.
         if (desc.subNodes.isEmpty)
           sendInfoProvidedMessage() 
@@ -871,8 +870,8 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           val tn = ex.testName
           if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
             if (tagsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
-              val exampleSucceededIcon = Resources("testSucceededIconChar")
-              val formattedSpecText = Resources("iconPlusShortName", exampleSucceededIcon, ex.specText)
+              val testSucceededIcon = Resources("testSucceededIconChar")
+              val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, ex.specText)
               report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
             }
             else if ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
@@ -893,8 +892,8 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by
-   * <code>testName</code>. Each test's name is a concatenation of the text of all describers surrounding an example,
-   * from outside in, and the example's  spec text, with one space placed between each item. (See the documenation
+   * <code>testName</code>. Each test's name is a concatenation of the text of all describers surrounding a test,
+   * from outside in, and the test's  spec text, with one space placed between each item. (See the documenation
    * for <code>testNames</code> for an example.)
    *
    * @param testName the name of one test to execute.
@@ -909,13 +908,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
-    atomic.get.examplesList.find(_.testName == testName) match {
+    atomic.get.testsList.find(_.testName == testName) match {
       case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
-      case Some(example) => {
+      case Some(test) => {
         val report = wrapReporterIfNecessary(reporter)
 
-        val exampleSucceededIcon = Resources("testSucceededIconChar")
-        val formattedSpecText = Resources("iconPlusShortName", exampleSucceededIcon, example.specText)
+        val testSucceededIcon = Resources("testSucceededIconChar")
+        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, test.specText)
 
         // Create a Rerunner if the Spec has a no-arg constructor
         val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
@@ -930,9 +929,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
         // A TestStarting event won't normally show up in a specification-style output, but
         // will show up in a test-style output.
-        report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
+        report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
 
-        val formatter = IndentedText(formattedSpecText, example.specText, 1)
+        val formatter = IndentedText(formattedSpecText, test.specText, 1)
         val oldInformer = atomicInformer.get
         val informerForThisTest =
           new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
@@ -951,20 +950,20 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
         atomicInformer.set(informerForThisTest)
         try {
-          example.f()
+          test.f()
 
           val duration = System.currentTimeMillis - testStartTime
-          report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(duration), Some(formatter), rerunnable))
+          report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))
         }
         catch {
           case _: TestPendingException =>
-            report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(formatter)))
+            report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(formatter)))
           case e: Exception =>
             val duration = System.currentTimeMillis - testStartTime
-            handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
+            handleFailedTest(e, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
           case ae: AssertionError =>
             val duration = System.currentTimeMillis - testStartTime
-            handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
+            handleFailedTest(ae, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
         }
         finally {
           // send out any recorded messages
@@ -1123,7 +1122,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * "A Stack (when not full) must allow me to push"
    * </pre>
    */
-  override def testNames: Set[String] = ListSet(atomic.get.examplesList.map(_.testName): _*)
+  override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
@@ -1134,9 +1133,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     // which will disallow any further invocations of "describe", it", or "ignore" with
     // an RegistrationClosedException.
     val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
+    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
     if (!registrationClosed)
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, true))
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, true))
 
     val report = wrapReporterIfNecessary(reporter)
 
