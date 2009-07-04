@@ -1874,7 +1874,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
   }
 
-  test("that a null test group results in a thrown NPE at construction time") {
+  test("that a null test tag results in a thrown NPE at construction time") {
     // it
     intercept[NullPointerException] {
       new Spec {
@@ -1886,7 +1886,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
         it("hi", mytags.SlowAsMolasses, null) {}
       }
     }
-    assert(caught.getMessage === "a test group was null")
+    assert(caught.getMessage === "a test tag was null")
     intercept[NullPointerException] {
       new Spec {
         it("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
@@ -1903,21 +1903,13 @@ class SpecSuite extends FunSuite with SharedHelpers {
         ignore("hi", mytags.SlowAsMolasses, null) {}
       }
     }
-    assert(caught2.getMessage === "a test group was null")
+    assert(caught2.getMessage === "a test tag was null")
     intercept[NullPointerException] {
       new Spec {
         ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
       }
     }
   }
-/* remove if really ditching includeExamples
-  test("that a null sharedExamples passed to includeExamples results in a thrown NPE at construction time") {
-    intercept[NullPointerException] {
-      new Spec {
-        includeExamples(null)
-      }
-    }
-  } */
 
   test("test durations are included in TestFailed and TestSucceeded events fired from Spec") {
 
