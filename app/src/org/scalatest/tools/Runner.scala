@@ -1274,7 +1274,7 @@ object Runner {
 
           val testCountList =
             for (suite <- suiteInstances)
-              yield suite.expectedTestCount(tagsToInclude, tagsToExclude)
+              yield suite.expectedTestCount(filter)
   
           def sumInts(list: List[Int]): Int =
             list match {

@@ -1214,7 +1214,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("must five") {}
     }
     val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 5)
+    assert(a.expectedTestCount(Filter()) === 5)
   }
 
   // Testing strings sent in reports
@@ -1650,7 +1650,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("should five") {}
     }
     val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 5)
+    assert(a.expectedTestCount(Filter()) === 5)
   }
 
   test("expectedTestCount should include tests in a share that is called") {
@@ -1669,7 +1669,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("should five") {}
     }
     val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 7)
+    assert(a.expectedTestCount(Filter()) === 7)
   }
 
   test("expectedTestCount should include tests in a share that is called twice") {
@@ -1689,7 +1689,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       ensure (1) behaves like (misbehavior)
     }
     val a = new MySpec
-    assert(a.expectedTestCount(Set(), Set()) === 9)
+    assert(a.expectedTestCount(Filter()) === 9)
   }
 
   test("Spec's expectedTestCount includes tests in nested suites") {
@@ -1704,7 +1704,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("should count this here test") {}
     }
     val mySpec = new MySpec
-    assert(mySpec.expectedTestCount(Set(), Set()) === 7)
+    assert(mySpec.expectedTestCount(Filter()) === 7)
   }
 
   // End of Share stuff
