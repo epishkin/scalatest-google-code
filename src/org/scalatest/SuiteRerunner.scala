@@ -47,7 +47,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
     try {
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance().asInstanceOf[Suite]
-      val expectedTestCount = suite.expectedTestCount(tagsToInclude, tagsToExclude)
+      val expectedTestCount = suite.expectedTestCount(filter)
 
       // Create a Rerunner if the Suite has a public no-arg constructor
       val rerunnable =

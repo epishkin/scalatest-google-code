@@ -1766,21 +1766,28 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *     <code>nestedSuites</code>
    * </ul>
    */
-  def expectedTestCount(tagsToInclude: Set[String], tagsToExclude: Set[String]): Int = {
+  def expectedTestCount(filter: Filter): Int = {
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     // [bv: here was another tricky refactor. How to increment a counter in a loop]
-    def countNestedSuiteTests(nestedSuites: List[Suite], tagsToInclude: Set[String], tagsToExclude: Set[String]): Int =
+    def countNestedSuiteTests(nestedSuites: List[Suite], filter: Filter): Int =
       nestedSuites match {
         case List() => 0
-        case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(tagsToInclude, tagsToExclude) +
-            countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
+        case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(filter) +
+            countNestedSuiteTests(nestedSuites, filter)
     }
     // Semicolon inference bit me here for the first time. I had said:
-    //  case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(tagsToInclude, tagsToExclude)
+    //  case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(filter)
     //      + countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
     // That won't work. It thinks + starts a new expression
  
-    expectedTestCountThisSuiteOnly(tagsToInclude, tagsToExclude) + countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
+    expectedTestCountThisSuiteOnly(tagsToInclude, tagsToExclude) + countNestedSuiteTests(nestedSuites, filter)
   }
 
   private def expectedTestCountThisSuiteOnly(tagsToInclude: Set[String], tagsToExclude: Set[String]) = {

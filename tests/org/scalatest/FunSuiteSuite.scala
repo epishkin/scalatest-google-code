@@ -399,43 +399,43 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test this") {}
       test("test that") {}
     }
-    assert(a.expectedTestCount(Set(), Set()) === 2)
+    assert(a.expectedTestCount(Filter()) === 2)
 
     val b = new FunSuite {
       ignore("test this") {}
       test("test that") {}
     }
-    assert(b.expectedTestCount(Set(), Set()) === 1)
+    assert(b.expectedTestCount(Filter()) === 1)
 
     val c = new FunSuite {
       test("test this", mytags.FastAsLight) {}
       test("test that") {}
     }
-    assert(c.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
-    assert(c.expectedTestCount(Set(), Set("org.scalatest.FastAsLight")) === 1)
+    assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+    assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
 
     val d = new FunSuite {
       test("test this", mytags.FastAsLight, mytags.SlowAsMolasses) {}
       test("test that", mytags.SlowAsMolasses) {}
       test("test the other thing") {}
     }
-    assert(d.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
-    assert(d.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
-    assert(d.expectedTestCount(Set(), Set("org.scalatest.SlowAsMolasses")) === 1)
-    assert(d.expectedTestCount(Set(), Set()) === 3)
+    assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+    assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+    assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
+    assert(d.expectedTestCount(Filter()) === 3)
 
     val e = new FunSuite {
       test("test this", mytags.FastAsLight, mytags.SlowAsMolasses) {}
       test("test that", mytags.SlowAsMolasses) {}
       ignore("test the other thing") {}
     }
-    assert(e.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
-    assert(e.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
-    assert(e.expectedTestCount(Set(), Set("org.scalatest.SlowAsMolasses")) === 0)
-    assert(e.expectedTestCount(Set(), Set()) === 2)
+    assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+    assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+    assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
+    assert(e.expectedTestCount(Filter()) === 2)
 
     val f = new SuperSuite(List(a, b, c, d, e))
-    assert(f.expectedTestCount(Set(), Set()) === 10)
+    assert(f.expectedTestCount(Filter()) === 10)
   }
 
   def testThatTestMethodsWithNoTagsDontShowUpInTagsMap() {
@@ -451,7 +451,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test this") { 1 }
       test("test that") { "hi" }
     }
-    assert(a.expectedTestCount(Set(), Set()) === 2)
+    assert(a.expectedTestCount(Filter()) === 2)
     assert(a.testNames.size === 2)
     assert(a.tags.keySet.size === 0)
   }

@@ -392,22 +392,22 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThis() = ()
       def testThat(info: Informer) = ()
     }
-    assert(a.expectedTestCount(Set(), Set()) === 2)
+    assert(a.expectedTestCount(Filter()) === 2)
 
     val b = new Suite {
       @Ignore
       def testThis() = ()
       def testThat(info: Informer) = ()
     }
-    assert(b.expectedTestCount(Set(), Set()) === 1)
+    assert(b.expectedTestCount(Filter()) === 1)
 
     val c = new Suite {
       @FastAsLight
       def testThis() = ()
       def testThat(info: Informer) = ()
     }
-    assert(c.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
-    assert(c.expectedTestCount(Set(), Set("org.scalatest.FastAsLight")) === 1)
+    assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+    assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
 
     val d = new Suite {
       @FastAsLight
@@ -417,10 +417,10 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) = ()
       def testTheOtherThing(info: Informer) = ()
     }
-    assert(d.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
-    assert(d.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
-    assert(d.expectedTestCount(Set(), Set("org.scalatest.SlowAsMolasses")) === 1)
-    assert(d.expectedTestCount(Set(), Set()) === 3)
+    assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+    assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+    assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
+    assert(d.expectedTestCount(Filter()) === 3)
 
     val e = new Suite {
       @FastAsLight
@@ -431,13 +431,13 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       @Ignore
       def testTheOtherThing(info: Informer) = ()
     }
-    assert(e.expectedTestCount(Set("org.scalatest.FastAsLight"), Set()) === 1)
-    assert(e.expectedTestCount(Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight")) === 1)
-    assert(e.expectedTestCount(Set(), Set("org.scalatest.SlowAsMolasses")) === 0)
-    assert(e.expectedTestCount(Set(), Set()) === 2)
+    assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+    assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+    assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
+    assert(e.expectedTestCount(Filter()) === 2)
 
     val f = new SuperSuite(List(a, b, c, d, e))
-    assert(f.expectedTestCount(Set(), Set()) === 10)
+    assert(f.expectedTestCount(Filter()) === 10)
   }
 
   def testNamesAndGroupsMethodsDiscovered() {
@@ -445,7 +445,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     val a = new Suite {
       def testNames(info: Informer): Unit = ()
     }
-    assert(a.expectedTestCount(Set(), Set()) === 1)
+    assert(a.expectedTestCount(Filter()) === 1)
     val tnResult: Set[String] = a.testNames
     val gResult: Map[String, Set[String]] = a.tags
     assert(tnResult.size === 1)
@@ -465,7 +465,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThis(): Int = 1
       def testThat(info: Informer): String = "hi"
     }
-    assert(a.expectedTestCount(Set(), Set()) === 2)
+    assert(a.expectedTestCount(Filter()) === 2)
     assert(a.testNames.size === 2)
     assert(a.tags.keySet.size === 0)
   }
@@ -475,7 +475,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThis() = ()
       def testThis(info: Informer) = ()
     }
-    assert(a.expectedTestCount(Set(), Set()) === 2)
+    assert(a.expectedTestCount(Filter()) === 2)
     assert(a.testNames.size === 2)
     assert(a.tags.keySet.size === 0)
   }

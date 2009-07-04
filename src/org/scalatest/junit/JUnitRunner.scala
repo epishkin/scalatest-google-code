@@ -82,7 +82,7 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    *
    *  @return the expected number of tests that will run when this suite is run
    */
-  override def testCount() = suiteToRun.expectedTestCount(Set(), Set())
+  override def testCount() = suiteToRun.expectedTestCount(Filter())
 
   println(getDescription)
 }
