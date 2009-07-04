@@ -909,90 +909,80 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
 
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
-    registrationClosed = true
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
-    
-    try {
-      examplesList.find(_.testName == testName) match {
-        case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
-        case Some(example) => {
-          val report = wrapReporterIfNecessary(reporter)
-  
-          val exampleSucceededIcon = Resources("testSucceededIconChar")
-          val formattedSpecText = Resources("iconPlusShortName", exampleSucceededIcon, example.specText)
-  
-          // Create a Rerunner if the Spec has a no-arg constructor
-          val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
-  
-          val rerunnable =
-            if (hasPublicNoArgConstructor)
-              Some(new TestRerunner(getClass.getName, testName))
-            else
-              None
-       
-          val testStartTime = System.currentTimeMillis
+    atomic.get.examplesList.find(_.testName == testName) match {
+      case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
+      case Some(example) => {
+        val report = wrapReporterIfNecessary(reporter)
 
-          // A TestStarting event won't normally show up in a specification-style output, but
-          // will show up in a test-style output.
-          report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
+        val exampleSucceededIcon = Resources("testSucceededIconChar")
+        val formattedSpecText = Resources("iconPlusShortName", exampleSucceededIcon, example.specText)
 
-          val formatter = IndentedText(formattedSpecText, example.specText, 1)
-          val oldInformer = atomicInformer.get
-          val informerForThisTest =
-            new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
-              def apply(message: String) {
-                if (message == null)
-                  throw new NullPointerException
-                if (shouldRecord)
-                  record(message)
-                else {
-                  val infoProvidedIcon = Resources("infoProvidedIconChar")
-                  val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-                  report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
-                }
+        // Create a Rerunner if the Spec has a no-arg constructor
+        val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
+
+        val rerunnable =
+          if (hasPublicNoArgConstructor)
+            Some(new TestRerunner(getClass.getName, testName))
+          else
+            None
+
+        val testStartTime = System.currentTimeMillis
+
+        // A TestStarting event won't normally show up in a specification-style output, but
+        // will show up in a test-style output.
+        report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(MotionToSuppress), rerunnable))
+
+        val formatter = IndentedText(formattedSpecText, example.specText, 1)
+        val oldInformer = atomicInformer.get
+        val informerForThisTest =
+          new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
+            def apply(message: String) {
+              if (message == null)
+                throw new NullPointerException
+              if (shouldRecord)
+                record(message)
+              else {
+                val infoProvidedIcon = Resources("infoProvidedIconChar")
+                val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
+                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
               }
             }
+          }
 
-          atomicInformer.set(informerForThisTest)
-          try {
-            example.f()
+        atomicInformer.set(informerForThisTest)
+        try {
+          example.f()
 
+          val duration = System.currentTimeMillis - testStartTime
+          report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(duration), Some(formatter), rerunnable))
+        }
+        catch {
+          case _: TestPendingException =>
+            report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(formatter)))
+          case e: Exception =>
             val duration = System.currentTimeMillis - testStartTime
-            report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(duration), Some(formatter), rerunnable))
+            handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
+          case ae: AssertionError =>
+            val duration = System.currentTimeMillis - testStartTime
+            handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
+        }
+        finally {
+          // send out any recorded messages
+          for (message <- informerForThisTest.recordedMessages) {
+            val infoProvidedIcon = Resources("infoProvidedIconChar")
+            val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
+            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
           }
-          catch { 
-            case _: TestPendingException =>
-              report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), example.testName, Some(formatter)))
-            case e: Exception =>
-              val duration = System.currentTimeMillis - testStartTime
-              handleFailedTest(e, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
-            case ae: AssertionError =>
-              val duration = System.currentTimeMillis - testStartTime
-              handleFailedTest(ae, false, example.testName, example.specText, formattedSpecText, rerunnable, report, tracker, duration)
-          }
-          finally {
-            // send out any recorded messages
-            for (message <- informerForThisTest.recordedMessages) {
-              val infoProvidedIcon = Resources("infoProvidedIconChar")
-              val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-              report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
-            }
 
-            val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
-            val rarelyIfEverSeen = """
-              Two threads have apparently attempted to run tests at the same time. This has
-              resulted in both threads attempting to change the current informer.
-            """
-            if (!success)
-              throw new ConcurrentModificationException(rarelyIfEverSeen)
-          }
+          val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
+          val rarelyIfEverSeen = """
+            Two threads have apparently attempted to run tests at the same time. This has
+            resulted in both threads attempting to change the current informer.
+          """
+          if (!success)
+            throw new ConcurrentModificationException(rarelyIfEverSeen)
         }
       }
-    }
-    finally {
-      registrationClosed = false
     }
   }
 
@@ -1140,8 +1130,14 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
     val stopRequested = stopper
 
-    // Set the flag that indicates run has been invoked, which will disallow any further
-    // invocations of "test" with an IllegalStateException.
+    // Set the flag that indicates registration is closed (because run has now been invoked),
+    // which will disallow any further invocations of "describe", it", or "ignore" with
+    // an RegistrationClosedException.
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
+    if (!registrationClosed)
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, true))
+
     val report = wrapReporterIfNecessary(reporter)
 
     val informerForThisSuite =

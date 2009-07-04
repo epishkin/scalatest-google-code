@@ -867,8 +867,9 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
     val stopRequested = stopper
 
-    // Set the flag that indicates run has been invoked, which will disallow any further
-    // invocations of "test" with an IllegalStateException.
+    // Set the flag that indicates registration is closed (because run has now been invoked),
+    // which will disallow any further invocations of "test" or "ignore" with
+    // an RegistrationClosedException.    
     val oldBundle = atomic.get
     val (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
     if (!registrationClosed)
