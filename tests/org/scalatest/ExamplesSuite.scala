@@ -33,7 +33,7 @@ class ExamplesSuite extends FunSuite {
         it("should lead the whole game") {}
       }
 
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         myExamples()
       }
     }
@@ -50,7 +50,7 @@ class ExamplesSuite extends FunSuite {
       myOtherExamples()
       it("should lead the whole game") {}
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new MySpec  
     }
     class MyOtherSpec extends Spec {
@@ -61,7 +61,7 @@ class ExamplesSuite extends FunSuite {
       it("should lead the whole game") {}
       myOtherExamples()
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new MyOtherSpec  
     }
   }

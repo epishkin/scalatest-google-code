@@ -211,25 +211,25 @@ class SpecSuite extends FunSuite with SharedHelpers {
 
   test("duplicate test names should generate an exception") {
 
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new Spec {
         it("test this") {}
         it("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new Spec {
         it("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new Spec {
         ignore("test this") {}
         ignore("test this") {}
       }
     }
-    intercept[TestFailedException] {
+    intercept[DuplicateTestNameException] {
       new Spec {
         ignore("test this") {}
         it("test this") {}

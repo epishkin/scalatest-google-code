@@ -28,7 +28,7 @@ class ShouldBehaveLikeSpec extends Spec with SharedTests with ShouldStackBehavio
 
   describe("The 'should behave like' syntax should throw an exception inside an it clause") {
     it("the code in here should fail with an exception") {
-      intercept[TestFailedException] {
+      intercept[TestRegistrationClosedException] {
         ensure (1) behaves like (myFirstBehavior)
       }
     }

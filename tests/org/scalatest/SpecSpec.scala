@@ -70,27 +70,27 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
     }
 
-    it("should throw TestFailedException if a duplicate test name registration is attempted") {
+    it("should throw DuplicateTestNameException if a duplicate test name registration is attempted") {
       
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new Spec {
           it("test this") {}
           it("test this") {}
         }
       }
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new Spec {
           it("test this") {}
           ignore("test this") {}
         }
       }
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new Spec {
           ignore("test this") {}
           ignore("test this") {}
         }
       }
-      intercept[TestFailedException] {
+      intercept[DuplicateTestNameException] {
         new Spec {
           ignore("test this") {}
           it("test this") {}

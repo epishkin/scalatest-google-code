@@ -552,17 +552,6 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
-/*  private val trunk: Trunk = new Trunk
-  private var currentBranch: Branch = trunk
-  private var groupsMap: Map[String, Set[String]] = Map()
-
-  // All examples, in reverse order of registration
-  private var examplesList = List[TestLeaf]()
-
-  // Used to detect at runtime that they've stuck a describe or an it inside an it,
-  // which should result in a TestFailedException
-  private var runningATest = false
-*/
   private class Bundle private(
     val trunk: Trunk,
     val currentBranch: Branch,
@@ -572,10 +561,10 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val examplesList: List[TestLeaf],
 
     // Used to detect at runtime that they've stuck a describe or an it inside an it,
-    // which should result in a TestFailedException
-    val runningATest: Boolean
+    // which should result in a TestRegistrationClosedException
+    val registrationClosed: Boolean
   ) {
-    def unpack = (trunk, currentBranch, groupsMap, examplesList, runningATest)
+    def unpack = (trunk, currentBranch, groupsMap, examplesList, registrationClosed)
   }
 
   private object Bundle {
@@ -584,17 +573,17 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       currentBranch: Branch,
       groupsMap: Map[String, Set[String]],
       examplesList: List[TestLeaf],
-      runningATest: Boolean
+      registrationClosed: Boolean
     ): Bundle =
-      new Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest)
+      new Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed)
 
     def initialize(
       trunk: Trunk,
       groupsMap: Map[String, Set[String]],
       examplesList: List[TestLeaf],
-      runningATest: Boolean
+      registrationClosed: Boolean
     ): Bundle =
-      new Bundle(trunk, trunk, groupsMap, examplesList, runningATest)
+      new Bundle(trunk, trunk, groupsMap, examplesList, registrationClosed)
   }
 
   private val atomic =
@@ -618,18 +607,18 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   private def registerTest(specText: String, f: => Unit) = {
 
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
 
     val testName = getTestName(specText, currentBranch)
     if (examplesList.exists(_.testName == testName)) {
-      throw new TestFailedException(Resources("duplicateTestName", testName), getStackDepth("Spec.scala", "it"))
+      throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
     }
     val exampleShortName = specText
     val example = TestLeaf(currentBranch, testName, specText, f _)
     currentBranch.subNodes ::= example
     examplesList ::= example
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
 
     testName
   }
@@ -661,11 +650,11 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           throw new NullPointerException
 
         val oldBundle = atomic.get
-        var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+        var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
 
         currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
 
-        updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+        updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
       }
     }
 
@@ -695,13 +684,14 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * to form the test name
    * @param testTags the optional list of groups to which this test belongs
    * @param testFun the test function
-   * @throws TestFailedException if a test with the same name has been registered previously
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String, testTags: Tag*)(testFun: => Unit) {
 
-    if (atomic.get.runningATest)
-      throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
@@ -710,12 +700,12 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val testName = registerTest(specText, testFun)
 
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, runningATest2) = oldBundle.unpack
+    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed2) = oldBundle.unpack
     val groupNames = Set[String]() ++ testTags.map(_.name)
     if (!groupNames.isEmpty)
       groupsMap += (testName -> groupNames)
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest2))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed2))
   }
 
   /**
@@ -731,12 +721,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
    * @param testFun the test function
-   * @throws TestFailedException if a test with the same name has been registered previously
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def it(specText: String)(testFun: => Unit) {
-    if (atomic.get.runningATest)
-      throw new TestFailedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     it(specText, Array[Tag](): _*)(testFun)
   }
 
@@ -754,12 +745,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * to form the test name
    * @param testTags the optional list of groups to which this test belongs
    * @param testFun the test function
-   * @throws TestFailedException if a test with the same name has been registered previously
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: => Unit) {
-    if (atomic.get.runningATest)
-      throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
@@ -767,9 +759,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     val testName = registerTest(specText, testFun)
     val groupNames = Set[String]() ++ testTags.map(_.name)
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
     groupsMap += (testName -> (groupNames + IgnoreTagName))
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
   }
 
   /**
@@ -785,12 +777,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
    * @param testFun the test function
-   * @throws TestFailedException if a test with the same name has been registered previously
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
    */
   protected def ignore(specText: String)(testFun: => Unit) {
-    if (atomic.get.runningATest)
-      throw new TestFailedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
   }
   /**
@@ -801,19 +794,19 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    */
   protected def describe(description: String)(f: => Unit) {
 
-    if (atomic.get.runningATest)
-      throw new TestFailedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
 
     def createNewBranch() = {
       val oldBundle = atomic.get
-      var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+      var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
 
       val newBranch = DescriptionBranch(currentBranch, description)
       val oldBranch = currentBranch
       currentBranch.subNodes ::= newBranch
       currentBranch = newBranch
 
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
 
       oldBranch
     }
@@ -823,9 +816,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     f
 
     val oldBundle = atomic.get
-    val (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
+    val (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
 
-    updateAtomic(oldBundle, Bundle(trunk, oldBranch, groupsMap, examplesList, runningATest))
+    updateAtomic(oldBundle, Bundle(trunk, oldBranch, groupsMap, examplesList, registrationClosed))
   }
 
   /**
@@ -917,9 +910,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       throw new NullPointerException
 
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, runningATest) = oldBundle.unpack
-    runningATest = true
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, runningATest))
+    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
+    registrationClosed = true
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
     
     try {
       examplesList.find(_.testName == testName) match {
@@ -999,7 +992,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       }
     }
     finally {
-      runningATest = false
+      registrationClosed = false
     }
   }
 
