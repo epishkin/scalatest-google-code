@@ -155,7 +155,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
         val spec = new MySpec
         val myRep = new EventRecordingReporter
-        spec.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+        spec.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
         intercept[IllegalStateException] {
           spec.callInfo()
         }

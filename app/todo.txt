@@ -1,5 +1,7 @@
 Use filter in the run methods
 
+drop recipe name from runner and runnerjframe
+
 add the 'it should/must ""/describe a ""/describe it ""' style to Spec
 
 Do the fixture package for Suite, FunSuite, and Spec

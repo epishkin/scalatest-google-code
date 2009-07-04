@@ -64,8 +64,7 @@ trait RunMethods { this: Suite =>
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> test names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> test names to exclude in the execution of this <code>Suite</code>
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
@@ -77,8 +76,7 @@ trait RunMethods { this: Suite =>
     testName: Option[String],
     reporter: Reporter,
     stopper: Stopper,
-    groupsToInclude: Set[String],
-    groupsToExclude: Set[String],
+    filter: Filter,
     goodies: Map[String, Any],
     distributor: Option[Distributor],
     tracker: Tracker
@@ -90,8 +88,7 @@ trait RunMethods { this: Suite =>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
@@ -99,7 +96,7 @@ trait RunMethods { this: Suite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
                                 goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
 
   /**
@@ -109,8 +106,7 @@ trait RunMethods { this: Suite =>
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
@@ -121,7 +117,7 @@ trait RunMethods { this: Suite =>
    * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
    * used by all the methods of this <code>Suite</code>.
    */
-  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              goodies: Map[String, Any], tracker: Tracker)
 
   /**

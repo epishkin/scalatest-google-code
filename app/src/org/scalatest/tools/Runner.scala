@@ -524,12 +524,14 @@ object Runner {
     val suitesList: List[String] = parseSuiteArgsIntoNameStrings(suiteArgsList, "-s")
     val runpathList: List[String] = parseRunpathArgIntoList(runpathArgsList)
     val propertiesMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
-    val includes: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
-    val excludes: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-x")
+    val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
+    val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-x")
     val concurrent: Boolean = !concurrentList.isEmpty
     val membersOnlyList: List[String] = parseSuiteArgsIntoNameStrings(membersOnlyArgsList, "-m")
     val wildcardList: List[String] = parseSuiteArgsIntoNameStrings(wildcardArgsList, "-w")
     val testNGList: List[String] = parseSuiteArgsIntoNameStrings(testNGArgsList, "-t")
+
+    val filter = Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
 
     // Not yet supported
     val recipeName: Option[String] = None
@@ -568,7 +570,7 @@ object Runner {
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
           val rjf = new RunnerJFrame(recipeName, graphicEventsToPresent, reporterConfigs, suitesList, runpathList,
-            includes, excludes, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter)
+            filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter)
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
           rjf.prepUIForRunning()
@@ -583,7 +585,7 @@ object Runner {
       case None => { // Run the test without a GUI
         withClassLoaderAndDispatchReporter(runpathList, reporterConfigs, None, passFailReporter) {
           (loader, dispatchReporter) => {
-            doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, includes, excludesWithIgnore(excludes),
+            doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, filter,
                 propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1) 
           }
         }
@@ -1155,8 +1157,7 @@ object Runner {
     dispatch: DispatchReporter,
     suitesList: List[String],
     stopRequested: Stopper,
-    includes: Set[String],
-    excludes: Set[String],
+    filter: Filter,
     propertiesMap: Map[String, String],
     concurrent: Boolean,
     membersOnlyList: List[String],
@@ -1175,9 +1176,7 @@ object Runner {
       throw new NullPointerException
     if (stopRequested == null)
       throw new NullPointerException
-    if (includes == null)
-      throw new NullPointerException
-    if (excludes == null)
+    if (filter == null)
       throw new NullPointerException
     if (propertiesMap == null)
       throw new NullPointerException
@@ -1191,6 +1190,13 @@ object Runner {
       throw new NullPointerException
     if (doneListener == null)
       throw new NullPointerException
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     var tracker = new Tracker(new Ordinal(runStamp))
 
@@ -1268,7 +1274,7 @@ object Runner {
 
           val testCountList =
             for (suite <- suiteInstances)
-              yield suite.expectedTestCount(includes, excludes)
+              yield suite.expectedTestCount(tagsToInclude, tagsToExclude)
   
           def sumInts(list: List[Int]): Int =
             list match {
@@ -1281,7 +1287,7 @@ object Runner {
           dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatch, stopRequested, includes, excludesWithIgnore(excludes), propertiesMap)
+            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, propertiesMap)
             for (suite <- suiteInstances) {
               distributor.apply(suite, tracker.nextTracker())
             }
@@ -1289,7 +1295,7 @@ object Runner {
           }
           else {
             for (suite <- suiteInstances) {
-              val suiteRunner = new SuiteRunner(suite, dispatch, stopRequested, includes, excludesWithIgnore(excludes),
+              val suiteRunner = new SuiteRunner(suite, dispatch, stopRequested, filter,
                   propertiesMap, None, tracker)
               suiteRunner.run()
             }

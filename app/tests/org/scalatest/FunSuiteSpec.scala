@@ -90,13 +90,13 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         }
       }
       val suite = new InvokedWhenNotRunningSuite
-      suite.run(None, SilentReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      suite.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(suite.fromConstructorTestExecuted)
       assert(!suite.fromMethodTestExecuted)
       intercept[TestRegistrationClosedException] {
         suite.tryToRegisterATest()
       }
-      suite.run(None, SilentReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      suite.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(!suite.fromMethodTestExecuted)
 /*
       class InvokedWhenRunningSuite extends FunSuite {
@@ -169,7 +169,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         }
         val suite = new MySuite
         val myRep = new EventRecordingReporter
-        suite.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+        suite.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
         intercept[IllegalStateException] {
           suite.callInfo()
         }

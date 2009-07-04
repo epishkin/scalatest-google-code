@@ -124,7 +124,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
 
     val repA = new MyReporter
-    a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
@@ -138,7 +138,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
 
     val repB = new MyReporter
-    b.run(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
+    b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(repB.testIgnoredReceived)
     assert(repB.lastEvent.testName endsWith "testThis")
     assert(!b.theTestThisCalled)
@@ -153,7 +153,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
 
     val repC = new MyReporter
-    c.run(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
+    c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(repC.testIgnoredReceived)
     assert(repC.lastEvent.testName endsWith "testThat(Informer)", repC.lastEvent.testName)
     assert(c.theTestThisCalled)
@@ -169,7 +169,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
 
     val repD = new MyReporter
-    d.run(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
+    d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(repD.testIgnoredReceived)
     assert(repD.lastEvent.testName endsWith "testThis") // last because run alphabetically
     assert(!d.theTestThisCalled)
@@ -187,7 +187,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     }
 
     val repE = new MyReporter
-    e.run(Some("testThis"), repE, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    e.run(Some("testThis"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!repE.testIgnoredReceived)
     assert(e.theTestThisCalled)
   }
@@ -202,7 +202,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repA = new MyReporter
-    a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
@@ -215,7 +215,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repB = new MyReporter
-    b.run(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None, new Tracker)
+    b.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
     assert(!repB.testIgnoredReceived)
     assert(b.theTestThisCalled)
     assert(!b.theTestThatCalled)
@@ -229,7 +229,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repC = new MyReporter
-    c.run(None, repB, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set(), Map(), None, new Tracker)
+    c.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
     assert(!repC.testIgnoredReceived)
     assert(c.theTestThisCalled)
     assert(c.theTestThatCalled)
@@ -244,7 +244,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
     }
     val repD = new MyReporter
-    d.run(None, repD, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
+    d.run(None, repD, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.Ignore")), Map(), None, new Tracker)
     assert(repD.testIgnoredReceived)
     assert(!d.theTestThisCalled)
     assert(d.theTestThatCalled)
@@ -261,7 +261,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repE = new MyReporter
-    e.run(None, repE, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
+    e.run(None, repE, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repE.testIgnoredReceived)
     assert(!e.theTestThisCalled)
@@ -281,7 +281,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repF = new MyReporter
-    f.run(None, repF, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
+    f.run(None, repF, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repF.testIgnoredReceived)
     assert(!f.theTestThisCalled)
@@ -301,7 +301,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repG = new MyReporter
-    g.run(None, repG, new Stopper {}, Set("org.scalatest.SlowAsMolasses"), Set("org.scalatest.FastAsLight"),
+    g.run(None, repG, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repG.testIgnoredReceived)
     assert(!g.theTestThisCalled)
@@ -320,7 +320,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repH = new MyReporter
-    h.run(None, repH, new Stopper {}, Set(), Set("org.scalatest.FastAsLight"), Map(), None, new Tracker)
+    h.run(None, repH, new Stopper {}, Filter(None, Set("org.scalatest.FastAsLight")), Map(), None, new Tracker)
     assert(!repH.testIgnoredReceived)
     assert(!h.theTestThisCalled)
     assert(h.theTestThatCalled)
@@ -338,7 +338,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repI = new MyReporter
-    i.run(None, repI, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None, new Tracker)
+    i.run(None, repI, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
     assert(!repI.testIgnoredReceived)
     assert(!i.theTestThisCalled)
     assert(!i.theTestThatCalled)
@@ -358,7 +358,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repJ = new MyReporter
-    j.run(None, repJ, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses"), Map(), None, new Tracker)
+    j.run(None, repJ, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
     assert(!repI.testIgnoredReceived)
     assert(!j.theTestThisCalled)
     assert(!j.theTestThatCalled)
@@ -379,7 +379,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
     val repK = new MyReporter
-    k.run(None, repK, new Stopper {}, Set(), Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore"), Map(), None, new Tracker)
+    k.run(None, repK, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore")), Map(), None, new Tracker)
     assert(repK.testIgnoredReceived)
     assert(!k.theTestThisCalled)
     assert(!k.theTestThatCalled)
@@ -617,7 +617,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
     val mySuite = new MySuite
     val myReporter = new TestDurationReporter
-    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    mySuite.run(None, myReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.testSucceededWasFiredAndHadADuration)
     assert(myReporter.testFailedWasFiredAndHadADuration)
   }
@@ -634,11 +634,11 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
     val mySuite = new MySuite
     val myReporter = new SuiteDurationReporter
-    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    mySuite.run(None, myReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.suiteCompletedWasFiredAndHadADuration)
 
     class SuiteThatAborts extends Suite {
-      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
               goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new RuntimeException("Aborting for testing purposes")
       }
@@ -654,7 +654,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
     val myOtherSuite = new MyOtherSuite
     val myOtherReporter = new SuiteDurationReporter
-    myOtherSuite.run(None, myOtherReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    myOtherSuite.run(None, myOtherReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myOtherReporter.suiteAbortedWasFiredAndHadADuration)
   }
 
@@ -666,7 +666,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
     val mySuite = new MySuite
     val myReporter = new PendingReporter
-    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    mySuite.run(None, myReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.testPendingWasFired)
   }
 }

@@ -177,13 +177,13 @@ trait BeforeAndAfter extends RunMethods {
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
-  abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+  abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                        goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     var thrownException: Option[Throwable] = None
 
     beforeAll()
     try {
-      super.run(testName, reporter, stopper, includes, excludes, goodies, distributor, tracker)
+      super.run(testName, reporter, stopper, filter, goodies, distributor, tracker)
     }
     catch {
       case e: Exception => thrownException = Some(e)

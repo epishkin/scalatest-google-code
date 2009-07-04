@@ -23,15 +23,14 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait Rerunner extends ((Reporter, Stopper, Set[String], Set[String], Map[String, Any], Option[Distributor], Tracker, ClassLoader) => Unit) {
+trait Rerunner extends ((Reporter, Stopper, Filter, Map[String, Any], Option[Distributor], Tracker, ClassLoader) => Unit) {
 
   /**
    * Rerun a test or other entity (such as a suite), reporting results to the specified <code>Reporter</code>.
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include during this rerun
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude during this rerun
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the suite or test being rerun
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s, if any, to be executed
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
@@ -40,6 +39,6 @@ trait Rerunner extends ((Reporter, Stopper, Set[String], Set[String], Map[String
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>.
    */
-  def apply(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  def apply(reporter: Reporter, stopper: Stopper, filter: Filter,
             goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader): Unit
 }

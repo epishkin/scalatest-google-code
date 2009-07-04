@@ -831,7 +831,15 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, goodies: Map[String, Any], tracker: Tracker) {
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
+
     val stopRequested = stopper
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
     // so that exceptions are caught and transformed
@@ -885,7 +893,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           report(InfoProvided(tracker.nextOrdinal(), message,
             Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)),
               None, Some(IndentedText(formattedText, message, 1))))
-        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, tagsToInclude, tagsToExclude, goodies, tracker)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, goodies, tracker)
       }
     )
   }
@@ -1064,7 +1072,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
    *     <code>tagsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
-  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
+  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], tracker: Tracker) {
     
     if (testName == null)
@@ -1073,17 +1081,22 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (tagsToInclude == null)
-      throw new NullPointerException("tagsToInclude was null")
-    if (tagsToExclude == null)
-      throw new NullPointerException("tagsToExclude was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
 
     testName match {
-      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, tagsToInclude, tagsToExclude, goodies, tracker)
+      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, goodies, tracker)
       case Some(tn) => runTest(tn, reporter, stopRequested, goodies, tracker)
     }
   }
@@ -1124,8 +1137,15 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    */
   override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
 
-  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
 
@@ -1150,7 +1170,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
+      super.run(testName, report, stopRequested, filter, goodies, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)

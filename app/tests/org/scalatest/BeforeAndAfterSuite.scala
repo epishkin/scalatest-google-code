@@ -28,10 +28,10 @@ class BeforeAndAfterSuite extends FunSuite {
       runTestWasCalled = true
       super.runTest(testName, reporter, stopper, properties, tracker)
     }
-    override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+    override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                          properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
       runWasCalled = true
-      super.run(testName, reporter, stopper, includes, excludes, properties, distributor, tracker)
+      super.run(testName, reporter, stopper, filter, properties, distributor, tracker)
     }
   }
   
@@ -172,14 +172,14 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
   }
  
   test("If any call to super.run completes abruptly with an exception, run " +
     "will complete abruptly with the same exception, however, before doing so, it will invoke afterAll") {
     trait FunkySuite extends Suite {
-      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                            properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new NumberFormatException
       }
@@ -192,7 +192,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
     assert(a.afterAllCalled)
   }
@@ -200,7 +200,7 @@ class BeforeAndAfterSuite extends FunSuite {
   test("If both super.run and afterAll complete abruptly with an exception, run " + 
     "will complete abruptly with the exception thrown by super.run.") {
     trait FunkySuite extends Suite {
-      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                            properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new NumberFormatException
       }
@@ -214,7 +214,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
     assert(a.afterAllCalled)
   }
@@ -228,7 +228,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+      a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
   }
 }

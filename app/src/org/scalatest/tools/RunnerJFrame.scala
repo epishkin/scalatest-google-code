@@ -72,8 +72,8 @@ import EventToPresent.eventToEventToPresent
  * @author Bill Venners
  */                 
 private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypesToCollect: Set[EventToPresent],
-    reporterConfigurations: ReporterConfigurations, suitesList: List[String], runpathList: List[String], includes: Set[String],
-    excludes: Set[String], propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
+    reporterConfigurations: ReporterConfigurations, suitesList: List[String], runpathList: List[String], filter: Filter,
+    propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
     testNGList: List[String], passFailReporter: Option[Reporter]) extends
     JFrame(RunnerJFrame.getTitle(recipeName)) with RunDoneListener with RunnerGUI {
 
@@ -1348,7 +1348,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
       withClassLoaderAndDispatchReporter(runpathList, reporterConfigurations, Some(graphicRunReporter), passFailReporter) {
         (loader, dispatchReporter) => {
           try {
-            Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, stopper, includes, excludes,
+            Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, stopper, filter,
                 propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this, nextRunStamp) 
           }
           finally {
@@ -1374,7 +1374,7 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
       withClassLoaderAndDispatchReporter(runpathList, reporterConfigurations, Some(graphicRerunReporter), None) {
         (loader, dispatchReporter) => {
           try {
-            rerun(dispatchReporter, stopper, includes, Runner.excludesWithIgnore(excludes), propertiesMap,
+            rerun(dispatchReporter, stopper, filter, propertiesMap,
                 distributor, tracker, loader)
           }
           catch {
