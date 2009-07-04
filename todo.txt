@@ -1,7 +1,3 @@
-Spec is only dissallowing test registration while running a test. Actually, it kind of does make sense in that you can say can't nest
-a "test" inside another "test" when running a test. But also can't register after construction is done, which means after the first
-time run has been invoked. So could combine them, and have two different error messages.
-
 Use filter in the run methods
 
 add the 'it should/must ""/describe a ""/describe it ""' style to Spec
