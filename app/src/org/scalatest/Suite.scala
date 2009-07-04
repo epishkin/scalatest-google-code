@@ -743,8 +743,8 @@ import org.scalatest.tools.StandardOutReporter
  *     testName: Option[String],
  *     reporter: Reporter,
  *     stopper: Stopper,
- *     groupsToInclude: Set[String],
- *     groupsToExclude: Set[String],
+ *     tagsToInclude: Set[String],
+ *     tagsToExclude: Set[String],
  *     goodies: Map[String, Any],
  *     distributor: Option[Distributor],
  *     tracker: Tracker
@@ -766,15 +766,15 @@ import org.scalatest.tools.StandardOutReporter
  *   override def runNestedSuites(
  *     reporter: Reporter,
  *     stopper: Stopper,
- *     groupsToInclude: Set[String],
- *     groupsToExclude: Set[String],
+ *     tagsToInclude: Set[String],
+ *     tagsToExclude: Set[String],
  *     goodies: Map[String, Any],
  *     distributor: Option[Distributor]
  *   ) {
  *     val writer = new FileWriter("fixture.txt")
  *     try {
  *       val myGoodies = goodies + (Constants.GoodieKey -> writer)
- *       super.runNestedSuites(reporter, stopper, groupsToInclude, groupsToExclude, myGoodies, distributor)
+ *       super.runNestedSuites(reporter, stopper, tagsToInclude, tagsToExclude, myGoodies, distributor)
  *     }
  *     finally {
  *       writer.close()
@@ -893,9 +893,9 @@ import org.scalatest.tools.StandardOutReporter
  * 
  * <p>
  * <code>Ignore</code> is implemented as a group. The <code>run</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
+ * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> it passes to
  * the primary <code>run</code> method, as does <code>Runner</code>. The only difference between
- * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
+ * <code>org.scalatest.Ignore</code> and the tags you may define and exclude is that ScalaTest reports
  * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
@@ -1029,7 +1029,7 @@ import org.scalatest.tools.StandardOutReporter
  *   tests.</li>
  * <li><code>runTest</code> - override this method to define custom ways to run a single named test.</li>
  * <li><code>testNames</code> - override this method to specify the <code>Suite</code>'s test names in a custom way.</li>
- * <li><code>groups</code> - override this method to specify the <code>Suite</code>'s test groups in a custom way.</li>
+ * <li><code>tags</code> - override this method to specify the <code>Suite</code>'s test tags in a custom way.</li>
  * <li><code>nestedSuites</code> - override this method to specify the <code>Suite</code>'s nested <code>Suite</code>s in a custom way.</li>
  * <li><code>suiteName</code> - override this method to specify the <code>Suite</code>'s name in a custom way.</li>
  * <li><code>expectedTestCount</code> - override this method to count this <code>Suite</code>'s expected tests in a custom way.</li>
@@ -1101,8 +1101,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>testName</code> - <code>None</code></li>
    * <li><code>report</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>groupsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
+   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>tagsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
    * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
    * <li><code>distribute</code> - <code>None</code></li>
    * </ul>
@@ -1124,8 +1124,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>testName</code> - <code>None</code></li>
    * <li><code>report</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>groupsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
+   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>tagsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
    * <li><code>goodies</code> - the specified <code>goodies</code> <code>Map[String, Any]</code></li>
    * <li><code>distribute</code> - <code>None</code></li>
    * </ul>
@@ -1147,8 +1147,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>testName</code> - <code>Some(testName)</code></li>
    * <li><code>report</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>groupsToExclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>tagsToExclude</code> - an empty <code>Set[String]</code></li>
    * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
    * <li><code>distribute</code> - <code>None</code></li>
    * </ul>
@@ -1175,8 +1175,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>testName</code> - <code>Some(testName)</code></li>
    * <li><code>report</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>groupsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>groupsToExclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>tagsToExclude</code> - an empty <code>Set[String]</code></li>
    * <li><code>goodies</code> - the specified <code>goodies</code> <code>Map[String, Any]</code></li>
    * <li><code>distribute</code> - <code>None</code></li>
    * </ul>
@@ -1196,7 +1196,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>Suite</code> belong, and values
-   * the <code>Set</code> of test names that belong to each group.  If this <code>Suite</code> contains no groups, this method returns an empty <code>Map</code>.
+   * the <code>Set</code> of test names that belong to each group.  If this <code>Suite</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation uses Java reflection to discover any Java annotations attached to its test methods. Each unique
@@ -1206,8 +1206,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </p>
    *
    * <p>
-   * Subclasses may override this method to define and/or discover groups in a custom manner, but overriding method implementations
-   * should never return an empty <code>Set</code> as a value. If a group has no tests, its name should not appear as a key in the
+   * Subclasses may override this method to define and/or discover tags in a custom manner, but overriding method implementations
+   * should never return an empty <code>Set</code> as a value. If a tag has no tests, its name should not appear as a key in the
    * returned <code>Map</code>.
    * </p>
    */
@@ -1410,26 +1410,26 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method takes a <code>Set</code> of group names that should be included (<code>groupsToInclude</code>), and a <code>Set</code>
-   * that should be excluded (<code>groupsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to run.
-   * If <code>groupsToInclude</code> is empty, all tests will be run
-   * except those those belonging to groups listed in the <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
-   * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>
-   * will be run. However, if <code>testName</code> is <code>Some</code>, <code>groupsToInclude</code> and <code>groupsToExclude</code> are essentially ignored.
-   * Only if <code>testName</code> is <code>None</code> will <code>groupsToInclude</code> and <code>groupsToExclude</code> be consulted to
+   * This method takes a <code>Set</code> of tag names that should be included (<code>tagsToInclude</code>), and a <code>Set</code>
+   * that should be excluded (<code>tagsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to run.
+   * If <code>tagsToInclude</code> is empty, all tests will be run
+   * except those those belonging to tags listed in the <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is non-empty, only tests
+   * belonging to tags mentioned in <code>tagsToInclude</code>, and not mentioned in <code>tagsToExclude</code>
+   * will be run. However, if <code>testName</code> is <code>Some</code>, <code>tagsToInclude</code> and <code>tagsToExclude</code> are essentially ignored.
+   * Only if <code>testName</code> is <code>None</code> will <code>tagsToInclude</code> and <code>tagsToExclude</code> be consulted to
    * determine which of the tests named in the <code>testNames</code> <code>Set</code> should be run. This trait's implementation
    * behaves this way, and it is part of the general contract of this method, so all overridden forms of this method should behave
-   * this way as well.  For more information on trait groups, see the main documentation for this trait.
+   * this way as well.  For more information on test tags, see the main documentation for this trait.
    * </p>
    *
    * <p>
    * If <code>testName</code> is <code>None</code>, this trait's implementation of this method
    * invokes <code>testNames</code> on this <code>Suite</code> to get a <code>Set</code> of names of tests to potentially run.
    * (A <code>testNames</code> value of <code>None</code> essentially acts as a wildcard that means all tests in
-   * this <code>Suite</code> that are selected by <code>groupsToInclude</code> and <code>groupsToExclude</code> should be run.)
+   * this <code>Suite</code> that are selected by <code>tagsToInclude</code> and <code>tagsToExclude</code> should be run.)
    * For each test in the <code>testName</code> <code>Set</code>, in the order
    * they appear in the iterator obtained by invoking the <code>elements</code> method on the <code>Set</code>, this trait's implementation
-   * of this method checks whether the test should be run based on the <code>groupsToInclude</code> and <code>groupsToExclude</code> <code>Set</code>s.
+   * of this method checks whether the test should be run based on the <code>tagsToInclude</code> and <code>tagsToExclude</code> <code>Set</code>s.
    * If so, this implementation invokes <code>runTest</code>, passing in:
    * </p>
    *
@@ -1444,19 +1444,19 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Suite</code>
+   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
-   *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
+   *     <code>tagsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    *
    * This trait's implementation of this method runs tests
    * in the manner described in detail in the following paragraphs, but subclasses may override the method to provide different
    * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
    * used by all the methods of this <code>Suite</code>.
    */
-  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
                              goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
@@ -1465,10 +1465,10 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (groupsToInclude == null)
-      throw new NullPointerException("groupsToInclude was null")
-    if (groupsToExclude == null)
-      throw new NullPointerException("groupsToExclude was null")
+    if (tagsToInclude == null)
+      throw new NullPointerException("tagsToInclude was null")
+    if (tagsToExclude == null)
+      throw new NullPointerException("tagsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
@@ -1485,11 +1485,11 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       case Some(tn) => runTest(tn, report, stopRequested, goodies, tracker)
       case None => {
         for (tn <- testNames) {
-          if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-            if (groupsToExclude.contains(IgnoreAnnotation) && tags.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
+          if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
+            if (tagsToExclude.contains(IgnoreAnnotation) && tags.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
               report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
             }
-            else if ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
+            else if ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, report, stopRequested, goodies, tracker)
             }
           }
@@ -1505,8 +1505,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * calls these two methods on this object in this order:</p>
    *
    * <ol>
-   * <li><code>runNestedSuites(report, stopper, groupsToInclude, groupsToExclude, goodies, distributor)</code></li>
-   * <li><code>runTests(testName, report, stopper, groupsToInclude, groupsToExclude, goodies)</code></li>
+   * <li><code>runNestedSuites(report, stopper, tagsToInclude, tagsToExclude, goodies, distributor)</code></li>
+   * <li><code>runTests(testName, report, stopper, tagsToInclude, tagsToExclude, goodies)</code></li>
    * </ol>
    *
    * <p>
@@ -1518,8 +1518,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Suite</code>
+   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
@@ -1527,7 +1527,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  def run(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
               goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
@@ -1536,10 +1536,10 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (groupsToInclude == null)
-      throw new NullPointerException("groupsToInclude was null")
-    if (groupsToExclude == null)
-      throw new NullPointerException("groupsToExclude was null")
+    if (tagsToInclude == null)
+      throw new NullPointerException("tagsToInclude was null")
+    if (tagsToExclude == null)
+      throw new NullPointerException("tagsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
     if (distributor == null)
@@ -1551,10 +1551,10 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     val report = wrapReporterIfNecessary(reporter)
 
     testName match {
-      case None => runNestedSuites(report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+      case None => runNestedSuites(report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
       case Some(_) =>
     }
-    runTests(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
+    runTests(testName, report, stopRequested, tagsToInclude, tagsToExclude, goodies, tracker)
 
     if (stopRequested()) {
       val rawString = Resources("executeStopping")
@@ -1596,8 +1596,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Suite</code>
+   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Suite</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
@@ -1605,17 +1605,17 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
                                 goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (reporter == null)
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (groupsToInclude == null)
-      throw new NullPointerException("groupsToInclude was null")
-    if (groupsToExclude == null)
-      throw new NullPointerException("groupsToExclude was null")
+    if (tagsToInclude == null)
+      throw new NullPointerException("tagsToInclude was null")
+    if (tagsToExclude == null)
+      throw new NullPointerException("tagsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
     if (distributor == null)
@@ -1648,7 +1648,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
         try {
           // Same thread, so OK to send same tracker
-          nestedSuite.run(None, report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+          nestedSuite.run(None, report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
 
           val rawString = Resources("suiteCompletedNormally")
           val formatter = formatterForSuiteCompleted(nestedSuite)
@@ -1752,27 +1752,27 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *     <code>nestedSuites</code>
    * </ul>
    */
-  def expectedTestCount(groupsToInclude: Set[String], groupsToExclude: Set[String]): Int = {
+  def expectedTestCount(tagsToInclude: Set[String], tagsToExclude: Set[String]): Int = {
 
     // [bv: here was another tricky refactor. How to increment a counter in a loop]
-    def countNestedSuiteTests(nestedSuites: List[Suite], groupsToInclude: Set[String], groupsToExclude: Set[String]): Int =
+    def countNestedSuiteTests(nestedSuites: List[Suite], tagsToInclude: Set[String], tagsToExclude: Set[String]): Int =
       nestedSuites match {
         case List() => 0
-        case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(groupsToInclude, groupsToExclude) +
-            countNestedSuiteTests(nestedSuites, groupsToInclude, groupsToExclude)
+        case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(tagsToInclude, tagsToExclude) +
+            countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
     }
     // Semicolon inference bit me here for the first time. I had said:
-    //  case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(groupsToInclude, groupsToExclude)
-    //      + countNestedSuiteTests(nestedSuites, groupsToInclude, groupsToExclude)
+    //  case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(tagsToInclude, tagsToExclude)
+    //      + countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
     // That won't work. It thinks + starts a new expression
  
-    expectedTestCountThisSuiteOnly(groupsToInclude, groupsToExclude) + countNestedSuiteTests(nestedSuites, groupsToInclude, groupsToExclude)
+    expectedTestCountThisSuiteOnly(tagsToInclude, tagsToExclude) + countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
   }
 
-  private def expectedTestCountThisSuiteOnly(groupsToInclude: Set[String], groupsToExclude: Set[String]) = {
+  private def expectedTestCountThisSuiteOnly(tagsToInclude: Set[String], tagsToExclude: Set[String]) = {
     val tns =
-      for (tn <- testNames; if (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)
-         && ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) && (!(tags.getOrElse(tn, Set()).contains(IgnoreAnnotation))))
+      for (tn <- testNames; if (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)
+         && ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) && (!(tags.getOrElse(tn, Set()).contains(IgnoreAnnotation))))
         yield tn
 
     tns.size
