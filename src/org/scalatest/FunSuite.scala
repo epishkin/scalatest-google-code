@@ -638,25 +638,35 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
       }
     }
 
-    /**
-     *  Register a test with the specified name, optional tags, and function value that takes no arguments.
-     * This method will register the test for later execution via an invocation of one of the <code>run</code>
-     * methods. The passed test name must not have been registered previously on
-     * this <code>FunSuite</code> instance.
-     *
-     * @throws NotAllowedException if <code>testName</code> had been registered previously
-     */
+  /**
+   * Register a test with the specified name, optional tags, and function value that takes no arguments.
+   * This method will register the test for later execution via an invocation of one of the <code>run</code>
+   * methods. The passed test name must not have been registered previously on
+   * this <code>FunSuite</code> instance.
+   *
+   * @param testName the name of the test
+   * @param testTags the optional list of tags for this test
+   * @param testFun the test function
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws NotAllowedException if <code>testName</code> had been registered previously
+   * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
+   */
   protected def test(testName: String, testTags: Tag*)(f: => Unit) {
+
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+    if (testTags.exists(_ == null))
+      throw new NullPointerException("a test tag was null")
+
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
+    
+    if (atomic.get.testsMap.keySet.contains(testName))
+      throw new DuplicateTestNameException(Resources("duplicateTestName", testName), getStackDepth("FunSuite.scala", "test"))
 
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-
-    if (registrationClosed)
-      throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
-    
-    if (testsMap.keySet.contains(testName)) {
-      throw new DuplicateTestNameException(Resources("duplicateTestName", testName), getStackDepth("FunSuite.scala", "test"))
-    }
 
     val testNode = Test(testName, f _)
     testsMap += (testName -> testNode)
@@ -677,9 +687,19 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
    * report will be sent that indicates the test was ignored. The passed test name must not have been registered previously on
    * this <code>FunSuite</code> instance.
    *
-   * @throws TestFailedException if <code>testName</code> had been registered previously
+   * @param testName the name of the test
+   * @param testTags the optional list of tags for this test
+   * @param testFun the test function
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
   protected def ignore(testName: String, testTags: Tag*)(f: => Unit) {
+
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+    if (testTags.exists(_ == null))
+      throw new NullPointerException("a test tag was null")
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth("FunSuite.scala", "ignore"))

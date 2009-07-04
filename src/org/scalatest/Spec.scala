@@ -555,7 +555,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   private class Bundle private(
     val trunk: Trunk,
     val currentBranch: Branch,
-    val groupsMap: Map[String, Set[String]],
+    val tagsMap: Map[String, Set[String]],
 
     // All examples, in reverse order of registration
     val examplesList: List[TestLeaf],
@@ -564,26 +564,26 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     // which should result in a TestRegistrationClosedException
     val registrationClosed: Boolean
   ) {
-    def unpack = (trunk, currentBranch, groupsMap, examplesList, registrationClosed)
+    def unpack = (trunk, currentBranch, tagsMap, examplesList, registrationClosed)
   }
 
   private object Bundle {
     def apply(
       trunk: Trunk,
       currentBranch: Branch,
-      groupsMap: Map[String, Set[String]],
+      tagsMap: Map[String, Set[String]],
       examplesList: List[TestLeaf],
       registrationClosed: Boolean
     ): Bundle =
-      new Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed)
+      new Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed)
 
     def initialize(
       trunk: Trunk,
-      groupsMap: Map[String, Set[String]],
+      tagsMap: Map[String, Set[String]],
       examplesList: List[TestLeaf],
       registrationClosed: Boolean
     ): Bundle =
-      new Bundle(trunk, trunk, groupsMap, examplesList, registrationClosed)
+      new Bundle(trunk, trunk, tagsMap, examplesList, registrationClosed)
   }
 
   private val atomic =
@@ -607,7 +607,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   private def registerTest(specText: String, f: => Unit) = {
 
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
+    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
 
     val testName = getTestName(specText, currentBranch)
     if (examplesList.exists(_.testName == testName)) {
@@ -618,7 +618,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     currentBranch.subNodes ::= example
     examplesList ::= example
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
 
     testName
   }
@@ -650,11 +650,11 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           throw new NullPointerException
 
         val oldBundle = atomic.get
-        var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
+        var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
 
         currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
 
-        updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
+        updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
       }
     }
 
@@ -671,7 +671,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     }
 
   /**
-   * Register a test with the given spec text, optional groups, and test function value that takes no arguments.
+   * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
    * An invocation of this method is called an &#8220;example.&#8221;
    *
    * This method will register the test for later execution via an invocation of one of the <code>execute</code>
@@ -682,11 +682,11 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
-   * @param testTags the optional list of groups to which this test belongs
+   * @param testTags the optional list of tags for this test
    * @param testFun the test function
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def it(specText: String, testTags: Tag*)(testFun: => Unit) {
 
@@ -695,17 +695,17 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
-      throw new NullPointerException("a test group was null")
+      throw new NullPointerException("a test tag was null")
 
     val testName = registerTest(specText, testFun)
 
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed2) = oldBundle.unpack
-    val groupNames = Set[String]() ++ testTags.map(_.name)
-    if (!groupNames.isEmpty)
-      groupsMap += (testName -> groupNames)
+    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed2) = oldBundle.unpack
+    val tagNames = Set[String]() ++ testTags.map(_.name)
+    if (!tagNames.isEmpty)
+      tagsMap += (testName -> tagNames)
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed2))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed2))
   }
 
   /**
@@ -723,7 +723,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @param testFun the test function
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def it(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
@@ -732,7 +732,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
   }
 
   /**
-   * Register a test to ignore, which has the given spec text, optional groups, and test function value that takes no arguments.
+   * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
    * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
    * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
@@ -743,11 +743,11 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    *
    * @param specText the specification text, which will be combined with the descText of any surrounding describers
    * to form the test name
-   * @param testTags the optional list of groups to which this test belongs
+   * @param testTags the optional list of tags for this test
    * @param testFun the test function
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
@@ -755,13 +755,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
-      throw new NullPointerException("a test group was null")
+      throw new NullPointerException("a test tag was null")
     val testName = registerTest(specText, testFun)
-    val groupNames = Set[String]() ++ testTags.map(_.name)
+    val tagNames = Set[String]() ++ testTags.map(_.name)
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
-    groupsMap += (testName -> (groupNames + IgnoreTagName))
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
+    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
+    tagsMap += (testName -> (tagNames + IgnoreTagName))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
   }
 
   /**
@@ -779,7 +779,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * @param testFun the test function
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test group is <code>null</code>
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
@@ -799,14 +799,14 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
     def createNewBranch() = {
       val oldBundle = atomic.get
-      var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
+      var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
 
       val newBranch = DescriptionBranch(currentBranch, description)
       val oldBranch = currentBranch
       currentBranch.subNodes ::= newBranch
       currentBranch = newBranch
 
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, registrationClosed))
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, registrationClosed))
 
       oldBranch
     }
@@ -816,23 +816,23 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     f
 
     val oldBundle = atomic.get
-    val (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
+    val (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
 
-    updateAtomic(oldBundle, Bundle(trunk, oldBranch, groupsMap, examplesList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, examplesList, registrationClosed))
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>Spec</code> belong, and values
-   * the <code>Set</code> of test names that belong to each group. If this <code>FunSuite</code> contains no groups, this method returns an empty <code>Map</code>.
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
-   * This trait's implementation returns groups that were passed as strings contained in <code>Tag</code> objects passed to 
+   * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to 
    * methods <code>test</code> and <code>ignore</code>. 
    * </p>
    */
-  override def tags: Map[String, Set[String]] = atomic.get.groupsMap
+  override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String], goodies: Map[String, Any], tracker: Tracker) {
     val stopRequested = stopper
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
     // so that exceptions are caught and transformed
@@ -869,13 +869,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       _ match {
         case ex @ TestLeaf(parent, testName, specText, f) => {
           val tn = ex.testName
-          if (!stopRequested() && (groupsToInclude.isEmpty || !(groupsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-            if (groupsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
+          if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
+            if (tagsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
               val exampleSucceededIcon = Resources("testSucceededIconChar")
               val formattedSpecText = Resources("iconPlusShortName", exampleSucceededIcon, ex.specText)
               report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
             }
-            else if ((groupsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
+            else if ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
               runTest(tn, report, stopRequested, goodies, tracker)
             }
           }
@@ -886,7 +886,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
           report(InfoProvided(tracker.nextOrdinal(), message,
             Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)),
               None, Some(IndentedText(formattedText, message, 1))))
-        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, tagsToInclude, tagsToExclude, goodies, tracker)
       }
     )
   }
@@ -1027,24 +1027,24 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method takes a <code>Set</code> of group names that should be included (<code>groupsToInclude</code>), and a <code>Set</code>
-   * that should be excluded (<code>groupsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to execute.
-   * If <code>groupsToInclude</code> is empty, all tests will be executed
-   * except those those belonging to groups listed in the <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
-   * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>
-   * will be executed. However, if <code>testName</code> is <code>Some</code>, <code>groupsToInclude</code> and <code>groupsToExclude</code> are essentially ignored.
-   * Only if <code>testName</code> is <code>None</code> will <code>groupsToInclude</code> and <code>groupsToExclude</code> be consulted to
-   * determine which of the tests named in the <code>testNames</code> <code>Set</code> should be run. For more information on trait groups, see the main documentation for this trait.
+   * This method takes a <code>Set</code> of tag names that should be included (<code>tagsToInclude</code>), and a <code>Set</code>
+   * that should be excluded (<code>tagsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to execute.
+   * If <code>tagsToInclude</code> is empty, all tests will be executed
+   * except those those belonging to tags listed in the <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is non-empty, only tests
+   * belonging to tags mentioned in <code>tagsToInclude</code>, and not mentioned in <code>tagsToExclude</code>
+   * will be executed. However, if <code>testName</code> is <code>Some</code>, <code>tagsToInclude</code> and <code>tagsToExclude</code> are essentially ignored.
+   * Only if <code>testName</code> is <code>None</code> will <code>tagsToInclude</code> and <code>tagsToExclude</code> be consulted to
+   * determine which of the tests named in the <code>testNames</code> <code>Set</code> should be run. For more information on trait tags, see the main documentation for this trait.
    * </p>
    *
    * <p>
    * If <code>testName</code> is <code>None</code>, this trait's implementation of this method
    * invokes <code>testNames</code> on this <code>Suite</code> to get a <code>Set</code> of names of tests to potentially execute.
    * (A <code>testNames</code> value of <code>None</code> essentially acts as a wildcard that means all tests in
-   * this <code>Suite</code> that are selected by <code>groupsToInclude</code> and <code>groupsToExclude</code> should be executed.)
+   * this <code>Suite</code> that are selected by <code>tagsToInclude</code> and <code>tagsToExclude</code> should be executed.)
    * For each test in the <code>testName</code> <code>Set</code>, in the order
    * they appear in the iterator obtained by invoking the <code>elements</code> method on the <code>Set</code>, this trait's implementation
-   * of this method checks whether the test should be run based on the <code>groupsToInclude</code> and <code>groupsToExclude</code> <code>Set</code>s.
+   * of this method checks whether the test should be run based on the <code>tagsToInclude</code> and <code>tagsToExclude</code> <code>Set</code>s.
    * If so, this implementation invokes <code>runTest</code>, passing in:
    * </p>
    *
@@ -1059,13 +1059,13 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Spec</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Spec</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Spec</code>
+   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Spec</code>
+   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Spec</code>
    * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
-   *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
+   *     <code>tagsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
-  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
       goodies: Map[String, Any], tracker: Tracker) {
     
     if (testName == null)
@@ -1074,17 +1074,17 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (groupsToInclude == null)
-      throw new NullPointerException("groupsToInclude was null")
-    if (groupsToExclude == null)
-      throw new NullPointerException("groupsToExclude was null")
+    if (tagsToInclude == null)
+      throw new NullPointerException("tagsToInclude was null")
+    if (tagsToExclude == null)
+      throw new NullPointerException("tagsToExclude was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
     val stopRequested = stopper
 
     testName match {
-      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, groupsToInclude, groupsToExclude, goodies, tracker)
+      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, tagsToInclude, tagsToExclude, goodies, tracker)
       case Some(tn) => runTest(tn, reporter, stopRequested, goodies, tracker)
     }
   }
@@ -1125,7 +1125,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
    */
   override def testNames: Set[String] = ListSet(atomic.get.examplesList.map(_.testName): _*)
 
-  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     val stopRequested = stopper
@@ -1134,9 +1134,9 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     // which will disallow any further invocations of "describe", it", or "ignore" with
     // an RegistrationClosedException.
     val oldBundle = atomic.get
-    var (trunk, currentBranch, groupsMap, examplesList, registrationClosed) = oldBundle.unpack
+    var (trunk, currentBranch, tagsMap, examplesList, registrationClosed) = oldBundle.unpack
     if (!registrationClosed)
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, groupsMap, examplesList, true))
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, examplesList, true))
 
     val report = wrapReporterIfNecessary(reporter)
 
@@ -1151,7 +1151,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, groupsToInclude, groupsToExclude, goodies, distributor, tracker)
+      super.run(testName, report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
