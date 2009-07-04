@@ -1767,14 +1767,14 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ul>
    */
   def expectedTestCount(filter: Filter): Int = {
-
+ /*
     val tagsToInclude =
       filter.tagsToInclude match {
         case None => Set[String]()
         case Some(tti) => tti
       }
     val tagsToExclude = filter.tagsToExclude
-
+*/
     // [bv: here was another tricky refactor. How to increment a counter in a loop]
     def countNestedSuiteTests(nestedSuites: List[Suite], filter: Filter): Int =
       nestedSuites match {
@@ -1787,17 +1787,17 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     //      + countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
     // That won't work. It thinks + starts a new expression
  
-    expectedTestCountThisSuiteOnly(tagsToInclude, tagsToExclude) + countNestedSuiteTests(nestedSuites, filter)
+    filter.runnableTestsCount(testNames, tags) + countNestedSuiteTests(nestedSuites, filter)
   }
 
-  private def expectedTestCountThisSuiteOnly(tagsToInclude: Set[String], tagsToExclude: Set[String]) = {
+/*  private def expectedTestCountThisSuiteOnly(tagsToInclude: Set[String], tagsToExclude: Set[String]) = {
     val tns =
       for (tn <- testNames; if (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)
          && ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) && (!(tags.getOrElse(tn, Set()).contains(IgnoreAnnotation))))
         yield tn
 
     tns.size
-  }
+  } */
 
   // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
   // so that exceptions are caught and transformed

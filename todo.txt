@@ -2,8 +2,6 @@ Use filter in the run methods
 
 drop recipe name from runner and runnerjframe
 
-add the 'it should/must ""/describe a ""/describe it ""' style to Spec
-
 Do the fixture package for Suite, FunSuite, and Spec
 
 Make a GoodiesFixture trait for getting the goodies into a test
@@ -19,7 +17,7 @@ it completes (in a finally) it notifies an AfterAllActor. This react actor knows
 executes the after all method. So my theory is that since I'm using react, these actors won't hold up threads. But what tangled complexity we weave when
 we first learn to parallelize.
 
-Do WordSpec and FeatureSpec. WordSpec can use the same data structure as Spec, which would then give it the same kind of output.
+Do WordSpec, FlatSpec, and FeatureSpec. WordSpec and FlatSpec can use the same data structure as Spec, which would then give them the same kind of output.
 
 Write tests for JUnitComfort Suite.
 Document JUnitComfortSuite.
@@ -180,4 +178,64 @@ ant task.
 it is configured with. Print out the ordinal and everything. The
 reason is this can be used as an output during concurrent tests which
 can be read in and then sorted to produce other output.
+
+class FunSuiteSpec extends FlatSpec with SharedHelpers {
+
+  "A FunSuite" should "return the test names in registration order from testNames" taggedAs(SlowAsMolasses) {
+    // This is the first test
+  }
+
+  it should "throw NotAllowedException if a duplicate test name registration is attempted" {
+
+    // some test code here
+  }
+
+import scala.collection.mutable.ListBuffer
+
+class StackSpec extends Spec with StackFixtureCreationMethods with StackBehaviors {
+
+  behavior of "A Stack (when empty)"
+
+  it should "be empty" {
+        assert(emptyStack.empty)
+  }
+
+  it should "complain on peek" {
+    intercept[IllegalStateException] {
+      emptyStack.peek
+    }
+  }
+
+  ignore should "complain on pop" {
+    intercept[IllegalStateException] {
+      emptyStack.pop
+    }
+  }
+
+  behavior of "A Stack (with one item)"
+
+  ensure it behaves like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+  ensure it behaves like nonFullStack(stackWithOneItem)
+
+  behavior of "A Stack (with one item less than capacity)"
+
+  ensure it behaves like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
+  ensure it behaves like nonFullStack(stackWithOneItemLessThanCapacity)
+
+  "A Stack (full)" should "be full" {
+    assert(fullStack.full)
+  }
+
+  it should "go to sleep soon" (pending)
+      
+  ensure it behaves like nonEmptyStack(lastValuePushed)(fullStack)
+
+  it should "complain on a push" {
+    intercept[IllegalStateException] {
+      fullStack.push(10)
+    }
+  }
+}
+
+
 
