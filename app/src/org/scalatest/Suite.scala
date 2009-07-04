@@ -125,9 +125,12 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  *
  * <p>
- * The third overloaded <code>run</code> method takes seven parameters, so it is a bit unwieldy to invoke from
- * within the Scala interpreter. Instead, this <code>run</code> method is intended to be invoked indirectly by a test runner, such
- * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="tools/Runner$object.html">documentation for <code>Runner</code></a> for more detail.
+ * Two other <code>run</code> methods that are intended to be run from the interpreter accept a "goodies" map of key-value
+ * pairs (see <a href="#goodiesSection">Goodies</a>, below). The fifth overloaded <code>run</code> method takes seven
+ * parameters, so it is a bit unwieldy to invoke from
+ * within the Scala interpreter. Instead, this <code>run</code> method will usually be invoked by a test runner, such
+ * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="tools/Runner$object.html">documentation
+ * for <code>Runner</code></a> for more detail.
  * </p>
  *
  * <p>
@@ -147,9 +150,9 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * If the passed expression is <code>true</code>, <code>assert</code> will return normally. If <code>false</code>,
- * <code>assert</code> will complete abruptly with an <code>AssertionError</code>. This exception is usually not caught
- * by the test method, which means the test method itself will complete abruptly by throwing the <code>AssertionError</code>. Any
- * test method that completes abruptly with an <code>AssertionError</code> or any <code>Exception</code> is considered a failed
+ * <code>assert</code> will complete abruptly with a <code>TestFailedException</code>. This exception is usually not caught
+ * by the test method, which means the test method itself will complete abruptly by throwing the <code>TestFailedException</code>. Any
+ * test method that completes abruptly with a <code>TestFailedException</code> or any <code>Exception</code> is considered a failed
  * test. A test method that returns normally is considered a successful test.
  * </p>
  *
@@ -167,7 +170,8 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * Using this form of <code>assert</code>, the failure report will include the left and right values, thereby
- * helping you debug the problem. However, <code>Suite</code> provides the <code>===</code> operator to make this easier.
+ * helping you debug the problem. However, ScalaTest provides the <code>===</code> operator to make this easier.
+ * (The <code>===</code> operator is defined in trait <a href="Assertions.html"><code>Assertions</code></a> which trait <code>Suite</code> extends.)
  * You use it like this:
  * </p>
  *
@@ -179,7 +183,7 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * Because you use <code>===</code> here instead of <code>==</code>, the failure report will include the left
- * and right values. For example, the detail message in the thrown <code>AssertionErrorm</code> from the <code>assert</code>
+ * and right values. For example, the detail message in the thrown <code>TestFailedException</code> from the <code>assert</code>
  * shown previously will include, "2 did not equal 1".
  * From this message you will know that the operand on the left had the value 2, and the operand on the right had the value 1.
  * </p>
@@ -188,7 +192,7 @@ import org.scalatest.tools.StandardOutReporter
  * If you're familiar with JUnit, you would use <code>===</code>
  * in a ScalaTest <code>Suite</code> where you'd use <code>assertEquals</code> in a JUnit <code>TestCase</code>.
  * The <code>===</code> operator is made possible by an implicit conversion from <code>Any</code>
- * to <code>Equalizer</code>. If you're curious to understand the mechanics, see the <a href="Suite.Equalizer.html">documentation for
+ * to <code>Equalizer</code>. If you're curious to understand the mechanics, see the <a href="Assertions.Equalizer.html">documentation for
  * <code>Equalizer</code></a> and <code>Suite</code>'s <code>convertToEqualizer</code> method.
  * </p>
  *
@@ -215,7 +219,7 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * In this case, the expected value is <code>2</code>, and the code being tested is <code>a - b</code>. This expectation will fail, and
- * the detail message in the <code>AssertionError</code> will read, "Expected 2, but got 3."
+ * the detail message in the <code>TestFailedException</code> will read, "Expected 2, but got 3."
  * </p>
  *
  * <p>
@@ -239,14 +243,14 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  *
  * <p>
- * If <code>charAt</code> throws <code>IndexOutOfBoundsException</code> as left, control will transfer
+ * If <code>charAt</code> throws <code>IndexOutOfBoundsException</code> as expected, control will transfer
  * to the catch case, which does nothing. If, however, <code>charAt</code> fails to throw an exception,
  * the next statement, <code>fail()</code>, will be run. The <code>fail</code> method always completes abruptly with
- * an <code>AssertionError</code>, thereby signaling a failed test.
+ * a <code>TestFailedException</code>, thereby signaling a failed test.
  * </p>
  *
  * <p>
- * To make this common use case easier to express and read, <code>Suite</code> provides an <code>intercept</code>
+ * To make this common use case easier to express and read, ScalaTest provides an <code>intercept</code>
  * method. You use it like this:
  * </p>
  *
@@ -260,7 +264,7 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * This code behaves much like the previous example. If <code>charAt</code> throws an instance of <code>IndexOutOfBoundsException</code>,
  * <code>intercept</code> will return that exception. But if <code>charAt</code> completes normally, or throws a different
- * exception, <code>intercept</code> will complete abruptly with an <code>AssertionError</code>. <code>intercept</code> returns the
+ * exception, <code>intercept</code> will complete abruptly with a <code>TestFailedException</code>. <code>intercept</code> returns the
  * caught exception so that you can inspect it further if you wish, for example, to ensure that data contained inside
  * the exception has the expected values.
  * </p>
@@ -389,7 +393,7 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  * 
  * <p>
- * The <code>SpecsMatchers</code> trait was added to specs version 1.2.8. You will, of course, need to include the specs jar file
+ * You will, of course, need to include the specs jar file
  * in your class or run path when you run your ScalaTest suites that use specs matchers.
  * </p>
  * 
@@ -460,7 +464,7 @@ import org.scalatest.tools.StandardOutReporter
  * connections, etc.) used by tests to do their work.
  * If a fixture is used by only one test method, then the definitions of the fixture objects should
  * be local to the method, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
- * previous <code>MySuite</code> examples. If multiple methods need to share a fixture, the best approach
+ * previous <code>MySuite</code> examples. If multiple methods need to share a fixture, one approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
  * to <code>shared</code> is used by multiple test methods:
  * </p>
@@ -490,7 +494,7 @@ import org.scalatest.tools.StandardOutReporter
  * it needs to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
  * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
  * between tests. Before going that route, you should consider two approaches that
@@ -528,6 +532,11 @@ import org.scalatest.tools.StandardOutReporter
  *   }
  * }
  * </pre>
+ *
+ * <p>
+ * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple create-fixture methods and
+ * call the method (or methods) needed by each test at the begining of the test.
+ * </p>
  *
  * <p>
  * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
@@ -639,22 +648,89 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  *
  * <p>
- * If you are more comfortable with reassigning instance variables, however, you can
- * instead use the <code>BeforeAndAfter</code> trait, which provides
- * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
- * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
- * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with <code>BeforeAndAfter</code>:
+ * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple with-fixture methods and
+ * call the method (or methods) needed by each test at the beginning of the test. By far the most common case, however, will likely be that all
+ * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
+ * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
+ * directly support the with-fixture method approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
+ * is defined by the abstract <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.Suite</code> behaves exactly like
+ * <code>org.scalatest.Suite</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
+ * <a href="fixture.Suite"><code>org.scalatest.fixture.Suite</code></a>. To get the idea, however, here's what the previous example would
+ * look like rewritten to use an <code>org.scalatest.fixture.Suite</code>:
  * </p>
  *
  * <pre>
- * import org.scalatest.BeforeAndAfter
+ * import org.scalatest.fixture.Suite
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends Suite {
+ * 
+ *   type Fixture = FileReader
+ *
+ *   def withFixture(testFunction: FileReader => Unit) {
+ * 
+ *     val FileName = "TempFile.txt"
+ *  
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *  
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   def testReadingFromTheTempFile(reader: FileReader) {
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ * 
+ *   def testFirstCharOfTheTempFile(reader: FileReader) {
+ *     assert(reader.read() === 'H')
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you are more comfortable with reassigning instance variables, however, you can
+ * instead use the <code>BeforeAndAfterEach</code> trait, which provides
+ * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
+ * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
+ * methods, respectively). For example, here's how you'd write the previous
+ * test that uses a temp file with <code>BeforeAndAfterEach</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Suite
+ * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends Suite with BeforeAndAfter {
+ * class MySuite extends Suite with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -702,93 +778,33 @@ import org.scalatest.tools.StandardOutReporter
  * want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
+ * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
  * an example.
  * </p>
  *
  * <p>
- * <strong>Goodies</strong>
+ * <a name="goodiesSection"><strong>Goodies</strong></a>
  * </p>
  *
  * <p>
- * In some cases you may need to pass information from a suite to its nested suites.
- * For example, perhaps a main suite needs to open a database connection that is then
- * used by all of its nested suites. You can accomplish this in ScalaTest by using
- * goodies, which are passed to <code>run</code> as a <code>Map[String, Any]</code>.
- * This trait's <code>run</code> method calls two other methods, both of which you
- * can override:
+ * In some cases you may need to pass information to a suite of tests.
+ * For example, perhaps a suite of tests needs to grab configuration information from a file, and you want
+ * to be able to specify a different filename during different runs.  You can accomplish this in ScalaTest by passing
+ * the filename in the <em>goodies</em> map of key-value pairs, which is passed to <code>run</code> as a <code>Map[String, Any]</code>.
+ * (Note: A more natural name for goodies is <em>properties</em>, but property already has two other unrelated meanings
+ * in ScalaTest: property-based testing (see <a href="prop/Checkers.html"><code>Checkers</code></a>) and the testing
+ * of object properties via ScalaTest property matchers (see <a href="matchers/HavePropertyMatcher.html"><code>HavePropertyMatcher</code></a>).
  * </p>
- *
- * <ul>
- * <li><code>runNestedSuites</code> - responsible for running this <code>Suite</code>'s nested <code>Suite</code>s</li>
- * <li><code>runTests</code> - responsible for running this <code>Suite</code>'s tests</li>
- * </ul>
  *
  * <p>
- * To pass goodies to nested <code>Suite</code>s, simply override <code>runNestedSuites</code>.
- * Here's an example:
+ * The most common way to specify a goodie is via the ScalaTest <code>Runner</code>, either via the command line or ScalaTest's ant task.
+ * (See the <a href="tools/Runner$object.html#goodiesSection">documentation for Runner</a> for information on how to specify goodies on the command line.)
+ * The <code>goodies</code> map is passed to <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>,
+ * so one way to access it in your suite is to override one of those methods. If you need to use the goodies map inside your tests, you
+ * can use trait <code>GoodiesFixture</code>. (See the <a href="fixture/GoodiesFixture.html">documentation for <code>GoodiesFixture</code></a>
+ * for instructions on how to access the goodies map in tests.)
  * </p>
- * 
- * <pre>
- * import org.scalatest._
- * import java.io.FileWriter
  *
- * object Constants {
- *   val GoodieKey = "fixture.FileWriter"
- * }
- *
- * class NestedSuite extends Suite {
- *
- *   override def run(
- *     testName: Option[String],
- *     reporter: Reporter,
- *     stopper: Stopper,
- *     tagsToInclude: Set[String],
- *     tagsToExclude: Set[String],
- *     goodies: Map[String, Any],
- *     distributor: Option[Distributor],
- *     tracker: Tracker
- *   ) {
- *     def complain() = fail("Hey, where's my goodie?")
- *
- *     if (goodies.contains(Constants.GoodieKey)) {
- *       goodies(Constants.GoodieKey) match {
- *         case fw: FileWriter => fw.write("hi there\n") // Use the goodie
- *         case _ => complain()
- *       }
- *     }
- *     else complain()
- *   }
- * }
- *
- * class MainSuite extends SuperSuite(List(new NestedSuite)) {
- *
- *   override def runNestedSuites(
- *     reporter: Reporter,
- *     stopper: Stopper,
- *     tagsToInclude: Set[String],
- *     tagsToExclude: Set[String],
- *     goodies: Map[String, Any],
- *     distributor: Option[Distributor]
- *   ) {
- *     val writer = new FileWriter("fixture.txt")
- *     try {
- *       val myGoodies = goodies + (Constants.GoodieKey -> writer)
- *       super.runNestedSuites(reporter, stopper, tagsToInclude, tagsToExclude, myGoodies, distributor)
- *     }
- *     finally {
- *       writer.close()
- *     }
- *   }
- * }
- * </pre>
- * 
- * <p>
- * In this example, <code>MainSuite</code>'s runNestedSuites method opens a file for writing, then passes
- * the <code>FileWriter</code> to its <code>NestedSuite</code> via the goodies <code>Map</code>. The <code>NestedSuite</code>
- * grabs the <code>FileWriter</code> from the goodies <code>Map</code> and writes a friendly message to the file.
- * </p>
- * 
  * <p>
  * <strong>Tagging tests</strong>
  * </p>

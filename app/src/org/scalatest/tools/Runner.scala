@@ -57,7 +57,7 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <strong>Specifying goodies</strong>
+ * <a name="goodiesSection"><strong>Specifying goodies</strong></a>
  * </p>
  *
  * <p>
