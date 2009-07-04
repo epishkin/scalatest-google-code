@@ -99,7 +99,7 @@ final class Filter(val tagsToInclude: Option[Set[String]], val tagsToExclude: Se
    *
    * @throws IllegalArgumentException if any set contained in the passed <code>tags</code> map is empty
    */
-  def runnableTestsCount(testNames: Set[String], tags: Map[String, Set[String]]): Int = {
+  def runnableTestCount(testNames: Set[String], tags: Map[String, Set[String]]): Int = {
 
     verifyPreconditionsForMethods(testNames, tags)
 

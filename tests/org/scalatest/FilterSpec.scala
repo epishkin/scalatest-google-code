@@ -39,7 +39,7 @@ class FilterSpec extends Spec with ShouldMatchers {
     it("should throw IAE if passed an empty set for testName in the includedTestCount method") {
       val caught = intercept[IllegalArgumentException] {
         val filter = new Filter(None, Set())
-        filter.runnableTestsCount(Set("hi", "ho"), Map("hi" -> Set()))
+        filter.runnableTestCount(Set("hi", "ho"), Map("hi" -> Set()))
       }
       assert(caught.getMessage === "hi was associated with an empty set in the map passsed as tags")
     }
@@ -159,7 +159,7 @@ class FilterSpec extends Spec with ShouldMatchers {
             if !ignore
           } yield testName
 
-        assert(filter.runnableTestsCount(Set() ++ testNames, tags) === runnableTests.size, "runnableTests = " + runnableTests + ", testNames = " + testNames + ", tags = " + tags + ", tagsToExclude = " + tagsToExclude)
+        assert(filter.runnableTestCount(Set() ++ testNames, tags) === runnableTests.size, "runnableTests = " + runnableTests + ", testNames = " + testNames + ", tags = " + tags + ", tagsToExclude = " + tagsToExclude)
       }
     }
 

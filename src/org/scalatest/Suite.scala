@@ -1787,7 +1787,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     //      + countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
     // That won't work. It thinks + starts a new expression
  
-    filter.runnableTestsCount(testNames, tags) + countNestedSuiteTests(nestedSuites, filter)
+    filter.runnableTestCount(testNames, tags) + countNestedSuiteTests(nestedSuites, filter)
   }
 
 /*  private def expectedTestCountThisSuiteOnly(tagsToInclude: Set[String], tagsToExclude: Set[String]) = {
