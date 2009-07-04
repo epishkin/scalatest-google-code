@@ -22,8 +22,8 @@ import Suite.formatterForSuiteStarting
 import Suite.formatterForSuiteCompleted
 import Suite.formatterForSuiteAborted
 
-private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, stopper: Stopper, includes: Set[String],
-    excludes: Set[String], propertiesMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) extends Runnable {
+private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, stopper: Stopper, filter: Filter,
+    propertiesMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) extends Runnable {
 
   private val stopRequested = stopper
 
@@ -54,7 +54,7 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
       dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
   
       try {
-        suite.run(None, dispatch, stopRequested, includes, excludes, propertiesMap, distributor, tracker)
+        suite.run(None, dispatch, stopRequested, filter, propertiesMap, distributor, tracker)
   
         val rawString2 = Resources("suiteCompletedNormally")
         val formatter = formatterForSuiteCompleted(suite)

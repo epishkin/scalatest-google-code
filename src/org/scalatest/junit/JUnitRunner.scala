@@ -73,7 +73,7 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    * this suite of tests
    */
   def run(notifier: RunNotifier) {
-    suiteToRun.run(None, new RunNotifierReporter(notifier), new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker) // TODO: What should this Tracker be?
+    suiteToRun.run(None, new RunNotifierReporter(notifier), new Stopper {}, Filter(), Map(), None, new Tracker) // TODO: What should this Tracker be?
   }
 
   /**

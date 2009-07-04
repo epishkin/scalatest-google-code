@@ -56,8 +56,7 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
    * 
    * @param   testName   If present (Some), then only the method with the supplied name is executed and groups will be ignored.
    * @param   reporter         The reporter to be notified of test events (success, failure, etc).
-   * @param   groupsToInclude        Contains the names of groups to run. Only tests in these groups will be executed.
-   * @param   groupsToExclude        Tests in groups in this set will not be executed.
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    *
    * @param stopper the <code>Stopper</code> may be used to request an early termination of a suite of tests. However, because TestNG does
    *                not support the notion of aborting a run early, this class ignores this parameter.
@@ -68,10 +67,17 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
    *              Because TestNG handles its own concurrency, this class ignores this parameter.
    * <br><br>
    */
-  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-    
-    runTestNG(reporter, groupsToInclude, groupsToExclude, tracker)
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper,
+      filter: Filter, properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
+
+    runTestNG(reporter, tagsToInclude, tagsToExclude, tracker)
   }
 
   /**
@@ -79,7 +85,7 @@ class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
   override private[testng] def runTestNG(reporter: Reporter, tracker: Tracker) {
-    runTestNG(reporter, Set(), Set(), tracker)
+    runTestNG(reporter, Set[String](), Set[String](), tracker)
   }
 
   /**

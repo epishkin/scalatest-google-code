@@ -1112,7 +1112,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </p>
    */
   final def run() {
-    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None, new Tracker)
+    run(None, new StandardOutReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
   }
 
   /**
@@ -1135,7 +1135,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </p>
    */
   final def run(goodies: Map[String, Any]) {
-    run(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), goodies, None, new Tracker)
+    run(None, new StandardOutReporter, new Stopper {}, Filter(), goodies, None, new Tracker)
   }
 
   /**
@@ -1163,7 +1163,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
   final def run(testName: String) {
-    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
   }
 
   /**
@@ -1191,7 +1191,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
   final def run(testName: String, goodies: Map[String, Any]) {
-    run(Some(testName), new StandardOutReporter, new Stopper {}, Set(), Set(), goodies, None, new Tracker)
+    run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), goodies, None, new Tracker)
   }
 
   /**
@@ -1444,8 +1444,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Suite</code>
-   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Suite</code>
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
@@ -1456,7 +1455,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
    * used by all the methods of this <code>Suite</code>.
    */
-  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
+  protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
@@ -1465,12 +1464,17 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (tagsToInclude == null)
-      throw new NullPointerException("tagsToInclude was null")
-    if (tagsToExclude == null)
-      throw new NullPointerException("tagsToExclude was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
 
@@ -1518,8 +1522,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Suite</code>
-   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Suite</code>
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
@@ -1527,7 +1530,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  def run(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
+  def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
               goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
@@ -1536,10 +1539,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (tagsToInclude == null)
-      throw new NullPointerException("tagsToInclude was null")
-    if (tagsToExclude == null)
-      throw new NullPointerException("tagsToExclude was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
     if (distributor == null)
@@ -1547,14 +1548,22 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     if (tracker == null)
       throw new NullPointerException("tracker was null")
 
+    // Temporarily for the refactor to filter
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
+
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
 
     testName match {
-      case None => runNestedSuites(report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
+      case None => runNestedSuites(report, stopRequested, filter, goodies, distributor, tracker)
       case Some(_) =>
     }
-    runTests(testName, report, stopRequested, tagsToInclude, tagsToExclude, goodies, tracker)
+    runTests(testName, report, stopRequested, filter, goodies, tracker)
 
     if (stopRequested()) {
       val rawString = Resources("executeStopping")
@@ -1605,23 +1614,28 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
-  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
+  protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
                                 goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (reporter == null)
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (tagsToInclude == null)
-      throw new NullPointerException("tagsToInclude was null")
-    if (tagsToExclude == null)
-      throw new NullPointerException("tagsToExclude was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
       throw new NullPointerException("tracker was null")
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
@@ -1648,7 +1662,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
         try {
           // Same thread, so OK to send same tracker
-          nestedSuite.run(None, report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
+          nestedSuite.run(None, report, stopRequested, filter, goodies, distributor, tracker)
 
           val rawString = Resources("suiteCompletedNormally")
           val formatter = formatterForSuiteCompleted(nestedSuite)

@@ -456,7 +456,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     val suitesList = List("org.scalatest.usefulstuff.RunpathPropCheckerSuite")
 
     // Runner.doRunRunRunADoRunRun(new DispatchReporter)
-    // Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, Set(), Set(), Map(), false,
+    // Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, new Stopper {}, Filter(), Map(), false,
          List(), List(), runpath: "build_tests", loader: ClassLoader,
       doneListener: RunDoneListener) = {
 

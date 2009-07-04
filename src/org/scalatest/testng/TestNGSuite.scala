@@ -89,10 +89,10 @@ trait TestNGSuite extends Suite { thisSuite =>
    *              Because TestNG handles its own concurrency, this class ignores this parameter.
    * <br><br>
    */
-  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper,
+      filter: Filter, properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
-    runTestNG(testName, reporter, groupsToInclude, groupsToExclude, tracker)
+    runTestNG(testName, reporter, filter, tracker)
   }
   
   /**
@@ -100,7 +100,7 @@ trait TestNGSuite extends Suite { thisSuite =>
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
   private[testng] def runTestNG(reporter: Reporter, tracker: Tracker) {
-    runTestNG(None, reporter, Set(), Set(), tracker)
+    runTestNG(None, reporter, Filter(), tracker)
   }
  
   /**
@@ -109,7 +109,7 @@ trait TestNGSuite extends Suite { thisSuite =>
    * @param   reporter   the reporter to be notified of test events (success, failure, etc)
    */
   private[testng] def runTestNG(testName: String, reporter: Reporter, tracker: Tracker) {
-    runTestNG(Some(testName), reporter, Set(), Set(), tracker)
+    runTestNG(Some(testName), reporter, Filter(), tracker)
   }
   
   /**
@@ -120,9 +120,16 @@ trait TestNGSuite extends Suite { thisSuite =>
    * @param   groupsToInclude    contains the names of groups to run. only tests in these groups will be executed
    * @param   groupsToExclude    tests in groups in this Set will not be executed
    */  
-  private[testng] def runTestNG(testName: Option[String], reporter: Reporter, groupsToInclude: Set[String], 
-      groupsToExclude: Set[String], tracker: Tracker) {
+  private[testng] def runTestNG(testName: Option[String], reporter: Reporter,
+      filter: Filter, tracker: Tracker) {
     
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
+
     val testng = new TestNG()
     
     // only run the test methods in this class
@@ -131,7 +138,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     // if testName is supplied, ignore groups.
     testName match {
       case Some(tn) => setupTestNGToRunSingleMethod(tn, testng)
-      case None => handleGroups(groupsToInclude, groupsToExclude, testng)
+      case None => handleGroups(tagsToInclude, tagsToExclude, testng)
     }
 
     this.run(testng, reporter, tracker)

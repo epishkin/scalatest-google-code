@@ -835,7 +835,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     suiteName + ", " + testName
   }
   
-  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
+  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null)
@@ -844,12 +844,17 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (tagsToInclude == null)
-      throw new NullPointerException("tagsToInclude was null")
-    if (tagsToExclude == null)
-      throw new NullPointerException("tagsToExclude was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
 
@@ -882,8 +887,15 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     }
   }
 
-  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, tagsToInclude: Set[String], tagsToExclude: Set[String],
+  override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
 
@@ -908,7 +920,7 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, tagsToInclude, tagsToExclude, goodies, distributor, tracker)
+      super.run(testName, report, stopRequested, filter, goodies, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)

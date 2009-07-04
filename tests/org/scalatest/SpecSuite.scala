@@ -42,7 +42,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testFailedAsExpected)
   }
 
@@ -73,7 +73,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testFailedAsExpected)
   }
 
@@ -100,7 +100,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testFailedAsExpected)
   }
 
@@ -127,7 +127,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testFailedAsExpected)
   }
 
@@ -154,7 +154,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testFailedAsExpected)
   }
 
@@ -181,7 +181,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testFailedAsExpected)
   }
 
@@ -295,7 +295,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val repA = new MyReporter
-    a.run(None, repA, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
     assert(a.theTestThatCalled)
@@ -308,7 +308,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val repB = new MyReporter
-    b.run(None, repB, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
+    b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(repB.testIgnoredReceived)
     assert(repB.lastEvent.testName endsWith "test this")
     assert(!b.theTestThisCalled)
@@ -322,7 +322,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val repC = new MyReporter
-    c.run(None, repC, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
+    c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(repC.testIgnoredReceived)
     assert(repC.lastEvent.testName endsWith "test that", repC.lastEvent.testName)
     assert(c.theTestThisCalled)
@@ -338,7 +338,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val repD = new MyReporter
-    d.run(None, repD, new Stopper {}, Set(), Set("org.scalatest.Ignore"), Map(), None, new Tracker)
+    d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(repD.testIgnoredReceived)
     assert(repD.lastEvent.testName endsWith "test that") // last because should be in order of appearance
     assert(!d.theTestThisCalled)
@@ -354,7 +354,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
 
     val repE = new MyReporter
-    e.run(Some("test this"), repE, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    e.run(Some("test this"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!repE.testIgnoredReceived)
     assert(e.theTestThisCalled)
   }
@@ -500,7 +500,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -532,7 +532,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -564,7 +564,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("must start with proper words") { fail() }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -621,7 +621,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -680,7 +680,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -739,7 +739,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -802,7 +802,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -863,7 +863,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -924,7 +924,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -963,7 +963,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       ensure (1) behaves like (myBehavior)
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -998,7 +998,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       ensure (1) behaves like (myBehavior)
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -1033,7 +1033,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       ensure (1) behaves like (myBehavior)
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -1068,7 +1068,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       ensure (1) behaves like (myBehavior)
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -1128,7 +1128,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(reportHadCorrectTestName)
     assert(reportHadCorrectSpecText)
     assert(reportHadCorrectFormattedSpecText)
@@ -1158,7 +1158,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(Some("it should be invoked"), StubReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(Some("it should be invoked"), StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(correctTestWasInvoked)
     assert(!wrongTestWasInvoked)
   }
@@ -1173,7 +1173,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("it should find my goodie") {}
     }
     val a = new MySpec
-    a.run(None, StubReporter, new Stopper {}, Set(), Set(), Map("my goodie" -> "hi"), None, new Tracker)
+    a.run(None, StubReporter, new Stopper {}, Filter(), Map("my goodie" -> "hi"), None, new Tracker)
     assert(foundMyGoodie)  
   }
   
@@ -1199,7 +1199,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectTestName)
   }
   
@@ -1235,7 +1235,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("this thing must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectTestName)
   }
 
@@ -1256,7 +1256,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("this thing must start with proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectTestName)
   }
 
@@ -1276,7 +1276,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("this thing must start with proper words") { fail() }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testFailedReportHadCorrectTestName)
   }
   
@@ -1300,7 +1300,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectTestName)
   }
     
@@ -1343,7 +1343,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!myRep.gotAnUndefinedFormatter, myRep.lastEventWithUndefinedFormatter.toString)
   }
 
@@ -1370,7 +1370,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("My spec text must have the proper words") {}
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
@@ -1399,7 +1399,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
@@ -1430,7 +1430,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectSpecText, lastSpecText match { case Some(s) => s; case None => "No report"})
   }
 
@@ -1465,123 +1465,10 @@ class SpecSuite extends FunSuite with SharedHelpers {
     
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(myRep.infoProvidedCalled)
     assert(myRep.expectedMessageReceived)
   }
-  
-  ignore("That level gets sent correctly if no describe clauses.") {
-
-    class MyReporter extends Reporter {
-
-      val ExpectedLevel = 0
-      var testSucceededCalled = false
-      var testFailedCalled = false
-      var expectedLevelReceivedByTestSucceeded = false
-      var expectedLevelReceivedByTestFailed = false
- 
-      def apply(event: Event) {
-        event match {
-          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
-            formatter match {
-              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
-                testSucceededCalled = true
-                if (!expectedLevelReceivedByTestSucceeded) {
-                  // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevel)
-                }
-              case _ =>
-            }
-          case event: TestFailed =>
-            event.formatter match {
-              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
-                testFailedCalled = true
-                if (!expectedLevelReceivedByTestFailed) {
-                  // expectedLevelReceivedByTestFailed = (specReport.level == ExpectedLevel)
-                }
-              case _ =>
-            }
-          case _ =>
-        }
-      }
-    }
-
-    class MySpec extends Spec with ShouldMatchers {
-      it("it should be at level 0") {}
-      it("it should also be at level 0") { fail() }
-    }
-    val a = new MySpec
-    val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(myRep.testSucceededCalled)
-    assert(myRep.testFailedCalled)
-    assert(myRep.expectedLevelReceivedByTestSucceeded)
-    assert(myRep.expectedLevelReceivedByTestFailed)
-  }
-  
-  ignore("That level gets sent correctly if one and only one describe clause.") {
-
-    class MyReporter extends Reporter {
-
-      val ExpectedLevelForDescribe = 0
-      val ExpectedLevelForExamples = 1
-      var testSucceededCalled = false
-      var testFailedCalled = false
-      var infoProvidedCalled = false
-      var expectedLevelReceivedByTestSucceeded = false
-      var expectedLevelReceivedByTestFailed = false
-      var expectedLevelReceivedByInfoProvided = false
- 
-      def apply(event: Event) {
-        event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
-            formatter match {
-              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
-                infoProvidedCalled = true
-                if (!expectedLevelReceivedByInfoProvided) {
-                  // expectedLevelReceivedByInfoProvided = (specReport.level == ExpectedLevelForDescribe)
-                }
-              case _ =>
-            }
-          case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
-            formatter match {
-              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
-                testSucceededCalled = true
-                if (!expectedLevelReceivedByTestSucceeded) {
-                  // expectedLevelReceivedByTestSucceeded = (specReport.level == ExpectedLevelForExamples)
-                }
-              case _ =>
-            }
-          case event: TestFailed =>
-            event.formatter match {
-              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
-                testFailedCalled = true
-                if (!expectedLevelReceivedByTestFailed) {
-                  // expectedLevelReceivedByTestFailed = (specReport.level == ExpectedLevelForExamples)
-                }
-              case _ =>
-            }
-          case _ =>
-        }
-      }
-    }
-
-    class MySpec extends Spec with ShouldMatchers {
-      describe("my describe clause") {
-        it("should be at level 1") {}
-        it("should also be at level 1") { fail() }
-      }
-    }
-    val a = new MySpec
-    val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
-    assert(myRep.testSucceededCalled)
-    assert(myRep.testFailedCalled)
-    assert(myRep.infoProvidedCalled)
-    assert(myRep.expectedLevelReceivedByTestSucceeded)
-    assert(myRep.expectedLevelReceivedByTestFailed)
-    assert(myRep.expectedLevelReceivedByInfoProvided)
-  }
-  
  
   // Testing Shared behaviors
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
@@ -1714,7 +1601,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       ensure (1) behaves like (invocationVerifier)
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectTestName)
   }
   
@@ -1744,7 +1631,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(testSucceededReportHadCorrectTestName)
   }
  
@@ -1856,7 +1743,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
     val a = new MySpec
     val myRep = new MyReporter
-    a.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    a.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(myRep.infoProvidedCalled)
     assert(myRep.expectedMessageReceived)
   }
@@ -1920,7 +1807,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
 
     val mySpec = new MySpec
     val myReporter = new TestDurationReporter
-    mySpec.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    mySpec.run(None, myReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.testSucceededWasFiredAndHadADuration)
     assert(myReporter.testFailedWasFiredAndHadADuration)
   }
@@ -1933,14 +1820,14 @@ class SpecSuite extends FunSuite with SharedHelpers {
 
     val mySuite = new MySpec
     val myReporter = new SuiteDurationReporter
-    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    mySuite.run(None, myReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.suiteCompletedWasFiredAndHadADuration)
   }
 
   test("suite durations are included in SuiteAborted events fired from Spec") {
 
     class SuiteThatAborts extends Suite {
-      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, groupsToInclude: Set[String], groupsToExclude: Set[String],
+      override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
               goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new RuntimeException("Aborting for testing purposes")
       }
@@ -1952,7 +1839,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
 
     val mySuite = new MySpec
     val myReporter = new SuiteDurationReporter
-    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    mySuite.run(None, myReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.suiteAbortedWasFiredAndHadADuration)
   }
 
@@ -1964,7 +1851,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
 
     val mySuite = new MySpec
     val myReporter = new PendingReporter
-    mySuite.run(None, myReporter, new Stopper {}, Set(), Set(), Map(), None, new Tracker(new Ordinal(99)))
+    mySuite.run(None, myReporter, new Stopper {}, Filter(), Map(), None, new Tracker(new Ordinal(99)))
     assert(myReporter.testPendingWasFired)
   }
 }

@@ -20,7 +20,7 @@ package org.scalatest.testng {
    import org.testng.annotations.Test
    import testng.test._
 
-   //execute(None, new StandardOutReporter, new Stopper {}, Set(), Set(IgnoreAnnotation), Map(), None)
+   //execute(None, new StandardOutReporter, new Stopper {}, Filter(), Map(), None)
    class TestNGSuiteGroupsSuite extends FunSuite {
      
      //////////////////////////////////////////////////////////
@@ -100,8 +100,9 @@ package org.scalatest.testng {
        // given
        val testReporter = new TestReporter
 
+       val filter = Filter(if (groupsToInclude.isEmpty) None else Some(groupsToInclude), groupsToExclude)
        // when
-       new TestNGSuiteWithGroups().runTestNG(None, testReporter, groupsToInclude, groupsToExclude, new Tracker)
+       new TestNGSuiteWithGroups().runTestNG(None, testReporter, filter, new Tracker)
 
        // then
        assert(testReporter.successCount === successCount)

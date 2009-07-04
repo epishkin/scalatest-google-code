@@ -31,8 +31,7 @@ trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param groupsToInclude a <code>Set</code> of <code>String</code> group names to include in the execution of this <code>Suite</code>
-   * @param groupsToExclude a <code>Set</code> of <code>String</code> group names to exclude in the execution of this <code>Suite</code>
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
@@ -43,8 +42,7 @@ trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
   abstract override protected def runNestedSuites(
     reporter: Reporter,
     stopper: Stopper,
-    groupsToInclude: Set[String],
-    groupsToExclude: Set[String],
+    filter: Filter,
     goodies: Map[String, Any],
     distributor: Option[Distributor],
     tracker: Tracker
@@ -53,10 +51,8 @@ trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
       throw new NullPointerException("reporter was null")
     if (stopper == null)
       throw new NullPointerException("stopper was null")
-    if (groupsToInclude == null)
-      throw new NullPointerException("groupsToInclude was null")
-    if (groupsToExclude == null)
-      throw new NullPointerException("groupsToExclude was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
     if (distributor == null)
@@ -64,6 +60,6 @@ trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
     if (tracker == null)
       throw new NullPointerException("tracker was null")
 
-    super.runNestedSuites(reporter, stopper, groupsToInclude, groupsToExclude, goodies, None, tracker)
+    super.runNestedSuites(reporter, stopper, filter, goodies, None, tracker)
   }
 }

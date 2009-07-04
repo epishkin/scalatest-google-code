@@ -68,7 +68,7 @@ trait SharedHelpers extends Assertions {
   def getIndexesForInformerEventOrderTests(suite: Suite, testName: String, infoMsg: String): (Int, Int, Int) = {
 
     val myRep = new EventRecordingReporter
-    suite.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    suite.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
 
     val indexedList = myRep.eventsReceived.zipWithIndex
 
@@ -98,7 +98,7 @@ trait SharedHelpers extends Assertions {
   def getIndentedTextFromInfoProvided(suite: Suite): IndentedText = {
 
     val myRep = new EventRecordingReporter
-    suite.run(None, myRep, new Stopper {}, Set(), Set(), Map(), None, new Tracker)
+    suite.run(None, myRep, new Stopper {}, Filter(), Map(), None, new Tracker)
 
     val infoProvidedOption = myRep.eventsReceived.find(_.isInstanceOf[InfoProvided])
 

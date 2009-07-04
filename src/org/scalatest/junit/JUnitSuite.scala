@@ -78,8 +78,8 @@ trait JUnitSuite extends Suite { thisSuite =>
   // TODO: This may need to be made thread safe, because who knows what Thread JUnit will fire through this
   private var theTracker = new Tracker
 
-  override def run(testName: Option[String], report: Reporter, stopper: Stopper, groupsToInclude: Set[String],
-      groupsToExclude: Set[String], properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+  override def run(testName: Option[String], report: Reporter, stopper: Stopper,
+      filter: Filter, properties: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     theTracker = tracker
 

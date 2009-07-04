@@ -32,15 +32,22 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
   if (suiteClassName == null)
     throw new NullPointerException
 
-  def apply(report: Reporter, stopRequested: Stopper, includes: Set[String], excludes: Set[String],
+  def apply(report: Reporter, stopRequested: Stopper, filter: Filter,
             goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader) {
+
+    val tagsToInclude =
+      filter.tagsToInclude match {
+        case None => Set[String]()
+        case Some(tti) => tti
+      }
+    val tagsToExclude = filter.tagsToExclude
 
     val runStartTime = System.currentTimeMillis
 
     try {
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance().asInstanceOf[Suite]
-      val expectedTestCount = suite.expectedTestCount(includes, excludes)
+      val expectedTestCount = suite.expectedTestCount(tagsToInclude, tagsToExclude)
 
       // Create a Rerunner if the Suite has a public no-arg constructor
       val rerunnable =
@@ -59,7 +66,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
 
         report(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
 
-        suite.run(None, report, stopRequested, includes, excludes, goodies, distributor, tracker)
+        suite.run(None, report, stopRequested, filter, goodies, distributor, tracker)
 
         val rawString2 = Resources("suiteCompletedNormally")
         val formatter2 = formatterForSuiteCompleted(suite)
