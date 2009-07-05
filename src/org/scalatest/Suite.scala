@@ -1527,13 +1527,6 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
-    /* val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude */
-
     val stopRequested = stopper
 
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
@@ -1552,17 +1545,6 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
           report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
         else
           runTest(tn, report, stopRequested, goodies, tracker)
-
-/*        for (tn <- testNames) {
-          if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-            if (tagsToExclude.contains(IgnoreAnnotation) && tags.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
-              report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
-            }
-            else if ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, report, stopRequested, goodies, tracker)
-            }
-          }
-        }*/
     }
   }
 
@@ -1611,14 +1593,6 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("distributor was null")
     if (tracker == null)
       throw new NullPointerException("tracker was null")
-
-    // Temporarily for the refactor to filter
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
@@ -1692,13 +1666,6 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("distributor was null")
     if (tracker == null)
       throw new NullPointerException("tracker was null")
-
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
