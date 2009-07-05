@@ -1,12 +1,12 @@
 package org.scalatest
 
-import org.scalatest.matchers.ShouldMatchers
+//import org.scalatest.matchers.ShouldMatchers
 import scala.collection.immutable.TreeSet
-import org.scalacheck._
+/*import org.scalacheck._
 import Arbitrary._
-import Prop._
+import Prop._  */
 
-class FilterSpec extends Spec with ShouldMatchers {
+class FilterSpec extends Spec {
 
   describe("A Filter") {
 
@@ -31,7 +31,7 @@ class FilterSpec extends Spec with ShouldMatchers {
     it("should throw IAE if passed an empty set for testName in the apply method") {
       val caught = intercept[IllegalArgumentException] {
         val filter = new Filter(None, Set())
-        filter.apply(Set("hi", "ho"), Map("hi" -> Set()))
+        filter.apply(Set("hi", "ho"), Map("hi" -> Set[String]()))
       }
       assert(caught.getMessage === "hi was associated with an empty set in the map passsed as tags")
     }
@@ -55,22 +55,26 @@ class FilterSpec extends Spec with ShouldMatchers {
       assert(filtered exists (tuple => tuple._1 == "myTestName" && tuple._2 == true), "myTestName was in the result of apply, but was not marked as ignored") 
     }
 
-    it("should report a test as ignored when None is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+    it("should report a test as ignored when None is passed to filter for tagsToInclude, and" +
+            "org.scalatest.Ignore is not passed in the tagsToExclude") {
       val filter = new Filter(None, Set("no ignore here"))
       validateIgnoreBehavior(filter)
     }
 
-    it("should report a test as ignored when None is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+    it("should report a test as ignored when None is passed to filter for tagsToInclude, and" +
+            "org.scalatest.Ignore is passed in the tagsToExclude") {
       val filter = new Filter(None, Set("org.scalatest.Ignore"))
       validateIgnoreBehavior(filter)
     }
 
-    it("should report a test as ignored when Some(Ignore) is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+    it("should report a test as ignored when Some(Ignore) is passed to filter for tagsToInclude, and" +
+            "org.scalatest.Ignore is not passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("org.scalatest.Ignore")), Set("no ignore here"))
       validateIgnoreBehavior(filter)
     }
 
-    it("should report a test as ignored when Some(Ignore) is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+    it("should report a test as ignored when Some(Ignore) is passed to filter for tagsToInclude, and" +
+            "org.scalatest.Ignore is passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("org.scalatest.Ignore")), Set("org.scalatest.Ignore"))
       validateIgnoreBehavior(filter)
     }
@@ -81,12 +85,14 @@ class FilterSpec extends Spec with ShouldMatchers {
       assert(filtered exists (tuple => tuple._1 == "myTestName" && tuple._2 == true), "myTestName was in the result of apply, but was not marked as ignored") 
     }
 
-    it("should report a test tagged as Other as ignored when Some(Other) is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+    it("should report a test tagged as Other as ignored when Some(Other) is passed to filter" +
+            "for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("Other")), Set("no ignore here"))
       validateIgnoreOtherBehavior(filter)
     }
 
-    it("should report a test tagged as Other as ignored when Some(Other) is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+    it("should report a test tagged as Other as ignored when Some(Other) is passed to filter" +
+            "for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("Other")), Set("org.scalatest.Ignore"))
       validateIgnoreOtherBehavior(filter)
     }
@@ -96,12 +102,14 @@ class FilterSpec extends Spec with ShouldMatchers {
       assert(!(filtered exists (tuple => tuple._1 == "myTestName")), "myTestName's Ignore tag was not in tagsToInclude, but showed up in the result of apply") 
     }
 
-    it("should not report a test as ignored when Some(no ignore here) is passed to filter for tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
+    it("should not report a test as ignored when Some(no ignore here) is passed to filter for" +
+            "tagsToInclude, and org.scalatest.Ignore is not passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("no ignore here")), Set("no ignore here"))
       validateNotReportingIgnoresBehavior(filter)
     }
 
-    it("should not report a test as ignored when Some(no ignore here) is passed to filter for tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
+    it("should not report a test as ignored when Some(no ignore here) is passed to filter for" +
+            "tagsToInclude, and org.scalatest.Ignore is passed in the tagsToExclude") {
       val filter = new Filter(Some(Set("no ignore here")), Set("org.scalatest.Ignore"))
       validateNotReportingIgnoresBehavior(filter)
     }
@@ -131,12 +139,6 @@ class FilterSpec extends Spec with ShouldMatchers {
           if (tagsToExclude contains testName)
             assert(tags(testName) exists (_ == "org.scalatest.Ignore"), testName + " was in the filtered list and in the tags, but didn't have an Ignore tag")
         }
-/*
-        println("testNames = " + testNames)
-        println("tags = " + tags)
-        println("tagsToExclude = " + tagsToExclude)
-        println
-*/
 
         // Check that every test name that is not at all in the tags map, should be in the filtered
         for (testName <- testNames) {
@@ -146,9 +148,12 @@ class FilterSpec extends Spec with ShouldMatchers {
           }
         }
 
-        // Check that every test name that is in the tags as ignored, should be in the filtered as ignored
+        // Check that every test name that is in the tags as ignored, should be in the filtered as ignored,
+        // unless it is also tagged with some other tag that is in tagsToExclude. In the latter case, the
+        // other exclude tag should "overpower" the Ignore tag.
         for (testName <- testNames) {
-          if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore"))
+          if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore") &&
+                  ((tags(testName) - "org.scalatest.Ignore") ** tagsToExclude).isEmpty)
             assert(filtered exists (tuple => tuple._1 == testName && tuple._2 == true), testName + " was in the tags map as ignored, but did not show up in the result of apply marked as ignored") 
         }
 
@@ -218,17 +223,70 @@ class FilterSpec extends Spec with ShouldMatchers {
           }
         }
 
-        // Check that every test name that is in the tags as ignored, which also shared a tag in common with tagsToInclude, should be in the filtered as ignored
+        // Check that every test name that is in the tags as ignored, which also shared a tag in common
+        // with tagsToInclude, should be in the filtered as ignored, unless it is also tagged with some
+        // other tag that is in tagsToExclude. In the latter case, the
+        // other exclude tag should "overpower" the Ignore tag.
         for (testName <- testNames) {
-          if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore") && ((tags(testName) ** tagsToInclude).size > 0))
+          if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore") &&
+                  ((tags(testName) ** tagsToInclude).size > 0) &&
+                  ((tags(testName) - "org.scalatest.Ignore") ** tagsToExclude).isEmpty)
             assert(filtered exists (tuple => tuple._1 == testName && tuple._2 == true), testName + " was in the tags map as ignored, but did not show up in the result of apply marked as ignored") 
         }
       }
     }
-/*
- def apply(testNames: Set[String], tags: Map[String, Set[String]]): List[(String, Boolean)] = List()
 
-  def includedTestCount(testNames: Set[String], tags: Map[String, Set[String]]): Int = apply(testNames, tags).size
-*/
+    describe("(when invoking the apply method that takes one test name)") {
+
+      val emptyMap = Map[String, Set[String]]()
+
+      it("should return (false, false) if tagsToInclude is None and tagsToExclude is empty" +
+              "and the test has no tags") {
+        val filter = new Filter(None, Set[String]())
+        assert(filter("myTestName", emptyMap) === (false, false))
+      }
+      it("should return (true, false) if tagsToInclude is None and tagsToExclude includes" +
+              "SlowAsMolasses and the test is marked as SlowAsMolasses") {
+        val filter = new Filter(None, Set("SlowAsMolasses"))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (true, false))
+      }
+      it("should return (false, true) if tagsToInclude is None and tagsToExclude is empty" +
+              "and the test is marked as ignored") {
+        val filter = new Filter(None, Set[String]())
+        assert(filter("myTestName", Map("myTestName" -> Set("org.scalatest.Ignore"))) === (false, true))
+      }
+      it("should return (true, false) if tagsToInclude is None and tagsToExclude includes" +
+              "SlowAsMolasses and the test is marked as SlowAsMolasses and ignored") {
+        val filter = new Filter(None, Set("SlowAsMolasses"))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (true, false))
+      }
+
+      it("should return (false, false) if tagsToInclude includes a tag for the test name and tagsToExclude" +
+              "is empty and the test has no tags") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String]())
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (false, false))
+      }
+      it("should return (true, false) if tagsToInclude includes a tag for the test name and tagsToExclude" +
+              "includes SlowAsMolasses and the test is marked as SlowAsMolasses") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set("SlowAsMolasses"))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses"))) === (true, false))
+      }
+      it("should return (false, true) if tagsToInclude includes a tag for the test name and tagsToExclude" +
+              "is empty and the test is marked as ignored") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String]())
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (false, true))
+      }
+      it("should return (true, false) if tagsToInclude includes a tag for the test name and tagsToExclude" +
+              "includes SlowAsMolasses and the test is marked as SlowAsMolasses and ignored") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set("SlowAsMolasses"))
+        assert(filter("myTestName", Map("myTestName" -> Set("SlowAsMolasses", "org.scalatest.Ignore"))) === (true, false))
+      }
+
+      it("should return (true, false) if tagsToInclude is defined but does not include any tags for the" +
+              "test name") {
+        val filter = new Filter(Some(Set("SlowAsMolasses")), Set[String]())
+        assert(filter("myTestName", Map("myTestName" -> Set("FastAsLight"))) === (true, false))
+      }
+     }
   }
 }
