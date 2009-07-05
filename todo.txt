@@ -2,9 +2,13 @@ Use filter in the run methods
 
 drop recipe name from runner and runnerjframe
 
-Do the fixture package for Suite, FunSuite, and Spec
+Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
-Make a GoodiesFixture trait for getting the goodies into a test
+Do the fixture package for Suite, FunSuite, and Spec. Suite, etc., will have a runTest method that throws an exception, complaining that
+they need to mix in a trait like BasicFixture or GoodiesFixture. Such traits pair runTest methods with withFixture methods. This way
+I provide two to start with, and I could provide others later and people could make their own. BasicFixture has an abstract withFixture method
+with the signature withFixture(f: Fixture => Unit). GoodiesFixture has an abstract withFixture method with the
+signature withFixture(f: Fixture => Unit, goodies: Map[String, Any]).
 
 Do the OneInstancePerTest and ParallelTestExecution traits
 

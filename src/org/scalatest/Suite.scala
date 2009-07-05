@@ -661,18 +661,19 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <pre>
  * import org.scalatest.fixture.Suite
+ * import org.scalatest.fixture.BasicFixture
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends Suite {
- * 
+ * class MySuite extends Suite with BasicFixture {
+ *
  *   type Fixture = FileReader
  *
  *   def withFixture(testFunction: FileReader => Unit) {
- * 
+ *
  *     val FileName = "TempFile.txt"
- *  
+ *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)
  *     try {
@@ -681,7 +682,7 @@ import org.scalatest.tools.StandardOutReporter
  *     finally {
  *       writer.close()
  *     }
- *  
+ *
  *     // Create the reader needed by the test
  *     val reader = new FileReader(FileName)
  *  
@@ -813,7 +814,7 @@ import org.scalatest.tools.StandardOutReporter
  * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
  * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
  * trait's implementation, tags are indicated by annotations attached to the test method. To
- * create a tags, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
+ * create a new tag type to use in <code>Suite</code>s, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
  * (Currently, for annotations to be
  * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
  * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
@@ -831,8 +832,8 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  *
  * <p>
- * Given this new annotation, you could place methods into the <code>SlowAsMolasses</code> group
- * (<em>i.e.</em>, tag them as being <code>SlowAsMolasses</code>) like this:
+ * Given this new annotation, you could place a <code>Suite</code> test method into the <code>SlowAsMolasses</code> group
+ * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
  * </p>
  *
  * <pre>
@@ -843,9 +844,9 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
  * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is not defined, all tests will be run
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
  * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is non-empty, only tests
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
  * belonging to tags mentioned in <code>tagsToInclude</code>, and not mentioned in <code>tagsToExclude</code>,
  * will be run.
  * </p>
@@ -908,9 +909,9 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  * 
  * <p>
- * <code>Ignore</code> is implemented as a group. The <code>run</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> it passes to
- * the primary <code>run</code> method, as does <code>Runner</code>. The only difference between
+ * <code>Ignore</code> is implemented as a tag. The <code>Filter</code> class effectively 
+ * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> if it not already
+ * in the <code>tagsToExclude</code> set passed to its primary constructor.  The only difference between
  * <code>org.scalatest.Ignore</code> and the tags you may define and exclude is that ScalaTest reports
  * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
@@ -937,7 +938,7 @@ import org.scalatest.tools.StandardOutReporter
  * sent to the reporter when running the test can appear in the report of a test run. (In other words,
  * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
  * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality, has not yet been implemented.
+ * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
  * </p>
  *
  * <p>
@@ -1013,12 +1014,13 @@ import org.scalatest.tools.StandardOutReporter
  * <pre>
  * scala> (new MySuite).run()
  * Test Starting - MySuite: testAddition(Reporter)
- * Info Provided - MySuite: testAddition(Reporter): Addition seems to work
+ * Info Provided - MySuite: testAddition(Reporter)
+ *   Addition seems to work
  * Test Succeeded - MySuite: testAddition(Reporter)
  * </pre>
  *
  * <p>
- * <strong>Executing suites concurrently</strong>
+ * <strong>Executing suites in parallel</strong>
  * </p>
  *
  * <p>
@@ -1027,7 +1029,7 @@ import org.scalatest.tools.StandardOutReporter
  * <code>Suite</code>s into the distributor rather than executing them directly. The caller of <code>run</code>
  * is responsible for ensuring that some entity runs the <code>Suite</code>s placed into the 
  * distributor. The <code>-c</code> command line parameter to <code>Runner</code>, for example, will cause
- * <code>Suite</code>s put into the <code>Distributor</code> to be run concurrently via a pool of threads.
+ * <code>Suite</code>s put into the <code>Distributor</code> to be run in parallel via a pool of threads.
  * </p>
  *
  * <p>
@@ -1043,6 +1045,8 @@ import org.scalatest.tools.StandardOutReporter
  * <ul>
  * <li><code>run</code> - override this method to define custom ways to run suites of
  *   tests.</li>
+ * <li><code>runNestedSuites</code> - override this method to define custom ways to run nested suites.</li>
+ * <li><code>runTests</code> - override this method to define custom ways to run a suite's tests.</li>
  * <li><code>runTest</code> - override this method to define custom ways to run a single named test.</li>
  * <li><code>testNames</code> - override this method to specify the <code>Suite</code>'s test names in a custom way.</li>
  * <li><code>tags</code> - override this method to specify the <code>Suite</code>'s test tags in a custom way.</li>
@@ -1064,7 +1068,7 @@ import org.scalatest.tools.StandardOutReporter
  * Alternatively, you may not like starting your test methods with <code>test</code>, and prefer using <code>@Test</code> annotations in
  * the style of Java's JUnit 4 or TestNG. If so, you can override <code>testNames</code> to discover tests using either of these two APIs
  * <code>@Test</code> annotations, or one of your own invention. (This is in fact
- * how <code>org.scalatest.junit.JUnit4Suite</code> and <code>org.scalatest.testng.TestNGSuite</code> work.)
+ * how <code>org.scalatest.junit.JUnitSuite</code> and <code>org.scalatest.testng.TestNGSuite</code> work.)
  * </p>
  *
  * <p>
@@ -1077,9 +1081,9 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * You can also model existing JUnit 3, JUnit 4, or TestNG tests as suites of tests, thereby incorporating Java tests into a ScalaTest suite.
- * The "wrapper" classes in packages <code>org.scalatest.junit</code> and <code>org.scalatest.testng</code> exist to make this easy. The point here, however, is that
- * no matter what legacy tests you may have, it is likely you can create or use an existing <code>Suite</code> subclass that allows you to model those tests
+ * You can also model existing JUnit 3, JUnit 4, or TestNG tests as suites of tests, thereby incorporating tests written in Java into a ScalaTest suite.
+ * The "wrapper" classes in packages <code>org.scalatest.junit</code> and <code>org.scalatest.testng</code> exist to make this easy.
+ * No matter what legacy tests you may have, it is likely you can create or use an existing <code>Suite</code> subclass that allows you to model those tests
  * as ScalaTest suites and tests and incorporate them into a ScalaTest suite. You can then write new tests in Scala and continue supporting
  * older tests in Java.
  * </p>
@@ -1109,18 +1113,23 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   def nestedSuites: List[Suite] = Nil
   
   /**
-   * Runs this <code>Suite</code>, printing results to the standard output. This method
+   * Runs this <code>Suite</code>, printing results to the standard output.
+   *
+   * <p>
+   * This method
    * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
    * seven parameters, passing in:
+   * </p>
    *
    * <ul>
    * <li><code>testName</code> - <code>None</code></li>
-   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>reporter</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>tagsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
+   * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
+   *   for <code>tagsToExclude</code></li>
    * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
-   * <li><code>distribute</code> - <code>None</code></li>
+   * <li><code>distributor</code> - <code>None</code></li>
+   * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
    *
    * <p>
@@ -1132,49 +1141,62 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   }
 
   /**
-   * Runs this <code>Suite</code> with the specified <code>goodies</code> map, printing results to the standard output. This method
+   * Runs this <code>Suite</code> with the specified <code>goodies</code> map, printing results to the standard output.
+   *
+   * <p>
+   * This method
    * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
    * seven parameters, passing in:
+   * </p>
    *
    * <ul>
    * <li><code>testName</code> - <code>None</code></li>
-   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>reporter</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>tagsToExclude</code> - an <code>Set[String]</code> that contains only one element, <code>"org.scalatest.Ignore"</code></li>
+   * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
+   *   for <code>tagsToExclude</code></li>
    * <li><code>goodies</code> - the specified <code>goodies</code> <code>Map[String, Any]</code></li>
-   * <li><code>distribute</code> - <code>None</code></li>
+   * <li><code>distributor</code> - <code>None</code></li>
+   * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
    *
    * <p>
    * This method serves as a convenient way to run a <code>Suite</code>, passing in some objects via the <code>goodies</code> map, especially from within the Scala interpreter.
    * </p>
+   *
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   *
+   * @throws NullPointerException if the passed <code>goodies</code> parameter is <code>null</code>.
    */
   final def run(goodies: Map[String, Any]) {
     run(None, new StandardOutReporter, new Stopper {}, Filter(), goodies, None, new Tracker)
   }
 
   /**
-   * Runs the test specified <code>testName</code> in this <code>Suite</code>, printing results to the standard output. This method
+   * Runs the test specified as <code>testName</code> in this <code>Suite</code>, printing results to the standard output.
+   *
+   * <p>
+   * This method
    * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
    * seven parameters, passing in:
+   * </p>
    *
    * <ul>
    * <li><code>testName</code> - <code>Some(testName)</code></li>
-   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>reporter</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>tagsToExclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
+   *   for <code>tagsToExclude</code></li>
    * <li><code>goodies</code> - an empty <code>Map[String, Any]</code></li>
-   * <li><code>distribute</code> - <code>None</code></li>
+   * <li><code>distributor</code> - <code>None</code></li>
+   * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
    *
    * <p>
    * This method serves as a convenient way to run a single test, especially from within the Scala interpreter.
    * </p>
    *
-   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
-   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
+   * @param testName the name of one test to run.
    *
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    */
@@ -1183,41 +1205,49 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   }
 
   /**
-   * Runs the test specified <code>testName</code> in this <code>Suite</code> with the specified <code>goodies</code> map, printing results to the standard output. This method
-   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
+   * Runs the test specified as <code>testName</code> in this <code>Suite</code> with the specified <code>goodies</code> map, printing
+   * results to the standard output.
+   *
+   * <p>
+   * This method implementation calls on this <code>Suite</code> the <code>run</code> method that takes
    * seven parameters, passing in:
+   * </p>
    *
    * <ul>
    * <li><code>testName</code> - <code>Some(testName)</code></li>
-   * <li><code>report</code> - a reporter that prints to the standard output</li>
+   * <li><code>reporter</code> - a reporter that prints to the standard output</li>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
-   * <li><code>tagsToInclude</code> - an empty <code>Set[String]</code></li>
-   * <li><code>tagsToExclude</code> - an empty <code>Set[String]</code></li>
+   * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
+   *   for <code>tagsToExclude</code></li>
    * <li><code>goodies</code> - the specified <code>goodies</code> <code>Map[String, Any]</code></li>
-   * <li><code>distribute</code> - <code>None</code></li>
+   * <li><code>distributor</code> - <code>None</code></li>
+   * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to run a single test, passing in some objects via the <code>goodies</code> map, especially from within the Scala interpreter.
+   * This method serves as a convenient way to run a single test, passing in some objects via the <code>goodies</code> map, especially from
+   * within the Scala interpreter.
    * </p>
    *
-   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
-   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
+   * @param testName the name of one test to run.
+   * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    *
-   * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
+   * @throws NullPointerException if either of the passed <code>testName</code> or <code>goodies</code> parameters is <code>null</code>.
    */
   final def run(testName: String, goodies: Map[String, Any]) {
     run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), goodies, None, new Tracker)
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> group names to which tests in this <code>Suite</code> belong, and values
-   * the <code>Set</code> of test names that belong to each group.  If this <code>Suite</code> contains no tags, this method returns an empty <code>Map</code>.
+   * A <code>Map</code> whose keys are <code>String</code> tag names with which tests in this <code>Suite</code> are marked, and
+   * whose values are the <code>Set</code> of test names marked with each tag.  If this <code>Suite</code> contains no tags, this
+   * method returns an empty <code>Map</code>.
    *
    * <p>
-   * This trait's implementation uses Java reflection to discover any Java annotations attached to its test methods. Each unique
-   * annotation name is considered a group. This trait's implementation, therefore, places one key/value pair into to the
-   * <code>Map</code> for each unique annotation name discovered through reflection. The value for each group name key will contain
+   * This trait's implementation of this method uses Java reflection to discover any Java annotations attached to its test methods. The
+   * fully qualified name of each unique annotation that extends <code>TagAnnotation</code> is considered a tag. This trait's
+   * implementation of this method, therefore, places one key/value pair into to the
+   * <code>Map</code> for each unique tag annotation name discovered through reflection. The mapped value for each tag name key will contain
    * the test method name, as provided via the <code>testNames</code> method. 
    * </p>
    *
@@ -1225,6 +1255,14 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * Subclasses may override this method to define and/or discover tags in a custom manner, but overriding method implementations
    * should never return an empty <code>Set</code> as a value. If a tag has no tests, its name should not appear as a key in the
    * returned <code>Map</code>.
+   * </p>
+   * 
+   * <p>
+   * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 0.9.6, when "groups" were renamed
+   * to "tags." In 0.9.6 and 0.9.7, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
+   * method. Any annotation on a <code>Suite</code> method will be considered a tag until 0.9.8, to give users time to add
+   * <code>TagAnnotation</code>s on any tag annotations they made prior to the 0.9.6 release. From 0.9.8 onward, only annotations
+   * themsleves annotatted by <code>TagAnnotation</code> will be considered tag annotations.</strong>
    * </p>
    */
   def tags: Map[String, Set[String]] = {
@@ -1255,7 +1293,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   def groups: Map[String, Set[String]] = tags
 
   /**
-  * An immutable <code>Set</code> of test names. If this <code>Suite</code> contains no tests, this method returns an empty <code>Set</code>.
+  * An <code>Set</code> of test names. If this <code>Suite</code> contains no tests, this method returns an empty <code>Set</code>.
   *
   * <p>
   * This trait's implementation of this method uses Java reflection to discover all public methods whose name starts with <code>"test"</code>,
@@ -1275,7 +1313,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   *
   * <p>
   * This trait's implementation of this method returns an immutable <code>Set</code> of all such names, excluding the name
-  * <code>testName</code>. The iterator obtained by invoking <code>elements</code> on this
+  * <code>testNames</code>. The iterator obtained by invoking <code>elements</code> on this
   * returned <code>Set</code> will produce the test names in their <em>natural order</em>, as determined by <code>String</code>'s
   * <code>compareTo</code> method.
   * </p>
@@ -1292,8 +1330,9 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   * <p>
   * Subclasses may override this method to produce test names in a custom manner. One potential reason to override <code>testNames</code> is
   * to run tests in a different order, for example, to ensure that tests that depend on other tests are run after those other tests.
-  * Another potential reason to override is to discover test methods annotated with JUnit 4 or TestNG <code>@Test</code> annotations. Or
-  * a subclass could override this method and return a static, hard-coded <code>Set</code> of tests, etc.
+  * Another potential reason to override is allow tests to be defined in a different manner, such as methods annotated <code>@Test</code> annotations
+  * (as is done in <code>JUnitSuite</code> and <code>TestNGSuite</code>) or test functions registered during construction (as is
+  * done in <code>FunSuite</code> and <code>Spec</code>).
   * </p>
   */
   def testNames: Set[String] = {
@@ -1335,14 +1374,19 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     )
 
   /**
-   * Run a test. This trait's implementation uses Java reflection to invoke on this object the test method identified by the passed <code>testName</code>.
+   * Run a test.
+   *
+   * <p>
+   * This trait's implementation uses Java reflection to invoke on this object the test method identified by the passed <code>testName</code>.
+   * </p>
    *
    * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
-   *     is <code>null</code>.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>goodies</code>
+   *     or <code>tracker</code> is <code>null</code>.
    */
   protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
@@ -1413,7 +1457,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * <p>
    * This method takes a <code>testName</code> parameter that optionally specifies a test to invoke.
-   * If <code>testName</code> is <code>Some</code>, this trait's implementation of this method 
+   * If <code>testName</code> is defined, this trait's implementation of this method 
    * invokes <code>runTest</code> on this object, passing in:
    * </p>
    *
@@ -1426,16 +1470,20 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method takes a <code>Set</code> of tag names that should be included (<code>tagsToInclude</code>), and a <code>Set</code>
-   * that should be excluded (<code>tagsToExclude</code>), when deciding which of this <code>Suite</code>'s tests to run.
-   * If <code>tagsToInclude</code> is empty, all tests will be run
-   * except those those belonging to tags listed in the <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is non-empty, only tests
-   * belonging to tags mentioned in <code>tagsToInclude</code>, and not mentioned in <code>tagsToExclude</code>
-   * will be run. However, if <code>testName</code> is <code>Some</code>, <code>tagsToInclude</code> and <code>tagsToExclude</code> are essentially ignored.
+   * This method takes a <code>Filter</code>, which encapsulates an optional <code>Set</code> of tag names that should be included
+   * (<code>tagsToInclude</code>) and a <code>Set</code> that should be excluded (<code>tagsToExclude</code>), when deciding which
+   * of this <code>Suite</code>'s tests to run.
+   * If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+   * except those those belonging to tags listed in the <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+   * belonging to tags mentioned in the <code>tagsToInclude</code> <code>Set</code>, and not mentioned in the <code>tagsToExclude</code <code>Set</code>
+   * will be run. However, if <code>testName</code> is defined, <code>tagsToInclude</code> and <code>tagsToExclude</code> are essentially ignored.
    * Only if <code>testName</code> is <code>None</code> will <code>tagsToInclude</code> and <code>tagsToExclude</code> be consulted to
    * determine which of the tests named in the <code>testNames</code> <code>Set</code> should be run. This trait's implementation
    * behaves this way, and it is part of the general contract of this method, so all overridden forms of this method should behave
-   * this way as well.  For more information on test tags, see the main documentation for this trait.
+   * this way as well.  For more information on test tags, see the main documentation for this trait and for class <a href="Filter"><code>Filter</code></a>.
+   * Note that this means that even if a test is marked as ignored, for example a test method in a <code>Suite</code> annotated with
+   * <code>org.scalatest.Ignore</code>, if that test name is passed as <code>testName</code> to <code>runTest</code>, it will be invoked
+   * despite the <code>Ignore</code> annotation.
    * </p>
    *
    * <p>
@@ -1445,7 +1493,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * this <code>Suite</code> that are selected by <code>tagsToInclude</code> and <code>tagsToExclude</code> should be run.)
    * For each test in the <code>testName</code> <code>Set</code>, in the order
    * they appear in the iterator obtained by invoking the <code>elements</code> method on the <code>Set</code>, this trait's implementation
-   * of this method checks whether the test should be run based on the <code>tagsToInclude</code> and <code>tagsToExclude</code> <code>Set</code>s.
+   * of this method checks whether the test should be run based on the <code>Filter</code>.
    * If so, this implementation invokes <code>runTest</code>, passing in:
    * </p>
    *
@@ -1463,13 +1511,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
-   *     <code>tagsToExclude</code>, or <code>goodies</code> is <code>null</code>.
-   *
-   * This trait's implementation of this method runs tests
-   * in the manner described in detail in the following paragraphs, but subclasses may override the method to provide different
-   * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
-   * used by all the methods of this <code>Suite</code>.
+   * @throws NullPointerException if any of the passed parameters is <code>null</code>.
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              goodies: Map[String, Any], tracker: Tracker) {
@@ -1530,7 +1572,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ol>
    *
    * <p>
-   * If <code>testName</code> is <code>Some</code>, then this trait's implementation of this method
+   * If <code>testName</code> is defined, then this trait's implementation of this method
    * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>.
    * </p>
    *
@@ -1611,7 +1653,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * method completes abruptly with an exception, this trait's implementation of this
    * method reports that the <code>Suite</code> aborted and attempts to run the
    * next nested <code>Suite</code>.
-   * If the passed <code>distributor</code> is <code>Some</code>, this trait's implementation
+   * If the passed <code>distributor</code> is defined, this trait's implementation
    * puts each nested <code>Suite</code> 
    * into the <code>Distributor</code> contained in the <code>Some</code>, in the order in which the
    * <code>Suite</code>s appear in the <code>List</code> returned by <code>nestedSuites</code>, passing
@@ -1621,8 +1663,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Suite</code>
-   * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Suite</code>
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
@@ -1708,11 +1749,15 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   }
 
   /**
-   * A user-friendly suite name for this <code>Suite</code>. This trait's
+   * A user-friendly suite name for this <code>Suite</code>.
+   *
+   * <p>
+   * This trait's
    * implementation of this method returns the simple name of this object's class. This
    * trait's implementation of <code>runNestedSuites</code> calls this method to obtain a
    * name for <code>Report</code>s to pass to the <code>suiteStarting</code>, <code>suiteCompleted</code>,
    * and <code>suiteAborted</code> methods of the <code>Reporter</code>.
+   * </p>
    *
    * @return this <code>Suite</code> object's suite name.
    */
@@ -1738,7 +1783,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * sent to the reporter when running the test can appear in the report of a test run. (In other words,
    * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
    * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
-   * the actual test, and possibly the functionality, has not yet been implemented.
+   * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
    * </p>
    *
    * <p>
@@ -1759,7 +1804,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * stay at a higher level, forgetting how it is implemented and just focusing on the intent of the programmer who wrote the code.
    * </p>
    */
-  def pending { throw new TestPendingException }
+  final def pending { throw new TestPendingException }
 
   private[scalatest] def getTestNameForReport(testName: String) = {
 
@@ -1773,12 +1818,15 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
   /**
    * The total number of tests that are expected to run when this <code>Suite</code>'s <code>run</code> method is invoked.
+   *
+   * <p>
    * This trait's implementation of this method returns the sum of:
+   * </p>
    *
    * <ul>
-   * <li>the size of the <code>testNames</code> <code>List</code>
+   * <li>the size of the <code>testNames</code> <code>List</code>, minus the number of tests marked as ignored
    * <li>the sum of the values obtained by invoking
-   *     <code>expecteTestCount</code> on every nested <code>Suite</code> contained in
+   *     <code>expectedTestCount</code> on every nested <code>Suite</code> contained in
    *     <code>nestedSuites</code>
    * </ul>
    */
