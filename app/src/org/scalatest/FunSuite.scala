@@ -22,8 +22,8 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 
 /**
- * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands for functional.
- * Here's an example <code>FunSuite</code>:
+ * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
+ * for &#8220;function.&#8221; Here's an example <code>FunSuite</code>:
  *
  * <pre>
  * import org.scalatest.FunSuite
@@ -849,13 +849,6 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
-
     val stopRequested = stopper
 
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
@@ -867,35 +860,26 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
     // by testNames.
     testName match {
       case Some(tn) => runTest(tn, report, stopRequested, goodies, tracker)
-      case None => {
+      case None =>
+
         val doList = atomic.get.doList.reverse
         for (node <- doList) {
           node match {
             case Info(message) => info(message)
             case Test(tn, _) =>
-              if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-                if (tagsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
+              val (filterTest, ignoreTest) = filter(tn, tags)
+              if (!filterTest)
+                if (ignoreTest)
                   report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
-                }
-                else if ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
+                else
                   runTest(tn, report, stopRequested, goodies, tracker)
-                }
-              }
           }
         }
-      }
     }
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
 

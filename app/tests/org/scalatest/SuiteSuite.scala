@@ -283,7 +283,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     val repF = new MyReporter
     f.run(None, repF, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
-    assert(repF.testIgnoredReceived)
+    assert(!repF.testIgnoredReceived)
     assert(!f.theTestThisCalled)
     assert(f.theTestThatCalled)
     assert(!f.theTestTheOtherCalled)
