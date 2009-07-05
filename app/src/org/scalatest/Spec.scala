@@ -785,6 +785,7 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
   }
+  
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
    * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
