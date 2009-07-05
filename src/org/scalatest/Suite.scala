@@ -1527,12 +1527,12 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
-    val tagsToInclude =
+    /* val tagsToInclude =
       filter.tagsToInclude match {
         case None => Set[String]()
         case Some(tti) => tti
       }
-    val tagsToExclude = filter.tagsToExclude
+    val tagsToExclude = filter.tagsToExclude */
 
     val stopRequested = stopper
 
@@ -1545,8 +1545,15 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     // by testNames.
     testName match {
       case Some(tn) => runTest(tn, report, stopRequested, goodies, tracker)
-      case None => {
-        for (tn <- testNames) {
+      case None =>
+
+      for ((tn, ignoreTest) <- filter(testNames, tags))
+        if (ignoreTest)
+          report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
+        else
+          runTest(tn, report, stopRequested, goodies, tracker)
+
+/*        for (tn <- testNames) {
           if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
             if (tagsToExclude.contains(IgnoreAnnotation) && tags.getOrElse(tn, Set()).contains(IgnoreAnnotation)) {
               report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
@@ -1555,8 +1562,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
               runTest(tn, report, stopRequested, goodies, tracker)
             }
           }
-        }
-      }
+        }*/
     }
   }
 
@@ -1831,14 +1837,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ul>
    */
   def expectedTestCount(filter: Filter): Int = {
- /*
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
-*/
+
     // [bv: here was another tricky refactor. How to increment a counter in a loop]
     def countNestedSuiteTests(nestedSuites: List[Suite], filter: Filter): Int =
       nestedSuites match {
@@ -1846,22 +1845,9 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
         case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(filter) +
             countNestedSuiteTests(nestedSuites, filter)
     }
-    // Semicolon inference bit me here for the first time. I had said:
-    //  case nestedSuite :: nestedSuites => nestedSuite.expectedTestCount(filter)
-    //      + countNestedSuiteTests(nestedSuites, tagsToInclude, tagsToExclude)
-    // That won't work. It thinks + starts a new expression
- 
+
     filter.runnableTestCount(testNames, tags) + countNestedSuiteTests(nestedSuites, filter)
   }
-
-/*  private def expectedTestCountThisSuiteOnly(tagsToInclude: Set[String], tagsToExclude: Set[String]) = {
-    val tns =
-      for (tn <- testNames; if (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)
-         && ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) && (!(tags.getOrElse(tn, Set()).contains(IgnoreAnnotation))))
-        yield tn
-
-    tns.size
-  } */
 
   // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
   // so that exceptions are caught and transformed

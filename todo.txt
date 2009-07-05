@@ -8,9 +8,14 @@ Do the fixture package for Suite, FunSuite, and Spec. Suite, etc., will have a r
 they need to mix in a trait like BasicFixture or GoodiesFixture. Such traits pair runTest methods with withFixture methods. This way
 I provide two to start with, and I could provide others later and people could make their own. BasicFixture has an abstract withFixture method
 with the signature withFixture(f: Fixture => Unit). GoodiesFixture has an abstract withFixture method with the
-signature withFixture(f: Fixture => Unit, goodies: Map[String, Any]).
+signature withFixture(f: Fixture => Unit, goodies: Map[String, Any]). No, I think runTest in all these fixture sister traits is final, and
+calls runTestWithFixture, which is abstract, and that method takes everything that runTest takes plus a function from Fixture => Unit.
 
-Do the OneInstancePerTest and ParallelTestExecution traits
+Do the OneInstancePerTest and ParallelTestExecution traits. OneInstancePerTest overrides runTests and instantiates a new instance of this
+using reflection and invokes run on its wrapped suite passing in one test name. That instance also implements OneInstancePerTest, so its
+runTests method will for sure only do this wrapping if testName is None. The other thing is it won't send SuiteStarting or SuiteCompleted
+messages, because that's not really what's going on. But if one of these isolation suites aborts, it will send SuiteAborted, with a suite name
+that has something like "<suite name> isolation suite for <test name>" as the suite name.
 
 Add BeforeAndAfterEach, BeforeAndAfterAll, AfterEach. Make BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll and deprecate it.
 BeforeAndAfterAll will need to look for some object sent down in goodies from OneInstancePerTest, so it knows not to do it if it is an
@@ -48,29 +53,24 @@ because it is also used by Distributor and will be used by SuiteRerunner.
 
 add a RandomTestOrder trait
 
-Change info in FunSuite to probably use an actor so multiple threads can fire infos. Oh and maybe you need to put the var that holds the current one in an atomic. Because only one thread should be writing to that.
-
 Do the OneArgXXX traits
 
 put goodies in ant task as well as properties for two releases, then drop properties
-Change description of user-defined properties in Runner to "goodies". Do same thing includes --> tagsToInclude,
+Change description of includes --> tagsToInclude,
 excludes --> tagsToExclude. Leave old one in for two releases.
 
 Add the things for Property based testing displaying args nicely in the GUI (like empty strings should be "")
 
 The eating error message problem. Make sure an exception message shows up in the GUI/Print output.
 
-Oh, and must fix the problem of counting tests when using config params. RunStopped, RunCompleted, and RunAborted all take an optional Summary. When fired from Runner, SuiteRerunner, and TestRerunner, these are Nones. So maybe I enhance DispatchReporter to count these? To reset the count to zero when a RunCompleted, RunStopped, or RunAborted comes through? It would be counted by the actor thread. And if the summary field was a None, it would replace it with a Some that has these counts in it.
-
 I'm not printing out the message in a formatted report, just the exception's detail message
-
-Add more overloaded methods to Informer that take optional throwable, formatter, payload, etc.
 
 Do an xml reporter and an html reporter
 
 Ask folks about run versus execute
 Ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
 Ask folks about the beforeAll and afterAll in BeforeAndAfter
+Ask folks about JUnit error instead of failures being fired
 
 a *** file-system separator separated runpath (platform-runpath)
 b
