@@ -834,13 +834,6 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, goodies: Map[String, Any], tracker: Tracker) {
 
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
-
     val stopRequested = stopper
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
     // so that exceptions are caught and transformed
@@ -875,20 +868,19 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case ex @ TestLeaf(parent, testName, specText, f) => {
-          val tn = ex.testName
-          if (!stopRequested() && (tagsToInclude.isEmpty || !(tagsToInclude ** tags.getOrElse(tn, Set())).isEmpty)) {
-            if (tagsToExclude.contains(IgnoreTagName) && tags.getOrElse(tn, Set()).contains(IgnoreTagName)) {
-              val testSucceededIcon = Resources("testSucceededIconChar")
-              val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, ex.specText)
-              report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, ex.specText, 1))))
-            }
-            else if ((tagsToExclude ** tags.getOrElse(tn, Set())).isEmpty) {
-              runTest(tn, report, stopRequested, goodies, tracker)
-            }
+        case TestLeaf(_, tn, specText, _) =>
+          if (!stopRequested()) { // TODO: Seems odd to me to check for stop here but still fire infos
+            val (filterTest, ignoreTest) = filter(tn, tags)
+            if (!filterTest)
+              if (ignoreTest) {
+                val testSucceededIcon = Resources("testSucceededIconChar")
+                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, specText)
+                report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
+              }
+              else
+                runTest(tn, report, stopRequested, goodies, tracker)
           }
-        }
-        case InfoLeaf(parent, message) =>
+        case InfoLeaf(_, message) =>
           val infoProvidedIcon = Resources("infoProvidedIconChar")
           val formattedText = Resources("iconPlusShortName", infoProvidedIcon, message)
           report(InfoProvided(tracker.nextOrdinal(), message,
@@ -1087,13 +1079,6 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
     if (goodies == null)
       throw new NullPointerException("goodies was null")
 
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
-
     val stopRequested = stopper
 
     testName match {
@@ -1140,13 +1125,6 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-
-    val tagsToInclude =
-      filter.tagsToInclude match {
-        case None => Set[String]()
-        case Some(tti) => tti
-      }
-    val tagsToExclude = filter.tagsToExclude
 
     val stopRequested = stopper
 
