@@ -17,19 +17,34 @@ package org.scalatest.fixture
 
 import collection.immutable.TreeSet
 import java.lang.reflect.{InvocationTargetException, Method, Modifier}
+import org.scalatest.Suite.checkForPublicNoArgConstructor
+import org.scalatest.Suite.TestMethodPrefix
+import org.scalatest.Suite.IgnoreAnnotation
+import Suite.FixtureAndInformerInParens
+import Suite.FixtureInParens
+import Suite.testMethodTakesInformer
+import Suite.simpleNameForTest
+import Suite.argsArrayForTestName
 import org.scalatest.events._
 
 abstract class Suite extends org.scalatest.Suite { thisSuite =>
-
-  import Suite.TestMethodPrefix, Suite.InformerInParens, Suite.IgnoreAnnotation
 
   type Fixture
 
   override def testNames: Set[String] = {
 
-    def takesInformer(m: Method) = {
+    def takesTwoParamsOfTypesObjectAndInformer(m: Method) = {
       val paramTypes = m.getParameterTypes
-      paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
+      val hasTwoParams = paramTypes.length == 2
+      hasTwoParams &&
+          classOf[Object].isAssignableFrom(paramTypes(0)) &&
+          classOf[Informer].isAssignableFrom(paramTypes(1))
+    }
+
+    def takesOneParamOfTypeObject(m: Method) = {
+      val paramTypes = m.getParameterTypes
+      val hasOneParam = paramTypes.length == 1
+      hasOneParam && classOf[Object].isAssignableFrom(paramTypes(0))
     }
 
     def isTestMethod(m: Method) = {
@@ -40,24 +55,26 @@ abstract class Suite extends org.scalatest.Suite { thisSuite =>
       val simpleName = m.getName
       val firstFour = if (simpleName.length >= 4) simpleName.substring(0, 4) else "" 
 
-      val paramTypes = m.getParameterTypes
-      val hasNoParams = paramTypes.length == 0
-
-      val isTestNames = simpleName == "testNames"
-
-      isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesInformer(m))
+      // Don't need to check for testNames in this case, because will discover both
+      // testNames(Object) and testNames(Object, Informer). Reason is if I didn't discover these
+      // it would likely just be silently ignored, and that might waste users' time
+      isInstanceMethod && (firstFour == "test") && (takesOneParamOfTypeObject(m) ||
+              takesTwoParamsOfTypesObjectAndInformer(m))
     }
 
     val testNameArray =
-      for (m <- getClass.getMethods; if isTestMethod(m)) 
-        yield if (takesInformer(m)) m.getName + InformerInParens else m.getName
+      for (m <- getClass.getMethods; if isTestMethod(m)) yield
+        if (takesOneParamOfTypeObject(m))
+          m.getName + FixtureInParens
+        else
+          m.getName + FixtureAndInformerInParens
 
     TreeSet[String]() ++ testNameArray
   }
 
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || goodies == null)
+    if (testName == null || reporter == null || stopper == null || goodies == null || tracker == null)
       throw new NullPointerException
 
     val stopRequested = stopper
@@ -65,7 +82,7 @@ abstract class Suite extends org.scalatest.Suite { thisSuite =>
     val method = getMethodForTestName(testName)
 
     // Create a Rerunner if the Suite has a no-arg constructor
-    val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
+    val hasPublicNoArgConstructor = checkForPublicNoArgConstructor(getClass)
 
     val rerunnable =
       if (hasPublicNoArgConstructor)
@@ -77,22 +94,28 @@ abstract class Suite extends org.scalatest.Suite { thisSuite =>
 
     report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
-    val args: Array[Object] =
-      if (testMethodTakesInformer(testName)) {
-        val informer =
-          new Informer {
-            def apply(message: String) {
-              if (message == null)
-                throw new NullPointerException
-              report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
-            }
-          }
-        Array(informer)  
-      }
-      else Array()
 
     try {
-      val testFun: Fixture => Unit = (fixture: Fixture) => method.invoke(this, args: _*)
+      val testFun: Fixture => Unit = {
+        (fixture: Fixture) => {
+          val anyRefFixture: AnyRef = fixture.asInstanceOf[AnyRef]
+          val args: Array[Object] =
+            if (testMethodTakesInformer(testName)) {
+              val informer =
+                new Informer {
+                  def apply(message: String) {
+                    if (message == null)
+                      throw new NullPointerException
+                    report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+                  }
+                }
+              Array(anyRefFixture, informer)
+            }
+            else Array(anyRefFixture)
+
+          method.invoke(this, args: _*)
+        }
+      }
       runTestWithFixture(testName, reporter, stopper, goodies, tracker, testFun)
 
       val duration = System.currentTimeMillis - testStartTime
@@ -139,19 +162,25 @@ abstract class Suite extends org.scalatest.Suite { thisSuite =>
   // TODO: This is also identical with the one in Suite, but it probably will change when I start looking
   // for an argument of type Fixture, which will probably have to be Object.
   private def getMethodForTestName(testName: String) =
-    getClass.getMethod(
-      simpleNameForTest(testName),
-      (if (testMethodTakesInformer(testName)) Array(classOf[Informer]) else new Array[Class[_]](0)): _*
-    )
+    getClass.getMethod(simpleNameForTest(testName), argsArrayForTestName(testName): _*)
+}
 
-  // TODO: This is also copied from Suite, but again will probably change when I start looking
-  // for the Fixture in the signature.
-  private def testMethodTakesInformer(testName: String) = testName.endsWith(InformerInParens)
+private object Suite {
 
-  // TODO: Also copied, but also may change later
+  val FixtureAndInformerInParens = "(Fixture, Informer)"
+  val FixtureInParens = "(Fixture)"
+
+  private def testMethodTakesInformer(testName: String) = testName.endsWith(FixtureAndInformerInParens)
+
   private def simpleNameForTest(testName: String) =
-    if (testName.endsWith(InformerInParens))
-      testName.substring(0, testName.length - InformerInParens.length)
+    if (testName.endsWith(FixtureAndInformerInParens))
+      testName.substring(0, testName.length - FixtureAndInformerInParens.length)
     else
-      testName
+      testName.substring(0, testName.length - FixtureInParens.length)
+
+  private def argsArrayForTestName(testName: String): Array[Class[_]] =
+    if (testMethodTakesInformer(testName))
+      Array(classOf[Object], classOf[Informer])
+    else
+      Array(classOf[Informer])
 }
