@@ -54,7 +54,23 @@ import org.scalatest.events._
  * your tests, because you need not encode them in camel case, as you must do
  * with test methods.
  * </p>
- * 
+ *
+ * <p>
+ * A <code>FunSuite</code>'s lifecycle has two phases: the <em>registration</em> phase and the
+ * <em>ready</em> phase. It starts in registration phase and enters ready phase the first time
+ * <code>run</code> is called on it. It then remains in ready phase for the remainder of its lifetime.
+ * </p>
+ *
+ * <p>
+ * Tests can only be registered with the <code>test</code> method while the <code>FunSuite</code> is
+ * in its registration phase. Any attempt to register a test after the <code>FunSuite</code> has
+ * entered its ready phase, <em>i.e.</em>, after <code>run</code> has been invoked on the <code>FunSuite</code>,
+ * will be met with a thrown <code>TestRegistrationClosedException</code>. The recommended style
+ * of using <code>FunSuite</code> is to register tests during object construction as is done in all
+ * the examples shown here. If you keep to the recommended style, you should never see a
+ * <code>TestRegistrationClosedException</code>.
+ * </p>
+ *
  * <p>
  * <strong>Test fixtures</strong>
  * </p>
