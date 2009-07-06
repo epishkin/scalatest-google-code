@@ -1,8 +1,10 @@
-Use filter in the run methods
-
 drop recipe name from runner and runnerjframe
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
+
+Add comment about how to turn off the === implicit conversion in a Suite to ScalaDoc for Suite or Assertions.
+
+Add but to GivenWhenThen.
 
 Do the fixture package for Suite, FunSuite, and Spec. Suite, etc., will have a runTest method that throws an exception, complaining that
 they need to mix in a trait like BasicFixture or GoodiesFixture. Such traits pair runTest methods with withFixture methods. This way
@@ -10,6 +12,24 @@ I provide two to start with, and I could provide others later and people could m
 with the signature withFixture(f: Fixture => Unit). GoodiesFixture has an abstract withFixture method with the
 signature withFixture(f: Fixture => Unit, goodies: Map[String, Any]). No, I think runTest in all these fixture sister traits is final, and
 calls runTestWithFixture, which is abstract, and that method takes everything that runTest takes plus a function from Fixture => Unit.
+Maybe I have a FixtureSuite that is fixture.Suite with BasicFixture, and a GoodiesSuite that is fixture.Suite with GoodiesFixture.
+Or maybe I call these AbstractSuite so people don't get confused. So:
+
+trait FixtureSuite extends AbstractFixtureSuite with BasicFixture
+trait GoodiesSuite extends AbstractFixtureSuite with GoodiesFixture
+trait FixtureFunSuite extends AbstractFixtureFunSuite with BasicFixture
+trait GoodiesFunSuite extends AbstractFixtureFunSuite with GoodiesFixture
+
+AbstractFixtureFunSuite could be BaseFixtureFunSuite. Or SuiteBase. Or FunSuiteBase.
+
+OK, so the question is that is it too much a pain to have the word "Fixture" in there? It could be:
+
+trait Suite extends AbstractFixtureSuite with BasicFixture
+trait GoodiesSuite extends AbstractFixtureSuite with GoodiesFixture
+trait FunSuite extends AbstractFixtureFunSuite with BasicFixture
+trait GoodiesFunSuite extends AbstractFixtureFunSuite with GoodiesFixture
+
+Frankly I think it would be confusing to reuse Suite. Just call it FixtureSuite and FixtureFunSuite and FixtureSpec.
 
 Do the OneInstancePerTest and ParallelTestExecution traits. OneInstancePerTest overrides runTests and instantiates a new instance of this
 using reflection and invokes run on its wrapped suite passing in one test name. That instance also implements OneInstancePerTest, so its
@@ -66,6 +86,16 @@ The eating error message problem. Make sure an exception message shows up in the
 I'm not printing out the message in a formatted report, just the exception's detail message
 
 Do an xml reporter and an html reporter
+
+The enter-after-be issue:
+love the scala-test BDD-DSL (only weird thing was a false possitive 
+when I added an enter after a "be" 
+be 
+( 
+instead of 
+be ( 
+The first case always passes :/ It would be better if it always failed. 
+
 
 Ask folks about run versus execute
 Ask folks about TestCase/Suite compatibility (check about testNames, because if that doesn't work it really is a non-starter)
@@ -182,64 +212,4 @@ ant task.
 it is configured with. Print out the ordinal and everything. The
 reason is this can be used as an output during concurrent tests which
 can be read in and then sorted to produce other output.
-
-class FunSuiteSpec extends FlatSpec with SharedHelpers {
-
-  "A FunSuite" should "return the test names in registration order from testNames" taggedAs(SlowAsMolasses) {
-    // This is the first test
-  }
-
-  it should "throw NotAllowedException if a duplicate test name registration is attempted" {
-
-    // some test code here
-  }
-
-import scala.collection.mutable.ListBuffer
-
-class StackSpec extends Spec with StackFixtureCreationMethods with StackBehaviors {
-
-  behavior of "A Stack (when empty)"
-
-  it should "be empty" {
-        assert(emptyStack.empty)
-  }
-
-  it should "complain on peek" {
-    intercept[IllegalStateException] {
-      emptyStack.peek
-    }
-  }
-
-  ignore should "complain on pop" {
-    intercept[IllegalStateException] {
-      emptyStack.pop
-    }
-  }
-
-  behavior of "A Stack (with one item)"
-
-  ensure it behaves like nonEmptyStack(lastValuePushed)(stackWithOneItem)
-  ensure it behaves like nonFullStack(stackWithOneItem)
-
-  behavior of "A Stack (with one item less than capacity)"
-
-  ensure it behaves like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
-  ensure it behaves like nonFullStack(stackWithOneItemLessThanCapacity)
-
-  "A Stack (full)" should "be full" {
-    assert(fullStack.full)
-  }
-
-  it should "go to sleep soon" (pending)
-      
-  ensure it behaves like nonEmptyStack(lastValuePushed)(fullStack)
-
-  it should "complain on a push" {
-    intercept[IllegalStateException] {
-      fullStack.push(10)
-    }
-  }
-}
-
-
 
