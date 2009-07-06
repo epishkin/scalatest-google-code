@@ -1353,6 +1353,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       val paramTypes = m.getParameterTypes
       val hasNoParams = paramTypes.length == 0
 
+      // Discover testNames(Informer) because if we didn't it might be confusing when someone
+      // actually wrote a testNames(Informer) method and it was silently ignored.
       val isTestNames = simpleName == "testNames"
 
       isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesInformer(m))
@@ -1390,7 +1392,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    */
   protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || goodies == null)
+    if (testName == null || reporter == null || stopper == null || goodies == null || tracker == null)
       throw new NullPointerException
 
     val stopRequested = stopper
@@ -1828,9 +1830,9 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
 private[scalatest] object Suite {
 
-  private val TestMethodPrefix = "test"
-  private val InformerInParens = "(Informer)"
-  private val IgnoreAnnotation = "org.scalatest.Ignore"
+  private[scalatest] val TestMethodPrefix = "test"
+  private[scalatest] val InformerInParens = "(Informer)"
+  private[scalatest] val IgnoreAnnotation = "org.scalatest.Ignore"
 
   // [bv: this is a good example of the expression type refactor. I moved this from SuiteClassNameListCellRenderer]
   // this will be needed by the GUI classes, etc.
