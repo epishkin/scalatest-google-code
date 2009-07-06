@@ -15,4 +15,4 @@
  */
 package org.scalatest.fixture
 
-trait FixtureSuite extends BaseFixtureSuite with BasicFixture
+trait FixtureSuite extends BaseFixtureSuite with SimpleFixture
