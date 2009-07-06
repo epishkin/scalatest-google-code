@@ -15,7 +15,7 @@
  */
 package org.scalatest.fixture
 
-trait GoodiesFixture { this: org.scalatest.fixture.Suite =>
+trait GoodiesFixture { this: org.scalatest.fixture.BaseFixtureSuite =>
 
   protected def withFixture(testFun: Fixture => Unit, goodies: Map[String, Any])
 

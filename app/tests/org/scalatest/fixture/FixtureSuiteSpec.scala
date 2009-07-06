@@ -21,7 +21,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester {
 
   describe("The private testMethodTakesInformer method") {
     val testMethodTakesInformer = PrivateMethod[Boolean]('testMethodTakesInformer)
-    val suiteObject = org.scalatest.fixture.Suite
+    val suiteObject = org.scalatest.fixture.BaseFixtureSuite
     it("should return true if passed a string that ends in (Fixture, Informer)") {
       assert(suiteObject invokePrivate testMethodTakesInformer("thisDoes(Fixture, Informer)"))
       assert(suiteObject invokePrivate testMethodTakesInformer("(Fixture, Informer)"))
@@ -33,9 +33,9 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester {
     }
   }
 
-  describe("A fixture.Suite") {
+  describe("A FixtureSuite") {
     it("should return the test names in alphabetical order from testNames") {
-      val a = new Suite with BasicFixture {
+      val a = new BaseFixtureSuite with BasicFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) {}
@@ -46,7 +46,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester {
         a.testNames.elements.toList
       }
 
-      val b = new Suite with BasicFixture {
+      val b = new BaseFixtureSuite with BasicFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
       }
@@ -55,7 +55,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester {
         b.testNames.elements.toList
       }
 
-      val c = new Suite with BasicFixture {
+      val c = new BaseFixtureSuite with BasicFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThat(fixture: String) {}
@@ -68,7 +68,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester {
     }
 
     it("should discover tests with and without Informer parameters") {
-      val a = new Suite with BasicFixture {
+      val a = new BaseFixtureSuite with BasicFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) = ()
@@ -78,7 +78,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester {
     }
 
     it("should pass in the fixture to every test method") {
-      val a = new Suite with BasicFixture {
+      val a = new BaseFixtureSuite with BasicFixture {
         type Fixture = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit) {

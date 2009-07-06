@@ -20,14 +20,14 @@ import java.lang.reflect.{InvocationTargetException, Method, Modifier}
 import org.scalatest.Suite.checkForPublicNoArgConstructor
 import org.scalatest.Suite.TestMethodPrefix
 import org.scalatest.Suite.IgnoreAnnotation
-import Suite.FixtureAndInformerInParens
-import Suite.FixtureInParens
-import Suite.testMethodTakesInformer
-import Suite.simpleNameForTest
-import Suite.argsArrayForTestName
+import BaseFixtureSuite.FixtureAndInformerInParens
+import BaseFixtureSuite.FixtureInParens
+import BaseFixtureSuite.testMethodTakesInformer
+import BaseFixtureSuite.simpleNameForTest
+import BaseFixtureSuite.argsArrayForTestName
 import org.scalatest.events._
 
-abstract class Suite extends org.scalatest.Suite { thisSuite =>
+abstract class BaseFixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   type Fixture
 
@@ -165,7 +165,7 @@ abstract class Suite extends org.scalatest.Suite { thisSuite =>
     getClass.getMethod(simpleNameForTest(testName), argsArrayForTestName(testName): _*)
 }
 
-private object Suite {
+private object BaseFixtureSuite {
 
   val FixtureAndInformerInParens = "(Fixture, Informer)"
   val FixtureInParens = "(Fixture)"
