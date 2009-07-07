@@ -95,12 +95,13 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
       }
     }
-    /*
+
     describe("(with info calls)") {
       class InfoInsideTestFlatSpec extends FlatSpec {
         val msg = "hi there, dude"
-        val testName = "test name"
-        it(testName) {
+        val partialTestName = "test name"
+        val testName = "should " + partialTestName
+        it should partialTestName in {
           info(msg)
         }
       }
@@ -115,9 +116,10 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
       class InfoBeforeTestFlatSpec extends FlatSpec {
         val msg = "hi there, dude"
-        val testName = "test name"
+        val partialTestName = "test name"
+        val testName = "should " + partialTestName
         info(msg)
-        it(testName) {}
+        it should partialTestName in {}
       }
       it("should, when the info appears in the body before a test, report the info before the test") {
         val spec = new InfoBeforeTestFlatSpec
@@ -128,9 +130,10 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
       it("should, when the info appears in the body after a test, report the info after the test runs") {
         val msg = "hi there, dude"
-        val testName = "test name"
+        val partialTestName = "test name"
+        val testName = "should " + partialTestName
         class MyFlatSpec extends FlatSpec {
-          it(testName) {}
+          it should partialTestName in {}
           info(msg)
         }
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
@@ -144,7 +147,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           def callInfo() {
             info("howdy")
           }
-          it("howdy also") {
+          it should "howdy also" in {
             callInfo() // This should work fine
           }
         }
@@ -166,7 +169,6 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
     }
-  */
   }
 }
 
