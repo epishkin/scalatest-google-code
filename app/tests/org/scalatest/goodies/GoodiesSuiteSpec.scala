@@ -93,5 +93,23 @@ class GoodiesSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
     }
+
+    it("should pass in the goodies to every test method via the fixture") {
+      val key = "greeting"
+      val hello = "Hello, world!"
+      val a = new Suite {
+        type Fixture = Map[String, Any]
+        def withFixture(fun: Fixture => Unit, goodies: Map[String, Any]) {
+          fun(goodies)
+        }
+        def testThis(fixture: Fixture) {
+          assert(fixture(key) === hello)
+        }
+        def testThat(fixture: Fixture, info: Informer) {
+          assert(fixture(key) === hello)
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(key -> hello), None, new Tracker())
+    }
   }
 }
