@@ -4,9 +4,9 @@ Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnot
 
 Add comment about how to turn off the === implicit conversion in a Suite to ScalaDoc for Suite or Assertions.
 
-Add but to GivenWhenThen.
-
 Do the fixture package for Suite, FunSuite, and Spec.
+
+Do the parallel afterAll thing.
 
 Do the OneInstancePerTest and ParallelTestExecution traits. OneInstancePerTest overrides runTests and instantiates a new instance of this
 using reflection and invokes run on its wrapped suite passing in one test name. That instance also implements OneInstancePerTest, so its
