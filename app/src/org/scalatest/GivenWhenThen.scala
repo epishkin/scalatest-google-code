@@ -24,7 +24,7 @@ package org.scalatest
 trait GivenWhenThen {
 
   /**
-   * Forwards a message to an implicit <code>Informer</code>, preceded by "given."
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "Given."
    *
    * @param message the message to forward to the passed informer
    * @param info the <code>Informer</code> to which to forward the message
@@ -34,7 +34,7 @@ trait GivenWhenThen {
   }
 
   /**
-   * Forwards a message to an implicit <code>Informer</code>, preceded by "when."
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "When ".
    *
    * @param message the message to forward to the passed informer
    * @param info the <code>Informer</code> to which to forward the message
@@ -44,7 +44,7 @@ trait GivenWhenThen {
   }
 
   /**
-   * Forwards a message to an implicit <code>Informer</code>, preceded by "then."
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "Then ".
    *
    * @param message the message to forward to the passed informer
    * @param info the <code>Informer</code> to which to forward the message
@@ -54,7 +54,7 @@ trait GivenWhenThen {
   }
 
   /**
-   * Forwards a message to an implicit <code>Informer</code>, preceded by "and."
+   * Forwards a message to an implicit <code>Informer</code>, preceded by "And ".
    *
    * @param message the message to forward to the passed informer
    * @param info the <code>Informer</code> to which to forward the message
@@ -63,3 +63,11 @@ trait GivenWhenThen {
     info(Resources("andMessage", message))
   }
 }
+
+/**
+ * Companion object that facilitates the importing of <code>GivenWhenThen</code> members as
+ * an alternative to mixing it in.
+ *
+ * @author Bill Venners
+ */
+object GivenWhenThen extends GivenWhenThen
