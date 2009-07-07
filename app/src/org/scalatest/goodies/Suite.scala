@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.fixture
+package org.scalatest.goodies
 
 import collection.immutable.TreeSet
 import java.lang.reflect.{InvocationTargetException, Method, Modifier}
@@ -31,7 +31,7 @@ trait Suite extends org.scalatest.Suite { thisSuite =>
 
   type Fixture
 
-  protected def withFixture(testFun: Fixture => Unit)
+  protected def withFixture(testFun: Fixture => Unit, goodies: Map[String, Any])
 
   // Need to override this one becaue it call getMethodForTestName
   override def tags: Map[String, Set[String]] = {
@@ -140,7 +140,7 @@ trait Suite extends org.scalatest.Suite { thisSuite =>
           method.invoke(this, args: _*)
         }
       }
-      withFixture(testFun)
+      withFixture(testFun, goodies)
 
       val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
