@@ -502,29 +502,3 @@ trait SharedTests { this: TestRegistration =>
    */
   val behaves = new BehavesWord
 }
-
-/*
-The way to do this in FunSuite is to use toString on the thing:
-
-using fixture "A stack with one item" {
-  ensure (stackWithOneItem) behaves like (nonFullStack)
-}
-
-testsFor("A stack with one item") {
-  ensure (stackWithOneItem) behaves like (nonFullStack)
-}
-
-testsFor("A stack with one item") {
-  ensure that stackWithOneItem behaves like a nonFullStack
-}
-
-Man, I guess I need to add testsFor to FunSuite. Bummer.
-
-Ack, what about scenarios?
-
-scenariosFor("something something") {
-}
-
-Dang, they are all the same: the same data structure, but different syntax.
-*/
-
