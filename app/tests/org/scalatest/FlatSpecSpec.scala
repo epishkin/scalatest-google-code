@@ -21,11 +21,11 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
   describe("A FlatSpec") {
 
-    it("should return the test names in registration order from testNames") {
+    it("should return the test names in registration order from testNames when using 'it should'") {
 
       val a = new FlatSpec {
-        it("should test this") {}
-        it("should test that") {}
+        it should "test this" in {}
+        it should "test that" in {}
       }
 
       expect(List("should test this", "should test that")) {
@@ -39,8 +39,8 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val c = new FlatSpec {
-        it("should test that") {}
-        it("should test this") {}
+        it should "test that" in {}
+        it should "test this" in {}
       }
 
       expect(List("should test that", "should test this")) {
@@ -48,10 +48,9 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val d = new FlatSpec {
-        describe("A Tester") {
-          it("should test that") {}
-          it("should test this") {}
-        }
+        behavior of "A Tester"
+        it should "test that" in {}
+        it should "test this" in {}
       }
 
       expect(List("A Tester should test that", "A Tester should test this")) {
@@ -59,10 +58,9 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val e = new FlatSpec {
-        describe("A Tester") {
-          it("should test this") {}
-          it("should test that") {}
-        }
+        behavior of "A Tester"
+        it should "test this" in {}
+        it should "test that" in {}
       }
 
       expect(List("A Tester should test this", "A Tester should test that")) {
@@ -74,29 +72,30 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       
       intercept[DuplicateTestNameException] {
         new FlatSpec {
-          it("test this") {}
-          it("test this") {}
+          it should "test this" in {}
+          it should "test this" in {}
         }
       }
       intercept[DuplicateTestNameException] {
         new FlatSpec {
-          it("test this") {}
-          ignore("test this") {}
+          it should "test this" in {}
+          ignore should "test this" in {}
         }
       }
       intercept[DuplicateTestNameException] {
         new FlatSpec {
-          ignore("test this") {}
-          ignore("test this") {}
+          ignore should "test this" in {}
+          ignore should "test this" in {}
         }
       }
       intercept[DuplicateTestNameException] {
         new FlatSpec {
-          ignore("test this") {}
-          it("test this") {}
+          ignore should "test this" in {}
+          it should "test this" in {}
         }
       }
     }
+    /*
     describe("(with info calls)") {
       class InfoInsideTestFlatSpec extends FlatSpec {
         val msg = "hi there, dude"
@@ -167,6 +166,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
     }
+  */
   }
 }
 
