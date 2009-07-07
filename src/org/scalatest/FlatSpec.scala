@@ -688,7 +688,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def it(specText: String, testTags: Tag*)(testFun: => Unit) {
+  private def oldIt(specText: String, testTags: Tag*)(testFun: => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
@@ -708,6 +708,48 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
     updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
   }
 
+  protected class BehaviorWord {
+    def of(description: String) {
+      if (atomic.get.registrationClosed)
+        throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "describe"))
+
+      val oldBundle = atomic.get
+      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
+
+      val newBranch = DescriptionBranch(trunk, description)
+      trunk.subNodes ::= newBranch
+      currentBranch = newBranch
+
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
+    }
+  }
+  /**
+   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
+   * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
+   * (defined with <code>it</code>). This trait's implementation of this method will register the
+   * description string and immediately invoke the passed function.
+   */
+  protected val behavior = new BehaviorWord
+
+  protected class ItVerbString(verb: String, name: String) {
+    def in(testFun: => Unit) { oldIt(verb + " " + name)(testFun) }
+  }
+
+  protected class ItWord {
+    def should(string: String) = new ItVerbString("should", string)
+  }
+
+  protected val it = new ItWord
+
+  protected class IgnoreVerbString(verb: String, name: String) {
+    def in(testFun: => Unit) { oldIgnore(verb + " " + name)(testFun) }
+  }
+
+  protected class IgnoreWord {
+    def should(string: String) = new IgnoreVerbString("should", string)
+  }
+
+  protected val ignore = new ItWord
   /**
    * Register a test with the given spec text and test function value that takes no arguments.
    *
@@ -724,10 +766,10 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def it(specText: String)(testFun: => Unit) {
+  private def oldIt(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
-    it(specText, Array[Tag](): _*)(testFun)
+    oldIt(specText, Array[Tag](): _*)(testFun)
   }
 
   /**
@@ -748,7 +790,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String, testTags: Tag*)(testFun: => Unit) {
+  protected def oldIgnore(specText: String, testTags: Tag*)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)
@@ -780,47 +822,12 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String)(testFun: => Unit) {
+  protected def oldIgnore(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
-    ignore(specText, Array[Tag](): _*)(testFun)
+    oldIgnore(specText, Array[Tag](): _*)(testFun)
   }
   
-  /**
-   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
-   * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
-   * (defined with <code>it</code>). This trait's implementation of this method will register the
-   * description string and immediately invoke the passed function.
-   */
-  protected def describe(description: String)(f: => Unit) {
-
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "describe"))
-
-    def createNewBranch() = {
-      val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-      val newBranch = DescriptionBranch(currentBranch, description)
-      val oldBranch = currentBranch
-      currentBranch.subNodes ::= newBranch
-      currentBranch = newBranch
-
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-
-      oldBranch
-    }
-
-    val oldBranch = createNewBranch()
-
-    f
-
-    val oldBundle = atomic.get
-    val (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
-  }
-
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
