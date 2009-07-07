@@ -1,5 +1,9 @@
 pass goodies down into before and after methods
 
+pass goodies into RunStarting.
+
+In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.
+
 drop recipe name from runner and runnerjframe
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
@@ -9,6 +13,12 @@ Add comment about how to turn off the === implicit conversion in a Suite to Scal
 Do the fixture package for Suite, FunSuite, and Spec.
 
 Do the parallel afterAll thing.
+
+Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
+perhaps I just need the final execute forms for the interpreter and the one public execute. Make a trait that can be mixed into
+Reporter called TransitionalReporter, which has an apply method that forwards to the old methods, so people can bring existing reporters
+up to date with a quick mix in. Or, consider whether I can just do that directly in Reporter itself. Oh, no, because then people's would
+extensions would automatically work. No, that's OK. Just deprecate all the old testStarting, etc., methods.
 
 Do the OneInstancePerTest and ParallelTestExecution traits. OneInstancePerTest overrides runTests and instantiates a new instance of this
 using reflection and invokes run on its wrapped suite passing in one test name. That instance also implements OneInstancePerTest, so its
