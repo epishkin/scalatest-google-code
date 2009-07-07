@@ -15,7 +15,7 @@
  */
 package org.scalatest.fixture
 
-trait SimpleFixture { this: org.scalatest.fixture.BaseFixtureSuite =>
+private[fixture] trait SimpleFixture { this: org.scalatest.fixture.BaseFixtureSuite =>
 
   protected def withFixture(testFun: Fixture => Unit)
 
