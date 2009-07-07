@@ -168,6 +168,17 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         val indentedText = getIndentedTextFromInfoProvided(spec)
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
+      it("should work when using the shorthand notation for 'behavior of'") {
+        val e = new FlatSpec {
+          "A Tester" should "test this" in {}
+          it should "test that" in {}
+        }
+
+        expect(List("A Tester should test this", "A Tester should test that")) {
+          e.testNames.elements.toList
+        }
+
+      }
     }
   }
 }
