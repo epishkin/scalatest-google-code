@@ -1,3 +1,5 @@
+pass goodies down into before and after methods
+
 drop recipe name from runner and runnerjframe
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
@@ -14,7 +16,7 @@ runTests method will for sure only do this wrapping if testName is None. The oth
 messages, because that's not really what's going on. But if one of these isolation suites aborts, it will send SuiteAborted, with a suite name
 that has something like "<suite name> isolation suite for <test name>" as the suite name.
 
-Add BeforeAndAfterEach, BeforeAndAfterAll, AfterEach. Make BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll and deprecate it.
+Add BeforeAndAfterEach, BeforeAndAfterAll. Make BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll and deprecate it.
 BeforeAndAfterAll will need to look for some object sent down in goodies from OneInstancePerTest, so it knows not to do it if it is an
 "isolated test instance" or something. And then it will also have to turn off the distributor. This would mean that DistributedTestExecution
 would not happen if there's an AfterAll right now. Later, what I could do is BeforeAndAfterAll wraps the distributor, if it is defined, in

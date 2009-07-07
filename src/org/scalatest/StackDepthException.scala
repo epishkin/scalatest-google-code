@@ -16,7 +16,7 @@
 package org.scalatest
 
 /**
- * Exception class that encapsulate information about the stack depth at which the line of code that failed resides,
+ * Exception class that encapsulates information about the stack depth at which the line of code that failed resides,
  * so that information can be presented to the user that makes it quick to find the failing line of code. (In other
  * words, the user need not scan through the stack trace to find the correct filename and line number of the problem code.)
  * Having a stack depth is more useful in a testing environment in which test failures are implemented as
