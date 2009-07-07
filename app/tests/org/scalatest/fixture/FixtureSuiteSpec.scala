@@ -17,7 +17,7 @@ package org.scalatest.fixture
 
 import collection.immutable.TreeSet
 
-class FixtureSuiteSpec extends Spec with PrivateMethodTester {
+class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
 
   describe("The private testMethodTakesInformer method") {
     val testMethodTakesInformer = PrivateMethod[Boolean]('testMethodTakesInformer)
@@ -91,7 +91,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester {
           assert(fixture === hello)
         }
       }
-      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
     }
   }
 }

@@ -653,20 +653,19 @@ import org.scalatest.tools.StandardOutReporter
  * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
  * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
  * directly support the with-fixture method approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
- * is defined by the abstract <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.Suite</code> behaves exactly like
+ * is defined by the abstract <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FixtureSuite</code> behaves exactly like
  * <code>org.scalatest.Suite</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
- * <a href="fixture.Suite"><code>org.scalatest.fixture.Suite</code></a>. To get the idea, however, here's what the previous example would
- * look like rewritten to use an <code>org.scalatest.fixture.Suite</code>:
+ * <a href="fixture/FixtureSuite.html"><code>FixtureSuite</code></a>. To get the idea, however, here's what the previous example would
+ * look like rewritten to use a <code>FixtureSuite</code>:
  * </p>
  *
  * <pre>
- * import org.scalatest.fixture.Suite
- * import org.scalatest.fixture.BasicFixture
+ * import org.scalatest.fixture.FixtureSuite
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends Suite with BasicFixture {
+ * class MySuite extends FixtureSuite {
  *
  *   type Fixture = FileReader
  *
