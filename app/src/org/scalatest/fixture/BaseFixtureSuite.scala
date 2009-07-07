@@ -31,6 +31,8 @@ abstract class BaseFixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   type Fixture
 
+  protected def withFixture(testFun: Fixture => Unit)
+
   // Need to override this one becaue it call getMethodForTestName
   override def tags: Map[String, Set[String]] = {
 
@@ -138,7 +140,7 @@ abstract class BaseFixtureSuite extends org.scalatest.Suite { thisSuite =>
           method.invoke(this, args: _*)
         }
       }
-      runTestWithFixture(testName, reporter, stopper, goodies, tracker, testFun)
+      withFixture(testFun)
 
       val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
@@ -164,9 +166,6 @@ abstract class BaseFixtureSuite extends org.scalatest.Suite { thisSuite =>
       }
     }
   }
-
-  protected def runTestWithFixture(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any],
-          tracker: Tracker, testFun: Fixture => Unit)
 
   // TODO: This is identical with the one in Suite. Factor it out to an object somewhere.
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,

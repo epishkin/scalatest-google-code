@@ -35,7 +35,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
 
   describe("A FixtureSuite") {
     it("should return the test names in alphabetical order from testNames") {
-      val a = new FixtureSuite {
+      val a = new BaseFixtureSuite {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) {}
@@ -46,7 +46,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
         a.testNames.elements.toList
       }
 
-      val b = new FixtureSuite {
+      val b = new BaseFixtureSuite {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
       }
@@ -55,7 +55,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
         b.testNames.elements.toList
       }
 
-      val c = new FixtureSuite {
+      val c = new BaseFixtureSuite {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThat(fixture: String) {}
@@ -68,7 +68,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
     }
 
     it("should discover tests with and without Informer parameters") {
-      val a = new FixtureSuite {
+      val a = new BaseFixtureSuite {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) = ()
@@ -78,7 +78,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
     }
 
     it("should pass in the fixture to every test method") {
-      val a = new FixtureSuite {
+      val a = new BaseFixtureSuite {
         type Fixture = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit) {
