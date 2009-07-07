@@ -750,6 +750,16 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
   }
 
   protected val ignore = new ItWord
+
+  class DescWrapper(description: String) {
+    def should(name: String) = {
+      behavior.of(description)
+      new ItVerbString("should", name)
+    }
+  }
+
+  implicit def convertToDescWrapper(s: String) = new DescWrapper(s)
+  
   /**
    * Register a test with the given spec text and test function value that takes no arguments.
    *
