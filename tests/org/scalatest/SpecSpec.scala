@@ -139,11 +139,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(testStartingIndex < testSucceededIndex)
         assert(testSucceededIndex < infoProvidedIndex)
       }
-      info("What's an info look like, anyway?")
       it("should throw an IllegalStateException when info is called by a method invoked after the suite has been executed") {
-        given("that a given is given")
-        when("a when comes along")
-        then("a then is sure to soon follow")
         class MySpec extends Spec {
           callInfo() // This should work fine
           def callInfo() {

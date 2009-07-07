@@ -302,9 +302,10 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
+            <suite classname="org.scalatest.GivenWhenThenSpec" />
+<!--
             <suite classname="org.scalatest.goodies.GoodiesSuiteSpec" />
             <suite classname="org.scalatest.fixture.FixtureSuiteSpec" />
-<!--
             <suite classname="org.scalatest.SpecSpec" />
             <suite classname="org.scalatest.FunSuiteSpec" />
             <suite classname="org.scalatest.SuiteSpec" />
