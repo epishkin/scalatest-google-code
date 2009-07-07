@@ -1818,6 +1818,11 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     filter.runnableTestCount(testNames, tags) + countNestedSuiteTests(nestedSuites, filter)
   }
 
+  /**
+   * Construct a new instance of this <code>Suite</code>.
+   */
+  def newInstance = this.getClass.newInstance.asInstanceOf[Suite]
+
   // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
   // so that exceptions are caught and transformed
   // into error messages on the standard error stream.
