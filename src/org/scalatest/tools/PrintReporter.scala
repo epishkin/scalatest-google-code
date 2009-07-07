@@ -148,7 +148,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val labeledClassNameWithMessage =
               if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
-                if (presentTestFailedExceptionStackTraces)
+                if (presentTestFailedExceptionStackTraces || labeledClassName.indexOf("TestFailedException") == -1)
                   "  " + labeledClassName + ": " + throwable.getMessage.trim
                 else
                   "  " + throwable.getMessage.trim // Don't show "org.scalatest.TestFailedException: " if no stack trace to follow

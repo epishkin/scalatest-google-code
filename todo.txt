@@ -31,6 +31,37 @@ trait GoodiesFunSuite extends AbstractFixtureFunSuite with GoodiesFixture
 
 Frankly I think it would be confusing to reuse Suite. Just call it FixtureSuite and FixtureFunSuite and FixtureSpec.
 
+Yes, but I think I don't really need the flexibility. Just make SimpleFixture and the BaseFixture traits private, and create
+an instance of them in each public trait and forward method invocations. So the public traits will be:
+
+FixtureSuite
+FixtureFunSuite
+FixtureSpec
+FixtureWordSpec
+FixtureFlatSpec
+FixtureFeatureSpec
+
+GoodiesSuite
+GoodiesFunSuite
+GoodiesSpec
+GoodiesWordSpec
+GoodiesFlatSpec
+GoodiesFeatureSpec
+
+FixSuite
+FixFunSuite
+FixSpec
+FixWordSpec
+FixFlatSpec
+FixFeatureSpec
+
+GoodSuite
+GoodFunSuite
+GoodSpec
+GoodWordSpec
+GoodFlatSpec
+GoodFeatureSpec
+
 Do the OneInstancePerTest and ParallelTestExecution traits. OneInstancePerTest overrides runTests and instantiates a new instance of this
 using reflection and invokes run on its wrapped suite passing in one test name. That instance also implements OneInstancePerTest, so its
 runTests method will for sure only do this wrapping if testName is None. The other thing is it won't send SuiteStarting or SuiteCompleted

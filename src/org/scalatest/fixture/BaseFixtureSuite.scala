@@ -31,6 +31,28 @@ abstract class BaseFixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   type Fixture
 
+  // Need to override this one becaue it call getMethodForTestName
+  override def tags: Map[String, Set[String]] = {
+
+    def getTags(testName: String) =
+/* AFTER THE DEPRECATION CYCLE FOR GROUPS TO TAGS (0.9.8), REPLACE THE FOLLOWING FOR LOOP WITH THIS COMMENTED OUT ONE
+   THAT MAKES SURE ANNOTATIONS ARE TAGGED WITH TagAnnotation.
+      for {
+        a <- getMethodForTestName(testName).getDeclaredAnnotations
+        annotationClass = a.annotationType
+        if annotationClass.isAnnotationPresent(classOf[TagAnnotation])
+      } yield annotationClass.getName
+*/
+      for (a <- getMethodForTestName(testName).getDeclaredAnnotations)
+        yield a.annotationType.getName
+
+    val elements =
+      for (testName <- testNames; if !getTags(testName).isEmpty)
+        yield testName -> (Set() ++ getTags(testName))
+
+    Map() ++ elements
+  }
+
   override def testNames: Set[String] = {
 
     def takesTwoParamsOfTypesObjectAndInformer(m: Method) = {
@@ -161,8 +183,23 @@ abstract class BaseFixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   // TODO: This is also identical with the one in Suite, but it probably will change when I start looking
   // for an argument of type Fixture, which will probably have to be Object.
-  private def getMethodForTestName(testName: String) =
-    getClass.getMethod(simpleNameForTest(testName), argsArrayForTestName(testName): _*)
+  private def getMethodForTestName(testName: String) = {
+    val candidateMethods = getClass.getMethods.filter(_.getName == simpleNameForTest(testName))
+    val found =
+      if (testMethodTakesInformer(testName))
+        candidateMethods.find(
+          candidateMethod => {
+            val paramTypes = candidateMethod.getParameterTypes
+            paramTypes.length == 2 && paramTypes(1) == classOf[Informer]
+          }
+        )
+      else
+        candidateMethods.find(_.getParameterTypes.length == 1)
+     found match {
+       case Some(method) => method
+       case None => throw new RuntimeException("Can't find a test method with name: " + testName)
+     }
+  }
 }
 
 private object BaseFixtureSuite {
