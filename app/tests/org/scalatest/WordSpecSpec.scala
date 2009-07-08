@@ -71,34 +71,34 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
     }
 
-/*
     it("should throw DuplicateTestNameException if a duplicate test name registration is attempted") {
       
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          it("should test this") {}
-          it("should test this") {}
+          "should test this" in {}
+          "should test this" in {}
         }
       }
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          it("should test this") {}
-          ignore("should test this") {}
+          "should test this" in {}
+          "should test this" ignore {}
         }
       }
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          ignore("should test this") {}
-          ignore("should test this") {}
+          "should test this" ignore {}
+          "should test this" in {}
         }
       }
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          ignore("should test this") {}
-          it("should test this") {}
+          "should test this" ignore {}
+          "should test this" in {}
         }
       }
     }
+/*
     describe("(with info calls)") {
       class InfoInsideTestSpec extends WordSpec {
         val msg = "hi there, dude"
