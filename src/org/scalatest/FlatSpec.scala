@@ -689,7 +689,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def oldIt(specText: String, testTags: Tag*)(testFun: => Unit) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: () => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
@@ -733,7 +733,9 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
   protected val behavior = new BehaviorWord
 
   protected class ItVerbString(verb: String, name: String) {
-    def in(testFun: => Unit) { oldIt(verb + " " + name)(testFun) }
+    def in(testFun: => Unit) {
+      registerTestToRun(verb + " " + name, List(), testFun _)
+    }
   }
 
   protected class ItWord {
@@ -744,7 +746,9 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
   protected val it = new ItWord
 
   protected class IgnoreVerbString(verb: String, name: String) {
-    def in(testFun: => Unit) { oldIgnore(verb + " " + name)(testFun) }
+    def in(testFun: => Unit) {
+      registerTestToIgnore(verb + " " + name, List(), testFun _)
+    }
   }
 
   protected class IgnoreWord {
@@ -758,8 +762,13 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
     (left, right, verb) => {
       behavior.of(left)
       new ResultOfStringPassedToVerb {
-        def in(testFun: => Unit) { oldIt(verb + " " + right)(testFun) }
-        /* def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) */
+        def in(testFun: => Unit) {
+          registerTestToRun(verb + " " + right, List(), testFun _)
+        }
+        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*)(testFun: => Unit) {
+          val tagList = firstTestTag :: otherTestTags.toList
+          registerTestToRun(verb + " " + right, tagList, testFun _)
+        }
       }
     }
   }
@@ -780,11 +789,11 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def oldIt(specText: String)(testFun: => Unit) {
+  /* private def oldIt(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
     oldIt(specText, Array[Tag](): _*)(testFun)
-  }
+  } */
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -804,7 +813,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def oldIgnore(specText: String, testTags: Tag*)(testFun: => Unit) {
+  protected def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)
@@ -836,11 +845,11 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def oldIgnore(specText: String)(testFun: => Unit) {
+  /* protected def oldIgnore(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     oldIgnore(specText, Array[Tag](): _*)(testFun)
-  }
+  } */
   
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
