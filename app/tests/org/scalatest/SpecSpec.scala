@@ -224,6 +224,47 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         val spec = new MySpec
         ensureTestFailedEventReceived(spec, "should blow up")
       }
+      ignore("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends Spec {
+          it("should blow up") {
+            describe("in the wrong place, at the wrong time") {
+              it("should never run") {
+                assert(1 === 2)
+              }
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends Spec {
+          it("should blow up") {
+            ignore("should never run") {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends Spec {
+          it("should blow up") {
+            ignore("should never run", SlowAsMolasses) {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
     }
   }
 }
