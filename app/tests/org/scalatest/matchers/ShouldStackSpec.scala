@@ -62,13 +62,18 @@ trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>
 
 class ShouldStackSpec extends Spec with ShouldMatchers with SharedTests with StackFixtureCreationMethods with ShouldStackBehaviors {
 
+  info("Before the first behavior of shorthand")
+
   describe("A Stack") {
 
     describe("(when empty)") {
       
       it("should be empty") {
         emptyStack should be (empty)
+        info("Inside the first test")
       }
+
+      info("After the first behavior of shorthand")
 
       it("should complain on peek") {
         intercept[IllegalStateException] {

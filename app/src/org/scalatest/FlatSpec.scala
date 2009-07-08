@@ -605,7 +605,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: => Unit) = {
+  private def registerTest(specText: String, f: () => Unit) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -615,7 +615,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
       throw new DuplicateTestNameException(testName, getStackDepth("FlatSpec.scala", "it"))
     }
     val testShortName = specText
-    val test = TestLeaf(currentBranch, testName, specText, f _)
+    val test = TestLeaf(currentBranch, testName, specText, f)
     currentBranch.subNodes ::= test
     testsList ::= test
 
@@ -969,6 +969,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
+ println("shouldRecord is " + shouldRecord)   
               if (shouldRecord)
                 record(message)
               else {
