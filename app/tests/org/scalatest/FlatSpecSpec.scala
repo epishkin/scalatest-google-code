@@ -98,6 +98,62 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
     }
 
+    it("should return registered tags, including ignore tags, from the tags method") {
+
+      val a = new FlatSpec {
+        ignore should "test this" in {}
+        it should "test that" in {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FlatSpec {
+        it should "test this" in {}
+        ignore should "test that" in {}
+      }
+      expect(Map("should test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FlatSpec {
+        ignore should "test this" in {}
+        ignore should "test that" in {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"), "should test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FlatSpec {
+        it should "test this" in {}
+        it should "test that" in {}
+      }
+      expect(Map()) {
+        d.tags
+      }
+
+      val e = new FlatSpec {
+        it should "test this" taggedAs(SlowAsMolasses) in {}
+        ignore should "test that" taggedAs(SlowAsMolasses) in {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        e.tags
+      }
+
+      val f = new FlatSpec {}
+      expect(Map()) {
+        f.tags
+      }
+
+      val g = new FlatSpec {
+        it should "test this" taggedAs(SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        it should "test that" taggedAs(SlowAsMolasses) in {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
+      }
+    }
+
     describe("(with info calls)") {
       class InfoInsideTestFlatSpec extends FlatSpec {
         val msg = "hi there, dude"
