@@ -17,6 +17,7 @@ package org.scalatest
 
 import matchers.ShouldMatchers
 import org.scalatest.events._
+import org.scalatest.mytags._
 
 class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
@@ -181,20 +182,59 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
       }
     }
-    it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
+    describe("(when a nesting rule has been violated)") {
 
-      class MySpec extends FlatSpec {
-        it should "blow up" in {
-          behavior of "in the wrong place, at the wrong time"
+      it("should, if they call a behavior-of from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FlatSpec {
+          it should "blow up" in {
+            behavior of "in the wrong place, at the wrong time"
+          }
         }
-      }
 
-      val spec = new MySpec
-      val reporter = new EventRecordingReporter
-      spec.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
-      val testFailedEvent = reporter.eventsReceived.find(_.isInstanceOf[TestFailed])
-      assert(testFailedEvent.isDefined)
-      assert(testFailedEvent.get.asInstanceOf[TestFailed].testName === "should blow up")
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a behavior-of with a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FlatSpec {
+          it should "blow up" in {
+            behavior of "in the wrong place, at the wrong time"
+            it should "never run" in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FlatSpec {
+          it should "blow up" in {
+            it should "never run" in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FlatSpec {
+          it should "blow up" in {
+            it should "never run" taggedAs(SlowAsMolasses) in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
     }
   }
 }

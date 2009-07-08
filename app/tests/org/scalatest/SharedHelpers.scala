@@ -111,5 +111,13 @@ trait SharedHelpers extends Assertions {
       case _ => fail("No InfoProvided was received by the Reporter during the run.")
     }
   }
+
+  def ensureTestFailedEventReceived(suite: Suite, testName: String) {
+    val reporter = new EventRecordingReporter
+    suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+    val testFailedEvent = reporter.eventsReceived.find(_.isInstanceOf[TestFailed])
+    assert(testFailedEvent.isDefined)
+    assert(testFailedEvent.get.asInstanceOf[TestFailed].testName === testName)
+  }
 }
 
