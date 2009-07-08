@@ -17,6 +17,7 @@ package org.scalatest.matchers
 
 import scala.reflect.Manifest
 import Helper.newTestFailedException
+import ShouldMatchers.ResultOfStringPassedToShould
 
 /**
  * Trait that provides a domain specific language (DSL) for expressing assertions in tests
@@ -974,7 +975,21 @@ trait ShouldMatchers extends Matchers {
    */
   class StringShouldWrapper(left: String) {
 
-    def should(right: String)(implicit fun: (String, String) => TheInThing): TheInThing = {
+    /**
+     * This method enables syntax such as the following in a <code>FlatSpec</code>:
+     *
+     * <pre>
+     * "A Stack (when empty)" should "be empty" in {
+     *   assert(emptyStack.empty)
+     * }
+     * </pre>
+     *
+     * <p>
+     * <code>FlatSpec</code> passes in a function that takes two strings and results in
+     * a <code>
+     * </p>
+     */
+    def should(right: String)(implicit fun: (String, String) => ResultOfStringPassedToShould): ResultOfStringPassedToShould = {
       fun(left, right)
     }
 
@@ -2180,4 +2195,8 @@ LATER: Well, I'm wondering if now that I've removed the be method in ShouldMetho
  *
  * @author Bill Venners
  */
-object ShouldMatchers extends ShouldMatchers
+object ShouldMatchers extends ShouldMatchers {
+  trait ResultOfStringPassedToShould {
+    def in(testFun: => Unit)
+  }
+}
