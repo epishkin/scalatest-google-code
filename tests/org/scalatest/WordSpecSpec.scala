@@ -98,12 +98,12 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
       }
     }
-/*
+
     describe("(with info calls)") {
       class InfoInsideTestSpec extends WordSpec {
         val msg = "hi there, dude"
         val testName = "test name"
-        it(testName) {
+        testName in {
           info(msg)
         }
       }
@@ -120,7 +120,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         val msg = "hi there, dude"
         val testName = "test name"
         info(msg)
-        it(testName) {}
+        testName in {}
       }
       it("should, when the info appears in the body before a test, report the info before the test") {
         val spec = new InfoBeforeTestSpec
@@ -133,7 +133,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         val msg = "hi there, dude"
         val testName = "test name"
         class MySpec extends WordSpec {
-          it(testName) {}
+          testName in {}
           info(msg)
         }
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
@@ -147,7 +147,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           def callInfo() {
             info("howdy")
           }
-          it("howdy also") {
+          "howdy also" in {
             callInfo() // This should work fine
           }
         }
@@ -169,6 +169,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
     }
+    /*
     it("should return registered tags, including ignore tags, from the tags method") {
 
       val a = new WordSpec {
