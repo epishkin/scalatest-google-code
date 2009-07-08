@@ -37,6 +37,7 @@ class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatS
 
   behavior of "A Stack (with one item)"
 
+  
   nonEmptyStack(lastValuePushed)(stackWithOneItem)
   nonFullStack(stackWithOneItem)
 
