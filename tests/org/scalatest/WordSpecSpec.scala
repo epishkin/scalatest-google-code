@@ -169,44 +169,43 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
     }
-    /*
     it("should return registered tags, including ignore tags, from the tags method") {
 
       val a = new WordSpec {
-        ignore("should test this") {}
-        it("should test that") {}
+        "should test this" ignore {}
+        "should test that" in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
         a.tags
       }
 
       val b = new WordSpec {
-        it("should test this") {}
-        ignore("should test that") {}
+        "should test this" in {}
+        "should test that" ignore {}
       }
       expect(Map("should test that" -> Set("org.scalatest.Ignore"))) {
         b.tags
       }
 
       val c = new WordSpec {
-        ignore("should test this") {}
-        ignore("should test that") {}
+        "should test this" ignore {}
+        "should test that" ignore {}
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"), "should test that" -> Set("org.scalatest.Ignore"))) {
         c.tags
       }
 
       val d = new WordSpec {
-        it("should test this") {}
-        it("should test that") {}
+        "should test this" in {}
+        "should test that" in {} // was an in
       }
       expect(Map()) {
         d.tags
       }
-
+ /*
       val e = new WordSpec {
-        it("should test this", SlowAsMolasses) {}
-        ignore("should test that", SlowAsMolasses) {}
+        "should test this" taggedAs(SlowAsMolasses) in {}
+        "should test that" taggedAs(SlowAsMolasses) ignore {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
         e.tags
@@ -218,14 +217,14 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val g = new WordSpec {
-        it("should test this", SlowAsMolasses, WeakAsAKitten) {}
-        it("should test that", SlowAsMolasses) {}
+        "should test this" taggedAs(SlowAsMolasses, WeakAsAKitten) in {}
+        "should test that" taggedAs(SlowAsMolasses) in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
         g.tags
-      }
+      }*/
     }
-
+/*
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
