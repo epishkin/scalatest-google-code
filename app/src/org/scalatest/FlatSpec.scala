@@ -15,7 +15,6 @@
  */
 package org.scalatest
 
-import matchers.{TheInThing, ShouldStringToken}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
