@@ -41,7 +41,7 @@ object GenMustMatchersTests extends Application {
 
   val dir = new File("target/generated/tests/org/scalatest/matchers")
   dir.mkdirs()
-  val shouldFileNames =
+  val shouldFileNames = 
     List(
       "ShouldBehaveLikeSpec.scala",
       "ShouldContainElementSpec.scala",
@@ -53,6 +53,7 @@ object GenMustMatchersTests extends Application {
       "ShouldOrderedSpec.scala",
       "ShouldSizeSpec.scala",
       "ShouldStackSpec.scala",
+      "ShouldStackFlatSpec.scala",
       "ShouldBeASymbolSpec.scala",
       "ShouldBeAnSymbolSpec.scala",
       "ShouldBeMatcherSpec.scala",

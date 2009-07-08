@@ -17,7 +17,6 @@ package org.scalatest.matchers
 
 import scala.reflect.Manifest
 import Helper.newTestFailedException
-import ShouldMatchers.ResultOfStringPassedToShould
 
 /**
  * Trait that provides a domain specific language (DSL) for expressing assertions in tests
@@ -985,12 +984,14 @@ trait ShouldMatchers extends Matchers {
      * </pre>
      *
      * <p>
-     * <code>FlatSpec</code> passes in a function that takes two strings and results in
-     * a <code>
+     * <code>FlatSpec</code> passes in a function via the implicit parameter that takes
+     * three strings and results in a <code>ResultOfStringPassedToVerb</code>. This method
+     * simply invokes this function, passing in left, right, and the verb string
+     * <code>"should"</code>.
      * </p>
      */
-    def should(right: String)(implicit fun: (String, String) => ResultOfStringPassedToShould): ResultOfStringPassedToShould = {
-      fun(left, right)
+    def should(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb): ResultOfStringPassedToVerb = {
+      fun(left, right, "should")
     }
 
     /**
@@ -2195,8 +2196,4 @@ LATER: Well, I'm wondering if now that I've removed the be method in ShouldMetho
  *
  * @author Bill Venners
  */
-object ShouldMatchers extends ShouldMatchers {
-  trait ResultOfStringPassedToShould {
-    def in(testFun: => Unit)
-  }
-}
+object ShouldMatchers extends ShouldMatchers
