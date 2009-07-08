@@ -688,7 +688,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def oldIt(specText: String, testTags: List[Tag], testFun: () => Unit) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: () => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
@@ -748,7 +748,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def oldIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
@@ -792,7 +792,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
-  protected def oldDescribe(description: String, f: () => Unit) {
+  private def oldDescribe(description: String, f: () => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
@@ -828,10 +828,26 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
   }
 
   protected implicit def convertToStringCanWrapper(s: String) = new StringCanWrapper(s)
-  
+
+  protected class StringTaggedAs(specText: String, tags: List[Tag]) {
+    def in(testFun: => Unit) {
+      registerTestToRun(specText, tags, testFun _)
+    }
+  }
+
+  protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
+    def in(testFun: => Unit) {
+      registerTestToIgnore(specText, tags, testFun _)
+    }
+  }
+
   protected class StringInWrapper(specText: String) {
     def in(f: => Unit) {
-      oldIt(specText, List(), f _)
+      registerTestToRun(specText, List(), f _)
+    }
+    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
+      val tagList = firstTestTag :: otherTestTags.toList
+      new StringTaggedAs(specText, tagList)
     }
   }
 
@@ -839,7 +855,11 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
 
   protected class IgnoredTest(specText: String) {
     def in(f: => Unit) {
-      oldIgnore(specText, List(), f _)
+      registerTestToIgnore(specText, List(), f _)
+    }
+    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
+      val tagList = firstTestTag :: otherTestTags.toList
+      new IgnoreTestStringTaggedAs(specText, tagList)
     }
   }
   protected class IgnoreWord {

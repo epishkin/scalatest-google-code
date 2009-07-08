@@ -833,7 +833,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)
