@@ -37,7 +37,8 @@ class StackShorthandFlatSpec extends FlatSpec with ShouldMatchers with StackFixt
   }
 
   behavior of "A Stack (with one item)"
-
+  // "A Stack (with one item)" should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+  // it should behave like nonFullStack(stackWithOneItem)
   nonEmptyStack(lastValuePushed)(stackWithOneItem)
   nonFullStack(stackWithOneItem)
 

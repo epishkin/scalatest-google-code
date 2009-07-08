@@ -32,7 +32,7 @@ trait StackBehaviors extends BeforeAndAfter { this: Spec =>
       assert(stack.peek === lastItemAdded)
       assert(stack.size === size)
     }
-  
+
     it("should remove the top item on pop") {
       val size = stack.size
       assert(stack.pop === lastItemAdded)
@@ -104,8 +104,12 @@ class SharedTestExampleSpec extends Spec with SharedTests with StackBehaviors {
     }
 
     describe("(with one item)") {
+
       ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
       ensure (stackWithOneItem) behaves like (nonFullStack)
+      // implicit def stackFixture = stackWithOneItem
+      // it should behave like nonEmptyStack(lastValuePushed)
+      // it should behave like nonFullStack
     }
     
     describe("(with one item less than capacity)") {

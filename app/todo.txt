@@ -1,5 +1,13 @@
 pass goodies down into before and after methods
 
+add sugar forms for shouldEqual and mustEqual to Should/MustMatchers:
+
+    stack.peek mustEqual lastItemAdded
+    stack.size mustEqual size
+    
+    stack.peek shouldEqual lastItemAdded
+    stack.size shouldEqual size
+    
 pass goodies into RunStarting.
 
 In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.
@@ -203,4 +211,46 @@ ant task.
 it is configured with. Print out the ordinal and everything. The
 reason is this can be used as an output during concurrent tests which
 can be read in and then sorted to produce other output.
+
+implicit def stackFixture = stackWithOneItem
+it should behave like nonEmptyStack(lastValuePushed)
+it should behave like nonFullStack
+
+"A Stack (with one item)" should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+it should behave like nonFullStack(stackWithOneItem)
+
+My thought was that it should behave like could be supported in SharedTests as is.
+So behave is defined in SharedTests, which requires TestRegistration as its self type. behave
+is a val that refers to a BehaveWord instance.
+
+Then in ShouldMatchers, there's the StringShouldWrapper has a should method that takes a BehaveWord 
+type, but there's no instance in ShouldMatchers. So you can only use it when SharedTests's
+is mixed in. And what it will need to do is register the left string as a describer. That's
+all that's needed here.
+
+"A Stack" ++ {
+  "(with one item)" should {
+    implicit def stackFixture = stackWithOneItem
+    behave like nonEmptyStack(lastValuePushed)
+    behave like nonFullStack
+  }
+}
+
+In WordSpec, just support "behave like X". No SharedTests mix in needed. 
+In FlatSpec, just support "it should behave like X" and if ShouldMatchers is mixed in "string should behave like X". No shared tests needed.
+In Spec, just support "it should behave like X." No SharedTests mix in needed. So it("test name") will have to be an apply method on
+the it object.
+
+Now, the question is FeatureSpec and FunSuite.
+include testsFor nonEmptyStack(lastValuePushed, stackWithOneItem)
+include testsFor nonFullStack(stackWithOneItem)
+
+include scenariosFor nonEmptyStack(lastValuePushed)(stackWithOneItem)
+include scenariosFor nonFullStack(stackWithOneItem)
+
+That's simple and readable. Can drop SharedTests trait and TestRegistration.
+
+My other thought was that WordSpec will by default only support "can" as its action word. To get
+should you need to mix in ShouldMatchers. To get must you need to mix in MustMatchers, so it is consistent.
+
 

@@ -41,6 +41,9 @@ class StackSpec extends Spec with StackFixtureCreationMethods with StackBehavior
     }
 
     describe("(with one item)") {
+      // implicit def stackFixture = stackWithOneItem
+      // it should behave like nonEmptyStack(lastValuePushed)
+      // it should behave like nonFullStack
       nonEmptyStack(lastValuePushed)(stackWithOneItem)
       nonFullStack(stackWithOneItem)
     }
