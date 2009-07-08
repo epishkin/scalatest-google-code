@@ -75,26 +75,26 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       
       intercept[DuplicateTestNameException] {
         new Spec {
-          it("test this") {}
-          it("test this") {}
+          it("should test this") {}
+          it("should test this") {}
         }
       }
       intercept[DuplicateTestNameException] {
         new Spec {
-          it("test this") {}
-          ignore("test this") {}
+          it("should test this") {}
+          ignore("should test this") {}
         }
       }
       intercept[DuplicateTestNameException] {
         new Spec {
-          ignore("test this") {}
-          ignore("test this") {}
+          ignore("should test this") {}
+          ignore("should test this") {}
         }
       }
       intercept[DuplicateTestNameException] {
         new Spec {
-          ignore("test this") {}
-          it("test this") {}
+          ignore("should test this") {}
+          it("should test this") {}
         }
       }
     }
@@ -168,6 +168,61 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
     }
+    it("should return registered tags, including ignore tags, from the tags method") {
+
+      val a = new Spec {
+        ignore("should test this") {}
+        it("should test that") {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new Spec {
+        it("should test this") {}
+        ignore("should test that") {}
+      }
+      expect(Map("should test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new Spec {
+        ignore("should test this") {}
+        ignore("should test that") {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"), "should test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new Spec {
+        it("should test this") {}
+        it("should test that") {}
+      }
+      expect(Map()) {
+        d.tags
+      }
+
+      val e = new Spec {
+        it("should test this", SlowAsMolasses) {}
+        ignore("should test that", SlowAsMolasses) {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        e.tags
+      }
+
+      val f = new Spec {}
+      expect(Map()) {
+        f.tags
+      }
+
+      val g = new Spec {
+        it("should test this", SlowAsMolasses, WeakAsAKitten) {}
+        it("should test that", SlowAsMolasses) {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
+      }
+    }
 
     describe("(when a nesting rule has been violated)") {
 
@@ -224,12 +279,12 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         val spec = new MySpec
         ensureTestFailedEventReceived(spec, "should blow up")
       }
-      ignore("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+      it("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends Spec {
           it("should blow up") {
             describe("in the wrong place, at the wrong time") {
-              it("should never run") {
+              ignore("should never run") {
                 assert(1 === 2)
               }
             }
