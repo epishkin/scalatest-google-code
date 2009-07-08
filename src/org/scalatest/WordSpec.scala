@@ -748,14 +748,14 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String, testTags: Tag*)(testFun: => Unit) {
+  protected def oldIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
       throw new NullPointerException("a test tag was null")
-    val testName = registerTest(specText, testFun _)
+    val testName = registerTest(specText, testFun)
     val tagNames = Set[String]() ++ testTags.map(_.name)
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -780,11 +780,11 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String)(testFun: => Unit) {
+  /* protected def ignore(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
-  }
+  } */
   
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
@@ -832,6 +832,9 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
   protected class StringInWrapper(specText: String) {
     def in(f: => Unit) {
       oldIt(specText, List(), f _)
+    }
+    def ignore(f: => Unit) {
+      oldIgnore(specText, List(), f _)
     }
   }
 
