@@ -969,7 +969,6 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
- println("shouldRecord is " + shouldRecord)   
               if (shouldRecord)
                 record(message)
               else {

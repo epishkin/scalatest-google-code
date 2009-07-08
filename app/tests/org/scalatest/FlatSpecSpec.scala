@@ -181,6 +181,21 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
       }
     }
+    it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
+
+      class MySpec extends FlatSpec {
+        it should "blow up" in {
+          behavior of "in the wrong place, at the wrong time"
+        }
+      }
+
+      val spec = new MySpec
+      val reporter = new EventRecordingReporter
+      spec.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      val testFailedEvent = reporter.eventsReceived.find(_.isInstanceOf[TestFailed])
+      assert(testFailedEvent.isDefined)
+      assert(testFailedEvent.get.asInstanceOf[TestFailed].testName === "should blow up")
+    }
   }
 }
 
