@@ -604,7 +604,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: => Unit) = {
+  private def registerTest(specText: String, f: () => Unit) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -614,7 +614,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
       throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
     }
     val testShortName = specText
-    val test = TestLeaf(currentBranch, testName, specText, f _)
+    val test = TestLeaf(currentBranch, testName, specText, f)
     currentBranch.subNodes ::= test
     testsList ::= test
 
@@ -688,7 +688,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def it(specText: String, testTags: Tag*)(testFun: => Unit) {
+  protected def oldIt(specText: String, testTags: List[Tag], testFun: () => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
@@ -724,11 +724,11 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def it(specText: String)(testFun: => Unit) {
+  /* protected def it(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     it(specText, Array[Tag](): _*)(testFun)
-  }
+  } */
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -755,7 +755,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
       throw new NullPointerException("a test tag was null")
-    val testName = registerTest(specText, testFun)
+    val testName = registerTest(specText, testFun _)
     val tagNames = Set[String]() ++ testTags.map(_.name)
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -829,6 +829,14 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
 
   protected implicit def convertToStringCanWrapper(s: String) = new StringCanWrapper(s)
   
+  protected class StringInWrapper(specText: String) {
+    def in(f: => Unit) {
+      oldIt(specText, List(), f _)
+    }
+  }
+
+  protected implicit def convertToStringInWrapper(s: String) = new StringInWrapper(s)
+
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
