@@ -235,6 +235,46 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         val spec = new MySpec
         ensureTestFailedEventReceived(spec, "should blow up")
       }
+      it("should, if they call a behavior-of with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FlatSpec {
+          it should "blow up" in {
+            behavior of "in the wrong place, at the wrong time"
+            ignore should "never run" in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FlatSpec {
+          it should "blow up" in {
+            ignore should "never run" in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FlatSpec {
+          it should "blow up" in {
+            ignore should "never run" taggedAs(SlowAsMolasses) in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
     }
   }
 }

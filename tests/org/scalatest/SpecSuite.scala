@@ -20,60 +20,6 @@ import org.scalatest.events._
 
 class SpecSuite extends FunSuite with SharedHelpers {
 
-  test("calling an ignore from within an it clause results in a TestFailedError at runtime") {
-    
-    var testFailedAsExpected = false
-    class MyReporter extends Reporter {
-      def apply(event: Event) {
-        event match {
-          case event: TestFailed =>
-            if (event.testName.indexOf("this test should blow up") != -1)
-              testFailedAsExpected = true
-          case _ =>
-        }
-      }
-    }
-
-    class MySpec extends Spec {
-      it("this test should blow up") {
-        ignore("is in the wrong place also") {
-          assert(1 === 1)
-        }
-      }
-    }
-
-    val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(testFailedAsExpected)
-  }
-
-  test("calling an ignore with tags from within an it clause results in a TestFailedError at runtime") {
-    
-    var testFailedAsExpected = false
-    class MyReporter extends Reporter {
-      def apply(event: Event) {
-        event match {
-          case event: TestFailed =>
-            if (event.testName.indexOf("this test should blow up") != -1)
-              testFailedAsExpected = true
-          case _ =>
-        }
-      }
-    }
-
-    class MySpec extends Spec {
-      it("this test should blow up") {
-        ignore("is in the wrong place also", mytags.SlowAsMolasses) {
-          assert(1 === 1)
-        }
-      }
-    }
-
-    val a = new MySpec
-    a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(testFailedAsExpected)
-  }
-
   test("tags work correctly in Spec") {
     
     val d = new Spec {

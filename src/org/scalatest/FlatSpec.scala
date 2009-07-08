@@ -755,13 +755,19 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
 
   protected val it = new ItWord
 
+  protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+    def in(testFun: => Unit) {
+      registerTestToIgnore(verb + " " + name, tags, testFun _)
+    }
+  }
+
   protected class IgnoreVerbString(verb: String, name: String) {
     def in(testFun: => Unit) {
       registerTestToIgnore(verb + " " + name, List(), testFun _)
     }
-    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*)(testFun: => Unit) {
+    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      registerTestToIgnore(verb + " " + name, tagList, testFun _)
+      new IgnoreVerbStringTaggedAs(verb, name, tagList)
     }
   }
 
