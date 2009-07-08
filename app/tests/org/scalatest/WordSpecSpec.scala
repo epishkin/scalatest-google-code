@@ -202,10 +202,10 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       expect(Map()) {
         d.tags
       }
- /*
+
       val e = new WordSpec {
         "should test this" taggedAs(SlowAsMolasses) in {}
-        "should test that" taggedAs(SlowAsMolasses) ignore {}
+        ignore test "should test that" taggedAs(SlowAsMolasses) in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
         e.tags
@@ -222,7 +222,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
         g.tags
-      }*/
+      }
     }
 /*
     describe("(when a nesting rule has been violated)") {
