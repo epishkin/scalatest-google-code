@@ -15,7 +15,6 @@
  */
 package org.scalatest
 
-
 import matchers.ShouldMatchers
 
 class StackShorthandFlatSpec extends FlatSpec with ShouldMatchers with StackFixtureCreationMethods with FlatStackBehaviors {
