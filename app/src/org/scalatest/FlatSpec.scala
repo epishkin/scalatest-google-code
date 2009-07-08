@@ -752,13 +752,14 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
     def must(string: String) = new IgnoreVerbString("must", string)
   }
 
-  protected val ignore = new ItWord
+  protected val ignore = new IgnoreWord
 
   implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
     (left, right, verb) => {
       behavior.of(left)
       new ResultOfStringPassedToVerb {
         def in(testFun: => Unit) { oldIt(verb + " " + right)(testFun) }
+        /* def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) */
       }
     }
   }
