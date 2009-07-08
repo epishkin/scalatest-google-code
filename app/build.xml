@@ -302,7 +302,7 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
-            <suite classname="org.scalatest.StackFlatSpec" />
+            <suite classname="org.scalatest.matchers.MustStackFlatSpec" />
 <!--
             <suite classname="org.scalatest.goodies.GoodiesSuiteSpec" />
             <suite classname="org.scalatest.fixture.FixtureSuiteSpec" />

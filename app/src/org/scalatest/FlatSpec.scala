@@ -21,7 +21,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-import org.scalatest.matchers.ShouldMatchers.ResultOfStringPassedToShould
+import org.scalatest.matchers.ResultOfStringPassedToVerb
 
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
@@ -738,6 +738,7 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
 
   protected class ItWord {
     def should(string: String) = new ItVerbString("should", string)
+    def must(string: String) = new ItVerbString("must", string)
   }
 
   protected val it = new ItWord
@@ -748,15 +749,16 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
 
   protected class IgnoreWord {
     def should(string: String) = new IgnoreVerbString("should", string)
+    def must(string: String) = new IgnoreVerbString("must", string)
   }
 
   protected val ignore = new ItWord
 
-  implicit val doShorthandForm: (String, String) => ResultOfStringPassedToShould = {
-    (left, right) => {
+  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
+    (left, right, verb) => {
       behavior.of(left)
-      new ResultOfStringPassedToShould {
-        def in(testFun: => Unit) { oldIt("should " + right)(testFun) }
+      new ResultOfStringPassedToVerb {
+        def in(testFun: => Unit) { oldIt(verb + " " + right)(testFun) }
       }
     }
   }
