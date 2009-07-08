@@ -974,6 +974,10 @@ trait ShouldMatchers extends Matchers {
    */
   class StringShouldWrapper(left: String) {
 
+    def should(right: String)(implicit fun: (String, String) => TheInThing): TheInThing = {
+      fun(left, right)
+    }
+
     /**
      * This method enables syntax such as the following:
      *

@@ -15,6 +15,7 @@
  */
 package org.scalatest
 
+import matchers.{TheInThing, ShouldStringToken}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
@@ -751,14 +752,19 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
 
   protected val ignore = new ItWord
 
-  class DescWrapper(description: String) {
+/*  class DescWrapper(description: String) {
     def should(name: String) = {
       behavior.of(description)
       new ItVerbString("should", name)
     }
-  }
+  }*/
 
-  implicit def convertToDescWrapper(s: String) = new DescWrapper(s)
+  implicit val doShorthandForm: (String, String) => TheInThing = {
+    (left, right) => {
+      behavior.of(left)
+      new TheInThing((testFun: () => Unit) => { oldIt("should " + right)(testFun) })
+    }
+  }
   
   /**
    * Register a test with the given spec text and test function value that takes no arguments.

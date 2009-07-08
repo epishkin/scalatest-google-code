@@ -15,6 +15,7 @@
  */
 package org.scalatest
 
+import matchers.ShouldMatchers
 import org.scalatest.events._
 
 class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
@@ -169,7 +170,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
       }
       it("should work when using the shorthand notation for 'behavior of'") {
-        val e = new FlatSpec {
+        val e = new FlatSpec with ShouldMatchers {
           "A Tester" should "test this" in {}
           it should "test that" in {}
         }
