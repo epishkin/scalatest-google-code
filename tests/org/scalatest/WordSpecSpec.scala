@@ -82,18 +82,18 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       intercept[DuplicateTestNameException] {
         new WordSpec {
           "should test this" in {}
-          "should test this" ignore {}
+          ignore test "should test this" in {}
         }
       }
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          "should test this" ignore {}
-          "should test this" in {}
+          ignore test "should test this" in {}
+          ignore test "should test this" in {}
         }
       }
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          "should test this" ignore {}
+          ignore test "should test this" in {}
           "should test this" in {}
         }
       }
@@ -172,7 +172,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
     it("should return registered tags, including ignore tags, from the tags method") {
 
       val a = new WordSpec {
-        "should test this" ignore {}
+        ignore example "should test this" in {}
         "should test that" in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
@@ -181,15 +181,15 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
       val b = new WordSpec {
         "should test this" in {}
-        "should test that" ignore {}
+        ignore example "should test that" in {}
       }
       expect(Map("should test that" -> Set("org.scalatest.Ignore"))) {
         b.tags
       }
 
       val c = new WordSpec {
-        "should test this" ignore {}
-        "should test that" ignore {}
+        ignore example "should test this" in {}
+        ignore example "should test that" in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"), "should test that" -> Set("org.scalatest.Ignore"))) {
         c.tags

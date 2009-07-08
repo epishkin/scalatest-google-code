@@ -833,12 +833,21 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     def in(f: => Unit) {
       oldIt(specText, List(), f _)
     }
-    def ignore(f: => Unit) {
-      oldIgnore(specText, List(), f _)
-    }
   }
 
   protected implicit def convertToStringInWrapper(s: String) = new StringInWrapper(s)
+
+  protected class IgnoredTest(specText: String) {
+    def in(f: => Unit) {
+      oldIgnore(specText, List(), f _)
+    }
+  }
+  protected class IgnoreWord {
+    def test(specText: String) = new IgnoredTest(specText)
+    def example(specText: String) = new IgnoredTest(specText)
+  }
+
+  protected val ignore = new IgnoreWord
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
