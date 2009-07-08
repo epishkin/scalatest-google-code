@@ -20,16 +20,16 @@ import org.scalatest.mytags._
 
 class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
-  describe("A Spec") {
+  describe("A WordSpec") {
 
     it("should return the test names in registration order from testNames") {
 
       val a = new WordSpec {
-        it("should test this") {}
-        it("should test that") {}
+        "it should test this" in {}
+        "it should test that" in {}
       }
 
-      expect(List("should test this", "should test that")) {
+      expect(List("it should test this", "it should test that")) {
         a.testNames.elements.toList
       }
 
@@ -40,18 +40,18 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val c = new WordSpec {
-        it("should test that") {}
-        it("should test this") {}
+        "it should test that" in {}
+        "it should test this" in {}
       }
 
-      expect(List("should test that", "should test this")) {
+      expect(List("it should test that", "it should test this")) {
         c.testNames.elements.toList
       }
 
       val d = new WordSpec {
         "A Tester" can {
-          it("test that") {}
-          it("test this") {}
+          "test that" in {}
+          "test this" in {}
         }
       }
 
@@ -61,8 +61,8 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
       val e = new WordSpec {
         "A Tester" can {
-          it("test this") {}
-          it("test that") {}
+          "test this" in {}
+          "test that" in {}
         }
       }
 
