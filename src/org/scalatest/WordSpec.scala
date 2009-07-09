@@ -887,7 +887,6 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
   }
   protected class IgnoreWord {
     def test(specText: String) = new IgnoredTest(specText)
-    def example(specText: String) = new IgnoredTest(specText)
   }
 
   protected val ignore = new IgnoreWord
@@ -916,8 +915,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
         def sendInfoProvidedMessage() {
           // Need to use the full name of the description, which includes all the descriptions it is nested inside
           // Call getPrefix and pass in this Desc, to get the full name
-          val descriptionFullName = getPrefix(desc).trim
-         
+          val descriptionFullName = getPrefixWithoutVerb(desc).trim
 
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
@@ -945,7 +943,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
             if (!filterTest)
               if (ignoreTest) {
                 val testSucceededIcon = Resources("testSucceededIconChar")
-                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getTestPrefix(parent) + " " + specText)
+                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getFormattedSpecTextPrefix(parent) + " " + specText)
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
@@ -986,7 +984,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
         val report = wrapReporterIfNecessary(reporter)
 
         val testSucceededIcon = Resources("testSucceededIconChar")
-        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getTestPrefix(test.parent) + " " + test.specText)
+        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getFormattedSpecTextPrefix(test.parent) + " " + test.specText)
 
         // Create a Rerunner if the Spec has a no-arg constructor
         val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
@@ -1003,7 +1001,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
         // will show up in a test-style output.
         report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
 
-        val formatter = IndentedText(formattedSpecText, getTestPrefix(test.parent) + " " + test.specText, 1)
+        val formatter = IndentedText(formattedSpecText, getFormattedSpecTextPrefix(test.parent) + " " + test.specText, 1)
         val oldInformer = atomicInformer.get
         val informerForThisTest =
           new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {

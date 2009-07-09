@@ -45,6 +45,8 @@ private[scalatest] object NodeFamily {
     verb: String
   ) extends Branch(Some(parent))
 
+  // This guy is for descriptions. If a VerbBranch, it looks for hard coded (when and if
+  // it finds it puts a trailing close paren in there
   private[scalatest] def getPrefix(branch: Branch): String = {
     branch match {
       case Trunk() => ""
@@ -52,14 +54,34 @@ private[scalatest] object NodeFamily {
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionName) =>
         Resources("prefixSuffix", getPrefix(parent), descriptionName)    
+      case VerbBranch(parent, descriptionName, verb) =>
+        val prefix = getPrefix(parent)
+        val suffix = if (prefix.endsWith("(when") || prefix.endsWith("(when it")) ")" else ""
+        val withoutVerb = Resources("prefixSuffix", prefix, descriptionName + suffix)
+        Resources("prefixSuffix", withoutVerb, verb)
+    }
+  }
+
+  // This guy is for descriptions. If a VerbBranch, it looks for hard coded (when and if
+  // it finds it puts a trailing close paren in there
+  private[scalatest] def getPrefixWithoutVerb(branch: Branch): String = {
+    branch match {
+      case Trunk() => ""
+      // Call to getPrefix is not tail recursive, but I don't expect
+      // the describe nesting to be very deep (famous last words).
+      case DescriptionBranch(parent, descriptionName) =>
+        Resources("prefixSuffix", getPrefix(parent), descriptionName)
       case VerbBranch(parent, descriptionName, _) =>
         val prefix = getPrefix(parent)
         val suffix = if (prefix.endsWith("(when") || prefix.endsWith("(when it")) ")" else ""
         Resources("prefixSuffix", prefix, descriptionName + suffix)
     }
   }
-  
-  private[scalatest] def getTestPrefix(branch: Branch): String = {
+
+  // This one is for formatted specText, like:
+  // - can do something
+  // So it goes up to the verb and stops
+  private[scalatest] def getFormattedSpecTextPrefix(branch: Branch): String = {
     branch match {
       case Trunk() => ""
       // Call to getTestPrefix is not tail recursive, but I don't expect
