@@ -20,6 +20,8 @@ import matchers.ShouldMatchers
 
 class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors with ShouldMatchers {
 
+  def it = afterWord("it")
+  
   "A Stack" when it {
     
       "is empty" should {
