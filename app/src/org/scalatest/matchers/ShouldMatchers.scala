@@ -792,7 +792,7 @@ import Helper.newTestFailedException
  * forget a set of needed parentheses.
  * </p>
  */
-trait ShouldMatchers extends Matchers {
+trait ShouldMatchers extends Matchers with ShouldVerb {
 
   private object ShouldMethodHelper {
     def shouldMatcher[T](left: T, rightMatcher: Matcher[T]) {
@@ -972,9 +972,9 @@ trait ShouldMatchers extends Matchers {
    *
    * @author Bill Venners
    */
-  class StringShouldWrapper(left: String) {
+  class StringShouldWrapper(left: String) extends StringShouldWrapperForVerb(left) {
 
-    /**
+    /* *
      * This method enables syntax such as the following in a <code>FlatSpec</code>:
      *
      * <pre>
@@ -989,14 +989,14 @@ trait ShouldMatchers extends Matchers {
      * simply invokes this function, passing in left, right, and the verb string
      * <code>"should"</code>.
      * </p>
-     */
+     *
     def should(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb): ResultOfStringPassedToVerb = {
       fun(left, right, "should")
     }
 
     def should(right: => Unit)(implicit fun: (String, () => Unit, String) => Unit) {
       fun(left, right _, "should")
-    }
+    }     */
 
     /**
      * This method enables syntax such as the following:
@@ -1931,7 +1931,7 @@ trait ShouldMatchers extends Matchers {
    * Implicitly converts an object of type <code>java.lang.String</code> to a <code>StringShouldWrapper</code>,
    * to enable <code>should</code> methods to be invokable on that object.
    */
-  implicit def convertToStringShouldWrapper(o: String): StringShouldWrapper = new StringShouldWrapper(o)
+  implicit override def convertToStringShouldWrapper(o: String): StringShouldWrapper = new StringShouldWrapper(o)
 
   /**
    * Implicitly converts an object of type <code>java.util.Collection[T]</code> to a <code>JavaCollectionShouldWrapper[T]</code>,

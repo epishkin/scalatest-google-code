@@ -27,7 +27,7 @@ trait ShouldVerb {
    *
    * @author Bill Venners
    */
-  class StringShouldWrapper(left: String) {
+  class StringShouldWrapperForVerb(left: String) {
 
     /**
      * This method enables syntax such as the following in a <code>FlatSpec</code>:
@@ -61,5 +61,5 @@ trait ShouldVerb {
    * Implicitly converts an object of type <code>java.lang.String</code> to a <code>StringShouldWrapper</code>,
    * to enable <code>should</code> methods to be invokable on that object.
    */
-  implicit def convertToStringShouldWrapper(o: String): StringShouldWrapper = new StringShouldWrapper(o)
+  implicit def convertToStringShouldWrapper(o: String): StringShouldWrapperForVerb = new StringShouldWrapperForVerb(o)
 }
