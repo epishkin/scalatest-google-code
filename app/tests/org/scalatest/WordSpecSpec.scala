@@ -224,14 +224,14 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         g.tags
       }
     }
-/*
+
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends WordSpec {
-          it("should blow up") {
-            describe("in the wrong place, at the wrong time") {
+          "should blow up" in {
+            "in the wrong place, at the wrong time" can {
             }
           }
         }
@@ -242,9 +242,9 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should, if they call a describe with a nested it from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends WordSpec {
-          it("should blow up") {
-            describe("in the wrong place, at the wrong time") {
-              it("should never run") {
+          "should blow up" in {
+            "in the wrong place, at the wrong time" can {
+              "should never run" in {
                 assert(1 === 2)
               }
             }
@@ -257,8 +257,8 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends WordSpec {
-          it("should blow up") {
-            it("should never run") {
+          "should blow up" in {
+            "should never run" in {
               assert(1 === 2)
             }
           }
@@ -270,8 +270,8 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends WordSpec {
-          it("should blow up") {
-            it("should never run", SlowAsMolasses) {
+          "should blow up" in {
+            "should never run" taggedAs(SlowAsMolasses) in {
               assert(1 === 2)
             }
           }
@@ -283,9 +283,9 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends WordSpec {
-          it("should blow up") {
-            describe("in the wrong place, at the wrong time") {
-              ignore("should never run") {
+          "should blow up" in {
+            "in the wrong place, at the wrong time" can {
+              ignore test "should never run" in {
                 assert(1 === 2)
               }
             }
@@ -298,8 +298,8 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends WordSpec {
-          it("should blow up") {
-            ignore("should never run") {
+          "should blow up" in {
+            ignore test "should never run" in {
               assert(1 === 2)
             }
           }
@@ -311,8 +311,8 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends WordSpec {
-          it("should blow up") {
-            ignore("should never run", SlowAsMolasses) {
+          "should blow up" in {
+            ignore test "should never run" taggedAs(SlowAsMolasses) in {
               assert(1 === 2)
             }
           }
@@ -322,7 +322,6 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         ensureTestFailedEventReceived(spec, "should blow up")
       }
     }
-*/
   }
 }
 

@@ -792,8 +792,8 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
-  private def oldDescribe(description: String, f: () => Unit) {
-
+  private def registerVerbBranch(description: String, verb: String, f: () => Unit) {
+      
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
 
@@ -801,7 +801,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
       val oldBundle = atomic.get
       var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
-      val newBranch = DescriptionBranch(currentBranch, description)
+      val newBranch = VerbBranch(currentBranch, description, verb)
       val oldBranch = currentBranch
       currentBranch.subNodes ::= newBranch
       currentBranch = newBranch
@@ -823,7 +823,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
 
   protected class StringCanWrapper(description: String) {
     def can(f: => Unit) {
-      oldDescribe(description + " can", f _)
+      registerVerbBranch(description, " can", f _)
     }
   }
 
@@ -888,7 +888,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     // into error messages on the standard error stream.
     val report = wrapReporterIfNecessary(reporter)
     branch match {
-      case desc @ DescriptionBranch(_, descriptionName) =>
+      case desc @ VerbBranch(_, descriptionName, verb) =>
 
         def sendInfoProvidedMessage() {
           // Need to use the full name of the description, which includes all the descriptions it is nested inside
@@ -916,13 +916,13 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case TestLeaf(_, tn, specText, _) =>
+        case TestLeaf(parent, tn, specText, _) =>
           if (!stopRequested()) { // TODO: Seems odd to me to check for stop here but still fire infos
             val (filterTest, ignoreTest) = filter(tn, tags)
             if (!filterTest)
               if (ignoreTest) {
                 val testSucceededIcon = Resources("testSucceededIconChar")
-                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, specText)
+                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getTestPrefix(parent) + " " + specText)
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
@@ -963,7 +963,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
         val report = wrapReporterIfNecessary(reporter)
 
         val testSucceededIcon = Resources("testSucceededIconChar")
-        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, test.specText)
+        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getTestPrefix(test.parent) + " " + test.specText)
 
         // Create a Rerunner if the Spec has a no-arg constructor
         val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
@@ -980,7 +980,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
         // will show up in a test-style output.
         report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
 
-        val formatter = IndentedText(formattedSpecText, test.specText, 1)
+        val formatter = IndentedText(formattedSpecText, getTestPrefix(test.parent) + " " + test.specText, 1)
         val oldInformer = atomicInformer.get
         val informerForThisTest =
           new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
