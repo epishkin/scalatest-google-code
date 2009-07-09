@@ -15,11 +15,14 @@
  */
 package org.scalatest
 
-class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors {
+
+import matchers.ShouldMatchers
+
+class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors with ShouldMatchers {
 
   "A Stack" when it {
     
-      "is empty" can {
+      "is empty" should {
 
         "be empty" in {
           assert(emptyStack.empty)
