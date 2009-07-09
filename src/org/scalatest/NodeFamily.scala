@@ -37,18 +37,37 @@ private[scalatest] object NodeFamily {
   case class DescriptionBranch(
     parent: Branch,
     descriptionName: String
+  ) extends Branch(Some(parent))   
+
+  case class VerbBranch(
+    parent: Branch,
+    descriptionName: String,
+    verb: String
   ) extends Branch(Some(parent))
 
-  protected[scalatest] def getPrefix(branch: Branch): String = {
+  private[scalatest] def getPrefix(branch: Branch): String = {
     branch match {
       case Trunk() => ""
       // Call to getPrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionName) =>
+        Resources("prefixSuffix", getPrefix(parent), descriptionName)    
+      case VerbBranch(parent, descriptionName, _) =>
         Resources("prefixSuffix", getPrefix(parent), descriptionName)
     }
   }
   
+  private[scalatest] def getTestPrefix(branch: Branch): String = {
+    branch match {
+      case Trunk() => ""
+      // Call to getTestPrefix is not tail recursive, but I don't expect
+      // the describe nesting to be very deep (famous last words).
+      case DescriptionBranch(parent, descriptionName) =>
+        Resources("prefixSuffix", getPrefix(parent), descriptionName)
+      case VerbBranch(parent, descriptionName, verb) => verb
+    }
+  }
+
   private[scalatest] def getTestName(specText: String, parent: Branch): String = {
     val prefix = getPrefix(parent).trim
     if (prefix.isEmpty) {
