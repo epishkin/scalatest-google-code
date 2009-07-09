@@ -891,6 +891,12 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
 
   protected val ignore = new IgnoreWord
 
+  implicit val doVerbThing: (String, () => Unit, String) => Unit = {
+    (left, f, verb) => {
+      registerVerbBranch(left, verb, f)
+    }
+  }
+
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.

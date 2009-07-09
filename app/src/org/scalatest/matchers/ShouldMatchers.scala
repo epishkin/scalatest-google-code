@@ -994,6 +994,10 @@ trait ShouldMatchers extends Matchers {
       fun(left, right, "should")
     }
 
+    def should(right: => Unit)(implicit fun: (String, () => Unit, String) => Unit) {
+      fun(left, right _, "should")
+    }
+
     /**
      * This method enables syntax such as the following:
      *
