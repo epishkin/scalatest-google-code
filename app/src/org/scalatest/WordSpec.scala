@@ -921,26 +921,13 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     branch match {
       case desc @ VerbBranch(_, descriptionName, verb) =>
 
-        def sendInfoProvidedMessage() {
-          // Need to use the full name of the description, which includes all the descriptions it is nested inside
-          // Call getPrefix and pass in this Desc, to get the full name
-          val descriptionFullName = getPrefixWithoutVerb(desc).trim
+        // Need to use the full name of the description, which includes all the descriptions it is nested inside
+        // Call getPrefix and pass in this Desc, to get the full name
+        val descriptionFullName = getPrefixWithoutVerb(desc).trim
 
-          // Call getTestNameForReport with the description, because that puts the Suite name
-          // in front of the description, which looks good in the regular report.
-          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
-        }
-        
-        // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
-        // it is a test, because otherwise we get a lame description that doesn't have any tests under it.
-        // But send it if the list is empty.
-        if (desc.subNodes.isEmpty)
-          sendInfoProvidedMessage() 
-        else
-          desc.subNodes.reverse.head match {
-            case ex: TestLeaf => sendInfoProvidedMessage()
-            case _ => // Do nothing in this case
-          }
+        // Call getTestNameForReport with the description, because that puts the Suite name
+        // in front of the description, which looks good in the regular report.
+        report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
 
       case _ =>
     }
