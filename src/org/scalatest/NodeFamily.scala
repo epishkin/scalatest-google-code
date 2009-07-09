@@ -45,8 +45,9 @@ private[scalatest] object NodeFamily {
     verb: String
   ) extends Branch(Some(parent))
 
-  // This guy is for descriptions. If a VerbBranch, it looks for hard coded (when and if
-  // it finds it puts a trailing close paren in there
+  // This is used to get a complete test name. If a VerbBranch, it looks for hard coded (when and if
+  // it finds it puts a trailing close paren in there. It also includes the verb in the prefix,
+  // because that needs to be in the test name
   private[scalatest] def getPrefix(branch: Branch): String = {
     branch match {
       case Trunk() => ""
@@ -62,8 +63,9 @@ private[scalatest] object NodeFamily {
     }
   }
 
-  // This guy is for descriptions. If a VerbBranch, it looks for hard coded (when and if
-  // it finds it puts a trailing close paren in there
+  // This is used for descriptions. If a VerbBranch, it looks for hard coded (when and if
+  // it finds it puts a trailing close paren in there. It does not put the verb in there, because
+  // that needs to go into the first part of the specText that gets printed out for a test.
   private[scalatest] def getPrefixWithoutVerb(branch: Branch): String = {
     branch match {
       case Trunk() => ""
@@ -87,7 +89,7 @@ private[scalatest] object NodeFamily {
       // Call to getTestPrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionName) =>
-        Resources("prefixSuffix", getPrefix(parent), descriptionName)
+        Resources("prefixSuffix", getFormattedSpecTextPrefix(parent), descriptionName)
       case VerbBranch(parent, descriptionName, verb) => verb
     }
   }
