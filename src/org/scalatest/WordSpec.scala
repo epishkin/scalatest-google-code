@@ -793,7 +793,15 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
    * description string and immediately invoke the passed function.
    */
   private def registerVerbBranch(description: String, verb: String, f: () => Unit) {
-      
+    registerBranch(f, VerbBranch(_, description, verb))
+  }
+
+  private def registerDescriptionBranch(description: String, f: () => Unit) {
+    registerBranch(f, DescriptionBranch(_, description))
+  }
+
+  private def registerBranch(f: () => Unit, constructBranch: Branch => Branch) {
+
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
 
@@ -801,7 +809,8 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
       val oldBundle = atomic.get
       var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
-      val newBranch = VerbBranch(currentBranch, description, verb)
+      val newBranch = constructBranch(currentBranch)
+      // val newBranch = VerbBranch(currentBranch, description, verb)
       val oldBranch = currentBranch
       currentBranch.subNodes ::= newBranch
       currentBranch = newBranch
@@ -820,20 +829,17 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
 
     updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
   }
-
-  protected class StringCanWrapper(description: String) {
-    def can(f: => Unit) {
-      registerVerbBranch(description, "can", f _)
-    }
+      /*
+  protected class StringCanWrapper(string: String) {
   }
 
   protected implicit def convertToStringCanWrapper(s: String) = new StringCanWrapper(s)
-
+    */
   protected class StringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: => Unit) {
       registerTestToRun(specText, tags, testFun _)
     }
-  }
+  }       
 
   protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: => Unit) {
@@ -841,17 +847,34 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     }
   }
 
-  protected class StringInWrapper(specText: String) {
+  protected class WordSpecStringWrapper(string: String) {
     def in(f: => Unit) {
-      registerTestToRun(specText, List(), f _)
+      registerTestToRun(string, List(), f _)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      new StringTaggedAs(specText, tagList)
+      new StringTaggedAs(string, tagList)
+    }
+    def can(f: => Unit) {
+      registerVerbBranch(string, "can", f _)
+    }
+    def when(f: => Unit) {
+      registerDescriptionBranch(string + " (when", f _)
+    }
+    def when(resultOfItApplication: ResultOfItApplication) {
+      registerDescriptionBranch(string + " (when it", resultOfItApplication.f)
     }
   }
 
-  protected implicit def convertToStringInWrapper(s: String) = new StringInWrapper(s)
+  protected class ResultOfItApplication(val f: () => Unit)
+
+  protected class ItWord {
+    def apply(f: => Unit) = new ResultOfItApplication(f _)
+  }
+
+  protected def it = new ItWord
+  
+  protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
 
   protected class IgnoredTest(specText: String) {
     def in(f: => Unit) {

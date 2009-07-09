@@ -82,7 +82,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       intercept[DuplicateTestNameException] {
         new WordSpec {
           "should test this" in {}
-          ignore test "should test this" in {}
+          ignore test "should test this" in {}  
         }
       }
       intercept[DuplicateTestNameException] {

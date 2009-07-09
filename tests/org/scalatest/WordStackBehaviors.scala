@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-trait WordStackBehaviors  { this: WordSpec =>
+trait WordStackBehaviors { this: WordSpec =>
 
   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
 

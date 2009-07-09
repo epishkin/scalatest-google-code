@@ -53,7 +53,9 @@ private[scalatest] object NodeFamily {
       case DescriptionBranch(parent, descriptionName) =>
         Resources("prefixSuffix", getPrefix(parent), descriptionName)    
       case VerbBranch(parent, descriptionName, _) =>
-        Resources("prefixSuffix", getPrefix(parent), descriptionName)
+        val prefix = getPrefix(parent)
+        val suffix = if (prefix.endsWith("(when") || prefix.endsWith("(when it")) ")" else ""
+        Resources("prefixSuffix", prefix, descriptionName + suffix)
     }
   }
   
