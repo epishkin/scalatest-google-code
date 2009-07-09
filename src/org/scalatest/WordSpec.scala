@@ -823,7 +823,7 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
 
   protected class StringCanWrapper(description: String) {
     def can(f: => Unit) {
-      registerVerbBranch(description, " can", f _)
+      registerVerbBranch(description, "can", f _)
     }
   }
 
