@@ -8,6 +8,15 @@ add sugar forms for shouldEqual and mustEqual to Should/MustMatchers:
     stack.peek shouldEqual lastItemAdded
     stack.size shouldEqual size
     
+    stack.peek must_== lastItemAdded
+    stack.size must_== size
+    
+    stack.peek should_== lastItemAdded
+    stack.size should_== size
+
+Put these into ShouldEqual and MustEqual traits, which Should/MustMatchers mix in. So that way people can get
+them by themselves if they want? Or maybe not. Just add them to the Matchers traits.
+    
 pass goodies into RunStarting.
 
 In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.

@@ -1934,6 +1934,7 @@ private[scalatest] object Suite {
       case spec: Spec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
       case spec: FlatSpec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
       case spec: WordSpec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
+      case spec: FeatureSpec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
       case _ => None
     }
 
@@ -1942,6 +1943,7 @@ private[scalatest] object Suite {
       case spec: Spec => Some(MotionToSuppress)
       case spec: FlatSpec => Some(MotionToSuppress)
       case spec: WordSpec => Some(MotionToSuppress)
+      case spec: FeatureSpec => Some(MotionToSuppress)
       case _ => None
     }
 
@@ -1950,6 +1952,7 @@ private[scalatest] object Suite {
       case spec: Spec => Some(IndentedText(message, message, 0))
       case spec: FlatSpec => Some(IndentedText(message, message, 0))
       case spec: WordSpec => Some(IndentedText(message, message, 0))
+      case spec: FeatureSpec => Some(IndentedText(message, message, 0))
       case _ => None
     }
   }
