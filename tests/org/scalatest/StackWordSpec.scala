@@ -43,19 +43,19 @@ class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordS
         }
     }
 
-    "has one item" can {
+    "has one item" should {
   
       nonEmptyStack(lastValuePushed)(stackWithOneItem)
       nonFullStack(stackWithOneItem)
     }
 
-    "has one item less than capacity" can {
+    "has one item less than capacity" should {
 
       nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
       nonFullStack(stackWithOneItemLessThanCapacity)
     }
 
-    "is full" can {
+    "is full" should {
 
       "be full" in {
         assert(fullStack.full)
