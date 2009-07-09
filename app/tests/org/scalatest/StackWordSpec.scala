@@ -17,22 +17,25 @@ package org.scalatest
 
 class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors {
 
-  "A Stack (when empty)" can {
+  "A Stack" when it {
+    
+      "is empty" can {
 
-    "be empty" in {
-      assert(emptyStack.empty)
-    }
+        "be empty" in {
+          assert(emptyStack.empty)
+        }
 
-    "complain on peek" in {
-      intercept[IllegalStateException] {
-        emptyStack.peek
-      }
-    }
+        "complain on peek" in {
+          intercept[IllegalStateException] {
+            emptyStack.peek
+          }
+        }
 
-    "complain on pop" in {
-      intercept[IllegalStateException] {
-        emptyStack.pop
-      }
+        "complain on pop" in {
+          intercept[IllegalStateException] {
+            emptyStack.pop
+          }
+        }
     }
   }
 
