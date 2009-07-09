@@ -864,6 +864,9 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     def when(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
       registerDescriptionBranch(string + " (when " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
     }
+    def that(f: => Unit) {
+      registerDescriptionBranch(string + " that", f _)
+    }
   }
 
   protected class ResultOfAfterWordApplication(val text: String, val f: () => Unit)

@@ -15,7 +15,6 @@
  */
 package org.scalatest
 
-
 import matchers.ShouldMatchers
 
 class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors with ShouldMatchers {
