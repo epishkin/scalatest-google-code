@@ -17,24 +17,28 @@ object Helper {
     val temp7 = temp6.replaceAll("I_MUST_STAY_SHOULD", "should")
     temp7.replaceAll("I_WAS_Must_ORIGINALLY", "Should")
   }
-}
-
-import Helper.translateShouldToMust
-
-object GenMustMatchers extends Application {
-  val dir = new File("target/generated/src/org/scalatest/matchers")
-  dir.mkdirs()
-  val writer = new BufferedWriter(new FileWriter("target/generated/src/org/scalatest/matchers/MustMatchers.scala"))
-  try {
-    val shouldLines = Source.fromFile("src/org/scalatest/matchers/ShouldMatchers.scala").getLines.toList
-    for (shouldLine <- shouldLines) {
-      val mustLine = translateShouldToMust(shouldLine)
-      writer.write(mustLine)
+  def generateFile(srcFileName: String, targetFileName: String) {
+    val dir = new File("target/generated/src/org/scalatest/matchers")
+    dir.mkdirs()
+    val writer = new BufferedWriter(new FileWriter("target/generated/src/org/scalatest/matchers/" + targetFileName))
+    try {
+      val shouldLines = Source.fromFile("src/org/scalatest/matchers/" + srcFileName).getLines.toList
+      for (shouldLine <- shouldLines) {
+        val mustLine = translateShouldToMust(shouldLine)
+        writer.write(mustLine)
+      }
+    }
+    finally {
+      writer.close()
     }
   }
-  finally {
-    writer.close()
-  }
+}
+
+import Helper._
+
+object GenMustVerbAndMatchers extends Application {
+  generateFile("ShouldVerb.scala", "MustVerb.scala")
+  generateFile("ShouldMatchers.scala", "MustMatchers.scala")
 }
 
 object GenMustMatchersTests extends Application {
