@@ -861,18 +861,18 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     def when(f: => Unit) {
       registerDescriptionBranch(string + " (when", f _)
     }
-    def when(resultOfItApplication: ResultOfItApplication) {
-      registerDescriptionBranch(string + " (when it", resultOfItApplication.f)
+    def when(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
+      registerDescriptionBranch(string + " (when " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
     }
   }
 
-  protected class ResultOfItApplication(val f: () => Unit)
+  protected class ResultOfAfterWordApplication(val text: String, val f: () => Unit)
 
-  protected class ItWord {
-    def apply(f: => Unit) = new ResultOfItApplication(f _)
+  protected class AfterWord(text: String) {
+    def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
   }
 
-  protected def it = new ItWord
+  protected def afterWord(text: String) = new AfterWord(text)
   
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
 
