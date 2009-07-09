@@ -302,7 +302,8 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
-            <suite classname="org.scalatest.VariousWordSpec" />
+            <suite classname="org.scalatest.AmpersandWordSpec" />
+            <suite classname="org.scalatest.LoginUiWordSpec" />
 <!--
             <suite classname="org.scalatest.StackWordSpec" />
             <suite classname="org.scalatest.StackFlatSpec" />

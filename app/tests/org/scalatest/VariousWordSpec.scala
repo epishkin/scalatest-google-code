@@ -15,9 +15,10 @@
  */
 package org.scalatest
 
-import matchers.ShouldMatchers
 
-class VariousWordSpec extends WordSpec with ShouldMatchers {
+import matchers.{ShouldMatchers, ShouldVerb}
+
+class AmpersandWordSpec extends WordSpec with ShouldMatchers {
 
   "The Scala language" should {
     "provide an && operator" that {
@@ -28,3 +29,38 @@ class VariousWordSpec extends WordSpec with ShouldMatchers {
     }
   }
 }
+
+class LoginUiWordSpec extends WordSpec with ShouldVerb {
+
+  def theUser = afterWord("the user")
+  def have = afterWord("have")
+  def is = afterWord("is")
+
+  "The login screen" when theUser {
+    "first enters it" should have {
+      "an empty username field" in (pending)
+      "a password field" that is {
+        "empty" in (pending)
+        "disabled" in (pending)
+      }
+      "a login button that is disabled" in (pending)
+    }
+    "enters his or her username" should have {
+      "a username field that contains the entered username" in (pending)
+      "a password field" that is {
+        "empty" in (pending)
+        "enabled" in (pending)
+      }
+      "a login button that is disabled" in (pending)
+    }
+    "enters his or her password" should have {
+      "an username field that contains the entered username" in (pending)
+      "a password field that contains the entered password" in (pending)
+      "a login button that is enabled" in (pending)
+    }
+    "presses the login button" should {
+      "attempt to log the user in" in (pending)
+    }
+  }
+}
+

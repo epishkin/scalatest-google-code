@@ -21,6 +21,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
+import org.scalatest.matchers.ResultOfAfterWordApplication
 
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
@@ -867,9 +868,10 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
     def that(f: => Unit) {
       registerDescriptionBranch(string + " that", f _)
     }
+    def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
+      registerDescriptionBranch(string + " that " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+    }
   }
-
-  protected class ResultOfAfterWordApplication(val text: String, val f: () => Unit)
 
   protected class AfterWord(text: String) {
     def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
@@ -897,6 +899,15 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
   implicit val doVerbThing: (String, () => Unit, String) => Unit = {
     (left, f, verb) => {
       registerVerbBranch(left, verb, f)
+    }
+  }
+  implicit val doAfterVerbThing: (String, ResultOfAfterWordApplication, String) => Unit = {
+    (left, resultOfAfterWordApplication, verb) => {
+      val afterWordFunction =
+        () => {
+          registerDescriptionBranch(resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+        }
+      registerVerbBranch(left, verb, afterWordFunction)
     }
   }
 
