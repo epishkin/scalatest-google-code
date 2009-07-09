@@ -37,33 +37,33 @@ class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordS
           }
         }
     }
-  }
 
-  "A Stack (with one item)" can {
+    "has one item" can {
   
-    nonEmptyStack(lastValuePushed)(stackWithOneItem)
-    nonFullStack(stackWithOneItem)
-  }
-
-  "A Stack (with one item less than capacity)" can {
-
-    nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
-    nonFullStack(stackWithOneItemLessThanCapacity)
-  }
-
-  "A Stack (full)" can {
-
-    "be full" in {
-      assert(fullStack.full)
+      nonEmptyStack(lastValuePushed)(stackWithOneItem)
+      nonFullStack(stackWithOneItem)
     }
 
-    "go to sleep soon" in (pending)
+    "has one item less than capacity" can {
 
-    nonEmptyStack(lastValuePushed)(fullStack)
+      nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
+      nonFullStack(stackWithOneItemLessThanCapacity)
+    }
 
-    "complain on a push" in {
-      intercept[IllegalStateException] {
-        fullStack.push(10)
+    "is full" can {
+
+      "be full" in {
+        assert(fullStack.full)
+      }
+
+      "go to sleep soon" in (pending)
+
+      nonEmptyStack(lastValuePushed)(fullStack)
+
+      "complain on a push" in {
+        intercept[IllegalStateException] {
+          fullStack.push(10)
+        }
       }
     }
   }
