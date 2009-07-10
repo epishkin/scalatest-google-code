@@ -49,24 +49,24 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val d = new WordSpec {
-        "A Tester" can {
+        "A Tester" should {
           "test that" in {}
           "test this" in {}
         }
       }
 
-      expect(List("A Tester can test that", "A Tester can test this")) {
+      expect(List("A Tester should test that", "A Tester should test this")) {
         d.testNames.elements.toList
       }
 
       val e = new WordSpec {
-        "A Tester" can {
+        "A Tester" should {
           "test this" in {}
           "test that" in {}
         }
       }
 
-      expect(List("A Tester can test this", "A Tester can test that")) {
+      expect(List("A Tester should test this", "A Tester should test that")) {
         e.testNames.elements.toList
       }
     }
@@ -231,7 +231,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends WordSpec {
           "should blow up" in {
-            "in the wrong place, at the wrong time" can {
+            "in the wrong place, at the wrong time" should {
             }
           }
         }
@@ -243,7 +243,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends WordSpec {
           "should blow up" in {
-            "in the wrong place, at the wrong time" can {
+            "in the wrong place, at the wrong time" should {
               "should never run" in {
                 assert(1 === 2)
               }
@@ -282,9 +282,9 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
       it("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
-        class MySpec extends WordSpec {
+        class MySpec extends WordSpec { 
           "should blow up" in {
-            "in the wrong place, at the wrong time" can {
+            "in the wrong place, at the wrong time" should {
               ignore test "should never run" in {
                 assert(1 === 2)
               }

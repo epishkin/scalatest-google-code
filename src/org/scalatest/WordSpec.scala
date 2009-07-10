@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
 import org.scalatest.matchers.ResultOfAfterWordApplication
+import org.scalatest.matchers.ShouldVerb
 
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
@@ -549,7 +550,7 @@ import org.scalatest.matchers.ResultOfAfterWordApplication
  * 
  * @author Bill Venners
  */
-trait WordSpec extends Suite with TestRegistration { thisSuite =>
+trait WordSpec extends Suite with ShouldVerb with TestRegistration { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
@@ -856,9 +857,9 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
       val tagList = firstTestTag :: otherTestTags.toList
       new StringTaggedAs(string, tagList)
     }
-    def can(f: => Unit) {
+    /* def can(f: => Unit) {
       registerVerbBranch(string, "can", f _)
-    }
+    } */
     def when(f: => Unit) {
       registerDescriptionBranch(string + " (when", f _)
     }
@@ -1237,4 +1238,20 @@ trait WordSpec extends Suite with TestRegistration { thisSuite =>
         throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
     }
   }
+
+  class BehaveWord {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * behave like nonEmptyStack(lastValuePushed)
+     *        ^
+     * </pre>
+     */
+    def like(unit: Unit) {
+    }
+  }
+
+  val behave = new BehaveWord
 }

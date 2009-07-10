@@ -19,6 +19,12 @@ class TVFeatureSpec extends FeatureSpec with GivenWhenThen {
 
   feature("Ability to change the channel on the TV remotely") {
 
+    /*description("""
+      As a couch potato,
+      I want to surf the channels without getting up from my couch,
+      So that i need not interrupt my eating of potato chips.
+    """)  */
+
     /*info("As a couch potato,")
     info("I want to surf the channels without getting up from my couch,")
     info("So that I need not interrupt my eating of potato chips.") */
