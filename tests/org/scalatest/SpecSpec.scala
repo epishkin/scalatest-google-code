@@ -321,6 +321,26 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         ensureTestFailedEventReceived(spec, "should blow up")
       }
     }
+    it("should run tests registered via the 'it should behave like' syntax") {
+      trait SharedSpecTests { this: Spec =>
+        def nonEmptyStack(s: String)(i: Int) {
+          it("should be that I am shared") {}
+        }
+      }
+      class MySpec extends Spec with SharedSpecTests {
+        it should behave like nonEmptyStack("hi")(1)
+      }
+      val suite = new MySpec
+      val reporter = new EventRecordingReporter
+      suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+
+      val indexedList = reporter.eventsReceived
+
+      val testStartingOption = indexedList.find(_.isInstanceOf[TestStarting])
+      assert(testStartingOption.isDefined)
+      assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "should be that I am shared")
+    }
+
   }
 }
 
