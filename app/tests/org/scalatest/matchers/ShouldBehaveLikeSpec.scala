@@ -20,7 +20,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldBehaveLikeSpec extends Spec with SharedTests with ShouldStackBehaviors with StackFixtureCreationMethods {
+class ShouldBehaveLikeSpec extends Spec with ShouldStackBehaviors with StackFixtureCreationMethods {
 
   def myFirstBehavior(i: Int) {
     it("This one is should blow up") {}
@@ -29,7 +29,7 @@ class ShouldBehaveLikeSpec extends Spec with SharedTests with ShouldStackBehavio
   describe("The 'should behave like' syntax should throw an exception inside an it clause") {
     it("the code in here should fail with an exception") {
       intercept[TestRegistrationClosedException] {
-        ensure (1) behaves like (myFirstBehavior)
+        it should behave like myFirstBehavior(1) 
       }
     }
   }
@@ -37,18 +37,18 @@ class ShouldBehaveLikeSpec extends Spec with SharedTests with ShouldStackBehavio
   // Checking for a specific size
   describe("The 'should behave like' syntax should work in a describe") {
 
-    ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+    it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem) 
 
     describe(", and in a nested describe") {
 
-      ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
+      it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem) 
     }
   }
 
   def myBehavior(i: Int) {
     it("This one is solo") {}
   }
-  ensure (1) behaves like (myBehavior)
+  it should behave like myBehavior(1) 
 
   // TODO: Make these into real tests. I looked at it and heck they work. So I can indeed put describe clauses in
   // the shared behaviors. Cool.
@@ -58,9 +58,9 @@ class ShouldBehaveLikeSpec extends Spec with SharedTests with ShouldStackBehavio
     }
   }
 
-  ensure (1) behaves like (myNestedBehavior)
+  it should behave like myNestedBehavior(1) 
   describe("And outer describe...") {
-    ensure (1) behaves like (myNestedBehavior)
+    it should behave like myNestedBehavior(1) 
   }
 
 /* Correct, none of these compiled

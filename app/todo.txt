@@ -8,7 +8,7 @@ add description to FeatureSpec
 
 pass goodies into RunStarting.
 
-Add specific shared test support to Spec and FlatSpec. Drop the SharedTests and TestRegistartion traits.
+Add specific shared test support to FlatSpec. Drop the SharedTests and TestRegistartion traits.
 
 Maybe add can back in to FlatSpec and WordSpec, via CanVerbs.
 

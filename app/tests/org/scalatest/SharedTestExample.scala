@@ -17,7 +17,7 @@ package org.scalatest
 
 trait StackBehaviors extends BeforeAndAfter { this: Spec =>
 
-  def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
+  def nonEmptyStack(lastItemAdded: Int)(implicit stack: Stack[Int]) {
 
     it("should be non-empty") {
       assert(!stack.empty)
@@ -40,7 +40,7 @@ trait StackBehaviors extends BeforeAndAfter { this: Spec =>
     }
   }
   
-  def nonFullStack(stack: Stack[Int]) {
+  def nonFullStack(implicit stack: Stack[Int]) {
       
     it("should not be full") {
       assert(!stack.full)
@@ -55,7 +55,7 @@ trait StackBehaviors extends BeforeAndAfter { this: Spec =>
   }
 }
 
-class SharedTestExampleSpec extends Spec with SharedTests with StackBehaviors {
+class SharedTestExampleSpec extends Spec with StackBehaviors {
 
   // Stack fixture creation methods
   def emptyStack = new Stack[Int]
@@ -104,17 +104,15 @@ class SharedTestExampleSpec extends Spec with SharedTests with StackBehaviors {
     }
 
     describe("(with one item)") {
-
-      ensure (stackWithOneItem) behaves like (nonEmptyStack(lastValuePushed))
-      ensure (stackWithOneItem) behaves like (nonFullStack)
-      // implicit def stackFixture = stackWithOneItem
-      // it should behave like nonEmptyStack(lastValuePushed)
-      // it should behave like nonFullStack
+      implicit def stackFixture = stackWithOneItem
+      it should behave like nonEmptyStack(lastValuePushed)
+      it should behave like nonFullStack
     }
     
     describe("(with one item less than capacity)") {
-      ensure (stackWithOneItemLessThanCapacity) behaves like (nonEmptyStack(lastValuePushed))
-      ensure (stackWithOneItemLessThanCapacity) behaves like (nonFullStack)
+      implicit def stackFixture = stackWithOneItemLessThanCapacity
+      it should behave like nonEmptyStack(lastValuePushed)
+      it should behave like nonFullStack
     }
 
     describe("(full)") {
@@ -123,7 +121,7 @@ class SharedTestExampleSpec extends Spec with SharedTests with StackBehaviors {
         assert(fullStack.full)
       }
 
-      nonEmptyStack(lastValuePushed)(fullStack)
+      it should behave like nonEmptyStack(lastValuePushed)(fullStack)
 
       it("should complain on a push") {
         intercept[IllegalStateException] {
