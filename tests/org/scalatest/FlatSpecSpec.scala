@@ -331,17 +331,17 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         val spec = new MySpec
         ensureTestFailedEventReceived(spec, "should blow up")
       }
-    } /*
+    }
     it("should run tests registered via the 'it should behave like' syntax") {
       trait SharedFlatSpecTests { this: FlatSpec =>
         def nonEmptyStack(s: String)(i: Int) {
           it should "I am shared" in {}
         }
       }
-      class MySuite extends FlatSpec with SharedFlatSpecTests {
-        scenariosFor(nonEmptyStack("hi")(1))
+      class MyFlatSpec extends FlatSpec with SharedFlatSpecTests {
+        it should behave like nonEmptyStack("hi")(1)
       }
-      val suite = new MySuite
+      val suite = new MyFlatSpec
       val reporter = new EventRecordingReporter
       suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
 
@@ -349,8 +349,8 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
       val testStartingOption = indexedList.find(_.isInstanceOf[TestStarting])
       assert(testStartingOption.isDefined)
-      assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "I am shared")
-    } */
+      assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "should I am shared")
+    }
   }
 }
 
