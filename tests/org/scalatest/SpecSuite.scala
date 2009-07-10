@@ -704,11 +704,11 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       def myBehavior(i: Int) {
         it("it should start with proper words") {}
       }
-      ensure (1) behaves like (myBehavior)
+      it should behave like myBehavior(1)
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
@@ -739,11 +739,11 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       def myBehavior(i: Int) {
         it("must start with proper words") {}
       }
-      ensure (1) behaves like (myBehavior)
+      it should behave like myBehavior(1)
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
@@ -774,11 +774,11 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       def myBehavior(i: Int) {
         it("must start with proper words") {}
       }
-      ensure (1) behaves like (myBehavior)
+      it should behave like myBehavior(1)
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
@@ -809,11 +809,11 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       def myBehavior(i: Int) {
         it("must start with proper words") { fail() }
       }
-      ensure (1) behaves like (myBehavior)
+      it should behave like myBehavior(1)
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
@@ -867,12 +867,12 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       def myBehavior(i: Int) {
         it("should start with proper words") {}
       }
       describe("My Spec") {
-        ensure (1) behaves like (myBehavior)
+        it should behave like myBehavior(1)
       }
     }
     val a = new MySpec
@@ -1220,7 +1220,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
  
   // Testing Shared behaviors
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
-    class MySpec extends Spec with SharedTests with BeforeAndAfter {
+    class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) {
         it("should be invoked") {
@@ -1230,7 +1230,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       describe("A Stack") {
         describe("(when not empty)") {
           it("should allow me to pop") {}
-          ensure (1) behaves like (invocationVerifier)
+          it should behave like invocationVerifier(1) 
         }
         describe("(when not full)") {
           it("should allow me to push") {}
@@ -1243,7 +1243,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
   }
   
   test("two examples in a shared behavior should get invoked") {
-    class MySpec extends Spec with SharedTests with BeforeAndAfter {
+    class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
       def invocationVerifier(i: Int) {
@@ -1257,7 +1257,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       describe("A Stack") {
         describe("(when not empty)") {
           it("should allow me to pop") {}
-          ensure (1) behaves like (invocationVerifier)
+          it should behave like invocationVerifier(1)
         }
         describe("(when not full)") {
           it("should allow me to push") {}
@@ -1271,7 +1271,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
   }
 
   test("three examples in a shared behavior should be invoked in order") {
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       var example1WasInvoked = false
       var example2WasInvokedAfterExample1 = false
       var example3WasInvokedAfterExample2 = false
@@ -1288,7 +1288,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
             example3WasInvokedAfterExample2 = true
         }
       }
-      ensure (1) behaves like (invocationVerifier)
+      it should behave like invocationVerifier(1)
     }
     val a = new MySpec
     a.run()
@@ -1339,14 +1339,14 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with SharedTests with BeforeAndAfter {
+    class MySpec extends Spec with BeforeAndAfter {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) {
         it("it should be invoked") {
           sharedExampleInvoked = true
         }
       }
-      ensure (1) behaves like (invocationVerifier)
+      it should behave like invocationVerifier(1) 
     }
     val a = new MySpec
     a.run(None, new MyReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
@@ -1367,7 +1367,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) {
         it("should pop properly") {
@@ -1375,7 +1375,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
       describe("A Stack") {
-        ensure (1) behaves like (invocationVerifier)
+        it should behave like invocationVerifier(1) 
       }
     }
     val a = new MySpec
@@ -1402,7 +1402,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
   }
 
   test("expectedTestCount should include tests in a share that is called") {
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       def misbehavior(i: Int) {
         it("should six") {}
         it("should seven") {}
@@ -1411,7 +1411,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("should two") {}
       describe("behavior") {
         it("should three") {}
-        ensure (1) behaves like (misbehavior)
+        it should behave like misbehavior(1) 
         it("should four") {}
       }
       it("should five") {}
@@ -1421,7 +1421,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
   }
 
   test("expectedTestCount should include tests in a share that is called twice") {
-    class MySpec extends Spec with SharedTests {
+    class MySpec extends Spec {
       def misbehavior(i: Int) {
         it("should six") {}
         it("should seven") {}
@@ -1430,11 +1430,11 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it("should two") {}
       describe("behavior") {
         it("should three") {}
-        ensure (1) behaves like (misbehavior)
+        it should behave like misbehavior(1) 
         it("should four") {}
       }
       it("should five") {}
-      ensure (1) behaves like (misbehavior)
+      it should behave like misbehavior(1) 
     }
     val a = new MySpec
     assert(a.expectedTestCount(Filter()) === 9)
