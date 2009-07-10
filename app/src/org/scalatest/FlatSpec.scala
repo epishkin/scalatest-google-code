@@ -549,7 +549,7 @@ import org.scalatest.matchers.ResultOfStringPassedToVerb
  * 
  * @author Bill Venners
  */
-trait FlatSpec extends Suite with TestRegistration { thisSuite =>
+trait FlatSpec extends Suite { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
