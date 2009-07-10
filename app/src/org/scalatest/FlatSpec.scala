@@ -751,6 +751,8 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
   protected class ItWord {
     def should(string: String) = new ItVerbString("should", string)
     def must(string: String) = new ItVerbString("must", string)
+    def should(behaveWord: BehaveWord) = behaveWord
+    def must(behaveWord: BehaveWord) = behaveWord
   }
 
   protected val it = new ItWord
@@ -1211,4 +1213,19 @@ trait FlatSpec extends Suite with TestRegistration { thisSuite =>
         throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
     }
   }
+
+  class BehaveWord {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * scenariosFor(nonEmptyStack(lastValuePushed))
+     *             ^
+     * </pre>
+     */
+    def like(unit: Unit) {}
+  }
+
+  val behave = new BehaveWord
 }
