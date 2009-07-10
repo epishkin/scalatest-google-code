@@ -550,7 +550,7 @@ import org.scalatest.matchers.ShouldVerb
  * 
  * @author Bill Venners
  */
-trait WordSpec extends Suite with ShouldVerb with TestRegistration { thisSuite =>
+trait WordSpec extends Suite with ShouldVerb { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
