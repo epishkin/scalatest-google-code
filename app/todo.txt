@@ -1,35 +1,24 @@
 pass goodies down into before and after methods
 
-add sugar forms for shouldEqual and mustEqual to Should/MustMatchers:
+Drop can from WordSpec. Go ahead and have WordSpec mix in ShouldVerb and MustVerb from the get go. Make sure
+ShouldVerb and MustVerb also work from FlatSpec. If you want either or both matchers, they should
+mix in just fine into either WordSpec or FlatSpec.
 
-    stack.peek mustEqual lastItemAdded
-    stack.size mustEqual size
-    
-    stack.peek shouldEqual lastItemAdded
-    stack.size shouldEqual size
-    
-    stack.peek must_== lastItemAdded
-    stack.size must_== size
-    
-    stack.peek should_== lastItemAdded
-    stack.size should_== size
+add description to FeatureSpec
 
-Put these into ShouldEqual and MustEqual traits, which Should/MustMatchers mix in. So that way people can get
-them by themselves if they want? Or maybe not. Just add them to the Matchers traits.
-    
 pass goodies into RunStarting.
+
+Add specific shared test support to FunSuite, Spec, FlatSpec, WordSpec, and FeatureSpec. Drop the SharedTests and TestRegistartion traits.
 
 In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.
 
-drop recipe name from runner and runnerjframe
+drop recipe name from Runner and RunnerJFrame
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
 Add comment about how to turn off the === implicit conversion in a Suite to ScalaDoc for Suite or Assertions.
 
-Do the fixture package for Suite, FunSuite, and Spec.
-
-Do the parallel afterAll thing.
+Do the fixture and goodies packages for Suite, FunSuite, Spec, WordSpec, FlatSpec, and FeatureSpec.
 
 Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
 perhaps I just need the final execute forms for the interpreter and the one public execute. Make a trait that can be mixed into
@@ -37,34 +26,18 @@ Reporter called TransitionalReporter, which has an apply method that forwards to
 up to date with a quick mix in. Or, consider whether I can just do that directly in Reporter itself. Oh, no, because then people's would
 extensions would automatically work. No, that's OK. Just deprecate all the old testStarting, etc., methods.
 
-Do the OneInstancePerTest and ParallelTestExecution traits. OneInstancePerTest overrides runTests and instantiates a new instance of this
-using reflection and invokes run on its wrapped suite passing in one test name. That instance also implements OneInstancePerTest, so its
-runTests method will for sure only do this wrapping if testName is None. The other thing is it won't send SuiteStarting or SuiteCompleted
-messages, because that's not really what's going on. But if one of these isolation suites aborts, it will send SuiteAborted, with a suite name
-that has something like "<suite name> isolation suite for <test name>" as the suite name.
-
-Add BeforeAndAfterEach, BeforeAndAfterAll. Make BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll and deprecate it.
-BeforeAndAfterAll will need to look for some object sent down in goodies from OneInstancePerTest, so it knows not to do it if it is an
-"isolated test instance" or something. And then it will also have to turn off the distributor. This would mean that DistributedTestExecution
-would not happen if there's an AfterAll right now. Later, what I could do is BeforeAndAfterAll wraps the distributor, if it is defined, in
-an AfterAllDistributor. And that guy would wrap the suites that are put into it in a SuiteWrapper that forwards the run invocation but when
-it completes (in a finally) it notifies an AfterAllActor. This react actor knows which notifications to wait for, and when they are all done, it
-executes the after all method. So my theory is that since I'm using react, these actors won't hold up threads. But what tangled complexity we weave when
-we first learn to parallelize.
-
-Do WordSpec, FlatSpec, and FeatureSpec. WordSpec and FlatSpec can use the same data structure as Spec, which would then give them the same kind of output.
+Do the ParallelTestExecution trait. 
 
 Write tests for JUnitComfort Suite.
-Document JUnitComfortSuite.
 
-Add the "it" form to SharedTest.
+Document JUnitComfortSuite.
 
 Put an Option[Nothing] in the run methods as a placeholder for the OutErrTester kind of stuff. Whatever that object is
 that's getting passed around. OutErrManager maybe. Wierd, could even provide overloaded versions. Wait, I could do that
 anyway. Just add it at the end later, and make.., no because then it would have to be final.
 OutputManager, OutputTester. Those seem nicer. Anyway, it is for another day.
 
-Someone complained that it they configured the graphic reporter, that it should show that configuration by default not
+Someone complained that if they configured the graphic reporter, that it should show that configuration by default not
 just runs and failures. Not sure.
 
 Do more testing on the FilterReporter config stuff.
@@ -79,8 +52,6 @@ because it is also used by Distributor and will be used by SuiteRerunner.
 
 add a RandomTestOrder trait
 
-Do the OneArgXXX traits
-
 put goodies in ant task as well as properties for two releases, then drop properties
 Change description of includes --> tagsToInclude,
 excludes --> tagsToExclude. Leave old one in for two releases.
@@ -91,7 +62,7 @@ The eating error message problem. Make sure an exception message shows up in the
 
 I'm not printing out the message in a formatted report, just the exception's detail message
 
-Do an xml reporter and an html reporter
+Do an XML reporter and an HTML reporter
 
 Make everything private in ScalaTestTask that can be private. I see a few things that are public I think unnecessarily.
 
@@ -259,7 +230,33 @@ include scenariosFor nonFullStack(stackWithOneItem)
 
 That's simple and readable. Can drop SharedTests trait and TestRegistration.
 
-My other thought was that WordSpec will by default only support "can" as its action word. To get
-should you need to mix in ShouldMatchers. To get must you need to mix in MustMatchers, so it is consistent.
+ask about sugar forms for shouldEqual and mustEqual to Should/MustMatchers:
 
+    stack.peek mustEqual lastItemAdded
+    stack.size mustEqual size
+    
+    stack.peek shouldEqual lastItemAdded
+    stack.size shouldEqual size
+    
+    stack.peek must_== lastItemAdded
+    stack.size must_== size
+    
+    stack.peek should_== lastItemAdded
+    stack.size should_== size
+
+Put these into ShouldEqual and MustEqual traits, which Should/MustMatchers mix in. So that way people can get
+them by themselves if they want? Or maybe not. Just add them to the Matchers traits.
+    
+0.9.7
+Do the parallel afterAll thing.
+Add BeforeAndAfterEach, BeforeAndAfterAll. Make BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll and deprecate it.
+BeforeAndAfterAll will need to look for some object sent down in goodies from OneInstancePerTest, so it knows not to do it if it is an
+"isolated test instance" or something. And then it will also have to turn off the distributor. This would mean that DistributedTestExecution
+would not happen if there's an AfterAll right now. Later, what I could do is BeforeAndAfterAll wraps the distributor, if it is defined, in
+an AfterAllDistributor. And that guy would wrap the suites that are put into it in a SuiteWrapper that forwards the run invocation but when
+it completes (in a finally) it notifies an AfterAllActor. This react actor knows which notifications to wait for, and when they are all done, it
+executes the after all method. So my theory is that since I'm using react, these actors won't hold up threads. But what tangled complexity we weave when
+we first learn to parallelize.
+
+Don't do the OneArgXXX traits
 

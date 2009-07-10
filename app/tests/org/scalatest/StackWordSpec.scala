@@ -44,14 +44,14 @@ class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordS
 
     "has one item" should {
   
-      nonEmptyStack(lastValuePushed)(stackWithOneItem)
-      nonFullStack(stackWithOneItem)
+      behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+      behave like nonFullStack(stackWithOneItem)
     }
 
     "has one item less than capacity" should {
 
-      nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
-      nonFullStack(stackWithOneItemLessThanCapacity)
+      behave like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
+      behave like nonFullStack(stackWithOneItemLessThanCapacity)
     }
 
     "is full" should {
@@ -62,7 +62,7 @@ class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordS
 
       "go to sleep soon" in (pending)
 
-      nonEmptyStack(lastValuePushed)(fullStack)
+      behave like nonEmptyStack(lastValuePushed)(fullStack)
 
       "complain on a push" in {
         intercept[IllegalStateException] {
