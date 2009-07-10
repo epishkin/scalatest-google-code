@@ -1158,4 +1158,19 @@ trait FeatureSpec extends Suite with TestRegistration { thisSuite =>
         throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
     }
   }
+
+  class ScenariosForPhrase {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * scenariosFor(nonEmptyStack(lastValuePushed))
+     *             ^
+     * </pre>
+     */
+    def apply(unit: Unit) {}
+  }
+
+  val scenariosFor = new ScenariosForPhrase
 }

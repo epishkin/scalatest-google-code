@@ -932,4 +932,19 @@ trait FunSuite extends Suite with TestRegistration { thisSuite =>
         throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
     }
   }
+
+  class TestsForPhrase {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * testsFor(nonEmptyStack(lastValuePushed))
+     *         ^
+     * </pre>
+     */
+    def apply(unit: Unit) {}
+  }
+
+  val testsFor = new TestsForPhrase
 }
