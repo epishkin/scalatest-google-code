@@ -670,65 +670,73 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
       }
     }
 
-  /**
-   * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
-   * An invocation of this method is called an &#8220;example.&#8221;
-   *
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
-   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
-   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
-   *
-   * @param specText the specification text, which will be combined with the descText of any surrounding describers
-   * to form the test name
-   * @param testTags the optional list of tags for this test
-   * @param testFun the test function
-   * @throws DuplicateTestNameException if a test with the same name has been registered previously
-   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
-   */
-  protected def it(specText: String, testTags: Tag*)(testFun: => Unit) {
+  protected class ItWord {
 
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
-    if (specText == null)
-      throw new NullPointerException("specText was null")
-    if (testTags.exists(_ == null))
-      throw new NullPointerException("a test tag was null")
+    /**
+     * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
+     * An invocation of this method is called an &#8220;example.&#8221;
+     *
+     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+     * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+     * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+     * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+     * this <code>Spec</code> instance.
+     *
+     * @param specText the specification text, which will be combined with the descText of any surrounding describers
+     * to form the test name
+     * @param testTags the optional list of tags for this test
+     * @param testFun the test function
+     * @throws DuplicateTestNameException if a test with the same name has been registered previously
+     * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+     * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+     */
+    def apply(specText: String, testTags: Tag*)(testFun: => Unit) {
 
-    val testName = registerTest(specText, testFun)
+      if (atomic.get.registrationClosed)
+        throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+      if (specText == null)
+        throw new NullPointerException("specText was null")
+      if (testTags.exists(_ == null))
+        throw new NullPointerException("a test tag was null")
 
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, testsList, registrationClosed2) = oldBundle.unpack
-    val tagNames = Set[String]() ++ testTags.map(_.name)
-    if (!tagNames.isEmpty)
-      tagsMap += (testName -> tagNames)
+      val testName = registerTest(specText, testFun)
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
+      val oldBundle = atomic.get
+      var (trunk, currentBranch, tagsMap, testsList, registrationClosed2) = oldBundle.unpack
+      val tagNames = Set[String]() ++ testTags.map(_.name)
+      if (!tagNames.isEmpty)
+        tagsMap += (testName -> tagNames)
+
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
+    }
+
+    /**
+     * Register a test with the given spec text and test function value that takes no arguments.
+     *
+     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+     * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+     * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+     * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+     * this <code>Spec</code> instance.
+     *
+     * @param specText the specification text, which will be combined with the descText of any surrounding describers
+     * to form the test name
+     * @param testFun the test function
+     * @throws DuplicateTestNameException if a test with the same name has been registered previously
+     * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+     * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+     */
+    def apply(specText: String)(testFun: => Unit) {
+      if (atomic.get.registrationClosed)
+        throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+      apply(specText, Array[Tag](): _*)(testFun)
+    }
+
+    def should(behaveWord: BehaveWord) = behaveWord
+    def must(behaveWord: BehaveWord) = behaveWord
   }
 
-  /**
-   * Register a test with the given spec text and test function value that takes no arguments.
-   *
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
-   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
-   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
-   *
-   * @param specText the specification text, which will be combined with the descText of any surrounding describers
-   * to form the test name
-   * @param testFun the test function
-   * @throws DuplicateTestNameException if a test with the same name has been registered previously
-   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
-   */
-  protected def it(specText: String)(testFun: => Unit) {
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
-    it(specText, Array[Tag](): _*)(testFun)
-  }
+  protected val it = new ItWord
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -1161,4 +1169,19 @@ trait Spec extends Suite with TestRegistration { thisSuite =>
         throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
     }
   }
+
+  class BehaveWord {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * scenariosFor(nonEmptyStack(lastValuePushed))
+     *             ^
+     * </pre>
+     */
+    def like(unit: Unit) {}
+  }
+
+  val behave = new BehaveWord
 }
