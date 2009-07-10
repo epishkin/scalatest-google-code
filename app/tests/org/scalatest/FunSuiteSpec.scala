@@ -175,6 +175,25 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         }
       }
     }
+    it("should run tests registered via the testsFor syntax") {
+      trait SharedFunSuiteTests { this: FunSuite =>
+        def nonEmptyStack(s: String)(i: Int) {
+          test("I am shared") {}
+        }
+      }
+      class MySuite extends FunSuite with SharedFunSuiteTests {
+        testsFor(nonEmptyStack("hi")(1))
+      }
+      val suite = new MySuite
+      val reporter = new EventRecordingReporter
+      suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+
+      val indexedList = reporter.eventsReceived
+
+      val testStartingOption = indexedList.find(_.isInstanceOf[TestStarting])
+      assert(testStartingOption.isDefined)
+      assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "I am shared")
+    }
   }
 }
 

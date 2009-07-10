@@ -216,7 +216,6 @@ all that's needed here.
   }
 }
 
-In WordSpec, just support "behave like X". No SharedTests mix in needed. 
 In FlatSpec, just support "it should behave like X" and if ShouldMatchers is mixed in "string should behave like X". No shared tests needed.
 In Spec, just support "it should behave like X." No SharedTests mix in needed. So it("test name") will have to be an apply method on
 the it object.
