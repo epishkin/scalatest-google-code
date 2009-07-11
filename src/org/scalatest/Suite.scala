@@ -493,14 +493,14 @@ import org.scalatest.tools.StandardOutReporter
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * it needs to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setup</code> and
+ * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
- * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
  * between tests. Before going that route, you should consider two approaches that
- * avoid <code>var</code>s. One approach is to write one or more "create" methods
- * that return a new instance of a needed object (or a tuple of new instances of
- * multiple objects) each time it is called. You can then call a create method at the beginning of each
+ * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
+ * that return a new instance of a needed object (or a tuple or case class holding new instances of
+ * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
  * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
@@ -539,8 +539,9 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
- * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create <em>with-fixture</em> methods,
+ * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the with-fixture
+ * method. Here's an example:
  * </p>
  * <pre>
  * import org.scalatest.Suite
@@ -559,29 +560,25 @@ import org.scalatest.tools.StandardOutReporter
  *   }
  *
  *   def testEasy() {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("easy!")
- *         assert(builder.toString === "ScalaTest is easy!")
- *         assert(lbuf.isEmpty)
- *         lbuf += "sweet"
- *       }
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(lbuf.isEmpty)
+ *       lbuf += "sweet"
  *     }
  *   }
  *
  *   def testFun() {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("fun!")
- *         assert(builder.toString === "ScalaTest is fun!")
- *         assert(lbuf.isEmpty)
- *       }
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(lbuf.isEmpty)
  *     }
  *   }
  * }
  * </pre>
  * 
- * One advantage of this approach compared to the create method approach shown previously is that
+ * One advantage of this approach compared to the create-fixture approach shown previously is that
  * you can more easily perform cleanup after each test runs. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
  * doing so before and after invoking the test function in a <code>withTempFile</code>
@@ -624,24 +621,20 @@ import org.scalatest.tools.StandardOutReporter
  *   }
  * 
  *   def testReadingFromTheTempFile() {
- *     withTempFile {
- *       (reader) => {
- *         var builder = new StringBuilder
- *         var c = reader.read()
- *         while (c != -1) {
- *           builder.append(c.toChar)
- *           c = reader.read()
- *         }
- *         assert(builder.toString === "Hello, test!")
+ *     withTempFile { (reader) =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
  *       }
+ *       assert(builder.toString === "Hello, test!")
  *     }
  *   }
  * 
  *   def testFirstCharOfTheTempFile() {
- *     withTempFile {
- *       (reader) => {
- *         assert(reader.read() === 'H')
- *       }
+ *     withTempFile { (reader) =>
+ *       assert(reader.read() === 'H')
  *     }
  *   }
  * }
@@ -649,23 +642,23 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple with-fixture methods and
- * call the method (or methods) needed by each test at the beginning of the test. By far the most common case, however, will likely be that all
+ * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
  * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
  * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
- * directly support the with-fixture method approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
- * is defined by the abstract <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FixtureSuite</code> behaves exactly like
+ * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
+ * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.Suite</code> behaves exactly like
  * <code>org.scalatest.Suite</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
- * <a href="fixture/FixtureSuite.html"><code>FixtureSuite</code></a>. To get the idea, however, here's what the previous example would
- * look like rewritten to use a <code>FixtureSuite</code>:
+ * <a href="fixture/Suite.html"><code>Suite</code></a>. To get the idea, however, here's what the previous example would
+ * look like rewritten to use an <code>org.scalatest.fixture.Suite</code>:
  * </p>
  *
  * <pre>
- * import org.scalatest.fixture.FixtureSuite
+ * import org.scalatest.fixture.Suite
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureSuite {
+ * class MySuite extends Suite with SimpleWithFixture {
  *
  *   type Fixture = FileReader
  *
@@ -718,7 +711,7 @@ import org.scalatest.tools.StandardOutReporter
  * instead use the <code>BeforeAndAfterEach</code> trait, which provides
  * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
  * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
+ * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
  * methods, respectively). For example, here's how you'd write the previous
  * test that uses a temp file with <code>BeforeAndAfterEach</code>:
  * </p>
