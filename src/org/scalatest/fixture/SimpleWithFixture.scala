@@ -15,7 +15,7 @@
  */
 package org.scalatest.fixture
 
-trait NoGoodiesInFixture extends FixtureSuite { this: org.scalatest.Suite =>
+trait SimpleWithFixture extends FixtureSuite { this: org.scalatest.Suite =>
 
   def withFixture(fun: TestFunction, goodies: Map[String, Any]) {
     withFixture(fun)

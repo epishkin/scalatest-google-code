@@ -1,13 +1,15 @@
-pass goodies down into before and after methods
+pass goodies down into before and after methods 30 min.
 
 Go ahead and have WordSpec mix in ShouldVerb and MustVerb from the get go. Make sure
 ShouldVerb and MustVerb also work from FlatSpec. If you want either or both matchers, they should
 mix in just fine into either WordSpec or FlatSpec.
 Add can back in to FlatSpec and WordSpec, via CanVerbs.
 
-add description to FeatureSpec
+Do the function type thing for the ShouldVerb implicit thing for WordSpec. 10 min.
 
-pass goodies into RunStarting.
+add description to FeatureSpec 45 min.
+
+pass goodies into RunStarting. 10 min.
 
 In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.
 
