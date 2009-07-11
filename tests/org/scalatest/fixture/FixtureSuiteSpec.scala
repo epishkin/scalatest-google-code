@@ -16,7 +16,6 @@
 package org.scalatest.fixture
 
 import collection.immutable.TreeSet
-import org.scalatest.goodies.Suite
 
 class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
 
