@@ -54,7 +54,11 @@ import org.scalatest.tools.StandardOutReporter
  * <li><code>Suite</code> - tests defined as methods that start with "<code>test</code>"</li>
  * <li><a href="FunSuite.html"><code>FunSuite</code></a> - tests defined as functions registered by invoking "<code>test</code>"</li>
  * <li><a href="Spec.html"><code>Spec</code></a> - supports behavior-driven development style, using "<code>describe</code>" and "<code>it</code>"</li>
- * <li><a href="junit/JUnitSuite.html"><code>JUnitSuite</code></a> - facilitates writing JUnit tests in Scala</li>
+ * <li><a href="FlatSpec.html"><code>FlatSpec</code></a> - supports behavior-driven development style, using operator notation and no nesting</li>
+ * <li><a href="WordSpec.html"><code>WordSpec</code></a> - supports behavior-driven development style, using implicit conversions that add words after strings</li>
+ * <li><a href="FeatureSpec.html"><code>FeatureSpec</code></a> - integration and other high level testing, using "<code>feature</code>" and "<code>scenario</code>"</li>
+ * <li><a href="junit/JUnitSuite.html"><code>JUnitSuite</code></a> - facilitates writing JUnit 4 tests in Scala</li>
+ * <li><a href="junit/JUnitComfortSuite.html"><code>JUnitComfortSuite</code></a> - offers syntax similar to JUnit 3 <code>TestCase</code>s in Scala</li>
  * <li><a href="testng/TestNGSuite.html"><code>TestNGSuite</code></a> - facilitates writing TestNG tests in Scala</li>
  * </ul>
  *
@@ -839,7 +843,7 @@ import org.scalatest.tools.StandardOutReporter
  * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
  * except those those belonging to tags listed in the
  * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in <code>tagsToInclude</code>, and not mentioned in <code>tagsToExclude</code>,
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
  * will be run.
  * </p>
  *
