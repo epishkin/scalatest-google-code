@@ -63,6 +63,7 @@ trait ShouldVerb {
     def should(right: => Unit)(implicit fun: (String, () => Unit, String) => Unit) {
       fun(left, right _, "should")
     }
+
     def should(resultOfAfterWordApplication: ResultOfAfterWordApplication)(implicit fun: (String, ResultOfAfterWordApplication, String) => Unit) {
       fun(left, resultOfAfterWordApplication, "should")
     }

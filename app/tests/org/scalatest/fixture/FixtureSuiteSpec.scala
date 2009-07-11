@@ -16,9 +16,11 @@
 package org.scalatest.fixture
 
 import collection.immutable.TreeSet
+import org.scalatest.goodies.Suite
 
 class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
 
+  /*
   describe("The private testMethodTakesInformer method") {
     val testMethodTakesInformer = PrivateMethod[Boolean]('testMethodTakesInformer)
     val suiteObject = Suite
@@ -31,11 +33,11 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
       assert(!(suiteObject invokePrivate testMethodTakesInformer("thisDoesNot(Fixture)")))
       assert(!(suiteObject invokePrivate testMethodTakesInformer("test(Fixture)")))
     }
-  }
+  }*/
 
   describe("A FixtureSuite") {
     it("should return the test names in alphabetical order from testNames") {
-      val a = new Suite {
+      val a = new Suite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) {}
@@ -46,7 +48,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
         a.testNames.elements.toList
       }
 
-      val b = new Suite {
+      val b = new Suite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
       }
@@ -55,7 +57,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
         b.testNames.elements.toList
       }
 
-      val c = new Suite {
+      val c = new Suite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThat(fixture: String) {}
@@ -68,7 +70,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
     }
 
     it("should discover tests with and without Informer parameters") {
-      val a = new Suite {
+      val a = new Suite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) = ()
@@ -78,7 +80,7 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
     }
 
     it("should pass in the fixture to every test method") {
-      val a = new Suite {
+      val a = new Suite with SimpleWithFixture {
         type Fixture = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit) {
