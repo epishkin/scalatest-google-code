@@ -27,11 +27,7 @@ import Suite.simpleNameForTest
 import Suite.argsArrayForTestName
 import org.scalatest.events._
 
-trait Suite extends org.scalatest.Suite { thisSuite =>
-
-  type Fixture
-
-  protected def withFixture(testFun: Fixture => Unit, goodies: Map[String, Any])
+trait Suite extends org.scalatest.Suite with org.scalatest.fixture.FixtureSuite { thisSuite =>
 
   // Need to override this one becaue it call getMethodForTestName
   override def tags: Map[String, Set[String]] = {

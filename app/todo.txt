@@ -3,14 +3,11 @@ pass goodies down into before and after methods
 Go ahead and have WordSpec mix in ShouldVerb and MustVerb from the get go. Make sure
 ShouldVerb and MustVerb also work from FlatSpec. If you want either or both matchers, they should
 mix in just fine into either WordSpec or FlatSpec.
+Add can back in to FlatSpec and WordSpec, via CanVerbs.
 
 add description to FeatureSpec
 
 pass goodies into RunStarting.
-
-Add specific shared test support to FlatSpec. Drop the SharedTests and TestRegistartion traits.
-
-Maybe add can back in to FlatSpec and WordSpec, via CanVerbs.
 
 In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.
 
@@ -18,7 +15,12 @@ drop recipe name from Runner and RunnerJFrame
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
-Do the fixture and goodies packages for Suite, FunSuite, Spec, WordSpec, FlatSpec, and FeatureSpec.
+Do the fixture package for Suite, FunSuite, Spec, WordSpec, FlatSpec, and FeatureSpec. Make
+Goodies a type alias in Suite, so it is less verbose to type than Map[String, Any]. Then, 
+have withFixture in each of these fixture. types take a function and a goodies map. Then add
+one trait, NoGoodiesInFixture, which implements withFixure(f, g) and calls withFixture(f), which
+is defined as an abstract method. Can also put a TestFunction type alias in those packages. Probably
+need a self type for NoGoodiesInFixture of FixtureSuite that all of these mix in.
 
 Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
 perhaps I just need the final execute forms for the interpreter and the one public execute. Make a trait that can be mixed into
@@ -192,42 +194,12 @@ it is configured with. Print out the ordinal and everything. The
 reason is this can be used as an output during concurrent tests which
 can be read in and then sorted to produce other output.
 
-implicit def stackFixture = stackWithOneItem
-it should behave like nonEmptyStack(lastValuePushed)
-it should behave like nonFullStack
-
 "A Stack (with one item)" should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
 it should behave like nonFullStack(stackWithOneItem)
-
-My thought was that it should behave like could be supported in SharedTests as is.
-So behave is defined in SharedTests, which requires TestRegistration as its self type. behave
-is a val that refers to a BehaveWord instance.
-
-Then in ShouldMatchers, there's the StringShouldWrapper has a should method that takes a BehaveWord 
-type, but there's no instance in ShouldMatchers. So you can only use it when SharedTests's
-is mixed in. And what it will need to do is register the left string as a describer. That's
-all that's needed here.
-
-"A Stack" ++ {
-  "(with one item)" should {
-    implicit def stackFixture = stackWithOneItem
-    behave like nonEmptyStack(lastValuePushed)
-    behave like nonFullStack
-  }
-}
 
 In FlatSpec, just support "it should behave like X" and if ShouldMatchers is mixed in "string should behave like X". No shared tests needed.
 In Spec, just support "it should behave like X." No SharedTests mix in needed. So it("test name") will have to be an apply method on
 the it object.
-
-Now, the question is FeatureSpec and FunSuite.
-include testsFor nonEmptyStack(lastValuePushed, stackWithOneItem)
-include testsFor nonFullStack(stackWithOneItem)
-
-include scenariosFor nonEmptyStack(lastValuePushed)(stackWithOneItem)
-include scenariosFor nonFullStack(stackWithOneItem)
-
-That's simple and readable. Can drop SharedTests trait and TestRegistration.
 
 ask about sugar forms for shouldEqual and mustEqual to Should/MustMatchers:
 
@@ -634,3 +606,48 @@ From the SharedTests trait:
  * </ul>
  */
 
+
+"A TimeSpan" can {
+    "be created from a number of milliseconds" in {
+      TimeSpan(3000) must_== TimeSpan(3 * 1000)
+    }
+    "be created from a number of seconds" in {
+      3.seconds must_== TimeSpan(3 * 1000)
+    }
+    "be created from a number of minutes" in {
+      3.minutes must_== TimeSpan(3 * 60 * 1000)
+    }
+    "be created from a number of hours" in {
+      3.hours must_== TimeSpan(3 * 60 * 60 * 1000)
+    }
+    "be created from a number of days" in {
+      3.days must_== TimeSpan(3 * 24 * 60 * 60 * 1000)
+    }
+    "be created from a number of weeks" in {
+      3.weeks must_== TimeSpan(3 * 7 * 24 * 60 * 60 * 1000)
+    }
+    "be converted implicitly to a date starting from the epoch time" in {
+      3.seconds.after(new Date(0)) must beTrue
+    }
+    "be converted to a date starting from the epoch time, using the date method" in {
+      3.seconds.after(new Date(0)) must beTrue
+    }
+    "be implicitly converted to a Long" in {
+      3.seconds must_== 3000L
+    }
+    "be compared to an int" in {
+      3.seconds must_== 3000
+      3.seconds must_!= 2000
+    }
+    "be compared to a long" in {
+      3.seconds must_== 3000L
+      3.seconds must_!= 2000L
+    }
+    "be compared to another TimeSpan" in {
+      3.seconds must_== 3.seconds
+      3.seconds must_!= 2.seconds
+    }
+    "be compared to another object" in {
+      3.seconds must_!= "string"
+    }
+  }

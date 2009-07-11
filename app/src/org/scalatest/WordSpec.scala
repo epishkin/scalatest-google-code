@@ -23,6 +23,7 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 import org.scalatest.matchers.ResultOfAfterWordApplication
 import org.scalatest.matchers.ShouldVerb
+import org.scalatest.matchers.BehaveWord
 
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
@@ -1236,20 +1237,6 @@ trait WordSpec extends Suite with ShouldVerb { thisSuite =>
       """
       if (!success)
         throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
-    }
-  }
-
-  class BehaveWord {
-
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * behave like nonEmptyStack(lastValuePushed)
-     *        ^
-     * </pre>
-     */
-    def like(unit: Unit) {
     }
   }
 

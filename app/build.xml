@@ -302,8 +302,10 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
-            <suite classname="org.scalatest.FlatSpecSpec" />
+            <suite classname="org.scalatest.StackShorthandFlatSpec" />
+            <suite classname="org.scalatest.StackFlatSpec" />
 <!--
+            <suite classname="org.scalatest.FlatSpecSpec" />
             <suite classname="org.scalatest.StackWordSpec" />
             <suite classname="org.scalatest.WordSpecSpec" />
             <suite classname="org.scalatest.TVFeatureSpec" />

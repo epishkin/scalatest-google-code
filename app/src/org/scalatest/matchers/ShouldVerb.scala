@@ -49,6 +49,17 @@ trait ShouldVerb {
       fun(left, right, "should")
     }
 
+    // For FlatSpec "bla" should behave like bla syntax
+    def should(right: BehaveWord)(implicit fun: (String) => ResultOfBehaveWordPassedToVerb): ResultOfBehaveWordPassedToVerb = {
+      fun(left)
+    }
+
+    // TODO: Make this a type alias, no, that won't work. Hmm. Would like something that. I know, make the
+    // result type. Well either make the result type some bous value, or probably better define a type that
+    // extends () => Unit and use that  as the center one. Probably very unlikely it would ever clash, but
+    // a better practice would be do use one "role-defining type" in here.
+    // These two are for WordSpec. Won't work elsewhere because only WordSpec defines these implicit
+    // parameters.
     def should(right: => Unit)(implicit fun: (String, () => Unit, String) => Unit) {
       fun(left, right _, "should")
     }
