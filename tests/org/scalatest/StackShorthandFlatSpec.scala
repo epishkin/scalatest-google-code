@@ -15,11 +15,11 @@
  */
 package org.scalatest
 
-class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatStackBehaviors {
+import matchers.ShouldVerb
 
-  behavior of "A Stack (when empty)"
+class StackShorthandFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatStackBehaviors with ShouldVerb {
 
-  it should "be empty" in {
+  "A Stack (when empty)" should "be empty" in {
     assert(emptyStack.empty)
   }
 
@@ -35,9 +35,7 @@ class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatS
     }
   }
 
-  behavior of "A Stack (with one item)"
-
-  it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+  "A Stack (with one item)" should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
   it should behave like nonFullStack(stackWithOneItem)
 
   behavior of "A Stack (with one item less than capacity)"
@@ -45,9 +43,7 @@ class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatS
   it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
   it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
 
-  behavior of "A Stack (full)"
-
-  it should "be full" in {
+  "A Stack (full)" should "be full" in {
     assert(fullStack.full)
   }
 

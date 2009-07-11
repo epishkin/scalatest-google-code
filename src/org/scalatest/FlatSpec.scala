@@ -15,13 +15,14 @@
  */
 package org.scalatest
 
+import matchers.{ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-import org.scalatest.matchers.ResultOfStringPassedToVerb
+import matchers.BehaveWord
 
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
@@ -795,6 +796,15 @@ trait FlatSpec extends Suite { thisSuite =>
     }
   }
   
+  implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
+    (left) => {
+      behavior.of(left)
+      new ResultOfBehaveWordPassedToVerb {
+        def like(unit: Unit) = ()
+      }
+    }
+  }
+
   /**
    * Register a test with the given spec text and test function value that takes no arguments.
    *
@@ -1212,19 +1222,6 @@ trait FlatSpec extends Suite { thisSuite =>
       if (!success)
         throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
     }
-  }
-
-  class BehaveWord {
-
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * scenariosFor(nonEmptyStack(lastValuePushed))
-     *             ^
-     * </pre>
-     */
-    def like(unit: Unit) {}
   }
 
   val behave = new BehaveWord
