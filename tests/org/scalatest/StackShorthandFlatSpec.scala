@@ -35,12 +35,14 @@ class StackShorthandFlatSpec extends FlatSpec with StackFixtureCreationMethods w
     }
   }
 
-  "A Stack (with one item)" should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+  "A Stack (with one item)" should
+          behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+
   it should behave like nonFullStack(stackWithOneItem)
 
-  behavior of "A Stack (with one item less than capacity)"
+  "A Stack (with one item less than capacity)" should
+          behave like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
 
-  it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
   it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
 
   "A Stack (full)" should "be full" in {
