@@ -21,5 +21,5 @@ trait FixtureSuite { this: org.scalatest.Suite =>
 
   type TestFunction = (Fixture) => Unit
 
-  def withFixture(fun: TestFunction, goodies: Map[String, Any])
+  def withFixture(fun: (Fixture) => Unit, goodies: Map[String, Any])
 }
