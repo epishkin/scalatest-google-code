@@ -100,12 +100,12 @@ import org.scalatest.events._
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
  *
- *   test("Addition") {
+ *   test("addition") {
  *     val sum = 2 + 3
  *     assert(sum === shared)
  *   }
  *
- *   test("Subtraction") {
+ *   test("subtraction") {
  *     val diff = 7 - 2
  *     assert(diff === shared)
  *   }
@@ -116,14 +116,14 @@ import org.scalatest.events._
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * it needs to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
- * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
+ * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
  * between tests. Before going that route, you should consider two approaches that
- * avoid <code>var</code>s. One approach is to write one or more "create" methods
- * that return a new instance of a needed object (or a tuple of new instances of
- * multiple objects) each time it is called. You can then call a create method at the beginning of each
+ * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
+ * that return a new instance of a needed object (or a tuple or case class holding new instances of
+ * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
  * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
@@ -139,7 +139,7 @@ import org.scalatest.events._
  *     new ListBuffer[String]
  *   )
  *
- *   test("Easy") {
+ *   test("easy") {
  *     val (builder, lbuf) = createFixture
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
@@ -147,7 +147,7 @@ import org.scalatest.events._
  *     lbuf += "sweet"
  *   }
  *
- *   test("Fun") {
+ *   test("fun") {
  *     val (builder, lbuf) = createFixture
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
@@ -157,9 +157,16 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
- * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
+ * If different tests in the same <code>FunSuite</code> require different fixtures, you can create multiple create-fixture methods and
+ * call the method (or methods) needed by each test at the begining of the test.
  * </p>
+ *
+ * <p>
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create with-fixture methods,
+ * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the
+ * with-fixture method. Here's an example:
+ * </p>
+ *
  * <pre>
  * import org.scalatest.FunSuite
  * import scala.collection.mutable.ListBuffer
@@ -176,30 +183,26 @@ import org.scalatest.events._
  *     testFunction(sb, lb)
  *   }
  *
- *   test("Easy") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("easy!")
- *         assert(builder.toString === "ScalaTest is easy!")
- *         assert(lbuf.isEmpty)
- *         lbuf += "sweet"
- *       }
+ *   test("easy") {
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(lbuf.isEmpty)
+ *       lbuf += "sweet"
  *     }
  *   }
  *
- *   test("Fun") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("fun!")
- *         assert(builder.toString === "ScalaTest is fun!")
- *         assert(lbuf.isEmpty)
- *       }
+ *   test("fun") {
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(lbuf.isEmpty)
  *     }
  *   }
  * }
  * </pre>
  * 
- * One advantage of this approach compared to the create method approach shown previously is that
+ * One advantage of this approach compared to the create-fixture approach shown previously is that
  * you can more easily perform cleanup after each test runs. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
  * doing so before and after invoking the test function in a <code>withTempFile</code>
@@ -241,26 +244,88 @@ import org.scalatest.events._
  *     }
  *   }
  * 
- *   test("Reading from the temp file") {
- *     withTempFile {
- *       (reader) => {
- *         var builder = new StringBuilder
- *         var c = reader.read()
- *         while (c != -1) {
- *           builder.append(c.toChar)
- *           c = reader.read()
- *         }
- *         assert(builder.toString === "Hello, test!")
+ *   test("reading from the temp file") {
+ *     withTempFile { (reader) =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
  *       }
+ *       assert(builder.toString === "Hello, test!")
  *     }
  *   }
  * 
- *   test("First char of the temp file") {
- *     withTempFile {
- *       (reader) => {
- *         assert(reader.read() === 'H')
- *       }
+ *   test("first char of the temp file") {
+ *     withTempFile { (reader) =>
+ *       assert(reader.read() === 'H')
  *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If different tests in the same <code>FunSuite</code> require different fixtures, you can create multiple with-fixture methods and
+ * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
+ * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
+ * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
+ * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
+ * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FunSuite</code> behaves exactly like
+ * <code>org.scalatest.FunSuite</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
+ * <a href="fixture/FunSuite.html"><code>FunSuite</code></a>. To get the idea, however, here's what the previous example would
+ * look like rewritten to use an <code>org.scalatest.fixture.FunSuite</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FunSuite
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends FunSuite with SimpleWithFixture {
+ *
+ *   type Fixture = FileReader
+ *
+ *   def withFixture(testFunction: FileReader => Unit) {
+ *
+ *     val FileName = "TempFile.txt"
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   test("reading from the temp file") { reader =>
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ * 
+ *   test("first char of the temp file") { reader =>
+ *     assert(reader.read() === 'H')
  *   }
  * }
  * </pre>
@@ -268,21 +333,21 @@ import org.scalatest.events._
  * <p>
  * If you are more comfortable with reassigning instance variables, however, you can
  * instead use the <code>BeforeAndafter</code> trait, which provides
- * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
+ * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
  * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
+ * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
  * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with <code>BeforeAndAfter</code>:
+ * test that uses a temp file with <code>BeforeAndAfterEach</code>:
  * </p>
  *
  * <pre>
  * import org.scalatest.FunSuite
- * import org.scalatest.BeforeAndAfter
+ * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FunSuite with BeforeAndAfter {
+ * class MySuite extends FunSuite with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -308,7 +373,7 @@ import org.scalatest.events._
  *     file.delete()
  *   }
  *
- *   test("Reading from the temp file") {
+ *   test("reading from the temp file") {
  *     var builder = new StringBuilder
  *     var c = reader.read()
  *     while (c != -1) {
@@ -318,7 +383,7 @@ import org.scalatest.events._
  *     assert(builder.toString === "Hello, test!")
  *   }
  *
- *   test("First char of the temp file") {
+ *   test("first char of the temp file") {
  *     assert(reader.read() === 'H')
  *   }
  * }
@@ -330,7 +395,7 @@ import org.scalatest.events._
  * want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
+ * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
  * an example.
  * </p>
  *
