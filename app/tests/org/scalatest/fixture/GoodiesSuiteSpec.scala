@@ -33,7 +33,7 @@ class GoodiesSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
     }
   }
 
-  describe("A FixtureSuite") {
+  describe("A fixture.Suite") {
     it("should return the test names in alphabetical order from testNames") {
       val a = new Suite {
         type Fixture = String

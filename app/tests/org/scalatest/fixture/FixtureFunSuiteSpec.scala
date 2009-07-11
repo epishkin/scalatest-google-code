@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 Artima, Inc.
+ * Copyright 2001-2009 Artima, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,24 @@
  */
 package org.scalatest.fixture
 
-import collection.immutable.TreeSet
+class FixtureFunSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
 
-class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
-
-  describe("A FixtureSuite with SimpleWithFixture") {
+  describe("A fixture.FunSuite") {
     it("should return the test names in alphabetical order from testNames") {
-      val a = new Suite with SimpleWithFixture {
+      val a = new FunSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
-        def testThis(fixture: String) {}
-        def testThat(fixture: String) {}
+        test("that") { fixture =>
+        }
+        test("this") { fixture =>
+        }
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+      expect(List("that", "this")) {
         a.testNames.elements.toList
       }
 
-      val b = new Suite with SimpleWithFixture {
+      val b = new FunSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
       }
@@ -41,39 +41,31 @@ class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers 
         b.testNames.elements.toList
       }
 
-      val c = new Suite with SimpleWithFixture {
+      val c = new FunSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
-        def testThat(fixture: String) {}
-        def testThis(fixture: String) {}
+        test("this") { fixture =>
+        }
+        test("that") { fixture =>
+        }
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+      expect(List("this", "that")) {
         c.testNames.elements.toList
       }
     }
 
-    it("should discover tests with and without Informer parameters") {
-      val a = new Suite with SimpleWithFixture {
-        type Fixture = String
-        def withFixture(fun: String => Unit) {}
-        def testThis(fixture: String) = ()
-        def testThat(fixture: String, info: Informer) = ()
-      }
-      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
-    }
-
     it("should pass in the fixture to every test method") {
-      val a = new Suite with SimpleWithFixture {
+      val a = new FunSuite with SimpleWithFixture {
         type Fixture = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit) {
           fun(hello)
         }
-        def testThis(fixture: String) {
+        test("this") { fixture =>
           assert(fixture === hello)
         }
-        def testThat(fixture: String, info: Informer) {
+        test("that") { fixture =>
           assert(fixture === hello)
         }
       }
