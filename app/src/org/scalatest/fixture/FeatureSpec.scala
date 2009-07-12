@@ -1159,7 +1159,7 @@ trait FeatureSpec extends Suite with FixtureSuite { thisSuite =>
     }
   }
 
-  class ScenariosForPhrase {
+  class FixtureScenariosForPhrase {
 
     /**
      * This method enables the following syntax:
@@ -1172,5 +1172,5 @@ trait FeatureSpec extends Suite with FixtureSuite { thisSuite =>
     def apply(unit: Unit) {}
   }
 
-  val scenariosFor = new ScenariosForPhrase
+  val scenariosFor = new FixtureScenariosForPhrase
 }
