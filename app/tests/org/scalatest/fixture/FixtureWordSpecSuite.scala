@@ -17,23 +17,25 @@ package org.scalatest.fixture
 
 import events.TestFailed
 
-class FixtureSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
+class FixtureWordSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
 
   test("A fixture.Spec should return the test names in alphabetical order from testNames") {
-    val a = new Spec with SimpleWithFixture {
+    val a = new WordSpec with SimpleWithFixture {
       type Fixture = String
       def withFixture(fun: String => Unit) {}
-      it("should do that") { fixture =>
-      }
-      it("should do this") { fixture =>
+      "Something" should {
+        "do that" in { fixture =>
+        }
+        "do this" in { fixture =>
+        }
       }
     }
 
-    expect(List("should do that", "should do this")) {
+    expect(List("Something should do that", "Something should do this")) {
       a.testNames.elements.toList
     }
 
-    val b = new Spec with SimpleWithFixture {
+    val b = new WordSpec with SimpleWithFixture {
       type Fixture = String
       def withFixture(fun: String => Unit) {}
     }
@@ -42,12 +44,14 @@ class FixtureSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester w
       b.testNames.elements.toList
     }
 
-    val c = new Spec with SimpleWithFixture {
+    val c = new WordSpec with SimpleWithFixture {
       type Fixture = String
       def withFixture(fun: String => Unit) {}
-      it("should do this") { fixture =>
-      }
-      it("should do that") { fixture =>
+      "Something" should {
+        "do this" in { fixture =>
+        }
+        "do that" in { fixture =>
+        }
       }
     }
 
@@ -57,17 +61,19 @@ class FixtureSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester w
   }
 
   test("A fixture.Spec should pass in the fixture to every test method") {
-    val a = new Spec with SimpleWithFixture {
+    val a = new WordSpec with SimpleWithFixture {
       type Fixture = String
       val hello = "Hello, world!"
       def withFixture(fun: String => Unit) {
         fun(hello)
       }
-      it("should do this") { fixture =>
-        assert(fixture === hello)
-      }
-      it("should do that") { fixture =>
-        assert(fixture === hello)
+      "Something" should {
+        "do this" in { fixture =>
+          assert(fixture === hello)
+        }
+        "do that" in { fixture =>
+          assert(fixture === hello)
+        }
       }
     }
     val rep = new EventRecordingReporter
