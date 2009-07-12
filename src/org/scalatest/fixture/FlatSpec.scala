@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.fixture
 
-import matchers.{ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb}
-import NodeFamily._
+import FixtureNodeFamily._
+import matchers.{ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-import matchers.BehaveWord
-
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -60,7 +58,7 @@ import matchers.BehaveWord
  * with <code>describe</code>, and a example with <code>it</code>. Both
  * <code>describe</code> and <code>it</code> are methods, defined in
  * <code>Spec</code>, which will be invoked
- * by the primary constructor of <code>StackSpec</code>. 
+ * by the primary constructor of <code>StackSpec</code>.
  * A describer names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
  * and testing. In the above example, "A Stack"
  * is the subject under specification and test. With each example you provide a string (the <em>spec text</em>) that specifies
@@ -135,7 +133,7 @@ import matchers.BehaveWord
  * <p>
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * it needs to be recreated or reinitialized before each test. Shared resources such
- * as files or database connections may also need to 
+ * as files or database connections may also need to
  * be cleaned up after each test. JUnit offers methods <code>setup</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
@@ -218,7 +216,7 @@ import matchers.BehaveWord
  *   }
  * }
  * </pre>
- * 
+ *
  * One advantage of this approach compared to the create method approach shown previously is that
  * you can more easily perform cleanup after each test executes. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
@@ -230,13 +228,13 @@ import matchers.BehaveWord
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
- * 
+ *
  * class MySpec extends Spec {
- * 
+ *
  *   def withTempFile(testFunction: FileReader => Unit) {
- * 
+ *
  *     val FileName = "TempFile.txt"
- *  
+ *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)
  *     try {
@@ -245,10 +243,10 @@ import matchers.BehaveWord
  *     finally {
  *       writer.close()
  *     }
- *  
+ *
  *     // Create the reader needed by the test
  *     val reader = new FileReader(FileName)
- *  
+ *
  *     try {
  *       // Run the test using the temp file
  *       testFunction(reader)
@@ -260,7 +258,7 @@ import matchers.BehaveWord
  *       file.delete()
  *     }
  *   }
- * 
+ *
  *   it("should read from a temp file") {
  *     withTempFile {
  *       (reader) => {
@@ -274,7 +272,7 @@ import matchers.BehaveWord
  *       }
  *     }
  *   }
- * 
+ *
  *   it("should read the first char of a temp file") {
  *     withTempFile {
  *       (reader) => {
@@ -366,7 +364,7 @@ import matchers.BehaveWord
  * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
  * a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
+ * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
  * create matching groups for <code>Spec</code>s like this:
@@ -400,7 +398,7 @@ import matchers.BehaveWord
  * </pre>
  *
  * <p>
- * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group, 
+ * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group,
  * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DBTest</code> group.
  * </p>
  *
@@ -503,7 +501,7 @@ import matchers.BehaveWord
  * </p>
  *
  * <p>
- * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
+ * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the
  * test name, like this:
  * </p>
  *
@@ -543,14 +541,14 @@ import matchers.BehaveWord
  * </p>
  *
  * <pre>
- * A Stack 
+ * A Stack
  * - should pop values in last-in-first-out order
  * - should throw NoSuchElementException if an empty stack is popped (pending)
  * </pre>
- * 
+ *
  * @author Bill Venners
  */
-trait FlatSpec extends Suite { thisSuite =>
+trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
@@ -560,7 +558,7 @@ trait FlatSpec extends Suite { thisSuite =>
     val tagsMap: Map[String, Set[String]],
 
     // All tests, in reverse order of registration
-    val testsList: List[TestLeaf],
+    val testsList: List[FixtureTestLeaf[Fixture]],
 
     // Used to detect at runtime that they've stuck a describe or an it inside an it,
     // which should result in a TestRegistrationClosedException
@@ -574,7 +572,7 @@ trait FlatSpec extends Suite { thisSuite =>
       trunk: Trunk,
       currentBranch: Branch,
       tagsMap: Map[String, Set[String]],
-      testsList: List[TestLeaf],
+      testsList: List[FixtureTestLeaf[Fixture]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
@@ -582,7 +580,7 @@ trait FlatSpec extends Suite { thisSuite =>
     def initialize(
       trunk: Trunk,
       tagsMap: Map[String, Set[String]],
-      testsList: List[TestLeaf],
+      testsList: List[FixtureTestLeaf[Fixture]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
@@ -590,7 +588,7 @@ trait FlatSpec extends Suite { thisSuite =>
 
   private val atomic =
     new AtomicReference[Bundle](
-      Bundle.initialize(new Trunk, Map(), List[TestLeaf](), false)
+      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[Fixture]](), false)
     )
 
   private val shouldRarelyIfEverBeSeen = """
@@ -606,7 +604,7 @@ trait FlatSpec extends Suite { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: () => Unit) = {
+  private def registerTest(specText: String, f: Fixture => Unit) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -616,7 +614,7 @@ trait FlatSpec extends Suite { thisSuite =>
       throw new DuplicateTestNameException(testName, getStackDepth("FlatSpec.scala", "it"))
     }
     val testShortName = specText
-    val test = TestLeaf(currentBranch, testName, specText, f)
+    val test = FixtureTestLeaf(currentBranch, testName, specText, f)
     currentBranch.subNodes ::= test
     testsList ::= test
 
@@ -690,7 +688,7 @@ trait FlatSpec extends Suite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: () => Unit) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
@@ -734,14 +732,14 @@ trait FlatSpec extends Suite { thisSuite =>
   protected val behavior = new BehaviorWord
 
   protected class ItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
-    def in(testFun: => Unit) {
-      registerTestToRun(verb + " " + name, tags, testFun _)
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(verb + " " + name, tags, testFun)
     }
   }
 
   protected class ItVerbString(verb: String, name: String) {
-    def in(testFun: => Unit) {
-      registerTestToRun(verb + " " + name, List(), testFun _)
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(verb + " " + name, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
@@ -759,14 +757,14 @@ trait FlatSpec extends Suite { thisSuite =>
   protected val it = new ItWord
 
   protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
-    def in(testFun: => Unit) {
-      registerTestToIgnore(verb + " " + name, tags, testFun _)
+    def in(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, tags, testFun)
     }
   }
 
   protected class IgnoreVerbString(verb: String, name: String) {
-    def in(testFun: => Unit) {
-      registerTestToIgnore(verb + " " + name, List(), testFun _)
+    def in(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
@@ -781,24 +779,24 @@ trait FlatSpec extends Suite { thisSuite =>
 
   protected val ignore = new IgnoreWord
 
-  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb[Any] = {
+  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb[Fixture] = {
     (left, right, verb) => {
       behavior.of(left)
-      new ResultOfStringPassedToVerb[Any] {
+      new ResultOfStringPassedToVerb[Fixture] {
         def in(testFun: => Unit) {
-          registerTestToRun(verb + " " + right, List(), testFun _)
+          throw new RuntimeException // TODO: Explain why in msg
         }
-        def in(testFun: Any => Unit) { // TODO pass some message
-          throw new RuntimeException
+        def in(testFun: Fixture => Unit) {
+          registerTestToRun(verb + " " + right, List(), testFun)
         }
-        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*)(testFun: => Unit) {
+        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*)(testFun: Fixture => Unit) {
           val tagList = firstTestTag :: otherTestTags.toList
-          registerTestToRun(verb + " " + right, tagList, testFun _)
+          registerTestToRun(verb + " " + right, tagList, testFun)
         }
       }
     }
   }
-  
+
   implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
     (left) => {
       behavior.of(left)
@@ -848,7 +846,7 @@ trait FlatSpec extends Suite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)
@@ -885,14 +883,14 @@ trait FlatSpec extends Suite { thisSuite =>
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     oldIgnore(specText, Array[Tag](): _*)(testFun)
   } */
-  
+
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
-   * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to 
-   * methods <code>test</code> and <code>ignore</code>. 
+   * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to
+   * methods <code>test</code> and <code>ignore</code>.
    * </p>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
@@ -911,21 +909,21 @@ trait FlatSpec extends Suite { thisSuite =>
           // Need to use the full name of the description, which includes all the descriptions it is nested inside
           // Call getPrefix and pass in this Desc, to get the full name
           val descriptionFullName = getPrefix(desc).trim
-         
+
 
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
           report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
         }
-        
+
         // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
         // it is a test, because otherwise we get a lame description that doesn't have any tests under it.
         // But send it if the list is empty.
         if (desc.subNodes.isEmpty)
-          sendInfoProvidedMessage() 
+          sendInfoProvidedMessage()
         else
           desc.subNodes.reverse.head match {
-            case ex: TestLeaf => sendInfoProvidedMessage()
+            case ex: FixtureTestLeaf[_] => sendInfoProvidedMessage()
             case _ => // Do nothing in this case
           }
 
@@ -933,7 +931,7 @@ trait FlatSpec extends Suite { thisSuite =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case TestLeaf(_, tn, specText, _) =>
+        case FixtureTestLeaf(_, tn, specText, _) =>
           if (!stopRequested()) { // TODO: Seems odd to me to check for stop here but still fire infos
             val (filterTest, ignoreTest) = filter(tn, tags)
             if (!filterTest)
@@ -983,7 +981,7 @@ trait FlatSpec extends Suite { thisSuite =>
         val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, test.specText)
 
         // Create a Rerunner if the Spec has a no-arg constructor
-        val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
+        val hasPublicNoArgConstructor = org.scalatest.Suite.checkForPublicNoArgConstructor(getClass)
 
         val rerunnable =
           if (hasPublicNoArgConstructor)
@@ -1016,7 +1014,7 @@ trait FlatSpec extends Suite { thisSuite =>
 
         atomicInformer.set(informerForThisTest)
         try {
-          test.f()
+          withFixture(test.f, goodies)
 
           val duration = System.currentTimeMillis - testStartTime
           report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))
@@ -1132,7 +1130,7 @@ trait FlatSpec extends Suite { thisSuite =>
    */
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], tracker: Tracker) {
-    
+
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
