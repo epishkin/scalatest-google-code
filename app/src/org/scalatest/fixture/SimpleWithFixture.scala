@@ -17,9 +17,9 @@ package org.scalatest.fixture
 
 trait SimpleWithFixture extends FixtureSuite { this: org.scalatest.Suite =>
 
-  def withFixture(fun: TestFunction, goodies: Map[String, Any]) {
+  def withFixture(fun: (Fixture) => Unit, goodies: Map[String, Any]) {
     withFixture(fun)
   }
   
-  def withFixture(fun: TestFunction)
+  def withFixture(fun: (Fixture) => Unit)
 }

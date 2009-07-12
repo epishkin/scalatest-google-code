@@ -15,7 +15,7 @@
  */
 package org.scalatest.fixture
 
-import NodeFamily._
+import FixtureNodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference

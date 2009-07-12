@@ -15,7 +15,7 @@
  */
 package org.scalatest.fixture
 
-class FixtureFunSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
+class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("A fixture.FunSuite") {
     it("should return the test names in alphabetical order from testNames") {

@@ -17,7 +17,7 @@ package org.scalatest.fixture
 
 import collection.immutable.TreeSet
 
-class FixtureSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
+class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("A FixtureSuite with SimpleWithFixture") {
     it("should return the test names in alphabetical order from testNames") {
