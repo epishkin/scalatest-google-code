@@ -17,7 +17,7 @@ package org.scalatest.goodies
 
 import collection.immutable.TreeSet
 
-class GoodiesSuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
+class GoodiesSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("The private testMethodTakesInformer method") {
     val testMethodTakesInformer = PrivateMethod[Boolean]('testMethodTakesInformer)

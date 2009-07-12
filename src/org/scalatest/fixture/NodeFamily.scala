@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 Artima, Inc.
+ * Copyright 2001-2009 Artima, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.fixture
 
-private[scalatest] object NodeFamily {
-  
+object FixtureNodeFamily  {
+
   sealed abstract class Node(parentOption: Option[Branch])
 
   abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
@@ -25,11 +25,11 @@ private[scalatest] object NodeFamily {
 
   case class Trunk extends Branch(None)
 
-  case class TestLeaf(
+  case class FixtureTestLeaf[Fixture](
     parent: Branch,
     testName: String,
     specText: String,
-    f: () => Unit
+    f: Fixture => Unit
   ) extends Node(Some(parent))
 
   case class InfoLeaf(parent: Branch, message: String) extends Node(Some(parent))
@@ -37,7 +37,7 @@ private[scalatest] object NodeFamily {
   case class DescriptionBranch(
     parent: Branch,
     descriptionName: String
-  ) extends Branch(Some(parent))   
+  ) extends Branch(Some(parent))
 
   case class VerbBranch(
     parent: Branch,
@@ -54,7 +54,7 @@ private[scalatest] object NodeFamily {
       // Call to getPrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionName) =>
-        Resources("prefixSuffix", getPrefix(parent), descriptionName)    
+        Resources("prefixSuffix", getPrefix(parent), descriptionName)
       case VerbBranch(parent, descriptionName, verb) =>
         val prefix = getPrefix(parent)
         val suffix = if (prefix.indexOf(" (when ") != -1) ")" else ""
