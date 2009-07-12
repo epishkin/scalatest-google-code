@@ -16,6 +16,7 @@
 package org.scalatest.goodies
 
 import collection.immutable.TreeSet
+import events.TestFailed
 
 class GoodiesSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
@@ -109,7 +110,9 @@ class GoodiesSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
           assert(fixture(key) === hello)
         }
       }
-      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(key -> hello), None, new Tracker())
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(key -> hello), None, new Tracker())
+      assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
   }
 }

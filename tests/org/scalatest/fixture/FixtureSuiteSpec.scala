@@ -16,6 +16,7 @@
 package org.scalatest.fixture
 
 import collection.immutable.TreeSet
+import events.TestFailed
 
 class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
@@ -77,7 +78,9 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
           assert(fixture === hello)
         }
       }
-      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
   }
 }
