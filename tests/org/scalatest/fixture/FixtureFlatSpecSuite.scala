@@ -15,7 +15,7 @@
  */
 package org.scalatest.fixture
 
-import events.TestFailed
+import events.{TestStarting, TestFailed}
 import matchers.ShouldVerb
 
 class FixtureFlatSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
@@ -52,7 +52,7 @@ class FixtureFlatSpecSuite extends org.scalatest.FunSuite with PrivateMethodTest
       }
     }
 
-    expect(List("should do this", "should do that")) {
+    expect(List("Something should do this", "Something should do that")) {
       c.testNames.elements.toList
     }
   }
@@ -75,4 +75,28 @@ class FixtureFlatSpecSuite extends org.scalatest.FunSuite with PrivateMethodTest
     a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
     assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
   }
+  test("it should run tests registered via the 'it can behave like' syntax") {
+    trait SharedFlatSpecTests { this: FlatSpec =>
+      def nonEmptyStack(s: String)(i: Int) {
+        it can "I am shared" in { fixture => }
+      }
+    }
+    class MyFlatSpec extends FlatSpec with SimpleWithFixture with SharedFlatSpecTests {
+      type Fixture = String
+      def withFixture(fun: String => Unit) {
+        fun("hi")
+      }
+      it can behave like nonEmptyStack("hi")(1)
+    }
+    val suite = new MyFlatSpec
+    val reporter = new EventRecordingReporter
+    suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+
+    val indexedList = reporter.eventsReceived
+
+    val testStartingOption = indexedList.find(_.isInstanceOf[TestStarting])
+    assert(testStartingOption.isDefined)
+    assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "can I am shared")
+  }
+
 }

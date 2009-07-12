@@ -25,7 +25,7 @@
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
     <property name="lib" value="lib" />
-    <property name="jvmargs" value="-Xmx1280M"/>
+    <property name="jvmargs" value="-Xmx1500M"/>
 
     <!--
   <property name="build.compiler" value="jikes"/>
@@ -261,6 +261,7 @@
             <reporter type="stdout"/>
             <reporter type="file" filename="delme.txt" />
             <membersonly package="org.scalatest" />
+            <membersonly package="org.scalatest.fixture" />
             <membersonly package="org.scalatest.matchers" />
             <membersonly package="org.scalatest.testng" />
             <membersonly package="org.scalatest.junit" />
@@ -302,15 +303,17 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
-            <suite classname="org.scalatest.fixture.FixtureFeatureSpecSuite" />
+            <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
+            <suite classname="org.scalatest.FlatSpecSpec" />
+            <suite classname="org.scalatest.matchers.CanVerbSuite" />
 <!--
+            <suite classname="org.scalatest.fixture.FixtureFeatureSpecSuite" />
             <suite classname="org.scalatest.fixture.FixtureSpecSuite" />
             <suite classname="org.scalatest.fixture.FixtureWordSpecSuite" />
             <suite classname="org.scalatest.fixture.FixtureFunSuiteSpec" />
             <suite classname="org.scalatest.fixture.FixtureSuiteSpec" />
             <suite classname="org.scalatest.fixture.GoodiesSuiteSpec" />
             <suite classname="org.scalatest.StackFlatSpec" />
-            <suite classname="org.scalatest.FlatSpecSpec" />
             <suite classname="org.scalatest.StackWordSpec" />
             <suite classname="org.scalatest.WordSpecSpec" />
             <suite classname="org.scalatest.TVFeatureSpec" />
