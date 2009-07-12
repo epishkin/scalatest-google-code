@@ -13,8 +13,6 @@ pass goodies into RunStarting. 10 min.
 
 In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.
 
-drop recipe name from Runner and RunnerJFrame
-
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
 Do the fixture package for Suite, FunSuite, Spec, WordSpec, FlatSpec, and FeatureSpec. Make
