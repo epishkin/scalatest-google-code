@@ -838,25 +838,25 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb { thisSuite =>
 
   protected implicit def convertToStringCanWrapper(s: String) = new StringCanWrapper(s)
     */
-  protected class StringTaggedAs(specText: String, tags: List[Tag]) {
+  protected class FixtureStringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: Fixture => Unit) {
       registerTestToRun(specText, tags, testFun)
     }
   }
 
-  protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
+  protected class FixtureIgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: Fixture => Unit) {
       registerTestToIgnore(specText, tags, testFun)
     }
   }
 
-  protected class WordSpecStringWrapper(string: String) {
+  protected class FixtureWordSpecStringWrapper(string: String) {
     def in(f: Fixture => Unit) {
       registerTestToRun(string, List(), f)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      new StringTaggedAs(string, tagList)
+      new FixtureStringTaggedAs(string, tagList)
     }
     /* def can(f: => Unit) {
       registerVerbBranch(string, "can", f _)
@@ -875,28 +875,28 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb { thisSuite =>
     }
   }
 
-  protected class AfterWord(text: String) {
+  protected class FixtureAfterWord(text: String) {
     def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
   }
 
-  protected def afterWord(text: String) = new AfterWord(text)
+  protected def afterWord(text: String) = new FixtureAfterWord(text)
 
-  protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
+  protected implicit def convertToWordSpecStringWrapper(s: String) = new FixtureWordSpecStringWrapper(s)
 
-  protected class IgnoredTest(specText: String) {
+  protected class FixtureIgnoredTest(specText: String) {
     def in(f: Fixture => Unit) {
       registerTestToIgnore(specText, List(), f)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      new IgnoreTestStringTaggedAs(specText, tagList)
+      new FixtureIgnoreTestStringTaggedAs(specText, tagList)
     }
   }
-  protected class IgnoreWord {
-    def test(specText: String) = new IgnoredTest(specText)
+  protected class FixtureIgnoreWord {
+    def test(specText: String) = new FixtureIgnoredTest(specText)
   }
 
-  protected val ignore = new IgnoreWord
+  protected val ignore = new FixtureIgnoreWord
 
   implicit val doVerbThing: (String, () => Unit, String) => Unit = {
     (left, f, verb) => {

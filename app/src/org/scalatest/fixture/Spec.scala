@@ -738,7 +738,7 @@ trait Spec extends org.scalatest.Suite with FixtureSuite { thisSuite =>
       }
     }
 
-  protected class ItWord {
+  protected class FixtureItWord {
 
     /**
      * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
@@ -800,11 +800,11 @@ trait Spec extends org.scalatest.Suite with FixtureSuite { thisSuite =>
       apply(specText, Array[Tag](): _*)(testFun)
     }
 
-    def should(behaveWord: BehaveWord) = behaveWord
-    def must(behaveWord: BehaveWord) = behaveWord
+    def should(behaveWord: FixureBehaveWord) = behaveWord
+    def must(behaveWord: FixureBehaveWord) = behaveWord
   }
 
-  protected val it = new ItWord
+  protected val it = new FixtureItWord
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -1238,7 +1238,7 @@ trait Spec extends org.scalatest.Suite with FixtureSuite { thisSuite =>
     }
   }
 
-  class BehaveWord {
+  class FixureBehaveWord {
 
     /**
      * This method enables the following syntax:
@@ -1251,5 +1251,5 @@ trait Spec extends org.scalatest.Suite with FixtureSuite { thisSuite =>
     def like(unit: Unit) {}
   }
 
-  val behave = new BehaveWord
+  val behave = new FixureBehaveWord
 }
