@@ -752,8 +752,10 @@ trait FlatSpec extends Suite { thisSuite =>
   protected class ItWord {
     def should(string: String) = new ItVerbString("should", string)
     def must(string: String) = new ItVerbString("must", string)
+    def can(string: String) = new ItVerbString("can", string)
     def should(behaveWord: BehaveWord) = behaveWord
     def must(behaveWord: BehaveWord) = behaveWord
+    def can(behaveWord: BehaveWord) = behaveWord
   }
 
   protected val it = new ItWord

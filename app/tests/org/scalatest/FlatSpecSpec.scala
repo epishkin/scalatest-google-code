@@ -351,6 +351,25 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(testStartingOption.isDefined)
       assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "should I am shared")
     }
+    it("should run tests registered via the 'it can behave like' syntax") {
+      trait SharedFlatSpecTests { this: FlatSpec =>
+        def nonEmptyStack(s: String)(i: Int) {
+          it can "I am shared" in {}
+        }
+      }
+      class MyFlatSpec extends FlatSpec with SharedFlatSpecTests {
+        it can behave like nonEmptyStack("hi")(1)
+      }
+      val suite = new MyFlatSpec
+      val reporter = new EventRecordingReporter
+      suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+
+      val indexedList = reporter.eventsReceived
+
+      val testStartingOption = indexedList.find(_.isInstanceOf[TestStarting])
+      assert(testStartingOption.isDefined)
+      assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "can I am shared")
+    }
   }
 }
 

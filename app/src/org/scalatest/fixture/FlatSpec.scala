@@ -750,8 +750,10 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
   protected class FixtureItWord {
     def should(string: String) = new FixtureItVerbString("should", string)
     def must(string: String) = new FixtureItVerbString("must", string)
+    def can(string: String) = new FixtureItVerbString("can", string)
     def should(behaveWord: BehaveWord) = behaveWord
     def must(behaveWord: BehaveWord) = behaveWord
+    def can(behaveWord: BehaveWord) = behaveWord
   }
 
   protected val it = new FixtureItWord

@@ -15,16 +15,13 @@
  */
 package org.scalatest
 
+import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-import org.scalatest.matchers.ResultOfAfterWordApplication
-import org.scalatest.matchers.ShouldVerb
-import org.scalatest.matchers.BehaveWord
-
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -551,7 +548,7 @@ import org.scalatest.matchers.BehaveWord
  * 
  * @author Bill Venners
  */
-trait WordSpec extends Suite with ShouldVerb { thisSuite =>
+trait WordSpec extends Suite with ShouldVerb with CanVerb { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 

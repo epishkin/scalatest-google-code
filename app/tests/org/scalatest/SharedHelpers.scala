@@ -60,6 +60,17 @@ trait SharedHelpers extends Assertions {
   class EventRecordingReporter extends Reporter {
     private var eventList: List[Event] = List()
     def eventsReceived = eventList.reverse
+    def testSucceededEventsReceived: List[TestSucceeded] = {
+      eventsReceived filter {
+        case event: TestSucceeded => true
+        case _ => false
+      } map {
+        case event: TestSucceeded => event
+        case _ => throw new RuntimeException("should never happen")
+      }
+    }
+    // Why doesn't this work:
+    // for (event: TestSucceeded <- eventsReceived) yield event
     def apply(event: Event) {
       eventList ::= event
     }
