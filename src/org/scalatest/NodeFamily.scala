@@ -32,6 +32,13 @@ private[scalatest] object NodeFamily {
     f: () => Unit
   ) extends Node(Some(parent))
 
+  case class FixtureTestLeaf[Fixture](
+    parent: Branch,
+    testName: String,
+    specText: String,
+    f: Fixture => Unit
+  ) extends Node(Some(parent))
+
   case class InfoLeaf(parent: Branch, message: String) extends Node(Some(parent))
 
   case class DescriptionBranch(
