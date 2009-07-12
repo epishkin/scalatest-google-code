@@ -71,11 +71,11 @@ import EventToPresent.eventToEventToPresent
  *
  * @author Bill Venners
  */                 
-private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypesToCollect: Set[EventToPresent],
+private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresent],
     reporterConfigurations: ReporterConfigurations, suitesList: List[String], runpathList: List[String], filter: Filter,
     propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
     testNGList: List[String], passFailReporter: Option[Reporter]) extends
-    JFrame(RunnerJFrame.getTitle(recipeName)) with RunDoneListener with RunnerGUI {
+    JFrame(Resources("ScalaTestTitle")) with RunDoneListener with RunnerGUI {
 
   // This should only be updated by the event handler thread.
   private var currentState: RunnerGUIState = RunningState
@@ -1394,15 +1394,6 @@ private[scalatest] class RunnerJFrame(recipeName: Option[String], val eventTypes
 }
 
 private[tools] object RunnerJFrame {
-  def getTitle(recipeName: Option[String]): String = {
-    val scalaTestTitle: String = Resources("ScalaTestTitle")
-    recipeName match {
-      case Some(rn) => {
-        Resources("titleAndFileName", scalaTestTitle, rn)
-      }
-      case None => scalaTestTitle
-    }
-  }
 
   def getUpperCaseName(event: Event): String = getUpperCaseName(eventToEventToPresent(event))
 
