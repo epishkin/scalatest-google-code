@@ -708,7 +708,7 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
   }
 
-  protected class BehaviorWord {
+  protected class FixtureBehaviorWord {
     def of(description: String) {
       if (atomic.get.registrationClosed)
         throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "describe"))
@@ -729,55 +729,55 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
-  protected val behavior = new BehaviorWord
+  protected val behavior = new FixtureBehaviorWord
 
-  protected class ItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+  protected class FixtureItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
     def in(testFun: Fixture => Unit) {
       registerTestToRun(verb + " " + name, tags, testFun)
     }
   }
 
-  protected class ItVerbString(verb: String, name: String) {
+  protected class FixtureItVerbString(verb: String, name: String) {
     def in(testFun: Fixture => Unit) {
       registerTestToRun(verb + " " + name, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      new ItVerbStringTaggedAs(verb, name, tagList)
+      new FixtureItVerbStringTaggedAs(verb, name, tagList)
     }
   }
 
-  protected class ItWord {
-    def should(string: String) = new ItVerbString("should", string)
-    def must(string: String) = new ItVerbString("must", string)
+  protected class FixtureItWord {
+    def should(string: String) = new FixtureItVerbString("should", string)
+    def must(string: String) = new FixtureItVerbString("must", string)
     def should(behaveWord: BehaveWord) = behaveWord
     def must(behaveWord: BehaveWord) = behaveWord
   }
 
-  protected val it = new ItWord
+  protected val it = new FixtureItWord
 
-  protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+  protected class FixtureIgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
     def in(testFun: Fixture => Unit) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
   }
 
-  protected class IgnoreVerbString(verb: String, name: String) {
+  protected class FixtureIgnoreVerbString(verb: String, name: String) {
     def in(testFun: Fixture => Unit) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      new IgnoreVerbStringTaggedAs(verb, name, tagList)
+      new FixtureIgnoreVerbStringTaggedAs(verb, name, tagList)
     }
   }
 
-  protected class IgnoreWord {
-    def should(string: String) = new IgnoreVerbString("should", string)
-    def must(string: String) = new IgnoreVerbString("must", string)
+  protected class FixtureIgnoreWord {
+    def should(string: String) = new FixtureIgnoreVerbString("should", string)
+    def must(string: String) = new FixtureIgnoreVerbString("must", string)
   }
 
-  protected val ignore = new IgnoreWord
+  protected val ignore = new FixtureIgnoreWord
 
   implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb[Fixture] = {
     (left, right, verb) => {

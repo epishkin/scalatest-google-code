@@ -1003,7 +1003,7 @@ trait FunSuite extends org.scalatest.Suite with FixtureSuite { thisSuite =>
     }
   }
 
-  class TestsForPhrase {
+  class FixtureTestsForPhrase {
 
     /**
      * This method enables the following syntax:
@@ -1016,5 +1016,5 @@ trait FunSuite extends org.scalatest.Suite with FixtureSuite { thisSuite =>
     def apply(unit: Unit) {}
   }
 
-  val testsFor = new TestsForPhrase
+  val testsFor = new FixtureTestsForPhrase
 }
