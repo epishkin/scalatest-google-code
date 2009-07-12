@@ -15,6 +15,8 @@
  */
 package org.scalatest.fixture
 
+import events.TestFailed
+
 class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("A fixture.FunSuite") {
@@ -69,7 +71,9 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
           assert(fixture === hello)
         }
       }
-      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
   }
 }

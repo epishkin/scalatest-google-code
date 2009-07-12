@@ -15,6 +15,9 @@
  */
 package org.scalatest.fixture
 
+
+import events.TestFailed
+
 class FixtureSpecSuite  extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
 
   test("A fixture.Spec should return the test names in alphabetical order from testNames") {
@@ -68,6 +71,8 @@ class FixtureSpecSuite  extends org.scalatest.FunSuite with PrivateMethodTester 
         assert(fixture === hello)
       }
     }
-    a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+    val rep = new EventRecordingReporter
+    a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+    assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
   }
 }
