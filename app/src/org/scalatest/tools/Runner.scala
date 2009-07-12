@@ -533,9 +533,6 @@ object Runner {
 
     val filter = Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
 
-    // Not yet supported
-    val recipeName: Option[String] = None
-
     // If there's a graphic reporter, we need to leave it out of
     // reporterSpecs, because we want to pass all reporterSpecs except
     // the graphic reporter's to the RunnerJFrame (because RunnerJFrame *is*
@@ -569,7 +566,7 @@ object Runner {
 
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
-          val rjf = new RunnerJFrame(recipeName, graphicEventsToPresent, reporterConfigs, suitesList, runpathList,
+          val rjf = new RunnerJFrame(graphicEventsToPresent, reporterConfigs, suitesList, runpathList,
             filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter)
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
