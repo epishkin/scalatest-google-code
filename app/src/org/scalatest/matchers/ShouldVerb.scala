@@ -45,7 +45,7 @@ trait ShouldVerb {
      * <code>"should"</code>.
      * </p>
      */
-    def should(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb): ResultOfStringPassedToVerb = {
+    def should(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb[_]): ResultOfStringPassedToVerb[_] = {
       fun(left, right, "should")
     }
 

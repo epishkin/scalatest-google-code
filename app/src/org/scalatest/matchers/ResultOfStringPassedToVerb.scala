@@ -46,7 +46,7 @@ package org.scalatest.matchers
  * then means any of this trait's methods, such as <code>in</code>, can be invoked next.
  * </p>
  */
-trait ResultOfStringPassedToVerb {
+trait ResultOfStringPassedToVerb[Fixture] {
 
   /**
    * Register the test function passed as <code>testFun</code> in a <code>FlatSpec</code>.
@@ -70,4 +70,6 @@ trait ResultOfStringPassedToVerb {
    * </pre>
    */
   def in(testFun: => Unit)
+
+  def in(testFun: Fixture => Unit)
 }

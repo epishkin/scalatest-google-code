@@ -16,18 +16,17 @@
 package org.scalatest.fixture
 
 import events.TestFailed
+import matchers.ShouldVerb
 
-class FixtureWordSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
+class FixtureFlatSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
 
   test("A fixture.Spec should return the test names in alphabetical order from testNames") {
-    val a = new WordSpec with SimpleWithFixture {
+    val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
       type Fixture = String
       def withFixture(fun: String => Unit) {}
-      "Something" should {
-        "do that" in { fixture =>
-        }
-        "do this" in { fixture =>
-        }
+      "Something" should "do that" in { fixture =>
+      }
+      it should "do this" in { fixture =>
       }
     }
 
@@ -35,7 +34,7 @@ class FixtureWordSpecSuite extends org.scalatest.FunSuite with PrivateMethodTest
       a.testNames.elements.toList
     }
 
-    val b = new WordSpec with SimpleWithFixture {
+    val b = new FlatSpec with SimpleWithFixture with ShouldVerb {
       type Fixture = String
       def withFixture(fun: String => Unit) {}
     }
@@ -44,36 +43,32 @@ class FixtureWordSpecSuite extends org.scalatest.FunSuite with PrivateMethodTest
       b.testNames.elements.toList
     }
 
-    val c = new WordSpec with SimpleWithFixture {
+    val c = new FlatSpec with SimpleWithFixture with ShouldVerb {
       type Fixture = String
       def withFixture(fun: String => Unit) {}
-      "Something" should {
-        "do this" in { fixture =>
-        }
-        "do that" in { fixture =>
-        }
+      "Something" should "do this" in { fixture =>
+      }
+      it should "do that" in { fixture =>
       }
     }
 
-    expect(List("Something should do this", "Something should do that")) {
+    expect(List("should do this", "should do that")) {
       c.testNames.elements.toList
     }
   }
 
   test("A fixture.Spec should pass in the fixture to every test method") {
-    val a = new WordSpec with SimpleWithFixture {
+    val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
       type Fixture = String
       val hello = "Hello, world!"
       def withFixture(fun: String => Unit) {
         fun(hello)
       }
-      "Something" should {
-        "do this" in { fixture =>
-          assert(fixture === hello)
-        }
-        "do that" in { fixture =>
-          assert(fixture === hello)
-        }
+      "Something" should "do this" in { fixture =>
+        assert(fixture === hello)
+      }
+      it should "do that" in { fixture =>
+        assert(fixture === hello)
       }
     }
     val rep = new EventRecordingReporter
