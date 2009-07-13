@@ -1155,7 +1155,7 @@ object Runner {
     suitesList: List[String],
     stopRequested: Stopper,
     filter: Filter,
-    propertiesMap: Map[String, String],
+    goodies: Map[String, String],
     concurrent: Boolean,
     membersOnlyList: List[String],
     wildcardList: List[String],
@@ -1175,7 +1175,7 @@ object Runner {
       throw new NullPointerException
     if (filter == null)
       throw new NullPointerException
-    if (propertiesMap == null)
+    if (goodies == null)
       throw new NullPointerException
     if (membersOnlyList == null)
       throw new NullPointerException
@@ -1281,10 +1281,10 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount))
+          dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount, goodies))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, propertiesMap)
+            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, goodies)
             for (suite <- suiteInstances) {
               distributor.apply(suite, tracker.nextTracker())
             }
@@ -1293,7 +1293,7 @@ object Runner {
           else {
             for (suite <- suiteInstances) {
               val suiteRunner = new SuiteRunner(suite, dispatch, stopRequested, filter,
-                  propertiesMap, None, tracker)
+                  goodies, None, tracker)
               suiteRunner.run()
             }
           }

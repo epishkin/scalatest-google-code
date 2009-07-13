@@ -36,8 +36,7 @@ object Helper {
 
 import Helper._
 
-object GenMustVerbAndMatchers extends Application {
-  generateFile("ShouldVerb.scala", "MustVerb.scala")
+object GenMustMatchers extends Application {
   generateFile("ShouldMatchers.scala", "MustMatchers.scala")
 }
 

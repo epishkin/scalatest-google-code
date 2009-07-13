@@ -36,9 +36,9 @@ class CatchReporterSuite extends Suite {
     val catchReporter = new CatchReporter(buggyReporter, new PrintStream(new ByteArrayOutputStream))
 
     intercept[RuntimeException] {
-      buggyReporter(RunStarting(new Ordinal(99), 1))
+      buggyReporter(RunStarting(new Ordinal(99), 1, Map()))
     }
-    catchReporter(RunStarting(new Ordinal(99), 1))
+    catchReporter(RunStarting(new Ordinal(99), 1, Map()))
 
     intercept[RuntimeException] {
       buggyReporter(TestStarting(new Ordinal(99), "suite name", Some("suite.className"), "test name"))
