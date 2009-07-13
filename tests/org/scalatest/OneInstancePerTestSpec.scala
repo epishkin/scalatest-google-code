@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import events._
+
 class TopLevelSuite extends Suite with OneInstancePerTest {
   import TopLevelSuite.sideEffectWasNotSeen
   var sideEffectWasIsolated = true
