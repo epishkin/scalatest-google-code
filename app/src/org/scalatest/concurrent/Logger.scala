@@ -15,9 +15,6 @@
  */
 package org.scalatest.concurrent
 
-/**
- * Time: 9:33:15 AM
- */
 private[concurrent] trait PrintlnLogger extends Logger {
   override def log(a: Any):Unit = {
     println(a)

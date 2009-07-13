@@ -300,6 +300,8 @@ import scala.collection.jcl.Conversions.convertList
  */
 class Conductor(logger:Logger){
 
+  def this() = this(new Logger {})
+
   type Tick = Int
 
   /**
