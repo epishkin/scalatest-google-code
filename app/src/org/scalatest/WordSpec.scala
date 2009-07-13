@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord}
+import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord, MustVerb}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
@@ -548,7 +548,7 @@ import org.scalatest.events._
  * 
  * @author Bill Venners
  */
-trait WordSpec extends Suite with ShouldVerb with CanVerb { thisSuite =>
+trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
