@@ -315,7 +315,7 @@ class Conductor(logger:Logger){
    *
    * @author Josh Cough
    */
-  class Clock { // TODO: figure out why the compiler won't let us make this private
+  private class Clock {
 
     import java.util.concurrent.locks.ReentrantReadWriteLock
     import PimpedReadWriteLock._
@@ -451,7 +451,7 @@ class Conductor(logger:Logger){
    *
    * @param maxRunTime The limit to run the test in seconds
    */
-  case class ClockThread(clockPeriod: Int, maxRunTime: Int) extends Thread("Clock") {
+  private case class ClockThread(clockPeriod: Int, maxRunTime: Int) extends Thread("Clock") {
     this setDaemon true // TODO: Why is this a daemon thread? If no good reason, drop it.
 
     // used in detecting timeouts
