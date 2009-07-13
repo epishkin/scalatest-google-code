@@ -108,6 +108,10 @@ trait RunMethods { this: Suite =>
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param goodies a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param distributor an optional <code>Distributor</code>, into which instances of this <code>Suite</code> class
+   *              that are responsible for executing individual tests contained in this </code>Suite</code>, or groups of this <code>Suite</code>'s
+   *              tests, may be placed so as to be run
+   *              by another entity, such as concurrently by a pool of threads.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>goodies</code> is <code>null</code>.
@@ -118,7 +122,7 @@ trait RunMethods { this: Suite =>
    * used by all the methods of this <code>Suite</code>.
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-                             goodies: Map[String, Any], tracker: Tracker)
+                             goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
 
   /**
    * Run a test.

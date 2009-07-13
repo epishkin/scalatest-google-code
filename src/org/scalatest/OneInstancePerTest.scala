@@ -50,9 +50,9 @@ trait OneInstancePerTest extends RunMethods {
    * </p>
    */
   protected abstract override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-                             goodies: Map[String, Any], tracker: Tracker) {
+                             goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     testName match {
-      case Some(tn) => super.runTests(testName, reporter, stopper, filter, goodies, tracker)
+      case Some(tn) => super.runTests(testName, reporter, stopper, filter, goodies, None, tracker)
       case None =>
         for (tn <- testNames) {
           val oneInstance = newInstance

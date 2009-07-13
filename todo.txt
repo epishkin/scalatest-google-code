@@ -8,8 +8,6 @@ pass goodies into RunStarting. 10 min.
 
 add Distributor to runTests 30 min.
 
-Create a ConductorFixture
-
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
 Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
