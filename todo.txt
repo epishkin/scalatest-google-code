@@ -7,8 +7,6 @@ add description to FeatureSpec 45 min.
 write down in the scaladoc that the runNestedSuites method is responsible for sending SuiteStarting/SuiteCompleted/SuiteAborted messages
 for each nested suite it runs and that runTest is responsible for sending TestStarting/TestSucceeded/TestFailed messages.
 
-pass goodies into RunStarting. 10 min.
-
 Make MustVerb checked in not generated, so I can have FlatSpec and WordSpec mix them in right away.
 
 drop "behavior of X" syntax from FlatSpec. Too ugly to live. Mix in ShouldVerb, CanVerb, and MustVerb from the get go.

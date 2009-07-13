@@ -17,7 +17,7 @@ package org.scalatest
 
 import matchers.ShouldMatchers
 
-class StackWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors with ShouldMatchers {
+class StackShouldWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors with ShouldMatchers {
 
   def it = afterWord("it")
   
