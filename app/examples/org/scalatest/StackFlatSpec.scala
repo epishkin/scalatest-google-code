@@ -19,45 +19,45 @@ class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatS
 
   behavior of "A Stack (when empty)"
 
-  it should "be empty" in {
-    assert(emptyStack.empty)
-  }
-
-  it should "complain on peek" in {
-    intercept[IllegalStateException] {
-      emptyStack.peek
+    it should "be empty" in {
+      assert(emptyStack.empty)
     }
-  }
 
-  ignore should "complain on pop" in {
-    intercept[IllegalStateException] {
-      emptyStack.pop
+    it should "complain on peek" in {
+      intercept[IllegalStateException] {
+        emptyStack.peek
+      }
     }
-  }
+
+    ignore should "complain on pop" in {
+      intercept[IllegalStateException] {
+        emptyStack.pop
+      }
+    }
 
   behavior of "A Stack (with one item)"
 
-  it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
-  it should behave like nonFullStack(stackWithOneItem)
+    it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
+    it should behave like nonFullStack(stackWithOneItem)
 
   behavior of "A Stack (with one item less than capacity)"
 
-  it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
-  it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
+    it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
+    it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
 
   behavior of "A Stack (full)"
 
-  it should "be full" in {
-    assert(fullStack.full)
-  }
-
-  it should "go to sleep soon" in (pending)
-
-  it should behave like nonEmptyStack(lastValuePushed)(fullStack)
-
-  it should "complain on a push" in {
-    intercept[IllegalStateException] {
-      fullStack.push(10)
+    it should "be full" in {
+      assert(fullStack.full)
     }
-  }
+
+    it should "go to sleep soon" in (pending)
+
+    it should behave like nonEmptyStack(lastValuePushed)(fullStack)
+
+    it should "complain on a push" in {
+      intercept[IllegalStateException] {
+        fullStack.push(10)
+      }
+    }
 }
