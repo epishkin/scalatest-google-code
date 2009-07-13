@@ -20,7 +20,7 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldBehaveLikeSpec extends Spec with ShouldStackBehaviors with StackFixtureCreationMethods {
+class ShouldBehaveLikeSpec extends Spec {
 
   def myFirstBehavior(i: Int) {
     it("This one is should blow up") {}
@@ -35,6 +35,7 @@ class ShouldBehaveLikeSpec extends Spec with ShouldStackBehaviors with StackFixt
   }
 
   // Checking for a specific size
+/*
   describe("The 'should behave like' syntax should work in a describe") {
 
     it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem) 
@@ -44,6 +45,7 @@ class ShouldBehaveLikeSpec extends Spec with ShouldStackBehaviors with StackFixt
       it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem) 
     }
   }
+*/
 
   def myBehavior(i: Int) {
     it("This one is solo") {}
