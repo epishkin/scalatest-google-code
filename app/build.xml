@@ -27,7 +27,7 @@
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
     <property name="lib" value="lib" />
-    <property name="jvmargs" value="-Xmx2000M"/>
+    <property name="jvmargs" value="-Xmx1500M"/>
 
     <!--
   <property name="build.compiler" value="jikes"/>
@@ -285,6 +285,8 @@
             <reporter type="graphic"/>
             <reporter type="stdout"/>
             <membersonly package="org.scalatest" />
+            <membersonly package="org.scalatest.concurrent" />
+            <membersonly package="org.scalatest.matchers" />
 <!--
             <suite classname="org.scalatest.StackFlatSpec" />
             <membersonly package="org.scalatest.fixture" />
