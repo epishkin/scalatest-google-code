@@ -16,7 +16,7 @@
 package org.scalatest.fixture
 
 import FixtureNodeFamily._
-import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord}
+import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, MustVerb, BehaveWord}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
@@ -548,7 +548,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait WordSpec extends Suite with FixtureSuite with ShouldVerb with CanVerb { thisSuite =>
+trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
