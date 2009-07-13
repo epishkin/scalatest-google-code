@@ -6,14 +6,11 @@ add description to FeatureSpec 45 min.
 
 pass goodies into RunStarting. 10 min.
 
-Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
+add Distributor to runTests 30 min.
 
-Do the fixture package for Suite, FunSuite, Spec, WordSpec, FlatSpec, and FeatureSpec. Make
-Goodies a type alias in Suite, so it is less verbose to type than Map[String, Any]. Then, 
-have withFixture in each of these fixture. types take a function and a goodies map. Then add
-one trait, NoGoodiesInFixture, which implements withFixure(f, g) and calls withFixture(f), which
-is defined as an abstract method. Can also put a TestFunction type alias in those packages. Probably
-need a self type for NoGoodiesInFixture of FixtureSuite that all of these mix in.
+Create a ConductorFixture
+
+Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
 Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
 perhaps I just need the final execute forms for the interpreter and the one public execute. Make a trait that can be mixed into
