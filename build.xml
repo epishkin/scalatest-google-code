@@ -141,7 +141,7 @@
 
     <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
-    <target name="compile-main" depends="init">
+    <target name="compile-main" depends="init,gencode">
 
         <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
         <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
