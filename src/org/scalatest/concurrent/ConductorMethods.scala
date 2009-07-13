@@ -69,6 +69,11 @@ trait ConductorMethods extends Suite with Logger{
   protected def waitForTick(tick:Int) = conductor.get.waitForTick(tick)
 
   /**
+   * Run the passed function, ensuring the clock does not advance while the function is running (has not yet returned or thrown an exception).
+   */
+  protected def withClockFrozen[T](f: => T) = conductor.get.withClockFrozen(f)
+
+  /**
    * Gets the current value of the clock. Primarily useful in assert statements.
    *
    * @return the current tick value

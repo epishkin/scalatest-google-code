@@ -1,20 +1,10 @@
 package org.scalatest.concurrent
 
-/**
- * Created by IntelliJ IDEA.
- * User: joshcough
- * Date: Jul 12, 2009
- * Time: 10:53:19 PM
- */
-package org.scalatest.concurrent
-
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{TimeUnit, Semaphore, ArrayBlockingQueue}
+import org.scalatest.matchers.ShouldMatchers
 
-/**
- *
- */
-class ConductorExamples extends FunSuite with ConductorMethods with MustMatchers {
+class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatchers {
   
   test("call to put on a full queue blocks the producer thread") {
     val buf = new ArrayBlockingQueue[Int](1)
@@ -22,17 +12,17 @@ class ConductorExamples extends FunSuite with ConductorMethods with MustMatchers
     thread("producer") {
       buf put 42
       buf put 17
-      tick mustBe 1
+      tick should be (1)
     }
 
     thread("consumer") {
       waitForTick(1)
-      buf.take must be(42)
-      buf.take must be(17)
+      buf.take should be (42)
+      buf.take should be (17)
     }
 
     finish {
-      buf must be('empty)
+      buf should be ('empty)
     }
   }
 
@@ -44,11 +34,11 @@ class ConductorExamples extends FunSuite with ConductorMethods with MustMatchers
     }
 
     thread {
-      ai.compareAndSet(1, 2) must be(true)
+      ai.compareAndSet(1, 2) should be (true)
     }
 
     finish {
-      ai.ge must be(3)
+      ai.get should be (3)
     }
   }
 
@@ -57,7 +47,7 @@ class ConductorExamples extends FunSuite with ConductorMethods with MustMatchers
 
     val nice = thread("nice") {
       intercept[InterruptedException] {s.acquire}
-      tick must be(1)
+      tick should be (1)
     }
 
     thread("rude") {
@@ -70,21 +60,21 @@ class ConductorExamples extends FunSuite with ConductorMethods with MustMatchers
     val ai = new AtomicInteger(0)
 
     thread {
-      ai.compareAndSet(0, 1) must be(true) // S1
+      ai.compareAndSet(0, 1) should be (true) // S1
       waitForTick(3)
-      ai.get() must be(3) // S4
+      ai.get() should be (3) // S4
     }
 
     thread {
       waitForTick(1)
-      ai.compareAndSet(1, 2) must be(true) // S2
+      ai.compareAndSet(1, 2) should be (true) // S2
       waitForTick(3)
-      ai.get must be(3) // S4
+      ai.get should be (3) // S4
     }
 
     thread {
       waitForTick(2)
-      ai.compareAndSet(2, 3) must be(true) // S3
+      ai.compareAndSet(2, 3) should be (true) // S3
     }
   }
 
@@ -96,14 +86,14 @@ class ConductorExamples extends FunSuite with ConductorMethods with MustMatchers
       q put "x"
 
       withClockFrozen {
-        q.offer("y", 25, TimeUnit.MILLISECONDS) mustBe false
+        q.offer("y", 25, TimeUnit.MILLISECONDS) should be (false)
       }
 
       intercept[InterruptedException] {
         q.offer("z", 2500, TimeUnit.MILLISECONDS)
       }
 
-      tick mustBe 1
+      tick should be (1)
     }
 
     val consumer = thread("consumer") {

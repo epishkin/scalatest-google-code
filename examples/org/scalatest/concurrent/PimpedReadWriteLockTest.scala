@@ -1,13 +1,9 @@
 package org.scalatest.concurrent
 
 import org.scalatest.concurrent.PimpedReadWriteLock._
+import org.scalatest.matchers.ShouldMatchers
 
-/**
- * User: joshcough
- * Date: Jul 12, 2009
- * Time: 10:55:54 PM
- */
-class PimpedReadWriteLockTest extends FunSuite with ConductorMethods with MustMatchers {
+class PimpedReadWriteLockTest extends FunSuite with ConductorMethods with ShouldMatchers {
   val lock = new java.util.concurrent.locks.ReentrantReadWriteLock
 
   test("demonstrate various functionality") {
@@ -29,7 +25,7 @@ class PimpedReadWriteLockTest extends FunSuite with ConductorMethods with MustMa
     thread("writer thread") {
       waitForTick(1)
       lock.write {
-        logger.debug.around("using write lock") {tick mustBe 2}
+        logger.debug.around("using write lock") {tick should be (2)}
       }
     }
   }

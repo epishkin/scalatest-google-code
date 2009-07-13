@@ -27,7 +27,7 @@
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
     <property name="lib" value="lib" />
-    <property name="jvmargs" value="-Xmx1500M"/>
+    <property name="jvmargs" value="-Xmx2000M"/>
 
     <!--
   <property name="build.compiler" value="jikes"/>
@@ -141,7 +141,7 @@
 
     <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
-    <target name="compile-main" depends="init,gencode">
+    <target name="compile-main" depends="init">
 
         <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
         <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
@@ -280,7 +280,7 @@
         </scalatest>
     </target>
 
-    <target name="examples" depends="compile,copyprops,taskdefscalatest">
+    <target name="examples" depends="compile-main,compile-examples,copyprops,taskdefscalatest">
         <scalatest runpath="${build.examples}" concurrent="false" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout"/>
