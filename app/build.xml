@@ -303,10 +303,11 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
+            <suite classname="org.scalatest.OneInstancePerTestSpec" />
+<!--
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
             <suite classname="org.scalatest.FlatSpecSpec" />
             <suite classname="org.scalatest.matchers.CanVerbSuite" />
-<!--
             <suite classname="org.scalatest.fixture.FixtureFeatureSpecSuite" />
             <suite classname="org.scalatest.fixture.FixtureSpecSuite" />
             <suite classname="org.scalatest.fixture.FixtureWordSpecSuite" />

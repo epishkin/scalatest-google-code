@@ -1,17 +1,10 @@
 pass goodies down into before and after methods 30 min.
 
-Go ahead and have WordSpec mix in ShouldVerb and MustVerb from the get go. Make sure
-ShouldVerb and MustVerb also work from FlatSpec. If you want either or both matchers, they should
-mix in just fine into either WordSpec or FlatSpec.
-Add can back in to FlatSpec and WordSpec, via CanVerbs.
-
-Do the function type thing for the ShouldVerb implicit thing for WordSpec. 10 min.
+Create a named function type for the ShouldVerb implicit conversion for WordSpec, so there's a role-related type in there. 10 min.
 
 add description to FeatureSpec 45 min.
 
 pass goodies into RunStarting. 10 min.
-
-In OneInstancePerTest, override runNestedSuites and don't call super.runNestedSuites if testNames is defined.
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 

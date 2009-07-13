@@ -1560,7 +1560,16 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * <p>
    * If <code>testName</code> is defined, then this trait's implementation of this method
-   * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>.
+   * calls <code>runTests</code>, but does not call <code>runNestedSuites</code>. This behavior
+   * is part of the contract of this method. Subclasses that override <code>run</code> must take
+   * care not to call <code>runNestedSuites</code> if <code>testName</code> is defined. (The
+   * <code>OneInstancePerTest</code> trait depends on this behavior, for example.)
+   * </p>
+   *
+   * <p>
+   * Subclasses and subtraits that override this <code>run</code> method can implement them without
+   * invoking either the <code>runTests</code> or <code>runNestedSuites</code> methods, which
+   * are invoked by this trait's implementation of this method. 
    * </p>
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
