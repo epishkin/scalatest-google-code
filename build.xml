@@ -3,6 +3,7 @@
     <!-- set global properties for this build -->
     <property name="src" value="src" />
     <property name="tests" value="tests" />
+    <property name="examples" value="examples" />
     <property name="build" value="target" />
     <property name="jar.contents" value="${build}/jar_contents" />
     <!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
@@ -12,6 +13,7 @@
     <property name="build.generated.tests" value="${build}/generated/tests" />
     <property name="build.tests" value="${build}/tests" />
     <property name="build.tests.jar" value="${build}/tests.jar" />
+    <property name="build.examples" value="${build}/examples" />
     <property name="build.generators" value="${build}/generators" />
     <property name="build.coverage" value="${build}/coverage" />
     <property name="dist" value="${build}/dist" />
@@ -37,6 +39,7 @@
         <!-- Create the build directory structure used by compile -->
         <mkdir dir="${jar.contents}" />
         <mkdir dir="${build.tests}" />
+        <mkdir dir="${build.examples}" />
         <mkdir dir="${build.generators}" />
         <mkdir dir="${build.generated.src}" />
         <mkdir dir="${build.generated.tests}" />
@@ -136,7 +139,7 @@
         <java classname="GenMustMatchersTests" classpathref="run.generators.class.path" fork="false" />
     </target>
 
-    <target name="compile" depends="compile-main, compile-tests"/>
+    <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
     <target name="compile-main" depends="init">
 
@@ -165,7 +168,14 @@
         <javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
     </target>
 
+    <target name="compile-examples" depends="compile-main">
 
+        <!-- Compile the Scala code from ${examples} into ${build.examples} -->
+        <scalac srcdir="${examples}" destdir="${build.examples}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
+
+        <!-- Compile the Java code from ${examples} into ${build.examples} -->
+        <javac srcdir="${examples}" destdir="${build.examples}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
+    </target>
 
     <!-- Compile demo into its own directory. I.e., the class files will sit alongside the java files
        so that people can more easily look at them. All of these source files are used as demonstrations
@@ -259,14 +269,32 @@
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout"/>
-            <reporter type="file" filename="delme.txt" />
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
             <membersonly package="org.scalatest.matchers" />
+            <membersonly package="org.scalatest.conductor" />
             <membersonly package="org.scalatest.testng" />
             <membersonly package="org.scalatest.junit" />
             <membersonly package="org.scalatest.events" />
             <membersonly package="org.scalatest.prop" />
+        </scalatest>
+    </target>
+
+    <target name="examples" depends="compile,copyprops,taskdefscalatest">
+        <scalatest runpath="${build.examples}" concurrent="false" haltonfailure="true">
+            <reporter type="graphic"/>
+            <reporter type="stdout"/>
+            <membersonly package="org.scalatest" />
+<!--
+            <suite classname="org.scalatest.StackFlatSpec" />
+            <membersonly package="org.scalatest.fixture" />
+            <membersonly package="org.scalatest.matchers" />
+            <membersonly package="org.scalatest.conductor" />
+            <membersonly package="org.scalatest.testng" />
+            <membersonly package="org.scalatest.junit" />
+            <membersonly package="org.scalatest.events" />
+            <membersonly package="org.scalatest.prop" />
+-->
         </scalatest>
     </target>
 
@@ -303,7 +331,7 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
-            <suite classname="org.scalatest.OneInstancePerTestSpec" />
+            <suite classname="org.scalatest.concurrent.ConductorSuite" />
 <!--
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
             <suite classname="org.scalatest.FlatSpecSpec" />
