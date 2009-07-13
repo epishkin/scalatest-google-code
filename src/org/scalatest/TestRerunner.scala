@@ -38,7 +38,7 @@ private[scalatest] class TestRerunner(suiteClassName: String, testName: String) 
       val suiteClass = loader.loadClass(suiteClassName)
       val suite = suiteClass.newInstance.asInstanceOf[Suite]
 
-      report(RunStarting(tracker.nextOrdinal(), 1))
+      report(RunStarting(tracker.nextOrdinal(), 1, goodies))
 
       suite.run(Some(testName), report, stopper, filter, goodies, distributor, tracker) 
 

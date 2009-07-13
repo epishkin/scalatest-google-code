@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * @author Josh Cough
  */
-trait ConductorMethods extends Suite with Logger{
+trait ConductorMethods extends RunMethods with Logger { this: Suite =>
 
   private val conductor = new AtomicReference[Conductor]()
 

@@ -56,7 +56,7 @@ private[scalatest] class SuiteRerunner(suiteClassName: String) extends Rerunner 
         else
           None
 
-      report(RunStarting(tracker.nextOrdinal(), expectedTestCount))
+      report(RunStarting(tracker.nextOrdinal(), expectedTestCount, goodies))
 
       val suiteStartTime = System.currentTimeMillis
       try {

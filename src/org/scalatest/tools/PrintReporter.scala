@@ -218,7 +218,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
     event match {
 
-      case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) => 
+      case RunStarting(ordinal, testCount, goodies, formatter, payload, threadName, timeStamp) => 
 
         if (testCount < 0)
           throw new IllegalArgumentException

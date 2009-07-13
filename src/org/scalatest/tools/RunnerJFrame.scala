@@ -814,7 +814,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
     override def apply(event: Event) {
       event match {
 
-        case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) =>
+        case RunStarting(ordinal, testCount, goodies, formatter, payload, threadName, timeStamp) =>
 
           // Create the Event outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
@@ -1211,7 +1211,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
     def apply(event: Event) {
 
       event match {
-        case RunStarting(ordinal, testCount, formatter, payload, threadName, timeStamp) =>
+        case RunStarting(ordinal, testCount, goodies, formatter, payload, threadName, timeStamp) =>
 
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
