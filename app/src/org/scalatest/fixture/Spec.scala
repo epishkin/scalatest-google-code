@@ -1142,7 +1142,7 @@ trait Spec extends org.scalatest.Suite with FixtureSuite { thisSuite =>
    *     <code>tagsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      goodies: Map[String, Any], tracker: Tracker) {
+      goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1154,6 +1154,10 @@ trait Spec extends org.scalatest.Suite with FixtureSuite { thisSuite =>
       throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
+    if (distributor == null)
+      throw new NullPointerException("distributor was null")
+    if (tracker == null)
+      throw new NullPointerException("tracker was null")
 
     val stopRequested = stopper
 

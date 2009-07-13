@@ -1513,7 +1513,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @throws NullPointerException if any of the passed parameters is <code>null</code>.
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-                             goodies: Map[String, Any], tracker: Tracker) {
+                             goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1525,6 +1525,10 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("filter was null")
     if (goodies == null)
       throw new NullPointerException("goodies was null")
+    if (distributor == null)
+      throw new NullPointerException("distributor was null")
+    if (tracker == null)
+      throw new NullPointerException("tracker was null")
 
     val stopRequested = stopper
 
@@ -1609,7 +1613,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       case None => runNestedSuites(report, stopRequested, filter, goodies, distributor, tracker)
       case Some(_) =>
     }
-    runTests(testName, report, stopRequested, filter, goodies, tracker)
+    runTests(testName, report, stopRequested, filter, goodies, distributor, tracker)
 
     if (stopRequested()) {
       val rawString = Resources("executeStopping")
