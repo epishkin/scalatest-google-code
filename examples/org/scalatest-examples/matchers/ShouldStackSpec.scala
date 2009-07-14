@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.matchers
+package org.scalatestexamples.matchers
 
+import org.scalatest.Spec
+import org.scalatest.matchers.ShouldMatchers
 import scala.collection.mutable.ListBuffer
 
 trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>

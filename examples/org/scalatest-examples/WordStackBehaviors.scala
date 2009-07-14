@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatestexamples
+
+import org.scalatest.WordSpec
 
 trait WordStackBehaviors { this: WordSpec =>
 
