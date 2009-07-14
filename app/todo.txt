@@ -2,8 +2,6 @@ pass goodies down into before and after methods 30 min.
 
 add description to FeatureSpec 45 min.
 
-Do the ParallelTestExecution trait. 
-
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
 Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
