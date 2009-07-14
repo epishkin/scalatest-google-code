@@ -437,7 +437,7 @@ class Conductor(logger:Logger){
   /**
    * Register a function to be executed after the simulation has finished.
    */
-  def finish(f: => Unit) {finishFunction = Some(f _)}
+  def whenFinished(fun: => Unit) {finishFunction = Some(fun _)}
 
   /**
    * An option that might contain a function to run after all threads have finished.
@@ -508,20 +508,20 @@ class Conductor(logger:Logger){
    * Run multithreaded test with the default parameters,
    * or the parameters set at the command line.
    */
-  def execute() {
+  def start() {
     val DEFAULT_CLOCKPERIOD = 10
     val DEFAULT_RUNLIMIT = 5
-    execute(DEFAULT_CLOCKPERIOD, DEFAULT_RUNLIMIT)
+    start(DEFAULT_CLOCKPERIOD, DEFAULT_RUNLIMIT)
   }
 
   /**
-   * Run multithreaded test.
+   * Start a multithreaded test.
    * @param clockPeriod The period (in ms) between checks for the clock 
    * @param runLimit The limit to run the test in seconds
    * @throws Throwable The first error or exception that is thrown by one of the threads
    */
   // TODO: Only allow this to be called once per instance.
-  def execute(clockPeriod: Int, runLimit: Int) {
+  def start(clockPeriod: Int, runLimit: Int) {
 
     // wait until all threads are definitely ready to go
     mainThreadStartLatch.await()
