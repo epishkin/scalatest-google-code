@@ -51,7 +51,8 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
   
       val suiteStartTime = System.currentTimeMillis
 
-      dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
+      if (!suite.isInstanceOf[DistributedTestRunnerSuite])
+        dispatch(SuiteStarting(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), formatter, rerunnable))
   
       try {
         suite.run(None, dispatch, stopRequested, filter, propertiesMap, distributor, tracker)
@@ -60,10 +61,11 @@ private[scalatest] class SuiteRunner(suite: Suite, dispatch: DispatchReporter, s
         val formatter = formatterForSuiteCompleted(suite)
 
         val duration = System.currentTimeMillis - suiteStartTime
-        dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), Some(duration), formatter, rerunnable))
+        if (!suite.isInstanceOf[DistributedTestRunnerSuite])
+          dispatch(SuiteCompleted(tracker.nextOrdinal(), suite.suiteName, Some(suite.getClass.getName), Some(duration), formatter, rerunnable))
       }
       catch {
-        case e: RuntimeException => {
+        case e: RuntimeException => { // Do fire SuiteAborted even if a DistributedTestRunnerSuite 
 
           val rawString3 = Resources("executeException")
           val formatter3 = formatterForSuiteAborted(suite, rawString3)

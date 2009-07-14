@@ -2,6 +2,8 @@ pass goodies down into before and after methods 30 min.
 
 add description to FeatureSpec 45 min.
 
+Do the ParallelTestExecution trait. 
+
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
 Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
@@ -9,8 +11,6 @@ perhaps I just need the final execute forms for the interpreter and the one publ
 Reporter called TransitionalReporter, which has an apply method that forwards to the old methods, so people can bring existing reporters
 up to date with a quick mix in. Or, consider whether I can just do that directly in Reporter itself. Oh, no, because then people's would
 extensions would automatically work. No, that's OK. Just deprecate all the old testStarting, etc., methods.
-
-Do the ParallelTestExecution trait. 
 
 Write tests for JUnitComfort Suite.
 

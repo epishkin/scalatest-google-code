@@ -980,7 +980,7 @@ trait Spec extends Suite { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
    *     is <code>null</code>.
    */
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
 
     if (testName == null || reporter == null || stopper == null || goodies == null)
       throw new NullPointerException
@@ -1141,7 +1141,7 @@ trait Spec extends Suite { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
    *     <code>tagsToExclude</code>, or <code>goodies</code> is <code>null</code>.
    */
-  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
     if (testName == null)

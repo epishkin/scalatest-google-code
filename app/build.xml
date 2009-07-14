@@ -281,21 +281,14 @@
     </target>
 
     <target name="examples" depends="compile-main,compile-examples,copyprops,taskdefscalatest">
-        <scalatest runpath="${build.examples}" concurrent="false" haltonfailure="true">
+        <scalatest runpath="${build.examples}" concurrent="true" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout"/>
+            <suite classname="org.scalatest.ParallelTestExecutionExampleSpec" />
+<!--
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.concurrent" />
             <membersonly package="org.scalatest.matchers" />
-<!--
-            <suite classname="org.scalatest.StackFlatSpec" />
-            <membersonly package="org.scalatest.fixture" />
-            <membersonly package="org.scalatest.matchers" />
-            <membersonly package="org.scalatest.conductor" />
-            <membersonly package="org.scalatest.testng" />
-            <membersonly package="org.scalatest.junit" />
-            <membersonly package="org.scalatest.events" />
-            <membersonly package="org.scalatest.prop" />
 -->
         </scalatest>
     </target>
@@ -333,8 +326,9 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
-            <suite classname="org.scalatest.concurrent.ConductorSuite" />
+            <suite classname="org.scalatest.ConductorSuite" />
 <!--
+            <suite classname="org.scalatest.concurrent.ConductorSuite" />
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
             <suite classname="org.scalatest.FlatSpecSpec" />
             <suite classname="org.scalatest.matchers.CanVerbSuite" />
