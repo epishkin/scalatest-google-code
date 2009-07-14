@@ -1503,6 +1503,14 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
+   * <p>
+   * Implementations of this method are responsible for ensuring a <code>TestStarting</code> event
+   * is fired to the <code>Reporter</code> before executing any test, and either <code>TestSucceeded</code>,
+   * <code>TestFailed</code>, or <code>TestPending</code> after executing any nested
+   * <code>Suite</code>. If a test is marked with the <code>org.scalatest.Ignore</code> tag, implementations
+   * of this method are responsible for ensuring a <code>TestIgnored</code> event is fired.
+   * </p>
+   *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
    * @param reporter the <code>Reporter</code> to which results will be reported
@@ -1651,6 +1659,12 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <code>Suite</code>s appear in the <code>List</code> returned by <code>nestedSuites</code>, passing
    * in a new <code>Tracker</code> obtained by invoking <code>nextTracker</code> on the <code>Tracker</code>
    * passed to this method.
+   * </p>
+   *
+   * <p>
+   * Implementations of this method are responsible for ensuring <code>SuiteStarting</code> events
+   * are fired to the <code>Reporter</code> before executing any nested <code>Suite</code>, and either <code>SuiteCompleted</code>
+   * or <code>SuiteAborted</code> after executing any nested <code>Suite</code>.
    * </p>
    *
    * @param reporter the <code>Reporter</code> to which results will be reported

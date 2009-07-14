@@ -1,11 +1,6 @@
 pass goodies down into before and after methods 30 min.
 
-Create a named function type for the ShouldVerb implicit conversion for WordSpec, so there's a role-related type in there. 10 min.
-
 add description to FeatureSpec 45 min.
-
-write down in the scaladoc that the runNestedSuites method is responsible for sending SuiteStarting/SuiteCompleted/SuiteAborted messages
-for each nested suite it runs and that runTest is responsible for sending TestStarting/TestSucceeded/TestFailed messages.
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 
