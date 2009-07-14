@@ -16,7 +16,8 @@
 package org.scalatest.fixture
 
 import FixtureNodeFamily._
-import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, MustVerb, BehaveWord}
+import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord, MustVerb,
+  StringVerbBlockRegistration}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
@@ -895,11 +896,12 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
 
   protected val ignore = new FixtureIgnoreWord
 
-  implicit val doVerbThing: (String, () => Unit, String) => Unit = {
-    (left, f, verb) => {
-      registerVerbBranch(left, verb, f)
+  implicit val doVerbThing: StringVerbBlockRegistration =
+    new StringVerbBlockRegistration {
+      def apply(left: String, verb: String, f: () => Unit) = registerVerbBranch(left, verb, f)
     }
-  }
+
+
   implicit val doAfterVerbThing: (String, ResultOfAfterWordApplication, String) => Unit = {
     (left, resultOfAfterWordApplication, verb) => {
       val afterWordFunction =

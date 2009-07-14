@@ -302,8 +302,6 @@ class Conductor(logger:Logger){
 
   def this() = this(new Logger {})
 
-  type Tick = Int
-
   /**
    * The metronome used to coordinate between threads.
    * This clock is advanced by the clock thread.
@@ -313,14 +311,15 @@ class Conductor(logger:Logger){
 
   /////////////////////// thread management start //////////////////////////////
 
+  // These were protected.
   // place all threads in a new thread group
-  protected val threadGroup = new ThreadGroup("Orchestra")
+  private val threadGroup = new ThreadGroup("Orchestra")
 
   // all the threads in this test
-  protected val threads = new CopyOnWriteArrayList[Thread]()
+  private val threads = new CopyOnWriteArrayList[Thread]()
 
   // the main test thread
-  protected val mainThread = currentThread
+  private val mainThread = currentThread
 
   /**
    * Create a new thread that will execute the given function
@@ -404,12 +403,12 @@ class Conductor(logger:Logger){
   /**
    * A list of any errors thrown by test threads at the time this method is called.
    */
-  def errors: List[Throwable] = {
-    def errors(errorList: List[Throwable], it: java.util.Iterator[Throwable]): List[Throwable] = {
-      if(it.hasNext) errors( errorList ::: List(it.next), it)
+  def exceptions: List[Throwable] = {
+    def exceptions(errorList: List[Throwable], it: java.util.Iterator[Throwable]): List[Throwable] = {
+      if(it.hasNext) exceptions( errorList ::: List(it.next), it)
       else errorList
     }
-    errors(Nil, errorsQueue.iterator)
+    exceptions(Nil, errorsQueue.iterator)
   }
 
 
@@ -468,7 +467,7 @@ class Conductor(logger:Logger){
    *
    * @param c the tick value to wait for
    */
-  def waitForTick(t: Tick) {clock waitForTick t}
+  def waitForBeat(beat: Int) {clock waitForBeat beat}
 
   /**
    * Gets the current value of the thread clock. Primarily useful in
@@ -476,18 +475,18 @@ class Conductor(logger:Logger){
    *
    * @return the current tick value
    */
-  def tick: Tick = clock.time
+  def beat: Int = clock.currentBeat
 
   /**
    * This runs the passed function, and while it runs it, the clock cannot advance.
    */
-  def withClockFrozen[T](f: => T) = clock.withClockFrozen(f _)
+  def withConductorFrozen[T](f: => T) = clock.withClockFrozen(f _)
 
   /**
    * Check if the clock has been frozen by any threads. (The only way a thread
    * can freeze the clock is by calling withClockFrozen.)
    */
-  def isClockFrozen: Boolean = clock.isFrozen
+  def isConductorFrozen: Boolean = clock.isFrozen
 
   /////////////////////// clock management end //////////////////////////////
 
@@ -603,11 +602,11 @@ class Conductor(logger:Logger){
 
     /**
      * Read locks are acquired when clock is frozen and must be
-     * released before the clock can advance in a waitForTick().
+     * released before the clock can advance in a waitForBeat().
      */
     private val rwLock = new ReentrantReadWriteLock
 
-    private var highestTickCountBeingWaitedOn = 0
+    private var highestBeatBeingWaitedOn = 0
 
     /**
      * Advance the current tick. In order to do so, the clock will wait
@@ -618,15 +617,14 @@ class Conductor(logger:Logger){
      * Only the clock thread should be calling this.
      *
      * If the clock has been frozen by a thread, then that thread will own the readLock. Write
-     * lcok can only be acquired when there are no readers, so ticks won't progress while someone
+     * lock can only be acquired when there are no readers, so ticks won't progress while someone
      * has the clock frozen. Other methods also grab the read lock, like time (which gets
      * the current tick.)
      */
-    // TODO: rename time() to tick or currentTick, and tick to incrementTick? Maybe not. Maybe OK.
-    def tick() {
+    def advance() {
       lock.synchronized {
         rwLock.write {
-          logger.trace("tick! from: " + currentTime + " to: " + (currentTime + 1))
+          logger.trace("clock advancing from: " + currentTime + " to: " + (currentTime + 1))
           currentTime += 1
         }
         lock.notifyAll()
@@ -634,22 +632,21 @@ class Conductor(logger:Logger){
     }
 
     /**
-     * The current time.
+     * The current beat.
      */
-    // TODO: Maybe currentTime is a better name for the method, but...
-    def time: Tick = rwLock read currentTime
+    def currentBeat: Int = rwLock read currentTime
 
     /**
      * When wait for tick is called, the current thread will block until
      * the given tick is reached by the clock.
      */
-    // TODO: Could just notify in the tick() method the folks that are waiting on that
-    // particular tick, but then that's more complicated. Not a big deal.
-    def waitForTick(t: Tick) {
+    // TODO: Could just notify in the advance() method the folks that are waiting on that
+    // particular beat, but then that's more complicated. Not a big deal.
+    def waitForBeat(beat: Int) {
       lock.synchronized {
-        if (t > highestTickCountBeingWaitedOn) highestTickCountBeingWaitedOn = t
-        logger.trace.around(currentThread.getName + " is waiting for time " + t) {
-          while (time < t) {
+        if (beat > highestBeatBeingWaitedOn) highestBeatBeingWaitedOn = beat
+        logger.trace.around(currentThread.getName + " is waiting for time " + beat) {
+          while (currentBeat < beat) {
             try {
               lock.wait()
             } catch {
@@ -668,8 +665,8 @@ class Conductor(logger:Logger){
     /**
      * Returns true if any thread is waiting for a tick in the future ( greater than the current time )
      */
-    def anyThreadWaitingForATick_? = {
-      lock.synchronized {highestTickCountBeingWaitedOn > currentTime}
+    def isAnyThreadWaitingForABeat = {
+      lock.synchronized {highestBeatBeingWaitedOn > currentTime}
     }
 
     /**
@@ -746,8 +743,8 @@ class Conductor(logger:Logger){
         if (threadGroup.anyThreadsRunning_?) {
           if (runningTooLong_?) timeout()
         }
-        else if (clock.anyThreadWaitingForATick_?) {
-          clock.tick()
+        else if (clock.isAnyThreadWaitingForABeat) {
+          clock.advance()
           deadlockCount = 0
           lastProgress = System.currentTimeMillis
         }

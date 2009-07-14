@@ -15,7 +15,8 @@
  */
 package org.scalatest
 
-import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord, MustVerb}
+import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord,
+  MustVerb, StringVerbBlockRegistration}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
@@ -895,11 +896,11 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
   protected val ignore = new IgnoreWord
 
-  implicit val doVerbThing: (String, () => Unit, String) => Unit = {
-    (left, f, verb) => {
-      registerVerbBranch(left, verb, f)
+  implicit val doVerbThing: StringVerbBlockRegistration =
+    new StringVerbBlockRegistration {
+      def apply(left: String, verb: String, f: () => Unit) = registerVerbBranch(left, verb, f)
     }
-  }
+
   implicit val doAfterVerbThing: (String, ResultOfAfterWordApplication, String) => Unit = {
     (left, resultOfAfterWordApplication, verb) => {
       val afterWordFunction =

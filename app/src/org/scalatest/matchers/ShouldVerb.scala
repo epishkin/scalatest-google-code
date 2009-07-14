@@ -60,8 +60,8 @@ trait ShouldVerb {
     // a better practice would be do use one "role-defining type" in here.
     // These two are for WordSpec. Won't work elsewhere because only WordSpec defines these implicit
     // parameters.
-    def should(right: => Unit)(implicit fun: (String, () => Unit, String) => Unit) {
-      fun(left, right _, "should")
+    def should(right: => Unit)(implicit fun: StringVerbBlockRegistration) {
+      fun(left, "should", right _)
     }
 
     def should(resultOfAfterWordApplication: ResultOfAfterWordApplication)(implicit fun: (String, ResultOfAfterWordApplication, String) => Unit) {
