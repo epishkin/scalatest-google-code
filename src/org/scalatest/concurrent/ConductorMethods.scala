@@ -66,19 +66,19 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
    *
    * @param c the tick value to wait for
    */
-  protected def waitForTick(tick:Int) = conductor.get.waitForTick(tick)
+  protected def waitForTick(tick:Int) = conductor.get.waitForBeat(tick)
 
   /**
    * Run the passed function, ensuring the clock does not advance while the function is running (has not yet returned or thrown an exception).
    */
-  protected def withClockFrozen[T](f: => T) = conductor.get.withClockFrozen(f)
+  protected def withClockFrozen[T](f: => T) = conductor.get.withConductorFrozen(f)
 
   /**
    * Gets the current value of the clock. Primarily useful in assert statements.
    *
    * @return the current tick value
    */
-  protected def tick = conductor.get.tick
+  protected def tick = conductor.get.beat
 
   /**
    * Register a function to be executed after the simulation has finished.
@@ -176,7 +176,7 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
       // if there were errors, fail the test.
       if (!caughtException) {
 
-        val errors = conductor.get.errors
+        val errors = conductor.get.exceptions
 
         if (errors.isEmpty) {
           reporter(testSucceededEvent)

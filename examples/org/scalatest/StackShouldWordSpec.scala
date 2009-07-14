@@ -23,23 +23,23 @@ class StackShouldWordSpec extends WordSpec with StackFixtureCreationMethods with
   
   "A Stack" when it {
     
-      "is empty" should {
+    "is empty" should {
 
-        "be empty" in {
-          assert(emptyStack.empty)
-        }
+      "be empty" in {
+        assert(emptyStack.empty)
+      }
 
-        "complain on peek" in {
-          intercept[IllegalStateException] {
-            emptyStack.peek
-          }
+      "complain on peek" in {
+        intercept[IllegalStateException] {
+          emptyStack.peek
         }
+      }
 
-        "complain on pop" in {
-          intercept[IllegalStateException] {
-            emptyStack.pop
-          }
+      "complain on pop" in {
+        intercept[IllegalStateException] {
+          emptyStack.pop
         }
+      }
     }
 
     "has one item" should {

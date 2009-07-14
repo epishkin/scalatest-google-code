@@ -61,8 +61,8 @@ trait MustVerb {
     // a better practice would be do use one "role-defining type" in here.
     // These two are for WordSpec. Won't work elsewhere because only WordSpec defines these implicit
     // parameters.
-    def must(right: => Unit)(implicit fun: (String, () => Unit, String) => Unit) {
-      fun(left, right _, "must")
+    def must(right: => Unit)(implicit fun: StringVerbBlockRegistration) {
+      fun(left, "must", right _)
     }
 
     def must(resultOfAfterWordApplication: ResultOfAfterWordApplication)(implicit fun: (String, ResultOfAfterWordApplication, String) => Unit) {
