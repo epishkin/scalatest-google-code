@@ -362,6 +362,20 @@
 -->
     </target>
 
+    <target name="runsuite" depends="compile,copyprops,taskdefscalatest"
+            description="run a specified suite (use -Dclass=classname)">
+
+        <fail message="class not defined (use -Dclass=classname)"
+              unless="class" />
+
+        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+            <reporter type="graphic"/>
+            <reporter type="stdout" config="N"/>
+            <suite classname="${class}"/>
+        </scalatest>
+    </target>
+
+
     <path id="example.class.path">
         <pathelement location="${dist}/lib/scalatest.jar" />
         <pathelement location="${classes}" />
