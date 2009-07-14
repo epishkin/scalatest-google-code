@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.matchers
+package org.scalatestexamples.matchers
+
+import org.scalatest.FlatSpec
+import org.scalatest.matchers.ShouldMatchers
 
 class ShouldStackFlatSpec extends FlatSpec with ShouldMatchers with StackFixtureCreationMethods with FlatStackBehaviors {
 

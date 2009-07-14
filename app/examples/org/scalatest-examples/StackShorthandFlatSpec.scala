@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatestexamples
 
-import matchers.ShouldVerb
+import org.scalatest.FlatSpec
+import org.scalatest.matchers.ShouldVerb
 
 class StackShorthandFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatStackBehaviors with ShouldVerb {
 

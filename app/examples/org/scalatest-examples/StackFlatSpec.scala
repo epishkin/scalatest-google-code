@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatestexamples
+
+import org.scalatest.FlatSpec
 
 class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatStackBehaviors {
-
 
   behavior of "A Stack (when empty)"
 
@@ -36,18 +37,15 @@ class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatS
     }
   }
 
-
   behavior of "A Stack (with one item)"
 
   it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItem)
   it should behave like nonFullStack(stackWithOneItem)
 
-
   behavior of "A Stack (with one item less than capacity)"
 
   it should behave like nonEmptyStack(lastValuePushed)(stackWithOneItemLessThanCapacity)
   it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
-
 
   behavior of "A Stack (full)"
 
