@@ -12,16 +12,16 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
     thread("producer") {
       buf put 42
       buf put 17
-      tick should be (1)
+      beat should be (1)
     }
 
     thread("consumer") {
-      waitForTick(1)
+      waitForBeat(1)
       buf.take should be (42)
       buf.take should be (17)
     }
 
-    finish {
+    whenFinished {
       buf should be ('empty)
     }
   }
@@ -37,7 +37,7 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
       ai.compareAndSet(1, 2) should be (true)
     }
 
-    finish {
+    whenFinished {
       ai.get should be (3)
     }
   }
@@ -47,11 +47,11 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
 
     val nice = thread("nice") {
       intercept[InterruptedException] {s.acquire}
-      tick should be (1)
+      beat should be (1)
     }
 
     thread("rude") {
-      waitForTick(1)
+      waitForBeat(1)
       nice.interrupt
     }
   }
@@ -61,19 +61,19 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
 
     thread {
       ai.compareAndSet(0, 1) should be (true) // S1
-      waitForTick(3)
+      waitForBeat(3)
       ai.get() should be (3) // S4
     }
 
     thread {
-      waitForTick(1)
+      waitForBeat(1)
       ai.compareAndSet(1, 2) should be (true) // S2
-      waitForTick(3)
+      waitForBeat(3)
       ai.get should be (3) // S4
     }
 
     thread {
-      waitForTick(2)
+      waitForBeat(2)
       ai.compareAndSet(2, 3) should be (true) // S3
     }
   }
@@ -85,7 +85,7 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
       q put "w"
       q put "x"
 
-      withClockFrozen {
+      withConductorFrozen {
         q.offer("y", 25, TimeUnit.MILLISECONDS) should be (false)
       }
 
@@ -93,11 +93,11 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
         q.offer("z", 2500, TimeUnit.MILLISECONDS)
       }
 
-      tick should be (1)
+      beat should be (1)
     }
 
     val consumer = thread("consumer") {
-      waitForTick(1)
+      waitForBeat(1)
       producer.interrupt()
     }
 

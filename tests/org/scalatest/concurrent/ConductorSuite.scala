@@ -40,39 +40,39 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
     var s = ""
 
     thread("t1") {
-      waitForTick(1)
+      waitForBeat(1)
       s = s + "A"
 
-      waitForTick(3)
+      waitForBeat(3)
       s = s + "C"
 
-      waitForTick(6)
+      waitForBeat(6)
       s = s + "F"
     }
 
     thread("t2") {
-      waitForTick(2)
+      waitForBeat(2)
       s = s + "B"
 
-      waitForTick(5)
+      waitForBeat(5)
       s = s + "E"
 
-      waitForTick(8)
+      waitForBeat(8)
       s = s + "H"
     }
 
     thread("t3") {
-      waitForTick(4)
+      waitForBeat(4)
       s = s + "D"
 
-      waitForTick(7)
+      waitForBeat(7)
       s = s + "G"
 
-      waitForTick(9)
+      waitForBeat(9)
       s = s + "I"
     }
 
-    finish {
+    whenFinished {
       s mustBe "ABCDEFGHI" // "Threads were not called in correct order"
     }
   }
@@ -96,7 +96,7 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
       c.await()
     }
 
-    finish {
+    whenFinished {
       v1.intValue() mustBe 2
       v2.intValue() mustBe 2
     }
@@ -116,14 +116,14 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
     }
 
     thread {
-      waitForTick(1)
+      waitForBeat(1)
       c.getCount mustBe 1
-      waitForTick(2) // advances quickly
+      waitForBeat(2) // advances quickly
       c.getCount mustBe 1
       c.countDown()
     }
 
-    finish {
+    whenFinished {
       c.getCount() mustBe 0
     }
   }
@@ -136,11 +136,11 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
 
     thread {
       t = currentThread
-      waitForTick(2)
+      waitForBeat(2)
     }
 
     thread {
-      waitForTick(1)
+      waitForBeat(1)
       t.getState should (be (WAITING) or be (BLOCKED))
     }
   }
@@ -156,7 +156,7 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
       t2 = Thread.currentThread
     }
 
-    finish {
+    whenFinished {
       t1.getState mustBe TERMINATED
       t2.getState mustBe TERMINATED
     }
@@ -167,16 +167,16 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
 
     thread {
       t1 = Thread.currentThread
-      waitForTick(2)
+      waitForBeat(2)
     }
 
     thread {
       t2 = Thread.currentThread
-      waitForTick(2)
+      waitForBeat(2)
     }
 
     thread {
-      waitForTick(1)
+      waitForBeat(1)
       t1 should not(be(t2))
     }
   }

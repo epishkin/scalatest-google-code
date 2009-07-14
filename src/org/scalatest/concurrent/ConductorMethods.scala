@@ -66,24 +66,30 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
    *
    * @param c the tick value to wait for
    */
-  protected def waitForTick(tick:Int) = conductor.get.waitForBeat(tick)
+  protected def waitForBeat(beat:Int) = conductor.get.waitForBeat(beat)
 
   /**
    * Run the passed function, ensuring the clock does not advance while the function is running (has not yet returned or thrown an exception).
    */
-  protected def withClockFrozen[T](f: => T) = conductor.get.withConductorFrozen(f)
+  protected def withConductorFrozen[T](f: => T) = conductor.get.withConductorFrozen(f)
+
+  /**
+   * Check if the clock has been frozen by any threads. (The only way a thread
+   * can freeze the clock is by calling withClockFrozen.)
+   */
+  protected def isConductorFrozen: Boolean = conductor.get.isConductorFrozen
 
   /**
    * Gets the current value of the clock. Primarily useful in assert statements.
    *
    * @return the current tick value
    */
-  protected def tick = conductor.get.beat
+  protected def beat = conductor.get.beat
 
   /**
    * Register a function to be executed after the simulation has finished.
    */
-  protected def finish(f: => Unit) = conductor.get.finish{ f }
+  protected def whenFinished(f: => Unit) = conductor.get.whenFinished{ f }
 
   /**
    * Adds threads methods to int, so one can say:<br/>
@@ -162,7 +168,7 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
     var caughtException = false
 
     try {
-      conductor.get.execute()
+      conductor.get.start()
     } catch {
       // handle the main thread throwing an exception      
       case e => {
