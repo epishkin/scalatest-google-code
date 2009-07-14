@@ -150,7 +150,7 @@
         <scalac srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
         <!-- Compile the Java code from ${src} into ${classes} -->
-        <javac srcdir="${src}" destdir="${classes}" classpathref="build.class.path" debug="yes">
+        <javac srcdir="${src}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
             <include name="org/scalatest/Ignore.java" />
             <include name="org/scalatest/tools/ScalaTestTask.java" />
         </javac>
@@ -281,15 +281,16 @@
     </target>
 
     <target name="examples" depends="compile-main,compile-examples,copyprops,taskdefscalatest">
-        <scalatest runpath="${build.examples}" concurrent="true" haltonfailure="true">
+        <scalatest runpath="${build.examples}" concurrent="false" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout"/>
-            <suite classname="org.scalatest.ParallelTestExecutionExampleSpec" />
 <!--
-            <membersonly package="org.scalatest" />
-            <membersonly package="org.scalatest.concurrent" />
-            <membersonly package="org.scalatest.matchers" />
+            <suite classname="org.scalatestexamples.ParallelTestExecutionExampleSpec" />
 -->
+            <membersonly package="org.scalatestexamples" />
+            <membersonly package="org.scalatestexamples.concurrent" />
+            <membersonly package="org.scalatestexamples.fixture" />
+            <membersonly package="org.scalatestexamples.matchers" />
         </scalatest>
     </target>
 
@@ -369,6 +370,19 @@
               unless="class" />
 
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+            <reporter type="graphic"/>
+            <reporter type="stdout" config="N"/>
+            <suite classname="${class}"/>
+        </scalatest>
+    </target>
+
+    <target name="runexample" depends="compile,copyprops,taskdefscalatest"
+            description="run a specified suite (use -Dclass=classname)">
+
+        <fail message="class not defined (use -Dclass=classname)"
+              unless="class" />
+
+        <scalatest runpath="${build.examples} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
             <suite classname="${class}"/>
