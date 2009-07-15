@@ -383,6 +383,9 @@
               unless="class" />
 
         <scalatest runpath="${build.examples} ${classes}" haltonfailure="true">
+<!--
+            <property name="tempFileName" value="TempFile.txt"/>
+-->
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
             <suite classname="${class}"/>

@@ -278,6 +278,7 @@ import org.scalatest.events._
  *
  * <pre>
  * import org.scalatest.fixture.FunSuite
+ * import org.scalatest.fixture.SimpleWithFixture
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
