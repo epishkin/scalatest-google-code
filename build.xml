@@ -165,7 +165,7 @@
         <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Java code from ${tests} into ${build.tests} -->
-        <javac srcdir="${tests}" destdir="${build.tests}" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
+        <javac srcdir="${tests}" destdir="${build.tests}" memoryMaximumSize="1500M" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
     </target>
 
     <target name="compile-examples" depends="compile-main">
@@ -268,7 +268,7 @@
     <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="graphic"/>
-            <reporter type="stdout"/>
+            <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
             <membersonly package="org.scalatest.matchers" />
@@ -371,7 +371,7 @@
 
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
-            <reporter type="stdout" config="N"/>
+            <reporter type="stdout" config="ND"/>
             <suite classname="${class}"/>
         </scalatest>
     </target>
