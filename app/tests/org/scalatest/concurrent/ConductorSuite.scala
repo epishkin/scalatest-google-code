@@ -207,4 +207,10 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
   //        "prior to conductTest being called.") (pending)
 
   // test("nested thread calls result in a running thread that is allowed to execute immediately") (pending)
+
+  // test("if whenFinished is called from a thread that did not construct the conductor, an IllegalStateException is thrown" +
+  //        "that explains the problem") (pending)
+
+  // test("if whenFinished is called twice on the same conductor, an IllegalStateException is thrown that explains it" +
+  //        "can only be called once")
 }
