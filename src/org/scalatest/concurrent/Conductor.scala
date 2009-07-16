@@ -337,6 +337,8 @@ class Conductor(logger:Logger){
     threads add t
     startThread(t)
   }
+  // The reason that the thread is started immediately, is do that nested threads
+  // will start immediately, without requiring the user to explicitly start() them.
 
   /**
    * Adds threads methods to int, so one can say:<br/>
@@ -520,7 +522,6 @@ class Conductor(logger:Logger){
    * @param runLimit The limit to run the test in seconds
    * @throws Throwable The first error or exception that is thrown by one of the threads
    */
-  // TODO: Only allow this to be called once per instance.
   def start(clockPeriod: Int, runLimit: Int) {
 
     // wait until all threads are definitely ready to go
