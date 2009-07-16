@@ -30,7 +30,7 @@ class AmpersandWordSpec extends WordSpec with ShouldMatchers {
   }
 }
 
-class LoginUiWordSpec extends WordSpec with ShouldVerb {
+class LoginUiWordSpec extends WordSpec {
 
   def theUser = afterWord("the user")
   def have = afterWord("have")
