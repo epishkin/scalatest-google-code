@@ -852,6 +852,13 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     def in(f: => Unit) {
       registerTestToRun(string, List(), f _)
     }
+    // Nothing so it will only work if the function ends with a thrown exception, which
+    // is the case for pending methods. Can say "is (pending)" that way, which reads much
+    // nicer than "in (pending)", but can't use is { ... } for an implemented test function,
+    // In that case, have to say "in { ... }"
+    def is(f: => Nothing) {
+      registerTestToRun(string, List(), f _)
+    }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new StringTaggedAs(string, tagList)
