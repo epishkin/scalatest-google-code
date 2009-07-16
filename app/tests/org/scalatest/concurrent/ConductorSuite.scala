@@ -180,4 +180,31 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
       t1 should not(be(t2))
     }
   }
+
+  // Josh, when a test is marked (pending) it completes abruptly with TestPendingException. This is
+  // not a test failure but an indication the test is pending, not yet implemented. We need to check
+  // for this in ConductorMethods, and let it through somehow. Right now it causes a big red stack
+  // trace. Once that works, you can uncomment the rest of these and they'll print out nicely as
+  // pending tests.
+
+  // test("handle TestPendingException properly in ConductorMehthods") (pending)
+
+  // TODO:
+  // 1. rename start() to conductTest() in both Conductor and ConductorMethods
+  // 2. add a testWasConducted: Boolean method to both Conductor and ConductorMethods
+
+  // test("if conductTest is called twice, the second time it throws an IllegalStateException") (pending)
+
+  // test("if conductTest has not been called, testWasConducted should return false") (pending)
+
+  // test("if conductTest has been called, testWasConducted should return true") (pending)
+  
+  // test("two thread calls return threads that both are in the same thread group") (pending)
+
+  // test("if a thread call is nested inside another thread call, both threads are in the same thread group") (pending)
+
+  // test("top level thread calls result in a running thread that is blocked such that it doesn't execute " +
+  //        "prior to conductTest being called.") (pending)
+
+  // test("nested thread calls result in a running thread that is allowed to execute immediately") (pending)
 }
