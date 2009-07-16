@@ -61,7 +61,7 @@ class StackCanWordSpec extends WordSpec with StackFixtureCreationMethods with Wo
         assert(fullStack.full)
       }
 
-      "go to sleep soon" in (pending)
+      "go to sleep soon" is (pending)
 
       behave like nonEmptyStack(lastValuePushed)(fullStack)
 

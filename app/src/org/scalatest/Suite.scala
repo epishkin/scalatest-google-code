@@ -1803,7 +1803,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * stay at a higher level, forgetting how it is implemented and just focusing on the intent of the programmer who wrote the code.
    * </p>
    */
-  final def pending { throw new TestPendingException }
+  final def pending: Nothing = { throw new TestPendingException }
 
   private[scalatest] def getTestNameForReport(testName: String) = {
 
