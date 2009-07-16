@@ -53,7 +53,7 @@ class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatS
     assert(fullStack.full)
   }
 
-  it should "go to sleep soon" in (pending)
+  it should "go to sleep soon" is (pending)
 
   it should behave like nonEmptyStack(lastValuePushed)(fullStack)
 

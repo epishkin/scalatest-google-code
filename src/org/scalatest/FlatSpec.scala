@@ -743,6 +743,9 @@ trait FlatSpec extends Suite { thisSuite =>
     def in(testFun: => Unit) {
       registerTestToRun(verb + " " + name, List(), testFun _)
     }
+    def is(testFun: => Nothing) {
+      registerTestToRun(verb + " " + name, List(), testFun _)
+    }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new ItVerbStringTaggedAs(verb, name, tagList)
