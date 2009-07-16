@@ -38,28 +38,28 @@ class LoginUiWordSpec extends WordSpec with ShouldVerb {
 
   "The login screen" when theUser {
     "first enters it" should have {
-      "an empty username field" in (pending)
+      "an empty username field" is (pending)
       "a password field" that is {
-        "empty" in (pending)
-        "disabled" in (pending)
+        "empty" is (pending)
+        "disabled" is (pending)
       }
-      "a login button that is disabled" in (pending)
+      "a login button that is disabled" is (pending)
     }
     "enters his or her username" should have {
-      "a username field that contains the entered username" in (pending)
+      "a username field that contains the entered username" is (pending)
       "a password field" that is {
-        "empty" in (pending)
-        "enabled" in (pending)
+        "empty" is (pending)
+        "enabled" is (pending)
       }
-      "a login button that is disabled" in (pending)
+      "a login button that is disabled" is (pending)
     }
     "enters his or her password" should have {
-      "an username field that contains the entered username" in (pending)
-      "a password field that contains the entered password" in (pending)
-      "a login button that is enabled" in (pending)
+      "an username field that contains the entered username" is (pending)
+      "a password field that contains the entered password" is (pending)
+      "a login button that is enabled" is (pending)
     }
     "presses the login button" should {
-      "attempt to log the user in" in (pending)
+      "attempt to log the user in" is (pending)
     }
   }
 }
