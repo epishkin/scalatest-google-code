@@ -234,4 +234,14 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
 
   // test("if conductTest is not called from within the test itself, the test still executes (because
   //       "ConductorFixture calls it given testWasConducted is false") (pending)
+
+  // test("if thread(String) is called twice with the same String name, the second invocation results" +
+  //        "in an IllegalArgumentException that explains each thread in a multi-threaded test" +
+  //        "must have a unique name") (pending)
+
+  // test("if thread {} is called after the test has been conducted, it throws an IllegalStateException" +
+  //        "with a detail message that explains the problem") (pending)
+
+  // test("if thread(String) {} is called after the test has been conducted, it throws IllegalStateException" +
+  //        "with a detail message that explains the problem")
 }
