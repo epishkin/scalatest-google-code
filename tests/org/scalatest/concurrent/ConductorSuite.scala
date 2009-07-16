@@ -212,7 +212,7 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
   //        "that explains the problem") (pending)
 
   // test("if whenFinished is called twice on the same conductor, an IllegalStateException is thrown that explains it" +
-  //        "can only be called once")
+  //        "can only be called once") (pending)
 
   // One issue is whther ConductorMethods should have a conductTest on it at all. Possibly not, but the trouble
   // is then that Conductor does have this method, and ConductorMethods wouldn't be being completely honest.
@@ -223,15 +223,15 @@ class ConductorSuite extends FunSuite with ConductorMethods with ShouldMatchers 
 
   // For ConductorMethods (probably in a ConductorMethodsSuite)
   // test("if conductTest is called from within the test itself, the test still succeeds (in other words," +
-  //        "ConductorMethods doesn't call it if testWasConducted is true.")
+  //        "ConductorMethods doesn't call it if testWasConducted is true.") (pending)
 
   // test("if conductTest is not called from within the test itself, the test still executes (because
-  //       "ConductorMethods calls it given testWasConducted is false")
+  //       "ConductorMethods calls it given testWasConducted is false") (pending)
 
   // ConductorFixture  (probably in a ConductorMethodsSuite)
   // test("if conductTest is called from within the test itself, the test still succeeds (in other words," +
-  //        "ConductorFixture doesn't call it if testWasConducted is true.")
+  //        "ConductorFixture doesn't call it if testWasConducted is true.") (pending)
 
   // test("if conductTest is not called from within the test itself, the test still executes (because
-  //       "ConductorFixture calls it given testWasConducted is false")
+  //       "ConductorFixture calls it given testWasConducted is false") (pending)
 }
