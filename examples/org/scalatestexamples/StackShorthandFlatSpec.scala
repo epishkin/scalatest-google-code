@@ -20,7 +20,7 @@ import org.scalatest.matchers.ShouldVerb
 
 class StackShorthandFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatStackBehaviors with ShouldVerb {
 
-  "A Stack (when empty)" should "be empty" in {
+  "A Stack (when empty)" should "be empty" ignore {
     assert(emptyStack.empty)
   }
 
@@ -53,7 +53,7 @@ class StackShorthandFlatSpec extends FlatSpec with StackFixtureCreationMethods w
     assert(fullStack.full)
   }
 
-  it should "go to sleep soon" in (pending)
+  it should "go to sleep soon" is (pending)
 
   it should behave like nonEmptyStack(lastValuePushed)(fullStack)
 

@@ -746,6 +746,9 @@ trait FlatSpec extends Suite { thisSuite =>
     def is(testFun: => Nothing) {
       registerTestToRun(verb + " " + name, List(), testFun _)
     }
+    def ignore(testFun: => Unit) {
+      registerTestToIgnore(verb + " " + name, List(), testFun _)
+    }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new ItVerbStringTaggedAs(verb, name, tagList)
@@ -792,6 +795,9 @@ trait FlatSpec extends Suite { thisSuite =>
       new ResultOfStringPassedToVerb[Any] {
         def in(testFun: => Unit) {
           registerTestToRun(verb + " " + right, List(), testFun _)
+        }
+        def ignore(testFun: => Unit) {
+          registerTestToIgnore(verb + " " + right, List(), testFun _)
         }
         def in(testFun: Any => Unit) { // TODO pass some message
           throw new RuntimeException
