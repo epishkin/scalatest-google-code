@@ -788,6 +788,9 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
         def in(testFun: => Unit) {
           throw new RuntimeException // TODO: Explain why in msg
         }
+        def ignore(testFun: => Unit) {
+          throw new RuntimeException // TODO: Explain why in msg
+        }
         def in(testFun: Fixture => Unit) {
           registerTestToRun(verb + " " + right, List(), testFun)
         }
