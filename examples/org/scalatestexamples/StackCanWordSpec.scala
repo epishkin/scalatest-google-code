@@ -15,8 +15,10 @@
  */
 package org.scalatestexamples
 
-import org.scalatest.WordSpec
 import org.scalatest.matchers.ShouldMatchers
+import scalatest.{Tag, WordSpec}
+
+object SlowTest extends Tag("SlowTest")
 
 class StackCanWordSpec extends WordSpec with StackFixtureCreationMethods with WordStackBehaviors with ShouldMatchers {
 
@@ -30,7 +32,7 @@ class StackCanWordSpec extends WordSpec with StackFixtureCreationMethods with Wo
         assert(emptyStack.empty)
       }
 
-      "complain on peek" in {
+      "complain on peek" ignore {
         intercept[IllegalStateException] {
           emptyStack.peek
         }
