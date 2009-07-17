@@ -17,6 +17,7 @@ package org.scalatestexamples
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldVerb
+import org.scalatest.Tag
 
 class StackShorthandFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatStackBehaviors with ShouldVerb {
 

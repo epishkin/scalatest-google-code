@@ -386,6 +386,7 @@
 <!--
             <property name="tempFileName" value="TempFile.txt"/>
 -->
+            <excludes>SlowTest</excludes>
             <reporter type="graphic"/>
             <reporter type="stdout" config="N"/>
             <suite classname="${class}"/>

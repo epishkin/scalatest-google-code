@@ -852,6 +852,9 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
     def in(f: Fixture => Unit) {
       registerTestToRun(string, List(), f)
     }
+    def ignore(f: Fixture => Unit) {
+      registerTestToIgnore(string, List(), f)
+    }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new FixtureStringTaggedAs(string, tagList)
