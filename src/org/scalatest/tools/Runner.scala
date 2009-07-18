@@ -32,7 +32,7 @@ import org.scalatest.events._
 /**
  * <p>
  * Application that runs a suite of tests.
- * The application accepts command line arguments that specify optional <em>goodies</em> (key-value pairs), an optional 
+ * The application accepts command line arguments that specify optional <em>config</em> (key-value pairs), an optional 
  * <em>runpath</em>, zero to many <code>Reporter</code>s, optional lists of tags to include and/or exclude, zero to many
  * <code>Suite</code> class names, zero to many "members-only" <code>Suite</code> paths, zero to many "wildcard" <code>Suite</code> paths,
  * and zero to many TestNG XML config file paths.
@@ -57,25 +57,19 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <a name="goodiesSection"><strong>Specifying goodies</strong></a>
+ * <a name="configSection"><strong>Specifying config objects</strong></a>
  * </p>
  *
  * <p>
- * A <em>goodie</em> consists of a key and a value. The key may not begin with
- * &quot;org.scalatest.&quot;. Goodies may be specified on the command line.
- * Each goodie is denoted with a "-D", followed immediately by the key string, an &quot;=&quot;, and the value string.
+ * A <em>config object</em> consists of a string key and a value, which may be of any type. (Keys that start with
+ * &quot;org.scalatest.&quot; are reserved for ScalaTest. Config objects that are themselves strings may be specified on the
+ * <code>Runner</code> command line.
+ * Each config object is denoted with a "-D", followed immediately by the key string, an &quot;=&quot;, and the value string.
  * For example:
  * </p>
  *
  * <p>
  * <code>-Ddbname=testdb -Dserver=192.168.1.188</code>
- * </p>
- *
- * <p>
- * The reasons these key-value pairs are called "goodies" in ScalaTest instead of "properties," is that the word property
- * already has two other meanings in ScalaTest. Objects can have properties that may be retrieved and sometimes set, which
- * can be tested with HavePropertyMatchers. And ScalaCheck allows you to test by specifying properties of the objects you
- * are testing.
  * </p>
  *
  * <p>
@@ -1155,7 +1149,7 @@ object Runner {
     suitesList: List[String],
     stopRequested: Stopper,
     filter: Filter,
-    goodies: Map[String, String],
+    config: Map[String, String],
     concurrent: Boolean,
     membersOnlyList: List[String],
     wildcardList: List[String],
@@ -1175,7 +1169,7 @@ object Runner {
       throw new NullPointerException
     if (filter == null)
       throw new NullPointerException
-    if (goodies == null)
+    if (config == null)
       throw new NullPointerException
     if (membersOnlyList == null)
       throw new NullPointerException
@@ -1281,10 +1275,10 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount, goodies))
+          dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount, config))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, goodies)
+            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, config)
             for (suite <- suiteInstances) {
               distributor.apply(suite, tracker.nextTracker())
             }
@@ -1293,7 +1287,7 @@ object Runner {
           else {
             for (suite <- suiteInstances) {
               val suiteRunner = new SuiteRunner(suite, dispatch, stopRequested, filter,
-                  goodies, None, tracker)
+                  config, None, tracker)
               suiteRunner.run()
             }
           }

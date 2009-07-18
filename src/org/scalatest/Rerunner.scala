@@ -31,7 +31,7 @@ trait Rerunner extends ((Reporter, Stopper, Filter, Map[String, Any], Option[Dis
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param goodies a <code>Map</code> of key-value pairs that can be used by the suite or test being rerun
+   * @param config a <code>Map</code> of key-value pairs that can be used by the suite or test being rerun
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s, if any, to be executed
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
    * @param loader the <code>ClassLoader</code> from which to load classes needed to rerun
@@ -40,5 +40,5 @@ trait Rerunner extends ((Reporter, Stopper, Filter, Map[String, Any], Option[Dis
    * @throws NullPointerException if any of the passed values are <code>null</code>.
    */
   def apply(reporter: Reporter, stopper: Stopper, filter: Filter,
-            goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader): Unit
+            config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker, loader: ClassLoader): Unit
 }

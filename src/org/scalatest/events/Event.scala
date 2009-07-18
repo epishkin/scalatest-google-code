@@ -1760,7 +1760,7 @@ object SuiteAborted {
  * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
  *        other events reported during the same run
  * @param testCount the number of tests expected during this run
- * @param goodies a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
+ * @param config a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
  * @param payload an optional object that can be used to pass custom information to the reporter about the <code>RunStarting</code> event
@@ -1775,7 +1775,7 @@ object SuiteAborted {
 final case class RunStarting (
   ordinal: Ordinal,
   testCount: Int,
-  goodies: Map[String, Any],
+  config: Map[String, Any],
   formatter: Option[Formatter],
   payload: Option[Any],
   threadName: String,
@@ -1786,8 +1786,8 @@ final case class RunStarting (
     throw new NullPointerException("ordinal was null")
   if (testCount < 0)
     throw new IllegalArgumentException("testCount was less than zero: " + testCount)
-  if (goodies == null)
-    throw new NullPointerException("goodies was null")
+  if (config == null)
+    throw new NullPointerException("config was null")
   if (formatter == null)
     throw new NullPointerException("formatter was null")
   if (payload == null)
@@ -1816,7 +1816,7 @@ object RunStarting {
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
    * @param testCount the number of tests expected during this run
-   * @param goodies a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
+   * @param config a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
    * @param payload an optional object that can be used to pass custom information to the reporter about the <code>RunStarting</code> event
@@ -1829,11 +1829,11 @@ object RunStarting {
   def apply(
     ordinal: Ordinal,
     testCount: Int,
-    goodies: Map[String, Any],
+    config: Map[String, Any],
     formatter: Option[Formatter],
     payload: Option[Any]
   ): RunStarting = {
-    apply(ordinal, testCount, goodies, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, testCount, config, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1844,7 +1844,7 @@ object RunStarting {
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
    * @param testCount the number of tests expected during this run
-   * @param goodies a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
+   * @param config a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
    *
@@ -1855,10 +1855,10 @@ object RunStarting {
   def apply(
     ordinal: Ordinal,
     testCount: Int,
-    goodies: Map[String, Any],
+    config: Map[String, Any],
     formatter: Option[Formatter]
   ): RunStarting = {
-    apply(ordinal, testCount, goodies, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, testCount, config, formatter, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -1869,7 +1869,7 @@ object RunStarting {
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
    * @param testCount the number of tests expected during this run
-   * @param goodies a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
+   * @param config a <code>Map</code> of key-value pairs that can be used by custom <code>Reporter</code>s
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
    *
@@ -1878,9 +1878,9 @@ object RunStarting {
   def apply(
     ordinal: Ordinal,
     testCount: Int,
-    goodies: Map[String, Any]
+    config: Map[String, Any]
   ): RunStarting = {
-    apply(ordinal, testCount, goodies, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, testCount, config, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
