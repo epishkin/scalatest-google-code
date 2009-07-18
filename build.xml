@@ -337,9 +337,9 @@
             <suite classname="org.scalatest.fixture.FixtureSuiteSpec" />
             <suite classname="org.scalatest.fixture.FixtureFunSuiteSpec" />
             <suite classname="org.scalatest.fixture.FixtureSpecSuite" />
-            <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
+            <suite classname="org.scalatest.fixture.FixtureFlatSpecSpec" />
             <suite classname="org.scalatest.fixture.FixtureWordSpecSuite" />
-            <suite classname="org.scalatest.fixture.FixtureFeatureSpecSuite" />
+            <suite classname="org.scalatest.fixture.FixtureFeatureSpecSpec" />
 <!--
             <suite classname="org.scalatest.concurrent.ConductorSuite" />
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
