@@ -20,7 +20,7 @@ import matchers.ShouldVerb
 
 class FixtureFlatSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
 
-  test("A fixture.Spec should return the test names in alphabetical order from testNames") {
+  test("A fixture.Spec should return the test names in order of registration from testNames") {
     val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
       type Fixture = String
       def withFixture(fun: String => Unit) {}
@@ -75,6 +75,7 @@ class FixtureFlatSpecSuite extends org.scalatest.FunSuite with PrivateMethodTest
     a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
     assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
   }
+  
   test("it should run tests registered via the 'it can behave like' syntax") {
     trait SharedFlatSpecTests { this: FlatSpec =>
       def nonEmptyStack(s: String)(i: Int) {

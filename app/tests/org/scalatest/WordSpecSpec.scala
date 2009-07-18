@@ -82,18 +82,18 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       intercept[DuplicateTestNameException] {
         new WordSpec {
           "should test this" in {}
-          ignore test "should test this" in {}  
+          "should test this" ignore {}
         }
       }
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          ignore test "should test this" in {}
-          ignore test "should test this" in {}
+          "should test this" ignore {}
+          "should test this" ignore {}
         }
       }
       intercept[DuplicateTestNameException] {
         new WordSpec {
-          ignore test "should test this" in {}
+          "should test this" ignore {}
           "should test this" in {}
         }
       }
@@ -172,7 +172,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
     it("should return registered tags, including ignore tags, from the tags method") {
 
       val a = new WordSpec {
-        ignore test "should test this" in {}
+        "should test this" ignore {}
         "should test that" in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
@@ -181,15 +181,15 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
       val b = new WordSpec {
         "should test this" in {}
-        ignore test "should test that" in {}
+        "should test that" ignore {}
       }
       expect(Map("should test that" -> Set("org.scalatest.Ignore"))) {
         b.tags
       }
 
       val c = new WordSpec {
-        ignore test "should test this" in {}
-        ignore test "should test that" in {}
+        "should test this" ignore {}
+        "should test that" ignore {}
       }
       expect(Map("should test this" -> Set("org.scalatest.Ignore"), "should test that" -> Set("org.scalatest.Ignore"))) {
         c.tags
@@ -205,7 +205,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
       val e = new WordSpec {
         "should test this" taggedAs(SlowAsMolasses) in {}
-        ignore test "should test that" taggedAs(SlowAsMolasses) in {}
+        "should test that" taggedAs(SlowAsMolasses) ignore {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
         e.tags
@@ -285,7 +285,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends WordSpec { 
           "should blow up" in {
             "in the wrong place, at the wrong time" should {
-              ignore test "should never run" in {
+              "should never run" ignore {
                 assert(1 === 2)
               }
             }
@@ -299,7 +299,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends WordSpec {
           "should blow up" in {
-            ignore test "should never run" in {
+            "should never run" ignore {
               assert(1 === 2)
             }
           }
@@ -312,7 +312,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends WordSpec {
           "should blow up" in {
-            ignore test "should never run" taggedAs(SlowAsMolasses) in {
+            "should never run" taggedAs(SlowAsMolasses) ignore {
               assert(1 === 2)
             }
           }

@@ -20,7 +20,21 @@ import events.TestFailed
 
 class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
-  describe("A FixtureSuite with SimpleWithFixture") {
+  describe("The private testMethodTakesInformer method") {
+    val testMethodTakesInformer = PrivateMethod[Boolean]('testMethodTakesInformer)
+    val suiteObject = Suite
+    it("should return true if passed a string that ends in (Fixture, Informer)") {
+      assert(suiteObject invokePrivate testMethodTakesInformer("thisDoes(Fixture, Informer)"))
+      assert(suiteObject invokePrivate testMethodTakesInformer("(Fixture, Informer)"))
+      assert(suiteObject invokePrivate testMethodTakesInformer("test(Fixture, Informer)"))
+    }
+    it("should return false if passed a string that doesn't end in (Fixture, Informer)") {
+      assert(!(suiteObject invokePrivate testMethodTakesInformer("thisDoesNot(Fixture)")))
+      assert(!(suiteObject invokePrivate testMethodTakesInformer("test(Fixture)")))
+    }
+  }
+
+  describe("A fixture.Suite with SimpleWithFixture") {
     it("should return the test names in alphabetical order from testNames") {
       val a = new Suite with SimpleWithFixture {
         type Fixture = String
@@ -80,6 +94,26 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
       val rep = new EventRecordingReporter
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
+    }
+
+    it("can pass in the goodies to every test method via the fixture") {
+      val key = "greeting"
+      val hello = "Hello, world!"
+      val a = new Suite {
+        type Fixture = Map[String, Any]
+        def withFixture(fun: Fixture => Unit, goodies: Map[String, Any]) {
+          fun(goodies)
+        }
+        def testThis(fixture: Fixture) {
+          assert(fixture(key) === hello)
+        }
+        def testThat(fixture: Fixture, info: Informer) {
+          assert(fixture(key) === hello)
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(key -> hello), None, new Tracker())
       assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
   }

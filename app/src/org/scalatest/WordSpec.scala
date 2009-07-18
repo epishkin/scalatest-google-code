@@ -830,23 +830,23 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
     updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
   }
-      /*
-  protected class StringCanWrapper(string: String) {
-  }
 
-  protected implicit def convertToStringCanWrapper(s: String) = new StringCanWrapper(s)
-    */
   protected class StringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: => Unit) {
       registerTestToRun(specText, tags, testFun _)
     }
+    def ignore(testFun: => Unit) {
+      registerTestToIgnore(specText, tags, testFun _)
+    }
   }       
 
+/*
   protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: => Unit) {
       registerTestToIgnore(specText, tags, testFun _)
     }
   }
+*/
 
   protected class WordSpecStringWrapper(string: String) {
     def in(f: => Unit) {
@@ -890,21 +890,6 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   protected def afterWord(text: String) = new AfterWord(text)
   
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
-
-  protected class IgnoredTest(specText: String) {
-    def in(f: => Unit) {
-      registerTestToIgnore(specText, List(), f _)
-    }
-    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
-      val tagList = firstTestTag :: otherTestTags.toList
-      new IgnoreTestStringTaggedAs(specText, tagList)
-    }
-  }
-  protected class IgnoreWord {
-    def test(specText: String) = new IgnoredTest(specText)
-  }
-
-  protected val ignore = new IgnoreWord
 
   implicit val doVerbThing: StringVerbBlockRegistration =
     new StringVerbBlockRegistration {
