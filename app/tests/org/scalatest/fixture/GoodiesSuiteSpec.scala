@@ -21,65 +21,6 @@ import events.TestFailed
 class GoodiesSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("A fixture.Suite") {
-    it("should return the test names in alphabetical order from testNames") {
-      val a = new Suite {
-        type Fixture = String
-        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
-        def testThis(fixture: String) {}
-        def testThat(fixture: String) {}
-      }
-
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
-        a.testNames.elements.toList
-      }
-
-      val b = new Suite {
-        type Fixture = String
-        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
-      }
-
-      expect(List[String]()) {
-        b.testNames.elements.toList
-      }
-
-      val c = new Suite {
-        type Fixture = String
-        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
-        def testThat(fixture: String) {}
-        def testThis(fixture: String) {}
-      }
-
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
-        c.testNames.elements.toList
-      }
-    }
-
-    it("should discover tests with and without Informer parameters") {
-      val a = new Suite {
-        type Fixture = String
-        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
-        def testThis(fixture: String) = ()
-        def testThat(fixture: String, info: Informer) = ()
-      }
-      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
-    }
-
-    it("should pass in the fixture to every test method") {
-      val a = new Suite {
-        type Fixture = String
-        val hello = "Hello, world!"
-        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {
-          fun(hello)
-        }
-        def testThis(fixture: String) {
-          assert(fixture === hello)
-        }
-        def testThat(fixture: String, info: Informer) {
-          assert(fixture === hello)
-        }
-      }
-      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-    }
 
   }
 }

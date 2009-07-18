@@ -96,14 +96,77 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
+  }
+  
+  describe("A fixture.Suite without SimpleWithFixture") {
+    
+    it("should return the test names in alphabetical order from testNames") {
+      val a = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
+        def testThis(fixture: String) {}
+        def testThat(fixture: String) {}
+      }
 
-    it("can pass in the goodies to every test method via the fixture") {
+      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+        a.testNames.elements.toList
+      }
+
+      val b = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
+      }
+
+      expect(List[String]()) {
+        b.testNames.elements.toList
+      }
+
+      val c = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
+        def testThat(fixture: String) {}
+        def testThis(fixture: String) {}
+      }
+
+      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+        c.testNames.elements.toList
+      }
+    }
+
+    it("should discover tests with and without Informer parameters") {
+      val a = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {}
+        def testThis(fixture: String) = ()
+        def testThat(fixture: String, info: Informer) = ()
+      }
+      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
+    }
+
+    it("should pass in the fixture to every test method") {
+      val a = new Suite {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: String => Unit, goodies: Map[String, Any]) {
+          fun(hello)
+        }
+        def testThis(fixture: String) {
+          assert(fixture === hello)
+        }
+        def testThat(fixture: String, info: Informer) {
+          assert(fixture === hello)
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+    }
+
+    it("can pass in the configMap to every test method via the fixture") {
       val key = "greeting"
       val hello = "Hello, world!"
       val a = new Suite {
         type Fixture = Map[String, Any]
-        def withFixture(fun: Fixture => Unit, goodies: Map[String, Any]) {
-          fun(goodies)
+        def withFixture(fun: Fixture => Unit, configMap: Map[String, Any]) {
+          fun(configMap)
         }
         def testThis(fixture: Fixture) {
           assert(fixture(key) === hello)
