@@ -914,9 +914,9 @@ class SpecSuite extends FunSuite with SharedHelpers {
   test("Goodies should make it through to runTest") {
     var foundMyGoodie = false
     class MySpec extends Spec with ShouldMatchers {
-      override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
-        foundMyGoodie = goodies.contains("my goodie")
-        super.runTest(testName, reporter, stopper, goodies, tracker)
+      override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+        foundMyGoodie = config.contains("my goodie")
+        super.runTest(testName, reporter, stopper, config, tracker)
       }
       it("it should find my goodie") {}
     }
@@ -1576,7 +1576,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
 
     class SuiteThatAborts extends Suite {
       override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-              goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+              config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new RuntimeException("Aborting for testing purposes")
       }
     }

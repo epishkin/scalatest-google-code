@@ -1,9 +1,4 @@
-Offer an is method on the string conversion that only works on by names that result in Nothing, which means
-it will only work on ones that throw an exception for sure, like (pending). So then for pending you can say is (pending).
-Or, maybe better, just say "is pending", and have that syntax throw an exception. So maybe that pending... No, I don't
-think so, because we want pending to mean what it means. so is (pending).
-
-pass goodies down into before and after methods 30 min.
+pass the config map down into before and after methods 30 min.
 
 add description to FeatureSpec 45 min.
 
@@ -43,7 +38,7 @@ still work, but so will some new one. And I'll warn folks that probably in 0.9.7
 Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. Maybe SuiteRunner should be in org.scalatest,
 because it is also used by Distributor and will be used by SuiteRerunner.
 
-add a RandomTestOrder trait
+add a RandomTestOrder trait?
 
 put goodies in ant task as well as properties for two releases, then drop properties
 Change description of includes --> tagsToInclude,
