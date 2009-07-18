@@ -735,11 +735,17 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     def in(testFun: Fixture => Unit) {
       registerTestToRun(verb + " " + name, tags, testFun)
     }
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, tags, testFun)
+    }
   }
 
   protected class FixtureItVerbString(verb: String, name: String) {
     def in(testFun: Fixture => Unit) {
       registerTestToRun(verb + " " + name, List(), testFun)
+    }
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList

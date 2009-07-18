@@ -20,26 +20,6 @@ import org.scalatest.events._
 
 class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
-  def testSimpleNameForTest() {
-    val simpleNameForTest = PrivateMethod[String]('simpleNameForTest)
-    assert((Suite invokePrivate simpleNameForTest("testThis")) === "testThis")
-    assert((Suite invokePrivate simpleNameForTest("testThis(Informer)")) === "testThis")
-    assert((Suite invokePrivate simpleNameForTest("test(Informer)")) === "test")
-    assert((Suite invokePrivate simpleNameForTest("test")) === "test")
-  }
-
-  def testTestNames() {
-
-    val a = new Suite {
-      def testThis() = ()
-      def testThat(info: Informer) = ()
-    }
-    assert(a.testNames === TreeSet("testThat(Informer)", "testThis"))
-
-    val b = new Suite {}
-    assert(b.testNames === TreeSet[String]())
-  }
-
   def testTestTags() {
     
     val a = new Suite {

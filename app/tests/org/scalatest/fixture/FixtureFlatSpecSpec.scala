@@ -18,6 +18,8 @@ package org.scalatest.fixture
 import events.{TestStarting, TestFailed}
 import matchers.ShouldVerb
 
+object SlowTest extends Tag("SlowTest")
+
 class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("A fixture.FlatSpec ") {
@@ -55,6 +57,42 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       expect(List("Something should do this", "Something should do that")) {
         c.testNames.elements.toList
+      }
+    }
+
+    it("should throw DuplicateTestNameException if a duplicate test name registration is attempted") {
+
+      intercept[DuplicateTestNameException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "test this" in { fixture => }
+          it should "test this" in { fixture => }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "test this" in { fixture => }
+          it should "test this" taggedAs(SlowTest) ignore { fixture => }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore should "test this" in { fixture => }
+          it should "test this" ignore { fixture => }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore should "test this" in { fixture => }
+          it should "test this" in { fixture => }
+        }
       }
     }
 
