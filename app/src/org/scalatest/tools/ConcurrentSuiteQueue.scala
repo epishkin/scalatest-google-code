@@ -26,13 +26,13 @@ import java.util.concurrent.Future
  * @author Bill Venners
  */
 private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporter, stopper: Stopper, filter: Filter,
-    goodies: Map[String, Any]) extends Distributor {
+    config: Map[String, Any]) extends Distributor {
 
   private val execSvc: ExecutorService = Executors.newCachedThreadPool()
   private val futureQueue = new LinkedBlockingQueue[Future[T] forSome { type T }]
 
   def apply(suite: Suite, tracker: Tracker) {
-    val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopper, filter, goodies, Some(this), tracker)
+    val suiteRunner = new SuiteRunner(suite, dispatchReporter, stopper, filter, config, Some(this), tracker)
     val future: Future[_] = execSvc.submit(suiteRunner)
     futureQueue.put(future)
   }

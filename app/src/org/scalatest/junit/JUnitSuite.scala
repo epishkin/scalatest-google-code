@@ -79,19 +79,19 @@ trait JUnitSuite extends Suite { thisSuite =>
   private var theTracker = new Tracker
 
   override def run(testName: Option[String], report: Reporter, stopper: Stopper,
-      filter: Filter, goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      filter: Filter, config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     theTracker = tracker
 
     val jUnitCore = new JUnitCore
-    jUnitCore.addListener(new MyRunListener(report, goodies, tracker))
+    jUnitCore.addListener(new MyRunListener(report, config, tracker))
     val myClass = getClass
     jUnitCore.run(myClass)
   }
 
 // verifySomething(org.scalatest.junit.helpers.HappySuite)
 // Description.displayName of a test report has the form <testMethodName>(<suiteClassName>)
-  private class MyRunListener(report: Reporter, goodies: Map[String, Any], tracker: Tracker) extends RunListener {
+  private class MyRunListener(report: Reporter, config: Map[String, Any], tracker: Tracker) extends RunListener {
 
 /*
     override def testAssumptionFailure(failure: Failure) {
@@ -121,7 +121,7 @@ trait JUnitSuite extends Suite { thisSuite =>
     }
 
     override def testRunStarted(description: Description) {
-      report(RunStarting(theTracker.nextOrdinal(), description.testCount, goodies))
+      report(RunStarting(theTracker.nextOrdinal(), description.testCount, config))
     }
 
     override def testStarted(description: Description) {

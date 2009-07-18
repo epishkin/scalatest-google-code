@@ -19,5 +19,5 @@ trait FixtureSuite { this: org.scalatest.Suite =>
 
   type Fixture
 
-  def withFixture(fun: (Fixture) => Unit, goodies: Map[String, Any])
+  def withFixture(fun: (Fixture) => Unit, config: Map[String, Any])
 }

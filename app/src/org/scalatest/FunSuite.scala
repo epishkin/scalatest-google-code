@@ -822,13 +822,13 @@ trait FunSuite extends Suite { thisSuite =>
    * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param goodies a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
+   * @param config a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>config</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || goodies == null)
+    if (testName == null || reporter == null || stopper == null || config == null)
       throw new NullPointerException
 
     val stopRequested = stopper
@@ -923,7 +923,7 @@ trait FunSuite extends Suite { thisSuite =>
   }
   
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -933,8 +933,8 @@ trait FunSuite extends Suite { thisSuite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (goodies == null)
-      throw new NullPointerException("goodies was null")
+    if (config == null)
+      throw new NullPointerException("config was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
@@ -950,7 +950,7 @@ trait FunSuite extends Suite { thisSuite =>
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, report, stopRequested, goodies, tracker)
+      case Some(tn) => runTest(tn, report, stopRequested, config, tracker)
       case None =>
 
         val doList = atomic.get.doList.reverse
@@ -963,14 +963,14 @@ trait FunSuite extends Suite { thisSuite =>
                 if (ignoreTest)
                   report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
                 else
-                  runTest(tn, report, stopRequested, goodies, tracker)
+                  runTest(tn, report, stopRequested, config, tracker)
           }
         }
     }
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     val stopRequested = stopper
 
@@ -995,7 +995,7 @@ trait FunSuite extends Suite { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, filter, goodies, distributor, tracker)
+      super.run(testName, report, stopRequested, filter, config, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)

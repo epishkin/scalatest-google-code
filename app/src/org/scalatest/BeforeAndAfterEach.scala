@@ -117,13 +117,13 @@ trait BeforeAndAfterEach extends RunMethods {
    * exception, this method will complete abruptly with the exception thrown by <code>afterEach</code>.
    * </p>
   */
-  abstract override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
+  abstract override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
 
     var thrownException: Option[Throwable] = None
 
     beforeEach()
     try {
-      super.runTest(testName, reporter, stopper, goodies, tracker)
+      super.runTest(testName, reporter, stopper, config, tracker)
     }
     catch {
       case e: Exception => thrownException = Some(e)

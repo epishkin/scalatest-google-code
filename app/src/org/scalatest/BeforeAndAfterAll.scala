@@ -19,17 +19,18 @@ package org.scalatest
  * Trait that can be mixed into suites that need methods invoked before and after executing the
  * suite. This trait allows code to be executed before and/or after all the tests and nested suites of a
  * suite are run. This trait overrides <code>run</code> (the main <code>run</code> method that
- * takes five parameters, a test name, reporter, stopper, goodies, and tracker) and calls the
+ * takes seven parameters, an optional test name, reporter, stopper, filter, config, optional distributor,
+ * and tracker) and calls the
  * <code>beforeAll</code> method, then calls <code>super.run</code>. After the <code>super.run</code>
  * invocation completes, whether it returns normally or completes abruptly with an exception,
  * this trait's <code>run</code> method will invoke <code>afterAll</code>.
  *
  * <p>
  * Trait <code>BeforeAndAfterEach</code> defines two overloaded variants  each of <code>beforeAll</code>
- * and <code>afterAll</code>, one which takes a <code>goodies</code> map and another that takes no
- * arguments. This traits implemention of the variant that takes the <code>goodies</code> map
+ * and <code>afterAll</code>, one which takes a <code>config</code> map and another that takes no
+ * arguments. This traits implemention of the variant that takes the <code>config</code> map
  * simply invokes the variant that takes no parameters, which does nothing. Thus you can override
- * whichever variant you want. If you need something from the <code>goodies</code> map before
+ * whichever variant you want. If you need something from the <code>config</code> map before
  * all tests and nested suites are run, override <code>beforeAll(Map[String, Any])</code>. Otherwise,
  * override <code>beforeAll()</code>.
  * </p>
@@ -37,11 +38,11 @@ package org.scalatest
  * <p>
  * For example, the following <code>MasterSuite</code> mixes in <code>BeforeAndAfterAll</code> and
  * in <code>beforeAll</code>, creates and writes to a temp file, taking the name of the temp file
- * from the <code>goodies</code> map. This same goodies map is then passed to the <code>run</code>
+ * from the <code>config</code> map. This same config map is then passed to the <code>run</code>
  * methods of the nested suites, <code>OneSuite</code>, <code>TwoSuite</code>, <code>RedSuite</code>,
  * and <code>BlueSuite</code>, so those suites can access the filename and, therefore, the file's
  * contents. After all of the nested suites have executed, <code>afterAll</code> is invoked, which
- * again grabs the file name from the <code>goodies</code> map and deletes the file:
+ * again grabs the file name from the <code>config</code> map and deletes the file:
  * </p>
  * 
  * <pre>
@@ -56,15 +57,15 @@ package org.scalatest
  *   private val FileNameKeyInGoodies = "tempFileName"
  *
  *   // Set up the temp file needed by the test, taking
- *   // a file name from the goodies map
- *   override def beforeAll(goodies: Map[String, Any]) {
+ *   // a file name from the config map
+ *   override def beforeAll(config: Map[String, Any]) {
  *
  *     require(
- *       goodies.isDefinedAt(FileNameKeyInGoodies),
- *       "must place a temp file name in the goodies map under the key: " + FileNameKeyInGoodies
+ *       config.isDefinedAt(FileNameKeyInGoodies),
+ *       "must place a temp file name in the config map under the key: " + FileNameKeyInGoodies
  *     )
  *
- *     val fileName = goodies(tempFileName))
+ *     val fileName = config(tempFileName))
  *
  *     val writer = new FileWriter(fileName)
  *     try {
@@ -79,10 +80,10 @@ package org.scalatest
  *     List(new OneSuite, new TwoSuite, new RedSuite, new BlueSuite)
  * 
  *   // Delete the temp file
- *   override def afterAll(goodies: Map[String, Any]) {
- *     // No need to require that goodies contains the key again because it won't get
+ *   override def afterAll(config: Map[String, Any]) {
+ *     // No need to require that config contains the key again because it won't get
  *     // here if it didn't contain the key in beforeAll 
- *     val fileName = goodies(tempFileName))
+ *     val fileName = config(tempFileName))
  *     val file = new File(fileName)
  *     file.delete()
  *   }
@@ -163,12 +164,12 @@ trait BeforeAndAfterAll  extends RunMethods {
    * </p>
   */
   abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-                       goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+                       config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     var thrownException: Option[Throwable] = None
 
     beforeAll()
     try {
-      super.run(testName, reporter, stopper, filter, goodies, distributor, tracker)
+      super.run(testName, reporter, stopper, filter, config, distributor, tracker)
     }
     catch {
       case e: Exception => thrownException = Some(e)

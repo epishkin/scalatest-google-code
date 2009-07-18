@@ -908,7 +908,7 @@ trait FlatSpec extends Suite { thisSuite =>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, goodies: Map[String, Any], tracker: Tracker) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, config: Map[String, Any], tracker: Tracker) {
 
     val stopRequested = stopper
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
@@ -954,7 +954,7 @@ trait FlatSpec extends Suite { thisSuite =>
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
-                runTest(tn, report, stopRequested, goodies, tracker)
+                runTest(tn, report, stopRequested, config, tracker)
           }
         case InfoLeaf(_, message) =>
           val infoProvidedIcon = Resources("infoProvidedIconChar")
@@ -962,7 +962,7 @@ trait FlatSpec extends Suite { thisSuite =>
           report(InfoProvided(tracker.nextOrdinal(), message,
             Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)),
               None, Some(IndentedText(formattedText, message, 1))))
-        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, goodies, tracker)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, config, tracker)
       }
     )
   }
@@ -976,13 +976,13 @@ trait FlatSpec extends Suite { thisSuite =>
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param goodies a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>goodies</code>
+   * @param config a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>config</code>
    *     is <code>null</code>.
    */
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, goodies: Map[String, Any], tracker: Tracker) {
+  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || goodies == null)
+    if (testName == null || reporter == null || stopper == null || config == null)
       throw new NullPointerException
 
     atomic.get.testsList.find(_.testName == testName) match {
@@ -1099,7 +1099,7 @@ trait FlatSpec extends Suite { thisSuite =>
    *   to this method</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>config</code> - the <code>config</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * <p>
@@ -1128,7 +1128,7 @@ trait FlatSpec extends Suite { thisSuite =>
    * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>goodies</code> - the <code>goodies</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>config</code> - the <code>config</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
@@ -1137,12 +1137,12 @@ trait FlatSpec extends Suite { thisSuite =>
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Spec</code>
    * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Spec</code>
-   * @param goodies a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
+   * @param config a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
-   *     <code>tagsToExclude</code>, or <code>goodies</code> is <code>null</code>.
+   *     <code>tagsToExclude</code>, or <code>config</code> is <code>null</code>.
    */
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1152,8 +1152,8 @@ trait FlatSpec extends Suite { thisSuite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (goodies == null)
-      throw new NullPointerException("goodies was null")
+    if (config == null)
+      throw new NullPointerException("config was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
@@ -1162,8 +1162,8 @@ trait FlatSpec extends Suite { thisSuite =>
     val stopRequested = stopper
 
     testName match {
-      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, goodies, tracker)
-      case Some(tn) => runTest(tn, reporter, stopRequested, goodies, tracker)
+      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, config, tracker)
+      case Some(tn) => runTest(tn, reporter, stopRequested, config, tracker)
     }
   }
 
@@ -1204,7 +1204,7 @@ trait FlatSpec extends Suite { thisSuite =>
   override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     val stopRequested = stopper
 
@@ -1229,7 +1229,7 @@ trait FlatSpec extends Suite { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, filter, goodies, distributor, tracker)
+      super.run(testName, report, stopRequested, filter, config, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
