@@ -57,6 +57,50 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
     }
 
+    it("should throw NotAllowedException if a duplicate scenario name registration is attempted") {
+
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          scenario("test this") { fixture =>
+          }
+          scenario("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          scenario("test this") { fixture =>
+          }
+          ignore("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("test this") { fixture =>
+          }
+          ignore("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("test this") { fixture =>
+          }
+          scenario("test this") { fixture =>
+          }
+        }
+      }
+    }
+
     it("should pass in the fixture to every test method") {
       val a = new FeatureSpec with SimpleWithFixture {
         type Fixture = String

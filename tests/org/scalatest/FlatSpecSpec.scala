@@ -87,7 +87,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       intercept[DuplicateTestNameException] {
         new FlatSpec {
           ignore should "test this" in {}
-          ignore should "test this" in {}
+          it should "test this" ignore {}
         }
       }
       intercept[DuplicateTestNameException] {

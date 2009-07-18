@@ -62,6 +62,42 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
     }
 
+    it("should throw DuplicateTestNameException if a duplicate test name registration is attempted") {
+
+      intercept[DuplicateTestNameException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "should test this" in { fixture => }
+          "should test this" in { fixture => }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "should test this" in { fixture => }
+          "should test this" ignore { fixture => }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "should test this" ignore { fixture => }
+          "should test this" ignore { fixture => }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "should test this" ignore { fixture => }
+          "should test this" in { fixture => }
+        }
+      }
+    }
+
     it("should pass in the fixture to every test method") {
       val a = new WordSpec with SimpleWithFixture {
         type Fixture = String

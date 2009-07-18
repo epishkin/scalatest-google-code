@@ -15,9 +15,21 @@
  */
 package org.scalatest
 
+import collection.immutable.TreeSet
 import org.scalatest.events._
 
-class SuiteSpec extends Spec with SharedHelpers {
+class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
+
+  describe("The simpleNameForTest method") {
+    it("should return the correct test simple name with or without Informer") {
+      val simpleNameForTest = PrivateMethod[String]('simpleNameForTest)
+      assert((Suite invokePrivate simpleNameForTest("testThis")) === "testThis")
+      assert((Suite invokePrivate simpleNameForTest("testThis(Informer)")) === "testThis")
+      assert((Suite invokePrivate simpleNameForTest("test(Informer)")) === "test")
+      assert((Suite invokePrivate simpleNameForTest("test")) === "test")
+    }
+  }
+
   describe("A Suite") {
     it("should return the test names in alphabetical order from testNames") {
       val a = new Suite {
@@ -43,6 +55,18 @@ class SuiteSpec extends Spec with SharedHelpers {
       expect(List("testThat", "testThis")) {
         c.testNames.elements.toList
       }
+    }
+    
+    it("should return the proper testNames for test methods whether or not they take an Informer") {
+
+      val a = new Suite {
+        def testThis() = ()
+        def testThat(info: Informer) = ()
+      }
+      assert(a.testNames === TreeSet("testThat(Informer)", "testThis"))
+
+      val b = new Suite {}
+      assert(b.testNames === TreeSet[String]())
     }
   }
 }

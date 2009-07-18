@@ -18,7 +18,64 @@ package org.scalatest
 import org.scalatest.events.TestStarting
 
 class FeatureSpecSpec extends Spec with SharedHelpers {
+
   describe("A FeatureSpec") {
+
+    it("should return the scenario names in registration order from testNames") {
+
+      val a = new FeatureSpec {
+        scenario("test this") {}
+        scenario("test that") {}
+      }
+
+      expect(List("test this", "test that")) {
+        a.testNames.elements.toList
+      }
+
+      val b = new FeatureSpec {}
+
+      expect(List[String]()) {
+        b.testNames.elements.toList
+      }
+
+      val c = new FeatureSpec {
+        scenario("test that") {}
+        scenario("test this") {}
+      }
+
+      expect(List("test that", "test this")) {
+        c.testNames.elements.toList
+      }
+    }
+
+    it("should throw NotAllowedException if a duplicate scenario name registration is attempted") {
+
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec {
+          scenario("test this") {}
+          scenario("test this") {}
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec {
+          scenario("test this") {}
+          ignore("test this") {}
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec {
+          ignore("test this") {}
+          ignore("test this") {}
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FeatureSpec {
+          ignore("test this") {}
+          scenario("test this") {}
+        }
+      }
+    }
+
     it("should run tests registered via the scenariosFor syntax") {
       trait SharedFeatureSpecTests { this: FeatureSpec =>
         def nonEmptyStack(s: String)(i: Int) {

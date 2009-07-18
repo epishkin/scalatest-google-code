@@ -58,6 +58,50 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       }
     }
 
+    it("should throw NotAllowedException if a duplicate test name registration is attempted") {
+
+      intercept[DuplicateTestNameException] {
+        new Spec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it("test this") { fixture =>
+          }
+          it("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new Spec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it("test this") { fixture =>
+          }
+          ignore("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new Spec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("test this") { fixture =>
+          }
+          ignore("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new Spec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("test this") { fixture =>
+          }
+          it("test this") { fixture =>
+          }
+        }
+      }
+    }
+
     it("should pass in the fixture to every test method") {
       val a = new Spec with SimpleWithFixture {
         type Fixture = String

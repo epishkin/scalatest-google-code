@@ -57,6 +57,50 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
     }
 
+    it("should throw NotAllowedException if a duplicate test name registration is attempted") {
+
+      intercept[DuplicateTestNameException] {
+        new FunSuite with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          test("test this") { fixture =>
+          }
+          test("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FunSuite with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          test("test this") { fixture =>
+          }
+          ignore("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FunSuite with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("test this") { fixture =>
+          }
+          ignore("test this") { fixture =>
+          }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FunSuite with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("test this") { fixture =>
+          }
+          test("test this") { fixture =>
+          }
+        }
+      }
+    }
+
     it("should pass in the fixture to every test method") {
       val a = new FunSuite with SimpleWithFixture {
         type Fixture = String
