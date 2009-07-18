@@ -20,7 +20,7 @@ import events.TestFailed
 class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("A fixture.FunSuite") {
-    it("should return the test names in alphabetical order from testNames") {
+    it("should return the test names in order of registration from testNames") {
       val a = new FunSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}

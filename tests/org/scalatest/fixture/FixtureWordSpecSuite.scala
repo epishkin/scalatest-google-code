@@ -19,7 +19,7 @@ import events.TestFailed
 
 class FixtureWordSpecSuite extends org.scalatest.FunSuite with PrivateMethodTester with SharedHelpers {
 
-  test("A fixture.Spec should return the test names in alphabetical order from testNames") {
+  test("A fixture.Spec should return the test names in order of registration from testNames") {
     val a = new WordSpec with SimpleWithFixture {
       type Fixture = String
       def withFixture(fun: String => Unit) {}

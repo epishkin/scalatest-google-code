@@ -3,9 +3,6 @@ it will only work on ones that throw an exception for sure, like (pending). So t
 Or, maybe better, just say "is pending", and have that syntax throw an exception. So maybe that pending... No, I don't
 think so, because we want pending to mean what it means. so is (pending).
 
-Ah, in FlatSpec and WordSpec, changing in or is to ignore is how you ignore a test. In FlatSpec, that initial it cannot be
-changed to ignore. That solves the problem of ignoring a Subject should predicate in {} form. Just change the in to ignore.
-
 pass goodies down into before and after methods 30 min.
 
 add description to FeatureSpec 45 min.
