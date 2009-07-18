@@ -619,7 +619,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
     class SuiteThatAborts extends Suite {
       override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-              goodies: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+              config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
         throw new RuntimeException("Aborting for testing purposes")
       }
     }
