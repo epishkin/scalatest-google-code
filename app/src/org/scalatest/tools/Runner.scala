@@ -600,7 +600,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-s") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-s") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
         if (it.hasNext)
           it.next
       }
@@ -1105,7 +1105,7 @@ object Runner {
 
         case HtmlReporterConfiguration(configSet, fileName) =>
           if (configSetMinusNonFilterParams(configSet).isEmpty)
-            new FileReporter( // TODO: Change this to HTML reporter
+            new HtmlReporter(
               fileName,
               configSet.contains(PresentAllDurations),
               !configSet.contains(PresentWithoutColor),
@@ -1113,7 +1113,7 @@ object Runner {
             )
           else
             new FilterReporter(
-              new FileReporter(
+              new HtmlReporter(
                 fileName,
                 configSet.contains(PresentAllDurations),
                 !configSet.contains(PresentWithoutColor),
