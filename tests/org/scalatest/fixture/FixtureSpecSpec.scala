@@ -167,5 +167,65 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
         }
       }
     }
+    it("should return a correct tags map from the tags method") {
+
+      val a = new Spec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        ignore("test this") { fixture => }
+        it("test that") { fixture => }
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new Spec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it("test this") { fixture => }
+        ignore("test that") { fixture => }
+      }
+      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new Spec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        ignore("test this") { fixture => }
+        ignore("test that") { fixture => }
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new Spec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it("test this", mytags.SlowAsMolasses) { fixture => }
+        ignore("test that", mytags.SlowAsMolasses) { fixture => }
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new Spec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+      }
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new Spec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) { fixture => }
+        it("test that", mytags.SlowAsMolasses) { fixture => }
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+    }
   }
 }
