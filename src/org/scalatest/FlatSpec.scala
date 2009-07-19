@@ -768,7 +768,7 @@ trait FlatSpec extends Suite { thisSuite =>
   protected val it = new ItWord
 
   protected class FlatSpecSubjectVerbStringTaggedAs(verbAndname: String, tags: List[Tag])
-      extends SubjectVerbStringTaggedAs {
+      extends SubjectVerbStringTaggedAs[Any] {
 
     // "A Stack" should "bla bla" taggedAs(SlowTest) in {
     //                                               ^
@@ -780,6 +780,18 @@ trait FlatSpec extends Suite { thisSuite =>
     //                                               ^
     def ignore(testFun: => Unit) {
       registerTestToIgnore(verbAndname, tags, testFun _)
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in { fixture =>
+    //                                               ^
+    def in(testFun: Any => Unit) {
+      throw new RuntimeException() // TODO: add a message and tests
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { fixture =>
+    //                                               ^
+    def ignore(testFun: Any => Unit) {
+      throw new RuntimeException() // TODO: add a message and tests
     }
   }
 
@@ -824,6 +836,9 @@ trait FlatSpec extends Suite { thisSuite =>
           registerTestToIgnore(verb + " " + right, List(), testFun _)
         }
         def in(testFun: Any => Unit) { // TODO pass some message
+          throw new RuntimeException
+        }
+        def ignore(testFun: Any => Unit) { // TODO pass some message
           throw new RuntimeException
         }
         def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
