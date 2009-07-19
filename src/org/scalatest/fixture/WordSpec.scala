@@ -835,6 +835,11 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
     def in(testFun: Fixture => Unit) {
       registerTestToRun(specText, tags, testFun)
     }
+    // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                             ^
+    def is(testFun: => Nothing) {
+      registerTestToRun(specText, tags, unusedFixture => testFun)
+    }
     // "hi" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
     def ignore(testFun: Fixture => Unit) {
       registerTestToIgnore(specText, tags, testFun)
@@ -848,11 +853,16 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
   }
 
   protected class FixtureWordSpecStringWrapper(string: String) {
-    def in(f: Fixture => Unit) {
-      registerTestToRun(string, List(), f)
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(string, List(), testFun)
     }
-    def ignore(f: Fixture => Unit) {
-      registerTestToIgnore(string, List(), f)
+    // "test that" is (pending)
+    //             ^
+    def is(testFun: => Nothing) {
+      registerTestToRun(string, List(), unusedFixtre => testFun)
+    }
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(string, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
