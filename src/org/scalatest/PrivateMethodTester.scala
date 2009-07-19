@@ -15,8 +15,8 @@
  */
 package org.scalatest
 
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
+
+import java.lang.reflect.{InvocationTargetException, Method, Modifier}
 
 /**
  * Trait that facilitates the testing of private methods.
@@ -221,7 +221,14 @@ trait PrivateMethodTester {
           }
         val privateMethodToInvoke = methodArray(0)
         privateMethodToInvoke.setAccessible(true)
-        privateMethodToInvoke.invoke(target, anyRefArgs.toArray: _*).asInstanceOf[T]
+        try {
+          privateMethodToInvoke.invoke(target, anyRefArgs.toArray: _*).asInstanceOf[T]
+        }
+        catch {
+          case e: InvocationTargetException =>
+            val cause = e.getCause
+            if (cause != null) throw cause else throw e
+        }
       }
     }
   }

@@ -26,14 +26,19 @@ private[tools] case class GraphicReporterConfiguration(configSet: Set[ReporterCo
 private[tools] case class StandardOutReporterConfiguration(configSet: Set[ReporterConfigParam]) extends ReporterConfiguration
 private[tools] case class StandardErrReporterConfiguration(configSet: Set[ReporterConfigParam]) extends ReporterConfiguration
 private[tools] case class FileReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
+private[tools] case class HtmlReporterConfiguration(configSet: Set[ReporterConfigParam], fileName: String) extends ReporterConfiguration
 private[tools] case class CustomReporterConfiguration(configSet: Set[ReporterConfigParam], reporterClass: String) extends ReporterConfiguration
 
 // If there were no fileReporterSpecList or customReporterSpecList specified, you get Nil
 // If there were no graphicReporterSpec, standardOutReporterSpec, or standardErrReporterSpec, you get None
-private[tools] case class ReporterConfigurations(val graphicReporterConfiguration: Option[GraphicReporterConfiguration],
-    val fileReporterConfigurationList: List[FileReporterConfiguration], val standardOutReporterConfiguration: Option[StandardOutReporterConfiguration],
-    val standardErrReporterConfiguration: Option[StandardErrReporterConfiguration], val customReporterConfigurationList: List[CustomReporterConfiguration])
-    extends Seq[ReporterConfiguration] {
+private[tools] case class ReporterConfigurations(
+  val graphicReporterConfiguration: Option[GraphicReporterConfiguration],
+  val fileReporterConfigurationList: List[FileReporterConfiguration],
+  val standardOutReporterConfiguration: Option[StandardOutReporterConfiguration],
+  val standardErrReporterConfiguration: Option[StandardErrReporterConfiguration],
+  val htmlReporterConfigurationList: List[HtmlReporterConfiguration],
+  val customReporterConfigurationList: List[CustomReporterConfiguration]
+) extends Seq[ReporterConfiguration] {
 
   val reporterConfigurationList =
     List.concat[ReporterConfiguration](
@@ -41,6 +46,7 @@ private[tools] case class ReporterConfigurations(val graphicReporterConfiguratio
       fileReporterConfigurationList,
       standardOutReporterConfiguration.toList,
       standardErrReporterConfiguration.toList,
+      htmlReporterConfigurationList,
       customReporterConfigurationList
     )
 

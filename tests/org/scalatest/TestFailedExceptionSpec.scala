@@ -203,6 +203,19 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       }
     }
 
+    it("should return the cause in both cause and getCause") {
+      val theCause = new IllegalArgumentException("howdy")
+      val tfe = new TestFailedException(Some("doody"), Some(theCause), 3)
+      assert(tfe.cause.isDefined)
+      assert(tfe.cause.get === theCause)
+      assert(tfe.getCause == theCause)
+    }
+
+    it("should return None in cause and null in getCause if no cause") {
+      val tfe = new TestFailedException(Some("doody"), None, 3)
+      assert(tfe.cause.isEmpty)
+      assert(tfe.getCause == null)
+    }
     //it("bla bla bla") {
       // fail("message")
       // fail(new Throwable)
