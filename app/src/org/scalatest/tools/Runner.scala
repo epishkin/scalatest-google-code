@@ -511,7 +511,7 @@ object Runner {
     val fullReporterConfigurations: ReporterConfigurations =
       if (reporterArgsList.isEmpty)
         // If no reporters specified, just give them a graphic reporter
-        new ReporterConfigurations(Some(GraphicReporterConfiguration(Set())), Nil, None, None, Nil)
+        new ReporterConfigurations(Some(GraphicReporterConfiguration(Set())), Nil, None, None, Nil, Nil)
       else
         parseReporterArgsIntoConfigurations(reporterArgsList)
 
@@ -540,6 +540,7 @@ object Runner {
             fullReporterConfigurations.fileReporterConfigurationList,
             fullReporterConfigurations.standardOutReporterConfiguration,
             fullReporterConfigurations.standardErrReporterConfiguration,
+            fullReporterConfigurations.htmlReporterConfigurationList,
             fullReporterConfigurations.customReporterConfigurationList
           )
         }
@@ -650,6 +651,11 @@ object Runner {
         reporters += s
       }
       else if (s.startsWith("-f")) {
+        reporters += s
+        if (it.hasNext)
+          reporters += it.next
+      }
+      else if (s.startsWith("-h")) {
         reporters += s
         if (it.hasNext)
           reporters += it.next
@@ -765,7 +771,7 @@ object Runner {
         case 'W' => set += PresentWithoutColor
         case 'F' => set += PresentTestFailedExceptionStackTraces
         case 'D' => set += PresentAllDurations
-        case c: Char => {
+        case c: Char => { 
 
           // this should be moved to the checker, and just throw an exception here with a debug message. Or allow a MatchError.
           val msg1 = Resources("invalidConfigOption", String.valueOf(c)) + '\n'
@@ -796,23 +802,29 @@ object Runner {
     // TODO: also check and print a user friendly message for this
     // again here, i had to skip some things, so I had to use an iterator.
     val it = args.elements
-    while (it.hasNext) it.next.substring(0, 2) match {
-      case "-g" => 
-      case "-o" => 
-      case "-e" => 
-      case "-f" =>
-        if (it.hasNext)
-          it.next // scroll past the filename
-        else
-          throw new IllegalArgumentException("-f needs to be followed by a file name arg: ")
-      case "-r" =>
-        if (it.hasNext)
-          it.next // scroll past the reporter class
-        else
-          throw new IllegalArgumentException("-r needs to be followed by a reporter class name arg: ")
-      case arg: String =>
-        throw new IllegalArgumentException("An arg started with an invalid character string: " + arg)
-    }
+    while (it.hasNext)
+      it.next.substring(0, 2) match {
+        case "-g" =>
+        case "-o" =>
+        case "-e" =>
+        case "-f" =>
+          if (it.hasNext)
+            it.next // scroll past the filename
+          else
+            throw new IllegalArgumentException("-f needs to be followed by a file name arg: ")
+        case "-h" =>
+          if (it.hasNext)
+            it.next // scroll past the filename
+          else
+            throw new IllegalArgumentException("-h needs to be followed by a file name arg: ")
+        case "-r" =>
+          if (it.hasNext)
+            it.next // scroll past the reporter class
+          else
+            throw new IllegalArgumentException("-r needs to be followed by a reporter class name arg: ")
+        case arg: String =>
+          throw new IllegalArgumentException("An arg started with an invalid character string: " + arg)
+      }
 
     val graphicReporterConfigurationOption =
       args.find(arg => arg.substring(0, 2) == "-g") match {
@@ -841,6 +853,20 @@ object Runner {
       lb.toList
     }
     val fileReporterConfigurationList = buildFileReporterConfigurationList(args)
+
+    def buildHtmlReporterConfigurationList(args: List[String]) = {
+      val it = args.elements
+      val lb = new ListBuffer[HtmlReporterConfiguration]
+      while (it.hasNext) {
+        val arg = it.next
+        arg.substring(0,2) match {
+          case "-h" => lb += new HtmlReporterConfiguration(parseConfigSet(arg), it.next)
+          case _ =>
+        }
+      }
+      lb.toList
+    }
+    val htmlReporterConfigurationList = buildHtmlReporterConfigurationList(args)
 
     val standardOutReporterConfigurationOption =
       args.find(arg => arg.substring(0, 2) == "-o") match {
@@ -884,6 +910,7 @@ object Runner {
       fileReporterConfigurationList,
       standardOutReporterConfigurationOption,
       standardErrReporterConfigurationOption,
+      htmlReporterConfigurationList,
       customReporterConfigurationList
     )
   }
@@ -1075,6 +1102,25 @@ object Runner {
             ),
             configSet
           )
+
+        case HtmlReporterConfiguration(configSet, fileName) =>
+          if (configSetMinusNonFilterParams(configSet).isEmpty)
+            new FileReporter( // TODO: Change this to HTML reporter
+              fileName,
+              configSet.contains(PresentAllDurations),
+              !configSet.contains(PresentWithoutColor),
+              configSet.contains(PresentTestFailedExceptionStackTraces)
+            )
+          else
+            new FilterReporter(
+              new FileReporter(
+                fileName,
+                configSet.contains(PresentAllDurations),
+                !configSet.contains(PresentWithoutColor),
+                configSet.contains(PresentTestFailedExceptionStackTraces)
+              ),
+              configSet
+            )
 
       case CustomReporterConfiguration(configSet, reporterClassName) => {
         val customReporter = getCustomReporter(reporterClassName, loader, "-r... " + reporterClassName)

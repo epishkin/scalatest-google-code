@@ -196,12 +196,13 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
 
   def testParseConfigSet() {
 
-    val parseConfigSet = PrivateMethod[Set[ReporterConfigParam]]('parseCOnfigSet)
+    val parseConfigSet = PrivateMethod[Set[ReporterConfigParam]]('parseConfigSet)
+
     intercept[NullPointerException] {
       Runner invokePrivate parseConfigSet(null)
     }
     intercept[IllegalArgumentException] {
-      Runner invokePrivate parseConfigSet("-fX")
+      Runner invokePrivate parseConfigSet("-fJ")
     }
     intercept[IllegalArgumentException] {
       Runner invokePrivate parseConfigSet("-oYZTFUPBISARG-")
@@ -213,72 +214,63 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Runner invokePrivate parseConfigSet("")
     }
 
-    expect(Set(PresentRunStarting)) {
-      Runner invokePrivate parseConfigSet("-oY")
+    expect(Set(FilterTestStarting)) {
+      Runner invokePrivate parseConfigSet("-oN")
     }
-    expect(Set(PresentTestStarting)) {
-      Runner invokePrivate parseConfigSet("-oZ")
+    expect(Set(FilterTestSucceeded)) {
+      Runner invokePrivate parseConfigSet("-oC")
     }
-    expect(Set(PresentTestSucceeded)) {
-      Runner invokePrivate parseConfigSet("-oT")
+    expect(Set(FilterTestIgnored)) {
+      Runner invokePrivate parseConfigSet("-oX")
     }
-    expect(Set(PresentTestFailed)) {
+    expect(Set(FilterTestPending)) {
+      Runner invokePrivate parseConfigSet("-oE")
+    }
+    expect(Set(FilterSuiteStarting)) {
+      Runner invokePrivate parseConfigSet("-oH")
+    }
+    expect(Set(FilterSuiteCompleted)) {
+      Runner invokePrivate parseConfigSet("-oL")
+    }
+    expect(Set(FilterInfoProvided)) {
+      Runner invokePrivate parseConfigSet("-oO")
+    }
+    expect(Set(PresentWithoutColor)) {
+      Runner invokePrivate parseConfigSet("-oW")
+    }
+    expect(Set(PresentAllDurations)) {
+      Runner invokePrivate parseConfigSet("-oD")
+    }
+    expect(Set(PresentTestFailedExceptionStackTraces)) {
       Runner invokePrivate parseConfigSet("-oF")
     }
-    expect(Set(PresentSuiteStarting)) {
-      Runner invokePrivate parseConfigSet("-oU")
-    }
-    expect(Set(PresentSuiteCompleted)) {
-      Runner invokePrivate parseConfigSet("-oP")
-    }
-    expect(Set(PresentSuiteAborted)) {
-      Runner invokePrivate parseConfigSet("-oB")
-    }
-    expect(Set(PresentInfoProvided)) {
-      Runner invokePrivate parseConfigSet("-oI")
-    }
-    expect(Set(PresentRunStopped)) {
-      Runner invokePrivate parseConfigSet("-oS")
-    }
-    expect(Set(PresentRunAborted)) {
-      Runner invokePrivate parseConfigSet("-oA")
-    }
-    expect(Set(PresentRunCompleted)) {
-      Runner invokePrivate parseConfigSet("-oR")
-    }
-    expect(Set(PresentTestIgnored)) {
-      Runner invokePrivate parseConfigSet("-oG")
-    }
-    expect(Set[EventToPresent]()) {
+    expect(Set[ReporterConfigParam]()) {
       Runner invokePrivate parseConfigSet("-f")
     }
 
-    expect(Set(PresentRunStarting, PresentTestStarting)) {
-      Runner invokePrivate parseConfigSet("-oZY")
+    expect(Set(FilterInfoProvided, PresentWithoutColor)) {
+      Runner invokePrivate parseConfigSet("-oOW")
     }
-    expect(Set(PresentRunStarting, PresentTestStarting)) {
-      Runner invokePrivate parseConfigSet("-oYZ") // Just reverse the order of the params
+    expect(Set(FilterInfoProvided, PresentWithoutColor)) {
+      Runner invokePrivate parseConfigSet("-oWO") // Just reverse the order of the params
     }
     val allOpts = Set(
-      PresentRunStarting,
-      PresentTestStarting,
-      PresentTestSucceeded,
-      PresentTestFailed,
-      PresentSuiteStarting,
-      PresentSuiteCompleted,
-      PresentSuiteAborted,
-      PresentInfoProvided,
-      PresentRunStopped,
-      PresentRunAborted,
-      PresentRunCompleted,
-      PresentTestIgnored,
-      PresentTestPending
+      FilterInfoProvided,
+      FilterSuiteCompleted,
+      FilterSuiteStarting,
+      FilterTestIgnored,
+      FilterTestPending,
+      FilterTestStarting,
+      FilterTestSucceeded,
+      PresentAllDurations,
+      PresentWithoutColor,
+      PresentTestFailedExceptionStackTraces
     )
     expect(allOpts) {
-      Runner invokePrivate parseConfigSet("-oYZTFUPBISARG")
+      Runner invokePrivate parseConfigSet("-oNCXEHLOWDF")
     }
   }
-
+                                         
   def testParseReporterArgsIntoSpecs() {
     intercept[NullPointerException] {
       Runner.parseReporterArgsIntoConfigurations(null)
@@ -313,37 +305,37 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoConfigurations(List("-r")) // Can't have -r last, because need a reporter class
     }
-    expect(new ReporterConfigurations(None, Nil, None, None, Nil)) {
+    expect(new ReporterConfigurations(None, Nil, None, None, Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(Nil)
     }
-    expect(new ReporterConfigurations(Some(new GraphicReporterConfiguration(Set())), Nil, None, None, Nil)) {
+    expect(new ReporterConfigurations(Some(new GraphicReporterConfiguration(Set())), Nil, None, None, Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-g"))
     }
-    expect(new ReporterConfigurations(Some(new GraphicReporterConfiguration(Set(FilterSuiteCompleted))), Nil, None, None, Nil)) {
+    expect(new ReporterConfigurations(Some(new GraphicReporterConfiguration(Set(FilterSuiteCompleted))), Nil, None, None, Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-gL"))
     }
-    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(Set())), None, Nil)) {
+    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(Set())), None, Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-o"))
     }
-    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(Set(PresentWithoutColor,FilterTestIgnored))), None, Nil)) {
+    expect(new ReporterConfigurations(None, Nil, Some(new StandardOutReporterConfiguration(Set(FilterTestSucceeded,FilterTestIgnored))), None, Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-oCX"))
     }
-    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(Set())), Nil)) {
+    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(Set())), Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-e"))
     }
-    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(Set(PresentTestFailedExceptionStackTraces))), Nil)) {
-      Runner.parseReporterArgsIntoConfigurations(List("-eV"))
+    expect(new ReporterConfigurations(None, Nil, None, Some(new StandardErrReporterConfiguration(Set(PresentTestFailedExceptionStackTraces))), Nil, Nil)) {
+      Runner.parseReporterArgsIntoConfigurations(List("-eF"))
     }
-    expect(new ReporterConfigurations(None, List(new FileReporterConfiguration(Set(), "theFilename")), None, None, Nil)) {
+    expect(new ReporterConfigurations(None, List(new FileReporterConfiguration(Set(), "theFilename")), None, None, Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-f", "theFilename"))
     }
-    expect(new ReporterConfigurations(None, List(new FileReporterConfiguration(Set(FilterTestStarting), "theFilename")), None, None, Nil)) {
+    expect(new ReporterConfigurations(None, List(new FileReporterConfiguration(Set(FilterTestStarting), "theFilename")), None, None, Nil, Nil)) {
       Runner.parseReporterArgsIntoConfigurations(List("-fN", "theFilename"))
     }
-    expect(new ReporterConfigurations(None, Nil, None, None, List(new CustomReporterConfiguration(Set(), "the.reporter.Class")))) {
+    expect(new ReporterConfigurations(None, Nil, None, None, Nil, List(new CustomReporterConfiguration(Set(), "the.reporter.Class")))) {
       Runner.parseReporterArgsIntoConfigurations(List("-r", "the.reporter.Class"))
     }
-    expect(new ReporterConfigurations(None, Nil, None, None, List(new CustomReporterConfiguration(Set(FilterTestPending), "the.reporter.Class")))) {
+    expect(new ReporterConfigurations(None, Nil, None, None, Nil, List(new CustomReporterConfiguration(Set(FilterTestPending), "the.reporter.Class")))) {
       Runner.parseReporterArgsIntoConfigurations(List("-rE", "the.reporter.Class"))
     }
   }

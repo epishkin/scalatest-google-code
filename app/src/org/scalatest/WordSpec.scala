@@ -25,18 +25,19 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
- * are combined with text that specifies the behavior the tests verify.
- * Here's an example <code>Spec</code>:
+ * are combined with text that specifies the behavior the tests verify. <code>WordSpec</code> is so named because
+ * you specification text is structured by placing words after strings.
+ * Here's an example <code>WordSpec</code>:
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.WordSpec
  * import scala.collection.mutable.Stack
  *
- * class StackSpec extends Spec {
+ * class StackSpec extends WordSpec {
  *
- *   describe("A Stack") {
+ *   "A Stack" should {
  *
- *     it("should pop values in last-in-first-out order") {
+ *     "pop values in last-in-first-out order" in {
  *       val stack = new Stack[Int]
  *       stack.push(1)
  *       stack.push(2)
@@ -44,7 +45,7 @@ import org.scalatest.events._
  *       assert(stack.pop() === 1)
  *     }
  *
- *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *     "throw NoSuchElementException if an empty stack is popped" in {
  *       val emptyStack = new Stack[String]
  *       intercept[NoSuchElementException] {
  *         emptyStack.pop()
@@ -55,7 +56,12 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * A <code>Spec</code> contains <em>describers</em> and <em>examples</em>. You define a describer
+ * <em>Note: Trait <code>WordSpec</code> has some overlap with class <code>org.specs.Specification</code>, which designed by
+ * Eric Torreborre. There are several differences however, which will be described in a later section.</em>
+ * </p>
+ *
+ * <p>
+ * A <code>WordSpec</code> structures the specification text.  contains <em>describers</em> and <em>examples</em>. You define a describer
  * with <code>describe</code>, and a example with <code>it</code>. Both
  * <code>describe</code> and <code>it</code> are methods, defined in
  * <code>Spec</code>, which will be invoked

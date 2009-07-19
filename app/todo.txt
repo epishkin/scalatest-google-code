@@ -1,3 +1,8 @@
+In RunnerSuite, 'parseConfigSet was 'parseCOnfigSet, and it was passing, which tells me if invokePrivate
+doesn't find the requested method name maybe it isn't failing. It needs to fail.
+
+Also show the whole stack trace if there's a nested exception.
+
 pass the config map down into before and after methods 30 min.
 
 add description to FeatureSpec 45 min.

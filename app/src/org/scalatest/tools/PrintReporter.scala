@@ -47,7 +47,22 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
   * @param os the <code>OutputStream</code> to which to print reported info
   * @throws NullPointerException if passed <code>os</code> reference is <code>null</code>
   */
-  def this(os: OutputStream, presentAllDurations: Boolean, presentInColor: Boolean, presentTestFailedExceptionStackTraces: Boolean) = this(new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(os, BufferSize))), presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces)
+  def this(
+    os: OutputStream,
+    presentAllDurations: Boolean,
+    presentInColor: Boolean,
+    presentTestFailedExceptionStackTraces: Boolean
+  ) =
+    this(
+      new PrintWriter(
+        new OutputStreamWriter(
+          new BufferedOutputStream(os, BufferSize)
+        )
+      ),
+      presentAllDurations,
+      presentInColor,
+      presentTestFailedExceptionStackTraces
+    )
 
   /**
   * Construct a <code>PrintReporter</code> with passed
@@ -143,19 +158,28 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
     def getStackTrace(throwable: Option[Throwable]): List[String] =
       throwable match {
         case Some(throwable) =>
+
+          def useConciseTestFailedExceptionForm =
+            !presentTestFailedExceptionStackTraces && (
+              throwable match {
+                case tfe: TestFailedException => tfe.cause.isEmpty // If there's a cause inside, show the whole stack trace
+                case _ => false
+              }
+            )
+
           def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
             val className = throwable.getClass.getName 
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val labeledClassNameWithMessage =
               if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
-                if (presentTestFailedExceptionStackTraces || labeledClassName.indexOf("TestFailedException") == -1)
+                if (!useConciseTestFailedExceptionForm)
                   "  " + labeledClassName + ": " + throwable.getMessage.trim
                 else
                   "  " + throwable.getMessage.trim // Don't show "org.scalatest.TestFailedException: " if no stack trace to follow
               else
                 "  " + labeledClassName
 
-            if (presentTestFailedExceptionStackTraces || !throwable.isInstanceOf[TestFailedException]) {
+            if (!useConciseTestFailedExceptionForm) {
               val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
               val cause = throwable.getCause
 
@@ -167,7 +191,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             }
             else List(labeledClassNameWithMessage)
           }
-          if (!throwableIsATestFailedExceptionWithRedundantMessage || presentTestFailedExceptionStackTraces)
+          if (!throwableIsATestFailedExceptionWithRedundantMessage || !useConciseTestFailedExceptionForm)
             stackTrace(throwable, false)
           else List()
         case None => List()
