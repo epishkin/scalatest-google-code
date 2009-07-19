@@ -334,6 +334,9 @@ public class ScalaTestTask extends Task {
             else if (type.equals("file")) {
                 addFileReporter(args, reporter);
             }
+            else if (type.equals("html")) {
+                addHtmlReporter(args, reporter);
+            }
             else if (type.equals("reporterclass")) {
                 addReporterClass(args, reporter);
             }
@@ -374,6 +377,23 @@ public class ScalaTestTask extends Task {
         if (reporter.getFilename() == null) {
             throw new BuildException(
                 "reporter type 'file' requires 'filename' attribute");
+        }
+        args.add(reporter.getFilename());
+    }
+
+    //
+    // Adds '-h' file reporter option to args.  Appends reporter
+    // config string to option if specified.  Adds reporter's
+    // filename as additional argument, e.g. "-hFAB", "filename".
+    //
+    private void addHtmlReporter(ArrayList<String> args,
+                                 ReporterElement   reporter)
+    throws BuildException {
+        addReporterOption(args, reporter, "-h");
+
+        if (reporter.getFilename() == null) {
+            throw new BuildException(
+                "reporter type 'html' requires 'filename' attribute");
         }
         args.add(reporter.getFilename());
     }
