@@ -96,6 +96,58 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
+    
+    it("should return a correct tags map from the tags method") {
+
+      val a = new Suite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        @Ignore
+        def testThis(fixture: Fixture) = ()
+        def testThat(fixture: Fixture, info: Informer) = ()
+      }
+
+      assert(a.tags === Map("testThis(Fixture)" -> Set("org.scalatest.Ignore")))
+
+      val b = new Suite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        def testThis(fixture: Fixture) = ()
+        @Ignore
+        def testThat(fixture: Fixture, info: Informer) = ()
+      }
+
+      assert(b.tags === Map("testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore")))
+
+      val c = new Suite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        @Ignore
+        def testThis(fixture: Fixture) = ()
+        @Ignore
+        def testThat(fixture: Fixture, info: Informer) = ()
+      }
+
+      assert(c.tags === Map("testThis(Fixture)" -> Set("org.scalatest.Ignore"), "testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore")))
+
+      val d = new Suite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        @SlowAsMolasses
+        def testThis(fixture: Fixture) = ()
+        @SlowAsMolasses
+        @Ignore
+        def testThat(fixture: Fixture, info: Informer) = ()
+      }
+
+      assert(d.tags === Map("testThis(Fixture)" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
+
+      val e = new Suite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+      }
+      assert(e.tags === Map())
+    }
   }
   
   describe("A fixture.Suite without SimpleWithFixture") {
