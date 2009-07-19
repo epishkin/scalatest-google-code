@@ -95,5 +95,42 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
       assert(testStartingOption.isDefined)
       assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "I am shared")
     }
+
+    it("should throw NullPointerException if a null test tag is provided") {
+      // scenario
+      intercept[NullPointerException] {
+        new FeatureSpec {
+          scenario("hi", null) {}
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new FeatureSpec {
+          scenario("hi", mytags.SlowAsMolasses, null) {}
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FeatureSpec {
+          scenario("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new FeatureSpec {
+          ignore("hi", null) {}
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new FeatureSpec {
+          ignore("hi", mytags.SlowAsMolasses, null) {}
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FeatureSpec {
+          ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
+        }
+      }
+    }
   }
 }

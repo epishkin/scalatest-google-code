@@ -224,6 +224,42 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         g.tags
       }
     }
+    it("should throw NullPointerException if a null test tag is provided") {
+      // it
+      intercept[NullPointerException] {
+        new WordSpec {
+          "hi" taggedAs(null) in {}
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new WordSpec {
+          "hi" taggedAs(mytags.SlowAsMolasses, null) in {}
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new WordSpec {
+          "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in {}
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new WordSpec {
+          "hi" taggedAs(null) ignore {}
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new WordSpec {
+          "hi" taggedAs(mytags.SlowAsMolasses, null) ignore {}
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new WordSpec {
+          "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) ignore {}
+        }
+      }
+    }
 
     describe("(when a nesting rule has been violated)") {
 

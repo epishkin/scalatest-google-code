@@ -329,7 +329,6 @@
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
             <suite classname="org.scalatest.TestFailedExceptionSpec" />
-            <membersonly package="org.scalatest.tools" />
 <!--
             <suite classname="org.scalatest.SuiteSpec" />
             <suite classname="org.scalatest.FunSuiteSpec" />

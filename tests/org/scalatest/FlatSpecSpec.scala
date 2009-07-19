@@ -370,6 +370,58 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(testStartingOption.isDefined)
       assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "can I am shared")
     }
+    it("should throw NullPointerException if a null test tag is provided") {
+      // it
+      intercept[NullPointerException] {
+        new FlatSpec {
+          it should "hi" taggedAs(null) in {}
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new FlatSpec {
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null) in {}
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FlatSpec {
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in {}
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new FlatSpec {
+          ignore should "hi" taggedAs(null) in {}
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new FlatSpec {
+          ignore should "hi" taggedAs(mytags.SlowAsMolasses, null) in {}
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FlatSpec {
+          ignore should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in {}
+        }
+      }
+      intercept[NullPointerException] {
+        new FlatSpec {
+          it should "hi" taggedAs(null) ignore {}
+        }
+      }
+      val caught3 = intercept[NullPointerException] {
+        new FlatSpec {
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null) ignore {}
+        }
+      }
+      assert(caught3.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FlatSpec {
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) ignore {}
+        }
+      }
+    }
   }
 }
 

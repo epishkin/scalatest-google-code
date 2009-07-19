@@ -194,6 +194,42 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       assert(testStartingOption.isDefined)
       assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "I am shared")
     }
+    it("should throw NullPointerException if a null test tag is provided") {
+      // test
+      intercept[NullPointerException] {
+        new FunSuite {
+          test("hi", null) {}
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new FunSuite {
+          test("hi", mytags.SlowAsMolasses, null) {}
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FunSuite {
+          test("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new FunSuite {
+          ignore("hi", null) {}
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new FunSuite {
+          ignore("hi", mytags.SlowAsMolasses, null) {}
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FunSuite {
+          ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
+        }
+      }
+    }
   }
 }
 
