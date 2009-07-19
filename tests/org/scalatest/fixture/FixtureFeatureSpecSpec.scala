@@ -119,5 +119,53 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
+    it("should throw NullPointerException if a null test tag is provided") {
+      // scenario
+      intercept[NullPointerException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          scenario("hi", null) { fixture => }
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          scenario("hi", mytags.SlowAsMolasses, null) { fixture => }
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          scenario("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) { fixture => }
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("hi", null) { fixture => }
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("hi", mytags.SlowAsMolasses, null) { fixture => }
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FeatureSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) { fixture => }
+        }
+      }
+    }
   }
 }

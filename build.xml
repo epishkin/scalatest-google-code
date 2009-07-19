@@ -328,8 +328,7 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
-            <suite classname="org.scalatest.TestFailedExceptionSpec" />
-<!--
+
             <suite classname="org.scalatest.SuiteSpec" />
             <suite classname="org.scalatest.FunSuiteSpec" />
             <suite classname="org.scalatest.SpecSpec" />
@@ -344,6 +343,7 @@
             <suite classname="org.scalatest.fixture.FixtureWordSpecSpec" />
             <suite classname="org.scalatest.fixture.FixtureFeatureSpecSpec" />
 
+<!--
             <suite classname="org.scalatest.concurrent.ConductorSuite" />
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
             <suite classname="org.scalatest.FlatSpecSpec" />

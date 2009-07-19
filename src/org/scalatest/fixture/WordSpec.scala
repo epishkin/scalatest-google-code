@@ -830,15 +830,14 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
 
     updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
   }
-      /*
-  protected class StringCanWrapper(string: String) {
-  }
 
-  protected implicit def convertToStringCanWrapper(s: String) = new StringCanWrapper(s)
-    */
   protected class FixtureStringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: Fixture => Unit) {
       registerTestToRun(specText, tags, testFun)
+    }
+    // "hi" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(specText, tags, testFun)
     }
   }
 
