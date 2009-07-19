@@ -21,21 +21,21 @@ import java.io.File
 class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
 
   def transformToClassName(fileName: String, fileSeparator: Char): Option[String] = {
-    val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$SuiteDiscoveryHelper$$transformToClassName",
+    val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$tools$SuiteDiscoveryHelper$$transformToClassName",
       Array(classOf[String], classOf[Char]): _*)
     m.setAccessible(true)
     m.invoke(sdt, Array[Object](fileName, new java.lang.Character(fileSeparator)): _*).asInstanceOf[Option[String]]
   }
 
   def extractClassNames(fileNames: Iterator[String], fileSeparator: Char): Iterator[String] = {
-    val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("extractClassNames",
+    val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper").getDeclaredMethod("extractClassNames",
       Array(classOf[Iterator[String]], classOf[Char]): _*)
     m.setAccessible(true)
     m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator)): _*).asInstanceOf[Iterator[String]]
   }
 
   def isAccessibleSuite(clazz: java.lang.Class[_]): Boolean = {
-    val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("isAccessibleSuite",
+    val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper").getDeclaredMethod("isAccessibleSuite",
       Array(classOf[Class[_]]): _*) // This one works in 2.7
       // Array(classOf[Class])) // This one works in 2.6
     m.setAccessible(true)
@@ -44,14 +44,14 @@ class SuiteDiscoveryHelperFriend(sdt: SuiteDiscoveryHelper) {
 
   def processFileNames(fileNames: Iterator[String], fileSeparator: Char, loader: ClassLoader): Set[String] = {
 
-    val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$SuiteDiscoveryHelper$$processFileNames",
+    val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$tools$SuiteDiscoveryHelper$$processFileNames",
       Array(classOf[Iterator[String]], classOf[Char], classOf[ClassLoader]): _*)
     m.setAccessible(true)
     m.invoke(sdt, Array[Object](fileNames, new java.lang.Character(fileSeparator), loader): _*).asInstanceOf[Set[String]]
   }
 
   def getFileNamesSetFromFile(file: File, fileSeparator: Char): Set[String] = {
-    val m = Class.forName("org.scalatest.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$SuiteDiscoveryHelper$$getFileNamesSetFromFile",
+    val m = Class.forName("org.scalatest.tools.SuiteDiscoveryHelper").getDeclaredMethod("org$scalatest$tools$SuiteDiscoveryHelper$$getFileNamesSetFromFile",
       Array(classOf[File], classOf[Char]): _*)
     m.setAccessible(true)
     m.invoke(sdt, Array[Object](file, new java.lang.Character(fileSeparator)): _*).asInstanceOf[Set[String]]
@@ -79,7 +79,7 @@ class SuiteDiscoveryHelperSuite extends Suite {
   }
 
   def testIsAccessibleSuite() {
-    assert(sdtf.isAccessibleSuite(classOf[SuiteDiscoveryHelperSuite]))
+    assert(sdtf.isAccessibleSuite(classOf[SuiteDiscoveryHelperSuite])) 
     assert(!sdtf.isAccessibleSuite(classOf[PackageAccessSuite]))
     assert(!sdtf.isAccessibleSuite(classOf[PackageAccessConstructorSuite]))
     assert(!sdtf.isAccessibleSuite(classOf[Suite]))

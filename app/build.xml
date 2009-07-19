@@ -328,7 +328,6 @@
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
-            <reporter type="html" filename="forDianne.html" config="WN"/>
             <suite classname="org.scalatest.TestFailedExceptionSpec" />
             <membersonly package="org.scalatest.tools" />
 <!--
