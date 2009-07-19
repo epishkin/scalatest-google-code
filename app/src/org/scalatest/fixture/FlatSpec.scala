@@ -16,7 +16,7 @@
 package org.scalatest.fixture
 
 import FixtureNodeFamily._
-import matchers.{ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord}
+import matchers.{SubjectVerbStringTaggedAs, ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
@@ -783,6 +783,35 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
   protected class FixtureIgnoreWord {
     def should(string: String) = new FixtureIgnoreVerbString("should", string)
     def must(string: String) = new FixtureIgnoreVerbString("must", string)
+    def can(string: String) = new FixtureIgnoreVerbString("can", string)
+  }
+
+  protected class FixtureFlatSpecSubjectVerbStringTaggedAs(verbAndname: String, tags: List[Tag])
+      extends SubjectVerbStringTaggedAs[Fixture] {
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
+    //                                               ^
+    def in(testFun: => Unit) {
+      throw new RuntimeException() // TODO: add a message and tests
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
+    //                                               ^
+    def ignore(testFun: => Unit) {
+      throw new RuntimeException() // TODO: add a message and tests
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
+    //                                               ^
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(verbAndname, tags, testFun)
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
+    //                                               ^
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(verbAndname, tags, testFun)
+    }
   }
 
   protected val ignore = new FixtureIgnoreWord
@@ -800,9 +829,12 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
         def in(testFun: Fixture => Unit) {
           registerTestToRun(verb + " " + right, List(), testFun)
         }
-        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*)(testFun: Fixture => Unit) {
+        def ignore(testFun: Fixture => Unit) {
+          registerTestToIgnore(verb + " " + right, List(), testFun)
+        }
+        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
           val tagList = firstTestTag :: otherTestTags.toList
-          registerTestToRun(verb + " " + right, tagList, testFun)
+          new FixtureFlatSpecSubjectVerbStringTaggedAs(verb + " " + right, tagList)
         }
       }
     }

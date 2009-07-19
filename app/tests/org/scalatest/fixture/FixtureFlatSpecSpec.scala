@@ -15,8 +15,10 @@
  */
 package org.scalatest.fixture
 
-import events.{TestStarting, TestFailed}
-import matchers.ShouldVerb
+import org.scalatest.events.{TestStarting, TestFailed}
+import org.scalatest.matchers.ShouldVerb
+import org.scalatest.matchers.CanVerb
+import org.scalatest.matchers.MustVerb
 
 object SlowTest extends Tag("SlowTest")
 
@@ -206,6 +208,195 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
           def withFixture(fun: String => Unit) {}
           it should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) ignore { fixture => }
         }
+      }
+    }
+    it("should return a correct tags map from the tags method, when using regular (not shorthand)" +
+            " notation and ignore replacing it") {
+
+      val a = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        ignore should "test this" in { fixture => }
+        it should "test that" in { fixture => }
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it can "test this" in { fixture => }
+        ignore can "test that" in { fixture => }
+      }
+      expect(Map("can test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        ignore must "test this" in { fixture => }
+        ignore must "test that" in { fixture => }
+      }
+      expect(Map("must test this" -> Set("org.scalatest.Ignore"), "must test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it must "test this" taggedAs(mytags.SlowAsMolasses) in { fixture => }
+        ignore must "test that" taggedAs(mytags.SlowAsMolasses) in { fixture => }
+      }
+      expect(Map("must test this" -> Set("org.scalatest.SlowAsMolasses"), "must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it must "test this" in { fixture => }
+        it must "test that" in { fixture => }
+      }
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
+        it can "test that" taggedAs(mytags.SlowAsMolasses) in  { fixture => }
+      }
+      expect(Map("can test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "can test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+
+      val g = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
+        it should "test that" taggedAs(mytags.SlowAsMolasses) in { fixture => }
+      }
+      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
+      }
+    }
+    it("should return a correct tags map from the tags method, when using regular (not shorthand)" +
+            " notation and ignore replacing in") {
+
+      val a = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it should "test this" ignore { fixture => }
+        it should "test that" in { fixture => }
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it can "test this" in { fixture => }
+        it can "test that" ignore { fixture => }
+      }
+      expect(Map("can test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it must "test this" ignore { fixture => }
+        it must "test that" ignore { fixture => }
+      }
+      expect(Map("must test this" -> Set("org.scalatest.Ignore"), "must test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FlatSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        it must "test this" taggedAs(mytags.SlowAsMolasses) in { fixture => }
+        it must "test that" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
+      }
+      expect(Map("must test this" -> Set("org.scalatest.SlowAsMolasses"), "must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+    }
+
+    it("should return a correct tags map from the tags method, when using shorthand notation") {
+
+      val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "A Stack" should "test this" ignore { fixture => }
+        "A Stack" should "test that" in { fixture => }
+      }
+      expect(Map("A Stack should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FlatSpec with SimpleWithFixture with CanVerb {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "A Stack" can "test this" in { fixture => }
+        "A Stack" can "test that" ignore { fixture => }
+      }
+      expect(Map("A Stack can test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FlatSpec with SimpleWithFixture with MustVerb {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "A Stack" must "test this" ignore { fixture => }
+        "A Stack" must "test that" ignore { fixture => }
+      }
+      expect(Map("A Stack must test this" -> Set("org.scalatest.Ignore"), "A Stack must test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FlatSpec with SimpleWithFixture with MustVerb {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) in { fixture => }
+        "A Stack" must "test that" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
+      }
+      expect(Map("A Stack must test this" -> Set("org.scalatest.SlowAsMolasses"), "A Stack must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new FlatSpec with SimpleWithFixture with MustVerb {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "A Stack" must "test this" in { fixture => }
+        "A Stack" must "test that" in { fixture => }
+      }
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new FlatSpec with SimpleWithFixture with CanVerb {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "A Stack" can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
+        "A Stack" can "test that" taggedAs(mytags.SlowAsMolasses) in  { fixture => }
+      }
+      expect(Map("A Stack can test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "A Stack can test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+
+      val g = new FlatSpec with SimpleWithFixture with ShouldVerb {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "A Stack" should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
+        "A Stack" should "test that" taggedAs(mytags.SlowAsMolasses) in  { fixture => }
+      }
+      expect(Map("A Stack should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "A Stack should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
       }
     }
   }

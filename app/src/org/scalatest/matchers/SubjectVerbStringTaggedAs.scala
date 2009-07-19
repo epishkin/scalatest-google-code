@@ -15,7 +15,7 @@
  */
 package org.scalatest.matchers
 
-trait SubjectVerbStringTaggedAs {
+trait SubjectVerbStringTaggedAs[T] {
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) in {
   //                                               ^
@@ -24,4 +24,12 @@ trait SubjectVerbStringTaggedAs {
   // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
   //                                               ^
   def ignore(testFun: => Unit)
+
+  // "A Stack" should "bla bla" taggedAs(SlowTest) in { fixture =>
+  //                                               ^
+  def in(testFun: T => Unit)
+
+  // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { fixture =>
+  //                                               ^
+  def ignore(testFun: T => Unit)
 }
