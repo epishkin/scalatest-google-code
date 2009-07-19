@@ -422,6 +422,64 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
       }
     }
+    it("should return a correct tags map from the tags method") {
+
+      val a = new FlatSpec {
+        ignore should "test this" in {}
+        it should "test that" in {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FlatSpec {
+        it can "test this" in {}
+        ignore can "test that" in {}
+      }
+      expect(Map("can test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FlatSpec {
+        ignore must "test this" in {}
+        ignore must "test that" in {}
+      }
+      expect(Map("must test this" -> Set("org.scalatest.Ignore"), "must test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FlatSpec {
+        it must "test this" taggedAs(mytags.SlowAsMolasses) in {}
+        ignore must "test that" taggedAs(mytags.SlowAsMolasses) in {}
+      }
+      expect(Map("must test this" -> Set("org.scalatest.SlowAsMolasses"), "must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new FlatSpec {
+        it must "test this" in {}
+        it must "test that" in {}
+      }
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new FlatSpec {
+        it can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        it can "test that" taggedAs(mytags.SlowAsMolasses) in  {}
+      }
+      expect(Map("can test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "can test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+
+      val g = new FlatSpec {
+        it should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        it should "test that" taggedAs(mytags.SlowAsMolasses) in  {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
+      }
+    }
   }
 }
 

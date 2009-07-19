@@ -788,6 +788,7 @@ trait FlatSpec extends Suite { thisSuite =>
   protected class IgnoreWord {
     def should(string: String) = new IgnoreVerbString("should", string)
     def must(string: String) = new IgnoreVerbString("must", string)
+    def can(string: String) = new IgnoreVerbString("can", string)
   }
 
   protected val ignore = new IgnoreWord

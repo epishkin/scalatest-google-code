@@ -377,6 +377,53 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
       }
     }
+    it("should return a correct tags map from the tags method") {
+
+      val a = new Spec {
+        ignore("test this") {}
+        it("test that") {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new Spec {
+        it("test this") {}
+        ignore("test that") {}
+      }
+      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new Spec {
+        ignore("test this") {}
+        ignore("test that") {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new Spec {
+        it("test this", mytags.SlowAsMolasses) {}
+        ignore("test that", mytags.SlowAsMolasses) {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new Spec {}
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new Spec {
+        it("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
+        it("test that", mytags.SlowAsMolasses) {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+    }
   }
 }
 
