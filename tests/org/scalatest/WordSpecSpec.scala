@@ -260,6 +260,64 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
       }
     }
+    it("should return a correct tags map from the tags method") {
+
+      val a = new WordSpec {
+        "test this" ignore {}
+        "test that" in {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new WordSpec {
+        "test this" in {}
+        "test that" ignore {}
+      }
+      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new WordSpec {
+        "test this" ignore {}
+        "test that" ignore {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new WordSpec {
+        "test this" taggedAs(mytags.SlowAsMolasses) in {}
+        "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new WordSpec {
+        "test this" in {}
+        "test that" in {}
+      }
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new WordSpec {
+        "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        "test that" taggedAs(mytags.SlowAsMolasses) in  {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+
+      val g = new WordSpec {
+        "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        "test that" taggedAs(mytags.SlowAsMolasses) in  {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
+      }
+    }
 
     describe("(when a nesting rule has been violated)") {
 
