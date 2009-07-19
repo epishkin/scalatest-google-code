@@ -735,6 +735,11 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     def in(testFun: Fixture => Unit) {
       registerTestToRun(verb + " " + name, tags, testFun)
     }
+    // it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                                     ^
+    def is(testFun: => Nothing) {
+      registerTestToRun(verb + " " + name, tags, unusedFixture => testFun)
+    }
     def ignore(testFun: Fixture => Unit) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
@@ -744,6 +749,12 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     def in(testFun: Fixture => Unit) {
       registerTestToRun(verb + " " + name, List(), testFun)
     }
+    // it should "test that" is (pending)
+    //                       ^
+    def is(testFun: => Nothing) {
+      registerTestToRun(verb + " " + name, List(), unusedFixture => testFun)
+    }
+
     def ignore(testFun: Fixture => Unit) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
@@ -768,12 +779,24 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     def in(testFun: Fixture => Unit) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
+    // ignore must "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                                         ^
+    def is(testFun: => Nothing) {
+      registerTestToIgnore(verb + " " + name, tags, unusedFixture => testFun)
+    }
   }
 
   protected class FixtureIgnoreVerbString(verb: String, name: String) {
     def in(testFun: Fixture => Unit) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
+
+    // ignore should "test this" is (pending)
+    //                           ^
+    def is(testFun: => Nothing) {
+      registerTestToIgnore(verb + " " + name, List(), unusedFixture => testFun)
+    }
+
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new FixtureIgnoreVerbStringTaggedAs(verb, name, tagList)
@@ -807,6 +830,12 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
       registerTestToRun(verbAndname, tags, testFun)
     }
 
+    // "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                                            ^
+    def is(testFun: => Nothing) {
+      registerTestToRun(verbAndname, tags, unusedFixture => testFun)
+    }
+
     // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
     //                                               ^
     def ignore(testFun: Fixture => Unit) {
@@ -828,6 +857,9 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
         }
         def in(testFun: Fixture => Unit) {
           registerTestToRun(verb + " " + right, List(), testFun)
+        }
+        def is(testFun: => Nothing) {
+          registerTestToRun(verb + " " + right, List(), unusedFixture => testFun)
         }
         def ignore(testFun: Fixture => Unit) {
           registerTestToIgnore(verb + " " + right, List(), testFun)
