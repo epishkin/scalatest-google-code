@@ -1,5 +1,8 @@
 Move the verb stuff to a org.scalatest.verb package? It really has nothing to do with matchers.
 
+Add tests and error messages for the dynamic error of registering a test that takes no fixture in one
+that requires fixtures, and vice versa, for WordSpec and FlatSpec, or at least just FlatSpec.
+
 In RunnerSuite, 'parseConfigSet was 'parseCOnfigSet, and it was passing, which tells me if invokePrivate
 doesn't find the requested method name maybe it isn't failing. It needs to fail.
 
