@@ -118,5 +118,53 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
+    it("should throw NullPointerException if a null test tag is provided") {
+      // it
+      intercept[NullPointerException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "hi" taggedAs(null) in { fixture => }
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "hi" taggedAs(mytags.SlowAsMolasses, null) in { fixture => }
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in { fixture => }
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "hi" taggedAs(null) ignore { fixture => }
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "hi" taggedAs(mytags.SlowAsMolasses, null) ignore { fixture => }
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new WordSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) ignore { fixture => }
+        }
+      }
+    }
   }
 }

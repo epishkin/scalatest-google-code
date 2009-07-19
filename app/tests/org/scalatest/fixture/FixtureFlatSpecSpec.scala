@@ -138,5 +138,75 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(testStartingOption.isDefined)
       assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "can I am shared")
     }
+    it("should throw NullPointerException if a null test tag is provided") {
+      // it
+      intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "hi" taggedAs(null) in { fixture => }
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null) in { fixture => }
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in { fixture => }
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore should "hi" taggedAs(null) in { fixture => }
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore should "hi" taggedAs(mytags.SlowAsMolasses, null) in { fixture => }
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          ignore should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in { fixture => }
+        }
+      }
+      intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "hi" taggedAs(null) ignore { fixture => }
+        }
+      }
+      val caught3 = intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null) ignore { fixture => }
+        }
+      }
+      assert(caught3.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new FlatSpec with SimpleWithFixture {
+          type Fixture = String
+          def withFixture(fun: String => Unit) {}
+          it should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) ignore { fixture => }
+        }
+      }
+    }
   }
 }
