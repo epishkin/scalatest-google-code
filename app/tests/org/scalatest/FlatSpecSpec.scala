@@ -15,7 +15,10 @@
  */
 package org.scalatest
 
-import matchers.ShouldMatchers
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.matchers.ShouldVerb
+import org.scalatest.matchers.MustVerb
+import org.scalatest.matchers.CanVerb
 import org.scalatest.events._
 import org.scalatest.mytags._
 
@@ -422,7 +425,8 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
       }
     }
-    it("should return a correct tags map from the tags method") {
+    it("should return a correct tags map from the tags method, when using regular (not shorthand)" +
+            " notation and ignore replacing it") {
 
       val a = new FlatSpec {
         ignore should "test this" in {}
@@ -477,6 +481,100 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         it should "test that" taggedAs(mytags.SlowAsMolasses) in  {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
+      }
+    }
+    it("should return a correct tags map from the tags method, when using regular (not shorthand)" +
+            " notation and ignore replacing in") {
+
+      val a = new FlatSpec {
+        it should "test this" ignore {}
+        it should "test that" in {}
+      }
+      expect(Map("should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FlatSpec {
+        it can "test this" in {}
+        it can "test that" ignore {}
+      }
+      expect(Map("can test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FlatSpec {
+        it must "test this" ignore {}
+        it must "test that" ignore {}
+      }
+      expect(Map("must test this" -> Set("org.scalatest.Ignore"), "must test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FlatSpec {
+        it must "test this" taggedAs(mytags.SlowAsMolasses) in {}
+        it must "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
+      }
+      expect(Map("must test this" -> Set("org.scalatest.SlowAsMolasses"), "must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+    }
+
+    it("should return a correct tags map from the tags method, when using shorthand notation") {
+
+      val a = new FlatSpec with ShouldVerb {
+        "A Stack" should "test this" ignore {}
+        "A Stack" should "test that" in {}
+      }
+      expect(Map("A Stack should test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FlatSpec with CanVerb {
+        "A Stack" can "test this" in {}
+        "A Stack" can "test that" ignore {}
+      }
+      expect(Map("A Stack can test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FlatSpec with MustVerb {
+        "A Stack" must "test this" ignore {}
+        "A Stack" must "test that" ignore {}
+      }
+      expect(Map("A Stack must test this" -> Set("org.scalatest.Ignore"), "A Stack must test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FlatSpec with MustVerb {
+        "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) in {}
+        "A Stack" must "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
+      }
+      expect(Map("A Stack must test this" -> Set("org.scalatest.SlowAsMolasses"), "A Stack must test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new FlatSpec with MustVerb {
+        "A Stack" must "test this" in {}
+        "A Stack" must "test that" in {}
+      }
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new FlatSpec with CanVerb {
+        "A Stack" can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        "A Stack" can "test that" taggedAs(mytags.SlowAsMolasses) in  {}
+      }
+      expect(Map("A Stack can test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "A Stack can test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+
+      val g = new FlatSpec with ShouldVerb {
+        "A Stack" should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        "A Stack" should "test that" taggedAs(mytags.SlowAsMolasses) in  {}
+      }
+      expect(Map("A Stack should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "A Stack should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
         g.tags
       }
     }

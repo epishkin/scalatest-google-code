@@ -15,15 +15,13 @@
  */
 package org.scalatest
 
-import matchers.{ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb}
+import matchers.{SubjectVerbStringTaggedAs, ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb, BehaveWord}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-import matchers.BehaveWord
-
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -769,16 +767,38 @@ trait FlatSpec extends Suite { thisSuite =>
 
   protected val it = new ItWord
 
-  protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+  protected class FlatSpecSubjectVerbStringTaggedAs(verbAndname: String, tags: List[Tag])
+      extends SubjectVerbStringTaggedAs {
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
+    //                                               ^
     def in(testFun: => Unit) {
-      registerTestToIgnore(verb + " " + name, tags, testFun _)
+      registerTestToRun(verbAndname, tags, testFun _)
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
+    //                                               ^
+    def ignore(testFun: => Unit) {
+      registerTestToIgnore(verbAndname, tags, testFun _)
     }
   }
 
+  protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+    // I think this one is "ignore should "bla bla" taggedAs(SlowTest) in {
+    //                                                                 ^
+    def in(testFun: => Unit) {
+      registerTestToIgnore(verb + " " + name, tags, testFun _)
+    }  // Note: no def ignore here, so you can't put two ignores in the same line
+  }
+
   protected class IgnoreVerbString(verb: String, name: String) {
+    // I think this one is "ignore should "bla bla" in {
+    //                                              ^
     def in(testFun: => Unit) {
       registerTestToIgnore(verb + " " + name, List(), testFun _)
     }
+    // I think this one is "ignore should "bla bla" taggedAs(SlowTest) in {
+    //                                              ^
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new IgnoreVerbStringTaggedAs(verb, name, tagList)
@@ -794,8 +814,8 @@ trait FlatSpec extends Suite { thisSuite =>
   protected val ignore = new IgnoreWord
 
   implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb[Any] = {
-    (left, right, verb) => {
-      behavior.of(left)
+    (subject, right, verb) => {
+      behavior.of(subject)
       new ResultOfStringPassedToVerb[Any] {
         def in(testFun: => Unit) {
           registerTestToRun(verb + " " + right, List(), testFun _)
@@ -806,9 +826,9 @@ trait FlatSpec extends Suite { thisSuite =>
         def in(testFun: Any => Unit) { // TODO pass some message
           throw new RuntimeException
         }
-        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*)(testFun: => Unit) {
+        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
           val tagList = firstTestTag :: otherTestTags.toList
-          registerTestToRun(verb + " " + right, tagList, testFun _)
+          new FlatSpecSubjectVerbStringTaggedAs(verb + " " + right, tagList)
         }
       }
     }
