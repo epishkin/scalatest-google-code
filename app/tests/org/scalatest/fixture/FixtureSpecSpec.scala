@@ -101,7 +101,6 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
         }
       }
     }
-
     it("should pass in the fixture to every test method") {
       val a = new Spec with SimpleWithFixture {
         type Fixture = String
