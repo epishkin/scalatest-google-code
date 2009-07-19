@@ -73,6 +73,8 @@ trait ResultOfStringPassedToVerb[Fixture] {
 
   def in(testFun: Fixture => Unit)
 
+  def is(testFun: => Nothing)
+
   def ignore(testFun: => Unit)
 
   def ignore(testFun: Fixture => Unit)
