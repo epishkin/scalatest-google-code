@@ -230,6 +230,53 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         }
       }
     }
+    it("should return a correct tags map from the tags method") {
+
+      val a = new FunSuite {
+        ignore("test this") {}
+        test("test that") {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new FunSuite {
+        test("test this") {}
+        ignore("test that") {}
+      }
+      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new FunSuite {
+        ignore("test this") {}
+        ignore("test that") {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new FunSuite {
+        test("test this", mytags.SlowAsMolasses) {}
+        ignore("test that", mytags.SlowAsMolasses) {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new FunSuite {}
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new FunSuite {
+        test("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
+        test("test that", mytags.SlowAsMolasses) {}
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+    }
   }
 }
 
