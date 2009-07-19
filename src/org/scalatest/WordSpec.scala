@@ -841,18 +841,15 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     def in(testFun: => Unit) {
       registerTestToRun(specText, tags, testFun _)
     }
+    // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                             ^
+    def is(testFun: => Nothing) {
+      registerTestToRun(specText, tags, testFun _)
+    }
     def ignore(testFun: => Unit) {
       registerTestToIgnore(specText, tags, testFun _)
     }
   }       
-
-/*
-  protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
-    def in(testFun: => Unit) {
-      registerTestToIgnore(specText, tags, testFun _)
-    }
-  }
-*/
 
   protected class WordSpecStringWrapper(string: String) {
     def in(f: => Unit) {
