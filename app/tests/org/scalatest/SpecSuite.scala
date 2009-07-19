@@ -1509,43 +1509,6 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
   }
 
-  test("that a null test tag results in a thrown NPE at construction time") {
-    // it
-    intercept[NullPointerException] {
-      new Spec {
-        it("hi", null) {}
-      }
-    }
-    val caught = intercept[NullPointerException] {
-      new Spec {
-        it("hi", mytags.SlowAsMolasses, null) {}
-      }
-    }
-    assert(caught.getMessage === "a test tag was null")
-    intercept[NullPointerException] {
-      new Spec {
-        it("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
-      }
-    }
-    // ignore
-    intercept[NullPointerException] {
-      new Spec {
-        ignore("hi", null) {}
-      }
-    }
-    val caught2 = intercept[NullPointerException] {
-      new Spec {
-        ignore("hi", mytags.SlowAsMolasses, null) {}
-      }
-    }
-    assert(caught2.getMessage === "a test tag was null")
-    intercept[NullPointerException] {
-      new Spec {
-        ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
-      }
-    }
-  }
-
   test("test durations are included in TestFailed and TestSucceeded events fired from Spec") {
 
     class MySpec extends Spec {

@@ -341,6 +341,42 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(testStartingOption.get.asInstanceOf[TestStarting].testName === "should be that I am shared")
     }
 
+    it("should throw NullPointerException if a null test tag is provided") {
+      // it
+      intercept[NullPointerException] {
+        new Spec {
+          it("hi", null) {}
+        }
+      }
+      val caught = intercept[NullPointerException] {
+        new Spec {
+          it("hi", mytags.SlowAsMolasses, null) {}
+        }
+      }
+      assert(caught.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new Spec {
+          it("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
+        }
+      }
+      // ignore
+      intercept[NullPointerException] {
+        new Spec {
+          ignore("hi", null) {}
+        }
+      }
+      val caught2 = intercept[NullPointerException] {
+        new Spec {
+          ignore("hi", mytags.SlowAsMolasses, null) {}
+        }
+      }
+      assert(caught2.getMessage === "a test tag was null")
+      intercept[NullPointerException] {
+        new Spec {
+          ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) {}
+        }
+      }
+    }
   }
 }
 

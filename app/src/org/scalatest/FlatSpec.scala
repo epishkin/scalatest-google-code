@@ -737,6 +737,9 @@ trait FlatSpec extends Suite { thisSuite =>
     def in(testFun: => Unit) {
       registerTestToRun(verb + " " + name, tags, testFun _)
     }
+    def ignore(testFun: => Unit) {
+      registerTestToIgnore(verb + " " + name, tags, testFun _)
+    }
   }
 
   protected class ItVerbString(verb: String, name: String) {

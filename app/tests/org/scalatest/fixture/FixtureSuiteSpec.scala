@@ -160,13 +160,13 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
     }
 
-    it("can pass in the configMap to every test method via the fixture") {
+    it("can pass in the config map to every test method via the fixture") {
       val key = "greeting"
       val hello = "Hello, world!"
       val a = new Suite {
         type Fixture = Map[String, Any]
-        def withFixture(fun: Fixture => Unit, configMap: Map[String, Any]) {
-          fun(configMap)
+        def withFixture(fun: Fixture => Unit, config: Map[String, Any]) {
+          fun(config)
         }
         def testThis(fixture: Fixture) {
           assert(fixture(key) === hello)
