@@ -238,5 +238,77 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         g.tags
       }
     }
+    it("should return a correct tags map from the tags method using is (pending)") {
+
+      val a = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "test this" ignore { fixture => }
+        "test that" is (pending)
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
+        a.tags
+      }
+
+      val b = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "test this" is (pending)
+        "test that" ignore { fixture => }
+      }
+      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
+        b.tags
+      }
+
+      val c = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "test this" ignore { fixture => }
+        "test that" ignore { fixture => }
+      }
+      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
+        c.tags
+      }
+
+      val d = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+        "test that" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+        d.tags
+      }
+
+      val e = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "test this" is (pending)
+        "test that" is (pending)
+      }
+      expect(Map()) {
+        e.tags
+      }
+
+      val f = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
+        "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        f.tags
+      }
+
+      val g = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) {}
+        "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
+        "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
+      }
+      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+        g.tags
+      }
+    }
   }
 }
