@@ -227,5 +227,30 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         f.tags
       }
     }
+
+    class TestWasCalledSuite extends FeatureSpec with SimpleWithFixture {
+      type Fixture = String
+      def withFixture(fun: String => Unit) { fun("hi") }
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      scenario("this") { fixture => theTestThisCalled = true }
+      scenario("that") { fixture => theTestThatCalled = true }
+    }
+
+    it("should execute all tests when run is called with testName None") {
+
+      val b = new TestWasCalledSuite
+      b.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(b.theTestThisCalled)
+      assert(b.theTestThatCalled)
+    }
+
+    it("should execute one test when run is called with a defined testName") {
+
+      val a = new TestWasCalledSuite
+      a.run(Some("this"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
+    }
   }
 }

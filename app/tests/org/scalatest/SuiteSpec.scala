@@ -109,6 +109,109 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       val e = new Suite {}
       assert(e.tags === Map())
     }
+
+    class TestWasCalledSuite extends Suite {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      def testThis() { theTestThisCalled = true }
+      def testThat() { theTestThatCalled = true }
+    }
+
+    it("should execute all tests when run is called with testName None") {
+
+      val b = new TestWasCalledSuite
+      b.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(b.theTestThisCalled)
+      assert(b.theTestThatCalled)
+    }
+
+    it("should execute one test when run is called with a defined testName") {
+
+      val a = new TestWasCalledSuite
+      a.run(Some("testThis"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
+    }
+    it ("should report as ignored, ant not run, tests marked ignored") {
+
+      val a = new Suite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        def testThis() { theTestThisCalled = true }
+        def testThat(info: Informer) { theTestThatCalled = true }
+      }
+
+      val repA = new TestIgnoredTrackingReporter
+      a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repA.testIgnoredReceived)
+      assert(a.theTestThisCalled)
+      assert(a.theTestThatCalled)
+
+      val b = new Suite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        @Ignore
+        def testThis() { theTestThisCalled = true }
+        def testThat(info: Informer) { theTestThatCalled = true }
+      }
+
+      val repB = new TestIgnoredTrackingReporter
+      b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repB.testIgnoredReceived)
+      assert(repB.lastEvent.isDefined)
+      assert(repB.lastEvent.get.testName endsWith "testThis")
+      assert(!b.theTestThisCalled)
+      assert(b.theTestThatCalled)
+
+      val c = new Suite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        def testThis() { theTestThisCalled = true }
+        @Ignore
+        def testThat(info: Informer) { theTestThatCalled = true }
+      }
+
+      val repC = new TestIgnoredTrackingReporter
+      c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repC.testIgnoredReceived)
+      assert(repC.lastEvent.isDefined)
+      assert(repC.lastEvent.get.testName endsWith "testThat(Informer)", repC.lastEvent.get.testName)
+      assert(c.theTestThisCalled)
+      assert(!c.theTestThatCalled)
+
+      val d = new Suite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        @Ignore
+        def testThis() { theTestThisCalled = true }
+        @Ignore
+        def testThat(info: Informer) { theTestThatCalled = true }
+      }
+
+      val repD = new TestIgnoredTrackingReporter
+      d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repD.testIgnoredReceived)
+      assert(repD.lastEvent.isDefined)
+      assert(repD.lastEvent.get.testName endsWith "testThis") // last because run alphabetically
+      assert(!d.theTestThisCalled)
+      assert(!d.theTestThatCalled)
+    }
+    it ("should run a test marked as ignored if run is invoked with that testName") {
+
+      val e = new Suite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        @Ignore
+        def testThis() { theTestThisCalled = true }
+        def testThat(info: Informer) { theTestThatCalled = true }
+      }
+
+      val repE = new TestIgnoredTrackingReporter
+      e.run(Some("testThis"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repE.testIgnoredReceived)
+      assert(e.theTestThisCalled)
+      assert(!e.theTestThatCalled)
+    }
   }
 }
 

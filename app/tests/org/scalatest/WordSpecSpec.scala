@@ -377,6 +377,29 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
     }
 
+    class TestWasCalledSuite extends WordSpec {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      "run this" in { theTestThisCalled = true }
+      "run that, maybe" in { theTestThatCalled = true }
+    }
+
+    it("should execute all tests when run is called with testName None") {
+
+      val b = new TestWasCalledSuite
+      b.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(b.theTestThisCalled)
+      assert(b.theTestThatCalled)
+    }
+
+    it("should execute one test when run is called with a defined testName") {
+
+      val a = new TestWasCalledSuite
+      a.run(Some("run this"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
+    }
+
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
@@ -476,4 +499,3 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
     }
   }
 }
-
