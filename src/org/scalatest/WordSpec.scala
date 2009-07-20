@@ -25,7 +25,11 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
- * are combined with text that specifies the behavior the tests verify. <code>WordSpec</code> is so named because
+ * are combined with text that specifies the behavior the tests verify.
+ * (In BDD, the word <em>example</em> is usually used instead of <em>test</em>. The word test will not appear
+ * in your code if you use <code>WordSpec</code>, so if you prefer the word <em>example</em> you can use it. However, in this documentation
+ * the word <em>test</em> will be used, for clarity and to be consistent with the rest of ScalaTest.)
+ * Trait <code>WordSpec</code> is so named because
  * you specification text is structured by placing words after strings.
  * Here's an example <code>WordSpec</code>:
  *
@@ -56,12 +60,246 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * <em>Note: Trait <code>WordSpec</code> has some overlap with class <code>org.specs.Specification</code>, which designed by
- * Eric Torreborre. There are several differences however, which will be described in a later section.</em>
+ * <em>Note: Trait <code>WordSpec</code> is to some extent inspired by class <code>org.specs.Specification</code>, designed by
+ * Eric Torreborre for the <a href="http://code.google.com/p/specs/">Specs framework</a>. There are several differences however,
+ * which will be described in a <a href="#comparingToSpecs">later section</a>.</em>
  * </p>
  *
  * <p>
- * A <code>WordSpec</code> structures the specification text.  contains <em>describers</em> and <em>examples</em>. You define a describer
+ * In a <code>WordSpec</code> you will write a one (or more) sentence specification for each bit of behavior you wish to
+ * specify and test. Each specification sentence has a
+ * "subject," which is sometimes called the <em>system under test</em> (or SUT). The 
+ * subject is what's being specified and tested, and it also serves as the subject of the sentences you write for each test. A subject
+ * can be followed by one of three verbs, <code>should</code>, <code>must</code>, or <code>can</code>, and a block. Here are some
+ * examples:
+ * </p>
+ * 
+ * <pre>
+ * "A Stack" should {
+ *   // ...
+ * }
+ * "An Account" must {
+ *   // ...
+ * }
+ * "A ShippingManifest" can {
+ *   // ...
+ * }
+ * </pre>
+ * 
+ * <p>
+ * You can describe a subject in varying situations by using a <code>when</code> clause. A <code>when</code> clause
+ * follows the subject. In the block after the <code>when</code>, you place strings that describe a situation or state
+ * the subject may be in using a string, each followed by a verb. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * "A Stack" when {
+ *   "empty" should {
+ *     // ...
+ *   }
+ *   "non-empty" should {
+ *     // ...
+ *   }
+ *   "full" should {
+ *     // ...
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * When you are ready to finish a sentence, you write a string followed by <code>in</code> and a block that
+ * contains the code of the test. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * "A Stack" when {
+ *   "empty" should {
+ *     "be empty" in {
+ *       // ...
+ *     }
+ *     "complain on peek" in {
+ *       // ...
+ *     }
+ *     "complain on pop" in {
+ *       // ...
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * Sometimes you may wish to sketch out several sentences in the specification text before actually implementing
+ * the test code for it. In that case, you should write <code>is (pending)</code> instead of <code>in</code> followed
+ * by an empty block. The tests when run will be reported as pending (which means some behavior has been specified, but
+ * the test for that behavior haven't yet been implemented). Here's an example:
+ * </p>
+ * 
+ * <pre>
+ * import org.scalatest.WordSpec
+ * 
+ * class StackSpec extends WordSpec {
+ *   "A Stack" when {
+ *     "empty" should {
+ *       "be empty" is (pending)
+ *       "complain on peek" is (pending)
+ *       "complain on pop" is (pending)
+ *     }
+ *     "full" should {
+ *       "be full" is (pending)
+ *       "complain on push" is (pending)
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * Running the above <code>StackSpec</code> in the interpreter would yield:
+ * </p>
+ * 
+ * <pre>
+ * scala> (new StackSpec).run()
+ * A Stack (when empty) 
+ * - should be empty (pending)
+ * - should complain on peek (pending)
+ * - should complain on pop (pending)
+ * A Stack (when full) 
+ * - should be full (pending)
+ * - should complain on push (pending)
+ * </pre>
+ *
+ * <p>
+ * Note that the output does not exactly match the input in an effort to maximize readability.
+ * Although the <code>WordSpec</code> code is nested, which can help you eliminate any repeated phrases
+ * in the specification portion of your code, the output printed will have one line per subject in a situation, and
+ * one line per test.
+ * </p>
+ *
+ * <p>
+ * Sometimes you may with to eliminate repeated phrases inside the block following a <code>verb</code>. Here's an example
+ * in which the phrase "provide an and/or operator that" is repeated:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * 
+ * class AndOrSpec extends WordSpec {
+ * 
+ *   "The ScalaTest Matchers DSL" should {
+ *     "provide an and operator that returns silently when evaluating true and true" is (pending)
+ *     "provide an and operator that throws a TestFailedException when evaluating true and false" is (pending)
+ *     "provide an and operator that throws a TestFailedException when evaluating false and true" is (pending)
+ *     "provide an and operator that throws a TestFailedException when evaluating false and false" is (pending)
+ *     "provide an or operator that returns silently when evaluating true or true" is (pending)
+ *     "provide an or operator that returns silently when evaluating true or false" is (pending)
+ *     "provide an or operator that returns silently when evaluating false or true" is (pending)
+ *     "provide an or operator that throws a TestFailedException when evaluating false or false" is (pending)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In such situations you can place <code>that</code> clauses inside the verb clause, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * 
+ * class AndOrSpec extends WordSpec {
+ *
+ *   "The ScalaTest Matchers DSL" should {
+ *     "provide an and operator" that {
+ *       "returns silently when evaluating true and true" is (pending)
+ *       "throws a TestFailedException when evaluating true and false" is (pending)
+ *       "that throws a TestFailedException when evaluating false and true" is (pending)
+ *       "throws a TestFailedException when evaluating false and false" is (pending)
+ *     }
+ *     "provide an or operator" that {
+ *       "returns silently when evaluating true or true" is (pending)
+ *       "returns silently when evaluating true or false" is (pending)
+ *       "returns silently when evaluating false or true" is (pending)
+ *       "throws a TestFailedException when evaluating false or false" is (pending)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If a word or phrase is repeated at the beginning of each string contained in a block, you can eliminate
+ * that repetition by using an <em>after word</em>. An after word is a word or phrase that you can place
+ * after <code>when</code>, a verb, or
+ * <code>that</code>. For example, in the previous <code>WordSpec</code>, the word "provide" is repeated
+ * at the beginning of each string inside the <code>should</code> block. You can factor out this duplication
+ * like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * 
+ * class AndOrSpec extends WordSpec {
+ * 
+ *    def provide = afterWord("provide")
+ * 
+ *   "The ScalaTest Matchers DSL" should provide {
+ *     "an and operator" that {
+ *       "returns silently when evaluating true and true" is (pending)
+ *       "throws a TestFailedException when evaluating true and false" is (pending)
+ *       "that throws a TestFailedException when evaluating false and true" is (pending)
+ *       "throws a TestFailedException when evaluating false and false" is (pending)
+ *     }
+ *     "an or operator" that {
+ *       "returns silently when evaluating true or true" is (pending)
+ *       "returns silently when evaluating true or false" is (pending)
+ *       "returns silently when evaluating false or true" is (pending)
+ *       "throws a TestFailedException when evaluating false or false" is (pending)
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * Once you've defined an after word, you can place it after <code>when</code>, a verb
+ * (<code>should</code>, <code>must</code>, or <code>can</code>), or
+ * <code>that</code>. (You can't place one after <code>in</code> or <code>is</code>, the
+ * words that introduce a test.) Here's an example that has after words used in all three
+ * places:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * 
+ * class ScalaTestGUISpec extends WordSpec {
+ * 
+ *   def theUser = afterWord("the user")
+ *   def display = afterWord("display")
+ *   def is = afterWord("is")
+ * 
+ *   "The ScalaTest GUI" when theUser {
+ *     "clicks on an event report in the list box" should display {
+ *       "a blue background in the clicked-on row in the list box" is (pending)
+ *       "the details for the event in the details area" is (pending)
+ *       "a rerun button" that is {
+ *         "enabled if the clicked-on event is rerunnable" is (pending)
+ *         "disabled if the clicked-on event is not rerunnable" is (pending)
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Running the previous <code>WordSpec</code> in the Scala interpreter would yield:
+ * </p>
+ *
+ * <pre>
+ * scala> (new ScalaTestGUISpec).run()
+ * The ScalaTest GUI (when the user clicks on an event report in the list box) 
+ * - should display a blue background in the clicked-on row in the list box (pending)
+ * - should display the details for the event in the details area (pending)
+ * - should display a rerun button that is enabled if the clicked-on event is rerunnable (pending)
+ * - should display a rerun button that is disabled if the clicked-on event is not rerunnable (pending)
+ * </pre>
+ * <p>
+ * write tests for that structures the specification text.  contains <em>describers</em> and <em>examples</em>. You define a describer
  * with <code>describe</code>, and a example with <code>it</code>. Both
  * <code>describe</code> and <code>it</code> are methods, defined in
  * <code>Spec</code>, which will be invoked
@@ -553,6 +791,10 @@ import org.scalatest.events._
  * - should throw NoSuchElementException if an empty stack is popped (pending)
  * </pre>
  * 
+ * <p>
+ * <a name="comparingToSpecs"><strong>Differences from <code>org.specs.Specification</code></strong></a>
+ * </p>
+ *
  * @author Bill Venners
  */
 trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSuite =>

@@ -26,214 +26,6 @@ package mytags {
 
 class FunSuiteSuite extends Suite with SharedHelpers {
 
-  def testTestNames() {
-
-    val a = new FunSuite {
-      test("test this") {}
-      test("test that") {}
-    }
-
-    expect(List("test this", "test that")) {
-      a.testNames.elements.toList
-    }
-
-    val b = new FunSuite {}
-
-    expect(List[String]()) {
-      b.testNames.elements.toList
-    }
-
-    val c = new FunSuite {
-      test("test this") {}
-      test("test that") {}
-    }
-
-    expect(List("test this", "test that")) {
-      c.testNames.elements.toList
-    }
-
-    // Test duplicate names
-    intercept[DuplicateTestNameException] {
-      new FunSuite {
-        test("test this") {}
-        test("test this") {}
-      }
-    }
-    intercept[DuplicateTestNameException] {
-      new FunSuite {
-        test("test this") {}
-        ignore("test this") {}
-      }
-    }
-    intercept[DuplicateTestNameException] {
-      new FunSuite {
-        ignore("test this") {}
-        ignore("test this") {}
-      }
-    }
-    intercept[DuplicateTestNameException] {
-      new FunSuite {
-        ignore("test this") {}
-        test("test this") {}
-      }
-    }
-  }
-
-  def testTestTags() {
-    
-    val a = new FunSuite {
-      ignore("test this") {}
-      test("test that") {}
-    }
-    expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
-      a.tags
-    }
-
-    val b = new FunSuite {
-      test("test this") {}
-      ignore("test that") {}
-    }
-    expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
-      b.tags
-    }
-
-    val c = new FunSuite {
-      ignore("test this") {}
-      ignore("test that") {}
-    }
-    expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
-      c.tags
-    }
-
-    val d = new FunSuite {
-      test("test this", mytags.SlowAsMolasses) {}
-      ignore("test that", mytags.SlowAsMolasses) {}
-    }
-    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
-      d.tags
-    }
-
-    val e = new FunSuite {}
-    expect(Map()) {
-      e.tags
-    }
-
-    val f = new FunSuite {
-      test("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
-      test("test that", mytags.SlowAsMolasses) {}
-    }
-    expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
-      f.tags
-    }
-  }
-
-  def testExecuteOneTest() {
-    
-    class MySuite extends FunSuite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      test("test this") { theTestThisCalled = true }
-      test("test that") { theTestThatCalled = true }
-    }
-
-    val a = new MySuite 
-    a.run("test this")
-    assert(a.theTestThisCalled)
-    assert(!a.theTestThatCalled)
-
-    val b = new MySuite
-    b.run()
-    assert(b.theTestThisCalled)
-    assert(b.theTestThatCalled)
-  }
-
-  class MyReporter extends Reporter {
-    var testIgnoredReceived = false
-    var lastEvent: TestIgnored = null
-    def apply(event: Event) {
-      event match {
-        case event: TestIgnored =>
-          testIgnoredReceived = true
-          lastEvent = event
-        case _ =>
-      }
-    }
-  }
-
-  def testTestMethodsWithIgnores() {
-
-    val a = new FunSuite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      test("test this") { theTestThisCalled = true }
-      test("test that") { theTestThatCalled = true }
-    }
-
-    val repA = new MyReporter
-    a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(!repA.testIgnoredReceived)
-    assert(a.theTestThisCalled)
-    assert(a.theTestThatCalled)
-
-    val b = new FunSuite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      ignore("test this") { theTestThisCalled = true }
-      test("test that") { theTestThatCalled = true }
-    }
-
-    val repB = new MyReporter
-    b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(repB.testIgnoredReceived)
-    assert(repB.lastEvent.testName endsWith "test this")
-    assert(!b.theTestThisCalled)
-    assert(b.theTestThatCalled)
-
-    val c = new FunSuite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      test("test this") { theTestThisCalled = true }
-      ignore("test that") { theTestThatCalled = true }
-    }
-
-    val repC = new MyReporter
-    c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(repC.testIgnoredReceived)
-    assert(repC.lastEvent.testName endsWith "test that", repC.lastEvent.testName)
-    assert(c.theTestThisCalled)
-    assert(!c.theTestThatCalled)
-
-    // The order I want is order of appearance in the file.
-    // Will try and implement that tomorrow. Subtypes will be able to change the order.
-    val d = new FunSuite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      ignore("test this") { theTestThisCalled = true }
-      ignore("test that") { theTestThatCalled = true }
-    }
-
-    val repD = new MyReporter
-    d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(repD.testIgnoredReceived)
-    assert(repD.lastEvent.testName endsWith "test that") // last because should be in order of appearance
-    assert(!d.theTestThisCalled)
-    assert(!d.theTestThatCalled)
-
-    // If I provide a specific testName to run, then it should ignore an Ignore on that test
-    // method and actually invoke it.
-    val e = new FunSuite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      ignore("test this") { theTestThisCalled = true }
-      test("test that") { theTestThatCalled = true }
-    }
-
-    val repE = new MyReporter
-    e.run(Some("test this"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(!repE.testIgnoredReceived)
-    assert(e.theTestThisCalled)
-  }
-
   def testExcludes() {
 
     val a = new FunSuite {
@@ -242,7 +34,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
       test("test that") { theTestThatCalled = true }
     }
-    val repA = new MyReporter
+    val repA = new TestIgnoredTrackingReporter
     a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
@@ -254,7 +46,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
       test("test that") { theTestThatCalled = true }
     }
-    val repB = new MyReporter
+    val repB = new TestIgnoredTrackingReporter
     b.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
     assert(!repB.testIgnoredReceived)
     assert(b.theTestThisCalled)
@@ -266,7 +58,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
       test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
     }
-    val repC = new MyReporter
+    val repC = new TestIgnoredTrackingReporter
     c.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
     assert(!repC.testIgnoredReceived)
     assert(c.theTestThisCalled)
@@ -278,7 +70,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       ignore("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
       test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
     }
-    val repD = new MyReporter
+    val repD = new TestIgnoredTrackingReporter
     d.run(None, repD, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.Ignore")), Map(), None, new Tracker)
     assert(repD.testIgnoredReceived)
     assert(!d.theTestThisCalled)
@@ -292,7 +84,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
-    val repE = new MyReporter
+    val repE = new TestIgnoredTrackingReporter
     e.run(None, repE, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repE.testIgnoredReceived)
@@ -308,7 +100,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
-    val repF = new MyReporter
+    val repF = new TestIgnoredTrackingReporter
     f.run(None, repF, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repF.testIgnoredReceived)
@@ -324,7 +116,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       ignore("test the other") { theTestTheOtherCalled = true }
     }
-    val repG = new MyReporter
+    val repG = new TestIgnoredTrackingReporter
     g.run(None, repG, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repG.testIgnoredReceived)
@@ -340,7 +132,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
-    val repH = new MyReporter
+    val repH = new TestIgnoredTrackingReporter
     h.run(None, repH, new Stopper {}, Filter(None, Set("org.scalatest.FastAsLight")), Map(), None, new Tracker)
     assert(!repH.testIgnoredReceived)
     assert(!h.theTestThisCalled)
@@ -355,7 +147,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       test("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
-    val repI = new MyReporter
+    val repI = new TestIgnoredTrackingReporter
     i.run(None, repI, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
     assert(!repI.testIgnoredReceived)
     assert(!i.theTestThisCalled)
@@ -370,7 +162,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       ignore("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       test("test the other") { theTestTheOtherCalled = true }
     }
-    val repJ = new MyReporter
+    val repJ = new TestIgnoredTrackingReporter
     j.run(None, repJ, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
     assert(!repI.testIgnoredReceived)
     assert(!j.theTestThisCalled)
@@ -385,7 +177,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       ignore("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
       ignore("test the other") { theTestTheOtherCalled = true }
     }
-    val repK = new MyReporter
+    val repK = new TestIgnoredTrackingReporter
     k.run(None, repK, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore")), Map(), None, new Tracker)
     assert(repK.testIgnoredReceived)
     assert(!k.theTestThisCalled)

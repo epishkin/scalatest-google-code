@@ -324,10 +324,13 @@
         <cobertura-report srcdir="${src}" destdir="${build.coverage}"/>
     </target>
 
-    <target name="bvtest" depends="compile,copyprops,taskdefscalatest">
+    <target name="bvtest" depends="compile-main,compile-tests,copyprops,taskdefscalatest">
         <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
+
+            <suite classname="org.scalatest.SuiteSuite" />
+            <suite classname="org.scalatest.FunSuiteSuite" />
 
             <suite classname="org.scalatest.SuiteSpec" />
             <suite classname="org.scalatest.FunSuiteSpec" />

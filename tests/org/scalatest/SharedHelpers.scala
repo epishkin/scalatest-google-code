@@ -130,5 +130,18 @@ trait SharedHelpers extends Assertions {
     assert(testFailedEvent.isDefined)
     assert(testFailedEvent.get.asInstanceOf[TestFailed].testName === testName)
   }
+
+  class TestIgnoredTrackingReporter extends Reporter {
+    var testIgnoredReceived = false
+    var lastEvent: Option[TestIgnored] = None
+    def apply(event: Event) {
+      event match {
+        case event: TestIgnored =>
+          testIgnoredReceived = true
+          lastEvent = Some(event)
+        case _ =>
+      }
+    }
+  }
 }
 

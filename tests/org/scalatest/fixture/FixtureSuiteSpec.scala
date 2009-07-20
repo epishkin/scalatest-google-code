@@ -148,6 +148,31 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
       assert(e.tags === Map())
     }
+
+    class TestWasCalledSuite extends Suite with SimpleWithFixture {
+      type Fixture = String
+      def withFixture(fun: String => Unit) { fun("hi") }
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      def testThis(s: String) { theTestThisCalled = true }
+      def testThat(s: String) { theTestThatCalled = true }
+    }
+
+    it("should execute all tests when run is called with testName None") {
+
+      val b = new TestWasCalledSuite
+      b.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(b.theTestThisCalled)
+      assert(b.theTestThatCalled)
+    }
+
+    it("should execute one test when run is called with a defined testName") {
+
+      val a = new TestWasCalledSuite
+      a.run(Some("testThis(Fixture)"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
+    }
   }
   
   describe("A fixture.Suite without SimpleWithFixture") {

@@ -20,117 +20,6 @@ import org.scalatest.events._
 
 class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
-  def testExecuteOneTest() {
-    
-    class MySuite extends Suite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      def testThis() { theTestThisCalled = true }
-      def testThat() { theTestThatCalled = true }
-    }
-
-    val a = new MySuite 
-    a.run("testThis")
-    assert(a.theTestThisCalled)
-    assert(!a.theTestThatCalled)
-
-    val b = new MySuite
-    b.run()
-    assert(b.theTestThisCalled)
-    assert(b.theTestThatCalled)
-  }
-
-  class MyReporter extends Reporter {
-    var testIgnoredReceived = false
-    var lastEvent: TestIgnored = null
-    def apply(event: Event) {
-      event match {
-        case event: TestIgnored =>
-          testIgnoredReceived = true
-          lastEvent = event
-        case _ =>
-      }
-    }
-  }
-
-  def testTestMethodsWithIgnores() {
-
-    val a = new Suite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      def testThis() { theTestThisCalled = true }
-      def testThat(info: Informer) { theTestThatCalled = true }
-    }
-
-    val repA = new MyReporter
-    a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(!repA.testIgnoredReceived)
-    assert(a.theTestThisCalled)
-    assert(a.theTestThatCalled)
-
-    val b = new Suite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      @Ignore
-      def testThis() { theTestThisCalled = true }
-      def testThat(info: Informer) { theTestThatCalled = true }
-    }
-
-    val repB = new MyReporter
-    b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(repB.testIgnoredReceived)
-    assert(repB.lastEvent.testName endsWith "testThis")
-    assert(!b.theTestThisCalled)
-    assert(b.theTestThatCalled)
-
-    val c = new Suite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      def testThis() { theTestThisCalled = true }
-      @Ignore
-      def testThat(info: Informer) { theTestThatCalled = true }
-    }
-
-    val repC = new MyReporter
-    c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(repC.testIgnoredReceived)
-    assert(repC.lastEvent.testName endsWith "testThat(Informer)", repC.lastEvent.testName)
-    assert(c.theTestThisCalled)
-    assert(!c.theTestThatCalled)
-
-    val d = new Suite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      @Ignore
-      def testThis() { theTestThisCalled = true }
-      @Ignore
-      def testThat(info: Informer) { theTestThatCalled = true }
-    }
-
-    val repD = new MyReporter
-    d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(repD.testIgnoredReceived)
-    assert(repD.lastEvent.testName endsWith "testThis") // last because run alphabetically
-    assert(!d.theTestThisCalled)
-    assert(!d.theTestThatCalled)
-
-    // If I provide a specific testName to run, then it should ignore an Ignore on that test
-    // method and actually invoke it.
-
-    val e = new Suite {
-      var theTestThisCalled = false
-      var theTestThatCalled = false
-      @Ignore
-      def testThis() { theTestThisCalled = true }
-      def testThat(info: Informer) { theTestThatCalled = true }
-    }
-
-    val repE = new MyReporter
-    e.run(Some("testThis"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
-    assert(!repE.testIgnoredReceived)
-    assert(e.theTestThisCalled)
-  }
-
   def testExcludes() {
 
     val a = new Suite {
@@ -140,7 +29,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThis() { theTestThisCalled = true }
       def testThat(info: Informer) { theTestThatCalled = true }
     }
-    val repA = new MyReporter
+    val repA = new TestIgnoredTrackingReporter
     a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(!repA.testIgnoredReceived)
     assert(a.theTestThisCalled)
@@ -153,7 +42,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThis() { theTestThisCalled = true }
       def testThat(info: Informer) { theTestThatCalled = true }
     }
-    val repB = new MyReporter
+    val repB = new TestIgnoredTrackingReporter
     b.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
     assert(!repB.testIgnoredReceived)
     assert(b.theTestThisCalled)
@@ -167,7 +56,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       @SlowAsMolasses
       def testThat(info: Informer) { theTestThatCalled = true }
     }
-    val repC = new MyReporter
+    val repC = new TestIgnoredTrackingReporter
     c.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
     assert(!repC.testIgnoredReceived)
     assert(c.theTestThisCalled)
@@ -182,7 +71,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       @SlowAsMolasses
       def testThat(info: Informer) { theTestThatCalled = true }
     }
-    val repD = new MyReporter
+    val repD = new TestIgnoredTrackingReporter
     d.run(None, repD, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.Ignore")), Map(), None, new Tracker)
     assert(repD.testIgnoredReceived)
     assert(!d.theTestThisCalled)
@@ -199,7 +88,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
-    val repE = new MyReporter
+    val repE = new TestIgnoredTrackingReporter
     e.run(None, repE, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repE.testIgnoredReceived)
@@ -219,7 +108,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
-    val repF = new MyReporter
+    val repF = new TestIgnoredTrackingReporter
     f.run(None, repF, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repF.testIgnoredReceived)
@@ -239,7 +128,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       @Ignore
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
-    val repG = new MyReporter
+    val repG = new TestIgnoredTrackingReporter
     g.run(None, repG, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
               Map(), None, new Tracker)
     assert(!repG.testIgnoredReceived)
@@ -258,7 +147,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
-    val repH = new MyReporter
+    val repH = new TestIgnoredTrackingReporter
     h.run(None, repH, new Stopper {}, Filter(None, Set("org.scalatest.FastAsLight")), Map(), None, new Tracker)
     assert(!repH.testIgnoredReceived)
     assert(!h.theTestThisCalled)
@@ -276,7 +165,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
-    val repI = new MyReporter
+    val repI = new TestIgnoredTrackingReporter
     i.run(None, repI, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
     assert(!repI.testIgnoredReceived)
     assert(!i.theTestThisCalled)
@@ -296,7 +185,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       def testThat(info: Informer) { theTestThatCalled = true }
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
-    val repJ = new MyReporter
+    val repJ = new TestIgnoredTrackingReporter
     j.run(None, repJ, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
     assert(!repI.testIgnoredReceived)
     assert(!j.theTestThisCalled)
@@ -317,7 +206,7 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
       @Ignore
       def testTheOther(info: Informer) { theTestTheOtherCalled = true }
     }
-    val repK = new MyReporter
+    val repK = new TestIgnoredTrackingReporter
     k.run(None, repK, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore")), Map(), None, new Tracker)
     assert(repK.testIgnoredReceived)
     assert(!k.theTestThisCalled)

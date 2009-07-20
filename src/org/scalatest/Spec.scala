@@ -69,9 +69,9 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * When you execute a <code>Spec</code>, it will send <code>SpecReport</code>s to the
- * <code>Reporter</code>. ScalaTest's built-in reporters will report these <code>SpecReports</code> in such a way
- * that the output is easy to read as an informal specification of the entity under test.
+ * When you execute a <code>Spec</code>, it will send <code>Formatter</code>s in the events it sends to the
+ * <code>Reporter</code>. ScalaTest's built-in reporters will report these events in such a way
+ * that the output is easy to read as an informal specification of the <em>subject</em> being tested.
  * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
  * </p>
  *

@@ -732,6 +732,29 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         g.tags
       }
     }
+
+    class TestWasCalledSuite extends FlatSpec {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      it should "run this" in { theTestThisCalled = true }
+      it should "run that, maybe" in { theTestThatCalled = true }
+    }
+
+    it("should execute all tests when run is called with testName None") {
+
+      val b = new TestWasCalledSuite
+      b.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(b.theTestThisCalled)
+      assert(b.theTestThatCalled)
+    }
+
+    it("should execute one test when run is called with a defined testName") {
+
+      val a = new TestWasCalledSuite
+      a.run(Some("should run this"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
+    }
   }
 }
 
