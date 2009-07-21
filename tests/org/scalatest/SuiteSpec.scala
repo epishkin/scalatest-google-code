@@ -214,6 +214,20 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       assert(e.theTestThisCalled)
       assert(!e.theTestThatCalled)
     }
+
+    it("should throw IllegalArgumentException if run is passed a testName that does not exist") {
+      val suite = new Suite {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        def testThis() { theTestThisCalled = true }
+        def testThat(info: Informer) { theTestThatCalled = true }
+      }
+
+      intercept[IllegalArgumentException] {
+        // Here, they forgot that the name is actually testThis(Fixture)
+        suite.run(Some("misspelled"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      }
+    }
   }
 }
 
