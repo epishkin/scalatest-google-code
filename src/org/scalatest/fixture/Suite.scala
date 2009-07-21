@@ -207,8 +207,10 @@ private object Suite {
   private def simpleNameForTest(testName: String) =
     if (testName.endsWith(FixtureAndInformerInParens))
       testName.substring(0, testName.length - FixtureAndInformerInParens.length)
-    else
+    else if (testName.endsWith(FixtureInParens))
       testName.substring(0, testName.length - FixtureInParens.length)
+    else
+      throw new IllegalArgumentException(Resources("needFixtureInTestName", testName))
 
   private def argsArrayForTestName(testName: String): Array[Class[_]] =
     if (testMethodTakesInformer(testName))

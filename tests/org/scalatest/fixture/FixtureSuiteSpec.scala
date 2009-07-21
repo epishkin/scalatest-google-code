@@ -34,6 +34,90 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
   }
 
+
+  describe("A fixture.Suite without SimpleWithFixture") {
+
+    it("should return the test names in alphabetical order from testNames") {
+      val a = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
+        def testThis(fixture: String) {}
+        def testThat(fixture: String) {}
+      }
+
+      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+        a.testNames.elements.toList
+      }
+
+      val b = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
+      }
+
+      expect(List[String]()) {
+        b.testNames.elements.toList
+      }
+
+      val c = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
+        def testThat(fixture: String) {}
+        def testThis(fixture: String) {}
+      }
+
+      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+        c.testNames.elements.toList
+      }
+    }
+
+    it("should discover tests with and without Informer parameters") {
+      val a = new Suite {
+        type Fixture = String
+        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
+        def testThis(fixture: String) = ()
+        def testThat(fixture: String, info: Informer) = ()
+      }
+      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
+    }
+
+    it("should pass in the fixture to every test method") {
+      val a = new Suite {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: String => Unit, config: Map[String, Any]) {
+          fun(hello)
+        }
+        def testThis(fixture: String) {
+          assert(fixture === hello)
+        }
+        def testThat(fixture: String, info: Informer) {
+          assert(fixture === hello)
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+    }
+
+    it("can pass in the config map to every test method via the fixture") {
+      val key = "greeting"
+      val hello = "Hello, world!"
+      val a = new Suite {
+        type Fixture = Map[String, Any]
+        def withFixture(fun: Fixture => Unit, config: Map[String, Any]) {
+          fun(config)
+        }
+        def testThis(fixture: Fixture) {
+          assert(fixture(key) === hello)
+        }
+        def testThat(fixture: Fixture, info: Informer) {
+          assert(fixture(key) === hello)
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(key -> hello), None, new Tracker())
+      assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
+    }
+  }
+
   describe("A fixture.Suite with SimpleWithFixture") {
     it("should return the test names in alphabetical order from testNames") {
       val a = new Suite with SimpleWithFixture {
@@ -173,88 +257,113 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
-  }
-  
-  describe("A fixture.Suite without SimpleWithFixture") {
-    
-    it("should return the test names in alphabetical order from testNames") {
-      val a = new Suite {
+
+    it("should report as ignored, ant not run, tests marked ignored") {
+
+      val a = new Suite with SimpleWithFixture {
         type Fixture = String
-        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
-        def testThis(fixture: String) {}
-        def testThat(fixture: String) {}
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
-        a.testNames.elements.toList
-      }
+      val repA = new TestIgnoredTrackingReporter
+      a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repA.testIgnoredReceived)
+      assert(a.theTestThisCalled)
+      assert(a.theTestThatCalled)
 
-      val b = new Suite {
+      val b = new Suite with SimpleWithFixture {
         type Fixture = String
-        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        @Ignore
+        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
       }
 
-      expect(List[String]()) {
-        b.testNames.elements.toList
-      }
+      val repB = new TestIgnoredTrackingReporter
+      b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repB.testIgnoredReceived)
+      assert(repB.lastEvent.isDefined)
+      assert(repB.lastEvent.get.testName endsWith "testThis(Fixture)")
+      assert(!b.theTestThisCalled)
+      assert(b.theTestThatCalled)
 
-      val c = new Suite {
+      val c = new Suite with SimpleWithFixture {
         type Fixture = String
-        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
-        def testThat(fixture: String) {}
-        def testThis(fixture: String) {}
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        @Ignore
+        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
-        c.testNames.elements.toList
+      val repC = new TestIgnoredTrackingReporter
+      c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repC.testIgnoredReceived)
+      assert(repC.lastEvent.isDefined)
+      assert(repC.lastEvent.get.testName endsWith "testThat(Fixture, Informer)", repC.lastEvent.get.testName)
+      assert(c.theTestThisCalled)
+      assert(!c.theTestThatCalled)
+
+      val d = new Suite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        @Ignore
+        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        @Ignore
+        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
       }
+
+      val repD = new TestIgnoredTrackingReporter
+      d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repD.testIgnoredReceived)
+      assert(repD.lastEvent.isDefined)
+      assert(repD.lastEvent.get.testName endsWith "testThis(Fixture)") // last because run alphabetically
+      assert(!d.theTestThisCalled)
+      assert(!d.theTestThatCalled)
     }
 
-    it("should discover tests with and without Informer parameters") {
-      val a = new Suite {
+    it("should run a test marked as ignored if run is invoked with that testName") {
+
+      val e = new Suite with SimpleWithFixture {
         type Fixture = String
-        def withFixture(fun: String => Unit, config: Map[String, Any]) {}
-        def testThis(fixture: String) = ()
-        def testThat(fixture: String, info: Informer) = ()
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        @Ignore
+        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
       }
-      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
+
+      val repE = new TestIgnoredTrackingReporter
+      e.run(Some("testThis(Fixture)"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repE.testIgnoredReceived)
+      assert(e.theTestThisCalled)
+      assert(!e.theTestThatCalled)
     }
 
-    it("should pass in the fixture to every test method") {
-      val a = new Suite {
+    it("should throw IllegalArgumentException if run is passed a testName that does not exist") {
+      val suite = new Suite with SimpleWithFixture {
         type Fixture = String
-        val hello = "Hello, world!"
-        def withFixture(fun: String => Unit, config: Map[String, Any]) {
-          fun(hello)
-        }
-        def testThis(fixture: String) {
-          assert(fixture === hello)
-        }
-        def testThat(fixture: String, info: Informer) {
-          assert(fixture === hello)
-        }
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
       }
-      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-    }
 
-    it("can pass in the config map to every test method via the fixture") {
-      val key = "greeting"
-      val hello = "Hello, world!"
-      val a = new Suite {
-        type Fixture = Map[String, Any]
-        def withFixture(fun: Fixture => Unit, config: Map[String, Any]) {
-          fun(config)
-        }
-        def testThis(fixture: Fixture) {
-          assert(fixture(key) === hello)
-        }
-        def testThat(fixture: Fixture, info: Informer) {
-          assert(fixture(key) === hello)
-        }
+      intercept[IllegalArgumentException] {
+        // Here, they forgot that the name is actually testThis(Fixture)
+        suite.run(Some("testThis"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       }
-      val rep = new EventRecordingReporter
-      a.run(None, rep, new Stopper {}, Filter(), Map(key -> hello), None, new Tracker())
-      assert(!rep.eventsReceived.exists(_.isInstanceOf[TestFailed]))
     }
   }
 }

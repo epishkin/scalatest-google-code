@@ -132,7 +132,8 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       assert(a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
-    it ("should report as ignored, ant not run, tests marked ignored") {
+
+    it("should report as ignored, ant not run, tests marked ignored") {
 
       val a = new Suite {
         var theTestThisCalled = false
@@ -196,7 +197,8 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       assert(!d.theTestThisCalled)
       assert(!d.theTestThatCalled)
     }
-    it ("should run a test marked as ignored if run is invoked with that testName") {
+    
+    it("should run a test marked as ignored if run is invoked with that testName") {
 
       val e = new Suite {
         var theTestThisCalled = false
