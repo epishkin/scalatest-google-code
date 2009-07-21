@@ -448,7 +448,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(!a.theTestThatCalled)
     }
 
-    it("should report as ignored, ant not run, tests marked ignored") {
+    it("should report as ignored, and not run, tests marked ignored") {
 
       val a = new Spec {
         var theTestThisCalled = false

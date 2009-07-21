@@ -253,5 +253,95 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
+
+    it("should report as ignored, and not run, tests marked ignored") {
+
+      val a = new FunSuite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        test("test this") { fixture => theTestThisCalled = true }
+        test("test that") { fixture => theTestThatCalled = true }
+      }
+
+      val repA = new TestIgnoredTrackingReporter
+      a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repA.testIgnoredReceived)
+      assert(a.theTestThisCalled)
+      assert(a.theTestThatCalled)
+
+      val b = new FunSuite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        ignore("test this") { fixture => theTestThisCalled = true }
+        test("test that") { fixture => theTestThatCalled = true }
+      }
+
+      val repB = new TestIgnoredTrackingReporter
+      b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repB.testIgnoredReceived)
+      assert(repB.lastEvent.isDefined)
+      assert(repB.lastEvent.get.testName endsWith "test this")
+      assert(!b.theTestThisCalled)
+      assert(b.theTestThatCalled)
+
+      val c = new FunSuite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        test("test this") { fixture => theTestThisCalled = true }
+        ignore("test that") { fixture => theTestThatCalled = true }
+      }
+
+      val repC = new TestIgnoredTrackingReporter
+      c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repC.testIgnoredReceived)
+      assert(repC.lastEvent.isDefined)
+      assert(repC.lastEvent.get.testName endsWith "test that", repC.lastEvent.get.testName)
+      assert(c.theTestThisCalled)
+      assert(!c.theTestThatCalled)
+
+      // The order I want is order of appearance in the file.
+      // Will try and implement that tomorrow. Subtypes will be able to change the order.
+      val d = new FunSuite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        ignore("test this") { fixture => theTestThisCalled = true }
+        ignore("test that") { fixture => theTestThatCalled = true }
+      }
+
+      val repD = new TestIgnoredTrackingReporter
+      d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(repD.testIgnoredReceived)
+      assert(repD.lastEvent.isDefined)
+      assert(repD.lastEvent.get.testName endsWith "test that") // last because should be in order of appearance
+      assert(!d.theTestThisCalled)
+      assert(!d.theTestThatCalled)
+    }
+
+    it("should run a test marked as ignored if run is invoked with that testName") {
+      // If I provide a specific testName to run, then it should ignore an Ignore on that test
+      // method and actually invoke it.
+      val e = new FunSuite with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        ignore("test this") { fixture => theTestThisCalled = true }
+        test("test that") { fixture => theTestThatCalled = true }
+      }
+
+      val repE = new TestIgnoredTrackingReporter
+      e.run(Some("test this"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repE.testIgnoredReceived)
+      assert(e.theTestThisCalled)
+      assert(!e.theTestThatCalled)
+    }
   }
 }

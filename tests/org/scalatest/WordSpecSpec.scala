@@ -22,6 +22,105 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
   describe("A WordSpec") {
 
+
+    describe("(when a nesting rule has been violated)") {
+
+      it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends WordSpec {
+          "should blow up" in {
+            "in the wrong place, at the wrong time" should {
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a describe with a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends WordSpec {
+          "should blow up" in {
+            "in the wrong place, at the wrong time" should {
+              "should never run" in {
+                assert(1 === 2)
+              }
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends WordSpec {
+          "should blow up" in {
+            "should never run" in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends WordSpec {
+          "should blow up" in {
+            "should never run" taggedAs(SlowAsMolasses) in {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends WordSpec {
+          "should blow up" in {
+            "in the wrong place, at the wrong time" should {
+              "should never run" ignore {
+                assert(1 === 2)
+              }
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends WordSpec {
+          "should blow up" in {
+            "should never run" ignore {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends WordSpec {
+          "should blow up" in {
+            "should never run" taggedAs(SlowAsMolasses) ignore {
+              assert(1 === 2)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+    }
+
     it("should return the test names in registration order from testNames") {
 
       val a = new WordSpec {
@@ -400,7 +499,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(!a.theTestThatCalled)
     }
 
-    it("should report as ignored, ant not run, tests marked ignored") {
+    it("should report as ignored, and not run, tests marked ignored") {
 
       val a = new WordSpec {
         var theTestThisCalled = false
@@ -478,104 +577,6 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(!repE.testIgnoredReceived)
       assert(e.theTestThisCalled)
       assert(!e.theTestThatCalled)
-    }
-
-    describe("(when a nesting rule has been violated)") {
-
-      it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
-
-        class MySpec extends WordSpec {
-          "should blow up" in {
-            "in the wrong place, at the wrong time" should {
-            }
-          }
-        }
-
-        val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
-      }
-      it("should, if they call a describe with a nested it from within an it clause, result in a TestFailedException when running the test") {
-
-        class MySpec extends WordSpec {
-          "should blow up" in {
-            "in the wrong place, at the wrong time" should {
-              "should never run" in {
-                assert(1 === 2)
-              }
-            }
-          }
-        }
-
-        val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
-      }
-      it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
-
-        class MySpec extends WordSpec {
-          "should blow up" in {
-            "should never run" in {
-              assert(1 === 2)
-            }
-          }
-        }
-
-        val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
-      }
-      it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
-
-        class MySpec extends WordSpec {
-          "should blow up" in {
-            "should never run" taggedAs(SlowAsMolasses) in {
-              assert(1 === 2)
-            }
-          }
-        }
-
-        val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
-      }
-      it("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
-
-        class MySpec extends WordSpec { 
-          "should blow up" in {
-            "in the wrong place, at the wrong time" should {
-              "should never run" ignore {
-                assert(1 === 2)
-              }
-            }
-          }
-        }
-
-        val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
-      }
-      it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
-
-        class MySpec extends WordSpec {
-          "should blow up" in {
-            "should never run" ignore {
-              assert(1 === 2)
-            }
-          }
-        }
-
-        val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
-      }
-      it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
-
-        class MySpec extends WordSpec {
-          "should blow up" in {
-            "should never run" taggedAs(SlowAsMolasses) ignore {
-              assert(1 === 2)
-            }
-          }
-        }
-
-        val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
-      }
     }
   }
 }
