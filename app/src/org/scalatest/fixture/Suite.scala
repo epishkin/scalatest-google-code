@@ -192,7 +192,8 @@ trait Suite extends org.scalatest.Suite with org.scalatest.fixture.FixtureSuite 
         candidateMethods.find(_.getParameterTypes.length == 1)
      found match {
        case Some(method) => method
-       case None => throw new RuntimeException("Can't find a test method with name: " + testName)
+       case None =>
+         throw new IllegalArgumentException(Resources("testNotFound", testName))
      }
   }
 }

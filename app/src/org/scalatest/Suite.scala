@@ -1197,6 +1197,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param testName the name of one test to run.
    *
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
+   * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
+   *     exists in this <code>Suite</code>
    */
   final def run(testName: String) {
     run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
@@ -1231,6 +1233,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    *
    * @throws NullPointerException if either of the passed <code>testName</code> or <code>config</code> parameters is <code>null</code>.
+   * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
+   *     exists in this <code>Suite</code>
    */
   final def run(testName: String, config: Map[String, Any]) {
     run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), config, None, new Tracker)
@@ -1388,6 +1392,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>config</code>
    *     or <code>tracker</code> is <code>null</code>.
+   * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
+   *     exists in this <code>Suite</code>
    */
   protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
 
@@ -1396,7 +1402,16 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
-    val method = getMethodForTestName(testName)
+    val method =
+      try {
+        getMethodForTestName(testName)
+      }
+      catch {
+        case e: NoSuchMethodException =>
+          throw new IllegalArgumentException(Resources("testNotFound", testName))
+        case e =>
+          throw e
+      }
 
     // Create a Rerunner if the Suite has a no-arg constructor
     val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
@@ -1521,6 +1536,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of the passed parameters is <code>null</code>.
+   * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
+   *     exists in this <code>Suite</code>
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
@@ -1597,6 +1614,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    *         
    * @throws NullPointerException if any passed parameter is <code>null</code>.
+   * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
+   *     exists in this <code>Suite</code>
    */
   def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
               config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {

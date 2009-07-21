@@ -364,6 +364,11 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         // Here, they forgot that the name is actually testThis(Fixture)
         suite.run(Some("testThis"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       }
+
+      intercept[IllegalArgumentException] {
+        // Here, they gave a non-existent test name
+        suite.run(Some("doesNotExist(Fixture)"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      }
     }
   }
 }
