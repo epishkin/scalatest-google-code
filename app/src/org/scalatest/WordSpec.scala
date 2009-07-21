@@ -88,7 +88,7 @@ import org.scalatest.events._
  * 
  * <p>
  * You can describe a subject in varying situations by using a <code>when</code> clause. A <code>when</code> clause
- * follows the subject. In the block after the <code>when</code>, you place strings that describe a situation or state
+ * follows the subject. In the block after the <code>when</code>, you place strings that describe a situation or a state
  * the subject may be in using a string, each followed by a verb. Here's an example:
  * </p>
  *

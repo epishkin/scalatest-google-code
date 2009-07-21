@@ -300,7 +300,8 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       assert(a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
-    it ("should report as ignored, ant not run, tests marked ignored") {
+
+    it("should report as ignored, ant not run, tests marked ignored") {
 
       val a = new FunSuite {
         var theTestThisCalled = false
@@ -363,7 +364,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       assert(!d.theTestThatCalled)
     }
 
-    it ("should run a test marked as ignored if run is invoked with that testName") {
+    it("should run a test marked as ignored if run is invoked with that testName") {
       // If I provide a specific testName to run, then it should ignore an Ignore on that test
       // method and actually invoke it.
       val e = new FunSuite {

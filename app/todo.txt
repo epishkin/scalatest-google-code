@@ -31,7 +31,7 @@ Document JUnitComfortSuite.
 Put an Option[Nothing] in the run methods as a placeholder for the OutErrTester kind of stuff. Whatever that object is
 that's getting passed around. OutErrManager maybe. Wierd, could even provide overloaded versions. Wait, I could do that
 anyway. Just add it at the end later, and make.., no because then it would have to be final.
-OutputManager, OutputTester. Those seem nicer. Anyway, it is for another day.
+OutputManager, OutputTester. Those seem nicer. Anyway, it is for another day. OutputTester
 
 Someone complained that if they configured the graphic reporter, that it should show that configuration by default not
 just runs and failures. Not sure.
@@ -141,7 +141,7 @@ name.
 not sure under what name). Idea is that -p takes a space-separated
 runpath, which works fine except when people have spaces in their
 paths. I want to keep -p as is, because you can specify jar files with
-URLs in there, but also provide another way to specify the runpath -s,
+URLs in there, but also provide another way to specify the runpath -a,
 that uses the traditional path separated by platform-specific
 separator character. (On Unix, a :, on Windows, a;, etc.) Please
 suggest a name for this, maybe platformRunpath or something.
@@ -645,3 +645,116 @@ From the SharedTests trait:
       3.seconds must_!= "string"
     }
   }
+
+Thoughts on OutputManager. I would replace System.err and System.out with PrintStreams that are connected
+to the OutputManager, which I pass in a Some to run. You can register a listener with the OutputManager and
+unregister it. While registered, it will receive one "event" per call to the PrintStream methods. So I'd
+do the loan pattern to basically say capture the thing. 
+
+val myListener = new OutputListener
+outMan.addListener(myListener)
+try {
+  // Some code
+}
+finally {
+  outMan.removeListener(myListener)
+}
+
+Can make a trait that has a withListener method:
+
+val myListener = new OutputListener
+outMan.withListener(myListener) { // Maybe listens to both std err and std out
+}
+outMan.withOutputListener(myListener) { // Maybe listens to only std out
+}
+outMan.withErrorListener(myListener) { // Maybe listens to only std err
+}
+
+Then in all my runTest methods, whew, I would have a:
+
+outputManager match {
+case None =>
+case Some 
+
+yuck. Basically probably out an OutputManager, which does nothing with the listener if it is not listening
+
+So this listener could be an OutputCollector, and I could pass it in goodies as "org.scalatest.OutputCollector"
+
+Man, need to say just my thread or all threads.
+
+outMan.withListenerAllThreads(myListener) { // Maybe listens to both std err and std out
+}
+outMan.withOutputListenerAllThreads(myListener) { // Maybe listens to only std out
+}
+outMan.withErrorListenerAllThreads(myListener) { // Maybe listens to only std err
+}
+
+Would want to give the Dispatcher's thread a unique name so it can not show up. Blech. Very ugly and complicated. Side effect city.
+
+Yes, I think this makes sense. Only offer the withListener approach, because otherwise people could forget
+to unregister a listener. The Listener is a trait, and I can offer a BufferListener, that is in=memory. But people
+could put a file listener in there too if they wanted to write one. Could be called A Collector. Because that's really
+what it is doing as it listens is collects. So I really need OutputManager to be a trait that has a do nothing one
+and a real one.
+
+
+outputAndError.captureWith(collector) {
+}
+
+capture stdOutAndErrWith collector {
+}
+
+capture stdOutWith collector {
+}
+
+val collector = new BufferCollector
+capture stdErrWith collector {
+}
+
+import outMan._
+
+stdErr.capture(collector) {
+}
+
+outMan.collectStdErr(collector)
+
+collect(stdErr) {
+}
+
+Collector can be a function that takes a thing that is either stdErr, stdOut, or stdOutAndErr, which
+could be members of outMan. The collect method could also be a member of outMan. So could say:
+
+import outMan._
+
+vall collect = new BufCollector
+
+collect(stdErr) {
+}
+
+val stdErr = new BufCollector
+
+outMan.collect(stdErr) {
+}
+
+val stdErr = outMan.collectStdErr {
+}
+
+import outMan._
+val stdErr =
+  collectStdErr {
+  }
+
+stdErr.all should include "expected output"
+Actually, stdErr could simply be a List[String], right? Or a Seq[String].
+
+Then could offer another collectStdErr method that takes a Collector. This one provides a collector that
+buffers stuff in memory.
+
+val seq =
+  collectStandardError {
+  }
+
+assert(seq.find("bla") != -1)
+
+Could offer a CollectorFixture that will fail if there's no Collector. Else it passes it in,
+and tests can do tests based on standard input and output.
