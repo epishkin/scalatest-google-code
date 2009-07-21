@@ -203,7 +203,7 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
       assert(!a.theTestThatCalled)
     }
 
-    it("should report as ignored, ant not run, tests marked ignored") {
+    it("should report as ignored, and not run, tests marked ignored") {
 
       val a = new FeatureSpec {
         var theTestThisCalled = false
