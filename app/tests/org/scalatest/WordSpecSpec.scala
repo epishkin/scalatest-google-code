@@ -578,5 +578,55 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(e.theTestThisCalled)
       assert(!e.theTestThatCalled)
     }
+
+    it("should allow a +++ 'prepend' operator clause enclosing a verb clause") {
+      val a = new WordSpec {
+        "A Stack" +++ {
+          "(when empty)" should {
+            "be empty" in {}
+            "complain on pop" in {}
+            "complain on peek" in {}
+          }
+          "(when full)" should {
+            "be full" in {}
+            "complain on push" in {}
+          }
+        }
+      }
+
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker)
+      val events: List[TestSucceeded] = rep.testSucceededEventsReceived
+      assert(events.exists(_.testName == "A Stack (when empty) should be empty"))
+      assert(events.exists(_.testName == "A Stack (when empty) should complain on pop"))
+      assert(events.exists(_.testName == "A Stack (when empty) should complain on peek"))
+      assert(events.exists(_.testName == "A Stack (when full) should be full"))
+      assert(events.exists(_.testName == "A Stack (when full) should complain on push"))
+    }
+
+    it("should allow a +++ 'prepend' operator clause enclosing a test clause") {
+      val a = new WordSpec {
+        "A Stack" should {
+          "(when empty)" +++ {
+            "be empty" in {}
+            "complain on pop" in {}
+            "complain on peek" in {}
+          }
+          "(when full)" +++ {
+            "be full" in {}
+            "complain on push" in {}
+          }
+        }
+      }
+
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker)
+      val events: List[TestSucceeded] = rep.testSucceededEventsReceived
+      assert(events.exists(_.testName == "A Stack should (when empty) be empty"))
+      assert(events.exists(_.testName == "A Stack should (when empty) complain on pop"))
+      assert(events.exists(_.testName == "A Stack should (when empty) complain on peek"))
+      assert(events.exists(_.testName == "A Stack should (when full) be full"))
+      assert(events.exists(_.testName == "A Stack should (when full) complain on push"))
+    }
   }
 }
