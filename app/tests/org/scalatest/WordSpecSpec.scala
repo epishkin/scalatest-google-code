@@ -22,7 +22,6 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
   describe("A WordSpec") {
 
-
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
