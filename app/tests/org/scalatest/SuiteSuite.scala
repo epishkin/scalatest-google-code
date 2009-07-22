@@ -20,60 +20,6 @@ import org.scalatest.events._
 
 class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
 
-  def testTestCount() {
-
-    val a = new Suite {
-      def testThis() = ()
-      def testThat(info: Informer) = ()
-    }
-    assert(a.expectedTestCount(Filter()) === 2)
-
-    val b = new Suite {
-      @Ignore
-      def testThis() = ()
-      def testThat(info: Informer) = ()
-    }
-    assert(b.expectedTestCount(Filter()) === 1)
-
-    val c = new Suite {
-      @FastAsLight
-      def testThis() = ()
-      def testThat(info: Informer) = ()
-    }
-    assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
-    assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
-
-    val d = new Suite {
-      @FastAsLight
-      @SlowAsMolasses
-      def testThis() = ()
-      @SlowAsMolasses
-      def testThat(info: Informer) = ()
-      def testTheOtherThing(info: Informer) = ()
-    }
-    assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
-    assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
-    assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
-    assert(d.expectedTestCount(Filter()) === 3)
-
-    val e = new Suite {
-      @FastAsLight
-      @SlowAsMolasses
-      def testThis() = ()
-      @SlowAsMolasses
-      def testThat(info: Informer) = ()
-      @Ignore
-      def testTheOtherThing(info: Informer) = ()
-    }
-    assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
-    assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
-    assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
-    assert(e.expectedTestCount(Filter()) === 2)
-
-    val f = new SuperSuite(List(a, b, c, d, e))
-    assert(f.expectedTestCount(Filter()) === 10)
-  }
-
   def testNamesAndGroupsMethodsDiscovered() {
 
     val a = new Suite {
