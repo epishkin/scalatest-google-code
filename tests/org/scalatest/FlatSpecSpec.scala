@@ -1005,6 +1005,51 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(!k.theTestThatCalled)
       assert(!k.theTestTheOtherCalled)
     }
+
+    it("should return the correct test count from its expectedTestCount method") {
+
+      val a = new FlatSpec {
+        it should "test this" in {}
+        it should "test that" in {}
+      }
+      assert(a.expectedTestCount(Filter()) === 2)
+
+      val b = new FlatSpec {
+        ignore should "test this" in {}
+        it should "test that" in {}
+      }
+      assert(b.expectedTestCount(Filter()) === 1)
+
+      val c = new FlatSpec {
+        it should "test this" taggedAs(mytags.FastAsLight) in {}
+        it should "test that" in {}
+      }
+      assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
+
+      val d = new FlatSpec {
+        it should "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in {}
+        it should "test that" taggedAs(mytags.SlowAsMolasses) in {}
+        it should "test the other thing" in {}
+      }
+      assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+      assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
+      assert(d.expectedTestCount(Filter()) === 3)
+
+      val e = new FlatSpec {
+        it should "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in {}
+        it should "test that" taggedAs(mytags.SlowAsMolasses) in {}
+        ignore should "test the other thing" in {}
+      }
+      assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+      assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
+      assert(e.expectedTestCount(Filter()) === 2)
+
+      val f = new SuperSuite(List(a, b, c, d, e))
+      assert(f.expectedTestCount(Filter()) === 10)
+    }
   }
 }
 
