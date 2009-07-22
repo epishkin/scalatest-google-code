@@ -433,11 +433,11 @@ class ShouldBeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         val caught1 = intercept[TestFailedException] {
           nonEmptySet should be ('empty)
         }
-        assert(caught1.getMessage === "[2, 1, 3] was not empty")
+        assert(caught1.getMessage endsWith "] was not empty")
         val caught3 = intercept[TestFailedException] {
           nonEmptySet should not { be ('happy) }
         }
-        assert(caught3.getMessage === "[2, 1, 3] has neither a happy nor an isHappy method")
+        assert(caught3.getMessage endsWith "] has neither a happy nor an isHappy method")
       }
 
       // FOR: implicit def convertToJavaListShouldWrapper[T](o: java.util.List[T])...
