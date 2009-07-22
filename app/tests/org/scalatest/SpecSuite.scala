@@ -824,7 +824,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     assert(!wrongTestWasInvoked)
   }
   
-  test("Goodies should make it through to runTest") {
+  test("Config map should make it through to runTest") {
     var foundMyGoodie = false
     class MySpec extends Spec with ShouldMatchers {
       override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
