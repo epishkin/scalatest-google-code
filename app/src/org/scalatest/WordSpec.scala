@@ -1126,12 +1126,6 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
       registerDescriptionBranch(string + " that " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
     }
-    /* def ~ (f: => Unit) {
-      registerDescriptionBranch(string, f _)
-    }
-    def ~ (resultOfAfterWordApplication: ResultOfAfterWordApplication) {
-      registerDescriptionBranch(string + " " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
-    } */
   }
 
   protected class AfterWord(text: String) {
