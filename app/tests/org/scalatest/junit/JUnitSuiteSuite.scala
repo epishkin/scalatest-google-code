@@ -143,13 +143,13 @@ package org.scalatest.junit {
       many.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
 
       assert(repA.testStartingEvent.isDefined)
-      assert(repA.testStartingEvent.get.testName === "verifySomethingElse")
+      assert(repA.testStartingEvent.get.testName startsWith "verifySomething")
       assert(repA.testStartingEvent.get.suiteName === "ManySuite")
       assert(repA.testStartingEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.ManySuite")
       assert(repA.testStartingCount === 2)
 
       assert(repA.testSucceededEvent.isDefined)
-      assert(repA.testSucceededEvent.get.testName === "verifySomethingElse")
+      assert(repA.testSucceededEvent.get.testName startsWith "verifySomething")
       assert(repA.testSucceededEvent.get.suiteName === "ManySuite")
       assert(repA.testSucceededEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.ManySuite")
       assert(repA.testSucceededCount === 2)
