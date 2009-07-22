@@ -282,5 +282,175 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
       assert(e.theTestThisCalled)
       assert(!e.theTestThatCalled)
     }
+
+    it("should run only those tests selected by the tags to include and exclude sets") {
+
+      // Nothing is excluded
+      val a = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        scenario("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
+        scenario("test that") { theTestThatCalled = true }
+      }
+      val repA = new TestIgnoredTrackingReporter
+      a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(!repA.testIgnoredReceived)
+      assert(a.theTestThisCalled)
+      assert(a.theTestThatCalled)
+
+      // SlowAsMolasses is included, one test should be excluded
+      val b = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        scenario("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
+        scenario("test that") { theTestThatCalled = true }
+      }
+      val repB = new TestIgnoredTrackingReporter
+      b.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
+      assert(!repB.testIgnoredReceived)
+      assert(b.theTestThisCalled)
+      assert(!b.theTestThatCalled)
+
+      // SlowAsMolasses is included, and both tests should be included
+      val c = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        scenario("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
+        scenario("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+      }
+      val repC = new TestIgnoredTrackingReporter
+      c.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
+      assert(!repC.testIgnoredReceived)
+      assert(c.theTestThisCalled)
+      assert(c.theTestThatCalled)
+
+      // SlowAsMolasses is included. both tests should be included but one ignored
+      val d = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        ignore("test this", mytags.SlowAsMolasses) { theTestThisCalled = true }
+        scenario("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+      }
+      val repD = new TestIgnoredTrackingReporter
+      d.run(None, repD, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.Ignore")), Map(), None, new Tracker)
+      assert(repD.testIgnoredReceived)
+      assert(!d.theTestThisCalled)
+      assert(d.theTestThatCalled)
+
+      // SlowAsMolasses included, FastAsLight excluded
+      val e = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        var theTestTheOtherCalled = false
+        scenario("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+        scenario("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+        scenario("test the other") { theTestTheOtherCalled = true }
+      }
+      val repE = new TestIgnoredTrackingReporter
+      e.run(None, repE, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
+                Map(), None, new Tracker)
+      assert(!repE.testIgnoredReceived)
+      assert(!e.theTestThisCalled)
+      assert(e.theTestThatCalled)
+      assert(!e.theTestTheOtherCalled)
+
+      // An Ignored test that was both included and excluded should not generate a TestIgnored event
+      val f = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        var theTestTheOtherCalled = false
+        ignore("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+        scenario("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+        scenario("test the other") { theTestTheOtherCalled = true }
+      }
+      val repF = new TestIgnoredTrackingReporter
+      f.run(None, repF, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
+                Map(), None, new Tracker)
+      assert(!repF.testIgnoredReceived)
+      assert(!f.theTestThisCalled)
+      assert(f.theTestThatCalled)
+      assert(!f.theTestTheOtherCalled)
+
+      // An Ignored test that was not included should not generate a TestIgnored event
+      val g = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        var theTestTheOtherCalled = false
+        scenario("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+        scenario("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+        ignore("test the other") { theTestTheOtherCalled = true }
+      }
+      val repG = new TestIgnoredTrackingReporter
+      g.run(None, repG, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
+                Map(), None, new Tracker)
+      assert(!repG.testIgnoredReceived)
+      assert(!g.theTestThisCalled)
+      assert(g.theTestThatCalled)
+      assert(!g.theTestTheOtherCalled)
+
+      // No tagsToInclude set, FastAsLight excluded
+      val h = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        var theTestTheOtherCalled = false
+        scenario("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+        scenario("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+        scenario("test the other") { theTestTheOtherCalled = true }
+      }
+      val repH = new TestIgnoredTrackingReporter
+      h.run(None, repH, new Stopper {}, Filter(None, Set("org.scalatest.FastAsLight")), Map(), None, new Tracker)
+      assert(!repH.testIgnoredReceived)
+      assert(!h.theTestThisCalled)
+      assert(h.theTestThatCalled)
+      assert(h.theTestTheOtherCalled)
+
+      // No tagsToInclude set, SlowAsMolasses excluded
+      val i = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        var theTestTheOtherCalled = false
+        scenario("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+        scenario("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+        scenario("test the other") { theTestTheOtherCalled = true }
+      }
+      val repI = new TestIgnoredTrackingReporter
+      i.run(None, repI, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
+      assert(!repI.testIgnoredReceived)
+      assert(!i.theTestThisCalled)
+      assert(!i.theTestThatCalled)
+      assert(i.theTestTheOtherCalled)
+
+      // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
+      val j = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        var theTestTheOtherCalled = false
+        ignore("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+        ignore("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+        scenario("test the other") { theTestTheOtherCalled = true }
+      }
+      val repJ = new TestIgnoredTrackingReporter
+      j.run(None, repJ, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
+      assert(!repI.testIgnoredReceived)
+      assert(!j.theTestThisCalled)
+      assert(!j.theTestThatCalled)
+      assert(j.theTestTheOtherCalled)
+
+      // Same as previous, except Ignore specifically mentioned in excludes set
+      val k = new FeatureSpec {
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        var theTestTheOtherCalled = false
+        ignore("test this", mytags.SlowAsMolasses, mytags.FastAsLight) { theTestThisCalled = true }
+        ignore("test that", mytags.SlowAsMolasses) { theTestThatCalled = true }
+        ignore("test the other") { theTestTheOtherCalled = true }
+      }
+      val repK = new TestIgnoredTrackingReporter
+      k.run(None, repK, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore")), Map(), None, new Tracker)
+      assert(repK.testIgnoredReceived)
+      assert(!k.theTestThisCalled)
+      assert(!k.theTestThatCalled)
+      assert(!k.theTestTheOtherCalled)
+    }
   }
 }
