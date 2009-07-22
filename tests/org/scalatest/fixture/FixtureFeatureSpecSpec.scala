@@ -534,5 +534,60 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(!k.theTestThatCalled)
       assert(!k.theTestTheOtherCalled)
     }
+
+    it("should return the correct test count from its expectedTestCount method") {
+
+      val a = new FeatureSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        scenario("test this") { fixture => }
+        scenario("test that") { fixture => }
+      }
+      assert(a.expectedTestCount(Filter()) === 2)
+
+      val b = new FeatureSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        ignore("test this") { fixture => }
+        scenario("test that") { fixture => }
+      }
+      assert(b.expectedTestCount(Filter()) === 1)
+
+      val c = new FeatureSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        scenario("test this", mytags.FastAsLight) { fixture => }
+        scenario("test that") { fixture => }
+      }
+      assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
+
+      val d = new FeatureSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        scenario("test this", mytags.FastAsLight, mytags.SlowAsMolasses) { fixture => }
+        scenario("test that", mytags.SlowAsMolasses) { fixture => }
+        scenario("test the other thing") { fixture => }
+      }
+      assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+      assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
+      assert(d.expectedTestCount(Filter()) === 3)
+
+      val e = new FeatureSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        scenario("test this", mytags.FastAsLight, mytags.SlowAsMolasses) { fixture => }
+        scenario("test that", mytags.SlowAsMolasses) { fixture => }
+        ignore("test the other thing") { fixture => }
+      }
+      assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+      assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
+      assert(e.expectedTestCount(Filter()) === 2)
+
+      val f = new SuperSuite(List(a, b, c, d, e))
+      assert(f.expectedTestCount(Filter()) === 10)
+    }
   }
 }

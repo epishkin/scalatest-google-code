@@ -616,5 +616,60 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(!k.theTestThatCalled)
       assert(!k.theTestTheOtherCalled)
     }
+
+    it("should return the correct test count from its expectedTestCount method") {
+
+      val a = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        "test this" in { fixture => }
+        "test that" in { fixture => }
+      }
+      assert(a.expectedTestCount(Filter()) === 2)
+
+      val b = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        "test this" ignore { fixture => }
+        "test that" in { fixture => }
+      }
+      assert(b.expectedTestCount(Filter()) === 1)
+
+      val c = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        "test this" taggedAs(mytags.FastAsLight) in { fixture => }
+        "test that" in { fixture => }
+      }
+      assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
+
+      val d = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in { fixture => }
+        "test that" taggedAs(mytags.SlowAsMolasses) in { fixture => }
+        "test the other thing" in { fixture => }
+      }
+      assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+      assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
+      assert(d.expectedTestCount(Filter()) === 3)
+
+      val e = new WordSpec with SimpleWithFixture {
+        type Fixture = String
+        def withFixture(fun: String => Unit) { fun("hi") }
+        "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in { fixture => }
+        "test that" taggedAs(mytags.SlowAsMolasses) in { fixture => }
+        "test the other thing" ignore { fixture => }
+      }
+      assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
+      assert(e.expectedTestCount(Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight"))) === 1)
+      assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
+      assert(e.expectedTestCount(Filter()) === 2)
+
+      val f = new SuperSuite(List(a, b, c, d, e))
+      assert(f.expectedTestCount(Filter()) === 10)
+    }
   }
 }
