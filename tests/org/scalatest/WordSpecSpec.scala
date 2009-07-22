@@ -581,7 +581,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
     it("should allow a +++ 'prepend' operator clause enclosing a verb clause") {
       val a = new WordSpec {
-        "A Stack" +++ {
+        "A Stack" plus {
           "(when empty)" should {
             "be empty" in {}
             "complain on pop" in {}
@@ -597,6 +597,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       val rep = new EventRecordingReporter
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker)
       val events: List[TestSucceeded] = rep.testSucceededEventsReceived
+      println(events.map("\n" + _.testName))
       assert(events.exists(_.testName == "A Stack (when empty) should be empty"))
       assert(events.exists(_.testName == "A Stack (when empty) should complain on pop"))
       assert(events.exists(_.testName == "A Stack (when empty) should complain on peek"))
@@ -604,15 +605,15 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(events.exists(_.testName == "A Stack (when full) should complain on push"))
     }
 
-    it("should allow a +++ 'prepend' operator clause enclosing a test clause") {
+   it("should allow a +++ 'prepend' operator clause enclosing a test clause") {
       val a = new WordSpec {
         "A Stack" should {
-          "(when empty)" +++ {
+          "(when empty)" plus {
             "be empty" in {}
             "complain on pop" in {}
             "complain on peek" in {}
           }
-          "(when full)" +++ {
+          "(when full)" plus {
             "be full" in {}
             "complain on push" in {}
           }
@@ -626,6 +627,31 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(events.exists(_.testName == "A Stack should (when empty) complain on pop"))
       assert(events.exists(_.testName == "A Stack should (when empty) complain on peek"))
       assert(events.exists(_.testName == "A Stack should (when full) be full"))
+      assert(events.exists(_.testName == "A Stack should (when full) complain on push"))
+    }
+
+    it("should allow an after word after a +++ 'prepend' operator") {
+      val a = new WordSpec {
+
+        val complain = afterWord("complain")
+
+        "A Stack" should {
+          "(when empty)" plus complain {
+            "on pop" in {}
+            "on peek" in {}
+          }
+          "(when full)" plus complain {
+            "on push" in {}
+          }
+        }
+      }
+
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker)
+      val events: List[TestSucceeded] = rep.testSucceededEventsReceived
+      println(events.map("\n" + _.testName))
+      assert(events.exists(_.testName == "A Stack should (when empty) complain on pop"))
+      assert(events.exists(_.testName == "A Stack should (when empty) complain on peek"))
       assert(events.exists(_.testName == "A Stack should (when full) complain on push"))
     }
   }
