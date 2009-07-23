@@ -18,6 +18,7 @@ package org.scalatest
 import scala.collection.mutable.ListBuffer
 import org.scalatest.events.Event
 import org.scalatest.events.Ordinal
+import org.scalatest.SharedHelpers.SilentReporter
 
 class BeforeAndAfterSuite extends FunSuite {
 
@@ -35,11 +36,22 @@ class BeforeAndAfterSuite extends FunSuite {
     }
   }
   
-  class MySuite extends TheSuper with BeforeAndAfter {
+  class MySuite extends TheSuper with BeforeAndAfterEach with BeforeAndAfterAll {
     var beforeEachCalledBeforeRunTest = false
     var afterEachCalledAfterRunTest = false
     var beforeAllCalledBeforeExecute = false
     var afterAllCalledAfterExecute = false
+
+    var beforeEachConfigCalledBeforeRunTest = false
+    var afterEachConfigCalledAfterRunTest = false
+    var beforeAllConfigCalledBeforeExecute = false
+    var afterAllConfigCalledAfterExecute = false
+
+    var beforeEachConfigGotTheGreeting = false
+    var afterEachConfigGotTheGreeting = false
+    var beforeAllConfigGotTheGreeting = false
+    var afterAllConfigGotTheGreeting = false
+
     override def beforeAll() {
       if (!runWasCalled)
         beforeAllCalledBeforeExecute = true
@@ -57,49 +69,106 @@ class BeforeAndAfterSuite extends FunSuite {
       if (runWasCalled)
         afterAllCalledAfterExecute = true
     }
+
+    override def beforeAll(config: Map[String, Any]) {
+      if (!runWasCalled)
+        beforeAllConfigCalledBeforeExecute = true
+      if (config.contains("hi") && config("hi") == "there")
+        beforeAllConfigGotTheGreeting = true
+      super.beforeAll(config)
+    }
+    override def beforeEach(config: Map[String, Any]) {
+      if (!runTestWasCalled)
+        beforeEachConfigCalledBeforeRunTest = true
+      if (config.contains("hi") && config("hi") == "there")
+        beforeEachConfigGotTheGreeting = true
+      super.beforeEach(config)
+    }
+    override def afterEach(config: Map[String, Any]) {
+      if (runTestWasCalled)
+        afterEachConfigCalledAfterRunTest = true
+      if (config.contains("hi") && config("hi") == "there")
+        afterEachConfigGotTheGreeting = true
+      super.afterEach(config)
+    }
+    override def afterAll(config: Map[String, Any]) {
+      if (runWasCalled)
+        afterAllConfigCalledAfterExecute = true
+      if (config.contains("hi") && config("hi") == "there")
+        afterAllConfigGotTheGreeting = true
+      super.afterAll(config)
+    }
   }
 
   test("super's runTest must be called") {
     val a = new MySuite
-    a.run()
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
     assert(a.runTestWasCalled)
   }
   
   test("super's run must be called") {
     val a = new MySuite
-    a.run()
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
     assert(a.runWasCalled)
   }
 
   test("beforeEach gets called before runTest") {
     val a = new MySuite
-    a.run()
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
     assert(a.beforeEachCalledBeforeRunTest)
+    assert(a.beforeEachConfigCalledBeforeRunTest)
   }
   
   test("afterEach gets called after runTest") {
     val a = new MySuite
-    a.run()
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
     assert(a.afterEachCalledAfterRunTest)
+    assert(a.afterEachConfigCalledAfterRunTest)
   }
 
   test("beforeAll gets called before run") {
     val a = new MySuite
-    a.run()
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
     assert(a.beforeAllCalledBeforeExecute)
+    assert(a.beforeAllConfigCalledBeforeExecute)
   }
   
   test("afterAll gets called after run") {
     val a = new MySuite
-    a.run()
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
     assert(a.afterAllCalledAfterExecute)
+    assert(a.afterAllConfigCalledAfterExecute)
   }
   
+  test("beforeEach(config) gets the config passed to run") {
+    val a = new MySuite
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
+    assert(a.beforeEachConfigGotTheGreeting)
+  }
+
+  test("afterEach(config) gets the config passed to run") {
+    val a = new MySuite
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
+    assert(a.afterEachConfigGotTheGreeting)
+  }
+
+  test("beforeAll(config) gets the config passed to run") {
+    val a = new MySuite
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
+    assert(a.beforeAllConfigGotTheGreeting)
+  }
+
+  test("afterAll(config) gets the config passed to run") {
+    val a = new MySuite
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> "there"), None, new Tracker)
+    assert(a.afterAllConfigGotTheGreeting)
+  }
+
   // test exceptions with runTest
   test("If any invocation of beforeEach completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception.") {
     
-    class MySuite extends Suite with BeforeAndAfter {
+    class MySuite extends Suite with BeforeAndAfterEach with BeforeAndAfterAll {
       override def beforeEach() { throw new NumberFormatException } 
     }
     intercept[NumberFormatException] {
@@ -115,7 +184,7 @@ class BeforeAndAfterSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfter {
+    class MySuite extends FunkySuite with BeforeAndAfterEach with BeforeAndAfterAll {
       var afterEachCalled = false
       override def afterEach() {
         afterEachCalled = true
@@ -135,7 +204,7 @@ class BeforeAndAfterSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfter {
+    class MySuite extends FunkySuite with BeforeAndAfterEach with BeforeAndAfterAll {
       var afterEachCalled = false
       override def afterEach() {
         afterEachCalled = true
@@ -152,7 +221,7 @@ class BeforeAndAfterSuite extends FunSuite {
   test("If super.runTest returns normally, but afterEach completes abruptly with an " +
     "exception, runTest will complete abruptly with the same exception.") {
        
-    class MySuite extends Suite with BeforeAndAfter {
+    class MySuite extends Suite with BeforeAndAfterEach with BeforeAndAfterAll {
       override def afterEach() { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -166,7 +235,7 @@ class BeforeAndAfterSuite extends FunSuite {
   test("If any invocation of beforeAll completes abruptly with an exception, run " +
     "will complete abruptly with the same exception.") {
     
-    class MySuite extends Suite with BeforeAndAfter {
+    class MySuite extends Suite with BeforeAndAfterEach with BeforeAndAfterAll {
       override def beforeAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -184,7 +253,7 @@ class BeforeAndAfterSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfter {
+    class MySuite extends FunkySuite with BeforeAndAfterEach with BeforeAndAfterAll {
       var afterAllCalled = false
       override def afterAll() {
         afterAllCalled = true
@@ -205,7 +274,7 @@ class BeforeAndAfterSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfter {
+    class MySuite extends FunkySuite with BeforeAndAfterEach with BeforeAndAfterAll {
       var afterAllCalled = false
       override def afterAll() {
         afterAllCalled = true
@@ -222,7 +291,7 @@ class BeforeAndAfterSuite extends FunSuite {
   test("If super.run returns normally, but afterAll completes abruptly with an " +
     "exception, run will complete abruptly with the same exception.") {
        
-    class MySuite extends Suite with BeforeAndAfter {
+    class MySuite extends Suite with BeforeAndAfterEach with BeforeAndAfterAll {
       override def afterAll() { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -233,7 +302,7 @@ class BeforeAndAfterSuite extends FunSuite {
   }
 }
 
-class BeforeAndAfterExtendingSuite extends Suite with BeforeAndAfter {
+class BeforeAndAfterExtendingSuite extends Suite with BeforeAndAfterEach with BeforeAndAfterAll {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
@@ -257,7 +326,7 @@ class BeforeAndAfterExtendingSuite extends Suite with BeforeAndAfter {
   }
 }
 
-class BeforeAndAfterExtendingFunSuite extends FunSuite with BeforeAndAfter {
+class BeforeAndAfterExtendingFunSuite extends FunSuite with BeforeAndAfterEach with BeforeAndAfterAll {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
