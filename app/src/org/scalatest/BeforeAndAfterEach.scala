@@ -77,31 +77,72 @@ trait BeforeAndAfterEach extends RunMethods {
    *
    * <p>
    * This trait's implementation
-   * of <code>runTest</code> invokes this method before running
-   * each test, thus this method can be used to set up a test fixture
-   * needed by each test. This trait's implementation of this method does nothing.
+   * of <code>runTest</code> invokes the overloaded form of this method that
+   * takes a <code>config</code> map before running
+   * each test. This trait's implementation of that <code>beforeEach(Map[String, Any])</code> method simply invokes this
+   * <code>beforeEach()</code> method. Thus this method can be used to set up a test fixture
+   * needed by each test, when you don't need anything from the <code>config</code>
+   * map. This trait's implementation of this method does nothing.
    * </p>
    */
   protected def beforeEach() = ()
+
+  /**
+   * Defines a method (that takes a <code>config</code> map) to be run before
+   * each of this suite's tests.
+   *
+   * <p>
+   * This trait's implementation
+   * of <code>runTest</code> invokes this method before running
+   * each test (passing in the <code>config</code> map passed to it), thus this
+   * method can be used to set up a test fixture
+   * needed by each test. This trait's implementation of this method invokes the
+   * overloaded form of <code>beforeEach</code> that takes no <code>config</code> map.
+   * </p>
+   */
+  protected def beforeEach(config: Map[String, Any]) {
+    beforeEach()
+  }
 
   /**
    * Defines a method to be run after each of this suite's tests.
    *
    * <p>
    * This trait's implementation
-   * of <code>runTest</code> invokes this method after running
-   * each test, thus this method can be used to tear down a test fixture
-   * needed by each test. This trait's implementation of this method does nothing.
+   * of <code>runTest</code> invokes the overloaded form of this method that
+   * takes a <code>config</code> map after running
+   * each test. This trait's implementation of that <code>afterEach(Map[String, Any])</code> method simply invokes this
+   * <code>afterEach()</code> method. Thus this method can be used to tear down a test fixture
+   * needed by each test, when you don't need anything from the <code>config</code>
+   * map. This trait's implementation of this method does nothing.
    * </p>
    */
   protected def afterEach() = ()
 
   /**
+   * Defines a method (that takes a <code>config</code> map) to be run after
+   * each of this suite's tests.
+   *
+   * <p>
+   * This trait's implementation
+   * of <code>runTest</code> invokes this method after running
+   * each test (passing in the <code>config</code> map passed to it), thus this
+   * method can be used to tear down a test fixture
+   * needed by each test. This trait's implementation of this method invokes the
+   * overloaded form of <code>afterEach</code> that takes no <code>config</code> map.
+   * </p>
+   */
+  protected def afterEach(config: Map[String, Any]) {
+    afterEach()
+  }
+
+  /**
    * Run a test surrounded by calls to <code>beforeEach</code> and <code>afterEach</code>.
    *
    * <p>
-   * This trait's implementation of this method ("this method") invokes <code>beforeEach</code>
-   * before running each test and <code>afterEach</code>
+   * This trait's implementation of this method ("this method") invokes
+   * <code>beforeEach(config)</code>
+   * before running each test and <code>afterEach(config)</code>
    * after running each test. It runs each test by invoking <code>super.runTest</code>, passing along
    * the five parameters passed to it.
    * </p>
@@ -117,11 +158,11 @@ trait BeforeAndAfterEach extends RunMethods {
    * exception, this method will complete abruptly with the exception thrown by <code>afterEach</code>.
    * </p>
   */
-  abstract override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+  abstract protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
 
     var thrownException: Option[Throwable] = None
 
-    beforeEach()
+    beforeEach(config)
     try {
       super.runTest(testName, reporter, stopper, config, tracker)
     }
@@ -130,7 +171,7 @@ trait BeforeAndAfterEach extends RunMethods {
     }
     finally {
       try {
-        afterEach() // Make sure that afterEach is called even if runTest completes abruptly.
+        afterEach(config) // Make sure that afterEach is called even if runTest completes abruptly.
         thrownException match {
           case Some(e) => throw e
           case None =>

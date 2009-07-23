@@ -122,12 +122,33 @@ trait BeforeAndAfterAll  extends RunMethods {
    *
    * <p>
    * This trait's implementation
-   * of <code>run</code> invokes this method before executing
-   * any tests or nested suites, thus this method can be used to set up a test fixture
-   * needed by the entire suite. This trait's implementation of this method does nothing.
+   * of <code>run</code> invokes the overloaded form of this method that
+   * takes a <code>config</code> map before executing
+   * any tests or nested suites. This trait's implementation of that <code>beforeAll(Map[String, Any])</code>
+   * method simply invokes this <code>beforeAll()</code>
+   * method. Thus this method can be used to set up a test fixture
+   * needed by the entire suite, when you don't need anything from the <code>config</code>
+   * map. This trait's implementation of this method does nothing.
    * </p>
    */
   protected def beforeAll() = ()
+
+  /**
+   * Defines a method (that takes a <code>config</code> map) to be run before any
+   * of this suite's tests or nested suites are run.
+   *
+   * <p>
+   * This trait's implementation
+   * of <code>run</code> invokes this method before executing
+   * any tests or nested suites (passing in the <code>config</code> map passed to it), thus this
+   * method can be used to set up a test fixture
+   * needed by the entire suite. This trait's implementation of this method invokes the
+   * overloaded form of <code>beforeAll</code> that takes no <code>config</code> map.
+   * </p>
+   */
+  protected def beforeAll(config: Map[String, Any]) {
+    beforeAll()
+  }
 
   /**
    * Defines a method to be run after all of this suite's tests and nested suites have
@@ -135,19 +156,39 @@ trait BeforeAndAfterAll  extends RunMethods {
    *
    * <p>
    * This trait's implementation
-   * of <code>run</code> invokes this method after executing
-   * all tests and nested suites, thus this method can be used to tear down a test fixture
-   * needed by the entire suite. This trait's implementation of this method does nothing.
+   * of <code>run</code> invokes the overloaded form of this method that
+   * takes a <code>config</code> map after executing
+   * all tests and nested suites. This trait's implementation of that <code>afterAll(Map[String, Any])</code> method simply invokes this
+   * <code>afterAll()</code> method. Thus this method can be used to tear down a test fixture
+   * needed by the entire suite, when you don't need anything from the <code>config</code>
+   * map. This trait's implementation of this method does nothing.
    * </p>
    */
   protected def afterAll() = ()
-  
+
+  /**
+   * Defines a method (that takes a <code>config</code> map) to be run after
+   * all of this suite's tests and nested suites have been run.
+   *
+   * <p>
+   * This trait's implementation
+   * of <code>run</code> invokes this method after executing all tests
+   * and nested suites (passing in the <code>config</code> map passed to it), thus this
+   * method can be used to tear down a test fixture
+   * needed by the entire suite. This trait's implementation of this method invokes the
+   * overloaded form of <code>afterAll</code> that takes no <code>config</code> map.
+   * </p>
+   */
+  protected def afterAll(config: Map[String, Any]) {
+    afterAll()
+  }
+
   /**
    * Execute a suite surrounded by calls to <code>beforeAll</code> and <code>afterAll</code>.
    *
    * <p>
-   * This trait's implementation of this method ("this method") invokes <code>beforeAll</code>
-   * before executing any tests or nested suites and <code>afterAll</code>
+   * This trait's implementation of this method ("this method") invokes <code>beforeAll(Map[String, Any])</code>
+   * before executing any tests or nested suites and <code>afterAll(Map[String, Any])</code>
    * after executing all tests and nested suites. It runs the suite by invoking <code>super.run</code>, passing along
    * the seven parameters passed to it.
    * </p>
@@ -167,7 +208,7 @@ trait BeforeAndAfterAll  extends RunMethods {
                        config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     var thrownException: Option[Throwable] = None
 
-    beforeAll()
+    beforeAll(config)
     try {
       super.run(testName, reporter, stopper, filter, config, distributor, tracker)
     }
@@ -176,7 +217,7 @@ trait BeforeAndAfterAll  extends RunMethods {
     }
     finally {
       try {
-        afterAll() // Make sure that afterAll is called even if run completes abruptly.
+        afterAll(config) // Make sure that afterAll is called even if run completes abruptly.
         thrownException match {
           case Some(e) => throw e
           case None =>

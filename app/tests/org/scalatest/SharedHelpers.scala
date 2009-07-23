@@ -145,3 +145,6 @@ trait SharedHelpers extends Assertions {
   }
 }
 
+// Selfless trait pattern
+object SharedHelpers extends SharedHelpers
+
