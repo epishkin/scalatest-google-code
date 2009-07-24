@@ -837,7 +837,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
     }
     // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
     //                                             ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(specText, tags, unusedFixture => testFun)
     }
     // "hi" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
@@ -858,7 +858,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
     }
     // "test that" is (pending)
     //             ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(string, List(), unusedFixtre => testFun)
     }
     def ignore(testFun: Fixture => Unit) {

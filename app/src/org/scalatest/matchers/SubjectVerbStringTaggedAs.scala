@@ -23,7 +23,7 @@ trait SubjectVerbStringTaggedAs[T] {
 
   // "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
   //                                                            ^
-  def is(testFun: => Nothing)
+  def is(testFun: => PendingNothing)
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
   //                                               ^

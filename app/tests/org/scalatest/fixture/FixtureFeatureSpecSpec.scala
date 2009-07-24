@@ -589,5 +589,23 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       val f = new SuperSuite(List(a, b, c, d, e))
       assert(f.expectedTestCount(Filter()) === 10)
     }
+
+    it("should generate a TestPending message when the test body is (pending)") {
+      val a = new FeatureSpec with SimpleWithFixture {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: String => Unit) {
+          fun(hello)
+        }
+        scenario("should do this") (is => pending)
+        scenario("should do that") { fixture =>
+          assert(fixture === hello)
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testPendingEventsReceived
+      assert(tp.size === 1)
+    }
   }
 }

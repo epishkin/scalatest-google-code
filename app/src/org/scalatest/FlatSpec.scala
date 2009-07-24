@@ -737,7 +737,7 @@ trait FlatSpec extends Suite { thisSuite =>
     }
     // it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
     //                                                     ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(verb + " " + name, tags, testFun _)
     }
     def ignore(testFun: => Unit) {
@@ -749,7 +749,7 @@ trait FlatSpec extends Suite { thisSuite =>
     def in(testFun: => Unit) {
       registerTestToRun(verb + " " + name, List(), testFun _)
     }
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(verb + " " + name, List(), testFun _)
     }
     def ignore(testFun: => Unit) {
@@ -783,7 +783,7 @@ trait FlatSpec extends Suite { thisSuite =>
 
     // "A Stack" should "bla bla" taggedAs(SlowTest) is (pending)
     //                                               ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(verbAndname, tags, testFun _)
     }
 
@@ -814,7 +814,7 @@ trait FlatSpec extends Suite { thisSuite =>
     }
     // ignore must "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
     //                                                         ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToIgnore(verb + " " + name, tags, testFun _)
     }
     // Note: no def ignore here, so you can't put two ignores in the same line
@@ -828,7 +828,7 @@ trait FlatSpec extends Suite { thisSuite =>
     }
     // ignore should "test this" is (pending)
     //                           ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToIgnore(verb + " " + name, List(), testFun _)
     }
     // I think this one is "ignore should "bla bla" taggedAs(SlowTest) in {
@@ -854,7 +854,7 @@ trait FlatSpec extends Suite { thisSuite =>
         def in(testFun: => Unit) {
           registerTestToRun(verb + " " + right, List(), testFun _)
         }
-        def is(testFun: => Nothing) {
+        def is(testFun: => PendingNothing) {
           registerTestToRun(verb + " " + right, List(), testFun _)
         }
         def ignore(testFun: => Unit) {
@@ -863,7 +863,7 @@ trait FlatSpec extends Suite { thisSuite =>
         def in(testFun: Any => Unit) { // TODO pass some message
           throw new RuntimeException
         }
-        // Note, won't have a fixture => Nothing one, because don't want
+        // Note, won't have a fixture => PendingNothing one, because don't want
         // to say is (fixture => pending), rather just say is (pending)
         def ignore(testFun: Any => Unit) { // TODO pass some message
           throw new RuntimeException
