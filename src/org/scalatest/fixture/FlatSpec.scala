@@ -737,7 +737,7 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     }
     // it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
     //                                                     ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(verb + " " + name, tags, unusedFixture => testFun)
     }
     def ignore(testFun: Fixture => Unit) {
@@ -751,7 +751,7 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     }
     // it should "test that" is (pending)
     //                       ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(verb + " " + name, List(), unusedFixture => testFun)
     }
 
@@ -781,7 +781,7 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
     }
     // ignore must "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
     //                                                         ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToIgnore(verb + " " + name, tags, unusedFixture => testFun)
     }
   }
@@ -793,7 +793,7 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
 
     // ignore should "test this" is (pending)
     //                           ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToIgnore(verb + " " + name, List(), unusedFixture => testFun)
     }
 
@@ -832,7 +832,7 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
 
     // "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
     //                                                            ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(verbAndname, tags, unusedFixture => testFun)
     }
 
@@ -858,7 +858,7 @@ trait FlatSpec extends Suite with FixtureSuite { thisSuite =>
         def in(testFun: Fixture => Unit) {
           registerTestToRun(verb + " " + right, List(), testFun)
         }
-        def is(testFun: => Nothing) {
+        def is(testFun: => PendingNothing) {
           registerTestToRun(verb + " " + right, List(), unusedFixture => testFun)
         }
         def ignore(testFun: Fixture => Unit) {

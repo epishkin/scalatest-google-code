@@ -497,5 +497,21 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
       val f = new SuperSuite(List(a, b, c, d, e))
       assert(f.expectedTestCount(Filter()) === 10)
     }
+    
+    it("should send an InfoProvided event for an info") {
+      class MySuite extends FeatureSpec  {
+        info(
+          "hi there"
+        )
+      }
+      val suite = new MySuite
+      val reporter = new EventRecordingReporter
+      suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+
+      val infoList = reporter.infoProvidedEventsReceived
+
+      assert(infoList.size === 1)
+      assert(infoList(0).message === "hi there")
+    }
   }
 }

@@ -25,7 +25,7 @@ class BeforeAndAfterSuite extends FunSuite {
   class TheSuper extends Suite {
     var runTestWasCalled = false
     var runWasCalled = false
-    override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any], tracker: Tracker) {
+    protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any], tracker: Tracker) {
       runTestWasCalled = true
       super.runTest(testName, reporter, stopper, properties, tracker)
     }
@@ -173,14 +173,14 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.runTest("july", StubReporter, new Stopper {}, Map(), new Tracker)
+      a.run(Some("july"), StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
   }
   
   test("If any call to super.runTest completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception, however, before doing so, it will invoke afterEach") {
     trait FunkySuite extends Suite {
-      override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any], tracker: Tracker) {
+      protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any], tracker: Tracker) {
         throw new NumberFormatException
       }
     }
@@ -192,7 +192,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.runTest("july", StubReporter, new Stopper {}, Map(), new Tracker)
+      a.run(Some("july"), StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
     assert(a.afterEachCalled)
   }
@@ -200,7 +200,7 @@ class BeforeAndAfterSuite extends FunSuite {
   test("If both super.runTest and afterEach complete abruptly with an exception, runTest " + 
     "will complete abruptly with the exception thrown by super.runTest.") {
     trait FunkySuite extends Suite {
-      override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any], tracker: Tracker) {
+      protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, properties: Map[String, Any], tracker: Tracker) {
         throw new NumberFormatException
       }
     }
@@ -213,7 +213,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     val a = new MySuite
     intercept[NumberFormatException] {
-      a.runTest("july", StubReporter, new Stopper {}, Map(), new Tracker)
+      a.run(Some("july"), StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
     assert(a.afterEachCalled)
   }
@@ -227,7 +227,7 @@ class BeforeAndAfterSuite extends FunSuite {
     }
     intercept[NumberFormatException] {
       val a = new MySuite
-      a.runTest("testJuly", StubReporter, new Stopper {}, Map(), new Tracker)
+      a.run(Some("testJuly"), StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
   }
  

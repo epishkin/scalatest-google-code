@@ -1085,7 +1085,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     }
     // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
     //                                             ^
-    def is(testFun: => Nothing) {
+    def is(testFun: => PendingNothing) {
       registerTestToRun(specText, tags, testFun _)
     }
     def ignore(testFun: => Unit) {
@@ -1104,7 +1104,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     // is the case for pending methods. Can say "is (pending)" that way, which reads much
     // nicer than "in (pending)", but can't use is { ... } for an implemented test function,
     // In that case, have to say "in { ... }"
-    def is(f: => Nothing) {
+    def is(f: => PendingNothing) {
       registerTestToRun(string, List(), f _)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {

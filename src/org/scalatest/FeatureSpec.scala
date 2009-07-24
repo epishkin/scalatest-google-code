@@ -880,8 +880,7 @@ trait FeatureSpec extends Suite { thisSuite =>
                 runTest(tn, report, stopRequested, config, tracker)
           }
         case InfoLeaf(_, message) =>
-          val infoProvidedIcon = Resources("infoProvidedIconChar")
-          val formattedText = Resources("iconPlusShortName", infoProvidedIcon, message)
+          val formattedText = "  " +  message
           report(InfoProvided(tracker.nextOrdinal(), message,
             Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)),
               None, Some(IndentedText(formattedText, message, 1))))
