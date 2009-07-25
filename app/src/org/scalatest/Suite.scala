@@ -1824,7 +1824,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * stay at a higher level, forgetting how it is implemented and just focusing on the intent of the programmer who wrote the code.
    * </p>
    */
-  final def pending: PendingNothing = { throw new TestPendingException }
+  def pending: PendingNothing = { throw new TestPendingException }
 
   private[scalatest] def getTestNameForReport(testName: String) = {
 
@@ -2011,5 +2011,5 @@ private[scalatest] object Suite {
 
 // Trying this to see if I can get the syntax I want in fixture.FeatureSpec
 // TODO: move to own file
-final class PendingNothing
+class PendingNothing
 

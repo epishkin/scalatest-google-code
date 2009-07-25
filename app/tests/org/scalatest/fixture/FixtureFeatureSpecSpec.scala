@@ -597,7 +597,9 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         def withFixture(fun: String => Unit) {
           fun(hello)
         }
-        scenario("should do this") (is => pending)
+
+        scenario("should do this") (pending)
+
         scenario("should do that") { fixture =>
           assert(fixture === hello)
         }
