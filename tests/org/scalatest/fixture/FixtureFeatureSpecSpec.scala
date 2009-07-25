@@ -603,11 +603,15 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         scenario("should do that") { fixture =>
           assert(fixture === hello)
         }
+        scenario("should do something else") { fixture =>
+          assert(fixture === hello)
+          pending
+        }
       }
       val rep = new EventRecordingReporter
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
       val tp = rep.testPendingEventsReceived
-      assert(tp.size === 1)
+      assert(tp.size === 2)
     }
   }
 }
