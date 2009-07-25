@@ -1177,4 +1177,12 @@ trait FeatureSpec extends Suite with FixtureSuite { thisSuite =>
   }
 
   val scenariosFor = new FixtureScenariosForPhrase
+
+  override def pending: PendingNothing with ((Fixture) => Unit) = {
+    new PendingNothing with ((Fixture) => Unit) {
+      def apply(fixture: Fixture) = throw new TestPendingException
+    }
+  }
 }
+
+
