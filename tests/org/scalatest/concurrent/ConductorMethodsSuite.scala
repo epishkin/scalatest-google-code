@@ -79,6 +79,8 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
     }
   }
 
+  // t1.getState should (be(WAITING) or be(BLOCKED)) failed with:
+  // RUNNABLE was not equal to WAITING, and RUNNABLE was not equal to BLOCKED
   test("wait for beat blocks thread") {
 
     val t1 = thread {waitForBeat(2)}

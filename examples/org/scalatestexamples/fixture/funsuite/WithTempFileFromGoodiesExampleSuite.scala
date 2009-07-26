@@ -15,12 +15,12 @@
  */
 package org.scalatestexamples.fixture.funsuite
 
-import org.scalatest.fixture.FunSuite
+import org.scalatest.fixture.ConfigFunSuite
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.File
 
-class WithTempFileFromGoodiesExampleSuite extends FunSuite {
+class WithTempFileFromGoodiesExampleSuite extends ConfigFunSuite {
 
   type Fixture = FileReader
 

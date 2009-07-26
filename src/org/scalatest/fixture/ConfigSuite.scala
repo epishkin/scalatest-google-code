@@ -20,14 +20,18 @@ import java.lang.reflect.{InvocationTargetException, Method, Modifier}
 import org.scalatest.Suite.checkForPublicNoArgConstructor
 import org.scalatest.Suite.TestMethodPrefix
 import org.scalatest.Suite.IgnoreAnnotation
-import Suite.FixtureAndInformerInParens
-import Suite.FixtureInParens
-import Suite.testMethodTakesInformer
-import Suite.simpleNameForTest
-import Suite.argsArrayForTestName
+import ConfigSuite.FixtureAndInformerInParens
+import ConfigSuite.FixtureInParens
+import ConfigSuite.testMethodTakesInformer
+import ConfigSuite.simpleNameForTest
+import ConfigSuite.argsArrayForTestName
 import org.scalatest.events._
 
-trait Suite extends org.scalatest.Suite with org.scalatest.fixture.FixtureSuite { thisSuite =>
+trait ConfigSuite extends org.scalatest.Suite { thisSuite =>
+
+  type Fixture
+
+  def withFixture(fun: (Fixture) => Unit, config: Map[String, Any])
 
   // Need to override this one becaue it call getMethodForTestName
   override def tags: Map[String, Set[String]] = {
@@ -198,7 +202,7 @@ trait Suite extends org.scalatest.Suite with org.scalatest.fixture.FixtureSuite 
   }
 }
 
-private object Suite {
+private object ConfigSuite {
 
   val FixtureAndInformerInParens = "(Fixture, Informer)"
   val FixtureInParens = "(Fixture)"

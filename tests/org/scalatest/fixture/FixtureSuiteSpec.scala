@@ -22,7 +22,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
   describe("The private testMethodTakesInformer method") {
     val testMethodTakesInformer = PrivateMethod[Boolean]('testMethodTakesInformer)
-    val suiteObject = Suite
+    val suiteObject = ConfigSuite
     it("should return true if passed a string that ends in (Fixture, Informer)") {
       assert(suiteObject invokePrivate testMethodTakesInformer("thisDoes(Fixture, Informer)"))
       assert(suiteObject invokePrivate testMethodTakesInformer("(Fixture, Informer)"))
@@ -38,7 +38,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
   describe("A fixture.Suite without SimpleWithFixture") {
 
     it("should return the test names in alphabetical order from testNames") {
-      val a = new Suite {
+      val a = new ConfigSuite {
         type Fixture = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
         def testThis(fixture: String) {}
@@ -49,7 +49,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         a.testNames.elements.toList
       }
 
-      val b = new Suite {
+      val b = new ConfigSuite {
         type Fixture = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
       }
@@ -58,7 +58,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         b.testNames.elements.toList
       }
 
-      val c = new Suite {
+      val c = new ConfigSuite {
         type Fixture = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
         def testThat(fixture: String) {}
@@ -71,7 +71,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
 
     it("should discover tests with and without Informer parameters") {
-      val a = new Suite {
+      val a = new ConfigSuite {
         type Fixture = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
         def testThis(fixture: String) = ()
@@ -81,7 +81,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
 
     it("should pass in the fixture to every test method") {
-      val a = new Suite {
+      val a = new ConfigSuite {
         type Fixture = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit, config: Map[String, Any]) {
@@ -100,7 +100,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("can pass in the config map to every test method via the fixture") {
       val key = "greeting"
       val hello = "Hello, world!"
-      val a = new Suite {
+      val a = new ConfigSuite {
         type Fixture = Map[String, Any]
         def withFixture(fun: Fixture => Unit, config: Map[String, Any]) {
           fun(config)
@@ -120,7 +120,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
   describe("A fixture.Suite with SimpleWithFixture") {
     it("should return the test names in alphabetical order from testNames") {
-      val a = new Suite with SimpleWithFixture {
+      val a = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) {}
@@ -131,7 +131,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         a.testNames.elements.toList
       }
 
-      val b = new Suite with SimpleWithFixture {
+      val b = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
       }
@@ -140,7 +140,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         b.testNames.elements.toList
       }
 
-      val c = new Suite with SimpleWithFixture {
+      val c = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThat(fixture: String) {}
@@ -153,7 +153,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
 
     it("should discover tests with and without Informer parameters") {
-      val a = new Suite with SimpleWithFixture {
+      val a = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: String) = ()
@@ -163,7 +163,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
 
     it("should pass in the fixture to every test method") {
-      val a = new Suite with SimpleWithFixture {
+      val a = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit) {
@@ -183,7 +183,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     
     it("should return a correct tags map from the tags method") {
 
-      val a = new Suite with SimpleWithFixture {
+      val a = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         @Ignore
@@ -193,7 +193,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       assert(a.tags === Map("testThis(Fixture)" -> Set("org.scalatest.Ignore")))
 
-      val b = new Suite with SimpleWithFixture {
+      val b = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         def testThis(fixture: Fixture) = ()
@@ -203,7 +203,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       assert(b.tags === Map("testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore")))
 
-      val c = new Suite with SimpleWithFixture {
+      val c = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         @Ignore
@@ -214,7 +214,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       assert(c.tags === Map("testThis(Fixture)" -> Set("org.scalatest.Ignore"), "testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore")))
 
-      val d = new Suite with SimpleWithFixture {
+      val d = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         @SlowAsMolasses
@@ -226,14 +226,14 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       assert(d.tags === Map("testThis(Fixture)" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
 
-      val e = new Suite with SimpleWithFixture {
+      val e = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
       }
       assert(e.tags === Map())
     }
 
-    class TestWasCalledSuite extends Suite with SimpleWithFixture {
+    class TestWasCalledSuite extends ConfigSuite with SimpleWithFixture {
       type Fixture = String
       def withFixture(fun: String => Unit) { fun("hi") }
       var theTestThisCalled = false
@@ -260,7 +260,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
     it("should report as ignored, ant not run, tests marked ignored") {
 
-      val a = new Suite with SimpleWithFixture {
+      val a = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -275,7 +275,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.theTestThisCalled)
       assert(a.theTestThatCalled)
 
-      val b = new Suite with SimpleWithFixture {
+      val b = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -293,7 +293,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(!b.theTestThisCalled)
       assert(b.theTestThatCalled)
 
-      val c = new Suite with SimpleWithFixture {
+      val c = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -311,7 +311,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(c.theTestThisCalled)
       assert(!c.theTestThatCalled)
 
-      val d = new Suite with SimpleWithFixture {
+      val d = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -333,7 +333,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
     it("should run a test marked as ignored if run is invoked with that testName") {
 
-      val e = new Suite with SimpleWithFixture {
+      val e = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -352,7 +352,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
     it("should throw IllegalArgumentException if run is passed a testName that does not exist") {
 
-      val suite = new Suite with SimpleWithFixture {
+      val suite = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -375,7 +375,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should run only those tests selected by the tags to include and exclude sets") {
 
       // Nothing is excluded
-      val a = new Suite with SimpleWithFixture {
+      val a = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -391,7 +391,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.theTestThatCalled)
 
       // SlowAsMolasses is included, one test should be excluded
-      val b = new Suite with SimpleWithFixture {
+      val b = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -407,7 +407,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(!b.theTestThatCalled)
 
       // SlowAsMolasses is included, and both tests should be included
-      val c = new Suite with SimpleWithFixture {
+      val c = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -424,7 +424,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(c.theTestThatCalled)
 
       // SlowAsMolasses is included. both tests should be included but one ignored
-      val d = new Suite with SimpleWithFixture {
+      val d = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -442,7 +442,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(d.theTestThatCalled)
 
       // SlowAsMolasses included, FastAsLight excluded
-      val e = new Suite with SimpleWithFixture {
+      val e = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -464,7 +464,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(!e.theTestTheOtherCalled)
 
       // An Ignored test that was both included and excluded should not generate a TestIgnored event
-      val f = new Suite with SimpleWithFixture {
+      val f = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -487,7 +487,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(!f.theTestTheOtherCalled)
 
       // An Ignored test that was not included should not generate a TestIgnored event
-      val g = new Suite with SimpleWithFixture {
+      val g = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -510,7 +510,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(!g.theTestTheOtherCalled)
 
       // No tagsToInclude set, FastAsLight excluded
-      val h = new Suite with SimpleWithFixture {
+      val h = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -531,7 +531,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(h.theTestTheOtherCalled)
 
       // No tagsToInclude set, SlowAsMolasses excluded
-      val i = new Suite with SimpleWithFixture {
+      val i = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -552,7 +552,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(i.theTestTheOtherCalled)
 
       // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
-      val j = new Suite with SimpleWithFixture {
+      val j = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -575,7 +575,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(j.theTestTheOtherCalled)
 
       // Same as previous, except Ignore specifically mentioned in excludes set
-      val k = new Suite with SimpleWithFixture {
+      val k = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -601,7 +601,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
     it("should return the correct test count from its expectedTestCount method") {
 
-      val a = new Suite with SimpleWithFixture {
+      val a = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         def testThis(fixture: Fixture) = ()
@@ -609,7 +609,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
       assert(a.expectedTestCount(Filter()) === 2)
 
-      val b = new Suite with SimpleWithFixture {
+      val b = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         @Ignore
@@ -618,7 +618,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
       assert(b.expectedTestCount(Filter()) === 1)
 
-      val c = new Suite with SimpleWithFixture {
+      val c = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         @FastAsLight
@@ -628,7 +628,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
       assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
 
-      val d = new Suite with SimpleWithFixture {
+      val d = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         @FastAsLight
@@ -643,7 +643,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
       assert(d.expectedTestCount(Filter()) === 3)
 
-      val e = new Suite with SimpleWithFixture {
+      val e = new ConfigSuite with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         @FastAsLight

@@ -16,13 +16,12 @@
 package org.scalatest.fixture
 
 import FixtureNodeFamily._
-import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord, MustVerb,
-  StringVerbBlockRegistration}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
+
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -185,7 +184,7 @@ import org.scalatest.events._
  *
  * class MySpec extends Spec {
  *
- *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
+ *   def withFtestixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
  *     // Create needed mutable objects
  *     val sb = new StringBuilder("ScalaTest is ")
@@ -549,7 +548,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
+trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
@@ -605,7 +604,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: (Fixture) => Unit) = {
+  private def registerTest(specText: String, f: Fixture => Unit) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -689,7 +688,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
+  protected def scenario(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
@@ -725,11 +724,11 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  /* protected def it(specText: String)(testFun: => Unit) {
+  protected def scenario(specText: String)(testFun: Fixture => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
-    it(specText, Array[Tag](): _*)(testFun)
-  } */
+    scenario(specText, Array[Tag](): _*)(testFun)
+  }
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -749,7 +748,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
+  protected def ignore(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
@@ -781,11 +780,11 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  /* protected def ignore(specText: String)(testFun: => Unit) {
+  protected def ignore(specText: String)(testFun: Fixture => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
-  } */
+  }
 
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
@@ -793,15 +792,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
-  private def registerVerbBranch(description: String, verb: String, f: () => Unit) {
-    registerBranch(f, VerbBranch(_, description, verb))
-  }
-
-  private def registerDescriptionBranch(description: String, f: () => Unit) {
-    registerBranch(f, DescriptionBranch(_, description))
-  }
-
-  private def registerBranch(f: () => Unit, constructBranch: Branch => Branch) {
+  protected def feature(description: String)(f: => Unit) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
@@ -810,8 +801,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
       val oldBundle = atomic.get
       var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
-      val newBranch = constructBranch(currentBranch)
-      // val newBranch = VerbBranch(currentBranch, description, verb)
+      val newBranch = DescriptionBranch(currentBranch, Resources("feature", description))
       val oldBranch = currentBranch
       currentBranch.subNodes ::= newBranch
       currentBranch = newBranch
@@ -823,105 +813,12 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
 
     val oldBranch = createNewBranch()
 
-    f()
+    f
 
     val oldBundle = atomic.get
     val (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
     updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
-  }
-
-  protected class FixtureStringTaggedAs(specText: String, tags: List[Tag]) {
-    def in(testFun: Fixture => Unit) {
-      registerTestToRun(specText, tags, testFun)
-    }
-    // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
-    //                                             ^
-    def is(testFun: => PendingNothing) {
-      registerTestToRun(specText, tags, unusedFixture => testFun)
-    }
-    // "hi" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
-    def ignore(testFun: Fixture => Unit) {
-      registerTestToIgnore(specText, tags, testFun)
-    }
-  }
-
-  protected class FixtureIgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
-    def in(testFun: Fixture => Unit) {
-      registerTestToIgnore(specText, tags, testFun)
-    }
-  }
-
-  protected class FixtureWordSpecStringWrapper(string: String) {
-    def in(testFun: Fixture => Unit) {
-      registerTestToRun(string, List(), testFun)
-    }
-    // "test that" is (pending)
-    //             ^
-    def is(testFun: => PendingNothing) {
-      registerTestToRun(string, List(), unusedFixtre => testFun)
-    }
-    def ignore(testFun: Fixture => Unit) {
-      registerTestToIgnore(string, List(), testFun)
-    }
-    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
-      val tagList = firstTestTag :: otherTestTags.toList
-      new FixtureStringTaggedAs(string, tagList)
-    }
-    /* def can(f: => Unit) {
-      registerVerbBranch(string, "can", f _)
-    } */
-    def when(f: => Unit) {
-      registerDescriptionBranch(string + " (when", f _)
-    }
-    def when(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
-      registerDescriptionBranch(string + " (when " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
-    }
-    def that(f: => Unit) {
-      registerDescriptionBranch(string + " that", f _)
-    }
-    def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
-      registerDescriptionBranch(string + " that " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
-    }
-  }
-
-  protected class FixtureAfterWord(text: String) {
-    def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
-  }
-
-  protected def afterWord(text: String) = new FixtureAfterWord(text)
-
-  protected implicit def convertToWordSpecStringWrapper(s: String) = new FixtureWordSpecStringWrapper(s)
-
-  protected class FixtureIgnoredTest(specText: String) {
-    def in(f: Fixture => Unit) {
-      registerTestToIgnore(specText, List(), f)
-    }
-    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
-      val tagList = firstTestTag :: otherTestTags.toList
-      new FixtureIgnoreTestStringTaggedAs(specText, tagList)
-    }
-  }
-  protected class FixtureIgnoreWord {
-    def test(specText: String) = new FixtureIgnoredTest(specText)
-  }
-
-  protected val ignore = new FixtureIgnoreWord
-
-  implicit val doVerbThing: StringVerbBlockRegistration =
-    new StringVerbBlockRegistration {
-      def apply(left: String, verb: String, f: () => Unit) = registerVerbBranch(left, verb, f)
-    }
-
-
-  implicit val doAfterVerbThing: (String, ResultOfAfterWordApplication, String) => Unit = {
-    (left, resultOfAfterWordApplication, verb) => {
-      val afterWordFunction =
-        () => {
-          registerDescriptionBranch(resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
-        }
-      registerVerbBranch(left, verb, afterWordFunction)
-    }
   }
 
   /**
@@ -943,27 +840,40 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
     // into error messages on the standard error stream.
     val report = wrapReporterIfNecessary(reporter)
     branch match {
-      case desc @ VerbBranch(_, descriptionName, verb) =>
+      case desc @ DescriptionBranch(_, descriptionName) =>
 
-        // Need to use the full name of the description, which includes all the descriptions it is nested inside
-        // Call getPrefix and pass in this Desc, to get the full name
-        val descriptionFullName = getPrefixWithoutVerb(desc).trim
+        def sendInfoProvidedMessage() {
+          // Need to use the full name of the description, which includes all the descriptions it is nested inside
+          // Call getPrefix and pass in this Desc, to get the full name
+          val descriptionFullName = getPrefix(desc).trim
 
-        // Call getTestNameForReport with the description, because that puts the Suite name
-        // in front of the description, which looks good in the regular report.
-        report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
+
+          // Call getTestNameForReport with the description, because that puts the Suite name
+          // in front of the description, which looks good in the regular report.
+          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
+        }
+
+        // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
+        // it is a test, because otherwise we get a lame description that doesn't have any tests under it.
+        // But send it if the list is empty.
+        if (desc.subNodes.isEmpty)
+          sendInfoProvidedMessage()
+        else
+          desc.subNodes.reverse.head match {
+            case ex: FixtureTestLeaf[_] => sendInfoProvidedMessage()
+            case _ => // Do nothing in this case
+          }
 
       case _ =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case FixtureTestLeaf(parent, tn, specText, _) =>
+        case FixtureTestLeaf(_, tn, specText, _) =>
           if (!stopRequested()) { // TODO: Seems odd to me to check for stop here but still fire infos
             val (filterTest, ignoreTest) = filter(tn, tags)
             if (!filterTest)
               if (ignoreTest) {
-                val testSucceededIcon = Resources("testSucceededIconChar")
-                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getFormattedSpecTextPrefix(parent) + " " + specText)
+                val formattedSpecText = "  " + Resources("scenario", specText)
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
@@ -1003,8 +913,8 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
       case Some(test) => {
         val report = wrapReporterIfNecessary(reporter)
 
-        val testSucceededIcon = Resources("testSucceededIconChar")
-        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getFormattedSpecTextPrefix(test.parent) + " " + test.specText)
+        val scenarioSpecText = Resources("scenario", test.specText)
+        val formattedSpecText = "  " + scenarioSpecText
 
         // Create a Rerunner if the Spec has a no-arg constructor
         val hasPublicNoArgConstructor = org.scalatest.Suite.checkForPublicNoArgConstructor(getClass)
@@ -1021,7 +931,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
         // will show up in a test-style output.
         report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
 
-        val formatter = IndentedText(formattedSpecText, getFormattedSpecTextPrefix(test.parent) + " " + test.specText, 1)
+        val formatter = IndentedText(formattedSpecText, scenarioSpecText, 1)
         val oldInformer = atomicInformer.get
         val informerForThisTest =
           new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
@@ -1031,8 +941,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
               if (shouldRecord)
                 record(message)
               else {
-                val infoProvidedIcon = Resources("infoProvidedIconChar")
-                val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
+                val formattedText = "    " + message
                 report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
               }
             }
@@ -1058,8 +967,7 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
         finally {
           // send out any recorded messages
           for (message <- informerForThisTest.recordedMessages) {
-            val infoProvidedIcon = Resources("infoProvidedIconChar")
-            val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
+            val formattedText = "    " + message
             report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
           }
 
@@ -1255,5 +1163,28 @@ trait WordSpec extends Suite with FixtureSuite with ShouldVerb with MustVerb wit
     }
   }
 
-  val behave = new BehaveWord
+  class FixtureScenariosForPhrase {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * scenariosFor(nonEmptyStack(lastValuePushed))
+     *             ^
+     * </pre>
+     */
+    def apply(unit: Unit) {}
+  }
+
+  val scenariosFor = new FixtureScenariosForPhrase
+
+  implicit def convertToFixtureFun(f: => PendingNothing): (Fixture) => Unit = {
+    fixture => f
+  }
+  
+ /* val Pending: (Fixture) => Unit = {
+      fixture => throw new TestPendingException
+  } */
 }
+
+
