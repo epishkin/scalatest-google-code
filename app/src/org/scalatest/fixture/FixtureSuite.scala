@@ -20,14 +20,14 @@ import java.lang.reflect.{InvocationTargetException, Method, Modifier}
 import org.scalatest.Suite.checkForPublicNoArgConstructor
 import org.scalatest.Suite.TestMethodPrefix
 import org.scalatest.Suite.IgnoreAnnotation
-import ConfigSuite.FixtureAndInformerInParens
-import ConfigSuite.FixtureInParens
-import ConfigSuite.testMethodTakesInformer
-import ConfigSuite.simpleNameForTest
-import ConfigSuite.argsArrayForTestName
+import FixtureSuite.FixtureAndInformerInParens
+import FixtureSuite.FixtureInParens
+import FixtureSuite.testMethodTakesInformer
+import FixtureSuite.simpleNameForTest
+import FixtureSuite.argsArrayForTestName
 import org.scalatest.events._
 
-trait ConfigSuite extends org.scalatest.Suite { thisSuite =>
+trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   type Fixture
 
@@ -202,7 +202,7 @@ trait ConfigSuite extends org.scalatest.Suite { thisSuite =>
   }
 }
 
-private object ConfigSuite {
+private object FixtureSuite {
 
   val FixtureAndInformerInParens = "(Fixture, Informer)"
   val FixtureInParens = "(Fixture)"

@@ -15,9 +15,9 @@
  */
 package org.scalatest.concurrent
 
-import org.scalatest.fixture.ConfigSuite
+import org.scalatest.fixture.FixtureSuite
 
-trait ConductorFixture { this: ConfigSuite =>
+trait ConductorFixture { this: FixtureSuite =>
 
   type Fixture = Conductor
   

@@ -627,7 +627,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait ConfigFunSuite extends ConfigSuite { thisSuite =>
+trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 

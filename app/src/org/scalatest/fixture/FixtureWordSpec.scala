@@ -16,12 +16,13 @@
 package org.scalatest.fixture
 
 import FixtureNodeFamily._
+import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord, MustVerb,
+  StringVerbBlockRegistration}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -134,14 +135,14 @@ import org.scalatest.events._
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * it needs to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to
- * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
- * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
+ * be cleaned up after each test. JUnit offers methods <code>setup</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
+ * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
  * between tests. Before going that route, you should consider two approaches that
- * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
- * that return a new instance of a needed object (or a tuple or case class holding new instances of
- * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
+ * avoid <code>var</code>s. One approach is to write one or more "create" methods
+ * that return a new instance of a needed object (or a tuple of new instances of
+ * multiple objects) each time it is called. You can then call a create method at the beginning of each
  * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
@@ -175,14 +176,8 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * If different tests in the same <code>FunSuite</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the begining of the test.
- * </p>
- *
- * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create <em>with-fixture</em> methods,
- * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the
- * with-fixture method. Here's an example:
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
+ * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
  * </p>
  * <pre>
  * import org.scalatest.Spec
@@ -201,25 +196,29 @@ import org.scalatest.events._
  *   }
  *
  *   it("should mutate shared fixture objects") {
- *     withFixture { (builder, lbuf) =>
- *       builder.append("easy!")
- *       assert(builder.toString === "ScalaTest is easy!")
- *       assert(lbuf.isEmpty)
- *       lbuf += "sweet"
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(lbuf.isEmpty)
+ *         lbuf += "sweet"
+ *       }
  *     }
  *   }
  *
  *   it("should get a fresh set of mutable fixture objects") {
- *     withFixture { (builder, lbuf) =>
- *       builder.append("fun!")
- *       assert(builder.toString === "ScalaTest is fun!")
- *       assert(lbuf.isEmpty)
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(lbuf.isEmpty)
+ *       }
  *     }
  *   }
  * }
  * </pre>
  *
- * One advantage of this approach compared to the create-fixture approach shown previously is that
+ * One advantage of this approach compared to the create method approach shown previously is that
  * you can more easily perform cleanup after each test executes. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
  * doing so before and after invoking the test function in a <code>withTempFile</code>
@@ -262,109 +261,47 @@ import org.scalatest.events._
  *   }
  *
  *   it("should read from a temp file") {
- *     withTempFile { (reader) =>
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
+ *     withTempFile {
+ *       (reader) => {
+ *         var builder = new StringBuilder
+ *         var c = reader.read()
+ *         while (c != -1) {
+ *           builder.append(c.toChar)
+ *           c = reader.read()
+ *         }
+ *         assert(builder.toString === "Hello, test!")
  *       }
- *       assert(builder.toString === "Hello, test!")
  *     }
  *   }
  *
  *   it("should read the first char of a temp file") {
- *     withTempFile { (reader) =>
- *       assert(reader.read() === 'H')
+ *     withTempFile {
+ *       (reader) => {
+ *         assert(reader.read() === 'H')
+ *       }
  *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If different tests in the same <code>Spec</code> require different fixtures, you can create multiple with-fixture methods and
- * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
- * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
- * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
- * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
- * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.Spec</code> behaves exactly like
- * <code>org.scalatest.Spec</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
- * <a href="fixture/Spec.html"><code>Spec</code></a>. To get the idea, however, here's what the previous example would
- * look like rewritten to use an <code>org.scalatest.fixture.Spec</code>:
- * </p>
- *
- * <pre>
- * import org.scalatest.fixture.Spec
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- *
- * class MySuite extends Spec with SimpleWithFixture {
- *
- *   type Fixture = FileReader
- *
- *   def withFixture(testFunction: FileReader => Unit) {
- *
- *     val FileName = "TempFile.txt"
- *
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *
- *     // Create the reader needed by the test
- *     val reader = new FileReader(FileName)
- *
- *     try {
- *       // Run the test using the temp file
- *       testFunction(reader)
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
- *     }
- *   }
- *
- *   it("should read from a temp file") { reader =>
- *     var builder = new StringBuilder
- *     var c = reader.read()
- *     while (c != -1) {
- *       builder.append(c.toChar)
- *       c = reader.read()
- *     }
- *     assert(builder.toString === "Hello, test!")
- *   }
- *
- *   it("should read the first char of a temp file") { reader =>
- *     assert(reader.read() === 'H')
  *   }
  * }
  * </pre>
  *
  * <p>
  * If you are more comfortable with reassigning instance variables, however, you can
- * instead use the <code>BeforeAndAfterEach</code> trait, which provides
- * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
+ * instead use the <code>BeforeAndafter</code> trait, which provides
+ * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
  * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
+ * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
  * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with <code>BeforeAndAfterEach</code>:
+ * test that uses a temp file with <code>BeforeAndAfter</code>:
  * </p>
  *
  * <pre>
  * import org.scalatest.Spec
- * import org.scalatest.BeforeAndAfterEach
+ * import org.scalatest.BeforeAndAfter
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySpec extends Spec with BeforeAndAfterEach {
+ * class MySpec extends Spec with BeforeAndAfter {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -412,19 +349,19 @@ import org.scalatest.events._
  * want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
+ * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
  * an example.
  * </p>
  *
  * <p>
- * <strong>Tagging tests</strong>
+ * <strong>Test groups</strong>
  * </p>
  *
  * <p>
- * A <code>Spec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * A <code>Spec</code>'s tests may be classified into named <em>groups</em>.
  * As with any suite, when executing a <code>Spec</code>, groups of tests can
- * optionally be included and/or excluded. To tag a <code>Spec</code>'s tests,
- * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
+ * optionally be included and/or excluded. To place <code>Spec</code> tests into
+ * groups, you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
  * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
  * a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
@@ -433,18 +370,15 @@ import org.scalatest.events._
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
  * create matching groups for <code>Spec</code>s like this:
  * </p>
- *
  * <pre>
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
  * object DBTest extends Tag("com.mycompany.groups.DBTest")
  * </pre>
- *
  * <p>
  * Given these definitions, you could place <code>Spec</code> tests into groups like this:
  * </p>
- *
  * <pre>
  * import org.scalatest.Spec
  *
@@ -465,18 +399,17 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag,
- * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.groups.DBTest</code> tag.
+ * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group,
+ * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DBTest</code> group.
  * </p>
  *
  * <p>
- * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
- * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
- * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
- * except those those belonging to tags listed in the
- * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
- * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
- * will be run.
+ * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
+ * except those those belonging to groups listed in the
+ * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
+ * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
+ * will be executed.
  * </p>
  *
  * <p>
@@ -616,7 +549,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait ConfigSpec extends ConfigSuite { thisSuite =>
+trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
@@ -672,7 +605,7 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: Fixture => Unit) = {
+  private def registerTest(specText: String, f: (Fixture) => Unit) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -682,7 +615,7 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
       throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
     }
     val testShortName = specText
-    val test = FixtureTestLeaf[Fixture](currentBranch, testName, specText, f)
+    val test = FixtureTestLeaf(currentBranch, testName, specText, f)
     currentBranch.subNodes ::= test
     testsList ::= test
 
@@ -738,73 +671,65 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
       }
     }
 
-  protected class FixtureItWord {
+  /**
+   * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
+   * An invocation of this method is called an &#8220;example.&#8221;
+   *
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>Spec</code> instance.
+   *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testTags the optional list of tags for this test
+   * @param testFun the test function
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+   */
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
 
-    /**
-     * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
-     * An invocation of this method is called an &#8220;example.&#8221;
-     *
-     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-     * methods. The name of the test will be a concatenation of the text of all surrounding describers,
-     * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
-     * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-     * this <code>Spec</code> instance.
-     *
-     * @param specText the specification text, which will be combined with the descText of any surrounding describers
-     * to form the test name
-     * @param testTags the optional list of tags for this test
-     * @param testFun the test function
-     * @throws DuplicateTestNameException if a test with the same name has been registered previously
-     * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-     * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
-     */
-    def apply(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+    if (specText == null)
+      throw new NullPointerException("specText was null")
+    if (testTags.exists(_ == null))
+      throw new NullPointerException("a test tag was null")
 
-      if (atomic.get.registrationClosed)
-        throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
-      if (specText == null)
-        throw new NullPointerException("specText was null")
-      if (testTags.exists(_ == null))
-        throw new NullPointerException("a test tag was null")
+    val testName = registerTest(specText, testFun)
 
-      val testName = registerTest(specText, testFun)
+    val oldBundle = atomic.get
+    var (trunk, currentBranch, tagsMap, testsList, registrationClosed2) = oldBundle.unpack
+    val tagNames = Set[String]() ++ testTags.map(_.name)
+    if (!tagNames.isEmpty)
+      tagsMap += (testName -> tagNames)
 
-      val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, testsList, registrationClosed2) = oldBundle.unpack
-      val tagNames = Set[String]() ++ testTags.map(_.name)
-      if (!tagNames.isEmpty)
-        tagsMap += (testName -> tagNames)
-
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
-    }
-
-    /**
-     * Register a test with the given spec text and test function value that takes no arguments.
-     *
-     * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-     * methods. The name of the test will be a concatenation of the text of all surrounding describers,
-     * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
-     * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-     * this <code>Spec</code> instance.
-     *
-     * @param specText the specification text, which will be combined with the descText of any surrounding describers
-     * to form the test name
-     * @param testFun the test function
-     * @throws DuplicateTestNameException if a test with the same name has been registered previously
-     * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-     * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
-     */
-    def apply(specText: String)(testFun: Fixture => Unit) {
-      if (atomic.get.registrationClosed)
-        throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
-      apply(specText, Array[Tag](): _*)(testFun)
-    }
-
-    def should(behaveWord: FixureBehaveWord) = behaveWord
-    def must(behaveWord: FixureBehaveWord) = behaveWord
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
   }
 
-  protected val it = new FixtureItWord
+  /**
+   * Register a test with the given spec text and test function value that takes no arguments.
+   *
+   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
+   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
+   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
+   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
+   * this <code>Spec</code> instance.
+   *
+   * @param specText the specification text, which will be combined with the descText of any surrounding describers
+   * to form the test name
+   * @param testFun the test function
+   * @throws DuplicateTestNameException if a test with the same name has been registered previously
+   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
+   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
+   */
+  /* protected def it(specText: String)(testFun: => Unit) {
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+    it(specText, Array[Tag](): _*)(testFun)
+  } */
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -824,7 +749,7 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
@@ -856,11 +781,11 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String)(testFun: Fixture => Unit) {
+  /* protected def ignore(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
-  }
+  } */
 
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
@@ -868,7 +793,15 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
-  protected def describe(description: String)(f: => Unit) {
+  private def registerVerbBranch(description: String, verb: String, f: () => Unit) {
+    registerBranch(f, VerbBranch(_, description, verb))
+  }
+
+  private def registerDescriptionBranch(description: String, f: () => Unit) {
+    registerBranch(f, DescriptionBranch(_, description))
+  }
+
+  private def registerBranch(f: () => Unit, constructBranch: Branch => Branch) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
@@ -877,7 +810,8 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
       val oldBundle = atomic.get
       var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
-      val newBranch = DescriptionBranch(currentBranch, description)
+      val newBranch = constructBranch(currentBranch)
+      // val newBranch = VerbBranch(currentBranch, description, verb)
       val oldBranch = currentBranch
       currentBranch.subNodes ::= newBranch
       currentBranch = newBranch
@@ -889,12 +823,105 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
 
     val oldBranch = createNewBranch()
 
-    f
+    f()
 
     val oldBundle = atomic.get
     val (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
     updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
+  }
+
+  protected class FixtureStringTaggedAs(specText: String, tags: List[Tag]) {
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(specText, tags, testFun)
+    }
+    // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                             ^
+    def is(testFun: => PendingNothing) {
+      registerTestToRun(specText, tags, unusedFixture => testFun)
+    }
+    // "hi" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(specText, tags, testFun)
+    }
+  }
+
+  protected class FixtureIgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
+    def in(testFun: Fixture => Unit) {
+      registerTestToIgnore(specText, tags, testFun)
+    }
+  }
+
+  protected class FixtureWordSpecStringWrapper(string: String) {
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(string, List(), testFun)
+    }
+    // "test that" is (pending)
+    //             ^
+    def is(testFun: => PendingNothing) {
+      registerTestToRun(string, List(), unusedFixtre => testFun)
+    }
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(string, List(), testFun)
+    }
+    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
+      val tagList = firstTestTag :: otherTestTags.toList
+      new FixtureStringTaggedAs(string, tagList)
+    }
+    /* def can(f: => Unit) {
+      registerVerbBranch(string, "can", f _)
+    } */
+    def when(f: => Unit) {
+      registerDescriptionBranch(string + " (when", f _)
+    }
+    def when(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
+      registerDescriptionBranch(string + " (when " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+    }
+    def that(f: => Unit) {
+      registerDescriptionBranch(string + " that", f _)
+    }
+    def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
+      registerDescriptionBranch(string + " that " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+    }
+  }
+
+  protected class FixtureAfterWord(text: String) {
+    def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
+  }
+
+  protected def afterWord(text: String) = new FixtureAfterWord(text)
+
+  protected implicit def convertToWordSpecStringWrapper(s: String) = new FixtureWordSpecStringWrapper(s)
+
+  protected class FixtureIgnoredTest(specText: String) {
+    def in(f: Fixture => Unit) {
+      registerTestToIgnore(specText, List(), f)
+    }
+    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
+      val tagList = firstTestTag :: otherTestTags.toList
+      new FixtureIgnoreTestStringTaggedAs(specText, tagList)
+    }
+  }
+  protected class FixtureIgnoreWord {
+    def test(specText: String) = new FixtureIgnoredTest(specText)
+  }
+
+  protected val ignore = new FixtureIgnoreWord
+
+  implicit val doVerbThing: StringVerbBlockRegistration =
+    new StringVerbBlockRegistration {
+      def apply(left: String, verb: String, f: () => Unit) = registerVerbBranch(left, verb, f)
+    }
+
+
+  implicit val doAfterVerbThing: (String, ResultOfAfterWordApplication, String) => Unit = {
+    (left, resultOfAfterWordApplication, verb) => {
+      val afterWordFunction =
+        () => {
+          registerDescriptionBranch(resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+        }
+      registerVerbBranch(left, verb, afterWordFunction)
+    }
   }
 
   /**
@@ -916,41 +943,27 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
     // into error messages on the standard error stream.
     val report = wrapReporterIfNecessary(reporter)
     branch match {
-      case desc @ DescriptionBranch(_, descriptionName) =>
+      case desc @ VerbBranch(_, descriptionName, verb) =>
 
-        def sendInfoProvidedMessage() {
-          // Need to use the full name of the description, which includes all the descriptions it is nested inside
-          // Call getPrefix and pass in this Desc, to get the full name
-          val descriptionFullName = getPrefix(desc).trim
+        // Need to use the full name of the description, which includes all the descriptions it is nested inside
+        // Call getPrefix and pass in this Desc, to get the full name
+        val descriptionFullName = getPrefixWithoutVerb(desc).trim
 
-
-          // Call getTestNameForReport with the description, because that puts the Suite name
-          // in front of the description, which looks good in the regular report.
-          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
-        }
-
-        // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
-        // it is a test, because otherwise we get a lame description that doesn't have any tests under it.
-        // But send it if the list is empty.
-        if (desc.subNodes.isEmpty)
-          sendInfoProvidedMessage()
-        else
-          desc.subNodes.reverse.head match {
-            case ex: FixtureTestLeaf[Fixture] => sendInfoProvidedMessage()
-            case _ => // Do nothing in this case
-          }
+        // Call getTestNameForReport with the description, because that puts the Suite name
+        // in front of the description, which looks good in the regular report.
+        report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
 
       case _ =>
     }
     branch.subNodes.reverse.foreach(
       _ match {
-        case FixtureTestLeaf(_, tn, specText, _) =>
+        case FixtureTestLeaf(parent, tn, specText, _) =>
           if (!stopRequested()) { // TODO: Seems odd to me to check for stop here but still fire infos
             val (filterTest, ignoreTest) = filter(tn, tags)
             if (!filterTest)
               if (ignoreTest) {
                 val testSucceededIcon = Resources("testSucceededIconChar")
-                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, specText)
+                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getFormattedSpecTextPrefix(parent) + " " + specText)
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
@@ -980,7 +993,7 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>config</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
 
     if (testName == null || reporter == null || stopper == null || config == null)
       throw new NullPointerException
@@ -991,7 +1004,7 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
         val report = wrapReporterIfNecessary(reporter)
 
         val testSucceededIcon = Resources("testSucceededIconChar")
-        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, test.specText)
+        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, getFormattedSpecTextPrefix(test.parent) + " " + test.specText)
 
         // Create a Rerunner if the Spec has a no-arg constructor
         val hasPublicNoArgConstructor = org.scalatest.Suite.checkForPublicNoArgConstructor(getClass)
@@ -1008,7 +1021,7 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
         // will show up in a test-style output.
         report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
 
-        val formatter = IndentedText(formattedSpecText, test.specText, 1)
+        val formatter = IndentedText(formattedSpecText, getFormattedSpecTextPrefix(test.parent) + " " + test.specText, 1)
         val oldInformer = atomicInformer.get
         val informerForThisTest =
           new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
@@ -1141,7 +1154,7 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
    *     <code>tagsToExclude</code>, or <code>config</code> is <code>null</code>.
    */
-  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
@@ -1242,18 +1255,5 @@ trait ConfigSpec extends ConfigSuite { thisSuite =>
     }
   }
 
-  class FixureBehaveWord {
-
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * scenariosFor(nonEmptyStack(lastValuePushed))
-     *             ^
-     * </pre>
-     */
-    def like(unit: Unit) {}
-  }
-
-  val behave = new FixureBehaveWord
+  val behave = new BehaveWord
 }
