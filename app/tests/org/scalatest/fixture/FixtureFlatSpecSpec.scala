@@ -26,7 +26,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
   describe("A fixture.FlatSpec ") {
     it("A fixture.Spec should return the test names in order of registration from testNames") {
-      val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val a = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "Something" should "do that" in { fixture =>
@@ -39,7 +39,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.testNames.elements.toList
       }
 
-      val b = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val b = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
       }
@@ -48,7 +48,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         b.testNames.elements.toList
       }
 
-      val c = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val c = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "Something" should "do this" in { fixture =>
@@ -65,7 +65,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should throw DuplicateTestNameException if a duplicate test name registration is attempted") {
 
       intercept[DuplicateTestNameException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "test this" in { fixture => }
@@ -73,7 +73,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         }
       }
       intercept[DuplicateTestNameException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "test this" in { fixture => }
@@ -81,7 +81,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         }
       }
       intercept[DuplicateTestNameException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           ignore should "test this" in { fixture => }
@@ -89,7 +89,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         }
       }
       intercept[DuplicateTestNameException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           ignore should "test this" in { fixture => }
@@ -99,7 +99,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     }
 
     it("should pass in the fixture to every test method") {
-      val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val a = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit) {
@@ -118,19 +118,19 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     }
 
     it("should run tests registered via the 'it can behave like' syntax") {
-      trait SharedFlatSpecTests { this: FlatSpec =>
+      trait SharedFlatSpecTests { this: ConfigFlatSpec =>
         def nonEmptyStack(s: String)(i: Int) {
           it can "I am shared" in { fixture => }
         }
       }
-      class MyFlatSpec extends FlatSpec with SimpleWithFixture with SharedFlatSpecTests {
+      class MyConfigFlatSpec extends ConfigFlatSpec with SimpleWithFixture with SharedFlatSpecTests {
         type Fixture = String
         def withFixture(fun: String => Unit) {
           fun("hi")
         }
         it can behave like nonEmptyStack("hi")(1)
       }
-      val suite = new MyFlatSpec
+      val suite = new MyConfigFlatSpec
       val reporter = new EventRecordingReporter
       suite.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
 
@@ -143,14 +143,14 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should throw NullPointerException if a null test tag is provided") {
       // it
       intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "hi" taggedAs(null) in { fixture => }
         }
       }
       val caught = intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "hi" taggedAs(mytags.SlowAsMolasses, null) in { fixture => }
@@ -158,7 +158,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       assert(caught.getMessage === "a test tag was null")
       intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in { fixture => }
@@ -166,14 +166,14 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       // ignore
       intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           ignore should "hi" taggedAs(null) in { fixture => }
         }
       }
       val caught2 = intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           ignore should "hi" taggedAs(mytags.SlowAsMolasses, null) in { fixture => }
@@ -181,21 +181,21 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       assert(caught2.getMessage === "a test tag was null")
       intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           ignore should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in { fixture => }
         }
       }
       intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "hi" taggedAs(null) ignore { fixture => }
         }
       }
       val caught3 = intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "hi" taggedAs(mytags.SlowAsMolasses, null) ignore { fixture => }
@@ -203,7 +203,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       assert(caught3.getMessage === "a test tag was null")
       intercept[NullPointerException] {
-        new FlatSpec with SimpleWithFixture {
+        new ConfigFlatSpec with SimpleWithFixture {
           type Fixture = String
           def withFixture(fun: String => Unit) {}
           it should "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) ignore { fixture => }
@@ -213,7 +213,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should return a correct tags map from the tags method, when using regular (not shorthand)" +
             " notation and ignore replacing it") {
 
-      val a = new FlatSpec with SimpleWithFixture {
+      val a = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         ignore should "test this" in { fixture => }
@@ -223,7 +223,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.tags
       }
 
-      val b = new FlatSpec with SimpleWithFixture {
+      val b = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it can "test this" in { fixture => }
@@ -233,7 +233,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         b.tags
       }
 
-      val c = new FlatSpec with SimpleWithFixture {
+      val c = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         ignore must "test this" in { fixture => }
@@ -243,7 +243,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         c.tags
       }
 
-      val d = new FlatSpec with SimpleWithFixture {
+      val d = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" taggedAs(mytags.SlowAsMolasses) in { fixture => }
@@ -253,7 +253,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         d.tags
       }
 
-      val e = new FlatSpec with SimpleWithFixture {
+      val e = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" in { fixture => }
@@ -263,7 +263,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         e.tags
       }
 
-      val f = new FlatSpec with SimpleWithFixture {
+      val f = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
@@ -273,7 +273,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         f.tags
       }
 
-      val g = new FlatSpec with SimpleWithFixture {
+      val g = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
@@ -286,7 +286,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should return a correct tags map from the tags method, when using regular (not shorthand)" +
             " notation and ignore replacing in") {
 
-      val a = new FlatSpec with SimpleWithFixture {
+      val a = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it should "test this" ignore { fixture => }
@@ -296,7 +296,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.tags
       }
 
-      val b = new FlatSpec with SimpleWithFixture {
+      val b = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it can "test this" in { fixture => }
@@ -306,7 +306,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         b.tags
       }
 
-      val c = new FlatSpec with SimpleWithFixture {
+      val c = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" ignore { fixture => }
@@ -316,7 +316,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         c.tags
       }
 
-      val d = new FlatSpec with SimpleWithFixture {
+      val d = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" taggedAs(mytags.SlowAsMolasses) in { fixture => }
@@ -329,7 +329,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
     it("should return a correct tags map from the tags method, when using shorthand notation") {
 
-      val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val a = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" should "test this" ignore { fixture => }
@@ -339,7 +339,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.tags
       }
 
-      val b = new FlatSpec with SimpleWithFixture with CanVerb {
+      val b = new ConfigFlatSpec with SimpleWithFixture with CanVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" can "test this" in { fixture => }
@@ -349,7 +349,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         b.tags
       }
 
-      val c = new FlatSpec with SimpleWithFixture with MustVerb {
+      val c = new ConfigFlatSpec with SimpleWithFixture with MustVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" must "test this" ignore { fixture => }
@@ -359,7 +359,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         c.tags
       }
 
-      val d = new FlatSpec with SimpleWithFixture with MustVerb {
+      val d = new ConfigFlatSpec with SimpleWithFixture with MustVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) in { fixture => }
@@ -369,7 +369,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         d.tags
       }
 
-      val e = new FlatSpec with SimpleWithFixture with MustVerb {
+      val e = new ConfigFlatSpec with SimpleWithFixture with MustVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" must "test this" in { fixture => }
@@ -379,7 +379,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         e.tags
       }
 
-      val f = new FlatSpec with SimpleWithFixture with CanVerb {
+      val f = new ConfigFlatSpec with SimpleWithFixture with CanVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
@@ -389,7 +389,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         f.tags
       }
 
-      val g = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val g = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
@@ -403,7 +403,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should return a correct tags map from the tags method using is (pending), when using regular (not shorthand)" +
             " notation and ignore replacing it") {
 
-      val a = new FlatSpec with SimpleWithFixture {
+      val a = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         ignore should "test this" is (pending)
@@ -413,7 +413,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.tags
       }
 
-      val b = new FlatSpec with SimpleWithFixture {
+      val b = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it can "test this" is (pending)
@@ -423,7 +423,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         b.tags
       }
 
-      val c = new FlatSpec with SimpleWithFixture {
+      val c = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         ignore must "test this" is (pending)
@@ -433,7 +433,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         c.tags
       }
 
-      val d = new FlatSpec with SimpleWithFixture {
+      val d = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -443,7 +443,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         d.tags
       }
 
-      val e = new FlatSpec with SimpleWithFixture {
+      val e = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" is (pending)
@@ -453,7 +453,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         e.tags
       }
 
-      val f = new FlatSpec with SimpleWithFixture {
+      val f = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
@@ -463,7 +463,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         f.tags
       }
 
-      val g = new FlatSpec with SimpleWithFixture {
+      val g = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
@@ -476,7 +476,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should return a correct tags map from the tags method using is (pending), when using regular (not shorthand)" +
             " notation and ignore replacing in") {
 
-      val a = new FlatSpec with SimpleWithFixture {
+      val a = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it should "test this" ignore { fixture => }
@@ -486,7 +486,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.tags
       }
 
-      val b = new FlatSpec with SimpleWithFixture {
+      val b = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it can "test this" is (pending)
@@ -496,7 +496,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         b.tags
       }
 
-      val c = new FlatSpec with SimpleWithFixture {
+      val c = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" ignore { fixture => }
@@ -506,7 +506,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         c.tags
       }
 
-      val d = new FlatSpec with SimpleWithFixture {
+      val d = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -519,7 +519,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
     it("should return a correct tags map from the tags method using is (pending), when using shorthand notation") {
 
-      val a = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val a = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" should "test this" ignore { fixture => }
@@ -529,7 +529,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.tags
       }
 
-      val b = new FlatSpec with SimpleWithFixture with CanVerb {
+      val b = new ConfigFlatSpec with SimpleWithFixture with CanVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" can "test this" is (pending)
@@ -539,7 +539,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         b.tags
       }
 
-      val c = new FlatSpec with SimpleWithFixture with MustVerb {
+      val c = new ConfigFlatSpec with SimpleWithFixture with MustVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" must "test this" ignore { fixture => }
@@ -549,7 +549,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         c.tags
       }
 
-      val d = new FlatSpec with SimpleWithFixture with MustVerb {
+      val d = new ConfigFlatSpec with SimpleWithFixture with MustVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -559,7 +559,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         d.tags
       }
 
-      val e = new FlatSpec with SimpleWithFixture with MustVerb {
+      val e = new ConfigFlatSpec with SimpleWithFixture with MustVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" must "test this" is (pending)
@@ -569,7 +569,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         e.tags
       }
 
-      val f = new FlatSpec with SimpleWithFixture with CanVerb {
+      val f = new ConfigFlatSpec with SimpleWithFixture with CanVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
@@ -579,7 +579,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         f.tags
       }
 
-      val g = new FlatSpec with SimpleWithFixture with ShouldVerb {
+      val g = new ConfigFlatSpec with SimpleWithFixture with ShouldVerb {
         type Fixture = String
         def withFixture(fun: String => Unit) {}
         "A Stack" should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
@@ -590,7 +590,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
     }
 
-    class TestWasCalledSuite extends FlatSpec with SimpleWithFixture {
+    class TestWasCalledSuite extends ConfigFlatSpec with SimpleWithFixture {
       type Fixture = String
       def withFixture(fun: String => Unit) { fun("hi") }
       var theTestThisCalled = false
@@ -617,7 +617,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
     it("should report as ignored, and not run, tests marked ignored") {
 
-      val a = new FlatSpec with SimpleWithFixture {
+      val a = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -632,7 +632,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(a.theTestThisCalled)
       assert(a.theTestThatCalled)
 
-      val b = new FlatSpec with SimpleWithFixture {
+      val b = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -649,7 +649,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(!b.theTestThisCalled)
       assert(b.theTestThatCalled)
 
-      val c = new FlatSpec with SimpleWithFixture {
+      val c = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -668,7 +668,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // The order I want is order of appearance in the file.
       // Will try and implement that tomorrow. Subtypes will be able to change the order.
-      val d = new FlatSpec with SimpleWithFixture {
+      val d = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -689,7 +689,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should run a test marked as ignored if run is invoked with that testName") {
       // If I provide a specific testName to run, then it should ignore an Ignore on that test
       // method and actually invoke it.
-      val e = new FlatSpec with SimpleWithFixture {
+      val e = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -708,7 +708,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should run only those tests selected by the tags to include and exclude sets") {
 
       // Nothing is excluded
-      val a = new FlatSpec with SimpleWithFixture {
+      val a = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -723,7 +723,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(a.theTestThatCalled)
 
       // SlowAsMolasses is included, one test should be excluded
-      val b = new FlatSpec with SimpleWithFixture {
+      val b = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -738,7 +738,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(!b.theTestThatCalled)
 
       // SlowAsMolasses is included, and both tests should be included
-      val c = new FlatSpec with SimpleWithFixture {
+      val c = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -753,7 +753,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(c.theTestThatCalled)
 
       // SlowAsMolasses is included. both tests should be included but one ignored
-      val d = new FlatSpec with SimpleWithFixture {
+      val d = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -768,7 +768,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(d.theTestThatCalled)
 
       // SlowAsMolasses included, FastAsLight excluded
-      val e = new FlatSpec with SimpleWithFixture {
+      val e = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -787,7 +787,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(!e.theTestTheOtherCalled)
 
       // An Ignored test that was both included and excluded should not generate a TestIgnored event
-      val f = new FlatSpec with SimpleWithFixture {
+      val f = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -806,7 +806,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(!f.theTestTheOtherCalled)
 
       // An Ignored test that was not included should not generate a TestIgnored event
-      val g = new FlatSpec with SimpleWithFixture {
+      val g = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -825,7 +825,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(!g.theTestTheOtherCalled)
 
       // No tagsToInclude set, FastAsLight excluded
-      val h = new FlatSpec with SimpleWithFixture {
+      val h = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -843,7 +843,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(h.theTestTheOtherCalled)
 
       // No tagsToInclude set, SlowAsMolasses excluded
-      val i = new FlatSpec with SimpleWithFixture {
+      val i = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -861,7 +861,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(i.theTestTheOtherCalled)
 
       // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
-      val j = new FlatSpec with SimpleWithFixture {
+      val j = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -879,7 +879,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(j.theTestTheOtherCalled)
 
       // Same as previous, except Ignore specifically mentioned in excludes set
-      val k = new FlatSpec with SimpleWithFixture {
+      val k = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         var theTestThisCalled = false
@@ -899,7 +899,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
     it("should return the correct test count from its expectedTestCount method") {
 
-      val a = new FlatSpec with SimpleWithFixture {
+      val a = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         it should "test this" in { fixture => }
@@ -907,7 +907,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       assert(a.expectedTestCount(Filter()) === 2)
 
-      val b = new FlatSpec with SimpleWithFixture {
+      val b = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         ignore should "test this" in { fixture => }
@@ -915,7 +915,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       assert(b.expectedTestCount(Filter()) === 1)
 
-      val c = new FlatSpec with SimpleWithFixture {
+      val c = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         it should "test this" taggedAs(mytags.FastAsLight) in { fixture => }
@@ -924,7 +924,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
       assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
 
-      val d = new FlatSpec with SimpleWithFixture {
+      val d = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         it should "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in { fixture => }
@@ -936,7 +936,7 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(d.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 1)
       assert(d.expectedTestCount(Filter()) === 3)
 
-      val e = new FlatSpec with SimpleWithFixture {
+      val e = new ConfigFlatSpec with SimpleWithFixture {
         type Fixture = String
         def withFixture(fun: String => Unit) { fun("hi") }
         it should "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in { fixture => }
