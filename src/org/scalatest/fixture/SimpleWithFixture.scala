@@ -15,7 +15,7 @@
  */
 package org.scalatest.fixture
 
-trait SimpleWithFixture extends ConfigSuite { this: org.scalatest.Suite =>
+trait SimpleWithFixture extends FixtureSuite { this: org.scalatest.Suite =>
 
   def withFixture(fun: (Fixture) => Unit, config: Map[String, Any]) {
     withFixture(fun)

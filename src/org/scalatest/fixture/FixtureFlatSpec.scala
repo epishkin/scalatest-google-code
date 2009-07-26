@@ -16,12 +16,12 @@
 package org.scalatest.fixture
 
 import FixtureNodeFamily._
+import matchers.{SubjectVerbStringTaggedAs, ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
-
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -184,7 +184,7 @@ import org.scalatest.events._
  *
  * class MySpec extends Spec {
  *
- *   def withFtestixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
+ *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
  *     // Create needed mutable objects
  *     val sb = new StringBuilder("ScalaTest is ")
@@ -548,7 +548,7 @@ import org.scalatest.events._
  *
  * @author Bill Venners
  */
-trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
+trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
@@ -611,7 +611,7 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
 
     val testName = getTestName(specText, currentBranch)
     if (testsList.exists(_.testName == testName)) {
-      throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
+      throw new DuplicateTestNameException(testName, getStackDepth("FlatSpec.scala", "it"))
     }
     val testShortName = specText
     val test = FixtureTestLeaf(currentBranch, testName, specText, f)
@@ -688,10 +688,10 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def scenario(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
 
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
@@ -706,6 +706,179 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
       tagsMap += (testName -> tagNames)
 
     updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
+  }
+
+  protected class FixtureBehaviorWord {
+    def of(description: String) {
+      if (atomic.get.registrationClosed)
+        throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "describe"))
+
+      val oldBundle = atomic.get
+      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
+
+      val newBranch = DescriptionBranch(trunk, description)
+      trunk.subNodes ::= newBranch
+      currentBranch = newBranch
+
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
+    }
+  }
+  /**
+   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
+   * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
+   * (defined with <code>it</code>). This trait's implementation of this method will register the
+   * description string and immediately invoke the passed function.
+   */
+  protected val behavior = new FixtureBehaviorWord
+
+  protected class FixtureItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(verb + " " + name, tags, testFun)
+    }
+    // it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                                     ^
+    def is(testFun: => PendingNothing) {
+      registerTestToRun(verb + " " + name, tags, unusedFixture => testFun)
+    }
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, tags, testFun)
+    }
+  }
+
+  protected class FixtureItVerbString(verb: String, name: String) {
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(verb + " " + name, List(), testFun)
+    }
+    // it should "test that" is (pending)
+    //                       ^
+    def is(testFun: => PendingNothing) {
+      registerTestToRun(verb + " " + name, List(), unusedFixture => testFun)
+    }
+
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, List(), testFun)
+    }
+    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
+      val tagList = firstTestTag :: otherTestTags.toList
+      new FixtureItVerbStringTaggedAs(verb, name, tagList)
+    }
+  }
+
+  protected class FixtureItWord {
+    def should(string: String) = new FixtureItVerbString("should", string)
+    def must(string: String) = new FixtureItVerbString("must", string)
+    def can(string: String) = new FixtureItVerbString("can", string)
+    def should(behaveWord: BehaveWord) = behaveWord
+    def must(behaveWord: BehaveWord) = behaveWord
+    def can(behaveWord: BehaveWord) = behaveWord
+  }
+
+  protected val it = new FixtureItWord
+
+  protected class FixtureIgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+    def in(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, tags, testFun)
+    }
+    // ignore must "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                                         ^
+    def is(testFun: => PendingNothing) {
+      registerTestToIgnore(verb + " " + name, tags, unusedFixture => testFun)
+    }
+  }
+
+  protected class FixtureIgnoreVerbString(verb: String, name: String) {
+    def in(testFun: Fixture => Unit) {
+      registerTestToIgnore(verb + " " + name, List(), testFun)
+    }
+
+    // ignore should "test this" is (pending)
+    //                           ^
+    def is(testFun: => PendingNothing) {
+      registerTestToIgnore(verb + " " + name, List(), unusedFixture => testFun)
+    }
+
+    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
+      val tagList = firstTestTag :: otherTestTags.toList
+      new FixtureIgnoreVerbStringTaggedAs(verb, name, tagList)
+    }
+  }
+
+  protected class FixtureIgnoreWord {
+    def should(string: String) = new FixtureIgnoreVerbString("should", string)
+    def must(string: String) = new FixtureIgnoreVerbString("must", string)
+    def can(string: String) = new FixtureIgnoreVerbString("can", string)
+  }
+
+  protected class FixtureFlatSpecSubjectVerbStringTaggedAs(verbAndname: String, tags: List[Tag])
+      extends SubjectVerbStringTaggedAs[Fixture] {
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
+    //                                               ^
+    def in(testFun: => Unit) {
+      throw new RuntimeException() // TODO: add a message and tests
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
+    //                                               ^
+    def ignore(testFun: => Unit) {
+      throw new RuntimeException() // TODO: add a message and tests
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
+    //                                               ^
+    def in(testFun: Fixture => Unit) {
+      registerTestToRun(verbAndname, tags, testFun)
+    }
+
+    // "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+    //                                                            ^
+    def is(testFun: => PendingNothing) {
+      registerTestToRun(verbAndname, tags, unusedFixture => testFun)
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
+    //                                               ^
+    def ignore(testFun: Fixture => Unit) {
+      registerTestToIgnore(verbAndname, tags, testFun)
+    }
+  }
+
+  protected val ignore = new FixtureIgnoreWord
+
+  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb[Fixture] = {
+    (left, right, verb) => {
+      behavior.of(left)
+      new ResultOfStringPassedToVerb[Fixture] {
+        def in(testFun: => Unit) {
+          throw new RuntimeException // TODO: Explain why in msg
+        }
+        def ignore(testFun: => Unit) {
+          throw new RuntimeException // TODO: Explain why in msg
+        }
+        def in(testFun: Fixture => Unit) {
+          registerTestToRun(verb + " " + right, List(), testFun)
+        }
+        def is(testFun: => PendingNothing) {
+          registerTestToRun(verb + " " + right, List(), unusedFixture => testFun)
+        }
+        def ignore(testFun: Fixture => Unit) {
+          registerTestToIgnore(verb + " " + right, List(), testFun)
+        }
+        def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
+          val tagList = firstTestTag :: otherTestTags.toList
+          new FixtureFlatSpecSubjectVerbStringTaggedAs(verb + " " + right, tagList)
+        }
+      }
+    }
+  }
+
+  implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
+    (left) => {
+      behavior.of(left)
+      new ResultOfBehaveWordPassedToVerb {
+        def like(unit: Unit) = ()
+      }
+    }
   }
 
   /**
@@ -724,11 +897,11 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def scenario(specText: String)(testFun: Fixture => Unit) {
+  /* private def oldIt(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
-    scenario(specText, Array[Tag](): _*)(testFun)
-  }
+      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
+    oldIt(specText, Array[Tag](): _*)(testFun)
+  } */
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -748,9 +921,9 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
@@ -780,46 +953,11 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String)(testFun: Fixture => Unit) {
+  /* protected def oldIgnore(specText: String)(testFun: => Unit) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
-    ignore(specText, Array[Tag](): _*)(testFun)
-  }
-
-  /**
-   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
-   * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
-   * (defined with <code>it</code>). This trait's implementation of this method will register the
-   * description string and immediately invoke the passed function.
-   */
-  protected def feature(description: String)(f: => Unit) {
-
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
-
-    def createNewBranch() = {
-      val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-      val newBranch = DescriptionBranch(currentBranch, Resources("feature", description))
-      val oldBranch = currentBranch
-      currentBranch.subNodes ::= newBranch
-      currentBranch = newBranch
-
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-
-      oldBranch
-    }
-
-    val oldBranch = createNewBranch()
-
-    f
-
-    val oldBundle = atomic.get
-    val (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
-  }
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
+    oldIgnore(specText, Array[Tag](): _*)(testFun)
+  } */
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
@@ -873,7 +1011,8 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
             val (filterTest, ignoreTest) = filter(tn, tags)
             if (!filterTest)
               if (ignoreTest) {
-                val formattedSpecText = "  " + Resources("scenario", specText)
+                val testSucceededIcon = Resources("testSucceededIconChar")
+                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, specText)
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
@@ -913,8 +1052,8 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
       case Some(test) => {
         val report = wrapReporterIfNecessary(reporter)
 
-        val scenarioSpecText = Resources("scenario", test.specText)
-        val formattedSpecText = "  " + scenarioSpecText
+        val testSucceededIcon = Resources("testSucceededIconChar")
+        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, test.specText)
 
         // Create a Rerunner if the Spec has a no-arg constructor
         val hasPublicNoArgConstructor = org.scalatest.Suite.checkForPublicNoArgConstructor(getClass)
@@ -931,7 +1070,7 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
         // will show up in a test-style output.
         report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
 
-        val formatter = IndentedText(formattedSpecText, scenarioSpecText, 1)
+        val formatter = IndentedText(formattedSpecText, test.specText, 1)
         val oldInformer = atomicInformer.get
         val informerForThisTest =
           new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
@@ -941,7 +1080,8 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
               if (shouldRecord)
                 record(message)
               else {
-                val formattedText = "    " + message
+                val infoProvidedIcon = Resources("infoProvidedIconChar")
+                val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
                 report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
               }
             }
@@ -967,7 +1107,8 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
         finally {
           // send out any recorded messages
           for (message <- informerForThisTest.recordedMessages) {
-            val formattedText = "    " + message
+            val infoProvidedIcon = Resources("infoProvidedIconChar")
+            val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
             report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
           }
 
@@ -1163,28 +1304,5 @@ trait ConfigFeatureSpec extends ConfigSuite { thisSuite =>
     }
   }
 
-  class FixtureScenariosForPhrase {
-
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * scenariosFor(nonEmptyStack(lastValuePushed))
-     *             ^
-     * </pre>
-     */
-    def apply(unit: Unit) {}
-  }
-
-  val scenariosFor = new FixtureScenariosForPhrase
-
-  implicit def convertToFixtureFun(f: => PendingNothing): (Fixture) => Unit = {
-    fixture => f
-  }
-  
- /* val Pending: (Fixture) => Unit = {
-      fixture => throw new TestPendingException
-  } */
+  val behave = new BehaveWord
 }
-
-

@@ -18,7 +18,7 @@ package org.scalatestexamples.fixture
 import org.scalatest.fixture.SimpleWithFixture
 import org.scalatest.GivenWhenThen
 
-class TVFixtureFeatureSpec extends org.scalatest.fixture.ConfigFeatureSpec
+class TVFixtureFeatureSpec extends org.scalatest.fixture.FixtureFeatureSpec
         with GivenWhenThen with SimpleWithFixture {
 
   type Fixture = String
