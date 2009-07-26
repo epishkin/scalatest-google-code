@@ -24,6 +24,6 @@ trait ConductorFixture { this: FixtureSuite =>
   def withFixture(testFun: Conductor => Unit, config: Map[String, Any]) {
     val conductor = new Conductor
     testFun(conductor)
-    conductor.start()
+    conductor.conductTest()
   }
 }

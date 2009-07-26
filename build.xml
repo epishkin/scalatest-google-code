@@ -272,7 +272,7 @@
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
             <membersonly package="org.scalatest.matchers" />
-            <membersonly package="org.scalatest.conductor" />
+            <membersonly package="org.scalatest.concurrent" />
             <membersonly package="org.scalatest.testng" />
             <membersonly package="org.scalatest.junit" />
             <membersonly package="org.scalatest.events" />
@@ -329,6 +329,8 @@
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
 
+            <membersonly package="org.scalatest.concurrent" />
+<!--
             <suite classname="org.scalatest.SuiteSuite" />
             <suite classname="org.scalatest.FunSuiteSuite" />
 
@@ -344,8 +346,8 @@
             <suite classname="org.scalatest.fixture.FixtureSpecSpec" />
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSpec" />
             <suite classname="org.scalatest.fixture.FixtureWordSpecSpec" />
-            <suite classname="org.scalatest.fixture.FixtureFeatureSpecSpec" />
-
+            <suite classname="org.scalatest.fixture.FixtureFeatureSpecSpec" /> 
+-->
 <!--
             <suite classname="org.scalatest.concurrent.ConductorSuite" />
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />

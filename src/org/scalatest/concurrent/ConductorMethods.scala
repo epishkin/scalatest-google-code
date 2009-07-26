@@ -17,6 +17,7 @@ package org.scalatest.concurrent
 
 import events._
 import java.util.concurrent.atomic.AtomicReference
+import _root_.java.util.concurrent.Callable
 
 /**
  * A Scala port of <a href="http://code.google.com/p/multithreadedtc/">MultithreadedTC</a>
@@ -37,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference
  *
  * @author Josh Cough
  */
-trait ConductorMethods extends RunMethods with Logger { this: Suite =>
+trait ConductorMethods extends RunMethods { this: Suite =>
 
   private val conductor = new AtomicReference[Conductor]()
 
@@ -61,15 +62,41 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
   protected def thread[T](name: String)(f: => T): Thread = conductor.get.thread(name){ f }
 
   /**
+   * Create a new thread that will execute the given Runnable
+   * @param runnable the Runnable to be executed by the thread
+   */
+  def thread[T](runnable: Runnable): Thread = conductor.get.thread(runnable)
+
+  /**
+   * Create a new thread that will execute the given Runnable
+   * @param name the name of the thread
+   * @param runnable the Runnable to be executed by the thread
+   */
+  def thread[T](name: String, runnable: Runnable): Thread = conductor.get.thread(name,runnable)
+
+  /**
+   * Create a new thread that will execute the given Callable
+   * @param callable the Callable to be executed by the thread
+   */
+  def thread[T](callable: Callable[T]): Thread = conductor.get.thread(callable)
+
+  /**
+   * Create a new thread that will execute the given Callable
+   * @param name the name of the thread
+   * @param callable the Callable to be executed by the thread
+   */
+  def thread[T](name: String, callable: Callable[T]): Thread = conductor.get.thread(name,callable)
+
+  /**
    * Force the current thread to block until the thread clock reaches the
    * specified value, at which point the current thread is unblocked.
-   *
    * @param c the tick value to wait for
    */
   protected def waitForBeat(beat:Int) = conductor.get.waitForBeat(beat)
 
   /**
-   * Run the passed function, ensuring the clock does not advance while the function is running (has not yet returned or thrown an exception).
+   * Run the passed function, ensuring the clock does not advance while the function is running
+   * (has not yet returned or thrown an exception).
    */
   protected def withConductorFrozen[T](f: => T) = conductor.get.withConductorFrozen(f)
 
@@ -81,7 +108,6 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
 
   /**
    * Gets the current value of the clock. Primarily useful in assert statements.
-   *
    * @return the current tick value
    */
   protected def beat = conductor.get.beat
@@ -92,9 +118,24 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
   protected def whenFinished(f: => Unit) = conductor.get.whenFinished{ f }
 
   /**
-   * Adds threads methods to int, so one can say:<br/>
-   * val threads:List[Thread] = 5.threads("some name"){ ... }<br/>
-   * val anonymous_threads:List[Thread] = 10 threads { ... }<br/>
+   *
+   */
+  protected def enableLogging() = conductor.get.enableLogging()
+
+  /**
+   *
+   */
+  protected def disableLogging() = conductor.get.disableLogging()
+
+  /**
+   * 
+   */
+  protected var enableLoggingForAllTests = false
+
+  /**
+   * Adds threads methods to int, so one can say:<br/> 
+   * val threads:List[Thread] = 5.threads("some name")  { ... } <br/>
+   * val anonymous_threads:List[Thread] = 10 threads   { ... } <br/>
    * @param nrThreads the number of threads to be created
    */
   protected implicit def addThreadsMethodToInt(nrThreads:Int) = {
@@ -115,7 +156,10 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
                                 stopper: Stopper, properties: Map[String,Any], tracker:Tracker) {
 
     // use a new conductor for each test
-    conductor.compareAndSet(conductor.get, new Conductor(this))
+    conductor.compareAndSet(conductor.get,
+                           new Conductor(Some(new Informer { def apply(s: String) { println(s) } })))
+
+    if( enableLoggingForAllTests ) conductor.get.enableLogging()
 
     val interceptor = new PassFailInterceptor(reporter)
 
@@ -124,11 +168,11 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
 
     super.runTest(testName, interceptor, stopper, properties, tracker)
 
-    // if we've intercepted a Failure, get out now.
-    // otherwise, run the Conductor
-    interceptor.failReport match {
-      case Some(fail) => reporter(fail)
-      case None => runConductor(testName, startTime, tracker, reporter, interceptor.successReport.get)
+    // if we've havent received a Success, then we need to get out now.
+    // if we have, its ok to run the Conductor.
+    interceptor.successReport match {
+      case Some(success) => runConductor(testName, startTime, tracker, reporter, success)
+      case None =>
     }
   }
 
@@ -168,7 +212,7 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
     var caughtException = false
 
     try {
-      conductor.get.start()
+      conductor.get.conductTest()
     } catch {
       // handle the main thread throwing an exception      
       case e => {
@@ -210,11 +254,13 @@ trait ConductorMethods extends RunMethods with Logger { this: Suite =>
 
     var successReport: Option[TestSucceeded] = None
     var failReport: Option[TestFailed] = None
+    var pendingReport: Option[TestPending] = None
 
     def apply(event:Event){
       event match {
         case pass:TestSucceeded => successReport = Some(pass)
-        case fail:TestFailed => failReport = Some(fail)
+        case fail:TestFailed => failReport = Some(fail); original(fail)
+        case pend:TestPending => pendingReport = Some(pend); original(pend)
         case _ => original(event)
       }
     }

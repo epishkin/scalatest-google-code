@@ -15,292 +15,19 @@
  */
 package org.scalatest.concurrent
 
-import java.util.concurrent._
 import Thread.State._
 import PimpedThreadGroup._
 import scala.collection.jcl.Conversions.convertList
+import _root_.java.util.concurrent._
+import _root_.java.util.concurrent.atomic.AtomicReference
 
 /**
- * <pre>
- * class MTCBoundedBufferTest extends MultithreadedTestCase {
- *    ArrayBlockingQueue<Integer> buf;
- *    @Override public void initialize() {
- *       buf = new ArrayBlockingQueue<Integer>(1);
- *    }
- *
- *    public void thread1() throws InterruptedException {
- *       buf.put(42);
- *       buf.put(17);
- *       assertTick(1);
- *    }
- *
- *    public void thread2() throws InterruptedException {
- *       waitForTick(1);
- *       assertEquals(Integer.valueOf(42), buf.take());
- *       assertEquals(Integer.valueOf(17), buf.take());
- *    }
- *
- *    @Override public void finish() {
- *       assertTrue(buf.isEmpty());
- *    }
- * }
- * </pre>
- *
- * <pre>
- * class MTCBoundedBufferTest extends FunSuite with ConductorMethods with MustMatchers {
- *   test("call to put on a full queue blocks the producer thread"){
- *     val buf = new ArrayBlockingQueue[Int](1)
- *
- *     thread("producer") {
- *       buf put 42
- *       buf put 17
- *       tick mustBe 1
- *     }
- *
- *     thread("consumer") {
- *       waitForTick(1)
- *       buf.take must be(42)
- *       buf.take must be(17)
- *     }
- *
- *     finish {
- *       buf must be('empty)
- *     }
- *   }
- * }
- * </pre>
- *
- * <pre>
- * class MTCCompareAndSet extends MultithreadedTest {
- *    AtomicInteger ai;
- *    @Override public void initialize() {
- *        ai = new AtomicInteger(1);
- *    }
- *
- *    public void thread1() {
- *        while(!ai.compareAndSet(2, 3)) Thread.yield();
- *    }
- *
- *    public void thread2() {
- *        assertTrue(ai.compareAndSet(1, 2));
- *    }
- *
- *    @Override public void finish() {
- *        assertEquals(ai.get(), 3);
- *    }
- * }
- * </pre>
- *
- * <pre>
- * class MTCCompareAndSet extends FunSuite with ConductorMethods with MustMatchers {
- *   test("compare and set") {
- *     val ai = new AtomicInteger(1)
- *
- *     thread {
- *       while(!ai.compareAndSet(2, 3)) Thread.`yield`
- *     }
- *
- *     thread {
- *       ai.compareAndSet(1, 2) must be(true)
- *     }
- *
- *     finish {
- *       ai.ge must be(3)
- *     }
- *   }
- * }
- * </pre>
- *
- * <pre>
- * class MTCInterruptedAcquire extends MultithreadedTestCase {
- *    Semaphore s;
- *    @Override public void initialize() {
- *        s = new Semaphore(0);
- *    }
- *
- *    public void thread1() {
- *        try {
- *            s.acquire();
- *            fail("should throw exception");
- *        } catch(InterruptedException success){ assertTick(1); }
- *    }
- *
- *    public void thread2() {
- *        waitForTick(1);
- *        getThread(1).interrupt();
- *    }
- * }
- * </pre>
- *
- * <pre>
- * class MTCInterruptedAcquire extends FunSuite with ConductorMethods with MustMatchers {
- *   test("interrupted aquire"){
- *     val s = new Semaphore(0)
- *
- *     val nice = thread("nice") {
- *       intercept[InterruptedException] { s.acquire }
- *       tick must be(1)
- *     }
- *
- *     thread("rude") {
- *       waitForTick(1)
- *       nice.interrupt
- *     }
- *   }
- * }
- * </pre>
- *
- * <pre>
- * class MTCThreadOrdering extends MultithreadedTestCase {
- *    AtomicInteger ai;
- *    @Override public void initialize() {
- *        ai = new AtomicInteger(0);
- *    }
- *
- *    public void thread1() {
- *        assertTrue(ai.compareAndSet(0, 1)); // S1
- *        waitForTick(3);
- *        assertEquals(ai.get(), 3);          // S4
- *    }
- *
- *    public void thread2() {
- *        waitForTick(1);
- *        assertTrue(ai.compareAndSet(1, 2)); // S2
- *        waitForTick(3);
- *        assertEquals(ai.get(), 3);          // S4
- *    }
- *
- *    public void thread3() {
- *        waitForTick(2);
- *        assertTrue(ai.compareAndSet(2, 3)); // S3
- *    }
- * }
- * </pre>
- *
- * <pre>
- * class MTCThreadOrdering extends FunSuite with ConductorMethods with MustMatchers {
- *   test("thread ordering"){
- *     val ai = new AtomicInteger(0)
- *
- *     thread {
- *       ai.compareAndSet(0, 1) must be(true)  // S1
- *       waitForTick(3)
- *       ai.get() must be(3)                   // S4
- *     }
- *
- *     thread {
- *       waitForTick(1)
- *       ai.compareAndSet(1, 2) must be(true)  // S2
- *       waitForTick(3)
- *       ai.get must be(3)                     // S4
- *     }
- *
- *     thread {
- *       waitForTick(2)
- *       ai.compareAndSet(2, 3) must be(true)  // S3
- *     }
- *   }
- * }
- * </pre>
- *
- * <pre>
- * class MTCTimedOffer extends MultithreadedTestCase {
- *    ArrayBlockingQueue<Object> q;
- *
- *    @Override public void initialize() {
- *        q = new ArrayBlockingQueue<Object>(2);
- *    }
- *
- *    public void thread1() {
- *        try {
- *            q.put(new Object());
- *            q.put(new Object());
- *
- *            freezeClock();
- *            assertFalse(q.offer(new Object(),
- *                25, TimeUnit.MILLISECONDS));
- *            unfreezeClock();
- *
- *            q.offer(new Object(),
- *                2500, TimeUnit.MILLISECONDS);
- *            fail("should throw exception");
- *        } catch (InterruptedException success){
- *            assertTick(1);
- *        }
- *    }
- *
- *    public void thread2() {
- *        waitForTick(1);
- *        getThread(1).interrupt();
- *    }
- * }
- * </pre>
- *
- * <pre>
- * class MTCTimedOffer extends MultiThreadedFunSuite {
- *   test("timed offer") {
- *     val q = new ArrayBlockingQueue[String](2)
- *
- *     val producer = thread("producer"){
- *       q put "w"
- *       q put "x"
- *
- *       withClockFrozen {
- *         q.offer("y", 25, TimeUnit.MILLISECONDS) mustBe false
- *       }
- *
- *       intercept[InterruptedException] {
- *         q.offer("z", 2500, TimeUnit.MILLISECONDS)
- *       }
- *
- *       tick mustBe 1
- *     }
- *
- *     val consumer = thread("consumer"){
- *       waitForTick(1)
- *       producer.interrupt()
- *     }
- *   }
- * }
- * </pre>
- *
- * <pre>
- * class PimpedReadWriteLockTest extends ConcurrentTest {
- *
- *   val lock = new java.util.concurrent.locks.ReentrantReadWriteLock
- *   import PimpedReadWriteLock._
- *
- *   test("demonstrate various functionality") {
- *     // create 5 named test threads that all do the same thing
- *     5.threads("reader thread") {
- *       lock.read {
- *         logger.debug.around("using read lock") {waitForTick(2)}
- *       }
- *     }
- *
- *     // create 10 test threads that all do the same thing
- *     10 threads {
- *       lock.read {
- *         logger.debug.around("using read lock") {waitForTick(2)}
- *       }
- *     }
- *
- *     // create a single, named thread
- *     thread("writer thread") {
- *       waitForTick(1)
- *       lock.write {
- *         logger.debug.around("using write lock") {tick mustBe 2}
- *       }
- *     }
- *   }
- * }
- * </pre>
  *
  * @author Josh Cough
  */
-class Conductor(logger:Logger){
+class Conductor(val informer: Option[Informer]){
 
-  def this() = this(new Logger {})
+  def this() = this(None)
 
   /**
    * The metronome used to coordinate between threads.
@@ -328,15 +55,44 @@ class Conductor(logger:Logger){
   def thread[T](f: => T): Thread = thread("thread" + threads.size) {f}
 
   /**
+   * Create a new thread that will execute the given Runnable
+   * @param runnable the Runnable to be executed by the thread
+   */
+  def thread[T](runnable: Runnable): Thread = thread("thread" + threads.size) {runnable.run}
+
+  /**
+   * Create a new thread that will execute the given Runnable
+   * @param runnable the Runnable to be executed by the thread
+   */
+  def thread[T](name: String, runnable: Runnable): Thread = thread(name) {runnable.run}
+
+  /**
+   * Create a new thread that will execute the given Callable
+   * @param callable the Callable to be executed by the thread
+   */
+  def thread[T](callable: Callable[T]): Thread = thread("thread" + threads.size) {callable.call}
+
+  /**
+   * Create a new thread that will execute the given Callable
+   * @param callable the Callable to be executed by the thread
+   */
+  def thread[T](name: String, callable: Callable[T]): Thread = thread(name) {callable.call}
+
+  /**
    * Create a new thread that will execute the given function
    * @param name the name of the thread
    * @param f the function to be executed by the thread
    */
   def thread[T](name: String)(f: => T): Thread = {
-    val t = TestThread(name, f _)
-    threads add t
-    startThread(t)
+    currentState.get match {
+      case TestFinished => throw new IllegalStateException("Test already completed.")
+      case _ =>
+        val t = TestThread(name, f _)
+        threads add t
+        startThread(t)
+    }
   }
+  
   // The reason that the thread is started immediately, is do that nested threads
   // will start immediately, without requiring the user to explicitly start() them.
 
@@ -389,7 +145,7 @@ class Conductor(logger:Logger){
    * start a thread, logging before and after
    */
   private def startThread(t: Thread): Thread = {
-    logger.trace.around("starting: " + t) {t.start(); t}
+    logAround("starting: " + t) {t.start(); t}
   }
 
   /////////////////////// thread management end /////////////////////////////
@@ -422,10 +178,10 @@ class Conductor(logger:Logger){
    * Clock thread will return normally when no threads are running.
    */
   private def signalError(t: Throwable) {
-    logger.error(t)
+    log(t)
     errorsQueue offer t
     for (t <- threadGroup.getThreads; if (t != currentThread)) {
-      logger.error("signaling error to " + t.getName)
+      log("signaling error to " + t.getName)
       val assertionError = new AssertionError(t.getName + " killed by " + currentThread.getName)
       assertionError setStackTrace t.getStackTrace
       t stop assertionError
@@ -439,7 +195,16 @@ class Conductor(logger:Logger){
   /**
    * Register a function to be executed after the simulation has finished.
    */
-  def whenFinished(fun: => Unit) {finishFunction = Some(fun _)}
+  def whenFinished(fun: => Unit) {
+    if( currentThread != mainThread )
+      throw new IllegalStateException("whenFinished can only be called by thread that created Conductor.")
+
+    finishFunction match {
+      case Some(_) =>
+        throw new IllegalStateException("whenFinished can only be called once.")
+      case None => finishFunction = Some(fun _)
+    }
+  }
 
   /**
    * An option that might contain a function to run after all threads have finished.
@@ -447,7 +212,6 @@ class Conductor(logger:Logger){
    * in order to have a function executed. If the user does call finish  {...}
    * then that function gets saved in this Option, as Some(f)
    */
-  // TODO: Ensure this is set and called by the main thread, and if not, it gets an exception
   private var finishFunction: Option[() => Unit] = None
 
   /**
@@ -464,7 +228,7 @@ class Conductor(logger:Logger){
   /////////////////////// clock management start //////////////////////////
 
   /**
-   * Force the current thread to block until the thread clock reaches the
+   * Force the current thread to block until the thread beat reaches the
    * specified value, at which point the current thread is unblocked.
    *
    * @param c the tick value to wait for
@@ -480,13 +244,15 @@ class Conductor(logger:Logger){
   def beat: Int = clock.currentBeat
 
   /**
-   * This runs the passed function, and while it runs it, the clock cannot advance.
+   * Freezes the conductor so that the beat cannot advance.
+   * Runs the given function.
+   * Unfreezes the conductor.
    */
   def withConductorFrozen[T](f: => T) = clock.withClockFrozen(f _)
 
   /**
-   * Check if the clock has been frozen by any threads. (The only way a thread
-   * can freeze the clock is by calling withClockFrozen.)
+   * Check if the conductor has been frozen by any threads. (The only way a thread
+   * can freeze the conductor is by calling withConductorFrozen.)
    */
   def isConductorFrozen: Boolean = clock.isFrozen
 
@@ -510,11 +276,15 @@ class Conductor(logger:Logger){
    * Run multithreaded test with the default parameters,
    * or the parameters set at the command line.
    */
-  def start() {
+  def conductTest() {
     val DEFAULT_CLOCKPERIOD = 10
     val DEFAULT_RUNLIMIT = 5
-    start(DEFAULT_CLOCKPERIOD, DEFAULT_RUNLIMIT)
+    conductTest(DEFAULT_CLOCKPERIOD, DEFAULT_RUNLIMIT)
   }
+
+  private val currentState: AtomicReference[ConductorState] = new AtomicReference(Setup)
+
+  def testWasStarted = currentState.get.testWasStarted
 
   /**
    * Start a multithreaded test.
@@ -522,7 +292,12 @@ class Conductor(logger:Logger){
    * @param runLimit The limit to run the test in seconds
    * @throws Throwable The first error or exception that is thrown by one of the threads
    */
-  def start(clockPeriod: Int, runLimit: Int) {
+  def conductTest(clockPeriod: Int, runLimit: Int) {
+
+    // if the test was started already, explode
+    // otherwise, change state to TestStarted
+    if( testWasStarted ) throw new IllegalStateException("Conductor can only be run once!")
+    else currentState set TestStarted
 
     // wait until all threads are definitely ready to go
     mainThreadStartLatch.await()
@@ -539,6 +314,9 @@ class Conductor(logger:Logger){
 
     // if there are any errors, get out and dont run the finish function
     if (errorsQueue.isEmpty) { runFinishFunction() }
+
+    // change state to test finished
+    currentState set TestFinished
   }
 
   /**
@@ -548,8 +326,7 @@ class Conductor(logger:Logger){
    * or other threads fail, the error is placed in the shared error array
    * and thrown by this method.
    *
-   * @param threads
-   *             List of all the test case threads and the clock thread
+   * @param threads List of all the test case threads and the clock thread
    */
   // Explain how we understand it works: if the thread that's been joined already dies with an exception
   // that will go into errors, and this thread the join will return. If the thread returns and doesn't
@@ -564,22 +341,59 @@ class Conductor(logger:Logger){
     }
   }
 
-
   private def waitForThread(t: Thread) {
-    logger.trace("waiting for: " + t.getName + " which is in state:" + t.getState)
+    log("waiting for: " + t.getName + " which is in state:" + t.getState)
     try {
-      if (t.isAlive && !errorsQueue.isEmpty) logger.trace.around("stopping: " + t) {t.stop()}
-      else logger.trace.around("joining: " + t) {t.join()}
+      if (t.isAlive && !errorsQueue.isEmpty) logAround("stopping: " + t) {t.stop()}
+      else logAround("joining: " + t) {t.join()}
+      assert(t.getState == TERMINATED)
     } catch {
       case e: InterruptedException => {
-        logger.trace("killed waiting for threads. probably deadlock or timeout.")
+        log("killed waiting for threads. probably deadlock or timeout.")
         errorsQueue offer new AssertionError(e)
       }
     }
   }
 
+  /////////////////////// logging start /////////////////////////////
+
+  private var trace: AtomicReference[Boolean] = new AtomicReference(false)
+
   /**
-   * A Clock manages the current tick in a MultiThreadedTest.
+   * Turn logging on
+   */
+  def enableLogging() = trace set true
+
+  /**
+   * Turn logging off
+   */
+  def disableLogging() = trace set false
+
+  /**
+   * Logs the given object by calling toString on it
+   */
+  def log(a:Any) = {
+    if( trace.get ) informer match {
+      case Some(inf) => inf(a.toString)
+      case None => 
+    }
+  }
+
+  /**
+   * Logs before and after executing the given function.
+   */
+  def logAround[T](a: => Any)(f: => T): T = {
+    log("|starting: " + a)
+    val t = f
+    log("|done with: " + a)
+    t
+  }
+
+  /////////////////////// logging end /////////////////////////////
+
+
+  /**
+   * A Clock manages the current beat in a MultiThreadedTest.
    * Several duties stem from that responsibility.
    *
    * The clock will:
@@ -589,8 +403,6 @@ class Conductor(logger:Logger){
    * <li>Report the current time</li>
    * <li>Run operations with the clock frozen.</li>
    * </ol>
-   *
-   * @author Josh Cough
    */
   private class Clock {
 
@@ -625,7 +437,7 @@ class Conductor(logger:Logger){
     def advance() {
       lock.synchronized {
         rwLock.write {
-          logger.trace("clock advancing from: " + currentTime + " to: " + (currentTime + 1))
+          log("clock advancing from: " + currentTime + " to: " + (currentTime + 1))
           currentTime += 1
         }
         lock.notifyAll()
@@ -646,7 +458,7 @@ class Conductor(logger:Logger){
     def waitForBeat(beat: Int) {
       lock.synchronized {
         if (beat > highestBeatBeingWaitedOn) highestBeatBeingWaitedOn = beat
-        logger.trace.around(currentThread.getName + " is waiting for time " + beat) {
+        logAround(currentThread.getName + " is waiting for time " + beat) {
           while (currentBeat < beat) {
             try {
               lock.wait()
@@ -784,4 +596,31 @@ class Conductor(logger:Logger){
       else deadlockCount += 1
     }
   }
+
+  /**
+   * Base class for the possible states of the Conductor.
+   */
+  private sealed case class ConductorState(testWasStarted:Boolean, testIsFinished: Boolean)
+
+  /**
+   * The initial state of the Conductor.
+   * Any calls the thread{ ... } will result in blocked Threads.
+   * Any call to conductTest will start the test.
+   */
+  private case object Setup extends ConductorState(false, false)
+
+  /**
+   * The state of the Conductor while its running.
+   * Any calls the thread{ ... } will result in running Threads.
+   * Any further call to conductTest will result in an exception.
+   */
+  private case object TestStarted extends ConductorState(true, false)
+
+  /**
+   * The state of the Conductor after all threads have finished,
+   * and the whenFinished method has completed.
+   * Any calls the thread{ ... } will result in an exception
+   * Any call to conductTest will result in an exception.
+   */
+  private case object TestFinished extends ConductorState(true, true)
 }
