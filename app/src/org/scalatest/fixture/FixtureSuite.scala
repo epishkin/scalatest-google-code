@@ -29,9 +29,9 @@ import org.scalatest.events._
 
 trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
-  type Fixture
+  protected type Fixture
 
-  def withFixture(fun: (Fixture) => Unit, config: Map[String, Any])
+  protected def withFixture(fun: (Fixture) => Unit, config: Map[String, Any])
 
   // Need to override this one becaue it call getMethodForTestName
   override def tags: Map[String, Set[String]] = {
