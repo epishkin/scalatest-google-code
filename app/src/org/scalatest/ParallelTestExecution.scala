@@ -22,13 +22,13 @@ trait ParallelTestExecution extends OneInstancePerTest {
   this: Suite =>
 
   private[scalatest] def runOneTest(testName: String, reporter: Reporter, stopper: Stopper,
-                         config: Map[String, Any], tracker: Tracker) {
+                         configMap: Map[String, Any], tracker: Tracker) {
 
-    runTest(testName, reporter, stopper, config, tracker)
+    runTest(testName, reporter, stopper, configMap, tracker)
   }
 
   protected abstract override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-                             config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+                             configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
 
     // testName distributor
@@ -39,14 +39,14 @@ trait ParallelTestExecution extends OneInstancePerTest {
     distributor match {
       // If there's no distributor, then just run sequentially, via the regular OneInstancePerTest
       // algorithm
-      case None => super.runTests(testName, reporter,stopper, filter, config, distributor, tracker)
+      case None => super.runTests(testName, reporter,stopper, filter, configMap, distributor, tracker)
       case Some(distribute) =>
         testName match {
           // The only way both testName and distributor should be defined is if someone called from the
           // outside and did this. Fir run is called with testName None and a defined Distributor, it
           // will not get here. So in this case, just do the usual OneInstancePerTest thing.
           // TODO: Make sure it doesn't get back here. Walk through the scenarios.
-          case Some(tn) => super.runTests(testName, reporter, stopper, filter, config, distributor, tracker)
+          case Some(tn) => super.runTests(testName, reporter, stopper, filter, configMap, distributor, tracker)
           case None =>
             for (tn <- testNames) {
               val wrappedInstance =

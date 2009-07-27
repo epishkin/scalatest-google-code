@@ -130,7 +130,7 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * Two other <code>run</code> methods that are intended to be run from the interpreter accept a "config" map of key-value
- * pairs (see <a href="#configSection">Goodies</a>, below). The fifth overloaded <code>run</code> method takes seven
+ * pairs (see <a href="#configMapSection">Config Map</a>, below). The fifth overloaded <code>run</code> method takes seven
  * parameters, so it is a bit unwieldy to invoke from
  * within the Scala interpreter. Instead, this <code>run</code> method will usually be invoked by a test runner, such
  * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="tools/Runner$object.html">documentation
@@ -780,7 +780,7 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * <a name="configSection"><strong>The config map</strong></a>
+ * <a name="configMapSection"><strong>The config map</strong></a>
  * </p>
  *
  * <p>
@@ -795,7 +795,7 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * You can specify a string config object is via the ScalaTest <code>Runner</code>, either via the command line
  * or ScalaTest's ant task.
- * (See the <a href="tools/Runner$object.html#configSection">documentation for Runner</a> for information on how to specify 
+ * (See the <a href="tools/Runner$object.html#configMapSection">documentation for Runner</a> for information on how to specify 
  * config objects on the command line.)
  * The config map is passed to <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>,
  * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
@@ -1125,7 +1125,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
    * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
    *   for <code>tagsToExclude</code></li>
-   * <li><code>config</code> - an empty <code>Map[String, Any]</code></li>
+   * <li><code>configMap</code> - an empty <code>Map[String, Any]</code></li>
    * <li><code>distributor</code> - <code>None</code></li>
    * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
@@ -1139,7 +1139,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   }
 
   /**
-   * Runs this <code>Suite</code> with the specified <code>config</code> map, printing results to the standard output.
+   * Runs this <code>Suite</code> with the specified <code>configMap</code>, printing results to the standard output.
    *
    * <p>
    * This method
@@ -1153,21 +1153,21 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
    * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
    *   for <code>tagsToExclude</code></li>
-   * <li><code>config</code> - the specified <code>config</code> <code>Map[String, Any]</code></li>
+   * <li><code>configMap</code> - the specified <code>configMap</code> <code>Map[String, Any]</code></li>
    * <li><code>distributor</code> - <code>None</code></li>
    * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to run a <code>Suite</code>, passing in some objects via the <code>config</code> map, especially from within the Scala interpreter.
+   * This method serves as a convenient way to run a <code>Suite</code>, passing in some objects via the <code>configMap</code>, especially from within the Scala interpreter.
    * </p>
    *
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    *
-   * @throws NullPointerException if the passed <code>config</code> parameter is <code>null</code>.
+   * @throws NullPointerException if the passed <code>configMap</code> parameter is <code>null</code>.
    */
-  final def run(config: Map[String, Any]) {
-    run(None, new StandardOutReporter, new Stopper {}, Filter(), config, None, new Tracker)
+  final def run(configMap: Map[String, Any]) {
+    run(None, new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
   /**
@@ -1185,7 +1185,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
    * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
    *   for <code>tagsToExclude</code></li>
-   * <li><code>config</code> - an empty <code>Map[String, Any]</code></li>
+   * <li><code>configMap</code> - an empty <code>Map[String, Any]</code></li>
    * <li><code>distributor</code> - <code>None</code></li>
    * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
@@ -1205,7 +1205,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   }
 
   /**
-   * Runs the test specified as <code>testName</code> in this <code>Suite</code> with the specified <code>config</code> map, printing
+   * Runs the test specified as <code>testName</code> in this <code>Suite</code> with the specified <code>configMap</code>, printing
    * results to the standard output.
    *
    * <p>
@@ -1219,25 +1219,25 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>stopper</code> - a <code>Stopper</code> whose <code>apply</code> method always returns <code>false</code></li>
    * <li><code>filter</code> - a <code>Filter</code> constructed with <code>None</code> for <code>tagsToInclude</code> and <code>Set()</code>
    *   for <code>tagsToExclude</code></li>
-   * <li><code>config</code> - the specified <code>config</code> <code>Map[String, Any]</code></li>
+   * <li><code>configMap</code> - the specified <code>configMap</code> <code>Map[String, Any]</code></li>
    * <li><code>distributor</code> - <code>None</code></li>
    * <li><code>tracker</code> - a new <code>Tracker</code></li>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to run a single test, passing in some objects via the <code>config</code> map, especially from
+   * This method serves as a convenient way to run a single test, passing in some objects via the <code>configMap</code>, especially from
    * within the Scala interpreter.
    * </p>
    *
    * @param testName the name of one test to run.
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    *
-   * @throws NullPointerException if either of the passed <code>testName</code> or <code>config</code> parameters is <code>null</code>.
+   * @throws NullPointerException if either of the passed <code>testName</code> or <code>configMap</code> parameters is <code>null</code>.
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
-  final def run(testName: String, config: Map[String, Any]) {
-    run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), config, None, new Tracker)
+  final def run(testName: String, configMap: Map[String, Any]) {
+    run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
   /**
@@ -1388,16 +1388,16 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>config</code>
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>configMap</code>
    *     or <code>tracker</code> is <code>null</code>.
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
-  protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+  protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || config == null || tracker == null)
+    if (testName == null || reporter == null || stopper == null || configMap == null || tracker == null)
       throw new NullPointerException
 
     val stopRequested = stopper
@@ -1482,7 +1482,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *   to this method</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>config</code> - the <code>config</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>configMap</code> - the <code>configMap</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * <p>
@@ -1517,7 +1517,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>config</code> - the <code>config</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>configMap</code> - the <code>configMap</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * <p>
@@ -1533,14 +1533,14 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of the passed parameters is <code>null</code>.
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-                             config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+                             configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1550,8 +1550,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (config == null)
-      throw new NullPointerException("config was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
@@ -1567,14 +1567,14 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, report, stopRequested, config, tracker)
+      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
       case None =>
 
       for ((tn, ignoreTest) <- filter(testNames, tags))
         if (ignoreTest)
           report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
         else
-          runTest(tn, report, stopRequested, config, tracker)
+          runTest(tn, report, stopRequested, configMap, tracker)
     }
   }
 
@@ -1585,8 +1585,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * calls these two methods on this object in this order:</p>
    *
    * <ol>
-   * <li><code>runNestedSuites(report, stopper, tagsToInclude, tagsToExclude, config, distributor)</code></li>
-   * <li><code>runTests(testName, report, stopper, tagsToInclude, tagsToExclude, config)</code></li>
+   * <li><code>runNestedSuites(report, stopper, tagsToInclude, tagsToExclude, configMap, distributor)</code></li>
+   * <li><code>runTests(testName, report, stopper, tagsToInclude, tagsToExclude, configMap)</code></li>
    * </ol>
    *
    * <p>
@@ -1608,7 +1608,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
@@ -1618,7 +1618,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *     exists in this <code>Suite</code>
    */
   def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-              config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1628,8 +1628,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (config == null)
-      throw new NullPointerException("config was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
@@ -1639,10 +1639,10 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     val report = wrapReporterIfNecessary(reporter)
 
     testName match {
-      case None => runNestedSuites(report, stopRequested, filter, config, distributor, tracker)
+      case None => runNestedSuites(report, stopRequested, filter, configMap, distributor, tracker)
       case Some(_) =>
     }
-    runTests(testName, report, stopRequested, filter, config, distributor, tracker)
+    runTests(testName, report, stopRequested, filter, configMap, distributor, tracker)
 
     if (stopRequested()) {
       val rawString = Resources("executeStopping")
@@ -1691,7 +1691,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
@@ -1699,7 +1699,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
   protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
-                                config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+                                configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (reporter == null)
       throw new NullPointerException("reporter was null")
@@ -1707,8 +1707,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (config == null)
-      throw new NullPointerException("config was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
@@ -1739,7 +1739,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
         try {
           // Same thread, so OK to send same tracker
-          nestedSuite.run(None, report, stopRequested, filter, config, distributor, tracker)
+          nestedSuite.run(None, report, stopRequested, filter, configMap, distributor, tracker)
 
           val rawString = Resources("suiteCompletedNormally")
           val formatter = formatterForSuiteCompleted(nestedSuite)

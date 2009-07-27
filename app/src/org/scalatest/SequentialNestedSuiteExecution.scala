@@ -32,7 +32,7 @@ trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
@@ -43,7 +43,7 @@ trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
     reporter: Reporter,
     stopper: Stopper,
     filter: Filter,
-    config: Map[String, Any],
+    configMap: Map[String, Any],
     distributor: Option[Distributor],
     tracker: Tracker
   ) {
@@ -53,13 +53,13 @@ trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (config == null)
-      throw new NullPointerException("config was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
       throw new NullPointerException("tracker was null")
 
-    super.runNestedSuites(reporter, stopper, filter, config, None, tracker)
+    super.runNestedSuites(reporter, stopper, filter, configMap, None, tracker)
   }
 }

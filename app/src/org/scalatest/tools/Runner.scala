@@ -57,7 +57,7 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <a name="configSection"><strong>Specifying config objects</strong></a>
+ * <a name="configMapSection"><strong>Specifying config objects</strong></a>
  * </p>
  *
  * <p>

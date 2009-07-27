@@ -65,7 +65,7 @@ trait RunMethods { this: Suite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be executed
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be executed sequentially.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
@@ -77,7 +77,7 @@ trait RunMethods { this: Suite =>
     reporter: Reporter,
     stopper: Stopper,
     filter: Filter,
-    config: Map[String, Any],
+    configMap: Map[String, Any],
     distributor: Option[Distributor],
     tracker: Tracker
   )
@@ -89,7 +89,7 @@ trait RunMethods { this: Suite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
    *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
@@ -97,7 +97,7 @@ trait RunMethods { this: Suite =>
    * @throws NullPointerException if any passed parameter is <code>null</code>.
    */
   protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
-                                config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
+                                configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
 
   /**
    * Run zero to many of this suite's tests.
@@ -107,14 +107,14 @@ trait RunMethods { this: Suite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param distributor an optional <code>Distributor</code>, into which instances of this <code>Suite</code> class
    *              that are responsible for executing individual tests contained in this </code>Suite</code>, or groups of this <code>Suite</code>'s
    *              tests, may be placed so as to be run
    *              by another entity, such as concurrently by a pool of threads.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
-   *     <code>groupsToExclude</code>, or <code>config</code> is <code>null</code>.
+   *     <code>groupsToExclude</code>, or <code>configMap</code> is <code>null</code>.
    *
    * This trait's implementation of this method runs tests
    * in the manner described in detail in the following paragraphs, but subclasses may override the method to provide different
@@ -122,7 +122,7 @@ trait RunMethods { this: Suite =>
    * used by all the methods of this <code>Suite</code>.
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-                             config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
+                             configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
 
   /**
    * Run a test.
@@ -130,17 +130,17 @@ trait RunMethods { this: Suite =>
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param config a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    *
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>config</code>,
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>configMap</code>,
    *     or <code>tracker</code> is <code>null</code>.
    */
   protected def runTest(
     testName: String,
     reporter: Reporter,
     stopper: Stopper,
-    config: Map[String, Any],
+    configMap: Map[String, Any],
     tracker: Tracker
   )
 }
