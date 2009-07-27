@@ -70,7 +70,7 @@ trait Stopper extends (() => Boolean) {
   Honestly, I kind of like: StopRequested, Distribute, Filter, and Report (problem with these latter two is they pass as nouns too, and in the case of Report that's misleading)
 
   StopRequestedFunction, DistributeFunction, ReportFunction, FilterFunction
-  testName: Option[String], report: ReportFunction, stopRequested: StopRequestedFunction, filter: FilterFunction, config: Map[String, Set[String]], distribute: Option[DistributeFunction]
+  testName: Option[String], report: ReportFunction, stopRequested: StopRequestedFunction, filter: FilterFunction, configMap: Map[String, Set[String]], distribute: Option[DistributeFunction]
 
   I think that latter is the most clear.
 */
