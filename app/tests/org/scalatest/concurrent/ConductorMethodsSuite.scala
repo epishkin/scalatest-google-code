@@ -149,12 +149,16 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
     whenFinished{ r.runCount mustBe 1 }
   }
 
+  // Josh, you have been neglecting to synchonize mutable variables shared by multiple
+  // threads. You must always synchronize these in some way. This test also failed
+  // intermittently. I will make the var volatile so that threads are guaranteed to
+  // see each others' changes.
   test("runnables can wait for beats"){
-    val r = new Runnable{
-      var runCount = 0
+    val r = new Runnable {
+      @volatile var runCount = 0
       def run = {
         waitForBeat(1)
-        runCount+=1
+        runCount += 1
       }
     }
     thread(r)
