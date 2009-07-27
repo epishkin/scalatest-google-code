@@ -31,7 +31,20 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   protected type Fixture
 
-  protected def withFixture(fun: (Fixture) => Unit, config: Map[String, Any])
+  protected trait TestFunction extends ((Fixture) => Unit) {
+    def apply(fixture: Fixture)
+    def configMap: Map[String, Any]
+  }
+
+  protected def withFixture(fun: TestFunction)
+
+  private[fixture] class TestFunAndConfigMap(fun: (Fixture) => Unit, val configMap: Map[String, Any])
+    extends TestFunction {
+    
+    def apply(fixture: Fixture) {
+      fun(fixture)
+    }
+  }
 
   // Need to override this one becaue it call getMethodForTestName
   override def tags: Map[String, Set[String]] = {
@@ -140,7 +153,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
           method.invoke(this, args: _*)
         }
       }
-      withFixture(testFun, config)
+      withFixture(new TestFunAndConfigMap(testFun, config))
 
       val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))

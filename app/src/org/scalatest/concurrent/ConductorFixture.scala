@@ -21,7 +21,7 @@ trait ConductorFixture { this: FixtureSuite =>
 
   type Fixture = Conductor
   
-  def withFixture(testFun: Conductor => Unit, config: Map[String, Any]) {
+  def withFixture(testFun: TestFunction) {
     val conductor = new Conductor
     testFun(conductor)
     conductor.conductTest()

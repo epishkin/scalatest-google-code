@@ -1,15 +1,4 @@
-May isPending is too error prone. maybe pendingFun? Because that more clearly says that 
-this is a function. pendingFunction How does an implicit conversion work? I can say there's
-an implicit conversion from ah, maybe that will work
-
-implicit def convertToFixtureFun(f: => PendingNothing): (Fixture) => Unit = {
-  fixture => f
-}
-
-
-Possibly have FixtureSuite extend Suite. That would work. Can override the testNames method
-to discover something different. Then FixtureFunSuite, FixtureSpec, etc., can extend FixtureSuite.
-No need for the extra trait.
+Rename config to configMap everywhere.
 
 Move the verb stuff to a org.scalatest.verb package? It really has nothing to do with matchers.
 

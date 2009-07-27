@@ -20,13 +20,15 @@ import java.io.FileReader
 import java.io.FileWriter
 import java.io.File
 
-class WithTempFileFromGoodiesExampleSuite extends FixtureFunSuite {
+class WithTempFileFromConfigMapExampleSuite extends FixtureFunSuite {
 
   type Fixture = FileReader
 
-  def withFixture(testFunction: FileReader => Unit, goodies: Map[String, Any]) {
+  def withFixture(testFun: TestFunction) {
 
-    val FileName = goodies("tempFileName").asInstanceOf[String]
+    import testFun.configMap
+
+    val FileName = configMap("tempFileName").asInstanceOf[String]
 
     // Set up the temp file needed by the test
     val writer = new FileWriter(FileName)
@@ -42,7 +44,7 @@ class WithTempFileFromGoodiesExampleSuite extends FixtureFunSuite {
 
     try {
       // Run the test using the temp file
-      testFunction(reader)
+      testFun(reader)
     }
     finally {
       // Close and delete the temp file
