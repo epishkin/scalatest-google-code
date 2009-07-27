@@ -821,13 +821,13 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param config a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>config</code>
+   * @param configMap a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || config == null)
+    if (testName == null || reporter == null || stopper == null || configMap == null)
       throw new NullPointerException
 
     val stopRequested = stopper
@@ -861,7 +861,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
       atomicInformer.set(informerForThisTest)
       try {
-        withFixture(new TestFunAndConfigMap(theTest.testFunction, config))
+        withFixture(new TestFunAndConfigMap(theTest.testFunction, configMap))
       }
       finally {
         val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
@@ -922,7 +922,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   }
 
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -932,8 +932,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (config == null)
-      throw new NullPointerException("config was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
@@ -949,7 +949,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     // If a testName is passed to run, just run that, else run the tests returned
     // by testNames.
     testName match {
-      case Some(tn) => runTest(tn, report, stopRequested, config, tracker)
+      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
       case None =>
 
         val doList = atomic.get.doList.reverse
@@ -962,14 +962,14 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
                 if (ignoreTest)
                   report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
                 else
-                  runTest(tn, report, stopRequested, config, tracker)
+                  runTest(tn, report, stopRequested, configMap, tracker)
           }
         }
     }
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     val stopRequested = stopper
 
@@ -994,7 +994,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, filter, config, distributor, tracker)
+      super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
