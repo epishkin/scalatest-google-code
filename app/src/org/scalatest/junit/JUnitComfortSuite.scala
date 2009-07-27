@@ -58,13 +58,13 @@ class JUnitComfortSuite extends Suite { // TODO: Add OneInstancePerTest when tha
    * exception, this method will complete abruptly with the same exception.
    * </p>
   */
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
     var thrownException: Option[Throwable] = None
 
     setUp()
     try {
-      super.runTest(testName, reporter, stopper, config, tracker)
+      super.runTest(testName, reporter, stopper, configMap, tracker)
     }
     catch {
       case e: Exception => thrownException = Some(e)
