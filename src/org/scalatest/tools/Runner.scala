@@ -32,7 +32,7 @@ import org.scalatest.events._
 /**
  * <p>
  * Application that runs a suite of tests.
- * The application accepts command line arguments that specify optional <em>config</em> (key-value pairs), an optional 
+ * The application accepts command line arguments that specify optional <em>config map</em> (key-value pairs), an optional 
  * <em>runpath</em>, zero to many <code>Reporter</code>s, optional lists of tags to include and/or exclude, zero to many
  * <code>Suite</code> class names, zero to many "members-only" <code>Suite</code> paths, zero to many "wildcard" <code>Suite</code> paths,
  * and zero to many TestNG XML config file paths.
@@ -57,14 +57,14 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <a name="configMapSection"><strong>Specifying config objects</strong></a>
+ * <a name="configMapSection"><strong>Specifying the config map</strong></a>
  * </p>
  *
  * <p>
- * A <em>config object</em> consists of a string key and a value, which may be of any type. (Keys that start with
- * &quot;org.scalatest.&quot; are reserved for ScalaTest. Config objects that are themselves strings may be specified on the
+ * A <em>config map</em> contains pairs consisting of a string key and a value that may be of any type. (Keys that start with
+ * &quot;org.scalatest.&quot; are reserved for ScalaTest. Configuration values that are themselves strings may be specified on the
  * <code>Runner</code> command line.
- * Each config object is denoted with a "-D", followed immediately by the key string, an &quot;=&quot;, and the value string.
+ * Each configuration pair is denoted with a "-D", followed immediately by the key string, an &quot;=&quot;, and the value string.
  * For example:
  * </p>
  *
@@ -197,10 +197,10 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <strong>Deprecation Note: Prior to 0.9.6, ScalaTest's <code>Runner</code> allowed you specify config parameters on reports that
+ * <strong>Deprecation Note: Prior to 0.9.6, ScalaTest's <code>Runner</code> allowed you specify configuration parameters on reports that
  * indicated a particular event should be <em>presented</em>. This meant that people could opt to not show
  * test failures, suite aborted events, <em>etc</em>. To prevent important events from being dropped accidentally,
- * starting in 0.9.6 the config parameters indicate which events should <em>not</em> be presented, and important
+ * starting in 0.9.6 the configuration parameters indicate which events should <em>not</em> be presented, and important
  * events can't be dropped at all. For two releases,
  * the old config parameters will be tolerated, but have no effect (except for F, which turns on printing of <code>TestFailedException</code>
  * stack traces). Only the new parameters will have any effect,
@@ -1195,7 +1195,7 @@ object Runner {
     suitesList: List[String],
     stopRequested: Stopper,
     filter: Filter,
-    config: Map[String, String],
+    configMap: Map[String, String],
     concurrent: Boolean,
     membersOnlyList: List[String],
     wildcardList: List[String],
@@ -1215,7 +1215,7 @@ object Runner {
       throw new NullPointerException
     if (filter == null)
       throw new NullPointerException
-    if (config == null)
+    if (configMap == null)
       throw new NullPointerException
     if (membersOnlyList == null)
       throw new NullPointerException
@@ -1321,10 +1321,10 @@ object Runner {
 
           val expectedTestCount = sumInts(testCountList)
 
-          dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount, config))
+          dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount, configMap))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, config)
+            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, configMap)
             for (suite <- suiteInstances) {
               distributor.apply(suite, tracker.nextTracker())
             }
@@ -1333,7 +1333,7 @@ object Runner {
           else {
             for (suite <- suiteInstances) {
               val suiteRunner = new SuiteRunner(suite, dispatch, stopRequested, filter,
-                  config, None, tracker)
+                  configMap, None, tracker)
               suiteRunner.run()
             }
           }
