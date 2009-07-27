@@ -1021,4 +1021,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   }
 
   val testsFor = new FixtureTestsForPhrase
+
+  implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
+    fixture => f
+  }
 }
