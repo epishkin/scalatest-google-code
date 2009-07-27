@@ -16,16 +16,15 @@
 package org.scalatestexamples.fixture.funsuite
 
 import org.scalatest.fixture.FixtureFunSuite
-import org.scalatest.fixture.SimpleWithFixture
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.File
 
-class WithTempFileExampleSuite extends FixtureFunSuite with SimpleWithFixture {
+class WithTempFileExampleSuite extends FixtureFunSuite {
 
   type Fixture = FileReader
 
-  def withFixture(testFunction: FileReader => Unit) {
+  def withFixture(testFunction: TestFunction) {
 
     val FileName = "TempFile.txt"
 

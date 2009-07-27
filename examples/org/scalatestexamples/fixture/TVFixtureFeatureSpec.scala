@@ -15,15 +15,14 @@
  */
 package org.scalatestexamples.fixture
 
-import org.scalatest.fixture.SimpleWithFixture
 import org.scalatest.GivenWhenThen
 
 class TVFixtureFeatureSpec extends org.scalatest.fixture.FixtureFeatureSpec
-        with GivenWhenThen with SimpleWithFixture {
+        with GivenWhenThen {
 
   type Fixture = String
   
-  def withFixture(testFun: Fixture => Unit) {
+  def withFixture(testFun: TestFunction) {
     testFun("hi")
   }
 

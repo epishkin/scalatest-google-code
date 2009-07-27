@@ -1089,7 +1089,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
 
         atomicInformer.set(informerForThisTest)
         try {
-          withFixture(test.f, config)
+          withFixture(new TestFunAndConfigMap(test.f, config))
 
           val duration = System.currentTimeMillis - testStartTime
           report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))

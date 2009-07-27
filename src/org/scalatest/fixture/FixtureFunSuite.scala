@@ -861,7 +861,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
       atomicInformer.set(informerForThisTest)
       try {
-        withFixture(theTest.testFunction, config)
+        withFixture(new TestFunAndConfigMap(theTest.testFunction, config))
       }
       finally {
         val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
