@@ -832,7 +832,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, config: Map[String, Any], tracker: Tracker) {
+  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
 
     val stopRequested = stopper
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
@@ -877,7 +877,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
-                runTest(tn, report, stopRequested, config, tracker)
+                runTest(tn, report, stopRequested, configMap, tracker)
           }
         case InfoLeaf(_, message) =>
           val infoProvidedIcon = Resources("infoProvidedIconChar")
@@ -885,7 +885,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
           report(InfoProvided(tracker.nextOrdinal(), message,
             Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)),
               None, Some(IndentedText(formattedText, message, 1))))
-        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, config, tracker)
+        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
       }
     )
   }
@@ -899,13 +899,13 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
-   * @param config a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
-   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>config</code>
+   * @param configMap a <code>Map</code> of properties that can be used by this <code>Spec</code>'s executing tests.
+   * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || config == null)
+    if (testName == null || reporter == null || stopper == null || configMap == null)
       throw new NullPointerException
 
     atomic.get.testsList.find(_.testName == testName) match {
@@ -949,7 +949,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
         atomicInformer.set(informerForThisTest)
         try {
-          withFixture(new TestFunAndConfigMap(test.f, config))
+          withFixture(new TestFunAndConfigMap(test.f, configMap))
 
           val duration = System.currentTimeMillis - testStartTime
           report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))
@@ -1020,7 +1020,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    *   to this method</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>config</code> - the <code>config</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>configMap</code> - the <code>configMap</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * <p>
@@ -1049,7 +1049,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * <li><code>testName</code> - the <code>String</code> name of the test to run (which will be one of the names in the <code>testNames</code> <code>Set</code>)</li>
    * <li><code>reporter</code> - the <code>Reporter</code> passed to this method, or one that wraps and delegates to it</li>
    * <li><code>stopper</code> - the <code>Stopper</code> passed to this method, or one that wraps and delegates to it</li>
-   * <li><code>config</code> - the <code>config</code> <code>Map</code> passed to this method, or one that wraps and delegates to it</li>
+   * <li><code>configMap</code> - the <code>configMap</code> passed to this method, or one that wraps and delegates to it</li>
    * </ul>
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
@@ -1058,12 +1058,12 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param tagsToInclude a <code>Set</code> of <code>String</code> tag names to include in the execution of this <code>Spec</code>
    * @param tagsToExclude a <code>Set</code> of <code>String</code> tag names to exclude in the execution of this <code>Spec</code>
-   * @param config a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by this <code>Spec</code>'s executing tests.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
-   *     <code>tagsToExclude</code>, or <code>config</code> is <code>null</code>.
+   *     <code>tagsToExclude</code>, or <code>configMap</code> is <code>null</code>.
    */
   override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -1073,8 +1073,8 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       throw new NullPointerException("stopper was null")
     if (filter == null)
       throw new NullPointerException("filter was null")
-    if (config == null)
-      throw new NullPointerException("config was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
     if (distributor == null)
       throw new NullPointerException("distributor was null")
     if (tracker == null)
@@ -1083,8 +1083,8 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     val stopRequested = stopper
 
     testName match {
-      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, config, tracker)
-      case Some(tn) => runTest(tn, reporter, stopRequested, config, tracker)
+      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, configMap, tracker)
+      case Some(tn) => runTest(tn, reporter, stopRequested, configMap, tracker)
     }
   }
 
@@ -1125,7 +1125,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
   override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
-      config: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+      configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     val stopRequested = stopper
 
@@ -1150,7 +1150,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
     atomicInformer.set(informerForThisSuite)
     try {
-      super.run(testName, report, stopRequested, filter, config, distributor, tracker)
+      super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
     }
     finally {
       val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)

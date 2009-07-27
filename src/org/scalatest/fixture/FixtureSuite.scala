@@ -109,9 +109,9 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     TreeSet[String]() ++ testNameArray
   }
 
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, config: Map[String, Any], tracker: Tracker) {
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || config == null || tracker == null)
+    if (testName == null || reporter == null || stopper == null || configMap == null || tracker == null)
       throw new NullPointerException
 
     val stopRequested = stopper
@@ -153,7 +153,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
           method.invoke(this, args: _*)
         }
       }
-      withFixture(new TestFunAndConfigMap(testFun, config))
+      withFixture(new TestFunAndConfigMap(testFun, configMap))
 
       val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
