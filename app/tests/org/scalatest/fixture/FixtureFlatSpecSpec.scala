@@ -951,5 +951,30 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       val f = new SuperSuite(List(a, b, c, d, e))
       assert(f.expectedTestCount(Filter()) === 10)
     }
+
+    it("should generate a TestPending message when the test body is (pending)") {
+      val a = new FixtureFlatSpec {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+
+        it should "do this" is (pending)
+
+        it should "do that" in { fixture =>
+          assert(fixture === hello)
+        }
+        
+        it should "do something else" in { fixture =>
+          assert(fixture === hello)
+          pending
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testPendingEventsReceived
+      assert(tp.size === 2)
+    }
   }
 }

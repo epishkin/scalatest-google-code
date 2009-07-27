@@ -1256,4 +1256,8 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
   }
 
   val behave = new FixureBehaveWord
+
+  implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
+    fixture => f
+  }
 }

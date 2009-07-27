@@ -1178,13 +1178,9 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
   val scenariosFor = new FixtureScenariosForPhrase
 
-  implicit def convertToFixtureFun(f: => PendingNothing): (Fixture) => Unit = {
+  implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
     fixture => f
   }
-  
- /* val Pending: (Fixture) => Unit = {
-      fixture => throw new TestPendingException
-  } */
 }
 
 

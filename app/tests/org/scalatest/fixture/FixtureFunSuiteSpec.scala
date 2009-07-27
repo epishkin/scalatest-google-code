@@ -590,5 +590,29 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       val f = new SuperSuite(List(a, b, c, d, e))
       assert(f.expectedTestCount(Filter()) === 10)
     }
+    it("should generate a TestPending message when the test body is (pending)") {
+      val a = new FixtureFunSuite {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+
+        test("should do this") (pending)
+
+        test("should do that") { fixture =>
+          assert(fixture === hello)
+        }
+        
+        test("should do something else") { fixture =>
+          assert(fixture === hello)
+          pending
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testPendingEventsReceived
+      assert(tp.size === 2)
+    }
   }
 }
