@@ -664,6 +664,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       val f = new SuperSuite(List(a, b, c, d, e))
       assert(f.expectedTestCount(Filter()) === 10)
     }
+
     it("should generate a TestPending message when the test body is (pending)") {
       val a = new FixtureSuite {
         type Fixture = String
