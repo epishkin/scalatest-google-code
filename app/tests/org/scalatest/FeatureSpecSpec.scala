@@ -513,5 +513,24 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
       assert(infoList.size === 1)
       assert(infoList(0).message === "hi there")
     }
+    it("should generate a TestPending message when the test body is (pending)") {
+      val a = new FeatureSpec {
+
+        scenario("should do this") (pending)
+
+        scenario("should do that") {
+          assert(2 + 2 === 4)
+        }
+        
+        scenario("should do something else") {
+          assert(2 + 2 === 4)
+          pending
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testPendingEventsReceived
+      assert(tp.size === 2)
+    }
   }
 }

@@ -792,5 +792,23 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       val f = new SuperSuite(List(a, b, c, d, e))
       assert(f.expectedTestCount(Filter()) === 10)
     }
+    it("should generate a TestPending message when the test body is (pending)") {
+      val a = new WordSpec {
+
+        "should do this" is (pending)
+
+        "should do that" in {
+          assert(2 + 2 === 4)
+        }
+        "should do something else" in {
+          assert(2 + 2 === 4)
+          pending
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testPendingEventsReceived
+      assert(tp.size === 2)
+    }
   }
 }

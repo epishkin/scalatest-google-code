@@ -595,6 +595,25 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       val f = new SuperSuite(List(a, b, c, d, e))
       assert(f.expectedTestCount(Filter()) === 10)
     }
+    it("should generate a TestPending message when the test body is (pending)") {
+      val a = new FunSuite {
+
+        test("should do this") (pending)
+
+        test("should do that") {
+          assert(2 + 2 === 4)
+        }
+
+        test("should do something else") {
+          assert(2 + 2 === 4)
+          pending
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testPendingEventsReceived
+      assert(tp.size === 2)
+    }
   }
 }
 
