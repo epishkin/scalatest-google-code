@@ -178,7 +178,7 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
 
   test("callables can wait for beats"){
     val c = new Callable[Unit]{
-      var callCount = 0
+      @volatile var callCount = 0
       def call = {
         waitForBeat(1)
         callCount+=1
