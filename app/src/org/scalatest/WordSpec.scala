@@ -23,6 +23,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
+
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
@@ -60,16 +61,16 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * <em>Note: Trait <code>WordSpec</code> is to some extent inspired by class <code>org.specs.Specification</code>, designed by
- * Eric Torreborre for the <a href="http://code.google.com/p/specs/">Specs framework</a>. There are several differences however,
+ * <em>Note: Trait <code>WordSpec</code> is in part inspired by class <code>org.specs.Specification</code>, designed by
+ * Eric Torreborre for the <a href="http://code.google.com/p/specs/">Specs framework</a>. There are significant differences however,
  * which will be described in a <a href="#comparingToSpecs">later section</a>.</em>
  * </p>
  *
  * <p>
- * In a <code>WordSpec</code> you will write a one (or more) sentence specification for each bit of behavior you wish to
+ * In a <code>WordSpec</code> you write a one (or more) sentence specification for each bit of behavior you wish to
  * specify and test. Each specification sentence has a
  * "subject," which is sometimes called the <em>system under test</em> (or SUT). The 
- * subject is what's being specified and tested, and it also serves as the subject of the sentences you write for each test. A subject
+ * subject is entity being specified and tested and also serves as the subject of the sentences you write for each test. A subject
  * can be followed by one of three verbs, <code>should</code>, <code>must</code>, or <code>can</code>, and a block. Here are some
  * examples:
  * </p>
@@ -88,7 +89,7 @@ import org.scalatest.events._
  * 
  * <p>
  * You can describe a subject in varying situations by using a <code>when</code> clause. A <code>when</code> clause
- * follows the subject. In the block after the <code>when</code>, you place strings that describe a situation or a state
+ * follows the subject and precedes a block. In the block after the <code>when</code>, you place strings that describe a situation or a state
  * the subject may be in using a string, each followed by a verb. Here's an example:
  * </p>
  *
@@ -170,12 +171,12 @@ import org.scalatest.events._
  * <p>
  * Note that the output does not exactly match the input in an effort to maximize readability.
  * Although the <code>WordSpec</code> code is nested, which can help you eliminate any repeated phrases
- * in the specification portion of your code, the output printed will have one line per subject in a situation, and
+ * in the specification portion of your code, the output printed will have one line per subject per situation, and
  * one line per test.
  * </p>
  *
  * <p>
- * Sometimes you may with to eliminate repeated phrases inside the block following a <code>verb</code>. Here's an example
+ * Sometimes you may wish to eliminate repeated phrases inside the block following a <code>verb</code>. Here's an example
  * in which the phrase "provide an and/or operator that" is repeated:
  * </p>
  *
@@ -298,41 +299,6 @@ import org.scalatest.events._
  * - should display a rerun button that is enabled if the clicked-on event is rerunnable (pending)
  * - should display a rerun button that is disabled if the clicked-on event is not rerunnable (pending)
  * </pre>
- * <p>
- * write tests for that structures the specification text.  contains <em>describers</em> and <em>examples</em>. You define a describer
- * with <code>describe</code>, and a example with <code>it</code>. Both
- * <code>describe</code> and <code>it</code> are methods, defined in
- * <code>Spec</code>, which will be invoked
- * by the primary constructor of <code>StackSpec</code>. 
- * A describer names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
- * and testing. In the above example, "A Stack"
- * is the subject under specification and test. With each example you provide a string (the <em>spec text</em>) that specifies
- * one bit of behavior of the subject, and a block of code that tests that behavior.
- * You place the spec text between the parentheses, followed by the test code between curly
- * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
- * <code>it</code>, which will register the test for later execution.
- * </p>
- *
- * <p>
- * When you execute a <code>Spec</code>, it will send <code>SpecReport</code>s to the
- * <code>Reporter</code>. ScalaTest's built-in reporters will report these <code>SpecReports</code> in such a way
- * that the output is easy to read as an informal specification of the entity under test.
- * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
- * </p>
- *
- * <pre>
- * scala> (new StackSpec).run()
- * </pre>
- *
- * <p>
- * You would see:
- * </p>
- *
- * <pre>
- * A Stack
- * - should pop values in last-in-first-out order
- * - should throw NoSuchElementException if an empty stack is popped
- * </pre>
  *
  * <p>
  * <strong>Test fixtures</strong>
@@ -341,49 +307,586 @@ import org.scalatest.events._
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
  * connections, etc.) used by tests to do their work. You can use fixtures in
- * <code>Spec</code>s with the same approaches suggested for <code>Suite</code> in
+ * <code>WordSpec</code>s with the same approaches suggested for <code>Suite</code> in
  * its documentation. The same text that appears in the test fixture
  * section of <code>Suite</code>'s documentation is repeated here, with examples changed from
- * <code>Suite</code> to <code>Spec</code>.
+ * <code>Suite</code> to <code>WordSpec</code>.
  * </p>
  *
  * <p>
  * If a fixture is used by only one test, then the definitions of the fixture objects should
  * be local to the test function, such as the objects assigned to <code>stack</code> and <code>emptyStack</code> in the
- * previous <code>StackSpec</code> examples. If multiple tests need to share a fixture, the best approach
+ * previous <code>StackSpec</code> examples. If multiple tests need to share an immutable fixture, one approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
  * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.WordSpec
  *
- * class ArithmeticSpec extends Spec {
+ * class ArithmeticSpec extends WordSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
  *
- *   it("should add correctly") {
- *     val sum = 2 + 3
- *     assert(sum === shared)
- *   }
+ *  "The Scala language" should {
+ *     "add correctly" in {
+ *       val sum = 2 + 3
+ *       assert(sum === shared)
+ *     }
  *
- *   it("should subtract correctly") {
- *     val diff = 7 - 2
- *     assert(diff === shared)
+ *     "subtract correctly" in {
+ *       val diff = 7 - 2
+ *       assert(diff === shared)
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
- * it needs to be recreated or reinitialized before each test. Shared resources such
+ * they need to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
- * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
+ * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
- * between tests. Before going that route, you should consider two approaches that
+ * between tests. Before going that route, you should consider some approaches that
+ * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
+ * that return a new instance of a needed object (or a tuple or case class holding new instances of
+ * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
+ * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MySuite extends WordSpec
+ *
+ *   // create objects needed by tests and return as a tuple
+ *   def createFixture = (
+ *     new StringBuilder("ScalaTest is "),
+ *     new ListBuffer[String]
+ *   )
+ *
+ *  "ScalaTest" should {
+ *
+ *     "be easy " in {
+ *       val (builder, lbuf) = createFixture
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(lbuf.isEmpty)
+ *       lbuf += "sweet"
+ *     }
+ *
+ *     "be fun" in {
+ *       val (builder, lbuf) = createFixture
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(lbuf.isEmpty)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If different tests in the same <code>WordSpec</code> require different fixtures, you can create multiple create-fixture methods and
+ * call the method (or methods) needed by each test at the begining of the test.
+ * </p>
+ *
+ * <p>
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create <em>with-fixture</em> methods,
+ * and wrap test code in calls to the with-fixture
+ * method. The with-fixture method accepts a test function as a parameter, creates the fixture, invoke the test function, passing in the
+ * newly created fixture. If necessary, the with-fixture method can also perform any cleanup after the test function returns. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MySuite extends Suite {
+ *
+ *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
+ *
+ *     // Create needed mutable objects
+ *     val sb = new StringBuilder("ScalaTest is ")
+ *     val lb = new ListBuffer[String]
+ *
+ *     // Invoke the test function, passing in the mutable objects
+ *     testFunction(sb, lb)
+ *   }
+ *
+ *  "ScalaTest" should {
+ *
+ *     "be easy " in {
+ *       withFixture { (builder, lbuf) =>
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(lbuf.isEmpty)
+ *       }
+ *     }
+ *
+ *     "be fun" in {
+ *       withFixture { (builder, lbuf) =>
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(lbuf.isEmpty)
+ *         lbuf += "sweet"
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * One advantage of this approach compared to the create-fixture approach shown previously is that
+ * you can more easily perform cleanup after each test runs. For example, you
+ * could create a temporary file before each test, and delete it afterwords, by
+ * doing so before and after invoking the test function in a <code>withTempFile</code>
+ * method. Here's an example:
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends WordSpec {
+ * 
+ *   def withTempFile(testFunction: FileReader => Unit) {
+ * 
+ *     val FileName = "TempFile.txt"
+ *  
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *  
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *  "A FileReader" must {
+ *     "read in the contents of a file correctly" in {
+ *       withTempFile { (reader) =>
+ *         var builder = new StringBuilder
+ *         var c = reader.read()
+ *         while (c != -1) {
+ *           builder.append(c.toChar)
+ *           c = reader.read()
+ *         }
+ *         assert(builder.toString === "Hello, test!")
+ *       }
+ *     }
+ * 
+ *     "read in the first character of a file correctly" in {
+ *       withTempFile { (reader) =>
+ *         assert(reader.read() === 'H')
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple with-fixture methods and
+ * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
+ * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
+ * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
+ * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
+ * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FixtureWordSpec</code> behaves exactly like
+ * <code>org.scalatest.WordSpec</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
+ * <a href="fixture/FixtureWordSpec.html"><code>FixtureWordSpec</code></a>. To get the idea, however, here's what the previous example would
+ * look like rewritten to use an <code>org.scalatest.fixture.FixtureWordSpec</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureWordSpec
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends FixtureWordSpec {
+ *
+ *   type Fixture = FileReader
+ *
+ *   def withFixture(testFunction: TestFunction) {
+ *
+ *     val FileName = "TempFile.txt"
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *  "A FileReader" must {
+ *     "read in the contents of a file correctly" in { (reader) =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
+ *     }
+ * 
+ *     "read in the first character of a file correctly" in { (reader) =>
+ *       assert(reader.read() === 'H')
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you are more comfortable with reassigning instance variables, however, you can
+ * instead use the <code>BeforeAndAfterEach</code> trait, which provides
+ * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
+ * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
+ * methods, respectively). For example, here's how you'd write the previous
+ * test that uses a temp file with <code>BeforeAndAfterEach</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * import org.scalatest.BeforeAndAfterEach
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ *
+ * class MySuite extends WordSpec with BeforeAndAfterEach {
+ *
+ *   private val FileName = "TempFile.txt"
+ *   private var reader: FileReader = _
+ *
+ *   // Set up the temp file needed by the test
+ *   override def beforeEach() {
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     reader = new FileReader(FileName)
+ *   }
+ *
+ *   // Close and delete the temp file
+ *   override def afterEach() {
+ *     reader.close()
+ *     val file = new File(FileName)
+ *     file.delete()
+ *   }
+ *
+ *  "A FileReader" must {
+ *     "read in the contents of a file correctly" in {
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
+ *     }
+ * 
+ *     "read in the first character of a file correctly" in {
+ *       assert(reader.read() === 'H')
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
+ * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
+ * want to execute code before and after all tests (and nested suites) in a suite, such
+ * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
+ * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
+ * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
+ * an example.
+ * </p>
+ *
+ * <p>
+ * <strong>STARTS REPEATING HERE</strong>
+ * In some cases you may need to pass information to a suite of tests.
+ * For example, perhaps a suite of tests needs to grab information from a file, and you want
+ * to be able to specify a different filename during different runs.  You can accomplish this in ScalaTest by passing
+ * the filename in the <em>config</em> map of key-value pairs, which is passed to <code>run</code> as a <code>Map[String, Any]</code>.
+ * The values in the config map are called "config objects," because they can be used to <em>configure</em>
+ * suites, reporters, and tests.
+ * </p>
+ *
+ * <p>
+ * You can specify a string config object is via the ScalaTest <code>Runner</code>, either via the command line
+ * or ScalaTest's ant task.
+ * (See the <a href="tools/Runner$object.html#configMapSection">documentation for Runner</a> for information on how to specify 
+ * config objects on the command line.)
+ * The config map is passed to <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>,
+ * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
+ * can use one of the traits in the <code>org.scalatest.fixture</code>  package. (See the
+ * <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>
+ * for instructions on how to access the config map in tests.)
+ * </p>
+ *
+ * <p>
+ * <strong>Tagging tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
+ * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
+ * trait's implementation, tags are indicated by annotations attached to the test method. To
+ * create a new tag type to use in <code>Suite</code>s, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
+ * (Currently, for annotations to be
+ * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
+ * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
+ * write in Java:
+ * </p>
+ *
+ * <pre>
+ * import java.lang.annotation.*; 
+ * import org.scalatest.TagAnnotation
+ * 
+ * @TagAnnotation
+ * @Retention(RetentionPolicy.RUNTIME)
+ * @Target({ElementType.METHOD, ElementType.TYPE})
+ * public @interface SlowAsMolasses {}
+ * </pre>
+ *
+ * <p>
+ * Given this new annotation, you could place a <code>Suite</code> test method into the <code>SlowAsMolasses</code> group
+ * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
+ * </p>
+ *
+ * <pre>
+ * @SlowAsMolasses
+ * def testSleeping() = sleep(1000000)
+ * </pre>
+ *
+ * <p>
+ * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
+ * </p>
+ *
+ * <p>
+ * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 0.9.6, when "groups" were renamed
+ * to "tags." In 0.9.6 and 0.9.7, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
+ * method. Any annotation on a <code>Suite</code> method will be considered a tag until 0.9.8, to give users time to add
+ * <code>TagAnnotation</code>s on any tag annotations they made prior to the 0.9.6 release. From 0.9.8 onward, only annotations
+ * themsleves annotatted by <code>TagAnnotation</code> will be considered tag annotations.</strong>
+ * </p>
+ * 
+ * <p>
+ * <strong>Ignored tests</strong>
+ * </p>
+ *
+ * <p>
+ * Another common use case is that tests must be &#8220;temporarily&#8221; disabled, with the
+ * good intention of resurrecting the test at a later time. ScalaTest provides an <code>Ignore</code>
+ * annotation for this purpose. You use it like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Suite
+ * import org.scalatest.Ignore
+ *
+ * class MySuite extends Suite {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   @Ignore
+ *   def testSubtraction() {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *     assert(diff - 2 === 1)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>MySuite</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new MySuite).run()
+ * </pre>
+ *
+ * <p>
+ * It will run only <code>testAddition</code> and report that <code>testSubtraction</code> was ignored. You'll see:
+ * </p>
+ *
+ * <pre>
+ * Test Starting - MySuite: testAddition
+ * Test Succeeded - MySuite: testAddition
+ * Test Ignored - MySuite: testSubtraction
+ * </pre>
+ * 
+ * <p>
+ * <code>Ignore</code> is implemented as a tag. The <code>Filter</code> class effectively 
+ * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> if it not already
+ * in the <code>tagsToExclude</code> set passed to its primary constructor.  The only difference between
+ * <code>org.scalatest.Ignore</code> and the tags you may define and exclude is that ScalaTest reports
+ * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
+ * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
+ * </p>
+ *
+ * <p>
+ * <strong>Pending tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, the before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
+ * </p>
+ *
+ * <p>
+ * Although pending tests may be used more often in specification-style suites, such as
+ * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Suite
+ *
+ * class MySuite extends Suite {
+ *
+ *   def testAddition() {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   def testSubtraction() { pending }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>MySuite</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new MySuite).run()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
+ * </p>
+ *
+ * <pre>
+ * Test Starting - MySuite: testAddition
+ * Test Succeeded - MySuite: testAddition
+ * Test Starting - MySuite: testSubtraction
+ * Test Pending - MySuite: testSubtraction
+ * </pre>
+ * 
+ * <p>
+ * <strong>Informers</strong>
+ * </p>
+ *
+ * <p>
+ * One of the parameters to the primary <code>run</code> method is an <code>Informer</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>Suite</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test method.
+ * For this purpose, you can optionally include an <code>Informer</code> parameter in a test method, and then
+ * pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods. The <code>Informer</code>
+ * will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest._
+ * 
+ * class MySuite extends Suite {
+ *   def testAddition(info: Informer) {
+ *     assert(1 + 1 === 2)
+ *     info("Addition seems to work")
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>Suite</code> from the interpreter, you will see the message
+ * included in the printed report:
+ *
+ * <pre>
+ * scala> (new MySuite).run()
+ * Test Starting - MySuite: testAddition(Reporter)
+ * Info Provided - MySuite: testAddition(Reporter)
+ *   Addition seems to work
+ * Test Succeeded - MySuite: testAddition(Reporter)
+ * </pre>
+ *
+ * <p>
+ * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
+ * they need to be recreated or reinitialized before each test. Shared resources such
+ * as files or database connections may also need to 
+ * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
+ * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
+ * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
+ * between tests. Before going that route, you should consider some approaches that
  * avoid <code>var</code>s. One approach is to write one or more "create" methods
  * that return a new instance of a needed object (or a tuple of new instances of
  * multiple objects) each time it is called. You can then call a create method at the beginning of each

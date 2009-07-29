@@ -1,4 +1,12 @@
-Rename config to configMap everywhere.
+Rename Checkers to ScalaCheck? Have Checkers extend ScalaCheck and deprecate Checkers for two releases.
+
+Text:
+Test fixtures:
+fixture, the best approach => immutable fixture, one approach
+it needs to be recreated => they need to be recreated
+setup => setUp
+BeforeAndAfter => BeforeAndAfterEach
+consider two approaches => consider some approaches
 
 Move the verb stuff to a org.scalatest.verb package? It really has nothing to do with matchers.
 
@@ -8,8 +16,6 @@ that requires fixtures, and vice versa, for WordSpec and FlatSpec, or at least j
 In RunnerSuite, 'parseConfigSet was 'parseCOnfigSet, and it was passing, which tells me if invokePrivate
 doesn't find the requested method name maybe it isn't failing. It needs to fail. No, I think the problem
 was probably simply that tools wasn't being run.
-
-add description to FeatureSpec 45 min.
 
 Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.prop
+package org.scalatest.scalacheck
 
 import org.scalatest.Suite
 import org.scalacheck.Arbitrary
@@ -22,6 +22,7 @@ import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
+import org.scalatest.prop.PropertyTestFailedException
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
@@ -32,22 +33,23 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
  * create generators, because ScalaCheck provides many default generators for you that can be used in many situations.
  * ScalaCheck will use the generators to generate test data and with that data run tests that check that the property holds.
  * Property-based tests can, therefore, give you a lot more testing for a lot less code than assertion-based tests.
- * Here's an example of using ScalaCheck from a <code>JUnit3Suite</code>:
+ * Here's an example of using ScalaCheck from a <code>JUnitSuite</code>:
  * </p>
  * <pre>
- * import org.scalatest.junit.JUnit3Suite
- * import org.scalatest.fun.Checkers
+ * import org.scalatest.junit.JUnitSuite
+ * import org.scalatest.ScalaCheck
  * import org.scalacheck.Arbitrary._
  * import org.scalacheck.Prop._
  *
- * class MySuite extends JUnit3Suite with Checkers {
+ * class MySuite extends JUnitSuite with ScalaCheck {
+ *   @Test
  *   def testConcat() {
  *     check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
  *   }
  * }
  * </pre>
  * <p>
- * The <code>check</code> method, defined in <code>Checkers</code>, makes it easy to write property-based tests inside
+ * The <code>check</code> method, defined in <code>ScalaCheck</code>, makes it easy to write property-based tests inside
  * ScalaTest, JUnit, and TestNG test suites. This example specifies a property that <code>List</code>'s <code>:::</code> method
  * should obey. ScalaCheck properties are expressed as function values that take the required
  * test data as parameters. ScalaCheck will generate test data using generators and 
@@ -72,14 +74,14 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * </p>
  *
  * <p>
- * To execute a suite that mixes in <code>Checkers</code> with ScalaTest's <code>Runner</code>, you must include ScalaCheck's jar file on the class path or runpath.
- * This version of <code>Checkers</code> was tested with ScalaCheck version 1.1.1. This trait must
+ * To execute a suite that mixes in <code>ScalaCheck</code> with ScalaTest's <code>Runner</code>, you must include ScalaCheck's jar file on the class path or runpath.
+ * This version of <code>ScalaCheck</code> was tested with ScalaCheck version 1.1.1. This trait must
  * be mixed into a ScalaTest <code>Suite</code>, because its self type is <code>org.scalatest.Suite</code>.
  * </p>
  *
  * @author Bill Venners
  */
-trait Checkers {
+trait ScalaCheck {
 
   this: Suite =>
 
@@ -202,7 +204,7 @@ trait Checkers {
           throw new PropertyTestFailedException(
             prettyTestStats(result),
             None,
-            getStackDepth("Checkers.scala", "check"),
+            getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyProved"),
             args,
             labels
@@ -214,7 +216,7 @@ trait Checkers {
           throw new PropertyTestFailedException(
             prettyTestStats(result),
             None,
-            getStackDepth("Checkers.scala", "check"),
+            getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyPassed", result.succeeded),
             args,
             labels
@@ -226,7 +228,7 @@ trait Checkers {
           throw new PropertyTestFailedException(
             prettyTestStats(result),
             None,
-            getStackDepth("Checkers.scala", "check"),
+            getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyExhausted", result.succeeded, result.discarded),
             args,
             labels
@@ -238,7 +240,7 @@ trait Checkers {
           throw new PropertyTestFailedException(
             prettyTestStats(result),
             None,
-            getStackDepth("Checkers.scala", "check"),
+            getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyFailed", result.succeeded),
             args,
             labels
@@ -249,7 +251,7 @@ trait Checkers {
           throw new PropertyTestFailedException(
             prettyTestStats(result),
             Some(e),
-            getStackDepth("Checkers.scala", "check"),
+            getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyException", UnquotedString(e.getClass.getName)),
             args,
             labels
@@ -260,7 +262,7 @@ trait Checkers {
           throw new PropertyTestFailedException(
             prettyTestStats(result),
             Some(e),
-            getStackDepth("Checkers.scala", "check"),
+            getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("generatorException", UnquotedString(e.getClass.getName)),
             args,
             labels
@@ -268,7 +270,7 @@ trait Checkers {
 
         case _ =>
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(prettyTestStats(result), None, getStackDepth("Checkers.scala", "check"), "FILL ME IN", args, labels)
+          throw new PropertyTestFailedException(prettyTestStats(result), None, getStackDepth("ScalaCheck.scala", "check"), "FILL ME IN", args, labels)
       }
     }
   }

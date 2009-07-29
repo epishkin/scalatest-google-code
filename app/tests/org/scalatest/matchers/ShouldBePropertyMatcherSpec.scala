@@ -15,13 +15,13 @@
  */
 package org.scalatest.matchers
 
-import prop.Checkers
+import org.scalatest.scalacheck.ScalaCheck
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 import scala.reflect.BeanProperty
 
-class ShouldBePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
+class ShouldBePropertyMatcherSpec extends Spec with ShouldMatchers with ScalaCheck with ReturnsNormallyThrowsAssertion with BookPropertyMatchers {
 
   // Checking for a specific size
   describe("The be (BePropertyMatcher) syntax") {
