@@ -75,9 +75,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
     // create a new event with everything the same except the old summary replaced by the new one
     def updatedSummary(oldSummary: Option[Summary], ordinal: Ordinal): Option[Summary] = {
       oldSummary match {
-        case Some(_) => None // pass old summary through if it is already defined
-        case None =>
-          if (counterMap.contains(ordinal.runStamp)) {
+        case None if (counterMap.contains(ordinal.runStamp)) => {
             // Update the RunAborted so that it is the same except it has a new Some(Summary)
             val counter = counterMap(ordinal.runStamp)
             Some(
@@ -91,7 +89,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
               )
             )
           }
-          else None // Also pass the old None summary through if it isn't in the counterMap
+         case _ => None // Also pass the old None summary through if it isn't in the counterMap
       }
     }
 
