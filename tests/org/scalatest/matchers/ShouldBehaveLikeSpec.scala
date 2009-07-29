@@ -15,7 +15,7 @@
  */
 package org.scalatest.matchers
 
-import prop.Checkers
+import org.scalatest.scalacheck.ScalaCheck
 import org.scalacheck._
 import Arbitrary._
 import Prop._

@@ -15,12 +15,12 @@
  */
 package org.scalatest.matchers
 
-import prop.Checkers
+import org.scalatest.scalacheck.ScalaCheck
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldContainValueSpec extends Spec with ShouldMatchers with ScalaCheck with ReturnsNormallyThrowsAssertion {
 
   // Checking for a specific size
   describe("The 'contain value (Int)' syntax") {

@@ -1,11 +1,11 @@
 package org.scalatest.events
 
-import org.scalatest.prop.Checkers
+import org.scalatest.scalacheck.ScalaCheck
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class EventSpec extends Spec with Checkers {
+class EventSpec extends Spec with ScalaCheck {
 /*
   describe("An TestStarting Event") {
     describe("(with different runStamps)") {

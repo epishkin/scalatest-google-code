@@ -15,10 +15,10 @@
  */
 package org.scalatest.matchers
 
-import prop.Checkers
+import org.scalatest.scalacheck.ScalaCheck
 import org.mockito.Mockito._
 
-class ShouldLogicalMatcherExprSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldLogicalMatcherExprSpec extends Spec with ShouldMatchers with ScalaCheck with ReturnsNormallyThrowsAssertion {
 
   class Clown {
     def hasBigRedNose = true

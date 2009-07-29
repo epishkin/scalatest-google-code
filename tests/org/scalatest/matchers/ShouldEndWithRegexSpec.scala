@@ -15,12 +15,12 @@
  */
 package org.scalatest.matchers
 
-import prop.Checkers
+import org.scalatest.scalacheck.ScalaCheck
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldEndWithRegexSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
+class ShouldEndWithRegexSpec extends Spec with ShouldMatchers with ScalaCheck with ReturnsNormallyThrowsAssertion {
 
 /*
 s should include substring t
