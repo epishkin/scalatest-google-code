@@ -545,8 +545,8 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * Another approach to mutable fixture objects that avoids <code>var</code>s is to create <em>with-fixture</em> methods,
  * and wrap test code in calls to the with-fixture
- * method. The with-fixture method accepts a test function as a parameter, creates the fixture, invoke the test function, passing in the
- * newly created fixture. If necessary, the with-fixture method can also perform any cleanup after the test function returns. Here's an example:
+ * method. The with-fixture method accepts a test function as a parameter, creates the fixture, invokes the test function, passing in the
+ * newly created fixture object or objects. If necessary, the with-fixture method can also perform any cleanup after the test function returns. Here's an example:
  * </p>
  *
  * <pre>
@@ -653,7 +653,7 @@ import org.scalatest.tools.StandardOutReporter
  * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
  * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
  * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FixtureSuite</code> behaves exactly like
- * <code>org.scalatest.Suite</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
+ * <code>org.scalatest.Suite</code>, except each test function takes a <code>Fixture</code>. For the details, see the documentation for
  * <a href="fixture/FixtureSuite.html"><code>FixtureSuite</code></a>. To get the idea, however, here's what the previous example would
  * look like rewritten to use an <code>org.scalatest.fixture.FixtureSuite</code>:
  * </p>
@@ -773,7 +773,15 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
- * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
+ * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * (It is worth noting that the only difference in the test code between the mutable
+ * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSuite</code>
+ * approach shown previously is that the <code>FixtureSuite</code>'s test methods take a <code>FileReader</code> as
+ * a parameter. Otherwise the code is identical.)
+ * </p>
+ *
+ * <p>
+ * If you
  * want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
