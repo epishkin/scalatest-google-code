@@ -13,7 +13,7 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
 
     // Josh, this test isn't guaranteed to work. Different threads are accessing a
     // shared mutable variable that isn't synchronized.
-    var s = ""
+    @volatile var s = ""
 
     thread("t1") {
       waitForBeat(1)
@@ -79,7 +79,7 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
     }
   }
 
-  // t1.getState should (be(WAITING) or be(BLOCKED)) failed with:
+  // TODO: t1.getState should (be(WAITING) or be(BLOCKED)) failed with:
   // RUNNABLE was not equal to WAITING, and RUNNABLE was not equal to BLOCKED
   test("wait for beat blocks thread") {
 
