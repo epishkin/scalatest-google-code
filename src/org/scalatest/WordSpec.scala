@@ -651,61 +651,59 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <strong>STARTS REPEATING HERE</strong>
- * In some cases you may need to pass information to a suite of tests.
- * For example, perhaps a suite of tests needs to grab information from a file, and you want
- * to be able to specify a different filename during different runs.  You can accomplish this in ScalaTest by passing
- * the filename in the <em>config</em> map of key-value pairs, which is passed to <code>run</code> as a <code>Map[String, Any]</code>.
- * The values in the config map are called "config objects," because they can be used to <em>configure</em>
- * suites, reporters, and tests.
- * </p>
- *
- * <p>
- * You can specify a string config object is via the ScalaTest <code>Runner</code>, either via the command line
- * or ScalaTest's ant task.
- * (See the <a href="tools/Runner$object.html#configMapSection">documentation for Runner</a> for information on how to specify 
- * config objects on the command line.)
- * The config map is passed to <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>,
- * so one way to access it in your suite is to override one of those methods. If you need to use the config map inside your tests, you
- * can use one of the traits in the <code>org.scalatest.fixture</code>  package. (See the
- * <a href="fixture/FixtureSuite.html">documentation for <code>FixtureSuite</code></a>
- * for instructions on how to access the config map in tests.)
- * </p>
- *
- * <p>
  * <strong>Tagging tests</strong>
  * </p>
  *
- * <p>
- * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
- * a <code>Suite</code>, groups of tests can optionally be included and/or excluded. In this
- * trait's implementation, tags are indicated by annotations attached to the test method. To
- * create a new tag type to use in <code>Suite</code>s, simply define a new Java annotation that itself is annotated with the <code>org.scalatest.TagAnnotation</code> annotation.
- * (Currently, for annotations to be
- * visible in Scala programs via Java reflection, the annotations themselves must be written in Java.) For example,
- * to create a tag named <code>SlowAsMolasses</code>, to use to mark slow tests, you would
- * write in Java:
+ * A <code>WordSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>WordSpec</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>WordSpec</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to <code>taggedAs</code> method
+ * invoked on the string that describes the test you want to tag. Class <code>Tag</code> takes one parameter,
+ * a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>WordSpec</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
+ * create matching groups for <code>Spec</code>s like this:
  * </p>
  *
  * <pre>
- * import java.lang.annotation.*; 
- * import org.scalatest.TagAnnotation
- * 
- * @TagAnnotation
- * @Retention(RetentionPolicy.RUNTIME)
- * @Target({ElementType.METHOD, ElementType.TYPE})
- * public @interface SlowAsMolasses {}
+ * import org.scalatest.Tag
+ *
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DBTest extends Tag("com.mycompany.groups.DBTest")
  * </pre>
  *
  * <p>
- * Given this new annotation, you could place a <code>Suite</code> test method into the <code>SlowAsMolasses</code> group
- * (<em>i.e.</em>, tag it as being <code>SlowAsMolasses</code>) like this:
+ * Given these definitions, you could place <code>WordSpec</code> tests into groups like this:
  * </p>
  *
  * <pre>
- * @SlowAsMolasses
- * def testSleeping() = sleep(1000000)
+ * import org.scalatest.WordSpec
+ *
+ * class MySuite extends WordSpec {
+ *
+ *   "The Scala language" should {
+ *
+ *     "add correctly" taggedAs(SlowTest) in {
+ *       val sum = 1 + 1
+ *       assert(sum === 2)
+ *       assert(sum + 2 === 4)
+ *     }
+ *
+ *     "subtract correctly" taggedAs(SlowTest, DBTest) in {
+ *       val diff = 4 - 1
+ *       assert(diff === 3)
+ *       assert(diff - 2 === 1)
+ *     }
+ *   }
+ * }
  * </pre>
+ *
+ * <p>
+ * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
+ * and test <code>"The Scala language should subtract correctly"</code> with the <code>com.mycompany.groups.DBTest</code> tag.
+ * </p>
  *
  * <p>
  * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
@@ -718,474 +716,25 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 0.9.6, when "groups" were renamed
- * to "tags." In 0.9.6 and 0.9.7, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
- * method. Any annotation on a <code>Suite</code> method will be considered a tag until 0.9.8, to give users time to add
- * <code>TagAnnotation</code>s on any tag annotations they made prior to the 0.9.6 release. From 0.9.8 onward, only annotations
- * themsleves annotatted by <code>TagAnnotation</code> will be considered tag annotations.</strong>
- * </p>
- * 
- * <p>
  * <strong>Ignored tests</strong>
  * </p>
  *
- * <p>
- * Another common use case is that tests must be &#8220;temporarily&#8221; disabled, with the
- * good intention of resurrecting the test at a later time. ScalaTest provides an <code>Ignore</code>
- * annotation for this purpose. You use it like this:
- * </p>
- *
- * <pre>
- * import org.scalatest.Suite
- * import org.scalatest.Ignore
- *
- * class MySuite extends Suite {
- *
- *   def testAddition() {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
- *
- *   @Ignore
- *   def testSubtraction() {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *     assert(diff - 2 === 1)
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>MySuite</code> with:
- * </p>
- *
- * <pre>
- * scala> (new MySuite).run()
- * </pre>
- *
- * <p>
- * It will run only <code>testAddition</code> and report that <code>testSubtraction</code> was ignored. You'll see:
- * </p>
- *
- * <pre>
- * Test Starting - MySuite: testAddition
- * Test Succeeded - MySuite: testAddition
- * Test Ignored - MySuite: testSubtraction
- * </pre>
- * 
- * <p>
- * <code>Ignore</code> is implemented as a tag. The <code>Filter</code> class effectively 
- * adds <code>org.scalatest.Ignore</code> to the <code>tagsToExclude</code> <code>Set</code> if it not already
- * in the <code>tagsToExclude</code> set passed to its primary constructor.  The only difference between
- * <code>org.scalatest.Ignore</code> and the tags you may define and exclude is that ScalaTest reports
- * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
- * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
- * </p>
- *
- * <p>
- * <strong>Pending tests</strong>
- * </p>
- *
- * <p>
- * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
- * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
- * out before tests are written to verify that behavior (and often, the before the behavior of
- * the system being tested is itself implemented). Such sketches form a kind of specification of
- * what tests and functionality to implement later.
- * </p>
- *
- * <p>
- * To support this style of testing, a test can be given a name that specifies one
- * bit of behavior required by the system being tested. The test can also include some code that
- * sends more information about the behavior to the reporter when the tests run. At the end of the test,
- * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
- * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
- * sent to the reporter when running the test can appear in the report of a test run. (In other words,
- * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
- * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
- * </p>
- *
- * <p>
- * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.Spec</code>, you can also use it in <code>Suite</code>, like this:
- * </p>
- *
- * <pre>
- * import org.scalatest.Suite
- *
- * class MySuite extends Suite {
- *
- *   def testAddition() {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
- *
- *   def testSubtraction() { pending }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>MySuite</code> with:
- * </p>
- *
- * <pre>
- * scala> (new MySuite).run()
- * </pre>
- *
- * <p>
- * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
- * </p>
- *
- * <pre>
- * Test Starting - MySuite: testAddition
- * Test Succeeded - MySuite: testAddition
- * Test Starting - MySuite: testSubtraction
- * Test Pending - MySuite: testSubtraction
- * </pre>
- * 
- * <p>
- * <strong>Informers</strong>
- * </p>
- *
- * <p>
- * One of the parameters to the primary <code>run</code> method is an <code>Informer</code>, which
- * will collect and report information about the running suite of tests.
- * Information about suites and tests that were run, whether tests succeeded or failed, 
- * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
- * Most often the reporting done by default by <code>Suite</code>'s methods will be sufficient, but
- * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test method.
- * For this purpose, you can optionally include an <code>Informer</code> parameter in a test method, and then
- * pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods. The <code>Informer</code>
- * will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
- * Here's an example:
- * </p>
- *
- * <pre>
- * import org.scalatest._
- * 
- * class MySuite extends Suite {
- *   def testAddition(info: Informer) {
- *     assert(1 + 1 === 2)
- *     info("Addition seems to work")
- *   }
- * }
- * </pre>
- *
- * If you run this <code>Suite</code> from the interpreter, you will see the message
- * included in the printed report:
- *
- * <pre>
- * scala> (new MySuite).run()
- * Test Starting - MySuite: testAddition(Reporter)
- * Info Provided - MySuite: testAddition(Reporter)
- *   Addition seems to work
- * Test Succeeded - MySuite: testAddition(Reporter)
- * </pre>
- *
- * <p>
- * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
- * they need to be recreated or reinitialized before each test. Shared resources such
- * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
- * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
- * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
- * between tests. Before going that route, you should consider some approaches that
- * avoid <code>var</code>s. One approach is to write one or more "create" methods
- * that return a new instance of a needed object (or a tuple of new instances of
- * multiple objects) each time it is called. You can then call a create method at the beginning of each
- * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
- * </p>
- *
- * <pre>
- * import org.scalatest.Spec
- * import scala.collection.mutable.ListBuffer
- *
- * class MySpec extends Spec {
- *
- *   // create objects needed by tests and return as a tuple
- *   def createFixture = (
- *     new StringBuilder("ScalaTest is "),
- *     new ListBuffer[String]
- *   )
- *
- *   it("should mutate shared fixture objects") {
- *     val (builder, lbuf) = createFixture
- *     builder.append("easy!")
- *     assert(builder.toString === "ScalaTest is easy!")
- *     assert(lbuf.isEmpty)
- *     lbuf += "sweet"
- *   }
- *
- *   it("should get a fresh set of mutable fixture objects") {
- *     val (builder, lbuf) = createFixture
- *     builder.append("fun!")
- *     assert(builder.toString === "ScalaTest is fun!")
- *     assert(lbuf.isEmpty)
- *   }
- * }
- * </pre>
- *
- * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
- * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
- * </p>
- * <pre>
- * import org.scalatest.Spec
- * import scala.collection.mutable.ListBuffer
- *
- * class MySpec extends Spec {
- *
- *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
- *
- *     // Create needed mutable objects
- *     val sb = new StringBuilder("ScalaTest is ")
- *     val lb = new ListBuffer[String]
- *
- *     // Invoke the test function, passing in the mutable objects
- *     testFunction(sb, lb)
- *   }
- *
- *   it("should mutate shared fixture objects") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("easy!")
- *         assert(builder.toString === "ScalaTest is easy!")
- *         assert(lbuf.isEmpty)
- *         lbuf += "sweet"
- *       }
- *     }
- *   }
- *
- *   it("should get a fresh set of mutable fixture objects") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("fun!")
- *         assert(builder.toString === "ScalaTest is fun!")
- *         assert(lbuf.isEmpty)
- *       }
- *     }
- *   }
- * }
- * </pre>
- * 
- * One advantage of this approach compared to the create method approach shown previously is that
- * you can more easily perform cleanup after each test executes. For example, you
- * could create a temporary file before each test, and delete it afterwords, by
- * doing so before and after invoking the test function in a <code>withTempFile</code>
- * method. Here's an example:
- *
- * <pre>
- * import org.scalatest.Spec
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- * 
- * class MySpec extends Spec {
- * 
- *   def withTempFile(testFunction: FileReader => Unit) {
- * 
- *     val FileName = "TempFile.txt"
- *  
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *  
- *     // Create the reader needed by the test
- *     val reader = new FileReader(FileName)
- *  
- *     try {
- *       // Run the test using the temp file
- *       testFunction(reader)
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
- *     }
- *   }
- * 
- *   it("should read from a temp file") {
- *     withTempFile {
- *       (reader) => {
- *         var builder = new StringBuilder
- *         var c = reader.read()
- *         while (c != -1) {
- *           builder.append(c.toChar)
- *           c = reader.read()
- *         }
- *         assert(builder.toString === "Hello, test!")
- *       }
- *     }
- *   }
- * 
- *   it("should read the first char of a temp file") {
- *     withTempFile {
- *       (reader) => {
- *         assert(reader.read() === 'H')
- *       }
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you are more comfortable with reassigning instance variables, however, you can
- * instead use the <code>BeforeAndafter</code> trait, which provides
- * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
- * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
- * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with <code>BeforeAndAfter</code>:
- * </p>
- *
- * <pre>
- * import org.scalatest.Spec
- * import org.scalatest.BeforeAndAfter
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- *
- * class MySpec extends Spec with BeforeAndAfter {
- *
- *   private val FileName = "TempFile.txt"
- *   private var reader: FileReader = _
- *
- *   // Set up the temp file needed by the test
- *   override def beforeEach() {
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *
- *     // Create the reader needed by the test
- *     reader = new FileReader(FileName)
- *   }
- *
- *   // Close and delete the temp file
- *   override def afterEach() {
- *     reader.close()
- *     val file = new File(FileName)
- *     file.delete()
- *   }
- *
- *   it("should read from a temp file") {
- *     var builder = new StringBuilder
- *     var c = reader.read()
- *     while (c != -1) {
- *       builder.append(c.toChar)
- *       c = reader.read()
- *     }
- *     assert(builder.toString === "Hello, test!")
- *   }
- *
- *   it("should read the first char of a temp file") {
- *     assert(reader.read() === 'H')
- *   }
- * }
- * </pre>
- *
- * <p>
- * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
- * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
- * want to execute code before and after all tests (and nested suites) in a suite, such
- * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
- * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
- * an example.
- * </p>
- *
- * <p>
- * <strong>Test groups</strong>
- * </p>
- *
- * <p>
- * A <code>Spec</code>'s tests may be classified into named <em>groups</em>.
- * As with any suite, when executing a <code>Spec</code>, groups of tests can
- * optionally be included and/or excluded. To place <code>Spec</code> tests into
- * groups, you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
- * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
- * a string name.  If you have
- * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
- * create matching groups for <code>Spec</code>s like this:
- * </p>
- * <pre>
- * import org.scalatest.Tag
- *
- * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DBTest extends Tag("com.mycompany.groups.DBTest")
- * </pre>
- * <p>
- * Given these definitions, you could place <code>Spec</code> tests into groups like this:
- * </p>
- * <pre>
- * import org.scalatest.Spec
- *
- * class MySuite extends Spec {
- *
- *   it("should add correctly", SlowTest) {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
- *
- *   it("should subtract correctly", SlowTest, DBTest) {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *     assert(diff - 2 === 1)
- *   }
- * }
- * </pre>
- *
- * <p>
- * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group, 
- * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DBTest</code> group.
- * </p>
- *
- * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
- * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
- * except those those belonging to groups listed in the
- * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
- * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
- * will be executed.
- * </p>
- *
- * <p>
- * <strong>Ignored tests</strong>
- * </p>
- *
- * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
- * good intention of resurrecting the test at a later time, <code>Spec</code> provides registration
- * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
- * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * good intention of resurrecting the test at a later time, <code>WordSpec</code> adds a method
+ * <code>ignore</code> to strings that can be used instead of <code>in</code> to register a test. For example, to temporarily
+ * disable the test with the name <code>"A Stack should pop values in last-in-first-out order"</code>, just
+ * change &#8220;<code>in</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.WordSpec
  * import scala.collection.mutable.Stack
  *
- * class StackSpec extends Spec {
+ * class StackSpec extends WordSpec {
  *
- *   describe("A Stack") {
+ *   "A Stack" should {
  *
- *     ignore("should pop values in last-in-first-out order") {
+ *     "pop values in last-in-first-out order" ignore {
  *       val stack = new Stack[Int]
  *       stack.push(1)
  *       stack.push(2)
@@ -1193,7 +742,7 @@ import org.scalatest.events._
  *       assert(stack.pop() === 1)
  *     }
  *
- *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *     "throw NoSuchElementException if an empty stack is popped" in {
  *       val emptyStack = new Stack[String]
  *       intercept[NoSuchElementException] {
  *         emptyStack.pop()
@@ -1222,16 +771,6 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The
- * <code>execute</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
- * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
- * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
- * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
- * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
- * </p>
- *
- * <p>
  * <strong>Pending tests</strong>
  * </p>
  *
@@ -1252,57 +791,342 @@ import org.scalatest.events._
  * sent to the reporter when running the test can appear in the report of a test run. (In other words,
  * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
  * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality, has not yet been implemented.
- * </p>
- *
- * <p>
- * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
- * test name, like this:
+ * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
+ * As mentioned previously, you can mark tests as pending in <code>WordSpec</code> like this:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
- * import scala.collection.mutable.Stack
+ * import org.scalatest.WordSpec
  *
- * class StackSpec extends Spec {
+ * class ArithmeticSpec extends WordSpec {
  *
- *   describe("A Stack") {
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
  *
- *     it("should pop values in last-in-first-out order") {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
+ *  "The Scala language" should {
+ *     "add correctly" in {
+ *       val sum = 2 + 3
+ *       assert(sum === shared)
  *     }
  *
- *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
+ *     "subtract correctly" is (pending)
  *   }
  * }
  * </pre>
  *
  * <p>
- * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
- * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
- * If you run this version of <code>StackSpec</code> with:
+ * If you run this version of <code>ArithmeticSpec</code> with:
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new ArithmeticSpec).run()
  * </pre>
  *
  * <p>
- * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
+ * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
  * </p>
  *
  * <pre>
- * A Stack 
- * - should pop values in last-in-first-out order
- * - should throw NoSuchElementException if an empty stack is popped (pending)
+ * The Scala language
+ * - should add correctly
+ * - should subtract correctly (pending)
  * </pre>
  * 
  * <p>
+ * <strong>Informers</strong>
+ * </p>
+ *
+ * <p>
+ * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ *
+ * class ArithmeticSpec extends WordSpec {
+ *
+ *  "The Scala language" should {
+ *     "add correctly" in {
+ *       val sum = 2 + 3
+ *       assert(sum === 5)
+ *       info("addition seems to work")
+ *     }
+ *
+ *     "subtract correctly" in {
+ *       val diff = 7 - 2
+ *       assert(diff === 5)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this <code>WordSpec</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ * </p>
+ *
+ * <pre>
+ * scala> (new ArithmeticSpec).run()
+ * The Scala language 
+ * - should add correctly
+ *   + addition seems to work 
+ * - should subtract correctly
+ * </pre>
+ *
+ * <p>
+ * One use case for the <code>Informer</code> is to pass more information about a specification to the reporter. For example,
+ * the <code>GivenWhenThen</code> trait provides methods that use the implicit <code>info</code> provided by <code>WordSpec</code>
+ * to pass such information to the reporter. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * import org.scalatest.GivenWhenThen
+ * 
+ * class ArithmeticSpec extends WordSpec with GivenWhenThen {
+ * 
+ *  "The Scala language" should {
+ * 
+ *     "add correctly" in { 
+ * 
+ *       given("two integers")
+ *       val x = 2
+ *       val y = 3
+ * 
+ *       when("they are added")
+ *       val sum = x + y
+ * 
+ *       then("the result is the sum of the two numbers")
+ *       assert(sum === 5)
+ *     }
+ * 
+ *     "subtract correctly" in {
+ * 
+ *       given("two integers")
+ *       val x = 7
+ *       val y = 2
+ * 
+ *       when("one is subtracted from the other")
+ *       val diff = x - y
+ * 
+ *       then("the result is the difference of the two numbers")
+ *       assert(diff === 5)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <pre>
+ * scala> (new ArithmeticSpec).run()
+ * The Scala language 
+ * - should add correctly
+ *   + Given two integers 
+ *   + When they are added 
+ *   + Then the result is the sum of the two numbers 
+ * - should subtract correctly
+ *   + Given two integers 
+ *   + When one is subtracted from the other 
+ *   + Then the result is the difference of the two numbers 
+ * </pre>
+ *
+ * <p>
  * <a name="comparingToSpecs"><strong>Differences from <code>org.specs.Specification</code></strong></a>
+ * </p>
+ *
+ * <p>
+ * Although the <code>WordSpec</code> trait shares some syntax in common with <code>org.specs.Specification</code>, it has many differences. One of the
+ * most significant is that a Specs <code>Specification</code> allows tests (called "examples" in Specs parlance to follow the BDD tradition) to be
+ * nested, whereas a <code>WordSpec</code> only
+ * allows specification text to be nested. In other words, in Specs, a test can contain other tests that can contain other tests, to any level of
+ * nesting depth. These tests can be marked with either <code>in</code> or the operator <code>&gt;&gt;</code>. Here's an example showing nested
+ * tests taken from an open source project (whose license is included here as required). Much of the code has been removed to better reveal the nested
+ * test structure:
+ * </p>
+ *
+ * <pre>
+ * Copyright (c) 2008 Twitter, Inc.
+ *  
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *  
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *  
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ * import org.specs.Specification
+ * 
+ * object CopyExchangeSpec extends Specification {
+ * 
+ *   "CopyExchange" should {
+ *    
+ *       "while performing the request" >> {
+ *    
+ *         doBefore{
+ *           // code deleted ...
+ *         }
+ *    
+ *         "onResponseHeader" >> {
+ *           "copies the header to the response" >> {
+ *             // code deleted ...
+ *           }
+ *         }
+ *    
+ *         "onResponseContent" >> {
+ *           "copies the content to the response" >> {
+ *             // code deleted ...
+ *           }
+ *         }
+ *    
+ *         "onResponseStatus" >> {
+ *           "copies the status to the response" >> {
+ *             // code deleted ...
+ *           }
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * Running this <code>Specification</code> with Specs will produce the following output:
+ * </p>
+ *
+ * <pre>
+ * Specification "CopyExchangeSpec"
+ *   CopyExchange should
+ *   o while performing the request
+ *     o onResponseHeader
+ *       o copies the header to the response
+ *         PENDING: not yet implemented (ConsoleReporter.scala:204)
+ *     o onResponseContent
+ *       o copies the content to the response
+ *         PENDING: not yet implemented (ConsoleReporter.scala:204)
+ *     o onResponseStatus
+ *       o copies the status to the response
+ *         PENDING: not yet implemented (ConsoleReporter.scala:204)
+ * 
+ * Total for specification "CopyExchangeSpec":
+ * Finished in 0 second, 60 ms
+ * 3 examples (9 skipped), 0 expectation, 0 failure, 0 error
+ * </pre>
+ *
+ * <p>
+ * Note that although there are conceptually only three tests in this specification, the total number of tests is reported as 12 (3 that ran and 9 that were "skipped").
+ * In a <code>WordSpec</code>, you might write this specification instead like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ * 
+ * class CopyExchangeSpec extends WordSpec with BeforeAndAfterEach {
+ * 
+ *   val copy = afterWord("copy")
+ *   val performing = afterWord("performing")
+ *
+ *   def beforeEach() {
+ *     // code deleted ...
+ *   }
+ *    
+ *   "CopyExchange" when performing {
+ *
+ *     "a request" should copy {
+ *    
+ *       "the header to the response if onResponseHeader is invoked" in {
+ *         // code deleted ...
+ *       }
+ *    
+ *       "the content to the response if onResponseContent is invoked" in {
+ *         // code deleted ...
+ *       }
+ *    
+ *       "the status to the response if onResponseStatus is invoked" in {
+ *         // code deleted ...
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * Running this <code>WordSpec</code> in the interpretter will yield the following output:
+ * </p>
+ * 
+ * <pre>
+ * scala> (new CopyExchangeSpec).run()
+ * CopyExchange (when performing a request) 
+ * - should copy the header to the response if onResponseHeader is invoked
+ * - should copy the content to the response if onResponseContent is invoked
+ * - should copy the status to the response if onResponseStatus is invoked
+ * </pre>
+ *
+ * <p>
+ * Thus in a ScalaTest <code>WordSpec</code> the text of the specification can be nested, but the tests themselves cannot be nested. In a Specs <code>Specification</code> it
+ * is the other way around. One other difference to note is that the output generated by a Specs <code>Specification</code> matches the nesting of the tests in
+ * the source code, whereas the output of the ScalaTest <code>WordSpec</code> has much less nesting in an effort to make the output easier to read. The output
+ * of a <code>WordSpec</code> simply follows the same readable scheme used by <code>Spec</code> and <code>FlatSpec</code>.
+ * </p>
+ *
+ * <p>
+ * Another significant difference between a Specs <code>Specification</code> and a ScalaTest <code>WordSpec</code> is that Specs determines whether
+ * a test is pending based on whether that test executes any "expectations" such as matcher expressions. Thus one side effect
+ * of using a matcher expression is that a test is designated as <em>not</em> pending. One consequence of this design is that whereas you can use
+ * just about any way of writing assertions or expectations in ScalaTest (including JUnit assertions, Hamcrest matchers, any Java mocking framework,
+ * and even Specs matchers themselves), you are restricted in Specs to only using expectations provided by Specs and mocking frameworks supported
+ * by Specs if you also want to use the pending feature. If you try to use ScalaTest assertions or a mocking framework that Specs doesn't support, for example,
+ * Specs will mark your tests as pending. Specs also determines as a side effect of registering a nested test but not executing an expectation
+ * that a test should be "skipped" (and "skipped" here really means that it probably really wasn't intended as a test, but rather was an attempt to nest
+ * the <em>text</em> of the specification). In addition, as yet another side effect, each time you execute an expectation, Specs increments a mutable count of
+ * how many expectations have executed.  ScalaTest avoids all of these side affects.
+ * </p>
+ *
+ * <p>
+ * Another significant difference is that although ScalaTest gently encourages users to write immutable suites of tests using a functional style for fixtures,
+ * Specs encourages the traditional imperative style used by most test prior frameworks, exemplified by the <code>setUp</code> and <code>tearDown</code>
+ * methods of the original JUnit. Another distinction in this area is that in Specs, multiple <code>doBefore</code> blocks can be registered to run the
+ * context of a single test. For example, a different <code>doBefore</code> may be placed in each nested test block that leads up to a leaf test. By constrast, in
+ * ScalaTest (if you mix in <code>BeforeAndAfterEach</code>) you get just one <code>beforeEach</code> method per <code>WordSpec</code>. Although nesting
+ * <code>doBefore</code> blocks can model certain scenarios that a single <code>beforeEach</code> method cannot, 
+ * the execution model of a single <code>beforeEach</code> is likely simpler for readers of test code to understand. This simpler conceptual model for
+ * readers of test code is why ScalaTest did not take the "<code>doBefore</code>" route.
+ * </p>
+ *
+ * <p>
+ * One other significant difference is that ScalaTest defines far fewer operators than Specs. Instead of the <code>&gt;&gt;</code> operator that Specs provides, for example, 
+ * ScalaTest provides words like <code>when</code> and <code>that</code>, which Specs does not provide. In addition, the verb in Specs can only be <code>should</code> or
+ * <code>can</code>, whereas in ScalaTest you can use <code>should</code>, <code>can</code>, or <code>must</code>. (Similarly, in Specs matchers you can only use
+ * <code>must</code>, but ScalaTest matchers lets you use either <code>should</code> or <code>must</code>.) Although Specs allows you to place what is essentially
+ * an "after word" after the verb with its <code>addToSusVerb</code> method, it has no syntax corresponding to placing words after <code>when</code> or
+ * <code>that</code> in a <code>WordSpec</code>.
+ * </p>
+ * 
+ * <p>
+ * Many other differences between ScalaTest and Specs exist, but these are some of the main differences between a Specs <code>Specification</code> and
+ * a ScalaTest <code>WordSpec</code>.
  * </p>
  *
  * @author Bill Venners
@@ -1730,7 +1554,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
-  override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
     if (testName == null || reporter == null || stopper == null || configMap == null)
       throw new NullPointerException
@@ -1891,7 +1715,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>tagsToInclude</code>,
    *     <code>tagsToExclude</code>, or <code>configMap</code> is <code>null</code>.
    */
-  override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+  protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
     if (testName == null)

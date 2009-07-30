@@ -535,16 +535,6 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The
- * <code>execute</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
- * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
- * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
- * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
- * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
- * </p>
- *
- * <p>
  * <strong>Pending tests</strong>
  * </p>
  *
