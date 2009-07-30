@@ -1,5 +1,7 @@
 Rename Checkers to ScalaCheck? Have Checkers extend ScalaCheck and deprecate Checkers for two releases.
 
+Do the "pending" thing in Formatter. So that I can turn the given when thens yellow that came from a pending test.
+
 Text:
 Test fixtures:
 fixture, the best approach => immutable fixture, one approach
