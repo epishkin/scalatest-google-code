@@ -460,7 +460,7 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * <strong>Test fixtures</strong>
+ * <strong>Shared fixtures</strong>
  * </p>
  *
  * <p>
@@ -777,7 +777,7 @@ import org.scalatest.tools.StandardOutReporter
  * (It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSuite</code>
  * approach shown previously is that the <code>FixtureSuite</code>'s test methods take a <code>FileReader</code> as
- * a parameter. Otherwise the code is identical.)
+ * a parameter. Otherwise the test code is identical.)
  * </p>
  *
  * <p>
