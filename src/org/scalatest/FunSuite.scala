@@ -72,7 +72,7 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * <strong>Test fixtures</strong>
+ * <strong>Shared fixtures</strong>
  * </p>
  *
  * <p>
@@ -399,6 +399,84 @@ import org.scalatest.events._
  * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
  * an example.
  * </p>
+ *
+ * <strong>Shared tests</strong>
+ *
+ * <p>
+ * In a <code>FunSuite</code>
+ * there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause. If the duplicate test name problem shows up in a
+ * <code>FunSuite</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
+ * the same way you pass any other data needed by the shared tests, or just call <code>toString</code> on the shared fixture object.
+ * Here's an example of how <code>StackBehaviors</code> might look for a <code>FunSuite</code>:
+ * </p>
+ *
+ * <pre>
+ * trait StackBehaviors { this: FunSuite =>
+ * 
+ *   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
+ * 
+ *     test(stack.toString + " should be non-empty") {
+ *       assert(!stack.empty)
+ *     }  
+ * 
+ *     test(stack.toString + " should return the top item on peek") {
+ *       assert(stack.peek === lastItemAdded)
+ *     }
+ *   
+ *     test(stack.toString + " should not remove the top item on peek") {
+ *       val size = stack.size
+ *       assert(stack.peek === lastItemAdded)
+ *       assert(stack.size === size)
+ *     }
+ *   
+ *     test(stack.toString + " should remove the top item on pop") {
+ *       val size = stack.size
+ *       assert(stack.pop === lastItemAdded)
+ *       assert(stack.size === size - 1)
+ *     }
+ *   }
+ *   
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * Given this <code>StackBahaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
+ * </p>
+ *
+ * <pre>
+ * testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
+ * </pre>
+ *
+ * <p>
+ * would yield test names:
+ * </p>
+ *
+ * <ul>
+ * <li><code>Stack(9) should be non-empty</code></li>
+ * <li><code>Stack(9) should return the top item on peek</code></li>
+ * <li><code>Stack(9) should not remove the top item on peek</code></li>
+ * <li><code>Stack(9) should remove the top item on pop</code></li>
+ * </ul>
+ *
+ * <p>
+ * Whereas calling it with the <code>stackWithOneItemLessThanCapacity</code> fixture, like this:
+ * </p>
+ *
+ * <pre>
+ * testsFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
+ * </pre>
+ *
+ * <p>
+ * would yield different test names:
+ * </p>
+ *
+ * <ul>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should be non-empty</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should return the top item on peek</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should not remove the top item on peek</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should remove the top item on pop</code></li>
+ * </ul>
  *
  * <p>
  * <strong>Tagging tests</strong>

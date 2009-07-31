@@ -113,41 +113,28 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * "A Stack" when {
- *   "empty" should {
- *     "be empty" in {
- *       // ...
- *     }
- *     "complain on peek" in {
- *       // ...
- *     }
- *     "complain on pop" in {
- *       // ...
- *     }
- *   }
- * }
- * </pre>
- * 
- * <p>
- * Sometimes you may wish to sketch out several sentences in the specification text before actually implementing
- * the test code for it. In that case, you should write <code>is (pending)</code> instead of <code>in</code> followed
- * by an empty block. The tests when run will be reported as pending (which means some behavior has been specified, but
- * the test for that behavior haven't yet been implemented). Here's an example:
- * </p>
- * 
- * <pre>
  * import org.scalatest.WordSpec
  * 
  * class StackSpec extends WordSpec {
  *   "A Stack" when {
  *     "empty" should {
- *       "be empty" is (pending)
- *       "complain on peek" is (pending)
- *       "complain on pop" is (pending)
+ *       "be empty" in {
+ *         // ...
+ *       }
+ *       "complain on peek" in {
+ *         // ...
+ *       }
+ *       "complain on pop" in {
+ *         // ...
+ *       }
  *     }
  *     "full" should {
- *       "be full" is (pending)
- *       "complain on push" is (pending)
+ *       "be full" in {
+ *         // ...
+ *       }
+ *       "complain on push" in {
+ *         // ...
+ *       }
  *     }
  *   }
  * }
@@ -160,12 +147,12 @@ import org.scalatest.events._
  * <pre>
  * scala> (new StackSpec).run()
  * A Stack (when empty) 
- * - should be empty (pending)
- * - should complain on peek (pending)
- * - should complain on pop (pending)
+ * - should be empty 
+ * - should complain on peek
+ * - should complain on pop
  * A Stack (when full) 
- * - should be full (pending)
- * - should complain on push (pending)
+ * - should be full
+ * - should complain on push
  * </pre>
  *
  * <p>
@@ -186,14 +173,14 @@ import org.scalatest.events._
  * class AndOrSpec extends WordSpec {
  * 
  *   "The ScalaTest Matchers DSL" should {
- *     "provide an and operator that returns silently when evaluating true and true" is (pending)
- *     "provide an and operator that throws a TestFailedException when evaluating true and false" is (pending)
- *     "provide an and operator that throws a TestFailedException when evaluating false and true" is (pending)
- *     "provide an and operator that throws a TestFailedException when evaluating false and false" is (pending)
- *     "provide an or operator that returns silently when evaluating true or true" is (pending)
- *     "provide an or operator that returns silently when evaluating true or false" is (pending)
- *     "provide an or operator that returns silently when evaluating false or true" is (pending)
- *     "provide an or operator that throws a TestFailedException when evaluating false or false" is (pending)
+ *     "provide an and operator that returns silently when evaluating true and true" in {}
+ *     "provide an and operator that throws a TestFailedException when evaluating true and false" in {}
+ *     "provide an and operator that throws a TestFailedException when evaluating false and true" in {}
+ *     "provide an and operator that throws a TestFailedException when evaluating false and false" in {}
+ *     "provide an or operator that returns silently when evaluating true or true" in {}
+ *     "provide an or operator that returns silently when evaluating true or false" in {}
+ *     "provide an or operator that returns silently when evaluating false or true" in {}
+ *     "provide an or operator that throws a TestFailedException when evaluating false or false" in {}
  *   }
  * }
  * </pre>
@@ -209,16 +196,16 @@ import org.scalatest.events._
  *
  *   "The ScalaTest Matchers DSL" should {
  *     "provide an and operator" that {
- *       "returns silently when evaluating true and true" is (pending)
- *       "throws a TestFailedException when evaluating true and false" is (pending)
- *       "that throws a TestFailedException when evaluating false and true" is (pending)
- *       "throws a TestFailedException when evaluating false and false" is (pending)
+ *       "returns silently when evaluating true and true" in {}
+ *       "throws a TestFailedException when evaluating true and false" in {}
+ *       "that throws a TestFailedException when evaluating false and true" in {}
+ *       "throws a TestFailedException when evaluating false and false" in {}
  *     }
  *     "provide an or operator" that {
- *       "returns silently when evaluating true or true" is (pending)
- *       "returns silently when evaluating true or false" is (pending)
- *       "returns silently when evaluating false or true" is (pending)
- *       "throws a TestFailedException when evaluating false or false" is (pending)
+ *       "returns silently when evaluating true or true" in {}
+ *       "returns silently when evaluating true or false" in {}
+ *       "returns silently when evaluating false or true" in {}
+ *       "throws a TestFailedException when evaluating false or false" in {}
  *     }
  *   }
  * }
@@ -242,16 +229,16 @@ import org.scalatest.events._
  * 
  *   "The ScalaTest Matchers DSL" should provide {
  *     "an and operator" that {
- *       "returns silently when evaluating true and true" is (pending)
- *       "throws a TestFailedException when evaluating true and false" is (pending)
- *       "that throws a TestFailedException when evaluating false and true" is (pending)
- *       "throws a TestFailedException when evaluating false and false" is (pending)
+ *       "returns silently when evaluating true and true" in {}
+ *       "throws a TestFailedException when evaluating true and false" in {}
+ *       "that throws a TestFailedException when evaluating false and true" in {}
+ *       "throws a TestFailedException when evaluating false and false" in {}
  *     }
  *     "an or operator" that {
- *       "returns silently when evaluating true or true" is (pending)
- *       "returns silently when evaluating true or false" is (pending)
- *       "returns silently when evaluating false or true" is (pending)
- *       "throws a TestFailedException when evaluating false or false" is (pending)
+ *       "returns silently when evaluating true or true" in {}
+ *       "returns silently when evaluating true or false" in {}
+ *       "returns silently when evaluating false or true" in {}
+ *       "throws a TestFailedException when evaluating false or false" in {}
  *     }
  *   }
  * }
@@ -276,11 +263,11 @@ import org.scalatest.events._
  * 
  *   "The ScalaTest GUI" when theUser {
  *     "clicks on an event report in the list box" should display {
- *       "a blue background in the clicked-on row in the list box" is (pending)
- *       "the details for the event in the details area" is (pending)
+ *       "a blue background in the clicked-on row in the list box" in {}
+ *       "the details for the event in the details area" in {}
  *       "a rerun button" that is {
- *         "enabled if the clicked-on event is rerunnable" is (pending)
- *         "disabled if the clicked-on event is not rerunnable" is (pending)
+ *         "enabled if the clicked-on event is rerunnable" in {}
+ *         "disabled if the clicked-on event is not rerunnable" in {}
  *       }
  *     }
  *   }
@@ -294,14 +281,14 @@ import org.scalatest.events._
  * <pre>
  * scala> (new ScalaTestGUISpec).run()
  * The ScalaTest GUI (when the user clicks on an event report in the list box) 
- * - should display a blue background in the clicked-on row in the list box (pending)
- * - should display the details for the event in the details area (pending)
- * - should display a rerun button that is enabled if the clicked-on event is rerunnable (pending)
- * - should display a rerun button that is disabled if the clicked-on event is not rerunnable (pending)
+ * - should display a blue background in the clicked-on row in the list box
+ * - should display the details for the event in the details area
+ * - should display a rerun button that is enabled if the clicked-on event is rerunnable
+ * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
  * </pre>
  *
  * <p>
- * <strong>Test fixtures</strong>
+ * <strong>Shared fixtures</strong>
  * </p>
  *
  * <p>
@@ -639,7 +626,7 @@ import org.scalatest.events._
  * (It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureWordSpec</code>
  * approach shown previously is that the <code>FixtureWordSpec</code>'s test functions take a <code>FileReader</code> as
- * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the code is identical.)
+ * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.)
  * </p>
  *
  * <p>
@@ -771,68 +758,6 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * <strong>Pending tests</strong>
- * </p>
- *
- * <p>
- * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
- * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
- * out before tests are written to verify that behavior (and often, the before the behavior of
- * the system being tested is itself implemented). Such sketches form a kind of specification of
- * what tests and functionality to implement later.
- * </p>
- *
- * <p>
- * To support this style of testing, a test can be given a name that specifies one
- * bit of behavior required by the system being tested. The test can also include some code that
- * sends more information about the behavior to the reporter when the tests run. At the end of the test,
- * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
- * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
- * sent to the reporter when running the test can appear in the report of a test run. (In other words,
- * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
- * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
- * As mentioned previously, you can mark tests as pending in <code>WordSpec</code> like this:
- * </p>
- *
- * <pre>
- * import org.scalatest.WordSpec
- *
- * class ArithmeticSpec extends WordSpec {
- *
- *   // Sharing fixture objects via instance variables
- *   val shared = 5
- *
- *  "The Scala language" should {
- *     "add correctly" in {
- *       val sum = 2 + 3
- *       assert(sum === shared)
- *     }
- *
- *     "subtract correctly" is (pending)
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you run this version of <code>ArithmeticSpec</code> with:
- * </p>
- *
- * <pre>
- * scala> (new ArithmeticSpec).run()
- * </pre>
- *
- * <p>
- * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
- * </p>
- *
- * <pre>
- * The Scala language
- * - should add correctly
- * - should subtract correctly (pending)
- * </pre>
- * 
- * <p>
  * <strong>Informers</strong>
  * </p>
  *
@@ -940,12 +865,120 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
+ * <strong>Pending tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, the before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
+ * You can mark tests as pending in <code>WordSpec</code> like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.WordSpec
+ *
+ * class ArithmeticSpec extends WordSpec {
+ *
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
+ *
+ *  "The Scala language" should {
+ *     "add correctly" in {
+ *       val sum = 2 + 3
+ *       assert(sum === shared)
+ *     }
+ *
+ *     "subtract correctly" is (pending)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>ArithmeticSpec</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new ArithmeticSpec).run()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
+ * </p>
+ *
+ * <pre>
+ * The Scala language
+ * - should add correctly
+ * - should subtract correctly (pending)
+ * </pre>
+ * 
+ * <p>
+ * One difference between an ignored test and a pending one is that an ignored test is intended to be used during a
+ * significant refactorings of the code under test, when tests break and you don't want to spend the time to fix
+ * all of them immediately. You can mark some of those broken tests as ignored temporarily, so that you can focus the red
+ * bar on just failing tests you actually want to fix immediately. Later you can go back and fix the ignored tests.
+ * In other words, by ignoring some failing tests temporarily, you can more easily notice failed tests that you actually
+ * want to fix. By contrast, a pending test is intended to be used before a test and/or the code under test is written.
+ * Pending indicates you've decided to write a test for a bit of behavior, but either you haven't written the test yet, or
+ * have only written part of it, or perhaps you've written the test but don't want to implement the behavior it tests
+ * until after you've implemented a different bit of behavior you realized you need first. Thus ignored tests are designed
+ * to facilitate refactoring of existing code whereas pending tests are designed to facilitate the creation of new code.
+ * </p>
+ *
+ * <p>
+ * One other difference between ignored and pending tests is that ignored tests are implemented as a test tag that is
+ * excluded by default. Thus an ignored test is never executed. By contrast, a pending test is implemented as a
+ * test that throws <code>TestPendingException</code> (which is what calling the <code>pending</code> method does). Thus
+ * the body of pending tests are executed up until they throw <code>TestPendingException</code>. The reason for this difference
+ * is that it enables your unfinished test to send <code>InfoProvided</code> messages to the reporter before it completes
+ * abruptly with <code>TestPendingException</code>, as shown in the previous example on <code>Informer</code>s
+ * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>WordSpec</code>:
+ * </p>
+ *
+ * <pre>
+ *  "The Scala language" should {
+ *     "add correctly" in { 
+ *       given("two integers")
+ *       when("they are added")
+ *       then("the result is the sum of the two numbers")
+ *       pending
+ *     }
+ *     // ...
+ * </pre>
+ *
+ * <p>
+ * Would yield the following output when run in the interpreter:
+ * </p>
+ *
+ * <pre>
+ * The Scala language
+ * - should add correctly (pending)
+ *   + Given two integers 
+ *   + When they are added 
+ *   + Then the result is the sum of the two numbers 
+ * </pre>
+ *
+ * <p>
  * <a name="comparingToSpecs"><strong>Differences from <code>org.specs.Specification</code></strong></a>
  * </p>
  *
  * <p>
  * Although the <code>WordSpec</code> trait shares some syntax in common with <code>org.specs.Specification</code>, it has many differences. One of the
- * most significant is that a Specs <code>Specification</code> allows tests (called "examples" in Specs parlance to follow the BDD tradition) to be
+ * most significant is that a Specs <code>Specification</code> allows tests (called "examples" in Specs parlance, following the BDD tradition) to be
  * nested, whereas a <code>WordSpec</code> only
  * allows specification text to be nested. In other words, in Specs, a test can contain other tests that can contain other tests, to any level of
  * nesting depth. These tests can be marked with either <code>in</code> or the operator <code>&gt;&gt;</code>. Here's an example showing nested
@@ -1111,8 +1144,9 @@ import org.scalatest.events._
  * context of a single test. For example, a different <code>doBefore</code> may be placed in each nested test block that leads up to a leaf test. By constrast, in
  * ScalaTest (if you mix in <code>BeforeAndAfterEach</code>) you get just one <code>beforeEach</code> method per <code>WordSpec</code>. Although nesting
  * <code>doBefore</code> blocks can model certain scenarios that a single <code>beforeEach</code> method cannot, 
- * the execution model of a single <code>beforeEach</code> is likely simpler for readers of test code to understand. This simpler conceptual model for
- * readers of test code is why ScalaTest did not take the "<code>doBefore</code>" route.
+ * the execution model of a single <code>beforeEach</code> is likely simpler for readers of test code to understand. Although registering multiple "before" blocks
+ * is possible in ScalaTest, since users can override <code>run</code> and implement that if they wish, the simpler conceptual model for
+ * readers of test code is why ScalaTest provides enables only one before and after block in each <code>WordSpec</code> via the <code>BeforeAndAfterEach</code> trait.
  * </p>
  *
  * <p>
@@ -1125,7 +1159,7 @@ import org.scalatest.events._
  * </p>
  * 
  * <p>
- * Many other differences between ScalaTest and Specs exist, but these are some of the main differences between a Specs <code>Specification</code> and
+ * Many other differences between ScalaTest and Specs exist, but these are the main differences between a Specs <code>Specification</code> and
  * a ScalaTest <code>WordSpec</code>.
  * </p>
  *
