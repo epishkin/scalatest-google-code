@@ -1469,7 +1469,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre>
-     * collection should have length (3)
+     * collection should have size (3)
      *            ^
      * </pre>
      */
