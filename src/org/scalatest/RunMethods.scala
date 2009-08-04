@@ -18,24 +18,26 @@ package org.scalatest
 /**
  * Trait that abstracts out the <code>run</code>, <code>runNestedSuites</code>, <code>runTests</code>, and <code>runTest</code>
  * methods of <code>Suite</code>. This
- * trait exists primarily to support the use of trait <code>BeforeAndAfter</code>, which is a direct subtrait of this trait. The
- * <code>BeforeAndAfter</code> trait's implementation of <code>runTest</code> surrounds an invocation of
+ * trait exists primarily to support the use of traits <code>BeforeAndAfterEach</code> and <code>BeforeAndAfterAll</code>, which are
+ * direct subtraits of this trait. The
+ * <code>BeforeAndAfterEach</code> trait's implementation of <code>runTest</code> surrounds an invocation of
  * <code>super.runTest</code> in calls to <code>beforeEach</code> and <code>afterEach</code>. Similarly, the
- * <code>BeforeAndAfter</code> trait's implementation of <code>run</code> surrounds an invocation of
- * <code>super.run</code> in calls to <code>beforeAll</code> and <code>afterAll</code>. This enables trait
- * <code>BeforeAndAfter</code> to be mixed into any <code>Suite</code>, but not into a trait that contains shared tests
- * (See documentation for trait <a href="SharedTests.html"><code>SharedTests</code></a>).
+ * <code>BeforeAndAfterAll</code> trait's implementation of <code>run</code> surrounds an invocation of
+ * <code>super.run</code> in calls to <code>beforeAll</code> and <code>afterAll</code>. This enables traits
+ * <code>BeforeAndAfterEach</code> and <code>BeforeAndAfterAll</code> to be mixed into any <code>Suite</code>, but not
+ * into a trait that contains shared tests (See, for example, documentation about <a href="FunSuite.html#SharedTests">shared tests</a>
+ * in trait <code>FunSuite</code>).
  *
  * <p>
  * The main purpose of <code>RunMethods</code> is to render a compiler error any attempt
- * to mix <code>BeforeAndAfter</code> into a trait containing shared tests. (An example of such a trait is the
- * <a href="SharedTests.html#StackBehaviors"><code>StackBehaviors</code></a> trait shown in the documentation for <code>SharedTests</code>.)
- * If <code>BeforeAndAfter</code> extended
+ * to mix <code>BeforeAndAfterEach</code> or <code>BeforeAndAfterAll</code> into a trait containing shared tests. (An example of such a trait is the
+ * <a href="FunSuite.html#SharedTests"><code>StackBehaviors</code></a> trait shown in the documentation for <code>FunSuite</code>.)
+ * If <code>BeforeAndAfterEach</code> extended
  * </code>Suite</code> itself, then it would compile if mixed into such a trait, but might not work
  * as expected. A user might reasonable think that the <code>beforeEach</code> and <code>afterEach</code> methods
- * would be called only before the shared tests in the trait that mixes in <code>BeforeAndAfter</code>, but they would
+ * would be called only before the shared tests in the trait that mixes in <code>BeforeAndAfterEach</code>, but they would
  * actually be called before all tests of the suite class the trait gets mixed into. And if that user tried to mix into the same suite
- * another shared tests trait that also mixed in <code>BeforeAndAfter</code>, the result would compile, but very likely
+ * another shared tests trait that also mixed in <code>BeforeAndAfterEach</code>, the result would compile, but very likely
  * not work as expected. Unless the <code>beforeEach</code> and <code>afterEach</code> methods all delegate to the superclass, with
  * <code>super.beforeEach</code> for example, only the methods defined in the last trait mixed in would actually be executed. Even if
  * superclass delegation were used, each <code>beforeEach</code> and <code>afterEach</code> method would be called once for each
@@ -43,12 +45,12 @@ package org.scalatest
  * </p>
  *
  * </p>
- * The goal of making <code>BeforeAndAfter</code> incompatible with shared tests traits can't be achieved solely by making the
- * self type of <code>BeforeAndAfter</code> <code>Suite</code>, because
- * in that case <code>BeforeAndAfter</code> couldn't wrap calls to the mixed into <code>Suite</code>,
- * given <code>Suite</code> would not be <code>super</code>. The two run methods not called by <code>BeforeAndAfter</code>,
- * <code>runNestedSuites</code> and <code>runTests</code>, are included in this trait both for completeness and also to
- * enable other traits that override these methods to be made incompatible with shared test traits. For example, 
+ * The goal of making <code>BeforeAndAfterEach</code> incompatible with shared tests traits can't be achieved solely by making the
+ * self type of <code>BeforeAndAfterEach</code> <code>Suite</code>, because
+ * in that case <code>BeforeAndAfterEach</code> couldn't wrap calls to the mixed into <code>Suite</code>,
+ * given <code>Suite</code> would not be <code>super</code>. The two run methods not called by either <code>BeforeAndAfterEach</code>
+ * or <code>BeforeAndAfterEach</code>, <code>runNestedSuites</code>, and <code>runTests</code>, are included in this trait both for
+ * completeness and also to enable other traits that override these methods to be made incompatible with shared test traits. For example, 
  * <code>SequentialNestedSuiteExecution</code> extends <code>RunMethods</code> instead of <code>Suite</code> so that
  * it doesn't end up mixed into shared tests traits.
  * </p>

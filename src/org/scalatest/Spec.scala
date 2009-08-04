@@ -411,7 +411,15 @@ import org.scalatest.events._
  *
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
- * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
+ * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * (It is worth noting that the only difference in the test code between the mutable
+ * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSpec</code>
+ * approach shown previously is that the <code>FixtureSpec</code>'s test functions take a <code>FileReader</code> as
+ * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.)
+ * </p>
+ *
+ * <p>
+ * If you want to execute code before and after all tests (and nested suites) in a suite, such
  * want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
