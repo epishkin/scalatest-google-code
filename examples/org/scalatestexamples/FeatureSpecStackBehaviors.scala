@@ -23,20 +23,20 @@ trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =>
 
   def nonEmptyStack(createNonEmptyStack: => Stack[Int], lastItemAdded: Int) {
 
-    scenario("empty is invoked on this non-empty stack: " + createNonEmptyStack().toString) {
+    scenario("empty is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
 
       given("a non-empty stack")
-      val stack = createNonEmptyStack()
+      val stack = createNonEmptyStack
 
       when("empty is invoked on the stack")
       then("empty returns false")
       assert(!stack.empty)
     }
 
-    scenario("peek is invoked on this non-empty stack: " + createNonEmptyStack().toString) {
+    scenario("peek is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
 
       given("a non-empty stack")
-      val stack = createNonEmptyStack()
+      val stack = createNonEmptyStack
       val size = stack.size
 
       when("peek is invoked on the stack")
@@ -47,10 +47,10 @@ trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =>
       assert(stack.size === size)
     }
 
-    scenario("pop is invoked on this non-empty stack: " + createNonEmptyStack().toString) {
+    scenario("pop is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
 
       given("a non-empty stack")
-      val stack = createNonEmptyStack()
+      val stack = createNonEmptyStack
       val size = stack.size
 
       when("pop is invoked on the stack")
@@ -64,20 +64,20 @@ trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =>
   
   def nonFullStack(createNonFullStack: => Stack[Int]) {
       
-    scenario("full is invoked on this non-full stack: " + createNonFullStack().toString) {
+    scenario("full is invoked on this non-full stack: " + createNonFullStack.toString) {
 
       given("a non-full stack")
-      val stack = createNonFullStack()
+      val stack = createNonFullStack
 
       when("full is invoked on the stack")
       then("full returns false")
       assert(!stack.full)
     }
       
-    scenario("push is invoked on this non-full stack: " + createNonFullStack().toString) {
+    scenario("push is invoked on this non-full stack: " + createNonFullStack.toString) {
 
       given("a non-full stack")
-      val stack = createNonFullStack()
+      val stack = createNonFullStack
       val size = stack.size
 
       when("push is invoked on the stack")
