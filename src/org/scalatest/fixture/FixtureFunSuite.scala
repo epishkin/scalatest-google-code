@@ -1007,7 +1007,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     }
   }
 
-  class FixtureTestsForPhrase {
+  class TestsForPhrase {
 
     /**
      * This method enables the following syntax:
@@ -1020,7 +1020,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     def apply(unit: Unit) {}
   }
 
-  val testsFor = new FixtureTestsForPhrase
+  val testsFor = new TestsForPhrase
 
   implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
     fixture => f

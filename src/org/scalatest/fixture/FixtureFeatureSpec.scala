@@ -1163,7 +1163,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     }
   }
 
-  class FixtureScenariosForPhrase {
+  class ScenariosForPhrase {
 
     /**
      * This method enables the following syntax:
@@ -1176,7 +1176,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     def apply(unit: Unit) {}
   }
 
-  val scenariosFor = new FixtureScenariosForPhrase
+  val scenariosFor = new ScenariosForPhrase
 
   implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
     fixture => f
