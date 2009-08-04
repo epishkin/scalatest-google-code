@@ -17,6 +17,7 @@ package org.scalatestexamples
 
 import org.scalatest.Spec
 import scala.collection.mutable.ListBuffer
+import org.scalatestexamples.helpers.Stack
 
 class StackSpec extends Spec with StackFixtureCreationMethods with StackBehaviors {
 

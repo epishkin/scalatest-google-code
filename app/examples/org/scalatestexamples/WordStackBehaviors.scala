@@ -16,6 +16,7 @@
 package org.scalatestexamples
 
 import org.scalatest.WordSpec
+import org.scalatestexamples.helpers.Stack
 
 trait WordStackBehaviors { this: WordSpec =>
 

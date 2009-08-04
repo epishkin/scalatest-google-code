@@ -15,6 +15,8 @@
  */
 package org.scalatestexamples
 
+import org.scalatestexamples.helpers.Stack
+
 trait StackFixtureCreationMethods {
 
   def emptyStack = new Stack[Int]

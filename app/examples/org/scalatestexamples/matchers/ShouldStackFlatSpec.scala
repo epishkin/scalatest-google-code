@@ -17,6 +17,7 @@ package org.scalatestexamples.matchers
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import org.scalatestexamples.helpers.Stack
 
 class ShouldStackFlatSpec extends FlatSpec with ShouldMatchers with StackFixtureCreationMethods with FlatStackBehaviors {
 

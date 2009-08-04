@@ -18,6 +18,8 @@ package org.scalatestexamples.matchers
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.mutable.ListBuffer
+import org.scalatestexamples.helpers.Stack
+import org.scalatestexamples.helpers.Stack
 
 trait ShouldStackBehaviors extends ShouldMatchers { this: Spec =>
 

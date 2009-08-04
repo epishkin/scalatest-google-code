@@ -23,107 +23,119 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 
 /**
- * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
- * are combined with text that specifies the behavior the tests verify.
- * Here's an example <code>Spec</code>:
+ * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
+ * for &#8220;function.&#8221; Here's an example <code>FeatureSpec</code>:
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FeatureSpec
  * import scala.collection.mutable.Stack
  *
- * class StackSpec extends Spec {
+ * class MyFeatureSpec extends FeatureSpec with GivenWhenThen {
  *
- *   describe("A Stack") {
+ *   feature("The user can pop an element off the top of the stack") {
  *
- *     it("should pop values in last-in-first-out order") {
+ *     info("As a programmer")
+ *     info("I want to be able to pop items off the stack")
+ *     info("So that I can get them in last-in-first-out order")
+ *
+ *     scenario("pop is invoked on a non-empty stack") {
+ *
+ *       given("a non-empty stack")
  *       val stack = new Stack[Int]
  *       stack.push(1)
  *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
+ *       val oldSize = stack.size
+ *
+ *       when("when pop is invoked on the stack")
+ *       val result = stack.pop()
+ *
+ *       then("the most recently pushed element should be returned")
+ *       assert(result === 2)
+ *
+ *       and("the stack should have one less item than before")
+ *       assert(stack.size === oldSize - 1)
  *     }
  *
- *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *     scenario("pop is invoked on an empty stack") {
+ *
+ *       given("an empty stack")
  *       val emptyStack = new Stack[String]
+ *
+ *       when("when pop is invoked on the stack")
+ *       then("NoSuchElementException should be thrown")
  *       intercept[NoSuchElementException] {
  *         emptyStack.pop()
  *       }
+ *
+ *       and("the stack should still be empty")
+ *       assert(stack.isEmpty)
  *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * A <code>Spec</code> contains <em>describers</em> and <em>examples</em>. You define a describer
- * with <code>describe</code>, and a example with <code>it</code>. Both
- * <code>describe</code> and <code>it</code> are methods, defined in
- * <code>Spec</code>, which will be invoked
- * by the primary constructor of <code>StackSpec</code>. 
- * A describer names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
- * and testing. In the above example, "A Stack"
- * is the subject under specification and test. With each example you provide a string (the <em>spec text</em>) that specifies
- * one bit of behavior of the subject, and a block of code that tests that behavior.
- * You place the spec text between the parentheses, followed by the test code between curly
- * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
- * <code>it</code>, which will register the test for later execution.
+ * &#8220;<code>test</code>&#8221; is a method, defined in <code>FeatureSpec</code>, which will be invoked
+ * by the primary constructor of <code>MySuite</code>. You specify the name of the test as
+ * a string between the parentheses, and the test code itself between curly braces.
+ * The test code is a function passed as a by-name parameter to <code>test</code>, which registers
+ * it for later execution. One benefit of <code>FeatureSpec</code> compared to <code>Suite</code> is you need not name all your
+ * tests starting with &#8220;<code>test</code>.&#8221; In addition, you can more easily give long names to
+ * your tests, because you need not encode them in camel case, as you must do
+ * with test methods.
  * </p>
  *
  * <p>
- * When you execute a <code>Spec</code>, it will send <code>SpecReport</code>s to the
- * <code>Reporter</code>. ScalaTest's built-in reporters will report these <code>SpecReports</code> in such a way
- * that the output is easy to read as an informal specification of the entity under test.
- * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
+ * A <code>FeatureSpec</code>'s lifecycle has two phases: the <em>registration</em> phase and the
+ * <em>ready</em> phase. It starts in registration phase and enters ready phase the first time
+ * <code>run</code> is called on it. It then remains in ready phase for the remainder of its lifetime.
  * </p>
  *
- * <pre>
- * scala> (new StackSpec).run()
- * </pre>
- *
  * <p>
- * You would see:
+ * Tests can only be registered with the <code>test</code> method while the <code>FeatureSpec</code> is
+ * in its registration phase. Any attempt to register a test after the <code>FeatureSpec</code> has
+ * entered its ready phase, <em>i.e.</em>, after <code>run</code> has been invoked on the <code>FeatureSpec</code>,
+ * will be met with a thrown <code>TestRegistrationClosedException</code>. The recommended style
+ * of using <code>FeatureSpec</code> is to register tests during object construction as is done in all
+ * the examples shown here. If you keep to the recommended style, you should never see a
+ * <code>TestRegistrationClosedException</code>.
  * </p>
  *
- * <pre>
- * A Stack
- * - should pop values in last-in-first-out order
- * - should throw NoSuchElementException if an empty stack is popped
- * </pre>
- *
  * <p>
- * <strong>Test fixtures</strong>
+ * <strong>Shared fixtures</strong>
  * </p>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
  * connections, etc.) used by tests to do their work. You can use fixtures in
- * <code>Spec</code>s with the same approaches suggested for <code>Suite</code> in
+ * <code>FeatureSpec</code>s with the same approaches suggested for <code>Suite</code> in
  * its documentation. The same text that appears in the test fixture
  * section of <code>Suite</code>'s documentation is repeated here, with examples changed from
- * <code>Suite</code> to <code>Spec</code>.
+ * <code>Suite</code> to <code>FeatureSpec</code>.
  * </p>
  *
  * <p>
  * If a fixture is used by only one test, then the definitions of the fixture objects should
- * be local to the test function, such as the objects assigned to <code>stack</code> and <code>emptyStack</code> in the
- * previous <code>StackSpec</code> examples. If multiple tests need to share a fixture, the best approach
+ * be local to the test function, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
+ * previous <code>MySuite</code> examples. If multiple tests need to share a fixture, the best approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
  * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FeatureSpec
  *
- * class ArithmeticSpec extends Spec {
+ * class MySuite extends FeatureSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
  *
- *   it("should add correctly") {
+ *   test("addition") {
  *     val sum = 2 + 3
  *     assert(sum === shared)
  *   }
  *
- *   it("should subtract correctly") {
+ *   test("subtraction") {
  *     val diff = 7 - 2
  *     assert(diff === shared)
  *   }
@@ -134,22 +146,22 @@ import org.scalatest.events._
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * it needs to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
- * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
+ * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
  * between tests. Before going that route, you should consider two approaches that
- * avoid <code>var</code>s. One approach is to write one or more "create" methods
- * that return a new instance of a needed object (or a tuple of new instances of
- * multiple objects) each time it is called. You can then call a create method at the beginning of each
+ * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
+ * that return a new instance of a needed object (or a tuple or case class holding new instances of
+ * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
  * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FeatureSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySpec extends Spec {
+ * class MySuite extends FeatureSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -157,7 +169,7 @@ import org.scalatest.events._
  *     new ListBuffer[String]
  *   )
  *
- *   it("should mutate shared fixture objects") {
+ *   test("easy") {
  *     val (builder, lbuf) = createFixture
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
@@ -165,7 +177,7 @@ import org.scalatest.events._
  *     lbuf += "sweet"
  *   }
  *
- *   it("should get a fresh set of mutable fixture objects") {
+ *   test("fun") {
  *     val (builder, lbuf) = createFixture
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
@@ -175,14 +187,21 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
- * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
+ * If different tests in the same <code>FeatureSpec</code> require different fixtures, you can create multiple create-fixture methods and
+ * call the method (or methods) needed by each test at the begining of the test.
  * </p>
+ *
+ * <p>
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create with-fixture methods,
+ * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the
+ * with-fixture method. Here's an example:
+ * </p>
+ *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FeatureSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySpec extends Spec {
+ * class MySuite extends FeatureSpec {
  *
  *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
@@ -194,42 +213,38 @@ import org.scalatest.events._
  *     testFunction(sb, lb)
  *   }
  *
- *   it("should mutate shared fixture objects") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("easy!")
- *         assert(builder.toString === "ScalaTest is easy!")
- *         assert(lbuf.isEmpty)
- *         lbuf += "sweet"
- *       }
+ *   test("easy") {
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(lbuf.isEmpty)
+ *       lbuf += "sweet"
  *     }
  *   }
  *
- *   it("should get a fresh set of mutable fixture objects") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("fun!")
- *         assert(builder.toString === "ScalaTest is fun!")
- *         assert(lbuf.isEmpty)
- *       }
+ *   test("fun") {
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(lbuf.isEmpty)
  *     }
  *   }
  * }
  * </pre>
  * 
- * One advantage of this approach compared to the create method approach shown previously is that
- * you can more easily perform cleanup after each test executes. For example, you
+ * One advantage of this approach compared to the create-fixture approach shown previously is that
+ * you can more easily perform cleanup after each test runs. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
  * doing so before and after invoking the test function in a <code>withTempFile</code>
  * method. Here's an example:
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FeatureSpec
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySpec extends Spec {
+ * class MySuite extends FeatureSpec {
  * 
  *   def withTempFile(testFunction: FileReader => Unit) {
  * 
@@ -259,26 +274,88 @@ import org.scalatest.events._
  *     }
  *   }
  * 
- *   it("should read from a temp file") {
- *     withTempFile {
- *       (reader) => {
- *         var builder = new StringBuilder
- *         var c = reader.read()
- *         while (c != -1) {
- *           builder.append(c.toChar)
- *           c = reader.read()
- *         }
- *         assert(builder.toString === "Hello, test!")
+ *   test("reading from the temp file") {
+ *     withTempFile { (reader) =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
  *       }
+ *       assert(builder.toString === "Hello, test!")
  *     }
  *   }
  * 
- *   it("should read the first char of a temp file") {
- *     withTempFile {
- *       (reader) => {
- *         assert(reader.read() === 'H')
- *       }
+ *   test("first char of the temp file") {
+ *     withTempFile { (reader) =>
+ *       assert(reader.read() === 'H')
  *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If different tests in the same <code>FeatureSpec</code> require different fixtures, you can create multiple with-fixture methods and
+ * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
+ * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
+ * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
+ * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
+ * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FeatureSpec</code> behaves exactly like
+ * <code>org.scalatest.FeatureSpec</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
+ * <a href="fixture/FeatureSpec.html"><code>FeatureSpec</code></a>. To get the idea, however, here's what the previous example would
+ * look like rewritten to use an <code>org.scalatest.fixture.FeatureSpec</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureFeatureSpec
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends FixtureFeatureSpec {
+ *
+ *   type Fixture = FileReader
+ *
+ *   def withFixture(testFunction: FileReader => Unit) {
+ *
+ *     val FileName = "TempFile.txt"
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   test("reading from the temp file") { reader =>
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ * 
+ *   test("first char of the temp file") { reader =>
+ *     assert(reader.read() === 'H')
  *   }
  * }
  * </pre>
@@ -286,21 +363,21 @@ import org.scalatest.events._
  * <p>
  * If you are more comfortable with reassigning instance variables, however, you can
  * instead use the <code>BeforeAndafter</code> trait, which provides
- * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
+ * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
  * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
+ * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
  * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with <code>BeforeAndAfter</code>:
+ * test that uses a temp file with <code>BeforeAndAfterEach</code>:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
- * import org.scalatest.BeforeAndAfter
+ * import org.scalatest.FeatureSpec
+ * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySpec extends Spec with BeforeAndAfter {
+ * class MySuite extends FeatureSpec with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -326,7 +403,7 @@ import org.scalatest.events._
  *     file.delete()
  *   }
  *
- *   it("should read from a temp file") {
+ *   test("reading from the temp file") {
  *     var builder = new StringBuilder
  *     var c = reader.read()
  *     while (c != -1) {
@@ -336,7 +413,7 @@ import org.scalatest.events._
  *     assert(builder.toString === "Hello, test!")
  *   }
  *
- *   it("should read the first char of a temp file") {
+ *   test("first char of the temp file") {
  *     assert(reader.read() === 'H')
  *   }
  * }
@@ -348,48 +425,131 @@ import org.scalatest.events._
  * want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
+ * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
  * an example.
  * </p>
  *
  * <p>
- * <strong>Test groups</strong>
+ * <strong>Shared tests</strong>
  * </p>
  *
  * <p>
- * A <code>Spec</code>'s tests may be classified into named <em>groups</em>.
- * As with any suite, when executing a <code>Spec</code>, groups of tests can
- * optionally be included and/or excluded. To place <code>Spec</code> tests into
- * groups, you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
- * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
- * a string name.  If you have
- * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
- * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
- * create matching groups for <code>Spec</code>s like this:
+ * In a <code>FeatureSpec</code>
+ * there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause. If the duplicate test name problem shows up in a
+ * <code>FeatureSpec</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
+ * the same way you pass any other data needed by the shared tests, or just call <code>toString</code> on the shared fixture object.
+ * Here's an example of how <code>StackBehaviors</code> might look for a <code>FeatureSpec</code>:
  * </p>
+ *
+ * <pre>
+ * trait StackBehaviors { this: FeatureSpec =>
+ * 
+ *   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
+ * 
+ *     test(stack.toString + " should be non-empty") {
+ *       assert(!stack.empty)
+ *     }  
+ * 
+ *     test(stack.toString + " should return the top item on peek") {
+ *       assert(stack.peek === lastItemAdded)
+ *     }
+ *   
+ *     test(stack.toString + " should not remove the top item on peek") {
+ *       val size = stack.size
+ *       assert(stack.peek === lastItemAdded)
+ *       assert(stack.size === size)
+ *     }
+ *   
+ *     test(stack.toString + " should remove the top item on pop") {
+ *       val size = stack.size
+ *       assert(stack.pop === lastItemAdded)
+ *       assert(stack.size === size - 1)
+ *     }
+ *   }
+ *   
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * Given this <code>StackBahaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
+ * </p>
+ *
+ * <pre>
+ * testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
+ * </pre>
+ *
+ * <p>
+ * would yield test names:
+ * </p>
+ *
+ * <ul>
+ * <li><code>Stack(9) should be non-empty</code></li>
+ * <li><code>Stack(9) should return the top item on peek</code></li>
+ * <li><code>Stack(9) should not remove the top item on peek</code></li>
+ * <li><code>Stack(9) should remove the top item on pop</code></li>
+ * </ul>
+ *
+ * <p>
+ * Whereas calling it with the <code>stackWithOneItemLessThanCapacity</code> fixture, like this:
+ * </p>
+ *
+ * <pre>
+ * testsFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
+ * </pre>
+ *
+ * <p>
+ * would yield different test names:
+ * </p>
+ *
+ * <ul>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should be non-empty</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should return the top item on peek</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should not remove the top item on peek</code></li>
+ * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should remove the top item on pop</code></li>
+ * </ul>
+ *
+ * <p>
+ * <strong>Tagging tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <code>FeatureSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>FeatureSpec</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>FeatureSpec</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to methods
+ * that register tests, <code>test</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter, a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>FeatureSpec</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and
+ * <code>com.mycompany.groups.DBTest</code>, then you could
+ * create matching groups for <code>FeatureSpec</code>s like this:
+ * </p>
+ *
  * <pre>
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
  * object DBTest extends Tag("com.mycompany.groups.DBTest")
  * </pre>
+ *
  * <p>
- * Given these definitions, you could place <code>Spec</code> tests into groups like this:
+ * Given these definitions, you could place <code>FeatureSpec</code> tests into groups like this:
  * </p>
+ *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FeatureSpec
  *
- * class MySuite extends Spec {
+ * class MySuite extends FeatureSpec {
  *
- *   it("should add correctly", SlowTest) {
+ *   test("addition", SlowTest) {
  *     val sum = 1 + 1
  *     assert(sum === 2)
  *     assert(sum + 2 === 4)
  *   }
  *
- *   it("should subtract correctly", SlowTest, DBTest) {
+ *   test("subtraction", SlowTest, DBTest) {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *     assert(diff - 2 === 1)
@@ -398,17 +558,18 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group, 
- * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DBTest</code> group.
+ * This code marks both tests, "addition" and "subtraction," with the <code>com.mycompany.groups.SlowTest</code> tag, 
+ * and test "subtraction" with the <code>com.mycompany.groups.DBTest</code> tag.
  * </p>
  *
  * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
- * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
- * except those those belonging to groups listed in the
- * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
- * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
- * will be executed.
+ * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
  * </p>
  *
  * <p>
@@ -417,64 +578,47 @@ import org.scalatest.events._
  *
  * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
- * good intention of resurrecting the test at a later time, <code>Spec</code> provides registration
- * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
- * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * good intention of resurrecting the test at a later time, <code>FeatureSpec</code> provides registration
+ * methods that start with <code>ignore</code> instead of <code>test</code>. For example, to temporarily
+ * disable the test named <code>addition</code>, just change &#8220;<code>test</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
- * import scala.collection.mutable.Stack
+ * import org.scalatest.FeatureSpec
  *
- * class StackSpec extends Spec {
+ * class MySuite extends FeatureSpec {
  *
- *   describe("A Stack") {
+ *   ignore("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
  *
- *     ignore("should pop values in last-in-first-out order") {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
- *
- *     it("should throw NoSuchElementException if an empty stack is popped") {
- *       val emptyStack = new Stack[String]
- *       intercept[NoSuchElementException] {
- *         emptyStack.pop()
- *       }
- *     }
+ *   test("subtraction") {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *     assert(diff - 2 === 1)
  *   }
  * }
  * </pre>
  *
  * <p>
- * If you run this version of <code>StackSpec</code> with:
+ * If you run this version of <code>MySuite</code> with:
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new MySuite).run()
  * </pre>
  *
  * <p>
- * It will run only the second test and report that the first test was ignored:
+ * It will run only <code>subtraction</code> and report that <code>addition</code> was ignored:
  * </p>
  *
  * <pre>
- * A Stack
- * - should pop values in last-in-first-out order !!! IGNORED !!!
- * - should throw NoSuchElementException if an empty stack is popped
+ * Test Ignored - MySuite: addition
+ * Test Starting - MySuite: subtraction
+ * Test Succeeded - MySuite: subtraction
  * </pre>
- *
- * <p>
- * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The
- * <code>execute</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
- * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
- * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
- * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
- * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
- * </p>
  *
  * <p>
  * <strong>Pending tests</strong>
@@ -501,51 +645,87 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
- * test name, like this:
+ * Although pending tests may be used more often in specification-style suites, such as
+ * <code>org.scalatest.Spec</code>, you can also use it in <code>FeatureSpec</code>, like this:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
- * import scala.collection.mutable.Stack
+ * import org.scalatest.FeatureSpec
  *
- * class StackSpec extends Spec {
+ * class MySuite extends FeatureSpec {
  *
- *   describe("A Stack") {
- *
- *     it("should pop values in last-in-first-out order") {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
- *
- *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
+ *   def test("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
  *   }
+ *
+ *   def test("subtraction") (pending)
  * }
  * </pre>
  *
  * <p>
  * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
  * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
- * If you run this version of <code>StackSpec</code> with:
+ * If you run this version of <code>MySuite</code> with:
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new MySuite).run()
  * </pre>
  *
  * <p>
- * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
+ * It will run both tests, but report that <code>subtraction</code> is pending. You'll see:
  * </p>
  *
  * <pre>
- * A Stack 
- * - should pop values in last-in-first-out order
- * - should throw NoSuchElementException if an empty stack is popped (pending)
+ * Test Starting - MySuite: addition
+ * Test Succeeded - MySuite: addition
+ * Test Starting - MySuite: subtraction
+ * Test Pending - MySuite: subtraction
  * </pre>
  * 
+ * <p>
+ * <strong>Informers</strong>
+ * </p>
+ *
+ * <p>
+ * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FeatureSpec</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FeatureSpec
+ *
+ * class MySuite extends FeatureSpec {
+ *
+ *   test("addition") {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *     info("Addition seems to work")
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>Suite</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ *
+ * <pre>
+ * Test Starting - MySuite: addition
+ * Info Provided - MySuite.addition: Addition seems to work
+ * Test Succeeded - MySuite: addition
+ * </pre>
+ *
  * @author Bill Venners
  */
 trait FeatureSpec extends Suite { thisSuite =>
@@ -1177,3 +1357,527 @@ trait FeatureSpec extends Suite { thisSuite =>
 
   val scenariosFor = new ScenariosForPhrase
 }
+/*
+ * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
+ * are combined with text that specifies the behavior the tests verify.
+ * Here's an example <code>Spec</code>:
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends Spec {
+ *
+ *   describe("A Stack") {
+ *
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *       val emptyStack = new Stack[String]
+ *       intercept[NoSuchElementException] {
+ *         emptyStack.pop()
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * A <code>Spec</code> contains <em>describers</em> and <em>examples</em>. You define a describer
+ * with <code>describe</code>, and a example with <code>it</code>. Both
+ * <code>describe</code> and <code>it</code> are methods, defined in
+ * <code>Spec</code>, which will be invoked
+ * by the primary constructor of <code>StackSpec</code>. 
+ * A describer names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
+ * and testing. In the above example, "A Stack"
+ * is the subject under specification and test. With each example you provide a string (the <em>spec text</em>) that specifies
+ * one bit of behavior of the subject, and a block of code that tests that behavior.
+ * You place the spec text between the parentheses, followed by the test code between curly
+ * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
+ * <code>it</code>, which will register the test for later execution.
+ * </p>
+ *
+ * <p>
+ * When you execute a <code>Spec</code>, it will send <code>SpecReport</code>s to the
+ * <code>Reporter</code>. ScalaTest's built-in reporters will report these <code>SpecReports</code> in such a way
+ * that the output is easy to read as an informal specification of the entity under test.
+ * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).run()
+ * </pre>
+ *
+ * <p>
+ * You would see:
+ * </p>
+ *
+ * <pre>
+ * A Stack
+ * - should pop values in last-in-first-out order
+ * - should throw NoSuchElementException if an empty stack is popped
+ * </pre>
+ *
+ * <p>
+ * <strong>Test fixtures</strong>
+ * </p>
+ *
+ * <p>
+ * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
+ * connections, etc.) used by tests to do their work. You can use fixtures in
+ * <code>Spec</code>s with the same approaches suggested for <code>Suite</code> in
+ * its documentation. The same text that appears in the test fixture
+ * section of <code>Suite</code>'s documentation is repeated here, with examples changed from
+ * <code>Suite</code> to <code>Spec</code>.
+ * </p>
+ *
+ * <p>
+ * If a fixture is used by only one test, then the definitions of the fixture objects should
+ * be local to the test function, such as the objects assigned to <code>stack</code> and <code>emptyStack</code> in the
+ * previous <code>StackSpec</code> examples. If multiple tests need to share a fixture, the best approach
+ * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
+ * to <code>shared</code> is used by multiple test functions:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ *
+ * class ArithmeticSpec extends Spec {
+ *
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
+ *
+ *   it("should add correctly") {
+ *     val sum = 2 + 3
+ *     assert(sum === shared)
+ *   }
+ *
+ *   it("should subtract correctly") {
+ *     val diff = 7 - 2
+ *     assert(diff === shared)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
+ * it needs to be recreated or reinitialized before each test. Shared resources such
+ * as files or database connections may also need to 
+ * be cleaned up after each test. JUnit offers methods <code>setup</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
+ * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
+ * between tests. Before going that route, you should consider two approaches that
+ * avoid <code>var</code>s. One approach is to write one or more "create" methods
+ * that return a new instance of a needed object (or a tuple of new instances of
+ * multiple objects) each time it is called. You can then call a create method at the beginning of each
+ * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MySpec extends Spec {
+ *
+ *   // create objects needed by tests and return as a tuple
+ *   def createFixture = (
+ *     new StringBuilder("ScalaTest is "),
+ *     new ListBuffer[String]
+ *   )
+ *
+ *   it("should mutate shared fixture objects") {
+ *     val (builder, lbuf) = createFixture
+ *     builder.append("easy!")
+ *     assert(builder.toString === "ScalaTest is easy!")
+ *     assert(lbuf.isEmpty)
+ *     lbuf += "sweet"
+ *   }
+ *
+ *   it("should get a fresh set of mutable fixture objects") {
+ *     val (builder, lbuf) = createFixture
+ *     builder.append("fun!")
+ *     assert(builder.toString === "ScalaTest is fun!")
+ *     assert(lbuf.isEmpty)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
+ * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
+ * </p>
+ * <pre>
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class MySpec extends Spec {
+ *
+ *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
+ *
+ *     // Create needed mutable objects
+ *     val sb = new StringBuilder("ScalaTest is ")
+ *     val lb = new ListBuffer[String]
+ *
+ *     // Invoke the test function, passing in the mutable objects
+ *     testFunction(sb, lb)
+ *   }
+ *
+ *   it("should mutate shared fixture objects") {
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(lbuf.isEmpty)
+ *         lbuf += "sweet"
+ *       }
+ *     }
+ *   }
+ *
+ *   it("should get a fresh set of mutable fixture objects") {
+ *     withFixture {
+ *       (builder, lbuf) => {
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(lbuf.isEmpty)
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ * 
+ * One advantage of this approach compared to the create method approach shown previously is that
+ * you can more easily perform cleanup after each test executes. For example, you
+ * could create a temporary file before each test, and delete it afterwords, by
+ * doing so before and after invoking the test function in a <code>withTempFile</code>
+ * method. Here's an example:
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySpec extends Spec {
+ * 
+ *   def withTempFile(testFunction: FileReader => Unit) {
+ * 
+ *     val FileName = "TempFile.txt"
+ *  
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *  
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   it("should read from a temp file") {
+ *     withTempFile {
+ *       (reader) => {
+ *         var builder = new StringBuilder
+ *         var c = reader.read()
+ *         while (c != -1) {
+ *           builder.append(c.toChar)
+ *           c = reader.read()
+ *         }
+ *         assert(builder.toString === "Hello, test!")
+ *       }
+ *     }
+ *   }
+ * 
+ *   it("should read the first char of a temp file") {
+ *     withTempFile {
+ *       (reader) => {
+ *         assert(reader.read() === 'H')
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you are more comfortable with reassigning instance variables, however, you can
+ * instead use the <code>BeforeAndafter</code> trait, which provides
+ * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
+ * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
+ * methods, respectively). For example, here's how you'd write the previous
+ * test that uses a temp file with <code>BeforeAndAfter</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import org.scalatest.BeforeAndAfter
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ *
+ * class MySpec extends Spec with BeforeAndAfter {
+ *
+ *   private val FileName = "TempFile.txt"
+ *   private var reader: FileReader = _
+ *
+ *   // Set up the temp file needed by the test
+ *   override def beforeEach() {
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     reader = new FileReader(FileName)
+ *   }
+ *
+ *   // Close and delete the temp file
+ *   override def afterEach() {
+ *     reader.close()
+ *     val file = new File(FileName)
+ *     file.delete()
+ *   }
+ *
+ *   it("should read from a temp file") {
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ *
+ *   it("should read the first char of a temp file") {
+ *     assert(reader.read() === 'H')
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
+ * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
+ * want to execute code before and after all tests (and nested suites) in a suite, such
+ * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
+ * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
+ * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
+ * an example.
+ * </p>
+ *
+ * <p>
+ * <strong>Test groups</strong>
+ * </p>
+ *
+ * <p>
+ * A <code>Spec</code>'s tests may be classified into named <em>groups</em>.
+ * As with any suite, when executing a <code>Spec</code>, groups of tests can
+ * optionally be included and/or excluded. To place <code>Spec</code> tests into
+ * groups, you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
+ * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
+ * a string name.  If you have
+ * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
+ * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
+ * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
+ * create matching groups for <code>Spec</code>s like this:
+ * </p>
+ * <pre>
+ * import org.scalatest.Tag
+ *
+ * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
+ * object DBTest extends Tag("com.mycompany.groups.DBTest")
+ * </pre>
+ * <p>
+ * Given these definitions, you could place <code>Spec</code> tests into groups like this:
+ * </p>
+ * <pre>
+ * import org.scalatest.Spec
+ *
+ * class MySuite extends Spec {
+ *
+ *   it("should add correctly", SlowTest) {
+ *     val sum = 1 + 1
+ *     assert(sum === 2)
+ *     assert(sum + 2 === 4)
+ *   }
+ *
+ *   it("should subtract correctly", SlowTest, DBTest) {
+ *     val diff = 4 - 1
+ *     assert(diff === 3)
+ *     assert(diff - 2 === 1)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group, 
+ * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DBTest</code> group.
+ * </p>
+ *
+ * <p>
+ * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
+ * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
+ * except those those belonging to groups listed in the
+ * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
+ * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
+ * will be executed.
+ * </p>
+ *
+ * <p>
+ * <strong>Ignored tests</strong>
+ * </p>
+ *
+ * <p>
+ * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
+ * good intention of resurrecting the test at a later time, <code>Spec</code> provides registration
+ * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
+ * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends Spec {
+ *
+ *   describe("A Stack") {
+ *
+ *     ignore("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") {
+ *       val emptyStack = new Stack[String]
+ *       intercept[NoSuchElementException] {
+ *         emptyStack.pop()
+ *       }
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).run()
+ * </pre>
+ *
+ * <p>
+ * It will run only the second test and report that the first test was ignored:
+ * </p>
+ *
+ * <pre>
+ * A Stack
+ * - should pop values in last-in-first-out order !!! IGNORED !!!
+ * - should throw NoSuchElementException if an empty stack is popped
+ * </pre>
+ *
+ * <p>
+ * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The
+ * <code>execute</code> method that takes no parameters
+ * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
+ * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
+ * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
+ * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
+ * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
+ * </p>
+ *
+ * <p>
+ * <strong>Pending tests</strong>
+ * </p>
+ *
+ * <p>
+ * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
+ * pending tests is to facilitate a style of testing in which documentation of behavior is sketched
+ * out before tests are written to verify that behavior (and often, the before the behavior of
+ * the system being tested is itself implemented). Such sketches form a kind of specification of
+ * what tests and functionality to implement later.
+ * </p>
+ *
+ * <p>
+ * To support this style of testing, a test can be given a name that specifies one
+ * bit of behavior required by the system being tested. The test can also include some code that
+ * sends more information about the behavior to the reporter when the tests run. At the end of the test,
+ * it can call method <code>pending</code>, which will cause it to complete abruptly with <code>TestPendingException</code>.
+ * Because tests in ScalaTest can be designated as pending with <code>TestPendingException</code>, both the test name and any information
+ * sent to the reporter when running the test can appear in the report of a test run. (In other words,
+ * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
+ * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
+ * the actual test, and possibly the functionality, has not yet been implemented.
+ * </p>
+ *
+ * <p>
+ * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
+ * test name, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.Spec
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends Spec {
+ *
+ *   describe("A Stack") {
+ *
+ *     it("should pop values in last-in-first-out order") {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
+ * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).run()
+ * </pre>
+ *
+ * <p>
+ * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
+ * </p>
+ *
+ * <pre>
+ * A Stack 
+ * - should pop values in last-in-first-out order
+ * - should throw NoSuchElementException if an empty stack is popped (pending)
+ * </pre>
+ */
