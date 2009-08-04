@@ -25,6 +25,9 @@ import org.scalatest.events._
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
+ * (Note: In BDD, the word <em>example</em> is usually used instead of <em>test</em>. The word test will not appear
+ * in your code if you use <code>WordSpec</code>, so if you prefer the word <em>example</em> you can use it. However, in this documentation
+ * the word <em>test</em> will be used, for clarity and to be consistent with the rest of ScalaTest.)
  * Here's an example <code>Spec</code>:
  *
  * <pre>
@@ -54,14 +57,14 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * A <code>Spec</code> contains <em>describers</em> and <em>examples</em>. You define a describer
- * with <code>describe</code>, and a example with <code>it</code>. Both
+ * A <code>Spec</code> contains <em>describe clauses</em> and tests. You define a describe clause
+ * with <code>describe</code>, and a test with <code>it</code>. Both
  * <code>describe</code> and <code>it</code> are methods, defined in
  * <code>Spec</code>, which will be invoked
  * by the primary constructor of <code>StackSpec</code>. 
- * A describer names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
- * and testing. In the above example, "A Stack"
- * is the subject under specification and test. With each example you provide a string (the <em>spec text</em>) that specifies
+ * A describe clause names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
+ * and testing. In the previous example, "A Stack"
+ * is the subject under specification and test. With each test you provide a string (the <em>spec text</em>) that specifies
  * one bit of behavior of the subject, and a block of code that tests that behavior.
  * You place the spec text between the parentheses, followed by the test code between curly
  * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
