@@ -1,4 +1,6 @@
-In Spec, this needs to be changed to this. Because if the first thing inside a describe with
+Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.)
+
+In Spec (and probably at least WordSpec, and the fixture sisters) this needs to be changed to this. Because if the first thing inside a describe with
 tests is an info, then it was not printing anything out. May need to be more tricky than this too,
 but probably not. describe, info, info, describe, etc.
 
@@ -9,8 +11,6 @@ but probably not. describe, info, info, describe, etc.
             case _: DescriptionBranch =>  // Do nothing in this case (should never happen)
             case _ => sendInfoProvidedMessage()
           }
-
-
 
 Maybe throw StackDepthExceptions for any kind of error in test code.
 

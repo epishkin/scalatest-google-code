@@ -23,66 +23,75 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 
 /**
- * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
- * for &#8220;function.&#8221; Here's an example <code>FeatureSpec</code>:
+ * A suite of tests in which each test represents one <em>scenario</em> of a <em>feature</em>. 
+ * <code>FeatureSpec</code> is intended for writing tests that are "higher level" than unit tests, for example, integration
+ * tests, functional tests, and acceptance tests. You can use <code>FeatureSpec</code> for unit testing if you prefer, however.
+ * Here's an example:
  *
  * <pre>
  * import org.scalatest.FeatureSpec
+ * import org.scalatest.GivenWhenThen
  * import scala.collection.mutable.Stack
- *
- * class MyFeatureSpec extends FeatureSpec with GivenWhenThen {
- *
+ * 
+ * class StackFeatureSpec extends FeatureSpec with GivenWhenThen {
+ * 
  *   feature("The user can pop an element off the top of the stack") {
- *
+ * 
  *     info("As a programmer")
  *     info("I want to be able to pop items off the stack")
  *     info("So that I can get them in last-in-first-out order")
- *
+ * 
  *     scenario("pop is invoked on a non-empty stack") {
- *
+ * 
  *       given("a non-empty stack")
  *       val stack = new Stack[Int]
  *       stack.push(1)
  *       stack.push(2)
  *       val oldSize = stack.size
- *
+ * 
  *       when("when pop is invoked on the stack")
  *       val result = stack.pop()
- *
+ * 
  *       then("the most recently pushed element should be returned")
  *       assert(result === 2)
- *
+ * 
  *       and("the stack should have one less item than before")
  *       assert(stack.size === oldSize - 1)
  *     }
- *
+ * 
  *     scenario("pop is invoked on an empty stack") {
- *
+ * 
  *       given("an empty stack")
  *       val emptyStack = new Stack[String]
- *
+ * 
  *       when("when pop is invoked on the stack")
  *       then("NoSuchElementException should be thrown")
  *       intercept[NoSuchElementException] {
  *         emptyStack.pop()
  *       }
- *
+ * 
  *       and("the stack should still be empty")
- *       assert(stack.isEmpty)
+ *       assert(emptyStack.isEmpty)
  *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * &#8220;<code>test</code>&#8221; is a method, defined in <code>FeatureSpec</code>, which will be invoked
- * by the primary constructor of <code>MySuite</code>. You specify the name of the test as
- * a string between the parentheses, and the test code itself between curly braces.
- * The test code is a function passed as a by-name parameter to <code>test</code>, which registers
- * it for later execution. One benefit of <code>FeatureSpec</code> compared to <code>Suite</code> is you need not name all your
- * tests starting with &#8220;<code>test</code>.&#8221; In addition, you can more easily give long names to
- * your tests, because you need not encode them in camel case, as you must do
- * with test methods.
+ * A <code>FeatureSpec</code> contains <em>feature clauses</em> and <em>scenarios</em>. You define a feature clause
+ * with <code>feature</code>, and a scenario with <code>scenario</code>. Both
+ * <code>feature</code> and <code>scenario</code> are methods, defined in
+ * <code>FeatureSpec</code>, which will be invoked
+ * by the primary constructor of <code>StackFeatureSpec</code>. 
+ * A feature clause describes a feature of the <em>subject</em> (class or other entity) you are specifying
+ * and testing. In the previous example, 
+ * the subject under specification and test is a stack. The feature being specified and tested is 
+ * the ability for a user (a programmer in this case) to pop an element off the top of the stack. With each scenario you provide a
+ * string (the <em>spec text</em>) that specifies the behavior of the subject for
+ * one scenario in which the feature may be used, and a block of code that tests that behavior.
+ * You place the spec text between the parentheses, followed by the test code between curly
+ * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
+ * <code>scenario</code>, which will register the test for later execution.
  * </p>
  *
  * <p>
@@ -92,14 +101,52 @@ import org.scalatest.events._
  * </p>
  *
  * <p>
- * Tests can only be registered with the <code>test</code> method while the <code>FeatureSpec</code> is
- * in its registration phase. Any attempt to register a test after the <code>FeatureSpec</code> has
+ * Scenarios can only be registered with the <code>scenario</code> method while the <code>FeatureSpec</code> is
+ * in its registration phase. Any attempt to register a scenario after the <code>FeatureSpec</code> has
  * entered its ready phase, <em>i.e.</em>, after <code>run</code> has been invoked on the <code>FeatureSpec</code>,
  * will be met with a thrown <code>TestRegistrationClosedException</code>. The recommended style
  * of using <code>FeatureSpec</code> is to register tests during object construction as is done in all
  * the examples shown here. If you keep to the recommended style, you should never see a
  * <code>TestRegistrationClosedException</code>.
  * </p>
+ *
+ * <p>
+ * Each scenario represents one test. The name of the test is the spec text passed to the <code>scenario</code> method.
+ * The feature name does not appear as part of the test name. In a <code>FeatureSpec</code>, therefore, you must take care
+ * to ensure that each test has a unique name (in other words, that each <code>scenario</code> has unique spec text).
+ * </p>
+ *
+ * <p>
+ * When you run a <code>FeatureSpec</code>, it will send <code>Formatter</code>s in the events it sends to the
+ * <code>Reporter</code>. ScalaTest's built-in reporters will report these events in such a way
+ * that the output is easy to read as an informal specification of the <em>subject</em> being tested.
+ * For example, if you ran <code>StackFeatureSpec</code> from within the Scala interpreter:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackFeatureSpec).run()
+ * </pre>
+ *
+ * <p>
+ * You would see:
+ * </p>
+ *
+ * <pre>
+ * Feature: The user can pop an element off the top of the stack 
+ *   As a programmer 
+ *   I want to be able to pop items off the stack 
+ *   So that I can get them in last-in-first-out order 
+ *   Scenario: pop is invoked on a non-empty stack
+ *     Given a non-empty stack 
+ *     When when pop is invoked on the stack 
+ *     Then the most recently pushed element should be returned 
+ *     And the stack should have one less item than before 
+ *   Scenario: pop is invoked on an empty stack
+ *     Given an empty stack 
+ *     When when pop is invoked on the stack 
+ *     Then NoSuchElementException should be thrown 
+ *     And the stack should still be empty 
+ * </pre>
  *
  * <p>
  * <strong>Shared fixtures</strong>
