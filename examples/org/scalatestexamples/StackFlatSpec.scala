@@ -16,6 +16,7 @@
 package org.scalatestexamples
 
 import org.scalatest.FlatSpec
+import org.scalatestexamples.helpers.Stack
 
 class StackFlatSpec extends FlatSpec with StackFixtureCreationMethods with FlatStackBehaviors {
 

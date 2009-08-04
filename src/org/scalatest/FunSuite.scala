@@ -277,13 +277,12 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * import org.scalatest.fixture.FunSuite
- * import org.scalatest.fixture.SimpleWithFixture
+ * import org.scalatest.fixture.FixtureFunSuite
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FunSuite with SimpleWithFixture {
+ * class MySuite extends FixtureFunSuite {
  *
  *   type Fixture = FileReader
  *

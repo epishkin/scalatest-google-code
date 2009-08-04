@@ -4,7 +4,7 @@ Only allow ignore to replace it in FlatSpec tests that start with it. (45 min.)
 
 Rename ScalaCheck back to Checkers? (later)
 
-Do the "pending" thing in Formatter. So that I can turn the given when thens yellow that came from a pending test. (1 hour)
+Do the "pending" thing in InfoProvided. Probably just add a fromPendingTest Boolean to it. So that I can turn the given when thens yellow that came from a pending test. (1 hour)
 
 Text:
 Test fixtures:

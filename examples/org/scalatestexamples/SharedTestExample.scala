@@ -17,6 +17,7 @@ package org.scalatestexamples
 
 import org.scalatest.Spec
 import org.scalatest.BeforeAndAfter
+import org.scalatestexamples.helpers.Stack
 
 trait StackBehaviors extends BeforeAndAfter { this: Spec =>
 
