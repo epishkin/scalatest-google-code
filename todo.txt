@@ -1,3 +1,17 @@
+In Spec, this needs to be changed to this. Because if the first thing inside a describe with
+tests is an info, then it was not printing anything out. May need to be more tricky than this too,
+but probably not. describe, info, info, describe, etc.
+
+        if (desc.subNodes.isEmpty)
+          sendInfoProvidedMessage() 
+        else
+          desc.subNodes.reverse.head match {
+            case _: DescriptionBranch =>  // Do nothing in this case (should never happen)
+            case _ => sendInfoProvidedMessage()
+          }
+
+
+
 Maybe throw StackDepthExceptions for any kind of error in test code.
 
 Only allow ignore to replace it in FlatSpec tests that start with it. (45 min.)

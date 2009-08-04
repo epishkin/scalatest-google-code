@@ -1027,22 +1027,12 @@ trait FeatureSpec extends Suite { thisSuite =>
           // Call getPrefix and pass in this Desc, to get the full name
           val descriptionFullName = getPrefix(desc).trim
          
-
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
           report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
         }
         
-        // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
-        // it is a test, because otherwise we get a lame description that doesn't have any tests under it.
-        // But send it if the list is empty.
-        if (desc.subNodes.isEmpty)
-          sendInfoProvidedMessage() 
-        else
-          desc.subNodes.reverse.head match {
-            case ex: TestLeaf => sendInfoProvidedMessage()
-            case _ => // Do nothing in this case
-          }
+        sendInfoProvidedMessage()
 
       case _ =>
     }

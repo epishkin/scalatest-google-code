@@ -26,7 +26,7 @@ class StackFeatureSpec extends FeatureSpec with GivenWhenThen {
     info("As a programmer")
     info("I want to be able to pop items off the stack")
     info("So that I can get them in last-in-first-out order")
-
+  
     scenario("pop is invoked on a non-empty stack") {
 
       given("a non-empty stack")
