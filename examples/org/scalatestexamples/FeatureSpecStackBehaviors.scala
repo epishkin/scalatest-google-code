@@ -21,7 +21,7 @@ import org.scalatestexamples.helpers.Stack
 
 trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =>
 
-  def nonEmptyStack(createNonEmptyStack: () => Stack[Int], lastItemAdded: Int) {
+  def nonEmptyStack(createNonEmptyStack: => Stack[Int], lastItemAdded: Int) {
 
     scenario("empty is invoked on this non-empty stack: " + createNonEmptyStack().toString) {
 
@@ -62,7 +62,7 @@ trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =>
     }
   }
   
-  def nonFullStack(createNonFullStack: () => Stack[Int]) {
+  def nonFullStack(createNonFullStack: => Stack[Int]) {
       
     scenario("full is invoked on this non-full stack: " + createNonFullStack().toString) {
 

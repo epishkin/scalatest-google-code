@@ -24,20 +24,20 @@ class StackFeatureSpec extends FeatureSpec with GivenWhenThen with FeatureSpecSt
   // Stack fixture creation methods
   def emptyStack = new Stack[Int]
  
-  def fullStack() = {
+  def fullStack = {
     val stack = new Stack[Int]
     for (i <- 0 until stack.MAX)
       stack.push(i)
     stack
   }
  
-  def stackWithOneItem() = {
+  def stackWithOneItem = {
     val stack = new Stack[Int]
     stack.push(9)
     stack
   }
  
-  def stackWithOneItemLessThanCapacity() = {
+  def stackWithOneItemLessThanCapacity = {
     val stack = new Stack[Int]
     for (i <- 1 to 9)
       stack.push(i)
