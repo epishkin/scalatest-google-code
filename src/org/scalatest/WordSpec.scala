@@ -349,7 +349,7 @@ import org.scalatest.events._
  * import org.scalatest.WordSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends WordSpec
+ * class MySuite extends WordSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -393,7 +393,7 @@ import org.scalatest.events._
  * import org.scalatest.WordSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends Suite {
+ * class MySuite extends WordSpec {
  *
  *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
@@ -492,7 +492,7 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple with-fixture methods and
+ * If different tests in the same <code>Wordspec</code> require different fixtures, you can create multiple with-fixture methods and
  * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
  * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
  * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
@@ -917,7 +917,7 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * It will run both tests but report that <code>testSubtraction</code> is pending. You'll see:
+ * It will run both tests but report that <code>The Scala language should subtract correctly</code> is pending. You'll see:
  * </p>
  *
  * <pre>
@@ -1127,7 +1127,7 @@ import org.scalatest.events._
  * <p>
  * Another significant difference between a Specs <code>Specification</code> and a ScalaTest <code>WordSpec</code> is that Specs determines whether
  * a test is pending based on whether that test executes any "expectations" such as matcher expressions. Thus one side effect
- * of using a matcher expression is that a test is designated as <em>not</em> pending. One consequence of this design is that whereas you can use
+ * of using a matcher expression in Specs is that a test is designated as <em>not</em> pending. One consequence of this design is that whereas you can use
  * just about any way of writing assertions or expectations in ScalaTest (including JUnit assertions, Hamcrest matchers, any Java mocking framework,
  * and even Specs matchers themselves), you are restricted in Specs to only using expectations provided by Specs and mocking frameworks supported
  * by Specs if you also want to use the pending feature. If you try to use ScalaTest assertions or a mocking framework that Specs doesn't support, for example,

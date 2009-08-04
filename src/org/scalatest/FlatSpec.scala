@@ -22,67 +22,120 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
+
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
  * are combined with text that specifies the behavior the tests verify.
- * Here's an example <code>Spec</code>:
+ * (In BDD, the word <em>example</em> is usually used instead of <em>test</em>. The word test will not appear
+ * in your code if you use <code>FlatSpec</code>, so if you prefer the word <em>example</em> you can use it. However, in this documentation
+ * the word <em>test</em> will be used, for clarity and to be consistent with the rest of ScalaTest.)
+ * Trait <code>FlatSpec</code> is so named because
+ * your specification text and tests line up flat against the left-side indentation level, with no nesting needed.
+ * </p>
+ *
+ * <p>
+ * <code>FlatSpec</code>'s no-nesting approach contrasts with traits <code>Spec</code> and <code>WordSpec</code>, which use nesting
+ * to reduce duplication of specification text. Although nesting does have the advantage of reducing text duplication,
+ * figuring out the full specification text for one test can require back-tracking out of several levels of nesting, mentally prepending
+ * each fragment of text encountered. Thus the tradeoff with the nesting approach of <code>Spec</code> and <code>WordSpec</code> is that
+ * they have less duplicated text at the cost of being a bit challenging to read. Trait <code>FlatSpec</code> offers the opposite
+ * tradeoff. In a <code>FlatSpec</code> text is duplicated more, but figuring out the full specification text for a particular test is
+ * easier. Here's an example <code>FlatSpec</code>:
+ * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FlatSpec
  * import scala.collection.mutable.Stack
  *
- * class StackSpec extends Spec {
+ * class StackSpec extends FlatSpec {
  *
- *   describe("A Stack") {
+ *   behavior of "A Stack"
  *
- *     it("should pop values in last-in-first-out order") {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
+ *   it should "pop values in last-in-first-out order" in {
+ *     val stack = new Stack[Int]
+ *     stack.push(1)
+ *     stack.push(2)
+ *     assert(stack.pop() === 2)
+ *     assert(stack.pop() === 1)
+ *   }
  *
- *     it("should throw NoSuchElementException if an empty stack is popped") {
- *       val emptyStack = new Stack[String]
- *       intercept[NoSuchElementException] {
- *         emptyStack.pop()
- *       }
+ *   it should "throw NoSuchElementException if an empty stack is popped" in {
+ *     val emptyStack = new Stack[String]
+ *     intercept[NoSuchElementException] {
+ *       emptyStack.pop()
  *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * A <code>Spec</code> contains <em>describers</em> and <em>examples</em>. You define a describer
- * with <code>describe</code>, and a example with <code>it</code>. Both
- * <code>describe</code> and <code>it</code> are methods, defined in
- * <code>Spec</code>, which will be invoked
- * by the primary constructor of <code>StackSpec</code>. 
- * A describer names, or gives more information about, the <em>subject</em> (class or other entity) you are specifying
- * and testing. In the above example, "A Stack"
- * is the subject under specification and test. With each example you provide a string (the <em>spec text</em>) that specifies
- * one bit of behavior of the subject, and a block of code that tests that behavior.
- * You place the spec text between the parentheses, followed by the test code between curly
- * braces.  The test code will be wrapped up as a function passed as a by-name parameter to
- * <code>it</code>, which will register the test for later execution.
+ * Note: you can you <code>must</code> or <code>can</code> as well as <code>should</code> in a <code>FlatSpec</code>. For example, instead of
+ * <code>it should "pop</code>..., you could write <code>it must "pop</code>... or <code>it can "pop</code>....
  * </p>
  *
  * <p>
- * When you execute a <code>Spec</code>, it will send <code>SpecReport</code>s to the
- * <code>Reporter</code>. ScalaTest's built-in reporters will report these <code>SpecReports</code> in such a way
- * that the output is easy to read as an informal specification of the entity under test.
- * For example, if you ran <code>StackSpec</code> from within the Scala interpreter:
+ * By default a <code>FlatSpec</code> gives you no implicit conversions except the one for the <code>===</code> operator inherited from <code>Suite</code>.
+ * If you don't mind bringing in one more implicit conversion, you can mix in <code>ShouldVerb</code>, <code>MustVerb</code>, or <code>CanVerb</code> to
+ * enable the following shorthand syntax:
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * import org.scalatest.FlatSpec
+ * import scala.collection.mutable.Stack
+ * import org.scalatest.verb.ShouldVerb
+ *
+ * class StackSpec extends FlatSpec with ShouldVerb {
+ *
+ *   "A Stack" should "pop values in last-in-first-out order" in {
+ *     val stack = new Stack[Int]
+ *     stack.push(1)
+ *     stack.push(2)
+ *     assert(stack.pop() === 2)
+ *     assert(stack.pop() === 1)
+ *   }
+ *
+ *   it should "throw NoSuchElementException if an empty stack is popped" in {
+ *     val emptyStack = new Stack[String]
+ *     intercept[NoSuchElementException] {
+ *       emptyStack.pop()
+ *     }
+ *   }
+ * }
  * </pre>
  *
  * <p>
- * You would see:
+ * <code>ShouldMatchers</code> extends <code>ShouldVerb</code> (and likewise, <code>MustMatchers</code> extends <code>MustVerb</code>), so if you
+ * want to use ScalaTest's matchers DSL in a <code>FlatSpec</code> you can use the shorthand by default:
  * </p>
  *
+ * <pre>
+ * import org.scalatest.FlatSpec
+ * import scala.collection.mutable.Stack
+ * import org.scalatest.matchers.ShouldMatchers
+ *
+ * class StackSpec extends FlatSpec with ShouldMatchers {
+ *
+ *   "A Stack" should "pop values in last-in-first-out order" in {
+ *     val stack = new Stack[Int]
+ *     stack.push(1)
+ *     stack.push(2)
+ *     stack.pop() should equal (2)
+ *     stack.pop() should equal (1)
+ *   }
+ *
+ *   it should "throw NoSuchElementException if an empty stack is popped" in {
+ *     val emptyStack = new Stack[String]
+ *     intercept[NoSuchElementException] {
+ *       emptyStack.pop()
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Running any of the previous three versions of <code>StackSpec</code> in the Scala interpreter would yield:
+ * </p>
+ * 
  * <pre>
  * A Stack
  * - should pop values in last-in-first-out order
@@ -90,40 +143,83 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * <strong>Test fixtures</strong>
+ * In a <code>FlatSpec</code> you write a one (or more) sentence specification for each bit of behavior you wish to
+ * specify and test. Each specification sentence has a
+ * "subject," which is sometimes called the <em>system under test</em> (or SUT). The 
+ * subject is the entity being specified and tested and also serves as the subject of the sentences you write for each test.
+ * Often you will want to write multiple tests for the same subject. In a <code>FlatSpec</code>, you name the subject once,
+ * with a <code>behavior of</code> clause, then write tests for that subject with <code>it should</code>/<code>must</code><code>can "do something"</code> phrases.
+ * Each <code>it</code> refers to the most recently declared subject. For example, the four tests shown in this snippet are all testing
+ * a stack that contains one item:
+ * </p>
+ * 
+ * <pre>
+ * behavior of "A Stack (with one item)"
+ *
+ * it should "be non-empty" in {}
+ *
+ * it should "return the top item on peek" in {}
+ *
+ * it should "not remove the top item on peek" in {}
+ *
+ * it should "remove the top item on pop" in {}
+ * </pre>
+ * 
+ * <p>
+ * The same is true if the tests are written using the shorthand notation:
+ * </p>
+ *
+ * <pre>
+ * "A Stack (with one item)" should "be non-empty" in {}
+ *
+ * it should "return the top item on peek" in {}
+ *
+ * it should "not remove the top item on peek" in {}
+ *
+ * it should "remove the top item on pop" in {}
+ * </pre>
+ * 
+ * <p>
+ * In a <code>FlatSpec</code>, therefore, to figure out what "<code>it</code>" means, you just scan vertically until you find the most
+ * recent use of <code>behavior of</code> or the shorthand notation.
+ * </p>
+ *
+ * <p>
+ * <strong>Shared fixtures</strong>
  * </p>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
  * connections, etc.) used by tests to do their work. You can use fixtures in
- * <code>Spec</code>s with the same approaches suggested for <code>Suite</code> in
+ * <code>FlatSpec</code>s with the same approaches suggested for <code>Suite</code> in
  * its documentation. The same text that appears in the test fixture
  * section of <code>Suite</code>'s documentation is repeated here, with examples changed from
- * <code>Suite</code> to <code>Spec</code>.
+ * <code>Suite</code> to <code>FlatSpec</code>.
  * </p>
  *
  * <p>
  * If a fixture is used by only one test, then the definitions of the fixture objects should
  * be local to the test function, such as the objects assigned to <code>stack</code> and <code>emptyStack</code> in the
- * previous <code>StackSpec</code> examples. If multiple tests need to share a fixture, the best approach
+ * previous <code>StackSpec</code> examples. If multiple tests need to share an immutable fixture, one approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
  * to <code>shared</code> is used by multiple test functions:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.MustVerb
  *
- * class ArithmeticSpec extends Spec {
+ * class ArithmeticSpec extends FlatSpec with MustVerb {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
  *
- *   it("should add correctly") {
+ *  "The Scala language" must "add correctly" in {
  *     val sum = 2 + 3
  *     assert(sum === shared)
  *   }
  *
- *   it("should subtract correctly") {
+ *   it must "subtract correctly" in {
  *     val diff = 7 - 2
  *     assert(diff === shared)
  *   }
@@ -132,24 +228,25 @@ import org.scalatest.events._
  *
  * <p>
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
- * it needs to be recreated or reinitialized before each test. Shared resources such
+ * they need to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setup</code> and
- * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,
- * which will be described later, to implement an approach similar to JUnit's <code>setup</code>
+ * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
+ * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
+ * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
- * between tests. Before going that route, you should consider two approaches that
- * avoid <code>var</code>s. One approach is to write one or more "create" methods
- * that return a new instance of a needed object (or a tuple of new instances of
- * multiple objects) each time it is called. You can then call a create method at the beginning of each
- * test that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
+ * between tests. Before going that route, you should consider some approaches that
+ * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
+ * that return a new instance of a needed object (or a tuple or case class holding new instances of
+ * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
+ * test method that needs the fixture, storing the fixture object or objects in local variables. Here's an example:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FlatSpec
  * import scala.collection.mutable.ListBuffer
+ * import org.scalatest.verb.CanVerb
  *
- * class MySpec extends Spec {
+ * class MySuite extends FlatSpec with CanVerb {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -157,7 +254,7 @@ import org.scalatest.events._
  *     new ListBuffer[String]
  *   )
  *
- *   it("should mutate shared fixture objects") {
+ *  "ScalaTest" can "be easy " in {
  *     val (builder, lbuf) = createFixture
  *     builder.append("easy!")
  *     assert(builder.toString === "ScalaTest is easy!")
@@ -165,7 +262,7 @@ import org.scalatest.events._
  *     lbuf += "sweet"
  *   }
  *
- *   it("should get a fresh set of mutable fixture objects") {
+ *   it can "be fun" in {
  *     val (builder, lbuf) = createFixture
  *     builder.append("fun!")
  *     assert(builder.toString === "ScalaTest is fun!")
@@ -175,14 +272,23 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create "with" methods,
- * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the "with" method. Here's an example:
+ * If different tests in the same <code>FlatSpec</code> require different fixtures, you can create multiple create-fixture methods and
+ * call the method (or methods) needed by each test at the begining of the test.
  * </p>
- * <pre>
- * import org.scalatest.Spec
- * import scala.collection.mutable.ListBuffer
  *
- * class MySpec extends Spec {
+ * <p>
+ * Another approach to mutable fixture objects that avoids <code>var</code>s is to create <em>with-fixture</em> methods,
+ * and wrap test code in calls to the with-fixture
+ * method. The with-fixture method accepts a test function as a parameter, creates the fixture, invokes the test function, passing in the
+ * newly created fixture object or objects. If necessary, the with-fixture method can also perform any cleanup after the test function returns. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FlatSpec
+ * import scala.collection.mutable.ListBuffer
+ * import org.scalatest.verb.CanVerb
+ *
+ * class MySuite extends FlatSpec with CanVerb {
  *
  *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
@@ -194,42 +300,39 @@ import org.scalatest.events._
  *     testFunction(sb, lb)
  *   }
  *
- *   it("should mutate shared fixture objects") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("easy!")
- *         assert(builder.toString === "ScalaTest is easy!")
- *         assert(lbuf.isEmpty)
- *         lbuf += "sweet"
- *       }
+ *  "ScalaTest" can "be easy " in {
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(lbuf.isEmpty)
  *     }
  *   }
  *
- *   it("should get a fresh set of mutable fixture objects") {
- *     withFixture {
- *       (builder, lbuf) => {
- *         builder.append("fun!")
- *         assert(builder.toString === "ScalaTest is fun!")
- *         assert(lbuf.isEmpty)
- *       }
+ *   it can "be fun" in {
+ *     withFixture { (builder, lbuf) =>
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(lbuf.isEmpty)
+ *       lbuf += "sweet"
  *     }
  *   }
  * }
  * </pre>
  * 
- * One advantage of this approach compared to the create method approach shown previously is that
- * you can more easily perform cleanup after each test executes. For example, you
+ * One advantage of this approach compared to the create-fixture approach shown previously is that
+ * you can more easily perform cleanup after each test runs. For example, you
  * could create a temporary file before each test, and delete it afterwords, by
  * doing so before and after invoking the test function in a <code>withTempFile</code>
  * method. Here's an example:
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.ShouldVerb
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySpec extends Spec {
+ * class MySuite extends FlatSpec with ShouldVerb {
  * 
  *   def withTempFile(testFunction: FileReader => Unit) {
  * 
@@ -259,48 +362,112 @@ import org.scalatest.events._
  *     }
  *   }
  * 
- *   it("should read from a temp file") {
- *     withTempFile {
- *       (reader) => {
- *         var builder = new StringBuilder
- *         var c = reader.read()
- *         while (c != -1) {
- *           builder.append(c.toChar)
- *           c = reader.read()
- *         }
- *         assert(builder.toString === "Hello, test!")
+ *  "A FileReader" should "read in the contents of a file correctly" in {
+ *     withTempFile { (reader) =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
  *       }
+ *       assert(builder.toString === "Hello, test!")
  *     }
  *   }
  * 
- *   it("should read the first char of a temp file") {
- *     withTempFile {
- *       (reader) => {
- *         assert(reader.read() === 'H')
- *       }
+ *   it should "read in the first character of a file correctly" in {
+ *     withTempFile { (reader) =>
+ *       assert(reader.read() === 'H')
  *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * If you are more comfortable with reassigning instance variables, however, you can
- * instead use the <code>BeforeAndafter</code> trait, which provides
- * methods that will be run before and after each test. <code>BeforeAndAfter</code>'s
- * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
- * method after, each test (like JUnit's <code>setup</code>  and <code>tearDown</code>
- * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with <code>BeforeAndAfter</code>:
+ * If different tests in the same <code>FlatSpec</code> require different fixtures, you can create multiple with-fixture methods and
+ * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
+ * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
+ * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
+ * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
+ * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FixtureFlatSpec</code> behaves exactly like
+ * <code>org.scalatest.FlatSpec</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
+ * <a href="fixture/FixtureFlatSpec.html"><code>FixtureFlatSpec</code></a>. To get the idea, however, here's what the previous example would
+ * look like rewritten to use an <code>org.scalatest.fixture.FixtureFlatSpec</code>:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
- * import org.scalatest.BeforeAndAfter
+ * import org.scalatest.fixture.FixtureFlatSpec
+ * import org.scalatest.verb.ShouldVerb
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends FixtureFlatSpec with ShouldVerb {
+ *
+ *   type Fixture = FileReader
+ *
+ *   def withFixture(testFunction: TestFunction) {
+ *
+ *     val FileName = "TempFile.txt"
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *  "A FileReader" should "read in the contents of a file correctly" in { reader =>
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ * 
+ *   it should "read in the first character of a file correctly" in { reader =>
+ *     assert(reader.read() === 'H')
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you are more comfortable with reassigning instance variables, however, you can
+ * instead use the <code>BeforeAndAfterEach</code> trait, which provides
+ * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
+ * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
+ * methods, respectively). For example, here's how you'd write the previous
+ * test that uses a temp file with <code>BeforeAndAfterEach</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.ShouldVerb
+ * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySpec extends Spec with BeforeAndAfter {
+ * class MySuite extends FlatSpec with ShouldVerb with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -326,7 +493,7 @@ import org.scalatest.events._
  *     file.delete()
  *   }
  *
- *   it("should read from a temp file") {
+ *  "A FileReader" should "read in the contents of a file correctly" in {
  *     var builder = new StringBuilder
  *     var c = reader.read()
  *     while (c != -1) {
@@ -335,8 +502,8 @@ import org.scalatest.events._
  *     }
  *     assert(builder.toString === "Hello, test!")
  *   }
- *
- *   it("should read the first char of a temp file") {
+ * 
+ *   it should "read in the first character of a file correctly" in {
  *     assert(reader.read() === 'H')
  *   }
  * }
@@ -344,52 +511,329 @@ import org.scalatest.events._
  *
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
- * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
- * want to execute code before and after all tests (and nested suites) in a suite, such
+ * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * (It is worth noting that the only difference in the test code between the mutable
+ * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureFlatSpec</code>
+ * approach shown previously is that the <code>FixtureFlatSpec</code>'s test functions take a <code>FileReader</code> as
+ * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.)
+ * </p>
+ *
+ * <p>
+ * If you want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
- * methods of <code>BeforeAndAfter</code>. See the documentation for <code>BeforeAndAfter</code> for
+ * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
  * an example.
  * </p>
  *
  * <p>
- * <strong>Test groups</strong>
+ * <strong>Shared tests</strong>
  * </p>
  *
  * <p>
- * A <code>Spec</code>'s tests may be classified into named <em>groups</em>.
- * As with any suite, when executing a <code>Spec</code>, groups of tests can
- * optionally be included and/or excluded. To place <code>Spec</code> tests into
- * groups, you pass objects that extend abstract class <code>org.scalatest.Tag</code> to the methods
- * that register tests, <code>it</code> and <code>ignore</code>. Class <code>Tag</code> takes one parameter,
+ * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
+ * by different fixture objects.  To accomplish this in a <code>FlatSpec</code>, you first place shared tests in <em>behavior functions</em>.
+ * These behavior functions will be invoked during the construction phase of any <code>FlatSpec</code> that uses them, so that the tests they
+ * contain will be registered as tests in that <code>FlatSpec</code>.  For example, given this stack class:
+ * </p>
+ *
+ * <pre>
+ * import scala.collection.mutable.ListBuffer
+ * 
+ * class Stack[T] {
+ *
+ *   val MAX = 10
+ *   private var buf = new ListBuffer[T]
+ *
+ *   def push(o: T) {
+ *     if (!full)
+ *       o +: buf
+ *     else
+ *       throw new IllegalStateException("can't push onto a full stack")
+ *   }
+ *
+ *   def pop(): T = {
+ *     if (!empty)
+ *       buf.remove(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *
+ *   def peek: T = {
+ *     if (!empty)
+ *       buf(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *
+ *   def full: Boolean = buf.size == MAX
+ *   def empty: Boolean = buf.size == 0
+ *   def size = buf.size
+ *
+ *   override def toString = buf.mkString("Stack(", ", ", ")")
+ * }
+ * </pre>
+ *
+ * <p>
+ * You may want to test the <code>Stack</code> class in different states: empty, full, with one item, with one item less than capacity,
+ * <em>etc</em>. You may find you have several tests that make sense any time the stack is non-empty. Thus you'd ideally want to run
+ * those same tests for three stack fixture objects: a full stack, a stack with a one item, and a stack with one item less than
+ * capacity. With shared tests, you can factor these tests out into a behavior function, into which you pass the
+ * stack fixture to use when running the tests. So in your <code>FlatSpec</code> for stack, you'd invoke the
+ * behavior function three times, passing in each of the three stack fixtures so that the shared tests are run for all three fixtures. You
+ * can define a behavior function that encapsulates these shared tests inside the <code>FlatSpec</code> that uses them. If they are shared
+ * between different <code>FlatSpec</code>s, however, you could also define them in a separate trait that is mixed into each <code>FlatSpec</code>
+ * that uses them.
+ * </p>
+ *
+ * <p>
+ * <a name="StackBehaviors">For</a> example, here the <code>nonEmptyStack</code> behavior function (in this case, a behavior <em>method</em>) is
+ * defined in a trait along with another method containing shared tests for non-full stacks:
+ * </p>
+ * 
+ * <pre>
+ * trait StackBehaviors { this: FlatSpec =>
+ * 
+ *   def nonEmptyStack(stack: Stack[Int], lastItemAdded: Int) {
+ * 
+ *     it should "be non-empty" in {
+ *       assert(!stack.empty)
+ *     }  
+ * 
+ *     it should "return the top item on peek" in {
+ *       assert(stack.peek === lastItemAdded)
+ *     }
+ *   
+ *     it should "not remove the top item on peek" in {
+ *       val size = stack.size
+ *       assert(stack.peek === lastItemAdded)
+ *       assert(stack.size === size)
+ *     }
+ *   
+ *     it should "remove the top item on pop" in {
+ *       val size = stack.size
+ *       assert(stack.pop === lastItemAdded)
+ *       assert(stack.size === size - 1)
+ *     }
+ *   }
+ *   
+ *   def nonFullStack(stack: Stack[Int]) {
+ *       
+ *     it should "not be full" in {
+ *       assert(!stack.full)
+ *     }
+ *       
+ *     it should "add to the top on push" in {
+ *       val size = stack.size
+ *       stack.push(7)
+ *       assert(stack.size === size + 1)
+ *       assert(stack.peek === 7)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ *
+ * <p>
+ * Given these behavior functions, you could invoke them directly, but <code>FlatSpec</code> offers a DSL for the purpose,
+ * which looks like this:
+ * </p>
+ *
+ * <pre>
+ * it should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
+ * it should behave like nonFullStack(stackWithOneItem)
+ * </pre>
+ *
+ * <p>
+ * If you prefer to use an imperative style to change fixtures, for example by mixing in <code>BeforeAndAfterEach</code> and
+ * reassigning a <code>stack</code> <code>var</code> in <code>beforeEach</code>, you could write your behavior functions
+ * in the context of that <code>var</code>, which means you wouldn't need to pass in the stack fixture because it would be
+ * in scope already inside the behavior function. In that case, your code would look like this:
+ * </p>
+ *
+ * <pre>
+ * it should behave like nonEmptyStack // assuming lastValuePushed is also in scope inside nonEmptyStack
+ * it should behave like nonFullStack
+ * </pre>
+ *
+ * <p>
+ * The recommended style, however, is the functional, pass-all-the-needed-values-in style. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * class SharedTestExampleSpec extends FlatSpec with ShouldVerb with StackBehaviors {
+ * 
+ *   // Stack fixture creation methods
+ *   def emptyStack = new Stack[Int]
+ * 
+ *   def fullStack = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 0 until stack.MAX)
+ *       stack.push(i)
+ *     stack
+ *   }
+ * 
+ *   def stackWithOneItem = {
+ *     val stack = new Stack[Int]
+ *     stack.push(9)
+ *     stack
+ *   }
+ * 
+ *   def stackWithOneItemLessThanCapacity = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 1 to 9)
+ *       stack.push(i)
+ *     stack
+ *   }
+ * 
+ *   val lastValuePushed = 9
+ * 
+ *   "A Stack (when empty)" should "be empty" in {
+ *     assert(emptyStack.empty)
+ *   }
+ * 
+ *   it should "complain on peek" in {
+ *     intercept[IllegalStateException] {
+ *       emptyStack.peek
+ *     }
+ *   }
+ *
+ *   it should "complain on pop" in {
+ *     intercept[IllegalStateException] {
+ *       emptyStack.pop
+ *     }
+ *   }
+ * 
+ *   "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
+ *
+ *   it should behave like nonFullStack(stackWithOneItem)
+ *     
+ *   "A Stack (with one item less than capacity)" should behave like nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+ *
+ *   it should behave like nonFullStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+ * 
+ *   "A Stack (full)" should "be full" in {
+ *     assert(fullStack.full)
+ *   }
+ * 
+ *   it should behave like nonEmptyStack(fullStack, lastValuePushed)
+ * 
+ *   it should "complain on a push" in {
+ *     intercept[IllegalStateException] {
+ *       fullStack.push(10)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you load these classes into the Scala interpreter (with scalatest's JAR file on the class path), and execute it,
+ * you'll see:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).execute()
+ * A Stack (when empty) 
+ * - should be empty
+ * - should complain on peek
+ * - should complain on pop
+ * A Stack (with one item) 
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (with one item less than capacity) 
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should not be full
+ * - should add to the top on push
+ * A Stack (full) 
+ * - should be full
+ * - should be non-empty
+ * - should return the top item on peek
+ * - should not remove the top item on peek
+ * - should remove the top item on pop
+ * - should complain on a push
+ * </pre>
+ * 
+ * <p>
+ * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
+ * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
+ * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>FlatSpec</code> is to make sure
+ * each invocation of a behavior function is in the context of a different <code>behavior of</code> clause, which will prepend a string to each test name.
+ * For example, the following code in a <code>FlatSpec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
+ * </p>
+ *
+ * <pre>
+ *   behavior of "A Stack (when empty)"
+ *       
+ *   it should "be empty" in {
+ *     assert(emptyStack.empty)
+ *   }
+ *   // ...
+ * </pre>
+ *
+ * <p>
+ * Or, using the shorthand notation:
+ * </p>
+ *
+ * <pre>
+ *   "A Stack (when empty)" should "be empty" in {
+ *     assert(emptyStack.empty)
+ *   }
+ *   // ...
+ * </pre>
+ *
+ * <p>
+ * If the <code>"should be empty"</code> test was factored out into a behavior function, it could be called repeatedly so long
+ * as each invocation of the behavior function is in the context of a different <code>behavior of</code> clause.
+ * </p>
+ *
+ * <p>
+ * <strong>Tagging tests</strong>
+ * </p>
+ *
+ * A <code>FlatSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
+ * As with any suite, when executing a <code>FlatSpec</code>, groups of tests can
+ * optionally be included and/or excluded. To tag a <code>FlatSpec</code>'s tests,
+ * you pass objects that extend abstract class <code>org.scalatest.Tag</code> to <code>taggedAs</code> method
+ * invoked on the string that describes the test you want to tag. Class <code>Tag</code> takes one parameter,
  * a string name.  If you have
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
- * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
+ * then you will probably want to use group names on your <code>FlatSpec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
  * create matching groups for <code>Spec</code>s like this:
  * </p>
+ *
  * <pre>
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
  * object DBTest extends Tag("com.mycompany.groups.DBTest")
  * </pre>
+ *
  * <p>
- * Given these definitions, you could place <code>Spec</code> tests into groups like this:
+ * Given these definitions, you could place <code>FlatSpec</code> tests into groups like this:
  * </p>
+ *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.MustVerb
  *
- * class MySuite extends Spec {
+ * class MySuite extends FlatSpec with MustVerb {
  *
- *   it("should add correctly", SlowTest) {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
+ *   "The Scala language" must "add correctly" taggedAs(SlowTest) in {
+ *       val sum = 1 + 1
+ *       assert(sum === 2)
+ *       assert(sum + 2 === 4)
+ *     }
  *
- *   it("should subtract correctly", SlowTest, DBTest) {
+ *   it must "subtract correctly" taggedAs(SlowTest, DBTest) in {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *     assert(diff - 2 === 1)
@@ -398,39 +842,39 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group, 
- * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DBTest</code> group.
+ * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
+ * and test <code>"The Scala language should subtract correctly"</code> with the <code>com.mycompany.groups.DBTest</code> tag.
  * </p>
  *
  * <p>
- * The primary execute method takes two <code>Set[String]</code>s called <code>groupsToInclude</code> and
- * <code>groupsToExclude</code>. If <code>groupsToInclude</code> is empty, all tests will be executed
- * except those those belonging to groups listed in the
- * <code>groupsToExclude</code> <code>Set</code>. If <code>groupsToInclude</code> is non-empty, only tests
- * belonging to groups mentioned in <code>groupsToInclude</code>, and not mentioned in <code>groupsToExclude</code>,
- * will be executed.
+ * The primary <code>run</code> method takes a <code>Filter</code>, whose constructor takes an optional
+ * <code>Set[String]</code>s called <code>tagsToInclude</code> and a <code>Set[String]</code> called
+ * <code>tagsToExclude</code>. If <code>tagsToInclude</code> is <code>None</code>, all tests will be run
+ * except those those belonging to tags listed in the
+ * <code>tagsToExclude</code> <code>Set</code>. If <code>tagsToInclude</code> is defined, only tests
+ * belonging to tags mentioned in the <code>tagsToInclude</code> set, and not mentioned in <code>tagsToExclude</code>,
+ * will be run.
  * </p>
  *
  * <p>
  * <strong>Ignored tests</strong>
  * </p>
  *
- * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
- * good intention of resurrecting the test at a later time, <code>Spec</code> provides registration
- * methods that start with <code>ignore</code> instead of <code>it</code>. For example, to temporarily
- * disable the test with the name <code>"should pop values in last-in-first-out order"</code>, just change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * good intention of resurrecting the test at a later time, <code>FlatSpec</code> provides a method
+ * <code>ignore</code> that can be used instead of <code>it</code> to register a test. For example, to temporarily
+ * disable the test with the name <code>"A Stack should throw NoSuchElementException if an empty stack is popped"</code>, just
+ * change &#8220;<code>it</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.ShouldVerb
  * import scala.collection.mutable.Stack
  *
- * class StackSpec extends Spec {
+ * class StackSpec extends FlatSpec with ShouldVerb {
  *
- *   describe("A Stack") {
- *
- *     ignore("should pop values in last-in-first-out order") {
+ *   "A Stack" should "pop values in last-in-first-out order" in {
  *       val stack = new Stack[Int]
  *       stack.push(1)
  *       stack.push(2)
@@ -438,11 +882,59 @@ import org.scalatest.events._
  *       assert(stack.pop() === 1)
  *     }
  *
- *     it("should throw NoSuchElementException if an empty stack is popped") {
- *       val emptyStack = new Stack[String]
- *       intercept[NoSuchElementException] {
- *         emptyStack.pop()
- *       }
+ *   ignore should "throw NoSuchElementException if an empty stack is popped" in {
+ *     val emptyStack = new Stack[String]
+ *     intercept[NoSuchElementException] {
+ *       emptyStack.pop()
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this version of <code>StackSpec</code> with:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackSpec).run()
+ * </pre>
+ *
+ * <p>
+ * It will run only the first test and report that the second test was ignored:
+ * </p>
+ *
+ * <pre>
+ * A Stack
+ * - should pop values in last-in-first-out order
+ * - should throw NoSuchElementException if an empty stack is popped !!! IGNORED !!!
+ * </pre>
+ *
+ * <p>
+ * When using shorthand notation, you won't have an <code>it</code> to change into <code>ignore</code> for
+ * the first test of each new subject. To ignore such tests, you must instead change <code>in</code> to <code>ignore</code>.
+ * For example, to temporarily disable the test with the name <code>"A Stack should pop values in last-in-first-out order"</code>,
+ * change &#8220;<code>in</code>&#8221; into &#8220;<code>ignore</code>&#8221; like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.ShouldVerb
+ * import scala.collection.mutable.Stack
+ *
+ * class StackSpec extends FlatSpec with ShouldVerb {
+ *
+ *   "A Stack" should "pop values in last-in-first-out order" ignore {
+ *       val stack = new Stack[Int]
+ *       stack.push(1)
+ *       stack.push(2)
+ *       assert(stack.pop() === 2)
+ *       assert(stack.pop() === 1)
+ *     }
+ *
+ *   it should "throw NoSuchElementException if an empty stack is popped" in {
+ *     val emptyStack = new Stack[String]
+ *     intercept[NoSuchElementException] {
+ *       emptyStack.pop()
  *     }
  *   }
  * }
@@ -467,14 +959,108 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * As with <code>org.scalatest.Suite</code>, the ignore feature is implemented as a group. The
- * <code>execute</code> method that takes no parameters
- * adds <code>org.scalatest.Ignore</code> to the <code>groupsToExclude</code> <code>Set</code> it passes to
- * the primary <code>execute</code> method, as does <code>Runner</code>. The only difference between
- * <code>org.scalatest.Ignore</code> and the groups you may define and exclude is that ScalaTest reports
- * ignored tests to the <code>Reporter</code>. The reason ScalaTest reports ignored tests is as a feeble
- * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
+ * <strong>Informers</strong>
  * </p>
+ *
+ * <p>
+ * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.MustVerb
+ *
+ * class ArithmeticSpec extends FlatSpec with MustVerb {
+ *
+ *  "The Scala language" must "add correctly" in {
+ *     val sum = 2 + 3
+ *     assert(sum === 5)
+ *     info("addition seems to work")
+ *   }
+ *
+ *   it must "subtract correctly" in {
+ *     val diff = 7 - 2
+ *     assert(diff === 5)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this <code>FlatSpec</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ * </p>
+ *
+ * <pre>
+ * scala> (new ArithmeticSpec).run()
+ * The Scala language 
+ * - must add correctly
+ *   + addition seems to work 
+ * - must subtract correctly
+ * </pre>
+ *
+ * <p>
+ * One use case for the <code>Informer</code> is to pass more information about a specification to the reporter. For example,
+ * the <code>GivenWhenThen</code> trait provides methods that use the implicit <code>info</code> provided by <code>FlatSpec</code>
+ * to pass such information to the reporter. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.MustVerb
+ * import org.scalatest.GivenWhenThen
+ * 
+ * class ArithmeticSpec extends FlatSpec with MustVerb with GivenWhenThen {
+ * 
+ *  "The Scala language" must "add correctly" in { 
+ * 
+ *     given("two integers")
+ *     val x = 2
+ *     val y = 3
+ * 
+ *     when("they are added")
+ *     val sum = x + y
+ * 
+ *     then("the result is the sum of the two numbers")
+ *     assert(sum === 5)
+ *   }
+ * 
+ *   it must "subtract correctly" in {
+ * 
+ *     given("two integers")
+ *     val x = 7
+ *     val y = 2
+ * 
+ *     when("one is subtracted from the other")
+ *     val diff = x - y
+ * 
+ *     then("the result is the difference of the two numbers")
+ *     assert(diff === 5)
+ *   }
+ * }
+ * </pre>
+ *
+ * <pre>
+ * scala> (new ArithmeticSpec).run()
+ * The Scala language 
+ * - must add correctly
+ *   + Given two integers 
+ *   + When they are added 
+ *   + Then the result is the sum of the two numbers 
+ * - must subtract correctly
+ *   + Given two integers 
+ *   + When one is subtracted from the other 
+ *   + Then the result is the difference of the two numbers 
+ * </pre>
  *
  * <p>
  * <strong>Pending tests</strong>
@@ -497,55 +1083,91 @@ import org.scalatest.events._
  * sent to the reporter when running the test can appear in the report of a test run. (In other words,
  * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
  * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
- * the actual test, and possibly the functionality, has not yet been implemented.
- * </p>
- *
- * <p>
- * You can mark a test as pending in <code>Spec</code> by placing "<code>(pending)</code>" after the 
- * test name, like this:
+ * the actual test, and possibly the functionality it is intended to test, has not yet been implemented.
+ * You can mark tests as pending in <code>FlatSpec</code> like this:
  * </p>
  *
  * <pre>
- * import org.scalatest.Spec
- * import scala.collection.mutable.Stack
+ * import org.scalatest.FlatSpec
+ * import org.scalatest.verb.MustVerb
  *
- * class StackSpec extends Spec {
+ * class ArithmeticSpec extends FlatSpec with MustVerb {
  *
- *   describe("A Stack") {
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
  *
- *     it("should pop values in last-in-first-out order") {
- *       val stack = new Stack[Int]
- *       stack.push(1)
- *       stack.push(2)
- *       assert(stack.pop() === 2)
- *       assert(stack.pop() === 1)
- *     }
- *
- *     it("should throw NoSuchElementException if an empty stack is popped") (pending)
+ *  "The Scala language" must "add correctly" in {
+ *     val sum = 2 + 3
+ *     assert(sum === shared)
  *   }
+ *
+ *   it must "subtract correctly" is (pending)
  * }
  * </pre>
  *
  * <p>
- * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
- * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
- * If you run this version of <code>StackSpec</code> with:
+ * If you run this version of <code>ArithmeticSpec</code> with:
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new ArithmeticSpec).run()
  * </pre>
  *
  * <p>
- * It will run both tests, but report that the test named "<code>A stack should pop values in last-in-first-out order</code>" is pending. You'll see:
+ * It will run both tests but report that <code>The Scala language must subtract correctly</code> is pending. You'll see:
  * </p>
  *
  * <pre>
- * A Stack 
- * - should pop values in last-in-first-out order
- * - should throw NoSuchElementException if an empty stack is popped (pending)
+ * The Scala language
+ * - must add correctly
+ * - must subtract correctly (pending)
  * </pre>
  * 
+ * <p>
+ * One difference between an ignored test and a pending one is that an ignored test is intended to be used during a
+ * significant refactorings of the code under test, when tests break and you don't want to spend the time to fix
+ * all of them immediately. You can mark some of those broken tests as ignored temporarily, so that you can focus the red
+ * bar on just failing tests you actually want to fix immediately. Later you can go back and fix the ignored tests.
+ * In other words, by ignoring some failing tests temporarily, you can more easily notice failed tests that you actually
+ * want to fix. By contrast, a pending test is intended to be used before a test and/or the code under test is written.
+ * Pending indicates you've decided to write a test for a bit of behavior, but either you haven't written the test yet, or
+ * have only written part of it, or perhaps you've written the test but don't want to implement the behavior it tests
+ * until after you've implemented a different bit of behavior you realized you need first. Thus ignored tests are designed
+ * to facilitate refactoring of existing code whereas pending tests are designed to facilitate the creation of new code.
+ * </p>
+ *
+ * <p>
+ * One other difference between ignored and pending tests is that ignored tests are implemented as a test tag that is
+ * excluded by default. Thus an ignored test is never executed. By contrast, a pending test is implemented as a
+ * test that throws <code>TestPendingException</code> (which is what calling the <code>pending</code> method does). Thus
+ * the body of pending tests are executed up until they throw <code>TestPendingException</code>. The reason for this difference
+ * is that it enables your unfinished test to send <code>InfoProvided</code> messages to the reporter before it completes
+ * abruptly with <code>TestPendingException</code>, as shown in the previous example on <code>Informer</code>s
+ * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>FlatSpec</code>:
+ * </p>
+ *
+ * <pre>
+ *  "The Scala language" must "add correctly" in { 
+ *     given("two integers")
+ *     when("they are added")
+ *     then("the result is the sum of the two numbers")
+ *     pending
+ *   }
+ *   // ...
+ * </pre>
+ *
+ * <p>
+ * Would yield the following output when run in the interpreter:
+ * </p>
+ *
+ * <pre>
+ * The Scala language
+ * - must add correctly (pending)
+ *   + Given two integers 
+ *   + When they are added 
+ *   + Then the result is the sum of the two numbers 
+ * </pre>
+ *
  * @author Bill Venners
  */
 trait FlatSpec extends Suite { thisSuite =>

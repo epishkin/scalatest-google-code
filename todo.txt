@@ -1,3 +1,9 @@
+Make sure the shorthand form works for should behave like in FlatSpec
+
+Drop the "Fixture" from the front of nested classes in the org.scalatest.fixture trait.
+
+Only allow ignore to replace it in FlatSpec tests that start with it.
+
 Rename Checkers to ScalaCheck? Have Checkers extend ScalaCheck and deprecate Checkers for two releases.
 
 Do the "pending" thing in Formatter. So that I can turn the given when thens yellow that came from a pending test.
