@@ -17,47 +17,99 @@ package org.scalatestexamples
 
 import org.scalatest.FeatureSpec
 import org.scalatest.GivenWhenThen
-import scala.collection.mutable.Stack
+import org.scalatestexamples.helpers.Stack
 
-class StackFeatureSpec extends FeatureSpec with GivenWhenThen {
+class StackFeatureSpec extends FeatureSpec with GivenWhenThen with FeatureSpecStackBehaviors {
 
-  feature("The user can pop an element off the top of the stack") {
+  // Stack fixture creation methods
+  def emptyStack = new Stack[Int]
+ 
+  def fullStack() = {
+    val stack = new Stack[Int]
+    for (i <- 0 until stack.MAX)
+      stack.push(i)
+    stack
+  }
+ 
+  def stackWithOneItem() = {
+    val stack = new Stack[Int]
+    stack.push(9)
+    stack
+  }
+ 
+  def stackWithOneItemLessThanCapacity() = {
+    val stack = new Stack[Int]
+    for (i <- 1 to 9)
+      stack.push(i)
+    stack
+  }
+ 
+  val lastValuePushed = 9
+ 
+  feature("A Stack is pushed and popped") {
+ 
+    scenario("empty is invoked on an empty stack") {
 
-    info("As a programmer")
-    info("I want to be able to pop items off the stack")
-    info("So that I can get them in last-in-first-out order")
-  
-    scenario("pop is invoked on a non-empty stack") {
+      given("an empty stack")
+      val stack = emptyStack
 
-      given("a non-empty stack")
-      val stack = new Stack[Int]
-      stack.push(1)
-      stack.push(2)
-      val oldSize = stack.size
-
-      when("when pop is invoked on the stack")
-      val result = stack.pop()
-
-      then("the most recently pushed element should be returned")
-      assert(result === 2)
-
-      and("the stack should have one less item than before")
-      assert(stack.size === oldSize - 1)
+      when("empty is invoked on the stack")
+      then("empty returns true")
+      assert(stack.empty)
     }
+ 
+    scenario("peek is invoked on an empty stack") {
 
+      given("an empty stack")
+      val stack = emptyStack
+
+      when("peek is invoked on the stack")
+      then("peek throws IllegalStateException")
+      intercept[IllegalStateException] {
+        stack.peek
+      }
+    }
+ 
     scenario("pop is invoked on an empty stack") {
 
       given("an empty stack")
-      val emptyStack = new Stack[String]
+      val stack = emptyStack
 
-      when("when pop is invoked on the stack")
-      then("NoSuchElementException should be thrown")
-      intercept[NoSuchElementException] {
-        emptyStack.pop()
+      when("pop is invoked on the stack")
+      then("pop throws IllegalStateException")
+      intercept[IllegalStateException] {
+        emptyStack.pop
       }
+    }
+ 
+    scenariosFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
+    scenariosFor(nonFullStack(stackWithOneItem))
+ 
+    scenariosFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
+    scenariosFor(nonFullStack(stackWithOneItemLessThanCapacity))
+ 
+    scenario("full is invoked on a full stack") {
 
-      and("the stack should still be empty")
-      assert(emptyStack.isEmpty)
+      given("an full stack")
+      val stack = fullStack
+
+      when("full is invoked on the stack")
+      then("full returns true")
+      assert(stack.full)
+    }
+ 
+    scenariosFor(nonEmptyStack(fullStack, lastValuePushed))
+ 
+    scenario("push is invoked on a full stack") {
+
+      given("an full stack")
+      val stack = fullStack
+
+      when("push is invoked on the stack")
+      then("push throws IllegalStateException")
+      intercept[IllegalStateException] {
+        stack.push(10)
+      }
     }
   }
 }

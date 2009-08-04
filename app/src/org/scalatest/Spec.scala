@@ -534,7 +534,6 @@ import org.scalatest.events._
  * }
  * </pre>
  *
- *
  * <p>
  * Given these behavior functions, you could invoke them directly, but <code>Spec</code> offers a DSL for the purpose,
  * which looks like this:
