@@ -416,7 +416,9 @@ import org.scalatest.events._
  * an example.
  * </p>
  *
+ * <p>
  * <strong>Shared tests</strong>
+ * </p>
  *
  * <p>
  * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
@@ -659,10 +661,6 @@ import org.scalatest.events._
  * - should complain on a push
  * </pre>
  * 
- * <p>
- * <strong>Obtaining unique test names</strong>
- * </p>
- *
  * <p>
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime

@@ -400,7 +400,9 @@ import org.scalatest.events._
  * an example.
  * </p>
  *
+ * <p>
  * <strong>Shared tests</strong>
+ * </p>
  *
  * <p>
  * In a <code>FunSuite</code>
