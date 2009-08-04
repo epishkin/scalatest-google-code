@@ -738,7 +738,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       }
     }
 
-  protected class FixtureItWord {
+  protected class ItWord {
 
     /**
      * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
@@ -804,7 +804,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
     def must(behaveWord: FixureBehaveWord) = behaveWord
   }
 
-  protected val it = new FixtureItWord
+  protected val it = new ItWord
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
