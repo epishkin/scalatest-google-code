@@ -163,8 +163,8 @@ import org.scalatest.events._
  *
  * <p>
  * If a fixture is used by only one test, then the definitions of the fixture objects should
- * be local to the test function, such as the objects assigned to <code>sum</code> and <code>diff</code> in the
- * previous <code>MySuite</code> examples. If multiple tests need to share a fixture, the best approach
+ * be local to the test function, such as the objects assigned to <code>stack</code> and <code>emptyStack</code> in the
+ * previous <code>StackFeatureSpec</code> examples. If multiple tests need to share a fixture, the best approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
  * to <code>shared</code> is used by multiple test functions:
  * </p>
@@ -172,19 +172,22 @@ import org.scalatest.events._
  * <pre>
  * import org.scalatest.FeatureSpec
  *
- * class MySuite extends FeatureSpec {
+ * class ArithmeticFeatureSpec extends FeatureSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
  *
- *   test("addition") {
- *     val sum = 2 + 3
- *     assert(sum === shared)
- *   }
+ *   feature("Integer arithmetic") {
  *
- *   test("subtraction") {
- *     val diff = 7 - 2
- *     assert(diff === shared)
+ *     scenario("addition") {
+ *       val sum = 2 + 3
+ *       assert(sum === shared)
+ *     }
+ *
+ *     scenario("subtraction") {
+ *       val diff = 7 - 2
+ *       assert(diff === shared)
+ *     }
  *   }
  * }
  * </pre>
@@ -208,7 +211,7 @@ import org.scalatest.events._
  * import org.scalatest.FeatureSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends FeatureSpec {
+ * class MyFeatureSpec extends FeatureSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -216,19 +219,22 @@ import org.scalatest.events._
  *     new ListBuffer[String]
  *   )
  *
- *   test("easy") {
- *     val (builder, lbuf) = createFixture
- *     builder.append("easy!")
- *     assert(builder.toString === "ScalaTest is easy!")
- *     assert(lbuf.isEmpty)
- *     lbuf += "sweet"
- *   }
+ *   feature("The create-fixture approach") {
  *
- *   test("fun") {
- *     val (builder, lbuf) = createFixture
- *     builder.append("fun!")
- *     assert(builder.toString === "ScalaTest is fun!")
- *     assert(lbuf.isEmpty)
+ *     scenario("shared fixture objects are mutated by a test") {
+ *       val (builder, lbuf) = createFixture
+ *       builder.append("easy!")
+ *       assert(builder.toString === "ScalaTest is easy!")
+ *       assert(lbuf.isEmpty)
+ *       lbuf += "sweet"
+ *     }
+ *
+ *     scenario("test gets a fresh copy of the shared fixture") {
+ *       val (builder, lbuf) = createFixture
+ *       builder.append("fun!")
+ *       assert(builder.toString === "ScalaTest is fun!")
+ *       assert(lbuf.isEmpty)
+ *     }
  *   }
  * }
  * </pre>
@@ -248,7 +254,7 @@ import org.scalatest.events._
  * import org.scalatest.FeatureSpec
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends FeatureSpec {
+ * class FileIoFeatureSpec extends FeatureSpec {
  *
  *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
@@ -260,20 +266,23 @@ import org.scalatest.events._
  *     testFunction(sb, lb)
  *   }
  *
- *   test("easy") {
- *     withFixture { (builder, lbuf) =>
- *       builder.append("easy!")
- *       assert(builder.toString === "ScalaTest is easy!")
- *       assert(lbuf.isEmpty)
- *       lbuf += "sweet"
- *     }
- *   }
+ *   feature("The create-fixture approach") {
  *
- *   test("fun") {
- *     withFixture { (builder, lbuf) =>
- *       builder.append("fun!")
- *       assert(builder.toString === "ScalaTest is fun!")
- *       assert(lbuf.isEmpty)
+ *     scenario("shared fixture objects are mutated by a test") {
+ *       withFixture { (builder, lbuf) =>
+ *         builder.append("easy!")
+ *         assert(builder.toString === "ScalaTest is easy!")
+ *         assert(lbuf.isEmpty)
+ *         lbuf += "sweet"
+ *       }
+ *     }
+ *  
+ *     scenario("test gets a fresh copy of the shared fixture") {
+ *       withFixture { (builder, lbuf) =>
+ *         builder.append("fun!")
+ *         assert(builder.toString === "ScalaTest is fun!")
+ *         assert(lbuf.isEmpty)
+ *       }
  *     }
  *   }
  * }
@@ -291,7 +300,7 @@ import org.scalatest.events._
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FeatureSpec {
+ * class FileIoFeatureSpec extends FeatureSpec {
  * 
  *   def withTempFile(testFunction: FileReader => Unit) {
  * 
@@ -321,21 +330,24 @@ import org.scalatest.events._
  *     }
  *   }
  * 
- *   test("reading from the temp file") {
- *     withTempFile { (reader) =>
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
+ *   feature("Reading and writing files") {
+ *
+ *     scenario("reading from a temp file") {
+ *       withTempFile { (reader) =>
+ *         var builder = new StringBuilder
+ *         var c = reader.read()
+ *         while (c != -1) {
+ *           builder.append(c.toChar)
+ *           c = reader.read()
+ *         }
+ *         assert(builder.toString === "Hello, test!")
  *       }
- *       assert(builder.toString === "Hello, test!")
  *     }
- *   }
  * 
- *   test("first char of the temp file") {
- *     withTempFile { (reader) =>
- *       assert(reader.read() === 'H')
+ *     scenario("reading first char of a temp file") {
+ *       withTempFile { (reader) =>
+ *         assert(reader.read() === 'H')
+ *       }
  *     }
  *   }
  * }
@@ -391,25 +403,28 @@ import org.scalatest.events._
  *     }
  *   }
  * 
- *   test("reading from the temp file") { reader =>
- *     var builder = new StringBuilder
- *     var c = reader.read()
- *     while (c != -1) {
- *       builder.append(c.toChar)
- *       c = reader.read()
+ *   feature("Reading and writing files") {
+ *
+ *     scenario("reading from a temp file") { reader =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
  *     }
- *     assert(builder.toString === "Hello, test!")
- *   }
  * 
- *   test("first char of the temp file") { reader =>
- *     assert(reader.read() === 'H')
+ *     scenario("reading first char of a temp file") { reader =>
+ *       assert(reader.read() === 'H')
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
  * If you are more comfortable with reassigning instance variables, however, you can
- * instead use the <code>BeforeAndafter</code> trait, which provides
+ * instead use the <code>BeforeAndafterEach</code> trait, which provides
  * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
  * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
  * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
@@ -424,7 +439,7 @@ import org.scalatest.events._
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FeatureSpec with BeforeAndAfterEach {
+ * class FileIoFeatureSpec extends FeatureSpec with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -450,26 +465,36 @@ import org.scalatest.events._
  *     file.delete()
  *   }
  *
- *   test("reading from the temp file") {
- *     var builder = new StringBuilder
- *     var c = reader.read()
- *     while (c != -1) {
- *       builder.append(c.toChar)
- *       c = reader.read()
- *     }
- *     assert(builder.toString === "Hello, test!")
- *   }
+ *   feature("Reading and writing files") {
  *
- *   test("first char of the temp file") {
- *     assert(reader.read() === 'H')
+ *     scenario("reading from a temp file") {
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
+ *     }
+ *
+ *     scenario("reading first char of a temp file") {
+ *       assert(reader.read() === 'H')
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
- * it can be reinitialized between tests by the <code>beforeEach</code> method. If you
- * want to execute code before and after all tests (and nested suites) in a suite, such
+ * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * (It is worth noting that the only difference in the test code between the mutable
+ * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureFeatureSpec</code>
+ * approach shown previously is that the <code>FixtureFeatureSpec</code>'s test functions take a <code>FileReader</code> as
+ * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.)
+ * </p>
+ *
+ * <p>
+ * If you want to execute code before and after all tests (and nested suites) in a suite, such
  * as you could do with <code>@BeforeClass</code> and <code>@AfterClass</code>
  * annotations in JUnit 4, you can use the <code>beforeAll</code> and <code>afterAll</code>
  * methods of <code>BeforeAndAfterAll</code>. See the documentation for <code>BeforeAndAfterAll</code> for
