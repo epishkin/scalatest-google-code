@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-import matchers.{SubjectVerbStringTaggedAs, ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb, BehaveWord}
+import verb.{SubjectVerbStringTaggedAs, ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb, BehaveWord}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth

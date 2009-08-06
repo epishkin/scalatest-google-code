@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.matchers
+package org.scalatest.verb
 
-// Used to make an implicit conversion more specific. If there were ever another
-// implicit (String, String, () => Unit) lying around in scope, it would clash with
-// if the implicit was just based on that more general type. This is used in
-// ShouldVerb, MustVerb, and CanVerb.
-abstract class StringVerbBlockRegistration extends ((String, String, () => Unit) => Unit) {
-  def apply(string: String, verb: String, block: () => Unit)
-}
+class ResultOfAfterWordApplication(val text: String, val f: () => Unit)
 

@@ -18,7 +18,6 @@ package org.scalatest.prop
 import org.scalacheck._
 import Arbitrary._
 import Prop._
-import org.scalatest.prop.PropertyTestFailedException
 
 class CheckersSuite extends Suite with Checkers {
 
