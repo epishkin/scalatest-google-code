@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.matchers
+package org.scalatest.verb
 
 /**
  * Trait used to enable  syntax such as the following in a <code>FlatSpec</code> that

@@ -16,9 +16,9 @@
 package org.scalatest.fixture
 
 import org.scalatest.events.{TestStarting, TestFailed}
-import org.scalatest.matchers.ShouldVerb
-import org.scalatest.matchers.CanVerb
-import org.scalatest.matchers.MustVerb
+import org.scalatest.verb.ShouldVerb
+import org.scalatest.verb.CanVerb
+import org.scalatest.verb.MustVerb
 
 object SlowTest extends Tag("SlowTest")
 

@@ -350,7 +350,7 @@
             <suite classname="org.scalatest.concurrent.ConductorSuite" />
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
             <suite classname="org.scalatest.FlatSpecSpec" />
-            <suite classname="org.scalatest.matchers.CanVerbSuite" />
+            <suite classname="org.scalatest.verb.CanVerbSuite" />
             <suite classname="org.scalatest.fixture.FixtureFeatureSpecSuite" />
             <suite classname="org.scalatest.fixture.FixtureSpecSuite" />
             <suite classname="org.scalatest.fixture.FixtureWordSpecSuite" />

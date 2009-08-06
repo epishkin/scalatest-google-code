@@ -16,9 +16,9 @@
 package org.scalatest
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.matchers.ShouldVerb
-import org.scalatest.matchers.MustVerb
-import org.scalatest.matchers.CanVerb
+import org.scalatest.verb.ShouldVerb
+import org.scalatest.verb.MustVerb
+import org.scalatest.verb.CanVerb
 import org.scalatest.events._
 import org.scalatest.mytags._
 

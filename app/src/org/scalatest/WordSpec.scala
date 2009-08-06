@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-import matchers.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord,
+import verb.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord,
   MustVerb, StringVerbBlockRegistration}
 import NodeFamily._
 import scala.collection.immutable.ListSet

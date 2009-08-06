@@ -15,8 +15,8 @@
  */
 package org.scalatest
 
-
-import matchers.{ShouldMatchers, ShouldVerb}
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.verb.ShouldVerb
 
 class AmpersandWordSpec extends WordSpec with ShouldMatchers {
 
