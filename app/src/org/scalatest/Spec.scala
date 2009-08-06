@@ -708,7 +708,7 @@ import org.scalatest.events._
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
  * create matching groups for <code>Spec</code>s like this:
  * </p>
  *
@@ -716,7 +716,7 @@ import org.scalatest.events._
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DBTest extends Tag("com.mycompany.groups.DBTest")
+ * object DbTest extends Tag("com.mycompany.groups.DbTest")
  * </pre>
  *
  * <p>
@@ -734,7 +734,7 @@ import org.scalatest.events._
  *     assert(sum + 2 === 4)
  *   }
  *
- *   it("should subtract correctly", SlowTest, DBTest) {
+ *   it("should subtract correctly", SlowTest, DbTest) {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *     assert(diff - 2 === 1)
@@ -744,7 +744,7 @@ import org.scalatest.events._
  *
  * <p>
  * This code marks both tests with the <code>com.mycompany.groups.SlowTest</code> tag, 
- * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.groups.DBTest</code> tag.
+ * and test <code>"should subtract correctly"</code> with the <code>com.mycompany.groups.DbTest</code> tag.
  * </p>
  *
  * <p>

@@ -993,15 +993,15 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * One of the parameters to the primary <code>run</code> method is an <code>Informer</code>, which
+ * One of the parameters to the primary <code>run</code> method is an <code>Reporter</code>, which
  * will collect and report information about the running suite of tests.
  * Information about suites and tests that were run, whether tests succeeded or failed, 
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
  * Most often the reporting done by default by <code>Suite</code>'s methods will be sufficient, but
  * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test method.
  * For this purpose, you can optionally include an <code>Informer</code> parameter in a test method, and then
- * pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods. The <code>Informer</code>
- * will then pass the information to the <code>Reporter</code>'s <code>infoProvided</code> method.
+ * pass the extra information to the <code>Informer</code> via its <code>apply</code> method. The <code>Informer</code>
+ * will then pass the information to the <code>Reporter</code> by sending an <code>InfoProvided</code> event.
  * Here's an example:
  * </p>
  *

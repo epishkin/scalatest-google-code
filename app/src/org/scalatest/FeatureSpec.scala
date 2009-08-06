@@ -928,7 +928,7 @@ import org.scalatest.events._
  * then you will probably want to use group names on your <code>FeatureSpec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
  * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and
- * <code>com.mycompany.groups.DBTest</code>, then you could
+ * <code>com.mycompany.groups.DbTest</code>, then you could
  * create matching groups for <code>FeatureSpec</code>s like this:
  * </p>
  *
@@ -936,7 +936,7 @@ import org.scalatest.events._
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DBTest extends Tag("com.mycompany.groups.DBTest")
+ * object DbTest extends Tag("com.mycompany.groups.DbTest")
  * </pre>
  *
  * <p>
@@ -946,25 +946,29 @@ import org.scalatest.events._
  * <pre>
  * import org.scalatest.FeatureSpec
  *
- * class MySuite extends FeatureSpec {
+ * class ArithmeticFeatureSpec extends FeatureSpec {
  *
- *   test("addition", SlowTest) {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
  *
- *   test("subtraction", SlowTest, DBTest) {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *     assert(diff - 2 === 1)
+ *   feature("Integer arithmetic") {
+ *
+ *     scenario("addition", SlowTest) {
+ *       val sum = 2 + 3
+ *       assert(sum === shared)
+ *     }
+ *
+ *     scenario("subtraction", SlowTest, DbTest) {
+ *       val diff = 7 - 2
+ *       assert(diff === shared)
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
  * This code marks both tests, "addition" and "subtraction," with the <code>com.mycompany.groups.SlowTest</code> tag, 
- * and test "subtraction" with the <code>com.mycompany.groups.DBTest</code> tag.
+ * and test "subtraction" with the <code>com.mycompany.groups.DbTest</code> tag.
  * </p>
  *
  * <p>
@@ -984,35 +988,39 @@ import org.scalatest.events._
  * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
  * good intention of resurrecting the test at a later time, <code>FeatureSpec</code> provides registration
- * methods that start with <code>ignore</code> instead of <code>test</code>. For example, to temporarily
- * disable the test named <code>addition</code>, just change &#8220;<code>test</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
+ * methods that start with <code>ignore</code> instead of <code>scenario</code>. For example, to temporarily
+ * disable the test named <code>addition</code>, just change &#8220;<code>scenario</code>&#8221; into &#8220;<code>ignore</code>,&#8221; like this:
  * </p>
  *
  * <pre>
  * import org.scalatest.FeatureSpec
  *
- * class MySuite extends FeatureSpec {
+ * class ArithmeticFeatureSpec extends FeatureSpec {
  *
- *   ignore("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *   }
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
  *
- *   test("subtraction") {
- *     val diff = 4 - 1
- *     assert(diff === 3)
- *     assert(diff - 2 === 1)
+ *   feature("Integer arithmetic") {
+ *
+ *     ignore("addition") {
+ *       val sum = 2 + 3
+ *       assert(sum === shared)
+ *     }
+ *
+ *     scenario("subtraction") {
+ *       val diff = 7 - 2
+ *       assert(diff === shared)
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * If you run this version of <code>MySuite</code> with:
+ * If you run this version of <code>ArithmeticFeatureSpec</code> with:
  * </p>
  *
  * <pre>
- * scala> (new MySuite).run()
+ * scala> (new ArithmeticFeatureSpec).run()
  * </pre>
  *
  * <p>
@@ -1020,9 +1028,118 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * Test Ignored - MySuite: addition
- * Test Starting - MySuite: subtraction
- * Test Succeeded - MySuite: subtraction
+ * Feature: Integer arithmetic 
+ *   Scenario: addition !!! IGNORED !!!
+ *   Scenario: subtraction
+ * </pre>
+ *
+ * <p>
+ * <strong>Informers</strong>
+ * </p>
+ *
+ * <p>
+ * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
+ * will collect and report information about the running suite of tests.
+ * Information about suites and tests that were run, whether tests succeeded or failed, 
+ * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
+ * Most often the reporting done by default by <code>FeatureSpec</code>'s methods will be sufficient, but
+ * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
+ * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
+ * is provided via the <code>info</code> parameterless method.
+ * You can pass the extra information to the <code>Informer</code> via its <code>apply</code> method.
+ * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FeatureSpec
+ *
+ * class ArithmeticFeatureSpec extends FeatureSpec {
+ *
+ *   feature("Integer arithmetic") {
+ *
+ *     scenario("addition") {
+ *       val sum = 2 + 3
+ *       assert(sum === 5)
+ *       info("Addition seems to work")
+ *     }
+ *
+ *     scenario("subtraction") {
+ *       val diff = 7 - 2
+ *       assert(diff === 5)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * If you run this <code>ArithmeticFeatureSpec</code> from the interpreter, you will see the following message
+ * included in the printed report:
+ *
+ * <pre>
+ * Feature: Integer arithmetic 
+ *   Scenario: addition
+ *     Addition seems to work 
+ * </pre>
+ *
+ * <p>
+ * One use case for the <code>Informer</code> is to pass more information about a scenario to the reporter. For example,
+ * the <code>GivenWhenThen</code> trait provides methods that use the implicit <code>info</code> provided by <code>FeatureSpec</code>
+ * to pass such information to the reporter. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FeatureSpec
+ * import org.scalatest.GivenWhenThen
+ * 
+ * class ArithmeticSpec extends FeatureSpec with GivenWhenThen {
+ * 
+ *   feature("Integer arithmetic") {
+ *
+ *     scenario("addition") {
+ * 
+ *       given("two integers")
+ *       val x = 2
+ *       val y = 3
+ * 
+ *       when("they are added")
+ *       val sum = x + y
+ * 
+ *       then("the result is the sum of the two numbers")
+ *       assert(sum === 5)
+ *     }
+ *
+ *     scenario("subtraction") {
+ * 
+ *       given("two integers")
+ *       val x = 7
+ *       val y = 2
+ * 
+ *       when("one is subtracted from the other")
+ *       val diff = x - y
+ * 
+ *       then("the result is the difference of the two numbers")
+ *       assert(diff === 5)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you run this <code>FeatureSpec</code> from the interpreter, you will see the following messages
+ * included in the printed report:
+ * </p>
+ *
+ * <pre>
+ * scala> (new ArithmeticFeatureSpec).run()
+ * Feature: Integer arithmetic 
+ *   Scenario: addition
+ *     Given two integers 
+ *     When they are added 
+ *     Then the result is the sum of the two numbers 
+ *   Scenario: subtraction
+ *     Given two integers 
+ *     When one is subtracted from the other 
+ *     Then the result is the difference of the two numbers 
  * </pre>
  *
  * <p>
@@ -1047,36 +1164,37 @@ import org.scalatest.events._
  * the code of a pending test is executed just like any other test.) However, because the test completes abruptly
  * with <code>TestPendingException</code>, the test will be reported as pending, to indicate
  * the actual test, and possibly the functionality, has not yet been implemented.
- * </p>
- *
- * <p>
- * Although pending tests may be used more often in specification-style suites, such as
- * <code>org.scalatest.Spec</code>, you can also use it in <code>FeatureSpec</code>, like this:
+ * You can mark tests as pending in a <code>FeatureSpec</code> like this:
  * </p>
  *
  * <pre>
  * import org.scalatest.FeatureSpec
  *
- * class MySuite extends FeatureSpec {
+ * class ArithmeticFeatureSpec extends FeatureSpec {
  *
- *   def test("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
+ *   // Sharing fixture objects via instance variables
+ *   val shared = 5
+ *
+ *   feature("Integer arithmetic") {
+ *
+ *     scenario("addition") {
+ *       val sum = 2 + 3
+ *       assert(sum === shared)
+ *     }
+ *
+ *     scenario("subtraction") (pending)
  *   }
- *
- *   def test("subtraction") (pending)
  * }
  * </pre>
  *
  * <p>
  * (Note: "<code>(pending)</code>" is the body of the test. Thus the test contains just one statement, an invocation
  * of the <code>pending</code> method, which throws <code>TestPendingException</code>.)
- * If you run this version of <code>MySuite</code> with:
+ * If you run this version of <code>ArithmeticFeatureSpec</code> with:
  * </p>
  *
  * <pre>
- * scala> (new MySuite).run()
+ * scala> (new ArithmeticFeatureSpec).run()
  * </pre>
  *
  * <p>
@@ -1084,51 +1202,56 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * Test Starting - MySuite: addition
- * Test Succeeded - MySuite: addition
- * Test Starting - MySuite: subtraction
- * Test Pending - MySuite: subtraction
+ * Feature: Integer arithmetic 
+ *   Scenario: addition
+ *   Scenario: subtraction (pending)
  * </pre>
  * 
  * <p>
- * <strong>Informers</strong>
+ * One difference between an ignored test and a pending one is that an ignored test is intended to be used during a
+ * significant refactorings of the code under test, when tests break and you don't want to spend the time to fix
+ * all of them immediately. You can mark some of those broken tests as ignored temporarily, so that you can focus the red
+ * bar on just failing tests you actually want to fix immediately. Later you can go back and fix the ignored tests.
+ * In other words, by ignoring some failing tests temporarily, you can more easily notice failed tests that you actually
+ * want to fix. By contrast, a pending test is intended to be used before a test and/or the code under test is written.
+ * Pending indicates you've decided to write a test for a bit of behavior, but either you haven't written the test yet, or
+ * have only written part of it, or perhaps you've written the test but don't want to implement the behavior it tests
+ * until after you've implemented a different bit of behavior you realized you need first. Thus ignored tests are designed
+ * to facilitate refactoring of existing code whereas pending tests are designed to facilitate the creation of new code.
  * </p>
  *
  * <p>
- * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
- * will collect and report information about the running suite of tests.
- * Information about suites and tests that were run, whether tests succeeded or failed, 
- * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
- * Most often the reporting done by default by <code>FeatureSpec</code>'s methods will be sufficient, but
- * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
- * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
- * is provided via the <code>info</code> parameterless method.
- * You can pass the extra information to the <code>Informer</code> via one of its <code>apply</code> methods.
- * The <code>Informer</code> will then pass the information to the <code>Reporter</code> via an <code>InfoProvided</code> event.
- * Here's an example:
+ * One other difference between ignored and pending tests is that ignored tests are implemented as a test tag that is
+ * excluded by default. Thus an ignored test is never executed. By contrast, a pending test is implemented as a
+ * test that throws <code>TestPendingException</code> (which is what calling the <code>pending</code> method does). Thus
+ * the body of pending tests are executed up until they throw <code>TestPendingException</code>. The reason for this difference
+ * is that it enables your unfinished test to send <code>InfoProvided</code> messages to the reporter before it completes
+ * abruptly with <code>TestPendingException</code>, as shown in the previous example on <code>Informer</code>s
+ * that used the <code>GivenWhenThen</code> trait. For example, the following snippet in a <code>FeatureSpec</code>:
  * </p>
  *
  * <pre>
- * import org.scalatest.FeatureSpec
+ *   feature("Integer arithmetic") {
  *
- * class MySuite extends FeatureSpec {
- *
- *   test("addition") {
- *     val sum = 1 + 1
- *     assert(sum === 2)
- *     assert(sum + 2 === 4)
- *     info("Addition seems to work")
- *   }
- * }
+ *     scenario("addition") {
+ *       given("two integers")
+ *       when("they are added")
+ *       then("the result is the sum of the two numbers")
+ *       pending
+ *     }
+ *     // ...
  * </pre>
  *
- * If you run this <code>Suite</code> from the interpreter, you will see the following message
- * included in the printed report:
+ * <p>
+ * Would yield the following output when run in the interpreter:
+ * </p>
  *
  * <pre>
- * Test Starting - MySuite: addition
- * Info Provided - MySuite.addition: Addition seems to work
- * Test Succeeded - MySuite: addition
+ * Feature: Integer arithmetic 
+ *   Scenario: addition (pending)
+ *     Given two integers 
+ *     When they are added 
+ *     Then the result is the sum of the two numbers 
  * </pre>
  *
  * @author Bill Venners
@@ -2096,14 +2219,14 @@ trait FeatureSpec extends Suite { thisSuite =>
  * created Java annotation interfaces for use as group names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you will probably want to use group names on your <code>Spec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interfaces to the <code>Tag</code> constructor. For example, if you've
- * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DBTest</code>, then you could
+ * defined Java annotation interfaces with fully qualified names, <code>com.mycompany.groups.SlowTest</code> and <code>com.mycompany.groups.DbTest</code>, then you could
  * create matching groups for <code>Spec</code>s like this:
  * </p>
  * <pre>
  * import org.scalatest.Tag
  *
  * object SlowTest extends Tag("com.mycompany.groups.SlowTest")
- * object DBTest extends Tag("com.mycompany.groups.DBTest")
+ * object DbTest extends Tag("com.mycompany.groups.DbTest")
  * </pre>
  * <p>
  * Given these definitions, you could place <code>Spec</code> tests into groups like this:
@@ -2119,7 +2242,7 @@ trait FeatureSpec extends Suite { thisSuite =>
  *     assert(sum + 2 === 4)
  *   }
  *
- *   it("should subtract correctly", SlowTest, DBTest) {
+ *   it("should subtract correctly", SlowTest, DbTest) {
  *     val diff = 4 - 1
  *     assert(diff === 3)
  *     assert(diff - 2 === 1)
@@ -2129,7 +2252,7 @@ trait FeatureSpec extends Suite { thisSuite =>
  *
  * <p>
  * This code places both tests into the <code>com.mycompany.groups.SlowTest</code> group, 
- * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DBTest</code> group.
+ * and test <code>"should subtract correctly"</code> into the <code>com.mycompany.groups.DbTest</code> group.
  * </p>
  *
  * <p>
