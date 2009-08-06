@@ -15,12 +15,12 @@
  */
 package org.scalatest.matchers
 
-import org.scalatest.scalacheck.ScalaCheck
+import org.scalatest.prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldLengthSpec extends Spec with ShouldMatchers with ScalaCheck with ReturnsNormallyThrowsAssertion {
+class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for a specific length
   describe("The 'have length (Int)' syntax") {

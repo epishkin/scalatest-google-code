@@ -27,6 +27,13 @@ import FixtureSuite.simpleNameForTest
 import FixtureSuite.argsArrayForTestName
 import org.scalatest.events._
 
+/**
+ * Suite in which a fixture object is passed into each test.
+ *
+ * <p>
+ * Subclasses must define the type of the fixture object by specifying type <code>Fixture</code>.
+ * </p>
+ */
 trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   protected type Fixture

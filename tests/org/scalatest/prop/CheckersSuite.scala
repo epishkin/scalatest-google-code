@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.scalacheck
+package org.scalatest.prop
 
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 import org.scalatest.prop.PropertyTestFailedException
 
-class ScalaCheckSuite extends Suite with ScalaCheck {
+class CheckersSuite extends Suite with Checkers {
 
   def testCheckProp() {
 

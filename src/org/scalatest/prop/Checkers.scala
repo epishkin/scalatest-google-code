@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.scalacheck
+package org.scalatest.prop
 
 import org.scalatest.Suite
 import org.scalacheck.Arbitrary
@@ -22,7 +22,6 @@ import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
-import org.scalatest.prop.PropertyTestFailedException
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
@@ -37,11 +36,11 @@ import org.scalatest.prop.PropertyTestFailedException
  * </p>
  * <pre>
  * import org.scalatest.junit.JUnitSuite
- * import org.scalatest.ScalaCheck
+ * import org.scalatest.prop.Checkers
  * import org.scalacheck.Arbitrary._
  * import org.scalacheck.Prop._
  *
- * class MySuite extends JUnitSuite with ScalaCheck {
+ * class MySuite extends JUnitSuite with Checkers {
  *   @Test
  *   def testConcat() {
  *     check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
@@ -49,7 +48,7 @@ import org.scalatest.prop.PropertyTestFailedException
  * }
  * </pre>
  * <p>
- * The <code>check</code> method, defined in <code>ScalaCheck</code>, makes it easy to write property-based tests inside
+ * The <code>check</code> method, defined in <code>Checkers</code>, makes it easy to write property-based tests inside
  * ScalaTest, JUnit, and TestNG test suites. This example specifies a property that <code>List</code>'s <code>:::</code> method
  * should obey. ScalaCheck properties are expressed as function values that take the required
  * test data as parameters. ScalaCheck will generate test data using generators and 
@@ -74,14 +73,14 @@ repeatedly pass generated data to the function. In this case, the test data is c
  * </p>
  *
  * <p>
- * To execute a suite that mixes in <code>ScalaCheck</code> with ScalaTest's <code>Runner</code>, you must include ScalaCheck's jar file on the class path or runpath.
- * This version of <code>ScalaCheck</code> was tested with ScalaCheck version 1.1.1. This trait must
+ * To execute a suite that mixes in <code>Checkers</code> with ScalaTest's <code>Runner</code>, you must include ScalaCheck's jar file on the class path or runpath.
+ * This version of <code>Checkers</code> was tested with ScalaCheck version 1.1.1. This trait must
  * be mixed into a ScalaTest <code>Suite</code>, because its self type is <code>org.scalatest.Suite</code>.
  * </p>
  *
  * @author Bill Venners
  */
-trait ScalaCheck {
+trait Checkers {
 
   this: Suite =>
 

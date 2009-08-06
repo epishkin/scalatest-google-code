@@ -1,12 +1,12 @@
 package org.scalatest.events
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.scalacheck.ScalaCheck
+import org.scalatest.prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class OrdinalSpec extends Spec with ShouldMatchers with ScalaCheck {
+class OrdinalSpec extends Spec with ShouldMatchers with Checkers {
 
   describe("An Ordinal") {
 

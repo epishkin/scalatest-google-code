@@ -3,7 +3,7 @@ Add pendingUntilFixed to Suite.
 Make sure all the SharedBehavior examples use by-name parameters to pass a stack creation function in, because
 that object is mutable. Also add a little bit of text to the docs to point out that immutable things can be
 simply passed in, but mutable ones need to be passed in as a function that can be called (most likely a by-name
-parmeter is most appropriate, as is used here.)
+parameter is most appropriate, as is used here.)
 
 Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.)
 
