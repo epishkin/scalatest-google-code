@@ -571,32 +571,81 @@ import org.scalatest.events._
  * </p>
  * 
  * <pre>
- * trait StackBehaviors { this: FeatureSpec =>
+ * import org.scalatest.FeatureSpec
+ * import org.scalatest.GivenWhenThen
+ * import org.scalatestexamples.helpers.Stack
  * 
- *   def nonEmptyStack(lastItemAdded: Int)(createStack: () => Stack[Int]) {
+ * trait FeatureSpecStackBehaviors { this: FeatureSpec with GivenWhenThen =>
  * 
- *     scenario(stack.toString + " is non-empty") {
+ *   def nonEmptyStack(createNonEmptyStack: => Stack[Int], lastItemAdded: Int) {
+ * 
+ *     scenario("empty is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
+ * 
+ *       given("a non-empty stack")
+ *       val stack = createNonEmptyStack
+ * 
+ *       when("empty is invoked on the stack")
+ *       then("empty returns false")
  *       assert(!stack.empty)
- *     }  
- * 
- *     scenario(stack.toString + " returns the top item on peek") {
- *       assert(stack.peek === lastItemAdded)
  *     }
- *   
- *     scenario(stack.toString + " does not remove the top item on peek") {
+ * 
+ *     scenario("peek is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
+ * 
+ *       given("a non-empty stack")
+ *       val stack = createNonEmptyStack
  *       val size = stack.size
+ * 
+ *       when("peek is invoked on the stack")
+ *       then("peek returns the last item added")
  *       assert(stack.peek === lastItemAdded)
+ * 
+ *       and("the size of the stack is the same as before")
  *       assert(stack.size === size)
  *     }
- *   
- *     scenario(stack.toString + " removes the top item on pop") {
+ * 
+ *     scenario("pop is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
+ * 
+ *       given("a non-empty stack")
+ *       val stack = createNonEmptyStack
  *       val size = stack.size
+ * 
+ *       when("pop is invoked on the stack")
+ *       then("pop returns the last item added")
  *       assert(stack.pop === lastItemAdded)
+ * 
+ *       and("the size of the stack one less than before")
  *       assert(stack.size === size - 1)
  *     }
  *   }
  *   
- *   // ...
+ *   def nonFullStack(createNonFullStack: => Stack[Int]) {
+ *       
+ *     scenario("full is invoked on this non-full stack: " + createNonFullStack.toString) {
+ * 
+ *       given("a non-full stack")
+ *       val stack = createNonFullStack
+ * 
+ *       when("full is invoked on the stack")
+ *       then("full returns false")
+ *       assert(!stack.full)
+ *     }
+ *       
+ *     scenario("push is invoked on this non-full stack: " + createNonFullStack.toString) {
+ * 
+ *       given("a non-full stack")
+ *       val stack = createNonFullStack
+ *       val size = stack.size
+ * 
+ *       when("push is invoked on the stack")
+ *       stack.push(7)
+ * 
+ *       then("the size of the stack is one greater than before")
+ *       assert(stack.size === size + 1)
+ * 
+ *       and("the top of the stack contains the pushed value")
+ *       assert(stack.peek === 7)
+ *     }
+ *   }
  * }
  * </pre>
  *
@@ -627,66 +676,100 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * class SharedTestExampleSpec extends FeatureSpec with StackBehaviors {
+ * import org.scalatest.FeatureSpec
+ * import org.scalatest.GivenWhenThen
+ * import org.scalatestexamples.helpers.Stack
+ * 
+ * class StackFeatureSpec extends FeatureSpec with GivenWhenThen with FeatureSpecStackBehaviors {
  * 
  *   // Stack fixture creation methods
  *   def emptyStack = new Stack[Int]
- * 
+ *  
  *   def fullStack = {
  *     val stack = new Stack[Int]
  *     for (i <- 0 until stack.MAX)
  *       stack.push(i)
  *     stack
  *   }
- * 
+ *  
  *   def stackWithOneItem = {
  *     val stack = new Stack[Int]
  *     stack.push(9)
  *     stack
  *   }
- * 
+ *  
  *   def stackWithOneItemLessThanCapacity = {
  *     val stack = new Stack[Int]
  *     for (i <- 1 to 9)
  *       stack.push(i)
  *     stack
  *   }
- * 
+ *  
  *   val lastValuePushed = 9
- * 
+ *  
  *   feature("A Stack is pushed and popped") {
- * 
+ *  
  *     scenario("empty is invoked on an empty stack") {
- *       assert(emptyStack.empty)
- *     }
  * 
+ *       given("an empty stack")
+ *       val stack = emptyStack
+ * 
+ *       when("empty is invoked on the stack")
+ *       then("empty returns true")
+ *       assert(stack.empty)
+ *     }
+ *  
  *     scenario("peek is invoked on an empty stack") {
+ * 
+ *       given("an empty stack")
+ *       val stack = emptyStack
+ * 
+ *       when("peek is invoked on the stack")
+ *       then("peek throws IllegalStateException")
  *       intercept[IllegalStateException] {
- *         emptyStack.peek
+ *         stack.peek
  *       }
  *     }
- * 
+ *  
  *     scenario("pop is invoked on an empty stack") {
+ * 
+ *       given("an empty stack")
+ *       val stack = emptyStack
+ * 
+ *       when("pop is invoked on the stack")
+ *       then("pop throws IllegalStateException")
  *       intercept[IllegalStateException] {
  *         emptyStack.pop
  *       }
  *     }
- * 
+ *  
  *     scenariosFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
  *     scenariosFor(nonFullStack(stackWithOneItem))
- *     
+ *  
  *     scenariosFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
- *     scenariosFor(nonFullStack(stackWithOneItemLessThanCapacity, lastValuePushed))
- * 
+ *     scenariosFor(nonFullStack(stackWithOneItemLessThanCapacity))
+ *  
  *     scenario("full is invoked on a full stack") {
- *       assert(fullStack.full)
+ * 
+ *       given("an full stack")
+ *       val stack = fullStack
+ * 
+ *       when("full is invoked on the stack")
+ *       then("full returns true")
+ *       assert(stack.full)
  *     }
- * 
+ *  
  *     scenariosFor(nonEmptyStack(fullStack, lastValuePushed))
- * 
+ *  
  *     scenario("push is invoked on a full stack") {
+ * 
+ *       given("an full stack")
+ *       val stack = fullStack
+ * 
+ *       when("push is invoked on the stack")
+ *       then("push throws IllegalStateException")
  *       intercept[IllegalStateException] {
- *         fullStack.push(10)
+ *         stack.push(10)
  *       }
  *     }
  *   }
@@ -699,53 +782,104 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).execute()
- * A Stack (when empty) 
- * - should be empty
- * - should complain on peek
- * - should complain on pop
- * A Stack (with one item) 
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should not be full
- * - should add to the top on push
- * A Stack (with one item less than capacity) 
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should not be full
- * - should add to the top on push
- * A Stack (full) 
- * - should be full
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should complain on a push
+ * scala> (new StackFeatureSpec).run()
+ * Feature: A Stack is pushed and popped 
+ *   Scenario: empty is invoked on an empty stack
+ *     Given an empty stack 
+ *     When empty is invoked on the stack 
+ *     Then empty returns true 
+ *   Scenario: peek is invoked on an empty stack
+ *     Given an empty stack 
+ *     When peek is invoked on the stack 
+ *     Then peek throws IllegalStateException 
+ *   Scenario: pop is invoked on an empty stack
+ *     Given an empty stack 
+ *     When pop is invoked on the stack 
+ *     Then pop throws IllegalStateException 
+ *   Scenario: empty is invoked on this non-empty stack: Stack(9)
+ *     Given a non-empty stack 
+ *     When empty is invoked on the stack 
+ *     Then empty returns false 
+ *   Scenario: peek is invoked on this non-empty stack: Stack(9)
+ *     Given a non-empty stack 
+ *     When peek is invoked on the stack 
+ *     Then peek returns the last item added 
+ *     And the size of the stack is the same as before 
+ *   Scenario: pop is invoked on this non-empty stack: Stack(9)
+ *     Given a non-empty stack 
+ *     When pop is invoked on the stack 
+ *     Then pop returns the last item added 
+ *     And the size of the stack one less than before 
+ *   Scenario: full is invoked on this non-full stack: Stack(9)
+ *     Given a non-full stack 
+ *     When full is invoked on the stack 
+ *     Then full returns false 
+ *   Scenario: push is invoked on this non-full stack: Stack(9)
+ *     Given a non-full stack 
+ *     When push is invoked on the stack 
+ *     Then the size of the stack is one greater than before 
+ *     And the top of the stack contains the pushed value 
+ *   Scenario: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ *     Given a non-empty stack 
+ *     When empty is invoked on the stack 
+ *     Then empty returns false 
+ *   Scenario: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ *     Given a non-empty stack 
+ *     When peek is invoked on the stack 
+ *     Then peek returns the last item added 
+ *     And the size of the stack is the same as before 
+ *   Scenario: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ *     Given a non-empty stack 
+ *     When pop is invoked on the stack 
+ *     Then pop returns the last item added 
+ *     And the size of the stack one less than before 
+ *   Scenario: full is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ *     Given a non-full stack 
+ *     When full is invoked on the stack 
+ *     Then full returns false 
+ *   Scenario: push is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ *     Given a non-full stack 
+ *     When push is invoked on the stack 
+ *     Then the size of the stack is one greater than before 
+ *     And the top of the stack contains the pushed value 
+ *   Scenario: full is invoked on a full stack
+ *     Given an full stack 
+ *     When full is invoked on the stack 
+ *     Then full returns true 
+ *   Scenario: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ *     Given a non-empty stack 
+ *     When empty is invoked on the stack 
+ *     Then empty returns false 
+ *   Scenario: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ *     Given a non-empty stack 
+ *     When peek is invoked on the stack 
+ *     Then peek returns the last item added 
+ *     And the size of the stack is the same as before 
+ *   Scenario: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ *     Given a non-empty stack 
+ *     When pop is invoked on the stack 
+ *     Then pop returns the last item added 
+ *     And the size of the stack one less than before 
+ *   Scenario: push is invoked on a full stack
+ *     Given an full stack 
+ *     When push is invoked on the stack 
+ *     Then push throws IllegalStateException 
  * </pre>
  * 
  * <p>
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
- * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>Spec</code> is to surround
- * each invocation of a behavior function with a <code>describe</code> clause, which will prepend a string to each test name.
- * For example, the following code in a <code>Spec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
- * </p>
- *
- * <p>
- * Note that In a <code>FeatureSpec</code>
- * there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause. Therefore, you need to do a bit of
+ * complaining that multiple tests are being registered with the same test name.
+ * In a <code>FeatureSpec</code> there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause.
+ * Therefore, you need to do a bit of
  * extra work to ensure that the test names are unique. If a duplicate test name problem shows up in a
  * <code>FeatureSpec</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
  * the same way you pass any other data needed by the shared tests, or just call <code>toString</code> on the shared fixture object.
- * This is the approach taken by the previous <code>StackBehaviors</code> example.
+ * This is the approach taken by the previous <code>FeatureSpecStackBehaviors</code> example.
  * </p>
  *
  * <p>
- * Given this <code>StackBahaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
+ * Given this <code>FeatureSpecStackBehaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
  * </p>
  *
  * <pre>
@@ -753,14 +887,13 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * would yield test names:
+ * yields test names:
  * </p>
  *
  * <ul>
- * <li><code>Stack(9) is non-empty</code></li>
- * <li><code>Stack(9) returns the top item on peek</code></li>
- * <li><code>Stack(9) does not remove the top item on peek</code></li>
- * <li><code>Stack(9) removes the top item on pop</code></li>
+ * <li><code>empty is invoked on this non-empty stack: Stack(9)</code></li>
+ * <li><code>peek is invoked on this non-empty stack: Stack(9)</code></li>
+ * <li><code>pop is invoked on this non-empty stack: Stack(9)</code></li>
  * </ul>
  *
  * <p>
@@ -772,14 +905,13 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * would yield different test names:
+ * yields different test names:
  * </p>
  *
  * <ul>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) is non-empty</code></li>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) returns the top item on peek</code></li>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) does not remove the top item on peek</code></li>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) removes the top item on pop</code></li>
+ * <li><code>empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
+ * <li><code>peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
+ * <li><code>pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
  * </ul>
  *
  * <p>
