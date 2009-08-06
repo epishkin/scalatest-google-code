@@ -15,12 +15,12 @@
  */
 package org.scalatest.matchers
 
-import org.scalatest.scalacheck.ScalaCheck
+import org.scalatest.prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldBeNullSpec extends Spec with ShouldMatchers with ScalaCheck with ReturnsNormallyThrowsAssertion {
+class ShouldBeNullSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   val nullMap: Map[Int, String] = null
   val map = Map(1 -> "one", 2 -> "two")

@@ -15,12 +15,12 @@
  */
 package org.scalatest.matchers
 
-import org.scalatest.scalacheck.ScalaCheck
+import org.scalatest.prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-class ShouldOrderedSpec extends Spec with ShouldMatchers with ScalaCheck with ReturnsNormallyThrowsAssertion {
+class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for a specific size
   describe("The 'be >/</>=/<= (x)' syntax") {
