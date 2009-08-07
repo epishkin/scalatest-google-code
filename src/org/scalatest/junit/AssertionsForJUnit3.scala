@@ -13,18 +13,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest
+package org.scalatest.junit
 
+import _root_.junit.framework.AssertionFailedError
 import scala.reflect.Manifest
 
 /**
- * Trait that contains ScalaTest's basic assertion methods.
+ * Trait that contains ScalaTest's basic assertion methods, suitable for use with JUnit 3.
  *
  * <p>
- * You can use the assertions provided by this trait in any ScalaTest <code>Suite</code>, because <code>Suite</code>
- * mixes in this trait. This trait is designed to be used independently of anything else in ScalaTest, though, so you
- * can mix it into anything. (You can alternatively import the methods defined in this trait. For details, see the documentation
- * for the <a href="Assertions$object.html"><code>Assertions</code> companion object</a>.
+ * The assertion methods provided in this trait look and behave exactly like the ones in <code>org.scalatest.Assertions</code>,
+ * except instead of throwing <code>org.scalatest.TestFailedException</code> they throw <code>junit.framework.AssertionFailedError</code>.
+ * In JUnit version 3 and earlier, JUnit distinguished between <em>failures</em> and <em>errors</em>. (JUnit 4 dropped this distinction.)
+ * If a test failed because of a failed assertion, that was considered a <em>failure</em> in JUnit 3. If a test failed for any other
+ * reason, either the test code or the application being tested threw an unexpected exception, that was considered an <em>error</em> in JUnit 3.
+ * </p>
+ *
+ * <p>
+ * The way JUnit 3 decided whether an exception represented a failure or error is that only thrown
+ * <code>junit.framework.AssertionFailedError</code>s were considered failures. Any other exception type was considered an error. The
+ * exception type thrown by the JUnit 3 assertion methods declared in <code>junit.framework.Assert</code> (such as
+ * <code>assertEquals</code>, <code>assertTrue</code>, and <code>fail</code>) was, therefore, <code>AssertionFailedError</code>.
+ * </p>
+ * 
+ * <p>
+ * The assertions provided by <code>org.scalatest.Assertions</code> throw <code>TestFailedException</code>, which does 
+ * not extend <code>junit.framework.AssertionFailedError</code>. As a result, JUnit 3 will report a failed
+ * <code>org.scalatest.Assertions</code> assertion as an error, not a failure. If <code>TestFailedException</code>
+ * extended <code>AssertionFailedError</code>, anyone using ScalaTest would need to have JUnit on the
+ * class path. To avoid this dependency, ScalaTest provides <code>org.scalatest.junit.AssertionsForJUnit3</code>, which gives JUnit 3 users
+ * the same ScalaTest assertion syntax as <code>org.scalatest.Assertions</code> but with failed assertions
+ * reported as failures, not errors, in JUnit 3.
+ * </p>
+ *
+ * <p>
+ * To use this trait in a JUnit 3 <code>TestCase</code>, you can mix it into your <code>TestCase</code> class, like this:
+ * </p>
+ *
+ * <pre>
+ * import junit.framework.TestCase
+ * import org.scalatest.junit.AssertionsForJUnit3
+ *
+ * class MyTestCase extends TestCase with AssertionsForJUnit3 {
+ *
+ *   def testSomething() {
+ *     assert("hi".charAt(1) === 'i')
+ *   }
+ *
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * You can alternatively import the methods defined in this trait.
+ * </p>
+ *
+ * <pre>
+ * import junit.framework.TestCase
+ * import org.scalatest.junit.AssertionsForJUnit3._
+ *
+ * class MyTestCase extends TestCase {
+ *
+ *   def testSomething() {
+ *     assert("hi".charAt(1) === 'i')
+ *   }
+ *
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * For details on the importing approach, see the documentation
+ * for the <a href="AssertionsForJUnit3$object.html"><code>AssertionsForJUnit3</code> companion object</a>.
+ * Now, on to the assertion syntax...
  * </p>
  *
  * <p>
@@ -42,10 +103,10 @@ import scala.reflect.Manifest
  * If the passed expression is <code>true</code>, <code>assert</code> will return normally. If <code>false</code>,
  * <code>assert</code> will complete abruptly with an <code>AssertionError</code>. This behavior is provided by
  * the <code>assert</code> method defined in object <code>Predef</code>, whose members are implicitly imported into every
- * Scala source file. This <code>Assertions</code> traits defines another <code>assert</code> method that hides the
+ * Scala source file. This <code>AssertionsForJUnit3</code> traits defines another <code>assert</code> method that hides the
  * one in <code>Predef</code>. It behaves the same, except that if <code>false</code> is passed it throws
- * <code>TestFailedException</code> instead of <code>AssertionError</code>. The reason it throws <code>TestFailedException</code>
- * is because <code>TestFailedException</code> carries information about exactly which item in the stack trace represents
+ * <code>AssertionFailedError</code> instead of <code>AssertionError</code>. The reason it throws <code>AssertionFailedError</code>
+ * is because <code>AssertionFailedError</code> carries information about exactly which item in the stack trace represents
  * the line of test code that failed, which can help users more quickly find an offending line of code in a failing test.
  * <p>
  *
@@ -75,7 +136,7 @@ import scala.reflect.Manifest
  *
  * <p>
  * Because you use <code>===</code> here instead of <code>==</code>, the failure report will include the left
- * and right values. For example, the detail message in the thrown <code>TestFailedException</code> from the <code>assert</code>
+ * and right values. For example, the detail message in the thrown <code>AssertionFailedError</code> from the <code>assert</code>
  * shown previously will include, "2 did not equal 1".
  * From this message you will know that the operand on the left had the value 2, and the operand on the right had the value 1.
  * </p>
@@ -84,7 +145,7 @@ import scala.reflect.Manifest
  * If you're familiar with JUnit, you would use <code>===</code>
  * in a ScalaTest <code>Suite</code> where you'd use <code>assertEquals</code> in a JUnit <code>TestCase</code>.
  * The <code>===</code> operator is made possible by an implicit conversion from <code>Any</code>
- * to <code>Equalizer</code>. If you're curious to understand the mechanics, see the <a href="Assertions.Equalizer.html">documentation for
+ * to <code>Equalizer</code>. If you're curious to understand the mechanics, see the <a href="AssertionsForJUnit3.Equalizer.html">documentation for
  * <code>Equalizer</code></a> and the <code>convertToEqualizer</code> method.
  * </p>
  *
@@ -111,7 +172,7 @@ import scala.reflect.Manifest
  *
  * <p>
  * In this case, the expected value is <code>2</code>, and the code being tested is <code>a - b</code>. This expectation will fail, and
- * the detail message in the <code>TestFailedException</code> will read, "Expected 2, but got 3."
+ * the detail message in the <code>AssertionFailedError</code> will read, "Expected 2, but got 3."
  * </p>
  *
  * <p>
@@ -138,7 +199,7 @@ import scala.reflect.Manifest
  * If <code>charAt</code> throws <code>IndexOutOfBoundsException</code> as expected, control will transfer
  * to the catch case, which does nothing. If, however, <code>charAt</code> fails to throw an exception,
  * the next statement, <code>fail()</code>, will be run. The <code>fail</code> method always completes abruptly with
- * a <code>TestFailedException</code>, thereby signaling a failed test.
+ * an <code>AssertionFailedError</code>, thereby signaling a failed test.
  * </p>
  *
  * <p>
@@ -156,18 +217,18 @@ import scala.reflect.Manifest
  * <p>
  * This code behaves much like the previous example. If <code>charAt</code> throws an instance of <code>IndexOutOfBoundsException</code>,
  * <code>intercept</code> will return that exception. But if <code>charAt</code> completes normally, or throws a different
- * exception, <code>intercept</code> will complete abruptly with a <code>TestFailedException</code>. <code>intercept</code> returns the
+ * exception, <code>intercept</code> will complete abruptly with an <code>AssertionFailedError</code>. <code>intercept</code> returns the
  * caught exception so that you can inspect it further if you wish, for example, to ensure that data contained inside
  * the exception has the expected values.
  * </p>
  *
  * @author Bill Venners
  */
-trait Assertions {
+trait AssertionsForJUnit3 {
 
   /**
    * Class used via an implicit conversion to enable any two objects to be compared with
-   * <code>===</code> in assertions in tests. For example:
+   * <code>===</code> in assertions in JUnit 3 tests. For example:
    *
    * <pre>
    * assert(a === b)
@@ -175,15 +236,15 @@ trait Assertions {
    *
    * <p>
    * The benefit of using <code>assert(a === b)</code> rather than <code>assert(a == b)</code> is
-   * that a <code>TestFailedException</code> produced by the former will include the values of <code>a</code> and <code>b</code>
+   * that an <code>AssertionFailedError</code> produced by the former will include the values of <code>a</code> and <code>b</code>
    * in its detail message.
    * The implicit method that performs the conversion from <code>Any</code> to <code>Equalizer</code> is
-   * <code>convertToEqualizer</code> in trait <code>Assertions</code>.
+   * <code>convertToEqualizer</code> in trait <code>AssertionsForJUnit3</code>.
    * </p>
    *
    * <p>
    * In case you're not familiar with how implicit conversions work in Scala, here's a quick explanation.
-   * The <code>convertToEqualizer</code> method in <code>Assertions</code> is defined as an "implicit" method that takes an
+   * The <code>convertToEqualizer</code> method in <code>AssertionsForJUnit3</code> is defined as an "implicit" method that takes an
    * <code>Any</code>, which means you can pass in any object, and it will convert it to an <code>Equalizer</code>.
    * The <code>Equalizer</code> has <code>===</code> defined. Most objects don't have <code>===</code> defined as a method
    * on them. Take two Strings, for example:
@@ -194,9 +255,9 @@ trait Assertions {
    * </pre>
    *
    * <p>
-   * Given this code, the Scala compiler looks for an <code>===</code> method on class <code>String</code>, because that's the class of
+   * Given this code, the Scala compiler looks for a <code>===</code> method on class <code>String</code>, because that's the class of
    * <code>"hello"</code>. <code>String</code> doesn't define <code>===</code>, so the compiler looks for an implicit conversion from
-   * <code>String</code> to something that does have an <code>===</code> method, and it finds the <code>convertToEqualizer</code> method. It
+   * <code>String</code> to something that does have a <code>===</code> method, and it finds the <code>convertToEqualizer</code> method. It
    * then rewrites the code to this:
    * </p>
    *
@@ -205,9 +266,9 @@ trait Assertions {
    * </pre>
    *
    * <p>
-   * So inside a <code>Suite</code> (which mixes in <code>Assertions</code>, <code>===</code> will work on anything. The only
-   * situation in which the implicit conversion wouldn't 
-   * happen is on types that have an <code>===</code> method already defined.
+   * So inside a JUnit 3 <code>TestCase</code> that mixes in <code>AssertionsForJUnit3</code> (or resides in a file
+   * in which <code>AssertionsForJUnit3._</code> is imported), <code>===</code> will work on anything. The only situation in
+   * which the implicit conversion wouldn't happen is on types that have an <code>===</code> method already defined.
    * </p>
    * 
    * <p>
@@ -231,13 +292,11 @@ trait Assertions {
      *
      * <p>
      * In its typical usage, the <code>Option[String]</code> returned by <code>===</code> will be passed to one of two
-     * of trait <code>Assertion</code>' overloaded <code>assert</code> methods. If <code>None</code>,
+     * of trait <code>Assertions</code>' overloaded <code>assert</code> methods. If <code>None</code>,
      * which indicates the assertion succeeded, <code>assert</code> will return normally. But if <code>Some</code> is passed,
-     * which indicates the assertion failed, <code>assert</code> will throw a <code>TestFailedException</code> whose detail
+     * which indicates the assertion failed, <code>assert</code> will throw an <code>AssertionFailedError</code> whose detail
      * message will include the <code>String</code> contained inside the <code>Some</code>, which in turn includes the
-     * <code>left</code> and <code>right</code> values. This <code>TestFailedException</code> is typically embedded in a 
-     * <code>Report</code> and passed to a <code>Reporter</code>, which can present the <code>left</code> and <code>right</code>
-     * values to the user.
+     * <code>left</code> and <code>right</code> values.
      * </p>
      */
     def ===(right: Any) =
@@ -261,42 +320,42 @@ trait Assertions {
   /**
    * Assert that a boolean condition is true.
    * If the condition is <code>true</code>, this method returns normally.
-   * Else, it throws <code>TestFailedException</code>.
+   * Else, it throws <code>AssertionFailedError</code>.
    *
    * @param condition the boolean condition to assert
-   * @throws TestFailedException if the condition is <code>false</code>.
+   * @throws junit.framework.AssertionFailedError if the condition is <code>false</code>.
    */
   def assert(condition: Boolean) {
     if (!condition)
-      throw new TestFailedException(2)
+      throw new AssertionFailedError
   }
 
   /**
    * Assert that a boolean condition, described in <code>String</code>
    * <code>message</code>, is true.
    * If the condition is <code>true</code>, this method returns normally.
-   * Else, it throws <code>TestFailedException</code> with the
+   * Else, it throws <code>AssertionFailedError</code> with the
    * <code>String</code> obtained by invoking <code>toString</code> on the
    * specified <code>message</code> as the exception's detail message.
    *
    * @param condition the boolean condition to assert
    * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
-   * @throws TestFailedException if the condition is <code>false</code>.
+   * @throws junit.framework.AssertionFailedError if the condition is <code>false</code>.
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
   def assert(condition: Boolean, message: Any) {
     if (!condition)
-      throw new TestFailedException(message.toString, 2)
+      throw new AssertionFailedError(message.toString)
   }
 
   /**
    * Assert that an <code>Option[String]</code> is <code>None</code>. 
    * If the condition is <code>None</code>, this method returns normally.
-   * Else, it throws <code>TestFailedException</code> with the <code>String</code>
+   * Else, it throws <code>AssertionFailedError</code> with the <code>String</code>
    * value of the <code>Some</code>, as well as the 
    * <code>String</code> obtained by invoking <code>toString</code> on the
    * specified <code>message</code>,
-   * included in the <code>TestFailedException</code>'s detail message.
+   * included in the <code>AssertionFailedError</code>'s detail message.
    *
    * <p>
    * This form of <code>assert</code> is usually called in conjunction with an
@@ -314,12 +373,12 @@ trait Assertions {
    *
    * @param o the <code>Option[String]</code> to assert
    * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
-   * @throws TestFailedException if the <code>Option[String]</code> is <code>Some</code>.
+   * @throws junit.framework.AssertionFailedError if the <code>Option[String]</code> is <code>Some</code>.
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
   def assert(o: Option[String], message: Any) {
     o match {
-      case Some(s) => throw new TestFailedException(message + "\n" + s, 2)
+      case Some(s) => throw new AssertionFailedError(message + "\n" + s)
       case None =>
     }
   }
@@ -327,8 +386,8 @@ trait Assertions {
   /**
    * Assert that an <code>Option[String]</code> is <code>None</code>.
    * If the condition is <code>None</code>, this method returns normally.
-   * Else, it throws <code>TestFailedException</code> with the <code>String</code>
-   * value of the <code>Some</code> included in the <code>TestFailedException</code>'s
+   * Else, it throws <code>AssertionFailedError</code> with the <code>String</code>
+   * value of the <code>Some</code> included in the <code>AssertionFailedError</code>'s
    * detail message.
    *
    * <p>
@@ -346,11 +405,11 @@ trait Assertions {
    * </p>
    *
    * @param o the <code>Option[String]</code> to assert
-   * @throws TestFailedException if the <code>Option[String]</code> is <code>Some</code>.
+   * @throws junit.framework.AssertionFailedError if the <code>Option[String]</code> is <code>Some</code>.
    */
   def assert(o: Option[String]) {
     o match {
-      case Some(s) => throw new TestFailedException(s, 2)
+      case Some(s) => throw new AssertionFailedError(s)
       case None =>
     }
   }
@@ -364,77 +423,10 @@ trait Assertions {
    * on this mechanism, see the <a href="Suite.Equalizer.html">documentation for </code>Equalizer</code></a>.
    * </p>
    *
-   * <p>
-   * Because trait <code>Suite</code> mixes in <code>Assertions</code>, this implicit conversion will always be
-   * available by default in ScalaTest <code>Suite</code>s. This is the only implicit conversion that is in scope by default in every
-   * ScalaTest <code>Suite</code>. Other implicit conversions offered by ScalaTest, such as those that support the matchers DSL
-   * or <code>invokePrivate</code>, must be explicitly invited into your test code, either by mixing in a trait or importing the
-   * members of its companion object. The reason ScalaTest requires you to invite in implicit conversions (with the exception of the
-   * implicit conversion for <code>===</code> operator)  is because if one of ScalaTest's implicit conversions clashes with an
-   * implicit conversion used in the code you are trying to test, your program won't compile. Thus there is a chance that if you
-   * are ever trying to use a library or test some code that also offers an implicit conversion involving a <code>===</code> operator,
-   * you could run into the problem of a compiler error due to an ambiguous implicit conversion. If that happens, you can turn off
-   * the implicit conversion offered by this <code>convertToEqualizer</code> method simply by overriding the method in your
-   * <code>Suite</code> subclass, but not marking it as implicit:
-   * </p>
-   *
-   * <pre>
-   * // In your Suite subclass
-   * override def convertToEqualizer(left: Any) = new Equalizer(left)
-   * </pre>
-   * 
    * @param left the object whose type to convert to <code>Equalizer</code>.
    * @throws NullPointerException if <code>left</code> is <code>null</code>.
    */
   implicit def convertToEqualizer(left: Any) = new Equalizer(left)
-
-  /*
-   * Intercept and return an instance of the passed exception class (or an instance of a subclass of the
-   * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
-   * function. If it throws an exception that's an instance of the passed class or one of its
-   * subclasses, this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>
-   * whose detail message includes the <code>String</code> obtained by invoking <code>toString</code> on the passed <code>message</code>.
-   *
-   * <p>
-   * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
-   * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
-   * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
-   * </p>
-   *
-   * @param message An object whose <code>toString</code> method returns a message to include in a failure report.
-   * @param f the function value that should throw the expected exception
-   * @return the intercepted exception, if it is of the expected type
-   * @throws TestFailedException if the passed function does not result in a value equal to the
-   *     passed <code>expected</code> value.
-  def intercept[T <: AnyRef](message: Any)(f: => Any)(implicit manifest: Manifest[T]): T = {
-    val clazz = manifest.erasure.asInstanceOf[Class[T]]
-    val messagePrefix = if (message.toString.trim.isEmpty) "" else (message +"\n")
-    val caught = try {
-      f
-      None
-    }
-    catch {
-      case u: Throwable => {
-        if (!clazz.isAssignableFrom(u.getClass)) {
-          val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          throw new TestFailedException(messagePrefix + s, u, 2)
-        }
-        else {
-          Some(u)
-        }
-      }
-    }
-    caught match {
-      case None =>
-        val message = messagePrefix + Resources("exceptionExpected", clazz.getName)
-        throw new TestFailedException(message, 2)
-      case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
-    }
-  }
-THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR JUST LEAVE IT OUT. FOR NOW I'LL LEAVE IT OUT.
-   */
 
   /**
    * Intercept and return an exception that's expected to
@@ -442,7 +434,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * type specified by the type parameter of this method. This method invokes the passed
    * function. If the function throws an exception that's an instance of the specified type,
    * this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>.
+   * or completes abruptly with a different exception, this method throws <code>AssertionFailedError</code>.
    *
    * <p>
    * Note that the type specified as this method's type parameter may represent any subtype of
@@ -450,14 +442,14 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * Scala, exceptions can be caught based on traits they implement, so it may at times make sense
    * to specify a trait that the intercepted exception's class must mix in. If a class instance is
    * passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
+   * for example), this method will complete abruptly with an <code>AssertionFailedError</code>.
    * </p>
    *
    * @param f the function value that should throw the expected exception
    * @param manifest an implicit <code>Manifest</code> representing the type of the specified
    * type parameter.
    * @return the intercepted exception, if it is of the expected type
-   * @throws TestFailedException if the passed function does not complete abruptly with an exception
+   * @throws junit.framework.AssertionFailedError if the passed function does not complete abruptly with an exception
    *    that's an instance of the specified type
    *     passed <code>expected</code> value.
    */
@@ -471,7 +463,9 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          throw new TestFailedException(s, u, 2)
+          val assertionFailedError = new AssertionFailedError(s)
+          assertionFailedError.initCause(u)
+          throw assertionFailedError
         }
         else {
           Some(u)
@@ -481,7 +475,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     caught match {
       case None =>
         val message = Resources("exceptionExpected", clazz.getName)
-        throw new TestFailedException(message, 2)
+        throw new AssertionFailedError(message)
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
@@ -491,19 +485,19 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * passed class), which is expected to be thrown by the passed function value. This method invokes the passed
    * function. If it throws an exception that's an instance of the passed class or one of its
    * subclasses, this method returns that exception. Else, whether the passed function returns normally
-   * or completes abruptly with a different exception, this method throws <code>TestFailedException</code>.
+   * or completes abruptly with a different exception, this method throws <code>AssertionFailedError</code>.
    *
    * <p>
    * Note that the passed <code>Class</code> may represent any type, not just <code>Throwable</code> or one of its subclasses. In
    * Scala, exceptions can be caught based on traits they implement, so it may at times make sense to pass in a class instance for
    * a trait. If a class instance is passed for a type that could not possibly be used to catch an exception (such as <code>String</code>,
-   * for example), this method will complete abruptly with a <code>TestFailedException</code>.
+   * for example), this method will complete abruptly with an <code>AssertionFailedError</code>.
    * </p>
    *
    * @param clazz a type to which the expected exception class is assignable, i.e., the exception should be an instance of the type represented by <code>clazz</code>.
    * @param f the function value that should throw the expected exception
    * @return the intercepted exception, if 
-   * @throws TestFailedException if the passed function does not complete abruptly with an exception that is assignable to the 
+   * @throws junit.framework.AssertionFailedError if the passed function does not complete abruptly with an exception that is assignable to the 
    *     passed <code>Class</code>.
    * @throws IllegalArgumentException if the passed <code>clazz</code> is not <code>Throwable</code> or
    *     one of its subclasses.
@@ -527,19 +521,19 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * If the <code>actual</code> equals the <code>expected</code>
    * (as determined by <code>==</code>), <code>expect</code> returns
    * normally. Else, if <code>actual</code> is not equal to <code>expected</code>, <code>expect</code> throws an
-   * <code>TestFailedException</code> whose detail message includes the expected and actual values, as well as the <code>String</code>
+   * <code>AssertionFailedError</code> whose detail message includes the expected and actual values, as well as the <code>String</code>
    * obtained by invoking <code>toString</code> on the passed <code>message</code>.
    *
    * @param expected the expected value
    * @param message An object whose <code>toString</code> method returns a message to include in a failure report.
    * @param actual the actual value, which should equal the passed <code>expected</code> value
-   * @throws TestFailedException if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
+   * @throws junit.framework.AssertionFailedError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
   def expect(expected: Any, message: Any)(actual: Any) {
     if (actual != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw new TestFailedException(message + "\n" + s, 2)
+      throw new AssertionFailedError(message + "\n" + s)
     }
   }
 
@@ -548,27 +542,27 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * If the <code>actual</code> value equals the <code>expected</code> value
    * (as determined by <code>==</code>), <code>expect</code> returns
    * normally. Else, <code>expect</code> throws an
-   * <code>TestFailedException</code> whose detail message includes the expected and actual values.
+   * <code>AssertionFailedError</code> whose detail message includes the expected and actual values.
    *
    * @param expected the expected value
    * @param actual the actual value, which should equal the passed <code>expected</code> value
-   * @throws TestFailedException if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
+   * @throws junit.framework.AssertionFailedError if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
   def expect(expected: Any)(actual: Any) {
     if (actual != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw new TestFailedException(s, 2)
+      throw new AssertionFailedError(s)
     }
   }
   
   /**
-   * Throws <code>TestFailedException</code> to indicate a test failed.
+   * Throws <code>AssertionFailedError</code> to indicate a test failed.
    */
-  def fail() = throw new TestFailedException(2)
+  def fail() = throw new AssertionFailedError
 
   /**
-   * Throws <code>TestFailedException</code>, with the passed
+   * Throws <code>AssertionFailedError</code>, with the passed
    * <code>String</code> <code>message</code> as the exception's detail
    * message, to indicate a test failed.
    *
@@ -580,11 +574,11 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (message == null)
         throw new NullPointerException("message is null")
      
-    throw new TestFailedException(message, 2)
+    throw new AssertionFailedError(message)
   }
 
   /**
-   * Throws <code>TestFailedException</code>, with the passed
+   * Throws <code>AssertionFailedError</code>, with the passed
    * <code>String</code> <code>message</code> as the exception's detail
    * message and <code>Throwable</code> cause, to indicate a test failed.
    *
@@ -600,13 +594,15 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (cause == null)
       throw new NullPointerException("cause is null")
 
-    throw new TestFailedException(message, cause, 2)
+    val assertionFailedError = new AssertionFailedError(message)
+    assertionFailedError.initCause(cause)
+    throw assertionFailedError
   }
 
   /**
-   * Throws <code>TestFailedException</code>, with the passed
+   * Throws <code>AssertionFailedError</code>, with the passed
    * <code>Throwable</code> cause, to indicate a test failed.
-   * The <code>getMessage</code> method of the thrown <code>TestFailedException</code>
+   * The <code>getMessage</code> method of the thrown <code>AssertionFailedError</code>
    * will return <code>cause.toString()</code>.
    *
    * @param cause a <code>Throwable</code> that indicates the cause of the failure.
@@ -617,50 +613,48 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (cause == null)
       throw new NullPointerException("cause is null")
         
-    throw new TestFailedException(cause, 2)
+    val assertionFailedError = new AssertionFailedError
+    assertionFailedError.initCause(cause)
+    throw assertionFailedError
   }
 }
 
 /**
- * Companion object that facilitates the importing of <code>Assertions</code> members as 
- * an alternative to mixing it in. One use case is to import <code>Assertions</code> members so you can use
+ * Companion object that facilitates the importing of <code>AssertionsForJUnit3</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>AssertionsForJUnit3</code> members so you can use
  * them in the Scala interpreter:
  *
  * <pre>
- * $scala -classpath scalatest.jar
- * Welcome to Scala version 2.7.3.final (Java HotSpot(TM) Client VM, Java 1.5.0_16).
+ * $ scala -cp junit3.8.2/junit.jar:../target/jar_contents 
+ * Welcome to Scala version 2.7.5.final (Java HotSpot(TM) Client VM, Java 1.5.0_16).
  * Type in expressions to have them evaluated.
  * Type :help for more information.
- * 
- * scala> import org.scalatest.Assertions._
- * import org.scalatest.Assertions._
- * 
+ *
+ * scala> import org.scalatest.junit.AssertionsForJUnit3._
+ * import org.scalatest.junit.AssertionsForJUnit3._
+ *
  * scala> assert(1 === 2)
- * org.scalatest.TestFailedException: 1 did not equal 2
- * 	at org.scalatest.Assertions$class.assert(Assertions.scala:211)
- * 	at org.scalatest.Assertions$.assert(Assertions.scala:511)
+ * junit.framework.AssertionFailedError: 1 did not equal 2
+ * 	at org.scalatest.junit.AssertionsForJUnit3$class.assert(AssertionsForJUnit3.scala:353)
+ * 	at org.scalatest.junit.AssertionsForJUnit3$.assert(AssertionsForJUnit3.scala:672)
  * 	at .<init>(<console>:7)
  * 	at .<clinit>(<console>)
  * 	at RequestResult$.<init>(<console>:3)
  * 	at RequestResult$.<clinit>(<console>)
- * 	at RequestResult$result(<console>)
- * 	at sun.reflect.NativeMethodAccessorImpl.invoke...
- *
+ * 	at RequestResult$result(<consol...
  * scala> expect(3) { 1 + 3 }
- * org.scalatest.TestFailedException: Expected 3, but got 4
- * 	at org.scalatest.Assertions$class.expect(Assertions.scala:447)
- * 	at org.scalatest.Assertions$.expect(Assertions.scala:511)
+ * junit.framework.AssertionFailedError: Expected 3, but got 4
+ * 	at org.scalatest.junit.AssertionsForJUnit3$class.expect(AssertionsForJUnit3.scala:563)
+ * 	at org.scalatest.junit.AssertionsForJUnit3$.expect(AssertionsForJUnit3.scala:672)
  * 	at .<init>(<console>:7)
  * 	at .<clinit>(<console>)
  * 	at RequestResult$.<init>(<console>:3)
  * 	at RequestResult$.<clinit>(<console>)
- * 	at RequestResult$result(<console>)
- * 	at sun.reflect.NativeMethodAccessorImpl.in...
- *
+ * 	at RequestResult$result(<co...
  * scala> val caught = intercept[StringIndexOutOfBoundsException] { "hi".charAt(-1) }
  * caught: StringIndexOutOfBoundsException = java.lang.StringIndexOutOfBoundsException: String index out of range: -1
  * <pre>
  *
  * @author Bill Venners
  */
-object Assertions extends Assertions
+object AssertionsForJUnit3 extends AssertionsForJUnit3
