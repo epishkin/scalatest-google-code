@@ -16,7 +16,6 @@
 package org.scalatest.matchers
 
 import scala.reflect.Manifest
-import Helper.newTestFailedException
 import org.scalatest.verb.ShouldVerb
 
 /**

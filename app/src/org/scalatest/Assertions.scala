@@ -271,7 +271,7 @@ trait Assertions {
       throw newAssertionFailedException(None, None, 4)
   }
 
-  protected[scalatest] def newAssertionFailedException(optionalMessage: Option[Any], optionalCause: Option[Throwable], stackDepth: Int): Throwable =
+  private[scalatest] def newAssertionFailedException(optionalMessage: Option[Any], optionalCause: Option[Throwable], stackDepth: Int): Throwable =
     (optionalMessage, optionalCause) match {
       case (None, None) => new TestFailedException(stackDepth)
       case (None, Some(cause)) => new TestFailedException(cause, stackDepth)
