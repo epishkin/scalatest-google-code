@@ -31,13 +31,6 @@ import Helper.transformOperatorChars
 
 private[scalatest] object Helper {
 
-  def newTestFailedException(message: String): TestFailedException = {
-    val fileNames = List("Matchers.scala", "ShouldMatchers.scala", "MustMatchers.scala")
-    val temp = new RuntimeException
-    val stackDepth = temp.getStackTrace.takeWhile(stackTraceElement => fileNames.exists(_ == stackTraceElement.getFileName)).length
-    new TestFailedException(message, stackDepth)
-  }
-
   // If the symbol passed is 'title, this will look for a field named "title", a method named "title", or a
   // method named "getTitle". The method must take no parameters.
   //
@@ -137,7 +130,6 @@ private[scalatest] object Helper {
 
 }
 
-import Helper.newTestFailedException
 import Helper.accessProperty
 
 /**
@@ -147,6 +139,13 @@ import Helper.accessProperty
  * @author Bill Venners
  */
 trait Matchers extends Assertions { matchers =>
+
+  private[scalatest] def newTestFailedException(message: String): TestFailedException = {
+    val fileNames = List("Matchers.scala", "ShouldMatchers.scala", "MustMatchers.scala")
+    val temp = new RuntimeException
+    val stackDepth = temp.getStackTrace.takeWhile(stackTraceElement => fileNames.exists(_ == stackTraceElement.getFileName)).length
+    new TestFailedException(message, stackDepth)
+  }
 
   private def matchSymbolToPredicateMethod[S <: AnyRef](left: S, right: Symbol, hasArticle: Boolean, articleIsA: Boolean): MatchResult = {
 
