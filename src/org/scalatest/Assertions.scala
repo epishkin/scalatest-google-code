@@ -268,8 +268,16 @@ trait Assertions {
    */
   def assert(condition: Boolean) {
     if (!condition)
-      throw new TestFailedException(2)
+      throw newAssertionFailedException(None, None, 4)
   }
+
+  protected[scalatest] def newAssertionFailedException(optionalMessage: Option[Any], optionalCause: Option[Throwable], stackDepth: Int): Throwable =
+    (optionalMessage, optionalCause) match {
+      case (None, None) => new TestFailedException(stackDepth)
+      case (None, Some(cause)) => new TestFailedException(cause, stackDepth)
+      case (Some(message), None) => new TestFailedException(message.toString, stackDepth)
+      case (Some(message), Some(cause)) => new TestFailedException(message.toString, cause, stackDepth)
+    }
 
   /**
    * Assert that a boolean condition, described in <code>String</code>
@@ -286,7 +294,8 @@ trait Assertions {
    */
   def assert(condition: Boolean, message: Any) {
     if (!condition)
-      throw new TestFailedException(message.toString, 2)
+      throw newAssertionFailedException(Some(message), None, 4)
+      //throw new TestFailedException(message.toString, 2)
   }
 
   /**
@@ -319,7 +328,8 @@ trait Assertions {
    */
   def assert(o: Option[String], message: Any) {
     o match {
-      case Some(s) => throw new TestFailedException(message + "\n" + s, 2)
+      case Some(s) => throw newAssertionFailedException(Some(message + "\n" + s), None, 4)
+      // case Some(s) => throw new TestFailedException(message + "\n" + s, 2)
       case None =>
     }
   }
@@ -350,7 +360,8 @@ trait Assertions {
    */
   def assert(o: Option[String]) {
     o match {
-      case Some(s) => throw new TestFailedException(s, 2)
+      case Some(s) => throw newAssertionFailedException(Some(s), None, 4)
+      // case Some(s) => throw new TestFailedException(s, 2)
       case None =>
     }
   }
@@ -419,7 +430,8 @@ trait Assertions {
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          throw new TestFailedException(messagePrefix + s, u, 2)
+          throw newAssertionFailedException(Some(messagePrefix + s), Some(u), 4)
+          // throw new TestFailedException(messagePrefix + s, u, 2)
         }
         else {
           Some(u)
@@ -429,7 +441,8 @@ trait Assertions {
     caught match {
       case None =>
         val message = messagePrefix + Resources("exceptionExpected", clazz.getName)
-        throw new TestFailedException(message, 2)
+        throw newAssertionFailedException(Some(message), None, 4)
+        // throw new TestFailedException(message, 2)
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
@@ -471,7 +484,8 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
       case u: Throwable => {
         if (!clazz.isAssignableFrom(u.getClass)) {
           val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-          throw new TestFailedException(s, u, 2)
+          throw newAssertionFailedException(Some(s), Some(u), 4)
+          // throw new TestFailedException(s, u, 2)
         }
         else {
           Some(u)
@@ -481,7 +495,8 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     caught match {
       case None =>
         val message = Resources("exceptionExpected", clazz.getName)
-        throw new TestFailedException(message, 2)
+        throw newAssertionFailedException(Some(message), None, 4)
+        // throw new TestFailedException(message, 2)
       case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
     }
   }
@@ -539,7 +554,8 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (actual != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw new TestFailedException(message + "\n" + s, 2)
+      throw newAssertionFailedException(Some(message + "\n" + s), None, 4)
+      // throw new TestFailedException(message + "\n" + s, 2)
     }
   }
 
@@ -558,14 +574,16 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (actual != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw new TestFailedException(s, 2)
+      throw newAssertionFailedException(Some(s), None, 4)
+      // throw new TestFailedException(s, 2)
     }
   }
   
   /**
    * Throws <code>TestFailedException</code> to indicate a test failed.
    */
-  def fail() = throw new TestFailedException(2)
+  def fail() = throw newAssertionFailedException(None, None, 4)
+  // def fail() = throw new TestFailedException(2)
 
   /**
    * Throws <code>TestFailedException</code>, with the passed
@@ -580,7 +598,8 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (message == null)
         throw new NullPointerException("message is null")
      
-    throw new TestFailedException(message, 2)
+    throw newAssertionFailedException(Some(message),  None, 4)
+    // throw new TestFailedException(message, 2)
   }
 
   /**
@@ -600,7 +619,8 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (cause == null)
       throw new NullPointerException("cause is null")
 
-    throw new TestFailedException(message, cause, 2)
+    throw newAssertionFailedException(Some(message), Some(cause), 4)
+    // throw new TestFailedException(message, cause, 2)
   }
 
   /**
@@ -617,7 +637,8 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     if (cause == null)
       throw new NullPointerException("cause is null")
         
-    throw new TestFailedException(cause, 2)
+    throw newAssertionFailedException(None, Some(cause), 4)
+    // throw new TestFailedException(cause, 2)
   }
 }
 

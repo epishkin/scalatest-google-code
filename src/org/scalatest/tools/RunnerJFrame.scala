@@ -480,7 +480,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
                   {
                     throwableTitle match {
                       case Some(title) =>
-                        <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ throwableTitle }</td></tr>
+                        <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsThrowable") + ":" }</span></td><td align="left">{ title }</td></tr>
                       case None => new scala.xml.NodeBuffer
                     }
                   }
