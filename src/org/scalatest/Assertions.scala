@@ -20,6 +20,147 @@ import scala.reflect.Manifest
 /**
  * Trait that contains ScalaTest's basic assertion methods.
  *
+ * <p>
+ * You can use the assertions provided by this trait in any ScalaTest <code>Suite</code>, because <code>Suite</code>
+ * mixes in this trait. This trait is designed to be used independently of anything else in ScalaTest, though, so you
+ * can mix it into anything. (You can alternatively import the methods defined in this trait. For details, see the documentation
+ * for the <a href="Assertions$object.html"><code>Assertions</code> companion object</a>.
+ * </p>
+ *
+ * <p>
+ * In any Scala program, you can write assertions by invoking <code>assert</code> and passing in a <code>Boolean</code> expression,
+ * such as:
+ * </p>
+ *
+ * <pre>
+ * val left = 2
+ * val right = 1
+ * assert(left == right)
+ * </pre>
+ *
+ * <p>
+ * If the passed expression is <code>true</code>, <code>assert</code> will return normally. If <code>false</code>,
+ * <code>assert</code> will complete abruptly with an <code>AssertionError</code>. This behavior is provided by
+ * the <code>assert</code> method defined in object <code>Predef</code>, whose members are implicitly imported into every
+ * Scala source file. This <code>Assertions</code> traits defines another <code>assert</code> method that hides the
+ * one in <code>Predef</code>. It behaves the same, except that if <code>false</code> is passed it throws
+ * <code>TestFailedException</code> instead of <code>AssertionError</code>. The reason it throws <code>TestFailedException</code>
+ * is because <code>TestFailedException</code> carries information about exactly which item in the stack trace represents
+ * the line of test code that failed, which can help users more quickly find an offending line of code in a failing test.
+ * <p>
+ *
+ * <p>
+ * If you pass the previous <code>Boolean</code> expression, <code>left == right</code> to <code>assert</code> in a ScalaTest test, a failure
+ * will be reported, but without reporting the left and right values. You can alternatively encode these values in a <code>String</code> passed as
+ * a second argument to <code>assert</code>, like this:
+ * </p>
+ * 
+ * <pre>
+ * val left = 2
+ * val right = 1
+ * assert(left == right, left + " did not equal " + right)
+ * </pre>
+ *
+ * <p>
+ * Using this form of <code>assert</code>, the failure report will include the left and right values, thereby
+ * helping you debug the problem. However, ScalaTest provides the <code>===</code> operator to make this easier.
+ * You use it like this:
+ * </p>
+ *
+ * <pre>
+ * val left = 2
+ * val right = 1
+ * assert(left === right)
+ * </pre>
+ *
+ * <p>
+ * Because you use <code>===</code> here instead of <code>==</code>, the failure report will include the left
+ * and right values. For example, the detail message in the thrown <code>TestFailedException</code> from the <code>assert</code>
+ * shown previously will include, "2 did not equal 1".
+ * From this message you will know that the operand on the left had the value 2, and the operand on the right had the value 1.
+ * </p>
+ *
+ * <p>
+ * If you're familiar with JUnit, you would use <code>===</code>
+ * in a ScalaTest <code>Suite</code> where you'd use <code>assertEquals</code> in a JUnit <code>TestCase</code>.
+ * The <code>===</code> operator is made possible by an implicit conversion from <code>Any</code>
+ * to <code>Equalizer</code>. If you're curious to understand the mechanics, see the <a href="Assertions.Equalizer.html">documentation for
+ * <code>Equalizer</code></a> and the <code>convertToEqualizer</code> method.
+ * </p>
+ *
+ * <p>
+ * <strong>Expected results</strong>
+ * </p>
+ *
+ * Although <code>===</code> provides a natural, readable extension to Scala's <code>assert</code> mechanism,
+ * as the operands become lengthy, the code becomes less readable. In addition, the <code>===</code> comparison
+ * doesn't distinguish between actual and expected values. The operands are just called <code>left</code> and <code>right</code>,
+ * because if one were named <code>expected</code> and the other <code>actual</code>, it would be difficult for people to
+ * remember which was which. To help with these limitations of assertions, <code>Suite</code> includes a method called <code>expect</code> that
+ * can be used as an alternative to <code>assert</code> with <code>===</code>. To use <code>expect</code>, you place
+ * the expected value in parentheses after <code>expect</code>, followed by curly braces containing code 
+ * that should result in the expected value. For example:
+ *
+ * <pre>
+ * val a = 5
+ * val b = 2
+ * expect(2) {
+ *   a - b
+ * }
+ * </pre>
+ *
+ * <p>
+ * In this case, the expected value is <code>2</code>, and the code being tested is <code>a - b</code>. This expectation will fail, and
+ * the detail message in the <code>TestFailedException</code> will read, "Expected 2, but got 3."
+ * </p>
+ *
+ * <p>
+ * <strong>Intercepted exceptions</strong>
+ * </p>
+ *
+ * <p>
+ * Sometimes you need to test whether a method throws an expected exception under certain circumstances, such
+ * as when invalid arguments are passed to the method. You can do this in the JUnit 3 style, like this:
+ * </p>
+ *
+ * <pre>
+ * val s = "hi"
+ * try {
+ *   s.charAt(-1)
+ *   fail()
+ * }
+ * catch {
+ *   case _: IndexOutOfBoundsException => // Expected, so continue
+ * }
+ * </pre>
+ *
+ * <p>
+ * If <code>charAt</code> throws <code>IndexOutOfBoundsException</code> as expected, control will transfer
+ * to the catch case, which does nothing. If, however, <code>charAt</code> fails to throw an exception,
+ * the next statement, <code>fail()</code>, will be run. The <code>fail</code> method always completes abruptly with
+ * a <code>TestFailedException</code>, thereby signaling a failed test.
+ * </p>
+ *
+ * <p>
+ * To make this common use case easier to express and read, ScalaTest provides an <code>intercept</code>
+ * method. You use it like this:
+ * </p>
+ *
+ * <pre>
+ * val s = "hi"
+ * intercept[IndexOutOfBoundsException] {
+ *   s.charAt(-1)
+ * }
+ * </pre>
+ *
+ * <p>
+ * This code behaves much like the previous example. If <code>charAt</code> throws an instance of <code>IndexOutOfBoundsException</code>,
+ * <code>intercept</code> will return that exception. But if <code>charAt</code> completes normally, or throws a different
+ * exception, <code>intercept</code> will complete abruptly with a <code>TestFailedException</code>. <code>intercept</code> returns the
+ * caught exception so that you can inspect it further if you wish, for example, to ensure that data contained inside
+ * the exception has the expected values.
+ * </p>
+ *
  * @author Bill Venners
  */
 trait Assertions {
