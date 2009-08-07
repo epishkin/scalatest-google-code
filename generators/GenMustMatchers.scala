@@ -18,11 +18,13 @@ object Helper {
     temp7.replaceAll("I_WAS_Must_ORIGINALLY", "Should")
   }
   def generateFile(srcFileName: String, targetFileName: String) {
-    val dir = new File("target/generated/src/org/scalatest/matchers")
-    dir.mkdirs()
-    val writer = new BufferedWriter(new FileWriter("target/generated/src/org/scalatest/matchers/" + targetFileName))
+    val matchersDir = new File("target/generated/src/org/scalatest/matchers")
+    matchersDir.mkdirs()
+    val junitDir = new File("target/generated/src/org/scalatest/junit")
+    junitDir.mkdirs()
+    val writer = new BufferedWriter(new FileWriter("target/generated/src/org/scalatest/" + targetFileName))
     try {
-      val shouldLines = Source.fromFile("src/org/scalatest/matchers/" + srcFileName).getLines.toList
+      val shouldLines = Source.fromFile("src/org/scalatest/" + srcFileName).getLines.toList
       for (shouldLine <- shouldLines) {
         val mustLine = translateShouldToMust(shouldLine)
         writer.write(mustLine)
@@ -37,7 +39,8 @@ object Helper {
 import Helper._
 
 object GenMustMatchers extends Application {
-  generateFile("ShouldMatchers.scala", "MustMatchers.scala")
+  generateFile("matchers/ShouldMatchers.scala", "matchers/MustMatchers.scala")
+  generateFile("junit/ShouldMatchersForJUnit3.scala", "junit/MustMatchersForJUnit3.scala")
 }
 
 object GenMustMatchersTests extends Application {
