@@ -197,7 +197,7 @@ import org.scalatest.tools.StandardOutReporter
  * in a ScalaTest <code>Suite</code> where you'd use <code>assertEquals</code> in a JUnit <code>TestCase</code>.
  * The <code>===</code> operator is made possible by an implicit conversion from <code>Any</code>
  * to <code>Equalizer</code>. If you're curious to understand the mechanics, see the <a href="Assertions.Equalizer.html">documentation for
- * <code>Equalizer</code></a> and <code>Suite</code>'s <code>convertToEqualizer</code> method.
+ * <code>Equalizer</code></a> and the <code>convertToEqualizer</code> method.
  * </p>
  *
  * <p>
@@ -210,8 +210,8 @@ import org.scalatest.tools.StandardOutReporter
  * because if one were named <code>expected</code> and the other <code>actual</code>, it would be difficult for people to
  * remember which was which. To help with these limitations of assertions, <code>Suite</code> includes a method called <code>expect</code> that
  * can be used as an alternative to <code>assert</code> with <code>===</code>. To use <code>expect</code>, you place
- * the expected value in parentheses after <code>expect</code>, and follow that by code contained inside
- * curly braces that results in a value that you expect should equal the expected value. For example:
+ * the expected value in parentheses after <code>expect</code>, followed by curly braces containing code 
+ * that should result in the expected value. For example:
  *
  * <pre>
  * val a = 5
@@ -242,7 +242,7 @@ import org.scalatest.tools.StandardOutReporter
  *   fail()
  * }
  * catch {
- *   case e: IndexOutOfBoundsException => // Expected, so continue
+ *   case _: IndexOutOfBoundsException => // Expected, so continue
  * }
  * </pre>
  *
@@ -270,8 +270,17 @@ import org.scalatest.tools.StandardOutReporter
  * <code>intercept</code> will return that exception. But if <code>charAt</code> completes normally, or throws a different
  * exception, <code>intercept</code> will complete abruptly with a <code>TestFailedException</code>. <code>intercept</code> returns the
  * caught exception so that you can inspect it further if you wish, for example, to ensure that data contained inside
- * the exception has the expected values.
+ * the exception has the expected values. Here's an example:
  * </p>
+ *
+ * <pre>
+ * val s = "hi"
+ * val caught =
+ *   intercept[IndexOutOfBoundsException] {
+ *     s.charAt(-1)
+ *   }
+ * assert(caught.getMessage === "String index out of range: -1")
+ * </pre>
  *
  * <p>
  * <strong>Using other assertions</strong>
