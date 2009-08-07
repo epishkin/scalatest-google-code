@@ -267,17 +267,20 @@
 
     <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
-            <reporter type="graphic"/>
+            <!--<reporter type="graphic"/>-->
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
-            <membersonly package="org.scalatest.matchers" />
             <membersonly package="org.scalatest.concurrent" />
             <membersonly package="org.scalatest.testng" />
             <membersonly package="org.scalatest.junit" />
             <membersonly package="org.scalatest.events" />
             <membersonly package="org.scalatest.prop" />
             <membersonly package="org.scalatest.tools" />
+        </scalatest>
+        <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
+            <reporter type="stdout" config="D"/>
+            <membersonly package="org.scalatest.matchers" />
         </scalatest>
     </target>
 
