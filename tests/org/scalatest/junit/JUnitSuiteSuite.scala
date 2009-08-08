@@ -58,12 +58,10 @@ package org.scalatest.junit {
     class MyReporter extends Reporter {
 
       var runStartingCount = 0
-      var testCountPassedToRunStarting = -1
       var runCompletedCount = 0
       def apply(event: Event) {
         event match {
           case RunStarting(_, testCount, _, _, _, _, _) =>
-            testCountPassedToRunStarting = testCount
             runStartingCount += 1
           case event: RunCompleted =>
             runCompletedCount += 1
@@ -155,21 +153,20 @@ package org.scalatest.junit {
       assert(repA.testSucceededCount === 2)
     }
 
-    test("A JUnitSuite with a JUnit 4 Test annotation will cause runStarting to be invoked") {
+    test("A JUnitSuite with a JUnit 4 Test annotation will not cause runStarting to be invoked") {
 
       val happy = new HappySuite
       val repA = new MyReporter
       happy.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
-      assert(repA.runStartingCount === 1)
-      assert(repA.testCountPassedToRunStarting === 1)
+      assert(repA.runStartingCount === 0)
     }
 
-    test("A JUnitSuite with a JUnit 4 Test annotation will cause runCompleted to be invoked") {
+    test("A JUnitSuite with a JUnit 4 Test annotation will not cause runCompleted to be invoked") {
 
       val happy = new HappySuite
       val repA = new MyReporter
       happy.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
-      assert(repA.runCompletedCount === 1)
+      assert(repA.runCompletedCount === 0)
     }
   }
 }

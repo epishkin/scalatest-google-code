@@ -144,7 +144,7 @@
     <target name="compile-main" depends="init">
 
         <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
-        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
+        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-Xno-varargs-conversion" />
 
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
@@ -165,7 +165,7 @@
         <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Java code from ${tests} into ${build.tests} -->
-        <javac srcdir="${tests}" destdir="${build.tests}" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${lib}/scala-library.jar" debug="yes" />
+        <javac srcdir="${tests}" destdir="${build.tests}" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${lib}/scala-library.jar:${lib}/junit-4.4.jar" debug="yes" />
     </target>
 
     <target name="compile-examples" depends="compile-main">
@@ -277,6 +277,7 @@
             <membersonly package="org.scalatest.events" />
             <membersonly package="org.scalatest.prop" />
             <membersonly package="org.scalatest.tools" />
+            <extra name="dbname" value="testdb" />
         </scalatest>
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="stdout" config="D"/>
