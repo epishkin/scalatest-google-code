@@ -1,6 +1,4 @@
-import org.scalatest.junit.AssertionsForJUnit3
-import org.scalatest.junit.ShouldMatchersForJUnit3
-import org.scalatest.junit.MustMatchersForJUnit3
+Add a ConfigMapFixture trait
 
 Add pendingUntilFixed to Suite.
 
