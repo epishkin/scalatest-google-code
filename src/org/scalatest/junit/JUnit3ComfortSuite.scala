@@ -23,7 +23,7 @@ import _root_.junit.framework.AssertionFailedError
  * A suite of tests that mimics the syntax of a JUnit 3 <code>TestCase</code>, which can be run with either
  * JUnit 4 or ScalaTest.
  *
- * This trait allows you to write tests with ScalaTest's more concise assertion syntax as well as JUnit-style assertions (<code>assertEquals</code>, etc.).
+ * This class allows you to write tests with ScalaTest's more concise assertion syntax as well as JUnit-style assertions (<code>assertEquals</code>, etc.).
  * You create tests by defining methods that start with <code>test</code>, and can create fixtures with methods
  * named <code>setUp</code> and <code>tearDown</code>. <code>JUnit3ComfortSuite</code> is intended for people who are
  * familiar with JUnit 3 and want to get started quickly writing tests with ScalaTest. Here's an example:
@@ -42,16 +42,16 @@ import _root_.junit.framework.AssertionFailedError
  *     lb = new ListBuffer[String]
  *   }
  *
- *   def testEasy() {
+ *   def testEasy() { // Uses JUnit-style assertions
  *     sb.append("easy!")
- *     assertEquals("ScalaTest is easy!", sb.toString) // JUnit-style assertions
+ *     assertEquals("ScalaTest is easy!", sb.toString)
  *     assertTrue(lb.isEmpty)
  *     lb += "sweet"
  *   }
  *
- *   def testFun() {
+ *   def testFun() { // Uses ScalaTest assertions
  *     sb.append("fun!")
- *     assert(sb.toString === "ScalaTest is fun!") // ScalaTest assertions
+ *     assert(sb.toString === "ScalaTest is fun!")
  *     assert(lb.isEmpty)
  *   }
  * }
@@ -59,6 +59,14 @@ import _root_.junit.framework.AssertionFailedError
  * 
  * <p>
  * To execute a <code>JUnit3ComfortSuite</code>s with ScalaTest's <code>Runner</code>, you must include a JUnit 4 jar file on the class path or runpath.
+ * </p>
+ *
+ * <p>
+ * Note: the reason <code>JUnit3ComfortSuite</code> is not named <code>JUnit3Suite</code> is because that name might imply
+ * that an instance of this class is a JUnit 3 <code>TestCase</code>, just as <code>JUnitSuite</code> is an actual JUnit 4 test
+ * class and <code>TestNGSuite</code> is an actual TestNG test class. By contrast, a <code>JUnit3ComfortSuite</code> is not actually
+ * a JUnit 3 <code>TestCase</code>, it just looks and behaves like one. Thus it gives you that comfortable familiar feeling of
+ * programming with JUnit 3, without actually being JUnit 3.
  * </p>
  *
  * @author Bill Venners
