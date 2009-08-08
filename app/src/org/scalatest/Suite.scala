@@ -567,27 +567,27 @@ import org.scalatest.tools.StandardOutReporter
  *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
  *
  *     // Create needed mutable objects
- *     val sb = new StringBuilder("ScalaTest is ")
- *     val lb = new ListBuffer[String]
+ *     val stringBuilder = new StringBuilder("ScalaTest is ")
+ *     val listBuffer = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     testFunction(sb, lb)
+ *     testFunction(stringBuilder, listBuffer)
  *   }
  *
  *   def testEasy() {
- *     withFixture { (builder, lbuf) =>
+ *     withFixture { (builder, buffer) =>
  *       builder.append("easy!")
  *       assert(builder.toString === "ScalaTest is easy!")
- *       assert(lbuf.isEmpty)
- *       lbuf += "sweet"
+ *       assert(buffer.isEmpty)
+ *       buffer += "sweet"
  *     }
  *   }
  *
  *   def testFun() {
- *     withFixture { (builder, lbuf) =>
+ *     withFixture { (builder, buffer) =>
  *       builder.append("fun!")
  *       assert(builder.toString === "ScalaTest is fun!")
- *       assert(lbuf.isEmpty)
+ *       assert(buffer.isEmpty)
  *     }
  *   }
  * }
