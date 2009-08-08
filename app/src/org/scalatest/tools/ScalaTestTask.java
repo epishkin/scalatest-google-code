@@ -99,21 +99,21 @@ import java.util.ArrayList;
  * </pre>
  *
  * <p>
- * Specify group includes and excludes using &lt;includes&gt; and
- * &lt;excludes&gt; elements.  E.g.:
+ * Specify tag includes and excludes using &lt;tagsToInclude&gt; and
+ * &lt;tagsToExclude&gt; elements.  E.g.:
  * </p>
  *
  * <pre>
  *   &lt;scalatest&gt;
- *     &lt;includes&gt;
+ *     &lt;tagsToInclude&gt;
  *         CheckinTests
  *         FunctionalTests
- *     &lt;/includes&gt;
+ *     &lt;/tagsToInclude&gt;
  *
- *     &lt;excludes&gt;
+ *     &lt;tagsToExclude&gt;
  *         SlowTests
  *         NetworkTests
- *     &lt;/excludes&gt;
+ *     &lt;/tagsToExclude&gt;
  * </pre>
  *
  * <p>
@@ -236,7 +236,7 @@ public class ScalaTestTask extends Task {
     }
 
     //
-    // Adds '-n includes-list' arg pair to args list if an <includes>
+    // Adds '-n includes-list' arg pair to args list if a <tagsToInclude>
     // element was supplied for task.
     //
     private void addIncludesArgs(ArrayList<String> args) {
@@ -471,8 +471,20 @@ public class ScalaTestTask extends Task {
     //
     // Sets values from nested element 'property'.
     //
+    // DEPRECATED in 0.9.6
+    //
     public void addConfiguredProperty(NameValuePair property) {
+        System.err.println("WARNING: 'property' is deprecated - " +
+                           "use 'extra' instead [name: " + property.name +
+                           "]");
         properties.add(property);
+    }
+
+    //
+    // Sets values from nested element 'extra'.
+    //
+    public void addConfiguredExtra(NameValuePair extra) {
+        properties.add(extra);
     }
 
     //
@@ -525,16 +537,40 @@ public class ScalaTestTask extends Task {
     }
 
     //
+    // Sets value from nested element 'tagsToInclude'.
+    //
+    public void addConfiguredTagsToInclude(TextElement tagsToInclude) {
+        this.includes = tagsToInclude.getText();
+    }
+
+    //
     // Sets value from nested element 'includes'.
     //
+    // DEPRECATED in 0.9.6
+    //
     public void addConfiguredIncludes(TextElement includes) {
+        System.err.println("WARNING: 'includes' is deprecated - " +
+                           "use 'tagsToInclude' instead [includes: " +
+                           includes.text + "]");
         this.includes = includes.getText();
     }
 
     //
     // Sets value from nested element 'excludes'.
     //
+    public void addConfiguredTagsToExclude(TextElement tagsToExclude) {
+        this.excludes = tagsToExclude.getText();
+    }
+
+    //
+    // Sets value from nested element 'excludes'.
+    //
+    // DEPRECATED in 0.9.6
+    //
     public void addConfiguredExcludes(TextElement excludes) {
+        System.err.println("WARNING: 'excludes' is deprecated - " +
+                           "use 'tagsToExclude' instead [excludes: " +
+                           excludes.text + "]");
         this.excludes = excludes.getText();
     }
 

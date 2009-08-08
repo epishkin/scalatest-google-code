@@ -26,6 +26,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       expectedRunpathList: List[String],
       expectedReporterList: List[String],
       expectedSuitesList: List[String],
+      expectedJunitsList: List[String],
       expectedPropsList: List[String],
       expectedIncludesList: List[String],
       expectedExcludesList: List[String],
@@ -39,6 +40,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
         runpathList,
         reportersList,
         suitesList,
+        junitsList,
         propsList,
         includesList,
         excludesList,
@@ -51,6 +53,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       assert(runpathList === expectedRunpathList)
       assert(reportersList === expectedReporterList)
       assert(suitesList === expectedSuitesList)
+      assert(junitsList === expectedJunitsList)
       assert(propsList === expectedPropsList)
       assert(includesList === expectedIncludesList)
       assert(excludesList === expectedExcludesList)
@@ -65,6 +68,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
             "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out", "-p"),
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-p"),
       List("-g", "-g", "-f", "file.out"),
+      Nil,
       Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       Nil,
@@ -82,6 +86,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
+      Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       Nil,
       Nil,
@@ -102,6 +107,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       Nil,
       Nil,
+      Nil,
       Nil
     )
 
@@ -112,6 +118,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
+      Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "JustOne"),
       Nil,
@@ -128,6 +135,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
+      Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
       List("-x", "SlowTests"),
@@ -144,6 +152,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
+      Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
       List("-x", "SlowTests"),
@@ -161,6 +170,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
+      Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
       List("-x", "SlowTests"),
@@ -178,6 +188,25 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
+      Nil,
+      List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
+      List("-n", "One Two Three"),
+      List("-x", "SlowTests"),
+      List("-c"),
+      List("-m", "com.example.webapp"),
+      List("-w", "com.example.root"),
+      List("-t", "some/path/file.xml")
+    )
+    // Try a junit Suite
+    verify(
+      Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
+          "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out",
+          "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne", "-j", "junitTest", "-j", "junitTest2",
+          "-m", "com.example.webapp", "-w", "com.example.root", "-t", "some/path/file.xml"),
+      List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
+      List("-g", "-g", "-f", "file.out"),
+      List("-s", "SuiteOne"),
+      List("-j", "junitTest", "-j", "junitTest2"),
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
       List("-x", "SlowTests"),
@@ -394,6 +423,9 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     }
     expect(List("serviceuitest-1.1beta4.jar", "myjini", "http://myhost:9998/myfile.jar")) {
       Runner.parseRunpathArgIntoList(List("-p", "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar"))
+    }
+    expect(List("\\", "c:\\", "c:\\Program Files", "c:\\Documents and Settings", "\\", "myjini")) {
+      Runner.parseRunpathArgIntoList(List("-p", """\ c:\ c:\Program\ Files c:\Documents\ and\ Settings \ myjini"""))
     }
   }
 

@@ -117,11 +117,13 @@ trait JUnitSuite extends Suite { thisSuite =>
     }
 
     override def testRunFinished(result: Result) {
-      report(RunCompleted(theTracker.nextOrdinal()))
+      // don't report these - they get reported by Runner
+      // report(RunCompleted(theTracker.nextOrdinal()))
     }
 
     override def testRunStarted(description: Description) {
-      report(RunStarting(theTracker.nextOrdinal(), description.testCount, configMap))
+      // don't report these - they get reported by Runner
+      // report(RunStarting(theTracker.nextOrdinal(), description.testCount, configMap))
     }
 
     override def testStarted(description: Description) {

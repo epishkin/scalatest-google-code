@@ -72,7 +72,7 @@ import EventToPresent.eventToEventToPresent
  * @author Bill Venners
  */                 
 private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresent],
-    reporterConfigurations: ReporterConfigurations, suitesList: List[String], runpathList: List[String], filter: Filter,
+    reporterConfigurations: ReporterConfigurations, suitesList: List[String], junitsList: List[String], runpathList: List[String], filter: Filter,
     propertiesMap: Map[String, String], concurrent: Boolean, memberOfList: List[String], beginsWithList: List[String],
     testNGList: List[String], passFailReporter: Option[Reporter]) extends
     JFrame(Resources("ScalaTestTitle")) with RunDoneListener with RunnerGUI {
@@ -1348,7 +1348,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
       withClassLoaderAndDispatchReporter(runpathList, reporterConfigurations, Some(graphicRunReporter), passFailReporter) {
         (loader, dispatchReporter) => {
           try {
-            Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, stopper, filter,
+            Runner.doRunRunRunADoRunRun(dispatchReporter, suitesList, junitsList, stopper, filter,
                 propertiesMap, concurrent, memberOfList, beginsWithList, testNGList, runpathList, loader, RunnerJFrame.this, nextRunStamp) 
           }
           finally {
