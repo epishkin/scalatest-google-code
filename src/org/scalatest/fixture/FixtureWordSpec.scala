@@ -1053,4 +1053,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   }
 
   val behave = new BehaveWord
+
+  implicit def withNoFixture(testFunction: => Unit) =
+    (fixture: this.Fixture) => testFunction
 }

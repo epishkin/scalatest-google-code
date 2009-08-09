@@ -1,15 +1,28 @@
-Add pendingUntilFixed to Suite.
+Get matchers tests to run from ant, or at least get them to run so I can be confident giving
+the release to LinkedIn. (30 min)
+
+Add some kind of tests for AssertionsForJUnit3, ShouldMatchersForJUnit3. (30 min)
+
+See if you can't fix George's warning. (30 min)
+
+Drop that extra run started/completed notification thing from JUnitSuite. (15 min)
+
+Turn off tags in JUnit3ComfortSuite? At least until 0.9.8 when I turn on TagAnnotation? (15 min)
 
 Make sure all the SharedBehavior examples use by-name parameters to pass a stack creation function in, because
 that object is mutable. Also add a little bit of text to the docs to point out that immutable things can be
 simply passed in, but mutable ones need to be passed in as a function that can be called (most likely a by-name
-parameter is most appropriate, as is used here.)
+parameter is most appropriate, as is used here.) (15 min)
 
-Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.)
+Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.) (15 min)
+
+Try sorting the GUI reports with the ordinal (1 hour)
+
+Add pendingUntilFixed to Suite. (45 min)
 
 In Spec (and probably at least WordSpec, and the fixture sisters) this needs to be changed to this. Because if the first thing inside a describe with
 tests is an info, then it was not printing anything out. May need to be more tricky than this too,
-but probably not. describe, info, info, describe, etc.
+but probably not. describe, info, info, describe, etc. (45 min)
 
         if (desc.subNodes.isEmpty)
           sendInfoProvidedMessage() 
@@ -19,11 +32,11 @@ but probably not. describe, info, info, describe, etc.
             case _ => sendInfoProvidedMessage()
           }
 
-Maybe throw StackDepthExceptions for any kind of error in test code.
-
 Only allow ignore to replace it in FlatSpec tests that start with it. (45 min.)
 
 Do the "pending" thing in InfoProvided. Probably just add a fromPendingTest Boolean to it. So that I can turn the given when thens yellow that came from a pending test. (1 hour)
+
+Maybe throw StackDepthExceptions for any kind of error in test code. (Later release)
 
 Text:
 Test fixtures:
@@ -34,29 +47,27 @@ BeforeAndAfter => BeforeAndAfterEach
 consider two approaches => consider some approaches
 
 Add tests and error messages for the dynamic error of registering a test that takes no fixture in one
-that requires fixtures, and vice versa, for WordSpec and FlatSpec, or at least just FlatSpec.
+that requires fixtures, and vice versa, for WordSpec and FlatSpec, or at least just FlatSpec. (45 min)
+
+Continue going through the tests for nesting and what not for all the suite traits. (2 days)
 
 In RunnerSuite, 'parseConfigSet was 'parseCOnfigSet, and it was passing, which tells me if invokePrivate
 doesn't find the requested method name maybe it isn't failing. It needs to fail. No, I think the problem
 was probably simply that tools wasn't being run.
 
-Turn off tags in JUnitComfortSuite? At least until 0.9.8 when I turn on TagAnnotation?
+Add back in Report and SpecReport. (15 min)
 
-Add back in Report and SpecReport. Put deprecated final execute methods in that forward as best they can to the regular one, though
-perhaps I just need the final execute forms for the interpreter and the one public execute. Make a trait that can be mixed into
+Put deprecated final execute methods in that forward as best they can to the regular one, though
+perhaps I just need the final execute forms for the interpreter and the one public execute. (1 hour)
+
+Make a trait that can be mixed into
 Reporter called TransitionalReporter, which has an apply method that forwards to the old methods, so people can bring existing reporters
 up to date with a quick mix in. Or, consider whether I can just do that directly in Reporter itself. Oh, no, because then people's would
-extensions would automatically work. No, that's OK. Just deprecate all the old testStarting, etc., methods.
+extensions would automatically work. No, that's OK. Just deprecate all the old testStarting, etc., methods. (4 hours)
 
-Write tests for JUnitComfort Suite.
+Write tests for JUnit3ComfortSuite. (30 min)
 
-Probably make an org.scalatest.junit.AssertionsForJUnit3 trait that provides the same syntax as org.scalatest.Assertions, but
-throws an AssertionFailedError, which will cause JUnit 3 to record it as a failure not an error.
-
-Possibly have TestFailedException extend AssertionError, just for the heck of it? Because it seems like an assert method should
-actually throw an AssertionError.
-
-Document JUnitComfortSuite.
+Port whole thing to 2.8, and see how default params will change things. (1 day)
 
 Put an Option[Nothing] in the run methods as a placeholder for the OutErrTester kind of stuff. Whatever that object is
 that's getting passed around. OutErrManager maybe. Wierd, could even provide overloaded versions. Wait, I could do that
@@ -68,8 +79,6 @@ just runs and failures. Not sure.
 
 Do more testing on the FilterReporter config stuff.
 
-Try sorting the GUI reports with the ordinal
-
 I think I want to deprecate the use of -x for tags to exclude, to use it for XML Reporter. So in 0.9.6, -x should
 still work, but so will some new one. And I'll warn folks that probably in 0.9.7, -x will start meaning xml reporter.
 
@@ -77,10 +86,6 @@ Refactor SuiteRerunner to just create a tools.SuiteRunner and call run on that. 
 because it is also used by Distributor and will be used by SuiteRerunner.
 
 add a RandomTestOrder trait?
-
-put goodies in ant task as well as properties for two releases, then drop properties
-Change description of includes --> tagsToInclude,
-excludes --> tagsToExclude. Leave old one in for two releases.
 
 Add the things for Property based testing displaying args nicely in the GUI (like empty strings should be "")
 

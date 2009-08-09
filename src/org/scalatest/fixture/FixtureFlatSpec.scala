@@ -1092,4 +1092,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
   }
 
   val behave = new BehaveWord
+
+  implicit def withNoFixture(testFunction: => Unit) =
+      (fixture: this.Fixture) => testFunction
 }

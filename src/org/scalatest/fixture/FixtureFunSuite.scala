@@ -731,4 +731,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
     fixture => f
   }
+
+  // TODO: Can I combine this with the previous one, or just remove the previous one?
+  implicit def withNoFixture(testFunction: => Unit) =
+    (fixture: this.Fixture) => testFunction
 }

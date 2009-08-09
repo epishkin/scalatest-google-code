@@ -279,10 +279,12 @@
             <membersonly package="org.scalatest.tools" />
             <extra name="dbname" value="testdb" />
         </scalatest>
+<!--
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest.matchers" />
         </scalatest>
+-->
     </target>
 
     <target name="examples" depends="compile-main,compile-examples,copyprops,taskdefscalatest">
