@@ -238,13 +238,100 @@ import org.scalatest.events._
  * </pre>
  *
  * <p>
- * <strong>Configuring fixtures</strong>
+ * <strong>Configuring fixtures and tests</strong>
  * </p>
  * 
  * <p>
- * The <code>TestFunction</code> trait also has a <code>configMap</code>
- * method, which will return a <code>configMap</code> from which configuration information may be obtained 
+ * Sometimes you may want to write tests that are configurable. For example, you may want to write
+ * a suite of tests that each take an open temp file as a fixture, but whose file name is specified
+ * externally so that the file name can be can be changed from run to run. To accomplish this
+ * the <code>TestFunction</code> trait has a <code>configMap</code>
+ * method, which will return a <code>Map[String, Any]</code> from which configuration information may be obtained.
+ * The <code>runTest</code> method of this trait will pass a <code>TestFunction</code> to <code>withFixture</code>
+ * whose <code>configMap</code> method returns the <code>configMap</code> passed to <code>runTest</code>.
+ * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureSuite
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends FixtureSuite {
+ *
+ *   type Fixture = FileReader
+ *
+ *   def withFixture(testFunction: TestFunction) {
+ *
+ *     require(
+ *       testFunction.configMap.contains("TempFileName"),
+ *       "This suite requires a TempFileName to be passed in the configMap"
+ *     )
+ *
+ *     // Grab the file name from the configMap
+ *     val FileName = testFunction.configMap("TempFileName")
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       testFunction(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   def testReadingFromTheTempFile(reader: FileReader) {
+ *     var builder = new StringBuilder
+ *     var c = reader.read()
+ *     while (c != -1) {
+ *       builder.append(c.toChar)
+ *       c = reader.read()
+ *     }
+ *     assert(builder.toString === "Hello, test!")
+ *   }
+ * 
+ *   def testFirstCharOfTheTempFile(reader: FileReader) {
+ *     assert(reader.read() === 'H')
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you want to pass into each test the entire <code>configMap</code> that was passed to <code>runTest</code>, you 
+ * can mix in trait <code>ConfigMapFixture</code>. See the <a href="ConfigMapFixture.html">documentation
+ * for <code>ConfigMapFixture</code></a> for the details, but here's a quick
+ * example of how it looks:
+ * </p>
+ *
+ * <pre>
+ *  class MySuite extends FixtureSuite with ConfigMapFixture {
+ *
+ *    def testHello(configMap: Map[String, Any]) {
+ *      // Use the configMap passed to runTest in the test
+ *      assert(configMap.contains("hello")
+ *    }
+ *
+ *    def testWorld(configMap: Map[String, Any]) {
+ *      assert(configMap.contains("world")
+ *    }
+ *  }
+ * </pre>
  *
  * @author Bill Venners
  */
@@ -252,11 +339,39 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   protected type Fixture
 
+  /**
+   * Object that encapsulates a test function and config map.
+   *
+   * <p>
+   * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
+   * to <code>FixtureSuite</code>'s <code>withFixture</code> method.  For more detail and examples, see the
+   * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
+   * </p>
+   */
   protected trait TestFunction extends ((Fixture) => Unit) {
+
+    /**
+     * Run the test, using the passed <code>Fixture</code>.
+     */
     def apply(fixture: Fixture)
+
+    /**
+     * Return a <code>Map[String, Any]</code> containing objects that can be used
+     * to configure the fixture and test.
+     */
     def configMap: Map[String, Any]
   }
 
+  /**
+   * Run the passed test function with a fixture created by this method.
+   *
+   * <p>
+   * This method should create the fixture object needed by the tests of the
+   * current suite, invoke the test function (passing in the fixture object),
+   * and if needed, perform any clean up needed after the test completes.
+   * For more detail and examples, see the <a href="FixtureSuite.html">main documentation for this trait</a>.
+   * </p>
+   */
   protected def withFixture(fun: TestFunction)
 
   private[fixture] class TestFunAndConfigMap(fun: (Fixture) => Unit, val configMap: Map[String, Any])
