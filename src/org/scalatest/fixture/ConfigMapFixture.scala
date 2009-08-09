@@ -15,11 +15,26 @@
  */
 package org.scalatest.fixture
 
+/**
+ * Trait that when mixed into a <code>FixtureSuite</code> ensures the
+ * <code>configMap</code> passed to <code>runTest</code> is passed along
+ * as a fixture into each test.
+ */
 trait ConfigMapFixture { this: FixtureSuite =>
 
+  /**
+   * The type of the <code>configMap</code>, which is <code>Map[String, Any]</code>.
+   */
   type Fixture = Map[String, Any]
 
+  /**
+   * Invoke the test function, passing to the the test function the <code>configMap</code>
+   * obtained by invoking <code>configMap</code> on the passed <code>TestFunction</code>.
+   *
+   * @param testFunction the <code>TestFunction</code> to invoke, passing in the
+   *   <code>configMap</code> fixture
+   */
   def withFixture(testFunction: this.TestFunction) {
-    testFunction(testFunction.configMap)  
+    testFunction(testFunction.configMap)
   }
 }
