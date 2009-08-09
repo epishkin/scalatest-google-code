@@ -32,4 +32,3 @@ class TupleFixtureSuite extends FixtureSuite {
     assert(lbuf.isEmpty)
   }
 }
-
