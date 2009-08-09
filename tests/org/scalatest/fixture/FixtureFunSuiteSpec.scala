@@ -614,5 +614,43 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       val tp = rep.testPendingEventsReceived
       assert(tp.size === 2)
     }
+
+    it("should allow tests without fixtures to be combined with tests with fixtures") {
+
+      val a = new FixtureFunSuite {
+
+        var theTestWithFixtureWasRun = false
+        var theTestWithoutFixtureWasRun = false
+
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+
+        test("should do this") (pending)
+
+        test("should do that") { fixture =>
+          assert(fixture === hello)
+          theTestWithFixtureWasRun = true
+        }
+
+        test("should do something else") { fixture =>
+          assert(fixture === hello)
+          pending
+        }
+
+        test("should do that without a fixture") {
+          assert(2 + 2 === 4)
+          theTestWithoutFixtureWasRun = true
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tp = rep.testPendingEventsReceived
+      assert(tp.size === 2)
+      assert(a.theTestWithFixtureWasRun)
+      assert(a.theTestWithoutFixtureWasRun)
+    }
   }
 }
