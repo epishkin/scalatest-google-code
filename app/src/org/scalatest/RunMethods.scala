@@ -117,11 +117,6 @@ trait RunMethods { this: Suite =>
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, <code>groupsToInclude</code>,
    *     <code>groupsToExclude</code>, or <code>configMap</code> is <code>null</code>.
-   *
-   * This trait's implementation of this method runs tests
-   * in the manner described in detail in the following paragraphs, but subclasses may override the method to provide different
-   * behavior. The most common reason to override this method is to set up and, if also necessary, to clean up a test fixture
-   * used by all the methods of this <code>Suite</code>.
    */
   protected def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
                              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)

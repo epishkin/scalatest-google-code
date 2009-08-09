@@ -320,6 +320,9 @@ import org.scalatest.events._
  * </p>
  *
  * <pre>
+ *  import org.scalatest.fixture.FixtureSuite
+ *  import org.scalatest.fixture.ConfigMapFixture
+ *
  *  class MySuite extends FixtureSuite with ConfigMapFixture {
  *
  *    def testHello(configMap: Map[String, Any]) {
@@ -337,6 +340,9 @@ import org.scalatest.events._
  */
 trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
+  /**
+   * The type of the fixture needed by the current suite.
+   */
   protected type Fixture
 
   /**
@@ -371,8 +377,10 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * and if needed, perform any clean up needed after the test completes.
    * For more detail and examples, see the <a href="FixtureSuite.html">main documentation for this trait</a>.
    * </p>
+   *
+   * @param testFunction the <code>TestFunction</code> to invoke, passing in a fixture
    */
-  protected def withFixture(fun: TestFunction)
+  protected def withFixture(testFunction: TestFunction)
 
   private[fixture] class TestFunAndConfigMap(fun: (Fixture) => Unit, val configMap: Map[String, Any])
     extends TestFunction {

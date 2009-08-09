@@ -1553,6 +1553,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param filter a <code>Filter</code> with which to filter tests based on their tags
    * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
    * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
    * @throws NullPointerException if any of the passed parameters is <code>null</code>.
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
@@ -2027,8 +2029,3 @@ private[scalatest] object Suite {
     else
       testName
 }
-
-// Trying this to see if I can get the syntax I want in fixture.FeatureSpec
-// TODO: move to own file
-class PendingNothing
-
