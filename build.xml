@@ -280,10 +280,66 @@
         </scalatest>
     </target>
 
-    <target name="matcherstest" depends="compile,copyprops,jartests,taskdefscalatest">
+    <target name="shouldmatcherstest" depends="compile,copyprops,jartests,taskdefscalatest">
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="stdout" config="D"/>
-            <membersonly package="org.scalatest.matchers" />
+                <suite classname="org.scalatest.matchers.ShouldBeASymbolSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldBeAnSymbolSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldBeMatcherSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldBeNullSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldBePropertyMatcherSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldBeSymbolSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldBehaveLikeSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldContainElementSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldContainKeySpec"/>
+                <suite classname="org.scalatest.matchers.ShouldContainValueSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldEndWithRegexSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldEndWithSubstringSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldEqualSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldFullyMatchSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldHavePropertiesSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldIncludeRegexSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldIncludeSubstringSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldLengthSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldLogicalMatcherExprSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldMatcherSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldOrderedSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldPlusOrMinusSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldSameInstanceAsSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldSizeSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldStartWithRegexSpec"/>
+                <suite classname="org.scalatest.matchers.ShouldStartWithSubstringSpec"/>
+        </scalatest>
+    </target>
+    <target name="mustmatcherstest" depends="compile,copyprops,jartests,taskdefscalatest">
+        <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
+            <reporter type="stdout" config="D"/>
+                <suite classname="org.scalatest.matchers.MustBeASymbolSpec"/>
+                <suite classname="org.scalatest.matchers.MustBeAnSymbolSpec"/>
+                <suite classname="org.scalatest.matchers.MustBeMatcherSpec"/>
+                <suite classname="org.scalatest.matchers.MustBeNullSpec"/>
+                <suite classname="org.scalatest.matchers.MustBePropertyMatcherSpec"/>
+                <suite classname="org.scalatest.matchers.MustBeSymbolSpec"/>
+                <suite classname="org.scalatest.matchers.MustBehaveLikeSpec"/>
+                <suite classname="org.scalatest.matchers.MustContainElementSpec"/>
+                <suite classname="org.scalatest.matchers.MustContainKeySpec"/>
+                <suite classname="org.scalatest.matchers.MustContainValueSpec"/>
+                <suite classname="org.scalatest.matchers.MustEndWithRegexSpec"/>
+                <suite classname="org.scalatest.matchers.MustEndWithSubstringSpec"/>
+                <suite classname="org.scalatest.matchers.MustEqualSpec"/>
+                <suite classname="org.scalatest.matchers.MustFullyMatchSpec"/>
+                <suite classname="org.scalatest.matchers.MustHavePropertiesSpec"/>
+                <suite classname="org.scalatest.matchers.MustIncludeRegexSpec"/>
+                <suite classname="org.scalatest.matchers.MustIncludeSubstringSpec"/>
+                <suite classname="org.scalatest.matchers.MustLengthSpec"/>
+                <suite classname="org.scalatest.matchers.MustLogicalMatcherExprSpec"/>
+                <suite classname="org.scalatest.matchers.MustMatcherSpec"/>
+                <suite classname="org.scalatest.matchers.MustOrderedSpec"/>
+                <suite classname="org.scalatest.matchers.MustPlusOrMinusSpec"/>
+                <suite classname="org.scalatest.matchers.MustSameInstanceAsSpec"/>
+                <suite classname="org.scalatest.matchers.MustSizeSpec"/>
+                <suite classname="org.scalatest.matchers.MustStartWithRegexSpec"/>
+                <suite classname="org.scalatest.matchers.MustStartWithSubstringSpec"/>
         </scalatest>
     </target>
 

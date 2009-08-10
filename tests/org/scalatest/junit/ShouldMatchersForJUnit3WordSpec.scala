@@ -8,7 +8,7 @@ class ShouldMatchersForJUnit3WordSpec extends WordSpec with ShouldMatchersForJUn
 
   val throwAssertionFailedError = afterWord("throw AssertionFailedError")
 
-  "the AssertionsForJUnit3 trait" should throwAssertionFailedError {
+  "the ShouldMatchersForJUnit3 trait" should throwAssertionFailedError {
 
     // ShouldMatchersForJUnit3 mixes in AssertionsForJUnit3, so ShouldMatchersForJUnit3
     // should behave like AsssertionsForJUnit3. (I don't want to use the 'behave like'

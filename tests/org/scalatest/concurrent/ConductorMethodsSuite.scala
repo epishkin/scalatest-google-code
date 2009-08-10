@@ -162,7 +162,7 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
       }
     }
     thread(r)
-    thread{ r.runCount mustBe 0 }
+    thread{ r.runCount mustBe 0 } // This failed even with the volatile. Is there a race condition?
     whenFinished{ r.runCount mustBe 1 }
   }
 
