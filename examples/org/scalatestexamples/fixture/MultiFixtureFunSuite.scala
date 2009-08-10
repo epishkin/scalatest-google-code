@@ -15,19 +15,17 @@
  */
 package org.scalatestexamples.fixture
 
-import scalatest.fixture.{ConfigMapFixture, FixtureFunSuite}
 
-class MultiFixtureFunSuite extends FixtureFunSuite with ConfigMapFixture {
+import scalatest.fixture.MultipleFixtureFunSuite
 
-  implicit def withStringFixture(testFunction: String => Unit) =
-    (configMap: ConfigMap) => {
-      testFunction("howdy")
-    }
+class MultiFixtureFunSuite extends MultipleFixtureFunSuite {
 
-  implicit def withListFixture(testFunction: List[Int] => Unit) =
-    (configMap: ConfigMap) => {
-      testFunction(List(9))
-    }
+   // Uses the implicit conversion from by-name to Fixture => Unit
+  implicit def withStringFixture(testFunction: String => Unit): Fixture => Unit =
+    testFunction("howdy")
+
+  implicit def withListFixture(testFunction: List[Int] => Unit): Fixture => Unit =
+    configMap => testFunction(List(configMap.size))
 
   test("a by name version") {
     assert(1 === 1)

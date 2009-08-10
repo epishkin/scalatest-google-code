@@ -22,12 +22,10 @@ package org.scalatest.fixture
  */
 trait ConfigMapFixture { this: FixtureSuite =>
 
-  type ConfigMap = Map[String, Any]
-
   /**
    * The type of the <code>configMap</code>, which is <code>Map[String, Any]</code>.
    */
-  type Fixture = ConfigMap
+  type Fixture = Map[String, Any]
 
   /**
    * Invoke the test function, passing to the the test function the <code>configMap</code>
