@@ -45,8 +45,8 @@ object GenMustMatchers extends Application {
 
 object GenMustMatchersTests extends Application {
 
-  val dir = new File("target/generated/tests/org/scalatest/matchers")
-  dir.mkdirs()
+  val matchersDir = new File("target/generated/tests/org/scalatest/matchers")
+  matchersDir.mkdirs()
   val shouldFileNames = 
     List(
       "ShouldBehaveLikeSpec.scala",
@@ -93,6 +93,20 @@ object GenMustMatchersTests extends Application {
     finally {
       writer.close()
     }
+  }
+
+  val junitDir = new File("target/generated/tests/org/scalatest/junit")
+  junitDir.mkdirs()
+  val writer = new BufferedWriter(new FileWriter("target/generated/tests/org/scalatest/junit/" + "MustMatchersForJUnit3WordSpec.scala"))
+  try {
+    val shouldLines = Source.fromFile("tests/org/scalatest/junit/" + "ShouldMatchersForJUnit3WordSpec.scala").getLines.toList
+    for (shouldLine <- shouldLines) {
+      val mustLine = translateShouldToMust(shouldLine)
+      writer.write(mustLine.toString)
+    }
+  }
+  finally {
+    writer.close()
   }
 }
 
