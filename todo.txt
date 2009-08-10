@@ -1,18 +1,7 @@
 Write tests that combine tests that take no fixture with tests that do in each Fixture traits. For FixtureSuite
 will need to add a bit of software.
 
-See if you can get rid of the pending conversion in FixtureFunSuite, FixtureFeatureSpec, FixtureSpec.
-
-Get matchers tests to run from ant, or at least get them to run so I can be confident giving
-the release to LinkedIn. (30 min)
-
 Add some kind of tests for AssertionsForJUnit3, ShouldMatchersForJUnit3. (30 min)
-
-See if you can't fix George's warning. (30 min)
-
-Drop that extra run started/completed notification thing from JUnitSuite. (15 min)
-
-Turn off tags in JUnit3ComfortSuite? At least until 0.9.8 when I turn on TagAnnotation? (15 min)
 
 Make sure all the SharedBehavior examples use by-name parameters to pass a stack creation function in, because
 that object is mutable. Also add a little bit of text to the docs to point out that immutable things can be
