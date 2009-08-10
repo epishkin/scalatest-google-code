@@ -43,8 +43,7 @@ import java.lang.reflect
  * @author Joel Neely
  * @author George Berger
  */
-class JUnitWrapperSuite(junitClassName: String, loader: ClassLoader)
-extends Suite {
+class JUnitWrapperSuite(junitClassName: String, loader: ClassLoader) extends Suite {
 
   // TODO: This may need to be made thread safe, because who
   // knows what Thread JUnit will fire through this

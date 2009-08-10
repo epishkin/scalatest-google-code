@@ -62,6 +62,23 @@ import _root_.junit.framework.AssertionFailedError
  * </p>
  *
  * <p>
+ * One difference between a <code>JUnit3ComfortSuite</code> and a JUnit 3 <code>TestCase</code>
+ * is that tags are supported in a <code>JUnit3ComfortSuite</code>, but JUnit 3 had no such
+ * concept. Tags work in a <code>JUnit3ComfortSuite</code> exactly like they work in <code>Suite</code>:
+ * you place annotations on the test methods. This allows you, for example, to ignore a test in
+ * a <code>JUnit3ComfortSuite</code> like this:
+ * </p>
+ *
+ * <pre>
+ * @Ignore
+ * def testSubtraction() {
+ *   val diff = 4 - 1
+ *   assert(diff === 3)
+ *   assert(diff - 2 === 1)
+ * }
+ * </pre>
+ *
+ * <p>
  * Note: the reason <code>JUnit3ComfortSuite</code> is not named <code>JUnit3Suite</code> is because that name might imply
  * that an instance of this class is a JUnit 3 <code>TestCase</code>, just as <code>JUnitSuite</code> is an actual JUnit 4 test
  * class and <code>TestNGSuite</code> is an actual TestNG test class. By contrast, a <code>JUnit3ComfortSuite</code> is not actually

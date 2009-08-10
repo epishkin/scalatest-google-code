@@ -267,7 +267,6 @@
 
     <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
-            <!--<reporter type="graphic"/>-->
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
@@ -279,12 +278,13 @@
             <membersonly package="org.scalatest.tools" />
             <extra name="dbname" value="testdb" />
         </scalatest>
-<!--
+    </target>
+
+    <target name="matcherstest" depends="compile,copyprops,jartests,taskdefscalatest">
         <scalatest runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest.matchers" />
         </scalatest>
--->
     </target>
 
     <target name="examples" depends="compile-main,compile-examples,copyprops,taskdefscalatest">
