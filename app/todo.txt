@@ -1,3 +1,11 @@
+compile-examples:
+   [scalac] Compiling 3 scala and 3 java source files to /Users/bv/nobkp/delus/st/target/examples
+   [scalac] /Users/bv/nobkp/delus/st/examples/org/scalatestexamples/easymock/EasyMockExampleFlatSpec.scala:42: error: overloaded method value in with alternatives ((_$2) => Unit)Unit <and> (=> Unit)Unit cannot be applied to (Boolean)
+   [scalac]   "ClassTested" should "not call the collaborator when removing a non-existing document" in {
+   [scalac]                                                                                          ^
+   [scalac] one error found
+I get an error in FlatSpec when the inferred result type isn't Unit for the in block. Had to put a () at the end.
+
 I think giving people the choice is the way to go. So a JMockMethods and a JMockFixture, just like Conductor.
 
 trait JMockMethods defines methods on the object itself, which in the background use a Mockery in a var, replaced
