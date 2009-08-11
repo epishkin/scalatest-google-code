@@ -1,3 +1,97 @@
+I think giving people the choice is the way to go. So a JMockMethods and a JMockFixture, just like Conductor.
+
+trait JMockMethods defines methods on the object itself, which in the background use a Mockery in a var, replaced
+by runTest. JMockFixture defines some MockeryWrapper object that has the methods on it, or JMockSugar, and this
+guy gets passed as the fixture, which must be imported:
+
+trait JMockCycleMethods { this: Suite =>
+
+  def mock ...
+
+  def expecting ...
+
+  def whenExecuting ...
+}
+
+class JMockCycle {
+
+  // Maybe it isn't private, so people can use it
+  private val context = new Mockery
+
+  def mock ...
+
+  def expecting ...
+
+  def whenExecuting ...
+  
+}
+
+trait JMockCycleFixture { this: FixtureSuite =>
+
+  type Fixture = JMockCycle
+
+  def withFixture(f: TestFunction) {
+    f(new JMockContext)
+  }
+}
+
+for the latter, it is:
+
+test("bla bla bla") { jmc => import jmc._
+}
+
+EasyMock is easier, it is just EasyMockSugar
+And Mockito is just MockitoSugar
+No JMockSugar, so no implicit parameters? JMockSugar is another valid approach, and can be used in
+JUnit 3, etc. Actually, JUnit3 brings up an issue. Maybe want a JMockSugarForJUnit3, EasyMockSugarForJUnit3?
+Not sure what these guys throw when there's an error.
+
+trait MutableFixture affixes Fixture to type Unused.type, which has one instance, a singleton object.
+
+trait CreateFixtureMethod { this: FixtureSuite =>
+  def createFixture: this.Fixture
+}
+
+trait NoOtherFixture extends CreateFixtureMethod { this: FixtureSuite =>
+
+  object Unused
+
+  type Fixture = Unused.type
+
+  def createFixture = Unused
+}
+
+trait NewConductorEachTest extends CreateFixtureMethod {
+  // Does not define Fixture
+  def withFixture(testFunction: TestFunction) {
+    conductor = new Conductor // mutate the implicit var thing
+    testFunction(createFixture)
+    if (!conductor.testWasStarted) {
+      conductor.runTest()
+    }
+  }
+  def createFixture: Fixture
+}
+
+Then to use, can just say
+
+class MySuite extends FixtureFunSuite with NewConductorEachTest with NoOtherFixture {
+  test("bla bla bla") {
+    // Just use it, because don't need the fixture param
+  }
+}
+
+Or I can provide:
+
+trait ConductorSugar extends NewConductorEachTest with NoOtherFixture
+
+ConductorFixture would be mutable. Could have methods that take an implicit, and just
+redo the implicit. If I could just override the fixture type. Ah!!!! Got it. I delegate
+to ta method. (Ye olde template pattern), for the fixture object. 
+
+
+Crap, will need to make an ImplicitMockery in the old fashioned way. OneImplicitMockeryPerTest
+
 Transform detail messages printed out in Graphic view, so that any \n characters become <br />.
 
 Write tests that combine tests that take no fixture with tests that do in each Fixture traits. For FixtureSuite
