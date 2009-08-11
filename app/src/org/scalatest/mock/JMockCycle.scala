@@ -32,7 +32,6 @@ class JMockCycle {
    * </pre>
    *
    * <pre>
-   * implicit val context = new Mockery
    * val reporter = mock[Reporter]
    * </pre>
    */
