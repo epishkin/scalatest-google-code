@@ -958,14 +958,12 @@ trait FunSuite extends Suite { thisSuite =>
     catch { 
       case _: TestPendingException =>
         report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
-      case e: Exception => {
+      case e: Exception =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
-      }
-      case ae: AssertionError => {
+      case ae: AssertionError =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(ae, false, testName, rerunnable, report, tracker, duration)
-      }
     }
   }
 

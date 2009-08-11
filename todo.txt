@@ -1,3 +1,5 @@
+Transform detail messages printed out in Graphic view, so that any \n characters become <br />.
+
 Write tests that combine tests that take no fixture with tests that do in each Fixture traits. For FixtureSuite
 will need to add a bit of software.
 

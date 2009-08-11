@@ -22,23 +22,22 @@ package org.scalatest.testng {
   import org.jmock.Expectations
   import org.hamcrest.core.IsAnything
   import org.scalatest.events._
+  import org.scalatest.mock.JMockSugar
 
-  class TestNGSuiteSuite extends FunSuite with SuiteExpectations {
+  class TestNGSuiteSuite extends FunSuite with SuiteExpectations with JMockSugar {
 
     test("Reporter should be notified when test passes") {
  
-      val context = new Mockery
-      val reporter = context.mock(classOf[Reporter])
+      implicit val context = new Mockery
+      val reporter = mock[Reporter]
 
-      context.checking(
-        new Expectations() {
-          expectSingleTestToPass(this, reporter)
-        }
-      )
-      
-      (new SuccessTestNGSuite()).runTestNG(reporter, new Tracker)
+      expecting { e =>
+        expectSingleTestToPass(e, reporter)
+      }
 
-      context.assertIsSatisfied()
+      whenExecuting {
+        (new SuccessTestNGSuite()).runTestNG(reporter, new Tracker)
+      }
     }
 
     test("Reporter should be notified when test fails") {
