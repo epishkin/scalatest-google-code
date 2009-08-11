@@ -20,7 +20,9 @@ import org.jmock.api.ExpectationError
 import org.jmock.{Expectations, Mockery}
 import scala.reflect.Manifest
 
-trait JMockSugar {
+class JMockCycle {
+
+  private val context = new Mockery
 
   /**
    *
@@ -34,8 +36,8 @@ trait JMockSugar {
    * val reporter = mock[Reporter]
    * </pre>
    */
-  def mock[T <: AnyRef](implicit context: Mockery, manifest: Manifest[T]): T = {
-    context.mock( manifest.erasure.asInstanceOf[Class[T]])
+  def mock[T <: AnyRef](implicit manifest: Manifest[T]): T = {
+    context.mock(manifest.erasure.asInstanceOf[Class[T]])
   }
 
   /**
@@ -59,7 +61,7 @@ trait JMockSugar {
    * }
    * </pre>
    */
-  def expecting(expectationsFunction: Expectations => Unit)(implicit context: Mockery) {
+  def expecting(expectationsFunction: Expectations => Unit) {
     val e = new Expectations
     expectationsFunction(e)
     context.checking(e)
@@ -78,7 +80,7 @@ trait JMockSugar {
    * }
    * </pre>
    */
-  def whenExecuting(f: => Unit)(implicit context: Mockery) = {
+  def whenExecuting(f: => Unit) = {
     try {
       f
       context.assertIsSatisfied()

@@ -22,13 +22,14 @@ package org.scalatest.testng {
   import org.jmock.Expectations
   import org.hamcrest.core.IsAnything
   import org.scalatest.events._
-  import org.scalatest.mock.JMockSugar
+  import org.scalatest.mock.JMockCycle
+  import org.scalatest.mock.JMockCycleFixture
+  import org.scalatest.fixture.FixtureFunSuite
 
-  class TestNGSuiteSuite extends FunSuite with SuiteExpectations with JMockSugar {
+  class TestNGSuiteSuite extends FixtureFunSuite with JMockCycleFixture with SuiteExpectations {
 
-    test("Reporter should be notified when test passes") {
- 
-      implicit val context = new Mockery
+    test("Reporter should be notified when test passes") { cycle => import cycle._
+
       val reporter = mock[Reporter]
 
       expecting { e =>
@@ -40,20 +41,17 @@ package org.scalatest.testng {
       }
     }
 
-    test("Reporter should be notified when test fails") {
-   
-      val context = new Mockery
-      val reporter = context.mock(classOf[Reporter])
+    test("Reporter should be notified when test fails") { cycle => import cycle._
 
-      context.checking(
-        new Expectations() {
-          expectSingleTestToFail(this, reporter)
-        }
-      )
+      val reporter = mock[Reporter]
 
-      (new FailureTestNGSuite()).runTestNG(reporter, new Tracker)
+      expecting { e =>
+        expectSingleTestToFail(e, reporter)
+      }
 
-      context.assertIsSatisfied()
+      whenExecuting {
+        (new FailureTestNGSuite()).runTestNG(reporter, new Tracker)
+      }
     }
 
     test("If a test fails due to an exception, Report should have the exception") {
@@ -71,60 +69,51 @@ package org.scalatest.testng {
       }
     }
 
-    test("Report should be generated for each invocation") {
+    test("Report should be generated for each invocation") { cycle => import cycle._
       
-      val context = new Mockery
-      val reporter = context.mock(classOf[Reporter])
+      val reporter = mock[Reporter]
 
       // expect reporter gets 10 passing reports because invocationCount = 10
-      context.checking(
-        new Expectations() {
-          expectNTestsToPass(this, 10, reporter)
-        }
-      )
+      expecting { e =>
+        expectNTestsToPass(e, 10, reporter)
+      }
 
-      // when runnning the suite with method that has invocationCount = 10") {
-      (new TestNGSuiteWithInvocationCount()).runTestNG(reporter, new Tracker)
-
-      context.assertIsSatisfied()
+      // when runnning the suite with method that has invocationCount = 10")
+      whenExecuting {
+        (new TestNGSuiteWithInvocationCount()).runTestNG(reporter, new Tracker)
+      }
     }
 
-    test("Reporter should be notified when test is skipped") {
+    test("Reporter should be notified when test is skipped") { cycle => import cycle._
 
-      val context = new Mockery
-      val reporter = context.mock(classOf[Reporter])
+      val reporter = mock[Reporter]
 
       // expect a single test should fail, followed by a single test being skipped
-      context.checking(
-        new Expectations() {
-          one(reporter).apply(`with`(new IsAnything[SuiteStarting]))
-          one(reporter).apply(`with`(new IsAnything[TestStarting]))
-          one(reporter).apply(`with`(new IsAnything[TestFailed]))
-          one(reporter).apply(`with`(new IsAnything[TestIgnored]))
-          one(reporter).apply(`with`(new IsAnything[SuiteCompleted]))
-        }
-      )
+      expecting { e => import e._
+        one(reporter).apply(`with`(new IsAnything[SuiteStarting]))
+        one(reporter).apply(`with`(new IsAnything[TestStarting]))
+        one(reporter).apply(`with`(new IsAnything[TestFailed]))
+        one(reporter).apply(`with`(new IsAnything[TestIgnored]))
+        one(reporter).apply(`with`(new IsAnything[SuiteCompleted]))
+      }
 
       // when runnning the suite with a test that should fail and a test that should be skipped
-      (new SuiteWithSkippedTest()).runTestNG(reporter, new Tracker)
-
-      context.assertIsSatisfied()
+      whenExecuting {
+        (new SuiteWithSkippedTest()).runTestNG(reporter, new Tracker)
+      }
     }
     
-    test("Only the correct method should be run when specifying a single method to run") {
+    test("Only the correct method should be run when specifying a single method to run") { cycle => import cycle._
       
-      val context = new Mockery
-      val reporter = context.mock(classOf[Reporter])
+      val reporter = mock[Reporter]
 
-      context.checking(
-        new Expectations() {
-          expectSingleTestToPass(this, reporter)
-        }
-      )
-      
-      (new SuiteWithTwoTests()).runTestNG("testThatPasses", reporter, new Tracker)
+      expecting { e =>
+        expectSingleTestToPass(e, reporter)
+      }
 
-      context.assertIsSatisfied()
+      whenExecuting {
+        (new SuiteWithTwoTests()).runTestNG("testThatPasses", reporter, new Tracker)
+      }
     }
 
     test("Report for failing tests should include rerunner") {
