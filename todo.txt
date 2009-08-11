@@ -5,6 +5,7 @@ compile-examples:
    [scalac]                                                                                          ^
    [scalac] one error found
 I get an error in FlatSpec when the inferred result type isn't Unit for the in block. Had to put a () at the end.
+I think the fix is that this type shouldn't be Unit, it should be Any.
 
 I think giving people the choice is the way to go. So a JMockMethods and a JMockFixture, just like Conductor.
 

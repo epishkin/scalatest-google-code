@@ -15,7 +15,7 @@
  */
 package org.scalatestexamples.easymock
 
-import org.easymock.EasyMock.{expect => expectCall, _}
+import org.easymock.EasyMock._
 import org.junit.Assert._
 
 import java.util.ArrayList
@@ -25,135 +25,154 @@ import org.easymock.IAnswer
 import org.junit.Before
 import org.junit.Test
 import org.scalatest.verb.ShouldVerb
+import scalatest.mock.EasyMockSugar
 import scalatest.{BeforeAndAfterEach, FlatSpec}
-class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAfterEach {
+class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAfterEach with EasyMockSugar {
 
   // Sorry about the nulls and vars, this was ported from Java from an EasyMock example
   private var classUnderTest: ClassTested = _
 
-  private var mock: Collaborator = _
+  private var mockCollaborator: Collaborator = _
 
   override def beforeEach() {
-    mock = createMock(classOf[Collaborator])
+    mockCollaborator = mock[Collaborator]
     classUnderTest = new ClassTested()
-    classUnderTest.addListener(mock)
+    classUnderTest.addListener(mockCollaborator)
   }
 
   "ClassTested" should "not call the collaborator when removing a non-existing document" in {
-    replay(mock)
+    replay(mockCollaborator)
     classUnderTest.removeDocument("Does not exist")
     ()
   }
 
   it should "call documentAdded on the Collaborator when a new document is added" in {
-    mock.documentAdded("New Document")
-    replay(mock)
-    classUnderTest.addDocument("New Document", new Array[Byte](0))
-    verify(mock)
+    expecting {
+      mockCollaborator.documentAdded("New Document")
+    }
+    whenExecuting(mockCollaborator) {
+      classUnderTest.addDocument("New Document", new Array[Byte](0))
+    }
   }
 
   it should "call documentChanged on the Collaborator when a document is changed" in {
-    mock.documentAdded("Document")
-    mock.documentChanged("Document")
-    expectLastCall().times(3)
-    replay(mock)
-    classUnderTest.addDocument("Document", new Array[Byte](0))
-    classUnderTest.addDocument("Document", new Array[Byte](0))
-    classUnderTest.addDocument("Document", new Array[Byte](0))
-    classUnderTest.addDocument("Document", new Array[Byte](0))
-    verify(mock)
+
+    expecting {
+      mockCollaborator.documentAdded("Document")
+      mockCollaborator.documentChanged("Document")
+      expectLastCall().times(3)
+    }
+    
+    whenExecuting(mockCollaborator) {
+      classUnderTest.addDocument("Document", new Array[Byte](0))
+      classUnderTest.addDocument("Document", new Array[Byte](0))
+      classUnderTest.addDocument("Document", new Array[Byte](0))
+      classUnderTest.addDocument("Document", new Array[Byte](0))
+    }
   }
 
-  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested, and" +
-          "if a POSITIVE number is returned (i.e., a vote FOR removal), documentRemoved" +
+  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested, and " +
+          "if a POSITIVE number is returned (i.e., a vote FOR removal), documentRemoved " +
           "should be called on Collaborator" in {
-    // expect document addition
-    mock.documentAdded("Document");
-    // expect to be asked to vote, and vote for it
-    expectCall(mock.voteForRemoval("Document")).andReturn((42).asInstanceOf[Byte]);
-    // expect document removal
-    mock.documentRemoved("Document");
 
-    replay(mock);
-    classUnderTest.addDocument("Document", new Array[Byte](0));
-    assertTrue(classUnderTest.removeDocument("Document"));
-    verify(mock);
+    expecting {
+      // expect document addition
+      mockCollaborator.documentAdded("Document");
+      // expect to be asked to vote, and vote for it
+      expectCall(mockCollaborator.voteForRemoval("Document")).andReturn((42).asInstanceOf[Byte]);
+      // expect document removal
+      mockCollaborator.documentRemoved("Document");
+    }
+
+    whenExecuting(mockCollaborator) {
+      classUnderTest.addDocument("Document", new Array[Byte](0));
+      assertTrue(classUnderTest.removeDocument("Document"));
+    }
   }
 
-  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested, and" +
-          "if a NEGATIVE number is returned (i.e., a vote AGAINST removal), documentRemoved" +
+  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested, and " +
+          "if a NEGATIVE number is returned (i.e., a vote AGAINST removal), documentRemoved " +
           "should NOT be called on Collaborator" in {
-    // expect document addition
-    mock.documentAdded("Document");
-    // expect to be asked to vote, and vote against it
-    expectCall(mock.voteForRemoval("Document")).andReturn((-42).asInstanceOf[Byte]); //
-    // document removal is *not* expected
 
-    replay(mock);
-    classUnderTest.addDocument("Document", new Array[Byte](0));
-    assertFalse(classUnderTest.removeDocument("Document"));
-    verify(mock);
+    expecting {
+      // expect document addition
+      mockCollaborator.documentAdded("Document");
+      // expect to be asked to vote, and vote against it
+      expectCall(mockCollaborator.voteForRemoval("Document")).andReturn((-42).asInstanceOf[Byte]); //
+      // document removal is *not* expected
+    }
+
+    whenExecuting(mockCollaborator) {
+      classUnderTest.addDocument("Document", new Array[Byte](0));
+      assertFalse(classUnderTest.removeDocument("Document"));
+    }
   }
 
-  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested" +
-          "to remove multiple documents, and if a POSITIVE number is returned (i.e., a vote" +
+  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested " +
+          "to remove multiple documents, and if a POSITIVE number is returned (i.e., a vote " +
           "FOR removal), documentRemoved should be called on Collaborator" in {
-    mock.documentAdded("Document 1");
-    mock.documentAdded("Document 2");
-    val documents = Array("Document 1", "Document 2")
-    expectCall(mock.voteForRemovals(aryEq(documents))).andReturn((42).asInstanceOf[Byte]);
-    mock.documentRemoved("Document 1");
-    mock.documentRemoved("Document 2");
-    replay(mock);
-    classUnderTest.addDocument("Document 1", new Array[Byte](0));
-    classUnderTest.addDocument("Document 2", new Array[Byte](0));
-    assertTrue(classUnderTest.removeDocuments(Array("Document 1",
-            "Document 2")));
-    verify(mock);
+
+    expecting {
+      mockCollaborator.documentAdded("Document 1");
+      mockCollaborator.documentAdded("Document 2");
+      val documents = Array("Document 1", "Document 2")
+      expectCall(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((42).asInstanceOf[Byte]);
+      mockCollaborator.documentRemoved("Document 1");
+      mockCollaborator.documentRemoved("Document 2");
+    }
+
+    whenExecuting(mockCollaborator) {
+      classUnderTest.addDocument("Document 1", new Array[Byte](0));
+      classUnderTest.addDocument("Document 2", new Array[Byte](0));
+      assertTrue(classUnderTest.removeDocuments(Array("Document 1",
+              "Document 2")));
+    }
   }
 
-  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested" +
-          "to remove multiple documents, and if a NEGATIVE number is returned (i.e., a vote" +
+  it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested " +
+          "to remove multiple documents, and if a NEGATIVE number is returned (i.e., a vote " +
           "AGAINST removal), documentRemoved should NOT be called on Collaborator" in {
-    mock.documentAdded("Document 1");
-    mock.documentAdded("Document 2");
-    val documents = Array("Document 1", "Document 2")
-    expectCall(mock.voteForRemovals(aryEq(documents))).andReturn((-42).asInstanceOf[Byte]);
-    replay(mock);
-    classUnderTest.addDocument("Document 1", new Array[Byte](0));
-    classUnderTest.addDocument("Document 2", new Array[Byte](0));
-    assertFalse(classUnderTest.removeDocuments(Array("Document 1",
-            "Document 2")));
-    verify(mock);
+
+    expecting {
+      mockCollaborator.documentAdded("Document 1");
+      mockCollaborator.documentAdded("Document 2");
+      val documents = Array("Document 1", "Document 2")
+      expectCall(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((-42).asInstanceOf[Byte]);
+    }
+
+    whenExecuting(mockCollaborator) {
+      classUnderTest.addDocument("Document 1", new Array[Byte](0));
+      classUnderTest.addDocument("Document 2", new Array[Byte](0));
+      assertFalse(classUnderTest.removeDocuments(Array("Document 1",
+              "Document 2")));
+    }
   }
 
   "EasyMock" should "work with both andAnswer and andDelegateTo styles" in {
     
-    val l: List[String] = createMock(classOf[List[String]]);
+    val list = mock[List[String]]
 
-    // andAnswer style
-    expectCall(l.remove(10)).andAnswer(new IAnswer[String]() {
-      def answer(): String = {
-        return getCurrentArguments()(0).toString();
-      }
-    });
+    expecting {
+      // andAnswer style
+      expectCall(list.remove(10)).andAnswer(new IAnswer[String]() {
+        def answer(): String = {
+          return getCurrentArguments()(0).toString();
+        }
+      });
 
-    // andDelegateTo style
-    expectCall(l.remove(10)).andDelegateTo(new ArrayList[String]() {
-      // private static final long serialVersionUID = 1L;
+      // andDelegateTo style
+      expectCall(list.remove(10)).andDelegateTo(new ArrayList[String]() {
+        // private static final long serialVersionUID = 1L;
 
-      override def remove(index: Int): String = {
-        return Integer.toString(index);
-      }
-    });
+        override def remove(index: Int): String = {
+          return Integer.toString(index);
+        }
+      });
+    }
         
-    replay(l);
-
-    assertEquals("10", l.remove(10));
-    assertEquals("10", l.remove(10));
-
-    verify(l);
-
-    ()
+    whenExecuting(list) {
+      assertEquals("10", list.remove(10));
+      assertEquals("10", list.remove(10));
+    }
   }
 }
