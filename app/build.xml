@@ -145,7 +145,7 @@
     <target name="compile-main" depends="init">
 
         <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
-        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-Xno-varargs-conversion" />
+        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-Xno-varargs-conversion" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
