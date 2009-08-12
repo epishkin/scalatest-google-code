@@ -176,6 +176,7 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
   }
 
 
+  // Got a: 1 was not equal to 0 test failure, even with the var
   test("callables can wait for beats"){
     val c = new Callable[Unit]{
       @volatile var callCount = 0

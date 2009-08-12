@@ -483,7 +483,12 @@ object Runner {
    * Runs a suite of tests, with optional GUI. See the main documentation for this singleton object for the details.
    */
   def main(args: Array[String]) {
-    runOptionallyWithPassFailReporter(args, false)
+    val result = runOptionallyWithPassFailReporter(args, true)
+
+    if (result)
+      exit(0)
+    else
+      exit(1)
   }
 
   /**

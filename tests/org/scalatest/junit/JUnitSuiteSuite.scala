@@ -121,6 +121,7 @@ package org.scalatest.junit {
       assert(repA.testFailedEvent.get.testName === "verifySomething")
       assert(repA.testFailedEvent.get.suiteName === "BitterSuite")
       assert(repA.testFailedEvent.get.suiteClassName.get === "org.scalatest.junit.helpers.BitterSuite")
+      assert(repA.testSucceededCount === 0)
     }
 
     test("A JUnitSuite with JUnit 4 Ignore and Test annotations will cause TestIgnored to be fired") {
