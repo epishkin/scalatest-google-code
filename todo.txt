@@ -1,3 +1,6 @@
+Maybe I can keep JUnit3Suite and have it extend junit.framework.Test instead. 
+If that will still allow it to be run by JUnit3, that would be cool.
+
 Had the problem of a missing exception message in the GUI again:
 
 [scalatest] Suite Completed - ErrorTestNGSuite

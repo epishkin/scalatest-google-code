@@ -15,9 +15,8 @@
  */
 package org.scalatest.junit
 
+import _root_.junit.framework.{TestCase, Assert, AssertionFailedError}
 import org.junit.runner.RunWith
-import _root_.junit.framework.Assert
-import _root_.junit.framework.AssertionFailedError
 
 /**
  * A suite of tests that mimics the syntax of a JUnit 3 <code>TestCase</code>, which can be run with either
@@ -638,5 +637,7 @@ class JUnit3ComfortSuite extends Suite with OneInstancePerTest {
  * <code>JUnit3ComfortSuite</code> trait can give you that comfortable feeling of using JUnit 3-like syntax, and it can be run with
  * either ScalaTest or JUnit 4.</strong>
  */
-@deprecated
-class JUnit3Suite extends JUnit3ComfortSuite
+//@deprecated
+//class JUnit3Suite extends JUnit3ComfortSuite
+
+class JUnit3Suite extends TestCase with Suite

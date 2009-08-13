@@ -38,7 +38,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run()
+    a.execute()
     assert(a.example1WasInvoked)
     assert(a.example2WasInvokedAfterExample1)
     assert(a.example3WasInvokedAfterExample2)
@@ -64,7 +64,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run()
+    a.execute()
     assert(a.example1WasInvoked)
     assert(a.example2WasInvokedAfterExample1)
     assert(a.example3WasInvokedAfterExample2)
@@ -83,7 +83,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run()
+    a.execute()
     assert(a.testNames.size === 2)
     assert(a.testNames.elements.toList(0) === "should get invoked")
     assert(a.testNames.elements.toList(1) === "should also get invoked")
@@ -131,7 +131,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run()
+    a.execute()
   }
   
   // Test for good strings in report for top-level examples  
@@ -804,7 +804,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       describe("this will be empty") {}
     }
     val a = new MySpec
-    a.run()
+    a.execute()
   }  
   
   test("Only a passed test name should be invoked.") {
@@ -1151,7 +1151,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run()
+    a.execute()
     assert(a.sharedExampleInvoked)
   }
   
@@ -1178,7 +1178,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       }
     }
     val a = new MySpec
-    a.run()
+    a.execute()
     assert(a.sharedExampleInvoked)
     assert(a.sharedExampleAlsoInvoked)
   }
@@ -1204,7 +1204,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       it should behave like invocationVerifier(1)
     }
     val a = new MySpec
-    a.run()
+    a.execute()
     assert(a.example1WasInvoked)
     assert(a.example2WasInvokedAfterExample1)
     assert(a.example3WasInvokedAfterExample2)
@@ -1231,7 +1231,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
       // don't use it: behaves like (an InvocationVerifier())
     }
     val a = new MySpec
-    a.run()
+    a.execute()
     assert(!a.example1WasInvoked)
     assert(!a.example2WasInvokedAfterExample1)
     assert(!a.example3WasInvokedAfterExample2)
