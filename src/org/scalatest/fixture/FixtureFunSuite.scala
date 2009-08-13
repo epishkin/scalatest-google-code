@@ -20,6 +20,7 @@ import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
+import Suite.anErrorThatShouldCauseAnAbort
 
 /**
  * A sister trait to <code>org.scalatest.FunSuite</code>, which passes a fixture object into each test.
@@ -585,14 +586,10 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     catch {
       case _: TestPendingException =>
         report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
-      case e: Exception => {
+      case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
-      }
-      case ae: AssertionError => {
-        val duration = System.currentTimeMillis - testStartTime
-        handleFailedTest(ae, false, testName, rerunnable, report, tracker, duration)
-      }
+      case e => throw e
     }
   }
 
