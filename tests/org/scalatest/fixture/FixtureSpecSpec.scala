@@ -642,5 +642,51 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
         a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       }
     }
+    it("should send InfoProvided events with aboutAPendingTest set to true for info " +
+            "calls made from a test that is pending") {
+      val a = new FixtureSpec with GivenWhenThen {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+        it("should do something else") { s =>
+          given("two integers")
+          when("one is subracted from the other")
+          then("the result is the difference between the two numbers")
+          pending
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val ip = rep.infoProvidedEventsReceived
+      assert(ip.size === 3)
+      for (event <- ip) {
+        assert(event.aboutAPendingTest)
+      }
+    }
+    it("should send InfoProvided events with aboutAPendingTest set to false for info " +
+            "calls made from a test that is not pending") {
+      val a = new FixtureSpec with GivenWhenThen {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+        it("should do something else") { s =>
+          given("two integers")
+          when("one is subracted from the other")
+          then("the result is the difference between the two numbers")
+          assert(1 + 1 === 2)
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val ip = rep.infoProvidedEventsReceived
+      assert(ip.size === 3)
+      for (event <- ip) {
+        assert(!event.aboutAPendingTest)
+      }
+    }
   }
 }
