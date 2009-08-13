@@ -88,7 +88,7 @@ import org.junit.runner.RunWith
  * @author Bill Venners
  */
 @RunWith(classOf[JUnitRunner])
-class JUnit3ComfortSuite extends Suite with OneInstancePerTest {
+private [junit] class JUnit3ComfortSuite extends Suite with OneInstancePerTest {
 
   /**
    * Defines a method to be run before each of this suite's tests. This trait's implementation
@@ -640,4 +640,4 @@ class JUnit3ComfortSuite extends Suite with OneInstancePerTest {
 //@deprecated
 //class JUnit3Suite extends JUnit3ComfortSuite
 
-class JUnit3Suite extends TestCase with Suite
+class JUnit3Suite extends TestCase with JUnitSuite
