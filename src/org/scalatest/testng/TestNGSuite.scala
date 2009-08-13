@@ -265,7 +265,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     override def onTestFailure(result: ITestResult) = {
       val throwableOrNull = result.getThrowable
       val throwable = if (throwableOrNull != null) Some(throwableOrNull) else None
-      val message = if (throwableOrNull != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
+      val message = if (throwableOrNull != null && throwableOrNull.getMessage != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
       reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), result.getName + params(result), throwable, None, None, Some(new TestRerunner(className, result.getName)))) // Can I add a duration?
     }
 
@@ -278,7 +278,7 @@ trait TestNGSuite extends Suite { thisSuite =>
     override def onConfigurationFailure(result: ITestResult) = {
       val throwableOrNull = result.getThrowable
       val throwable = if (throwableOrNull != null) Some(throwableOrNull) else None
-      val message = if (throwableOrNull != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
+      val message = if (throwableOrNull != null && throwableOrNull.getMessage != null) throwableOrNull.getMessage else Resources("testNGConfigFailed")
       reporter(SuiteAborted(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), throwable))
     }
 
