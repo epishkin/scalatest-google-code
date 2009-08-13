@@ -1847,6 +1847,49 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    */
   def pending: PendingNothing = { throw new TestPendingException }
 
+  /**
+   * Execute the passed block of code, and if it completes abruptly, throw <code>TestPendingException</code>, else
+   * throw <code>TestFailedException</code>.
+   *
+   * <p>
+   * This method can be used to temporarily change a failing test into a pending test in such a way that it will
+   * automatically turn back into a failing test once the problem originally causing the test to fail has been fixed.
+   * At that point, you need only remove the <code>pendingUntilFixed</code> call. In other words, a
+   * <code>pendingUntilFixed</code> surrounding a block of code that isn't broken is treated as a test failure.
+   * The motivation for this behavior is to encourage people to remove <code>pendingUntilFixed</code> calls when
+   * there are no longer needed.
+   * </p>
+   *
+   * <p>
+   * This method facilitates a style of testing in which tests are written before the code they test. Sometimes you may
+   * encounter a test failure that requires more functionality than you want to tackle without writing more tests. In this
+   * case you can mark the bit of test code causing the failure with <code>pendingUntilFixed</code>. You can then write more
+   * tests and functionality that eventually will get your production code to a point where the original test won't fail anymore.
+   * At this point the code block marked with <code>pendingUntilFixed</code> will no longer throw an exception (because the
+   * problem has been fixed). This will in turn cause <code>pendingUntilFixed</code> to throw <code>TestFailedException</code>
+   * with a detail message explaining you need to go back and remove the <code>pendingUntilFixed</code> call as the problem orginally
+   * causing your test code to fail has been fixed.
+   * </p>
+   *
+   * @param f a block of code, which if it completes abruptly, should trigger a <code>TestPendingException</code> 
+   * @throws TestPendingException if the passed block of code completes abruptly with an <code>Exception</code> or <code>AssertionError</code>
+   */
+  def pendingUntilFixed(f: => Unit) {
+    val isPending =
+      try {
+        f
+        false
+      }
+      catch {
+        case _: Exception => true
+        case _: AssertionError => true
+      }
+      if (isPending)
+        throw new TestPendingException
+      else
+        throw new TestFailedException(Resources("pendingUntilFixed"), 2)
+  }
+
   private[scalatest] def getTestNameForReport(testName: String) = {
 
     if (testName == null)

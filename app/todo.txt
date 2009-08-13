@@ -1,3 +1,46 @@
+Had the problem of a missing exception message in the GUI again:
+
+[scalatest] Suite Completed - ErrorTestNGSuite
+[scalatest] SUITE ABORTED - ErrorTestNGSuite
+[scalatest]   Exception encountered when invoking run on a nested suite.
+[scalatest]   java.lang.NullPointerException: message was null
+[scalatest]   org.scalatest.events.TestFailed.<init>(Event.scala:554)
+[scalatest]   org.scalatest.events.TestFailed$.apply(Event.scala:658)
+[scalatest]   org.scalatest.testng.TestNGSuite$MyTestListenerAdapter.onTestFailure(TestNGSuite.scala:270)
+[scalatest]   org.testng.internal.Invoker.runTestListeners(Invoker.java:1433)
+[scalatest]   org.testng.internal.Invoker.runTestListeners(Invoker.java:1417)
+[scalatest]   org.testng.internal.Invoker.handleInvocationResults(Invoker.java:1152)
+[scalatest]   org.testng.internal.Invoker.invokeTestMethods(Invoker.java:887)
+[scalatest]   org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)
+[scalatest]   org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)
+[scalatest]   org.testng.TestRunner.runWorkers(TestRunner.java:689)
+[scalatest]   org.testng.TestRunner.privateRun(TestRunner.java:566)
+[scalatest]   org.testng.TestRunner.run(TestRunner.java:466)
+[scalatest]   org.testng.SuiteRunner.runTest(SuiteRunner.java:301)
+[scalatest]   org.testng.SuiteRunner.runSequentially(SuiteRunner.java:296)
+[scalatest]   org.testng.SuiteRunner.privateRun(SuiteRunner.java:276)
+[scalatest]   org.testng.SuiteRunner.run(SuiteRunner.java:191)
+[scalatest]   org.testng.TestNG.createAndRunSuiteRunners(TestNG.java:808)
+[scalatest]   org.testng.TestNG.runSuitesLocally(TestNG.java:776)
+[scalatest]   org.testng.TestNG.run(TestNG.java:701)
+[scalatest]   org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:157)
+[scalatest]   org.scalatestexamples.testng.ErrorTestNGSuite.run(ErrorTestNGSuite.scala:21)
+[scalatest]   org.scalatest.testng.TestNGSuite$class.runTestNG(TestNGSuite.scala:144)
+[scalatest]   org.scalatestexamples.testng.ErrorTestNGSuite.runTestNG(ErrorTestNGSuite.scala:21)
+[scalatest]   org.scalatest.testng.TestNGSuite$class.run(TestNGSuite.scala:95)
+[scalatest]   org.scalatestexamples.testng.ErrorTestNGSuite.run(ErrorTestNGSuite.scala:21)
+[scalatest]   org.scalatest.tools.SuiteRunner.run(SuiteRunner.scala:58)
+[scalatest]   org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$2.apply(Runner.scala:1429)
+[scalatest]   org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$2.apply(Runner.scala:1426)
+[scalatest]   scala.List.foreach(List.scala:834)
+[scalatest]   org.scalatest.tools.Runner$.doRunRunRunADoRunRun(Runner.scala:1426)
+[scalatest]   org.scalatest.tools.RunnerJFrame$RunnerThread$$anonfun$run$1.apply(RunnerJFrame.scala:1351)
+[scalatest]   org.scalatest.tools.RunnerJFrame$RunnerThread$$anonfun$run$1.apply(RunnerJFrame.scala:1349)
+[scalatest]   org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1470)
+[scalatest]   org.scalatest.tools.RunnerJFrame$RunnerThread.run(RunnerJFrame.scala:1348)
+[
+The "message was null" was not visible in the GUI.
+
 compile-examples:
    [scalac] Compiling 3 scala and 3 java source files to /Users/bv/nobkp/delus/st/target/examples
    [scalac] /Users/bv/nobkp/delus/st/examples/org/scalatestexamples/easymock/EasyMockExampleFlatSpec.scala:42: error: overloaded method value in with alternatives ((_$2) => Unit)Unit <and> (=> Unit)Unit cannot be applied to (Boolean)

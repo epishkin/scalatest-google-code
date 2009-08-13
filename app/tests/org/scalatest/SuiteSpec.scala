@@ -507,6 +507,23 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       val tp = rep.testPendingEventsReceived
       assert(tp.size === 2)
     }
+
+    describe("(when its pendingUntilFixed method is invoked)") {
+      it("should throw TestPendingException if the code block throws an exception") {
+        intercept[TestPendingException] {
+          pendingUntilFixed {
+            assert(1 + 1 === 3)
+          }
+        }
+      }
+      it("should throw TestFailedException if the code block doesn't throw an exception") {
+        intercept[TestFailedException] {
+          pendingUntilFixed {
+            assert(1 + 2 === 3)
+          }
+        }
+      }
+    }
   }
 }
 
