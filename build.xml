@@ -22,7 +22,8 @@
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
     <property name="project.name" value="ScalaTest" />
-    <property name="release" value="0.9.6" />
+    <property name="release" value="1.0-snapshot" />
+    <property name="releaseCapitalized" value="1.0-Snapshot" />
     <property name="demo" value="${build}/demo" />
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
@@ -190,9 +191,9 @@
     </target>
 
     <target name="doc" depends="compile-main">
-        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
+        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
-        <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
+        <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
             <include name="**/*.scala" />
         </scaladoc>
         <!--
@@ -200,8 +201,8 @@
         destdir="${demodoc}"
         packagenames="com.artima.examples.*"
         classpath="${classes}:${lib}/junit-4.1.jar"
-        windowtitle="ScalaTest Examples ${release}"
-        doctitle="ScalaTest Examples ${release}"
+        windowtitle="ScalaTest Examples ${releaseCapitalized}"
+        doctitle="ScalaTest Examples ${releaseCapitalized}"
         bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved."/>
 -->
     </target>
