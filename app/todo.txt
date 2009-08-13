@@ -1,5 +1,8 @@
+Show 5 lines of stack trace in print reporter.
+
 Maybe I can keep JUnit3Suite and have it extend junit.framework.Test instead. 
-If that will still allow it to be run by JUnit3, that would be cool.
+If that will still allow it to be run by JUnit3, that would be cool. People are
+using JUnit3 to 
 
 Had the problem of a missing exception message in the GUI again:
 
