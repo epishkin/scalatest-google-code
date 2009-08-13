@@ -24,7 +24,7 @@ object SlowTest extends Tag("SlowTest")
 
 class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
-  describe("A fixture.FlatSpec ") {
+  describe("A FixtureFlatSpec ") {
     it("A fixture.Spec should return the test names in order of registration from testNames") {
       val a = new FixtureFlatSpec with ShouldVerb {
         type Fixture = String
@@ -975,6 +975,37 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
       val tp = rep.testPendingEventsReceived
       assert(tp.size === 2)
+    }
+    it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
+            "known in JDK 1.5, excluding AssertionError") {
+      val a = new FixtureFlatSpec {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+        it should "throw AssertionError" in { s => throw new AssertionError }
+        it should "throw plain old Error" in { s => throw new Error }
+        it should "throw Throwable" in { s =>  throw new Throwable }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tf = rep.testFailedEventsReceived
+      assert(tf.size === 3)
+    }
+    it("should propagate out Errors that are direct subtypes of Error in JDK 1.5, other than " +
+            "AssertionError, causing Suites and Runs to abort.") {
+      val a = new FixtureFlatSpec {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+        it should "throws AssertionError" in { s => throw new OutOfMemoryError }
+      }
+      intercept[OutOfMemoryError] {
+        a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      }
     }
   }
 }

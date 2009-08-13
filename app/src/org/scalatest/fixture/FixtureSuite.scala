@@ -26,6 +26,7 @@ import FixtureSuite.testMethodTakesInformer
 import FixtureSuite.simpleNameForTest
 import FixtureSuite.argsArrayForTestName
 import org.scalatest.events._
+import Suite.anErrorThatShouldCauseAnAbort
 
 /**
  * <code>Suite</code> that passes a fixture object into each test.
@@ -508,19 +509,15 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
         t match {
           case _: TestPendingException =>
             report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
-          case _ =>
+          case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
+          case e => throw e
         }
-
-      case e: Exception => {
+      case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
-      }
-      case ae: AssertionError => {
-        val duration = System.currentTimeMillis - testStartTime
-        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
-      }
+      case e => throw e
     }
   }
 

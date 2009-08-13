@@ -19,7 +19,7 @@ import events.TestFailed
 
 class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
-  describe("A fixture.FunSuite") {
+  describe("A FixtureFunSuite") {
     it("should return the test names in order of registration from testNames") {
       val a = new FixtureFunSuite {
         type Fixture = String
@@ -651,6 +651,37 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(tp.size === 2)
       assert(a.theTestWithFixtureWasRun)
       assert(a.theTestWithoutFixtureWasRun)
+    }
+    it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
+            "known in JDK 1.5, excluding AssertionError") {
+      val a = new FixtureFunSuite {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+        test("throws AssertionError") { s => throw new AssertionError }
+        test("throws plain old Error") { s => throw new Error }
+        test("throws Throwable") { s => throw new Throwable }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tf = rep.testFailedEventsReceived
+      assert(tf.size === 3)
+    }
+    it("should propagate out Errors that are direct subtypes of Error in JDK 1.5, other than " +
+            "AssertionError, causing Suites and Runs to abort.") {
+      val a = new FixtureFunSuite {
+        type Fixture = String
+        val hello = "Hello, world!"
+        def withFixture(fun: TestFunction) {
+          fun(hello)
+        }
+        test("throws AssertionError") { s => throw new OutOfMemoryError }
+      }
+      intercept[OutOfMemoryError] {
+        a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      }
     }
   }
 }
