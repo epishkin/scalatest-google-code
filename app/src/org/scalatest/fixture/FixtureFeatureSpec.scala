@@ -735,6 +735,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
           }
 
         atomicInformer.set(informerForThisTest)
+        var testWasPending = false
         try {
           withFixture(new TestFunAndConfigMap(test.f, configMap))
 
@@ -744,6 +745,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
         catch {
           case _: TestPendingException =>
             report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(formatter)))
+            testWasPending = true
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(e, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
@@ -753,7 +755,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
           // send out any recorded messages
           for (message <- informerForThisTest.recordedMessages) {
             val formattedText = "    " + message
-            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, false, None, Some(IndentedText(formattedText, message, 2))))
+            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, testWasPending, None, Some(IndentedText(formattedText, message, 2))))
           }
 
           val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
