@@ -645,7 +645,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
 
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
-          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
+          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), false, None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
         }
 
         // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
@@ -679,7 +679,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
           val infoProvidedIcon = Resources("infoProvidedIconChar")
           val formattedText = Resources("iconPlusShortName", infoProvidedIcon, message)
           report(InfoProvided(tracker.nextOrdinal(), message,
-            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)),
+            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), false,
               None, Some(IndentedText(formattedText, message, 1))))
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
       }
@@ -739,7 +739,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
               else {
                 val infoProvidedIcon = Resources("infoProvidedIconChar")
                 val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
+                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, false, None, Some(IndentedText(formattedText, message, 2))))
               }
             }
           }
@@ -764,7 +764,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
           for (message <- informerForThisTest.recordedMessages) {
             val infoProvidedIcon = Resources("infoProvidedIconChar")
             val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, None, Some(IndentedText(formattedText, message, 2))))
+            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, false, None, Some(IndentedText(formattedText, message, 2))))
           }
 
           val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)

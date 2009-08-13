@@ -244,7 +244,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             infoProvidedHasBeenInvoked = true
@@ -303,7 +303,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             infoProvidedHasBeenInvoked = true
@@ -362,7 +362,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             infoProvidedHasBeenInvoked = true
@@ -423,7 +423,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             infoProvidedHasBeenInvoked = true
@@ -484,7 +484,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             infoProvidedHasBeenInvoked = true
@@ -545,7 +545,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             infoProvidedHasBeenInvoked = true
@@ -748,7 +748,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
     class MyReporter extends Reporter {
       def apply(event: Event) {
         event match {
-          case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+          case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
             infoProvidedHasBeenInvoked = true

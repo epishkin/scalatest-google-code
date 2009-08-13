@@ -323,7 +323,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
         val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName), duration)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
-      case InfoProvided(ordinal, message, nameInfo, throwable, formatter, payload, threadName, timeStamp) =>
+      case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
 
         val (suiteName, testName) =
           nameInfo match {
@@ -331,7 +331,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             case None => (None, None)
           }
         val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName, None)
-        for (line <- lines) printPossiblyInColor(line, ansiGreen)
+        for (line <- lines) printPossiblyInColor(line, if (aboutAPendingTest) ansiYellow else ansiGreen)
 
       case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) =>
 

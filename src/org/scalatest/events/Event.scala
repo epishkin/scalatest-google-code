@@ -2525,6 +2525,7 @@ object RunAborted {
  * @param message a localized message suitable for presenting to the user
  * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
  *        in the context of which the information was provided
+ * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
  * @param throwable an optional <code>Throwable</code>
  * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
  *        how to present this event to the user
@@ -2539,6 +2540,7 @@ final case class InfoProvided (
   ordinal: Ordinal,
   message: String,
   nameInfo: Option[NameInfo],
+  aboutAPendingTest: Boolean,
   throwable: Option[Throwable],
   formatter: Option[Formatter],
   payload: Option[Any],
@@ -2583,6 +2585,7 @@ object InfoProvided {
    * @param message a localized message suitable for presenting to the user
    * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
    *        in the context of which the information was provided
+   * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
    * @param throwable an optional <code>Throwable</code>
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
@@ -2596,11 +2599,12 @@ object InfoProvided {
     ordinal: Ordinal,
     message: String,
     nameInfo: Option[NameInfo],
+    aboutAPendingTest: Boolean,
     throwable: Option[Throwable],
     formatter: Option[Formatter],
     payload: Option[Any]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, throwable, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, Thread.currentThread.getName, (new Date).getTime)
   }
 
 
@@ -2612,9 +2616,10 @@ object InfoProvided {
    * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
    *        other events reported during the same run
    * @param message a localized message suitable for presenting to the user
-   * @param throwable an optional <code>Throwable</code>
-   * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
+   * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test
    *        in the context of which the information was provided
+   * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
+   * @param throwable an optional <code>Throwable</code>
    * @param formatter an optional formatter that provides extra information that can be used by reporters in determining
    *        how to present this event to the user
    *
@@ -2626,10 +2631,11 @@ object InfoProvided {
     ordinal: Ordinal,
     message: String,
     nameInfo: Option[NameInfo],
+    aboutAPendingTest: Boolean,
     throwable: Option[Throwable],
     formatter: Option[Formatter]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, throwable, formatter, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2642,6 +2648,7 @@ object InfoProvided {
    * @param message a localized message suitable for presenting to the user
    * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
    *        in the context of which the information was provided
+   * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
    * @param throwable an optional <code>Throwable</code>
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -2652,9 +2659,10 @@ object InfoProvided {
     ordinal: Ordinal,
     message: String,
     nameInfo: Option[NameInfo],
+    aboutAPendingTest: Boolean,
     throwable: Option[Throwable]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, throwable, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 
   /**
@@ -2668,6 +2676,32 @@ object InfoProvided {
    * @param message a localized message suitable for presenting to the user
    * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test 
    *        in the context of which the information was provided
+   * @param aboutAPendingTest indicates whether the information being provided via this event is about a pending test
+   * @param throwable an optional <code>Throwable</code>
+   * * @throws NullPointerException if any of the passed values are <code>null</code>
+   *
+   * @return a new <code>InfoProvided</code> instance initialized with the passed and default values
+   */
+  def apply(
+    ordinal: Ordinal,
+    message: String,
+    nameInfo: Option[NameInfo],
+    aboutAPendingTest: Boolean
+  ): InfoProvided = {
+    apply(ordinal, message, nameInfo, aboutAPendingTest, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+  }
+
+  /**
+   * Constructs a new <code>InfoProvided</code> event with the passed parameters, passing <code>None</code> for
+   * the <code>throwable</code>, <code>None</code> for
+   * <code>formatter</code>, <code>None</code> as the <code>payload</code>,
+   * the current threads name as <code>threadname</code>, and the current time as <code>timeStamp</code>.
+   *
+   * @param ordinal an <code>Ordinal</code> that can be used to place this event in order in the context of
+   *        other events reported during the same run
+   * @param message a localized message suitable for presenting to the user
+   * @param nameInfo an optional <code>NameInfo</code> that if defined, provides names for the suite and optionally the test
+   *        in the context of which the information was provided
    * @param throwable an optional <code>Throwable</code>
    *
    * @throws NullPointerException if any of the passed values are <code>null</code>
@@ -2679,7 +2713,7 @@ object InfoProvided {
     message: String,
     nameInfo: Option[NameInfo]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, false, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 
