@@ -107,8 +107,6 @@ Add text about registration and ready mode to Spec and others. (In FunSuite and 
 
 Try sorting the GUI reports with the ordinal (1 hour)
 
-Add pendingUntilFixed to Suite. (45 min)
-
 In Spec (and probably at least WordSpec, and the fixture sisters) this needs to be changed to this. Because if the first thing inside a describe with
 tests is an info, then it was not printing anything out. May need to be more tricky than this too,
 but probably not. describe, info, info, describe, etc. (45 min)
