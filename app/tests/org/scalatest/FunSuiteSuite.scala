@@ -85,13 +85,13 @@ class FunSuiteSuite extends Suite with SharedHelpers {
       }
     }
     val a = new MySuite
-    a.run()
+    a.execute()
     assert(a.fromConstructorTestExecuted)
     assert(!a.fromMethodTestExecuted)
     intercept[TestRegistrationClosedException] {
       a.registerOne()
     }
-    a.run()
+    a.execute()
     assert(!a.fromMethodTestExecuted)
   }
   

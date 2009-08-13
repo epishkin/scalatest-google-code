@@ -1130,12 +1130,10 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   def nestedSuites: List[Suite] = Nil
   
   /**
-   * Runs this <code>Suite</code>, printing results to the standard output.
+   * Executes this <code>Suite</code>, printing results to the standard output.
    *
    * <p>
-   * This method
-   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
-   * seven parameters, passing in:
+   * This method implementation calls <code>run</code> on this <code>Suite</code>, passing in:
    * </p>
    *
    * <ul>
@@ -1150,20 +1148,34 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to run a <code>Suite</code>, especially from within the Scala interpreter.
+   * This method serves as a convenient way to execute a <code>Suite</code>, especially from
+   * within the Scala interpreter.
+   * </p>
+   *
+   * <p>
+   * Note:  In ScalaTest, the terms "execute" and "run" basically mean the same thing and
+   * can be used interchangably. The reason this convenience method (and its three overloaded forms)
+   * isn't named <code>run</code>
+   * is because <code>junit.framework.TestCase</code> declares a <code>run</code> method
+   * that takes no arguments but returns a <code>junit.framework.TestResult</code>. That
+   * <code>run</code> method would not overload with this method if it were named <code>run</code>,
+   * because it would have the same parameters but a different return type than the one
+   * defined in <code>TestCase</code>. To facilitate integration with JUnit 3, therefore,
+   * these convenience "run" methods are named <code>execute</code>. In particular, this allows trait
+   * <code>JUnit3Suite</code> to extend both <code>org.scalatest.Suite</code> and
+   * <code>junit.framework.TestCase</code>, which enables the creating of classes that
+   * can be run with either ScalaTest or JUnit 3.
    * </p>
    */
-  final def run() {
+  final def execute() {
     run(None, new StandardOutReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
   }
 
   /**
-   * Runs this <code>Suite</code> with the specified <code>configMap</code>, printing results to the standard output.
+   * Executes this <code>Suite</code> with the specified <code>configMap</code>, printing results to the standard output.
    *
    * <p>
-   * This method
-   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
-   * seven parameters, passing in:
+   * This method implementation calls <code>run</code> on this <code>Suite</code>, passing in:
    * </p>
    *
    * <ul>
@@ -1178,24 +1190,22 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to run a <code>Suite</code>, passing in some objects via the <code>configMap</code>, especially from within the Scala interpreter.
+   * This method serves as a convenient way to execute a <code>Suite</code>, passing in some objects via the <code>configMap</code>, especially from within the Scala interpreter.
    * </p>
    *
    * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    *
    * @throws NullPointerException if the passed <code>configMap</code> parameter is <code>null</code>.
    */
-  final def run(configMap: Map[String, Any]) {
+  final def execute(configMap: Map[String, Any]) {
     run(None, new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
   /**
-   * Runs the test specified as <code>testName</code> in this <code>Suite</code>, printing results to the standard output.
+   * Executes the test specified as <code>testName</code> in this <code>Suite</code>, printing results to the standard output.
    *
    * <p>
-   * This method
-   * implementation calls on this <code>Suite</code> the <code>run</code> method that takes
-   * seven parameters, passing in:
+   * This method implementation calls <code>run</code> on this <code>Suite</code>, passing in:
    * </p>
    *
    * <ul>
@@ -1219,17 +1229,16 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
-  final def run(testName: String) {
+  final def execute(testName: String) {
     run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
   }
 
   /**
-   * Runs the test specified as <code>testName</code> in this <code>Suite</code> with the specified <code>configMap</code>, printing
+   * Executes the test specified as <code>testName</code> in this <code>Suite</code> with the specified <code>configMap</code>, printing
    * results to the standard output.
    *
    * <p>
-   * This method implementation calls on this <code>Suite</code> the <code>run</code> method that takes
-   * seven parameters, passing in:
+   * This method implementation calls <code>run</code> on this <code>Suite</code>, passing in:
    * </p>
    *
    * <ul>
@@ -1244,7 +1253,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </ul>
    *
    * <p>
-   * This method serves as a convenient way to run a single test, passing in some objects via the <code>configMap</code>, especially from
+   * This method serves as a convenient way to execute a single test, passing in some objects via the <code>configMap</code>, especially from
    * within the Scala interpreter.
    * </p>
    *
@@ -1255,7 +1264,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
-  final def run(testName: String, configMap: Map[String, Any]) {
+  final def execute(testName: String, configMap: Map[String, Any]) {
     run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
@@ -1600,7 +1609,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   }
 
   /**
-   * Run this suite of tests.
+   * Runs this suite of tests.
    *
    * <p>If <code>testName</code> is <code>None</code>, this trait's implementation of this method
    * calls these two methods on this object in this order:</p>
@@ -1621,7 +1630,24 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <p>
    * Subclasses and subtraits that override this <code>run</code> method can implement them without
    * invoking either the <code>runTests</code> or <code>runNestedSuites</code> methods, which
-   * are invoked by this trait's implementation of this method. 
+   * are invoked by this trait's implementation of this method. It is recommended, but not required,
+   * that subclasses and subtraits that override <code>run</code> in a way that does not
+   * invoke <code>runNestedSuites</code> also override <code>runNestedSuites</code> and make it
+   * final. Similarly it is recommended, but not required,
+   * that subclasses and subtraits that override <code>run</code> in a way that does not
+   * invoke <code>runTests</code> also override <code>runTests</code> (and <code>runTest</code>,
+   * which this trait's implementation of <code>runTests</code> calls) and make it
+   * final. The implementation of these final methods can either invoke the superclass implementation
+   * of the method, or throw an <code>UnsupportedOperationException</code> if appropriate. The
+   * reason for this recommendation is that ScalaTest includes several traits that override
+   * these methods to allow behavior to be mixed into a <code>Suite</code>. For example, trait
+   * <code>BeforeAndAfterEach</code> overrides <code>runTests</code>s. In a <code>Suite</code>
+   * subclass that no longer invokes <code>runTests</code> from <code>run</code>, the
+   * <code>BeforeAndAfterEach</code> trait is not applicable. Mixing it in would have no effect.
+   * By making <code>runTests</code> final in such a <code>Suite</code> subtrait, you make
+   * the attempt to mix <code>BeforeAndAfterEach</code> into a subclass of your subtrait
+   * a compiler error. (It would fail to compile with a complaint that <code>BeforeAndAfterEach</code>
+   * is trying to override <code>runTests</code>, which is a final method in your trait.) 
    * </p>
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
