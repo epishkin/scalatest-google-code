@@ -193,7 +193,7 @@
     <target name="doc" depends="compile-main">
         <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
-        <scaladoc srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
+        <scaladoc addparams="-Xno-varargs-conversion" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
             <include name="**/*.scala" />
         </scaladoc>
         <!--
