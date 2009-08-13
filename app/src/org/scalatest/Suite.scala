@@ -1154,15 +1154,15 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * <p>
    * Note:  In ScalaTest, the terms "execute" and "run" basically mean the same thing and
-   * can be used interchangably. The reason this convenience method (and its three overloaded forms)
-   * isn't named <code>run</code>
+   * can be used interchangably. The reason this convenience method and its three overloaded forms
+   * aren't named <code>run</code>
    * is because <code>junit.framework.TestCase</code> declares a <code>run</code> method
    * that takes no arguments but returns a <code>junit.framework.TestResult</code>. That
    * <code>run</code> method would not overload with this method if it were named <code>run</code>,
    * because it would have the same parameters but a different return type than the one
    * defined in <code>TestCase</code>. To facilitate integration with JUnit 3, therefore,
    * these convenience "run" methods are named <code>execute</code>. In particular, this allows trait
-   * <code>JUnit3Suite</code> to extend both <code>org.scalatest.Suite</code> and
+   * <code>org.scalatest.junit.JUnit3Suite</code> to extend both <code>org.scalatest.Suite</code> and
    * <code>junit.framework.TestCase</code>, which enables the creating of classes that
    * can be run with either ScalaTest or JUnit 3.
    * </p>
@@ -1193,6 +1193,13 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * This method serves as a convenient way to execute a <code>Suite</code>, passing in some objects via the <code>configMap</code>, especially from within the Scala interpreter.
    * </p>
    *
+   * <p>
+   * Note:  In ScalaTest, the terms "execute" and "run" basically mean the same thing and
+   * can be used interchangably. The reason this convenience method and its three overloaded forms
+   * aren't named <code>run</code> is described the documentation of the overloaded form that
+   * takes no parameters: <a href="#execute%28%29">execute()</a>.
+   * </p>
+   *
    * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    *
    * @throws NullPointerException if the passed <code>configMap</code> parameter is <code>null</code>.
@@ -1221,6 +1228,13 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * <p>
    * This method serves as a convenient way to run a single test, especially from within the Scala interpreter.
+   * </p>
+   *
+   * <p>
+   * Note:  In ScalaTest, the terms "execute" and "run" basically mean the same thing and
+   * can be used interchangably. The reason this convenience method and its three overloaded forms
+   * aren't named <code>run</code> is described the documentation of the overloaded form that
+   * takes no parameters: <a href="#execute%28%29">execute()</a>.
    * </p>
    *
    * @param testName the name of one test to run.
@@ -1255,6 +1269,13 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <p>
    * This method serves as a convenient way to execute a single test, passing in some objects via the <code>configMap</code>, especially from
    * within the Scala interpreter.
+   * </p>
+   *
+   * <p>
+   * Note:  In ScalaTest, the terms "execute" and "run" basically mean the same thing and
+   * can be used interchangably. The reason this convenience method and its three overloaded forms
+   * aren't named <code>run</code> is described the documentation of the overloaded form that
+   * takes no parameters: <a href="#execute%28%29">execute()</a>.
    * </p>
    *
    * @param testName the name of one test to run.
