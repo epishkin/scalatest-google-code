@@ -1,3 +1,7 @@
+Document the Error policy.
+
+Document the aboutAPendingTest, probably in the InfoProvided event documentation.
+
 Show 5 lines of stack trace in print reporter.
 
 Maybe I can keep JUnit3Suite and have it extend junit.framework.Test instead. 
