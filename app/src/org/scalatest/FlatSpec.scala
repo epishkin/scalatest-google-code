@@ -22,6 +22,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
+import Suite.anErrorThatShouldCauseAnAbort
 
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
@@ -1723,12 +1724,10 @@ trait FlatSpec extends Suite { thisSuite =>
         catch {
           case _: TestPendingException =>
             report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(formatter)))
-          case e: Exception =>
+          case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(e, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
-          case ae: AssertionError =>
-            val duration = System.currentTimeMillis - testStartTime
-            handleFailedTest(ae, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
+          case e => throw e
         }
         finally {
           // send out any recorded messages

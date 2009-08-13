@@ -810,5 +810,30 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       val tp = rep.testPendingEventsReceived
       assert(tp.size === 2)
     }
+    it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
+            "known in JDK 1.5, excluding AssertionError") {
+      val a = new WordSpec {
+        "This WordSpec" should {
+          "throw AssertionError" in { throw new AssertionError }
+          "throw plain old Error" in { throw new Error }
+          "throw Throwable" in { throw new Throwable }
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val tf = rep.testFailedEventsReceived
+      assert(tf.size === 3)
+    }
+    it("should propagate out Errors that are direct subtypes of Error in JDK 1.5, other than " +
+            "AssertionError, causing Suites and Runs to abort.") {
+      val a = new WordSpec {
+        "This WordSpec" should {
+          "throw AssertionError" in { throw new OutOfMemoryError }
+        }
+      }
+      intercept[OutOfMemoryError] {
+        a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      }
+    }
   }
 }
