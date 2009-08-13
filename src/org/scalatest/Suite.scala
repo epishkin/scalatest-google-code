@@ -15,25 +15,27 @@
  */
 package org.scalatest
 
+import java.awt.AWTError
+import java.lang.annotation._
 import java.io.Serializable
-import java.lang.annotation.Annotation
 import java.lang.reflect.Constructor
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
+import java.nio.charset.CoderMalfunctionError
+import javax.xml.parsers.FactoryConfigurationError
+import javax.xml.transform.TransformerFactoryConfigurationError
 import Suite.simpleNameForTest
 import Suite.parseSimpleName
 import Suite.stripDollars
 import Suite.formatterForSuiteStarting
 import Suite.formatterForSuiteCompleted
 import Suite.formatterForSuiteAborted
-import java.lang.annotation.Retention
-import java.lang.annotation.RetentionPolicy
-import java.lang.annotation.Target
-import java.lang.annotation.ElementType
+import Suite.anErrorThatShouldCauseAnAbort
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 import org.scalatest.tools.StandardOutReporter
+
 
 /**
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
@@ -1501,19 +1503,15 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
         t match {
           case _: TestPendingException =>
             report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
-          case _ =>
+          case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
+          case e => throw e
         }
-
-      case e: Exception => {
+      case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
-      }
-      case ae: AssertionError => {
-        val duration = System.currentTimeMillis - testStartTime
-        handleFailedTest(ae, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
-      }
+      case e => throw e  
     }
   }
 
@@ -2118,4 +2116,17 @@ private[scalatest] object Suite {
       testName.substring(0, testName.length - InformerInParens.length)
     else
       testName
+
+  private[scalatest] def anErrorThatShouldCauseAnAbort(throwable: Throwable) =
+    throwable match {
+      case _: AnnotationFormatError => true
+      case _: AWTError => true
+      case _: CoderMalfunctionError => true
+      case _: FactoryConfigurationError => true
+      case _: LinkageError => true
+      case _: ThreadDeath => true
+      case _: TransformerFactoryConfigurationError => true
+      case _: VirtualMachineError => true
+      case _ => false
+    }
 }

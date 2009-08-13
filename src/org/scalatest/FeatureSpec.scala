@@ -21,6 +21,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
+import Suite.anErrorThatShouldCauseAnAbort
 
 /**
  * A suite of tests in which each test represents one <em>scenario</em> of a <em>feature</em>. 
@@ -1654,12 +1655,10 @@ trait FeatureSpec extends Suite { thisSuite =>
         catch {
           case _: TestPendingException =>
             report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(formatter)))
-          case e: Exception =>
+          case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(e, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
-          case ae: AssertionError =>
-            val duration = System.currentTimeMillis - testStartTime
-            handleFailedTest(ae, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
+          case e => throw e
         }
         finally {
           // send out any recorded messages

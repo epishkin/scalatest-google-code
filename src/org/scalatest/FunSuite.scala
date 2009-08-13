@@ -20,6 +20,7 @@ import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
+import Suite.anErrorThatShouldCauseAnAbort
 
 /**
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
@@ -958,12 +959,10 @@ trait FunSuite extends Suite { thisSuite =>
     catch { 
       case _: TestPendingException =>
         report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
-      case e: Exception =>
+      case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
-      case ae: AssertionError =>
-        val duration = System.currentTimeMillis - testStartTime
-        handleFailedTest(ae, false, testName, rerunnable, report, tracker, duration)
+      case e => throw e
     }
   }
 
