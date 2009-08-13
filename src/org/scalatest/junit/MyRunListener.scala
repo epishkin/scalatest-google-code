@@ -45,7 +45,7 @@ import java.util.regex.Pattern
 
       val message =
         if (throwableOrNull != null)
-          throwableOrNull.getMessage
+          throwableOrNull.toString
         else
           Resources("jUnitTestFailed")
 
