@@ -752,7 +752,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       val ip = rep.infoProvidedEventsReceived
       assert(ip.size === 4)
       for (event <- ip) {
-        assert(event.message == "A WordSpec" || event.aboutAPendingTest)
+        assert(event.message == "A WordSpec" || event.aboutAPendingTest.isDefined && event.aboutAPendingTest.get)
       }
     }
     it("should send InfoProvided events with aboutAPendingTest set to false for info " +
@@ -777,7 +777,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       val ip = rep.infoProvidedEventsReceived
       assert(ip.size === 4)
       for (event <- ip) {
-        assert(!event.aboutAPendingTest)
+        assert(event.message == "A WordSpec" || event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
   }

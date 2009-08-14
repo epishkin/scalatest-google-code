@@ -2540,7 +2540,7 @@ final case class InfoProvided (
   ordinal: Ordinal,
   message: String,
   nameInfo: Option[NameInfo],
-  aboutAPendingTest: Boolean,
+  aboutAPendingTest: Option[Boolean],
   throwable: Option[Throwable],
   formatter: Option[Formatter],
   payload: Option[Any],
@@ -2599,7 +2599,7 @@ object InfoProvided {
     ordinal: Ordinal,
     message: String,
     nameInfo: Option[NameInfo],
-    aboutAPendingTest: Boolean,
+    aboutAPendingTest: Option[Boolean],
     throwable: Option[Throwable],
     formatter: Option[Formatter],
     payload: Option[Any]
@@ -2631,7 +2631,7 @@ object InfoProvided {
     ordinal: Ordinal,
     message: String,
     nameInfo: Option[NameInfo],
-    aboutAPendingTest: Boolean,
+    aboutAPendingTest: Option[Boolean],
     throwable: Option[Throwable],
     formatter: Option[Formatter]
   ): InfoProvided = {
@@ -2659,7 +2659,7 @@ object InfoProvided {
     ordinal: Ordinal,
     message: String,
     nameInfo: Option[NameInfo],
-    aboutAPendingTest: Boolean,
+    aboutAPendingTest: Option[Boolean],
     throwable: Option[Throwable]
   ): InfoProvided = {
     apply(ordinal, message, nameInfo, aboutAPendingTest, throwable, None, None, Thread.currentThread.getName, (new Date).getTime)
@@ -2686,7 +2686,7 @@ object InfoProvided {
     ordinal: Ordinal,
     message: String,
     nameInfo: Option[NameInfo],
-    aboutAPendingTest: Boolean
+    aboutAPendingTest: Option[Boolean]
   ): InfoProvided = {
     apply(ordinal, message, nameInfo, aboutAPendingTest, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
@@ -2713,7 +2713,7 @@ object InfoProvided {
     message: String,
     nameInfo: Option[NameInfo]
   ): InfoProvided = {
-    apply(ordinal, message, nameInfo, false, None, None, None, Thread.currentThread.getName, (new Date).getTime)
+    apply(ordinal, message, nameInfo, None, None, None, None, Thread.currentThread.getName, (new Date).getTime)
   }
 }
 

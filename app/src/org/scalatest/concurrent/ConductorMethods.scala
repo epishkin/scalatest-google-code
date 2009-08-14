@@ -204,7 +204,7 @@ trait ConductorMethods extends RunMethods { this: Suite =>
     def infoProvidedEvent(t: Throwable) = {
       InfoProvided(
         tracker.nextOrdinal, t.getMessage,
-        Some(NameInfo(suiteName, Some(getClass.getName), Some(testName))), false, Some(t),
+        Some(NameInfo(suiteName, Some(getClass.getName), Some(testName))), None, Some(t),
         successReport.formatter, successReport.payload
       )
     }

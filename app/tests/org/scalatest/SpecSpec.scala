@@ -799,7 +799,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       val ip = rep.infoProvidedEventsReceived
       assert(ip.size === 3)
       for (event <- ip) {
-        assert(event.aboutAPendingTest)
+        assert(event.aboutAPendingTest.isDefined && event.aboutAPendingTest.get)
       }
     }
     it("should send InfoProvided events with aboutAPendingTest set to false for info " +
@@ -817,7 +817,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       val ip = rep.infoProvidedEventsReceived
       assert(ip.size === 3)
       for (event <- ip) {
-        assert(!event.aboutAPendingTest)
+        assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
   }

@@ -301,7 +301,12 @@ private[scalatest] class HtmlReporter(pw: PrintWriter, presentAllDurations: Bool
             case None => (None, None)
           }
         val lines = stringsToPrintOnError("infoProvidedNote", "infoProvided", message, throwable, formatter, suiteName, testName, None)
-        for (line <- lines) printPossiblyInColor(line, ansiGreen)
+        val shouldBeYellow =
+          aboutAPendingTest match {
+            case Some(isPending) => isPending
+            case None => false
+          }
+        for (line <- lines) printPossiblyInColor(line, if (shouldBeYellow) ansiYellow else ansiGreen)
 
       case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) =>
 

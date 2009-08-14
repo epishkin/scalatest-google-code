@@ -662,7 +662,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       val ip = rep.infoProvidedEventsReceived
       assert(ip.size === 3)
       for (event <- ip) {
-        assert(event.aboutAPendingTest)
+        assert(event.aboutAPendingTest.isDefined && event.aboutAPendingTest.get)
       }
     }
     it("should send InfoProvided events with aboutAPendingTest set to false for info " +
@@ -685,7 +685,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       val ip = rep.infoProvidedEventsReceived
       assert(ip.size === 3)
       for (event <- ip) {
-        assert(!event.aboutAPendingTest)
+        assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
   }

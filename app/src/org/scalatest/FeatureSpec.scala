@@ -1558,7 +1558,7 @@ trait FeatureSpec extends Suite { thisSuite =>
          
           // Call getTestNameForReport with the description, because that puts the Suite name
           // in front of the description, which looks good in the regular report.
-          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), false, None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
+          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
         }
         
         sendInfoProvidedMessage()
@@ -1581,7 +1581,7 @@ trait FeatureSpec extends Suite { thisSuite =>
         case InfoLeaf(_, message) =>
           val formattedText = "  " +  message
           report(InfoProvided(tracker.nextOrdinal(), message,
-            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), false,
+            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None,
               None, Some(IndentedText(formattedText, message, 1))))
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
       }
@@ -1640,7 +1640,7 @@ trait FeatureSpec extends Suite { thisSuite =>
                 record(message)
               else {
                 val formattedText = "    " + message
-                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, false, None, Some(IndentedText(formattedText, message, 2))))
+                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, None, Some(IndentedText(formattedText, message, 2))))
               }
             }
           }
@@ -1666,7 +1666,7 @@ trait FeatureSpec extends Suite { thisSuite =>
           // send out any recorded messages
           for (message <- informerForThisTest.recordedMessages) {
             val formattedText = "    " + message
-            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, testWasPending, None, Some(IndentedText(formattedText, message, 2))))
+            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, Some(testWasPending), None, Some(IndentedText(formattedText, message, 2))))
           }
 
           val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
