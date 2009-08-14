@@ -37,7 +37,7 @@ import org.junit.runner.Description
  * import org.scalatest.junit.JUnitRunner
  * import org.scalatest.FunSuite
  *
- * @RunWith(@RunWith(classOf[JUnitRunner])
+ * @RunWith(classOf[JUnitRunner])
  * class MySuite extends FunSuite {
  *   // ...
  * }
