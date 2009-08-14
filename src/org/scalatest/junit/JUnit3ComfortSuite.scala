@@ -628,7 +628,7 @@ private [junit] class JUnit3ComfortSuite extends Suite with OneInstancePerTest {
   }
 }
 
-/**
+/*
  * <strong>Note: <code>JUnit3Suite</code> has been deprecated, and will be removed in a future version of ScalaTest. Please
  * change to using <code>JUnit3ComforSuite</code> instead. <code>JUnit3ComfortSuite</code> does not extend <code>junit.framework.TestCase</code>.
  * In versions of ScalaTest prior to 0.9.5, <code>JUnit3Suite</code> extended <code>TestCase</code> so that it could be run by a JUnit 3 runner. In
@@ -639,5 +639,3 @@ private [junit] class JUnit3ComfortSuite extends Suite with OneInstancePerTest {
  */
 //@deprecated
 //class JUnit3Suite extends JUnit3ComfortSuite
-
-class JUnit3Suite extends TestCase with JUnitSuite
