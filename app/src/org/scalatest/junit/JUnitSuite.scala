@@ -78,6 +78,7 @@ trait JUnitSuite extends Suite { thisSuite =>
   // TODO: This may need to be made thread safe, because who knows what Thread JUnit will fire through this
   private var theTracker = new Tracker
 
+  // TODO: Should this not handle the case where testName is defined?
   override def run(testName: Option[String], report: Reporter, stopper: Stopper,
       filter: Filter, configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 

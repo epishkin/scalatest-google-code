@@ -268,7 +268,7 @@
     </target>
 
     <target name="test" depends="compile,copyprops,jartests,taskdefscalatest">
-        <scalatest fork="true" runpath="${build.tests.jar}" concurrent="false" haltonfailure="true">
+        <scalatest fork="true" runpath="${build.tests.jar}" concurrent="true" haltonfailure="true">
             <jvmarg value="-XX:MaxPermSize=128m"/>
             <reporter type="graphic" />
             <reporter type="stdout" config="D"/>

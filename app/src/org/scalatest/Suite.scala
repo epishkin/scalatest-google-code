@@ -32,6 +32,7 @@ import Suite.formatterForSuiteStarting
 import Suite.formatterForSuiteCompleted
 import Suite.formatterForSuiteAborted
 import Suite.anErrorThatShouldCauseAnAbort
+import Suite.getSimpleNameOfAnObjectsClass
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 import org.scalatest.tools.StandardOutReporter
@@ -1847,7 +1848,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * @return this <code>Suite</code> object's suite name.
    */
-  def suiteName = getSimpleNameOfThisObjectsClass
+  def suiteName = getSimpleNameOfAnObjectsClass(thisSuite)
 
   /**
    * Throws <code>TestPendingException</code> to indicate a test is pending.
@@ -1943,8 +1944,6 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     suiteName + ", " + testName
   }
 
-  private def getSimpleNameOfThisObjectsClass = stripDollars(parseSimpleName(getClass().getName()))
-
   /**
    * The total number of tests that are expected to run when this <code>Suite</code>'s <code>run</code> method is invoked.
    *
@@ -1987,6 +1986,8 @@ private[scalatest] object Suite {
   private[scalatest] val TestMethodPrefix = "test"
   private[scalatest] val InformerInParens = "(Informer)"
   private[scalatest] val IgnoreAnnotation = "org.scalatest.Ignore"
+
+  private[scalatest] def getSimpleNameOfAnObjectsClass(o: AnyRef) = stripDollars(parseSimpleName(o.getClass().getName()))
 
   // [bv: this is a good example of the expression type refactor. I moved this from SuiteClassNameListCellRenderer]
   // this will be needed by the GUI classes, etc.
