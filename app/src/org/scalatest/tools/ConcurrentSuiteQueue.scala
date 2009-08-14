@@ -28,7 +28,8 @@ import java.util.concurrent.Future
 private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporter, stopper: Stopper, filter: Filter,
     configMap: Map[String, Any]) extends Distributor {
 
-  private val execSvc: ExecutorService = Executors.newCachedThreadPool()
+  //private val execSvc: ExecutorService = Executors.newCachedThreadPool()
+  private val execSvc: ExecutorService = Executors.newFixedThreadPool(4)
   private val futureQueue = new LinkedBlockingQueue[Future[T] forSome { type T }]
 
   def apply(suite: Suite, tracker: Tracker) {
