@@ -1552,7 +1552,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
         // Call getTestNameForReport with the description, because that puts the Suite name
         // in front of the description, which looks good in the regular report.
-        report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), false, None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
+        report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
 
       case _ =>
     }
@@ -1574,7 +1574,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
           val infoProvidedIcon = Resources("infoProvidedIconChar")
           val formattedText = Resources("iconPlusShortName", infoProvidedIcon, message)
           report(InfoProvided(tracker.nextOrdinal(), message,
-            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), false,
+            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None,
               None, Some(IndentedText(formattedText, message, 1))))
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
       }
@@ -1634,7 +1634,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
               else {
                 val infoProvidedIcon = Resources("infoProvidedIconChar")
                 val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, false, None, Some(IndentedText(formattedText, message, 2))))
+                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, None, Some(IndentedText(formattedText, message, 2))))
               }
             }
           }
@@ -1661,7 +1661,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
           for (message <- informerForThisTest.recordedMessages) {
             val infoProvidedIcon = Resources("infoProvidedIconChar")
             val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, testWasPending, None, Some(IndentedText(formattedText, message, 2))))
+            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, Some(testWasPending), None, Some(IndentedText(formattedText, message, 2))))
           }
 
           val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
