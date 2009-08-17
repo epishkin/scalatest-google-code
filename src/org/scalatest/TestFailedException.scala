@@ -49,14 +49,14 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
    * <strong><code>failedTestCodeStackDepth</code> has been deprecated and will be removed in a future version of
    * ScalaTest. Please call <code>failedCodeStackDepth</code> instead.</strong>
    */
-  @deprecated // deprecated in 0.9.6, remove in 0.9.8
+  @deprecated // deprecated in 1.0, remove in 1.2
   val failedTestCodeStackDepth: Int = failedCodeStackDepth
 
   /**
    * <strong><code>failedTestCodeFileNameAndLineNumberString</code> has been deprecated and will be removed in a future version of
    * ScalaTest. Please call <code>failedCodeFileNameAndLineNumberString</code> instead.</strong>
    */
-   @deprecated // deprecated in 0.9.6, remove in 0.9.8
+   @deprecated // deprecated in 1.0, remove in 1.2
    val failedTestCodeFileNameAndLineNumberString: Option[String] = failedCodeFileNameAndLineNumberString
 
   /**
