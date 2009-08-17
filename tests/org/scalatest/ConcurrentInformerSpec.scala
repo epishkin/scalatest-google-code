@@ -1,8 +1,5 @@
 package org.scalatest
 
-import events.NameInfo
-import java.util.concurrent.atomic.AtomicBoolean
-
 /*
  * Copyright 2001-2008 Artima, Inc.
  *
@@ -18,18 +15,33 @@ import java.util.concurrent.atomic.AtomicBoolean
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class ConcurrentInformerSpec extends Spec {
-  describe("A ConcurrentInformer") {
-    val nameInfo = NameInfo("suite name", Some("suite.class.Name"), Some("test name"))
+
+import events.NameInfo
+import fixture.FixtureSpec
+import java.util.concurrent.atomic.AtomicBoolean
+
+class ConcurrentInformerSpec extends FixtureSpec {
+
+  val nameInfo = NameInfo("suite name", Some("suite.class.Name"), Some("test name"))
+
+  type Fixture = ConcurrentInformer
+
+  // The ConcurrentInformer must be passed in rather than constructed in the constructor
+  // and shared that way, to make sure it is created by the same thread that runs the tests
+  def withFixture(fun: TestFunction) {
     val informer =
       new ConcurrentInformer(nameInfo) {
         def apply(message: String) = ()
       }
-    it("should return the passed NameInfo in a Some when the constructing thread calls nameInfoForCurrentThread") {
+    fun(informer)
+  }
+
+  describe("A ConcurrentInformer") {
+    it("should return the passed NameInfo in a Some when the constructing thread calls nameInfoForCurrentThread") { informer =>
       assert(informer.nameInfoForCurrentThread.isDefined)
       assert(informer.nameInfoForCurrentThread.get === nameInfo)
     }
-    it("should return None when a thread other than the constructing thread calls nameInfoForCurrentThread") {
+    it("should return None when a thread other than the constructing thread calls nameInfoForCurrentThread") { informer =>
       val nameInfoWasNone = new AtomicBoolean
       class MyThread extends Thread {
         override def run() {
