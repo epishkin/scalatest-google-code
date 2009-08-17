@@ -1,3 +1,68 @@
+Finally found my syntax:
+
+    configMap.size should be === 7
+
+    configMap.size must be === 7
+
+This gives Ola his equals sign. And it lets people who don't want to write parens for assertEquals things
+a way out, which is consistent with the rest of ScalaTest matchers. It fits right in with:
+
+    configMap.size must be < 7
+    configMap.size must be > 7
+    configMap.size must be <= 7
+    configMap.size must be >= 7
+
+Log4j has appenders. java.util.logging has handlers. I think the model would be you'd ask runner
+to register a handler or an appender, and it could do that, then it would get a LogMessages object
+or something from that, and pass it to run. There would be an Option[LogMessages] param in there.
+A test would call testStarting on the LogMessages, to let it know it is starting. I think testStarting
+would return a ID object, which the runTest method would store in a local variable. If the test
+succeeds, it would call testSucceeded on the LogMessages, passing in the ID, so that the LogMessages
+could forget about that one. Then, if the test failed, through, it would call testFailed on the
+LogMessages object, passing in the ID, and LogMessages would return a collection of log messages
+that were received since the testStarting invocation that returned that ID. It would forget about
+that ID also. The test would forward those log messages to the reporter via InfoProvided events.
+
+Maybe the trait name should be LogRecorder, so I add a parameter to run, runTests, runTest, and runNestedSuites
+of type Option[LogRecorder]. One of these could be passed into Conductor's constructor, maybe, from the withFixture
+method. It is the same idea. It could be one that has a way to pass String messages into it. StringLogRecorder or
+SimpleLogRecorder. Something like that. There could later be LogRecorders that work for Log4j and java.util.logging
+stuff, and even stdout and stderr maybe. I would add a logRecorder method to TestFunction that returns
+an Option[LogRecorder]. Nah, just leave it be. The idea is LogRecorder stuff is coming from the outside, not
+inside a test. Inside a test what you want is a *logger*, and you could just use whatever logger is being
+recorded. That would be the way to do it.
+
+Make all the traits, like JUnitSuite, which override run in a way that doesn't use runNestedSuites, runTests, runTest,
+runNoArgTestFunction, etc., override these and make them final and have them throw UnsupportedOperationException. This
+will make it a compiler error to mix in say BeforeAndAfterEach, i.e., any trait that tries to modify behavior by
+overriding these methods and calling super. versions of them. It will render a runtime error any invocation of
+one of these methods when they really don't work. (Actually, could implement them to work correctly, things like
+testNames, suiteName, tags, maybe these should always be implemented. I should decide this and say it as part of the
+contract. But testNames may not be known, right?)
+
+Can use this for the side-effecty fixture style:
+
+import org.scalatest.fixture.FixtureFunSuite
+
+class MySuite extends FixtureFunSuite {
+
+  type Fixture = Unit
+
+  def withFixture(fun: TestFunction) {
+    fun()
+  }
+
+  test("did this work") {
+    assert(1 + 1 === 3)
+  }
+
+  test("did this work yup") {
+    assert(1 + 1 === 3)
+  }
+}
+
+Unit always means some side effect must be going on somewhere, and its the same here.
+
 Document the Error policy.
 
 Show 5 lines of stack trace in print reporter.

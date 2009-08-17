@@ -50,20 +50,67 @@ import org.scalatest.tools.StandardOutReporter
  * This approach is easy to understand, and a good way for Scala beginners to start writing tests.
  * More advanced Scala programmers may prefer to mix together other <code>Suite</code> subtraits defined in ScalaTest, 
  * or create their own, to write tests in the way they feel makes them most productive. Here's a quick overview
- * of some of the options:
+ * of some of the options to help you get started:
  * </p>
  *
- * <ul>
- * <li><code>Suite</code> - tests defined as methods that start with "<code>test</code>"</li>
- * <li><a href="FunSuite.html"><code>FunSuite</code></a> - tests defined as functions registered by invoking "<code>test</code>"</li>
- * <li><a href="Spec.html"><code>Spec</code></a> - supports behavior-driven development style, using "<code>describe</code>" and "<code>it</code>"</li>
- * <li><a href="FlatSpec.html"><code>FlatSpec</code></a> - supports behavior-driven development style, using operator notation and no nesting</li>
- * <li><a href="WordSpec.html"><code>WordSpec</code></a> - supports behavior-driven development style, using implicit conversions that add words after strings</li>
- * <li><a href="FeatureSpec.html"><code>FeatureSpec</code></a> - integration and other high level testing, using "<code>feature</code>" and "<code>scenario</code>"</li>
- * <li><a href="junit/JUnitSuite.html"><code>JUnitSuite</code></a> - facilitates writing JUnit 4 tests in Scala</li>
- * <li><a href="junit/JUnitComfortSuite.html"><code>JUnitComfortSuite</code></a> - offers syntax similar to JUnit 3 <code>TestCase</code>s in Scala</li>
- * <li><a href="testng/TestNGSuite.html"><code>TestNGSuite</code></a> - facilitates writing TestNG tests in Scala</li>
- * </ul>
+ * <p>
+ * <em>For JUnit 3 users</em>
+ * </p>
+ *
+ * <p>
+ * If you are using JUnit 3 (version 3.8 or earlier releases) and you want to write JUnit 3 tests in Scala, look at
+ * <a href="junit/AssertionsForJUnit3.html"><code>AssertionsForJUnit3</code></a>, 
+ * <a href="junit/ShouldMatchersForJUnit3.html"><code>ShouldMatchersForJUnit3</code></a>, and
+ * <a href="junit/JUnit3Suite.html"><code>JUnit3Suite</code></a>. 
+ * </p>
+ *
+ * <p>
+ * <em>For JUnit 4 users</em>
+ * </p>
+ *
+ * <p>
+ * If you are using JUnit 4 and you want to write JUnit 4 tests in Scala, look at
+ * <a href="junit/JUnitSuite.html"><code>JUnitSuite</code></a>, and
+ * <a href="junit/JUnitRunner.html"><code>JUnitRunner</code></a>. With <code>JUnitRunner</code>,
+ * you can use any of the traits described here and still run your tests with JUnit 4.
+ * </p>
+ *
+ * <p>
+ * <em>For TestNG users</em>
+ * </p>
+ *
+ * <p>
+ * If you are using TestNG and you want to write TestNG tests in Scala, look at
+ * <a href="testng/TestNGSuite.html"><code>TestNGSuite</code></a>.
+ * </p>
+ *
+ * <p>
+ * <em>For high-level testing</em>
+ * </p>
+ *
+ * <p>
+ * If you want to write tests at a higher level than unit tests, such as integration tests, acceptance tests,
+ * or functional tests, check out <a href="FeatureSpec.html"><code>FeatureSpec</code></a>.
+ * </p>
+ *
+ * <p>
+ * <em>For unit testing</em>
+ * </p>
+ *
+ * <p>
+ * If you prefer a behavior-driven development (BDD) style, in which tests are combined with text that
+ * specifies the behavior being tested, look at
+ * <a href="Spec.html"><code>Spec</code></a>, 
+ * <a href="FlatSpec.html"><code>FlatSpec</code></a>, and
+ * <a href="WordSpec.html"><code>WordSpec</code></a>. Otherwise, if you just want to write tests
+ * and don't want to combine testing with specifying, look at 
+ * <a href="FunSuite.html"><code>FunSuite</code></a> or read on to learn how to write
+ * tests using this base trait, <code>Suite</code>. 
+ * </p>
+ *
+ * <p>
+ * <strong>Getting started with <code>Suite</code></strong>
+ * </p>
  *
  * <p>
  * To use this trait's approach to writing tests, simply create classes that
@@ -92,15 +139,15 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  *
  * <p>
- * You run a <code>Suite</code> by invoking on it one of five overloaded <code>run</code>
- * methods. Four of these <code>run</code> methods, which print test results to the
+ * You can run a <code>Suite</code> by invoking on it one of four overloaded <code>execute</code>
+ * methods. These methods, which print test results to the
  * standard output, are intended to serve as a
  * convenient way to run tests from within the Scala interpreter. For example,
  * to run <code>MySuite</code> from within the Scala interpreter, you could write:
  * </p>
  *
  * <pre>
- * scala> (new MySuite).run()
+ * scala> (new MySuite).execute()
  * </pre>
  *
  * <p>
@@ -119,7 +166,7 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <pre>
- * scala> (new MySuite).run("testAddition")
+ * scala> (new MySuite).execute("testAddition")
  * </pre>
  *
  * <p>
@@ -132,10 +179,9 @@ import org.scalatest.tools.StandardOutReporter
  * </pre>
  *
  * <p>
- * Two other <code>run</code> methods that are intended to be run from the interpreter accept a "config" map of key-value
- * pairs (see <a href="#configMapSection">Config Map</a>, below). The fifth overloaded <code>run</code> method takes seven
- * parameters, so it is a bit unwieldy to invoke from
- * within the Scala interpreter. Instead, this <code>run</code> method will usually be invoked by a test runner, such
+ * Two other <code>execute</code> methods that are intended to be run from the interpreter accept a "config" map of key-value
+ * pairs (see <a href="#configMapSection">Config map</a>, below). Each of these <code>execute</code> methods invokes a <code>run</code> method takes seven
+ * parameters. This <code>run</code> method, which actually executes the suite, will usually be invoked by a test runner, such
  * as <code>org.scalatest.tools.Runner</code> or an IDE. See the <a href="tools/Runner$object.html">documentation
  * for <code>Runner</code></a> for more detail.
  * </p>
@@ -145,7 +191,7 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * Inside test methods, you can write assertions by invoking <code>assert</code> and passing in a <code>Boolean</code> expression,
+ * Inside test methods in a <code>Suite</code>, you can write assertions by invoking <code>assert</code> and passing in a <code>Boolean</code> expression,
  * such as:
  * </p>
  *
@@ -252,7 +298,7 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * If <code>charAt</code> throws <code>IndexOutOfBoundsException</code> as expected, control will transfer
  * to the catch case, which does nothing. If, however, <code>charAt</code> fails to throw an exception,
- * the next statement, <code>fail()</code>, will be run. The <code>fail</code> method always completes abruptly with
+ * the next statement, <code>fail()</code>, will be executed. The <code>fail</code> method always completes abruptly with
  * a <code>TestFailedException</code>, thereby signaling a failed test.
  * </p>
  *
@@ -271,7 +317,7 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * This code behaves much like the previous example. If <code>charAt</code> throws an instance of <code>IndexOutOfBoundsException</code>,
  * <code>intercept</code> will return that exception. But if <code>charAt</code> completes normally, or throws a different
- * exception, <code>intercept</code> will complete abruptly with a <code>TestFailedException</code>. <code>intercept</code> returns the
+ * exception, <code>intercept</code> will complete abruptly with a <code>TestFailedException</code>. The <code>intercept</code> method returns the
  * caught exception so that you can inspect it further if you wish, for example, to ensure that data contained inside
  * the exception has the expected values. Here's an example:
  * </p>
@@ -349,70 +395,6 @@ import org.scalatest.tools.StandardOutReporter
  * }
  * </pre>
  *
- * <p>
- * Alternatively, you might prefer the more English-like look and more detailed error messages 
- * provided by <a href="http://code.google.com/p/hamcrest/"><em>Hamcrest matchers</em></a>. As with
- * JUnit or TestNG assertions, you can use these in ScalaTest suites simply by importing them and
- * using them. Here's an example:
- * </p>
- * 
- * <pre>
- * import org.scalatest.Suite
- * import org.hamcrest.Matchers._
- * import org.hamcrest.MatcherAssert.assertThat
- *
- * class MySuite extends Suite {
- *
- *   def testAddition() {
- *     val sum = 1 + 1
- *     assertThat(sum, is(2))
- *     assertThat(sum + 2, is(4))
- *   }
- *
- *   def testSubtraction() {
- *     val diff = 4 - 1
- *     assertThat(diff, is(3))
- *     assertThat(diff - 2, is(1))
- *   }
- * }
- * </pre>
- * 
- * <p>
- * You will, of course, need to include the Hamcrest jar file
- * in your class or run path when you run your ScalaTest suites that use Hamcrest matchers.
- * </p>
- * 
- * <p>
- * You may instead prefer to use the matchers provided by the <a href="http://code.google.com/p/specs/">specs framework</a>, which take greater
- * advantage of Scala than Hamcrest matchers, since specs is written in Scala. (The Hamcrest library is written in Java.)
- * To use specs matchers, simply mix in trait <code>org.specs.SpecsMatchers</code> into your ScalaTest suite. Here's an example:
- * </p>
- * 
- * <pre>
- * import org.scalatest.Suite
- * import org.specs.SpecsMatchers
- *
- * class MySuite extends Suite with SpecsMatchers {
- *
- *   def testAddition() {
- *     val sum = 1 + 1
- *     sum mustBe 2
- *     sum + 2 mustBe 4
- *   }
- *
- *   def testSubtraction() {
- *     val diff = 4 - 1
- *     diff mustBe 3
- *     diff - 2 mustBe 1
- *   }
- * }
- * </pre>
- * 
- * <p>
- * You will, of course, need to include the specs jar file
- * in your class or run path when you run your ScalaTest suites that use specs matchers.
- * </p>
- * 
  * <p>
  * <strong>Nested suites</strong>
  * </p>
@@ -509,10 +491,10 @@ import org.scalatest.tools.StandardOutReporter
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
  * they need to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
+ * be created before and cleaned up after each test. JUnit 3 offers methods <code>setUp</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
- * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
+ * and <code>tearDown</code>, however, this approach usually involves reassigning <code>var</code>s
  * between tests. Before going that route, you should consider some approaches that
  * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
  * that return a new instance of a needed object (or a tuple or case class holding new instances of
@@ -551,123 +533,25 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the begining of the test.
+ * call the method (or methods) needed by each test at the begining of the test. If every test method requires the same set of
+ * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
+ * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
+ * will be run in its own instance of the <code>Suite</code>, similar to the way JUnit tests are executed.
  * </p>
  *
  * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create <em>with-fixture</em> methods,
- * and wrap test code in calls to the with-fixture
- * method. The with-fixture method accepts a test function as a parameter, creates the fixture, invokes the test function, passing in the
- * newly created fixture object or objects. If necessary, the with-fixture method can also perform any cleanup after the test function returns. Here's an example:
- * </p>
- *
- * <pre>
- * import org.scalatest.Suite
- * import scala.collection.mutable.ListBuffer
- *
- * class MySuite extends Suite {
- *
- *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
- *
- *     // Create needed mutable objects
- *     val stringBuilder = new StringBuilder("ScalaTest is ")
- *     val listBuffer = new ListBuffer[String]
- *
- *     // Invoke the test function, passing in the mutable objects
- *     testFunction(stringBuilder, listBuffer)
- *   }
- *
- *   def testEasy() {
- *     withFixture { (builder, buffer) =>
- *       builder.append("easy!")
- *       assert(builder.toString === "ScalaTest is easy!")
- *       assert(buffer.isEmpty)
- *       buffer += "sweet"
- *     }
- *   }
- *
- *   def testFun() {
- *     withFixture { (builder, buffer) =>
- *       builder.append("fun!")
- *       assert(builder.toString === "ScalaTest is fun!")
- *       assert(buffer.isEmpty)
- *     }
- *   }
- * }
- * </pre>
- * 
- * One advantage of this approach compared to the create-fixture approach shown previously is that
- * you can more easily perform cleanup after each test runs. For example, you
- * could create a temporary file before each test, and delete it afterwords, by
- * doing so before and after invoking the test function in a <code>withTempFile</code>
- * method. Here's an example:
- *
- * <pre>
- * import org.scalatest.Suite
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- * 
- * class MySuite extends Suite {
- * 
- *   def withTempFile(testFunction: FileReader => Unit) {
- * 
- *     val FileName = "TempFile.txt"
- *  
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *  
- *     // Create the reader needed by the test
- *     val reader = new FileReader(FileName)
- *  
- *     try {
- *       // Run the test using the temp file
- *       testFunction(reader)
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
- *     }
- *   }
- * 
- *   def testReadingFromTheTempFile() {
- *     withTempFile { (reader) =>
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
- *       }
- *       assert(builder.toString === "Hello, test!")
- *     }
- *   }
- * 
- *   def testFirstCharOfTheTempFile() {
- *     withTempFile { (reader) =>
- *       assert(reader.read() === 'H')
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If different tests in the same <code>Suite</code> require different fixtures, you can create multiple with-fixture methods and
- * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
- * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
- * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
- * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
- * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FixtureSuite</code> behaves exactly like
- * <code>org.scalatest.Suite</code>, except each test function takes a <code>Fixture</code>. For the details, see the documentation for
- * <a href="fixture/FixtureSuite.html"><code>FixtureSuite</code></a>. To get the idea, however, here's what the previous example would
- * look like rewritten to use an <code>org.scalatest.fixture.FixtureSuite</code>:
+ * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
+ * test, they don't address the problem of cleaning up a fixture after the test completes. One approach that addresses
+ * the clean up problem but still avoids <code>var</code>s is to use <code>FixtureSuite</code> trait in the
+ * <code>org.scalatest.fixture</code> package.  Tests in an <code>org.scalatest.fixture.FixtureSuite</code> can have a fixture
+ * object passed in as a parameter. You must indicate the type of the fixture object
+ * by defining the <code>Fixture</code> type member and define a <code>withFixture</code> method that takes a test function.
+ * Inside the <code>withFixture</code> method, you create the fixture, pass it into the test function, then perform any
+ * necessary cleanup after the test function returns. Instead of invoking each test directly, a <code>FixtureSuite</code> will
+ * pass a function that invokes the code of a test to <code>withFixture</code>. Your <code>withFixture</code> method, therefore,
+ * is responsible for actually running the code of the test by invoking the test function.
+ * For example, you could create a temporary file before each test, and delete it afterwords, by
+ * doing so before and after invoking the test function in the <code>withFixture</code> method of a <code>FixtureSuite</code>:
  * </p>
  *
  * <pre>
@@ -786,10 +670,13 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
- * (It is worth noting that the only difference in the test code between the mutable
+ * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSuite</code>
  * approach shown previously is that the <code>FixtureSuite</code>'s test methods take a <code>FileReader</code> as
- * a parameter. Otherwise the test code is identical.)
+ * a parameter. Otherwise the test code is identical. There is one other difference however. A <code>FixtureSuite</code>
+ * test method need not take the fixture. So you can have some tests that take a fixture, and others that don't.
+ * In this case, the <code>FixtureSuite</code> provides documentation of which
+ * test methods use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
  * </p>
  *
  * <p>
@@ -872,10 +759,10 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 0.9.6, when "groups" were renamed
- * to "tags." In 0.9.6 and 0.9.7, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
- * method. Any annotation on a <code>Suite</code> method will be considered a tag until 0.9.8, to give users time to add
- * <code>TagAnnotation</code>s on any tag annotations they made prior to the 0.9.6 release. From 0.9.8 onward, only annotations
+ * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 1.0, when "groups" were renamed
+ * to "tags." In 1.0 and 1.1, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
+ * method. Any annotation on a <code>Suite</code> method will be considered a tag until 1.2, to give users time to add
+ * <code>TagAnnotation</code>s on any tag annotations they made prior to the 1.0 release. From 1.2 onward, only annotations
  * themsleves annotatted by <code>TagAnnotation</code> will be considered tag annotations.</strong>
  * </p>
  * 
@@ -1312,17 +1199,17 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * </p>
    * 
    * <p>
-   * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 0.9.6, when "groups" were renamed
-   * to "tags." In 0.9.6 and 0.9.7, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
-   * method. Any annotation on a <code>Suite</code> method will be considered a tag until 0.9.8, to give users time to add
-   * <code>TagAnnotation</code>s on any tag annotations they made prior to the 0.9.6 release. From 0.9.8 onward, only annotations
+   * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 1.0, when "groups" were renamed
+   * to "tags." In 1.0 and 1.1, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
+   * method. Any annotation on a <code>Suite</code> method will be considered a tag until 1.2, to give users time to add
+   * <code>TagAnnotation</code>s on any tag annotations they made prior to the 1.0 release. From 1.2 onward, only annotations
    * themsleves annotatted by <code>TagAnnotation</code> will be considered tag annotations.</strong>
    * </p>
    */
   def tags: Map[String, Set[String]] = {
 
     def getTags(testName: String) =
-/* AFTER THE DEPRECATION CYCLE FOR GROUPS TO TAGS (0.9.8), REPLACE THE FOLLOWING FOR LOOP WITH THIS COMMENTED OUT ONE
+/* AFTER THE DEPRECATION CYCLE FOR GROUPS TO TAGS (1.2), REPLACE THE FOLLOWING FOR LOOP WITH THIS COMMENTED OUT ONE
    THAT MAKES SURE ANNOTATIONS ARE TAGGED WITH TagAnnotation.
       for {
         a <- getMethodForTestName(testName).getDeclaredAnnotations

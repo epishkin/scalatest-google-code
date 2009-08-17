@@ -199,15 +199,15 @@ import org.scalatest.junit.JUnitWrapperSuite
  * </p>
  *
  * <p>
- * <strong>Deprecation Note: Prior to 0.9.6, ScalaTest's <code>Runner</code> allowed you specify configuration parameters on reports that
+ * <strong>Deprecation Note: Prior to 1.0, ScalaTest's <code>Runner</code> allowed you specify configuration parameters on reports that
  * indicated a particular event should be <em>presented</em>. This meant that people could opt to not show
  * test failures, suite aborted events, <em>etc</em>. To prevent important events from being dropped accidentally,
- * starting in 0.9.6 the configuration parameters indicate which events should <em>not</em> be presented, and important
+ * starting in 1.0 the configuration parameters indicate which events should <em>not</em> be presented, and important
  * events can't be dropped at all. For two releases,
  * the old config parameters will be tolerated, but have no effect (except for F, which turns on printing of <code>TestFailedException</code>
  * stack traces). Only the new parameters will have any effect,
  * and none of the new ones overlap with any of the old ones. So you have two releases to change your scripts to
- * use the new config parameters. Starting with 0.9.8, using the old parameters&mdash;Y, Z, T, F, G, U, P, B, I, S, A, R&mdash;will
+ * use the new config parameters. Starting with 1.2, using the old parameters&mdash;Y, Z, T, F, G, U, P, B, I, S, A, R&mdash;will
  * cause <code>Runner</code> to abort with an error message and not run the tests.</strong>
  * </p>
  *
@@ -779,7 +779,7 @@ object Runner {
     var set = Set[ReporterConfigParam]()
     while (it.hasNext) 
       it.next match {
-        case 'Y' => // Allow the old ones for the two-release deprecation cycle, starting in 0.9.6
+        case 'Y' => // Allow the old ones for the two-release deprecation cycle, starting in 1.0
         case 'Z' => // But they have no effect. After that, drop these cases so these will generate an error.
         case 'T' =>
         // case 'F' => I decided to reuse F already, but not for a filter so it is OK
