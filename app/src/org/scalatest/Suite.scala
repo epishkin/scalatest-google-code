@@ -664,6 +664,10 @@ import org.scalatest.tools.StandardOutReporter
  *   def testFirstCharOfTheTempFile() {
  *     assert(reader.read() === 'H')
  *   }
+ * 
+ *   def testWithoutAFixture() {
+ *     assert(1 + 1 === 2)
+ *   }
  * }
  * </pre>
  *
@@ -673,7 +677,8 @@ import org.scalatest.tools.StandardOutReporter
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSuite</code>
  * approach shown previously is that the <code>FixtureSuite</code>'s test methods take a <code>FileReader</code> as
- * a parameter. Otherwise the test code is identical. There is one other difference however. A <code>FixtureSuite</code>
+ * a parameter. Otherwise the test code is identical. One benefit of the explicit parameter is that, as demonstrated
+ * by the <code>testWithoutAFixture</code> method, a <code>FixtureSuite</code>
  * test method need not take the fixture. So you can have some tests that take a fixture, and others that don't.
  * In this case, the <code>FixtureSuite</code> provides documentation of which
  * test methods use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
