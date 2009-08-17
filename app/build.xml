@@ -1,4 +1,5 @@
-<project name="ScalaTest" default="dist" basedir=".">
+<project name="ScalaTest" default="dist" basedir="."
+         xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
     <!-- set global properties for this build -->
     <property name="src" value="src" />
@@ -556,5 +557,41 @@
     </target>
 
     <target name="jar" depends="dist"></target>
+
+    <!--
+      - Deploy snapshot to remote repository.  Define -Ddeployment-username
+      - and -Ddeployment-password on command line.
+      -->
+    <target name="deploy-snapshot" depends="gencode,jar">
+
+        <fail message="deployment-username not defined (use -Ddeployment-username=username)"
+              unless="deployment-username" />
+        <fail message="deployment-password not defined (use -Ddeployment-password=password)"
+              unless="deployment-password" />
+
+        <path id="maven-ant-tasks.classpath"
+              path="lib/maven-ant-tasks-2.0.10.jar" />
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+                 uri="antlib:org.apache.maven.artifact.ant"
+                 classpathref="maven-ant-tasks.classpath" />
+
+        <copy file="${dist}/lib/scalatest.jar"
+              tofile="target/scalatest-${release}.jar" />
+
+        <copy file="pom.xml" todir="target" overwrite="true">
+          <filterset>
+            <filter token="RELEASE" value="${release}" />
+          </filterset>
+        </copy>
+
+        <artifact:deploy file="target/scalatest-${release}.jar">
+            <remoteRepository
+                url="http://nexus.scala-tools.org/content/repositories/snapshots/">
+                <authentication username="${deployment-username}"
+                                password="${deployment-password}"/>
+            </remoteRepository>
+            <pom file="target/pom.xml"/>
+        </artifact:deploy>
+    </target>
 </project>
 
