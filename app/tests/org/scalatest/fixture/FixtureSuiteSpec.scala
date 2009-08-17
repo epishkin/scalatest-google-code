@@ -17,20 +17,21 @@ package org.scalatest.fixture
 
 import collection.immutable.TreeSet
 import events.TestFailed
+import mock.MockitoSugar
 
 class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("The private testMethodTakesInformer method") {
-    val testMethodTakesInformer = PrivateMethod[Boolean]('testMethodTakesInformer)
+    val testMethodTakesAFixtureAndInformer = PrivateMethod[Boolean]('testMethodTakesAFixtureAndInformer)
     val suiteObject = FixtureSuite
     it("should return true if passed a string that ends in (Fixture, Informer)") {
-      assert(suiteObject invokePrivate testMethodTakesInformer("thisDoes(Fixture, Informer)"))
-      assert(suiteObject invokePrivate testMethodTakesInformer("(Fixture, Informer)"))
-      assert(suiteObject invokePrivate testMethodTakesInformer("test(Fixture, Informer)"))
+      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("thisDoes(Fixture, Informer)"))
+      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("(Fixture, Informer)"))
+      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("test(Fixture, Informer)"))
     }
     it("should return false if passed a string that doesn't end in (Fixture, Informer)") {
-      assert(!(suiteObject invokePrivate testMethodTakesInformer("thisDoesNot(Fixture)")))
-      assert(!(suiteObject invokePrivate testMethodTakesInformer("test(Fixture)")))
+      assert(!(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("thisDoesNot(Fixture)")))
+      assert(!(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("test(Fixture)")))
     }
   }
 
@@ -719,6 +720,34 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       intercept[OutOfMemoryError] {
         a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       }
+    }
+    it("should allow both tests that take fixtures and tests that don't") {
+      val a = new FixtureSuite {
+
+        type Fixture = String
+        def withFixture(fun: TestFunction) {
+          fun("Hello, world!")
+        }
+
+        var takesNoArgsInvoked = false
+        def testTakesNoArgs() { takesNoArgsInvoked = true }
+
+        var takesAnInformerInvoked = false
+        def testTakesAnInformer(info: Informer) { takesAnInformerInvoked = true }
+
+        var takesAFixtureInvoked = false
+        def testTakesAFixture(s: String) { takesAFixtureInvoked = true }
+
+        var takesAFixtureAndInformerInvoked = false
+        def testTakesAFixtureAndInformer(s: String, info: Informer) { takesAFixtureAndInformerInvoked = true }
+      }
+
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 4, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAnInformerInvoked)
+      assert(a.takesAFixtureInvoked)
+      assert(a.takesAFixtureAndInformerInvoked)
     }
   }
 }

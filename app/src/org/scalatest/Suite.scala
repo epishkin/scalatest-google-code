@@ -109,10 +109,6 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
- * <strong>Getting started with <code>Suite</code></strong>
- * </p>
- *
- * <p>
  * To use this trait's approach to writing tests, simply create classes that
  * extend <code>Suite</code> and define test methods. Test methods have names of the form <code>testX</code>, 
  * where <code>X</code> is some unique, hopefully meaningful, string. A test method must be public and
@@ -418,7 +414,7 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <pre>
- * import org.scalatet.Suite
+ * import org.scalatest.Suite
  *
  * class ASuite extends Suite
  * class BSuite extends Suite
@@ -604,6 +600,10 @@ import org.scalatest.tools.StandardOutReporter
  * 
  *   def testFirstCharOfTheTempFile(reader: FileReader) {
  *     assert(reader.read() === 'H')
+ *   }
+ * 
+ *   def testWithoutAFixture() {
+ *     assert(1 + 1 === 2)
  *   }
  * }
  * </pre>
