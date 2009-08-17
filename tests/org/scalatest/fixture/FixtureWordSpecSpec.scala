@@ -780,5 +780,27 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         assert(event.message == "A WordSpec" || event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
+    it("should allow both tests that take fixtures and tests that don't") {
+      val a = new FixtureWordSpec {
+
+        type Fixture = String
+        def withFixture(fun: TestFunction) {
+          fun("Hello, world!")
+        }
+
+        var takesNoArgsInvoked = false
+        var takesAFixtureInvoked = false
+
+        "A WordSpec" should {
+          "take no args" in { takesNoArgsInvoked = true }
+          "take a fixture" in { s => takesAFixtureInvoked = true }
+        }
+      }
+
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 2, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAFixtureInvoked)
+    }
   }
 }

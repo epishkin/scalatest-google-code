@@ -683,5 +683,25 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
         a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       }
     }
+    it("should allow both tests that take fixtures and tests that don't") {
+      val a = new FixtureFunSuite {
+
+        type Fixture = String
+        def withFixture(fun: TestFunction) {
+          fun("Hello, world!")
+        }
+
+        var takesNoArgsInvoked = false
+        test("take no args") { takesNoArgsInvoked = true }
+
+        var takesAFixtureInvoked = false
+        test("takes a fixture") { s => takesAFixtureInvoked = true }
+      }
+
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 2, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAFixtureInvoked)
+    }
   }
 }

@@ -688,5 +688,25 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
         assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
+    it("should allow both tests that take fixtures and tests that don't") {
+      val a = new FixtureSpec {
+
+        type Fixture = String
+        def withFixture(fun: TestFunction) {
+          fun("Hello, world!")
+        }
+
+        var takesNoArgsInvoked = false
+        it("take no args") { takesNoArgsInvoked = true }
+
+        var takesAFixtureInvoked = false
+        it("takes a fixture") { s => takesAFixtureInvoked = true }
+      }
+
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 2, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAFixtureInvoked)
+    }
   }
 }
