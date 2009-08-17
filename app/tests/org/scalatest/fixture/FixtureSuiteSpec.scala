@@ -749,5 +749,33 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.takesAFixtureInvoked)
       assert(a.takesAFixtureAndInformerInvoked)
     }
+    it("should allow primitive type fixtures") {
+      val a = new FixtureSuite {
+
+        type Fixture = Int
+        def withFixture(fun: TestFunction) {
+          fun(99)
+        }
+
+        var takesNoArgsInvoked = false
+        def testTakesNoArgs() { takesNoArgsInvoked = true }
+
+        var takesAnInformerInvoked = false
+        def testTakesAnInformer(info: Informer) { takesAnInformerInvoked = true }
+
+        var takesAFixtureInvoked = false
+        def testTakesAFixture(i: Int) { takesAFixtureInvoked = true }
+
+        var takesAFixtureAndInformerInvoked = false
+        def testTakesAFixtureAndInformer(i: Int, info: Informer) { takesAFixtureAndInformerInvoked = true }
+      }
+
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 4, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAnInformerInvoked)
+      assert(a.takesAFixtureInvoked)
+      assert(a.takesAFixtureAndInformerInvoked)
+    }
   }
 }

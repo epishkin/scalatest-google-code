@@ -423,19 +423,13 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
       paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
     }
 
-    def takesTwoParamsOfTypesObjectAndInformer(m: Method) = {
+    def takesTwoParamsOfTypesAnyAndInformer(m: Method) = {
       val paramTypes = m.getParameterTypes
       val hasTwoParams = paramTypes.length == 2
-      hasTwoParams &&
-          classOf[Object].isAssignableFrom(paramTypes(0)) &&
-          classOf[Informer].isAssignableFrom(paramTypes(1))
+      hasTwoParams && classOf[Informer].isAssignableFrom(paramTypes(1))
     }
 
-    def takesOneParamOfTypeObject(m: Method) = {
-      val paramTypes = m.getParameterTypes
-      val hasOneParam = paramTypes.length == 1
-      hasOneParam && classOf[Object].isAssignableFrom(paramTypes(0))
-    }
+    def takesOneParamOfAnyType(m: Method) = m.getParameterTypes.length == 1
 
     def isTestMethod(m: Method) = {
 
@@ -456,16 +450,16 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
       // testNames(Object) and testNames(Object, Informer). Reason is if I didn't discover these
       // it would likely just be silently ignored, and that might waste users' time
       isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) ||
-          takesInformer(m) || takesOneParamOfTypeObject(m) || takesTwoParamsOfTypesObjectAndInformer(m))
+          takesInformer(m) || takesOneParamOfAnyType(m) || takesTwoParamsOfTypesAnyAndInformer(m))
     }
 
     val testNameArray =
       for (m <- getClass.getMethods; if isTestMethod(m)) yield
         if (takesInformer(m))
           m.getName + InformerInParens
-        else if (takesOneParamOfTypeObject(m))
+        else if (takesOneParamOfAnyType(m))
           m.getName + FixtureInParens
-        else if (takesTwoParamsOfTypesObjectAndInformer(m))
+        else if (takesTwoParamsOfTypesAnyAndInformer(m))
           m.getName + FixtureAndInformerInParens
         else m.getName
 
