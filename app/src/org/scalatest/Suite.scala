@@ -560,7 +560,7 @@ import org.scalatest.tools.StandardOutReporter
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(testFunction: TestFunction) {
+ *   def withFixture(fun: TestFunction) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -578,7 +578,7 @@ import org.scalatest.tools.StandardOutReporter
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -674,6 +674,9 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * </p>
+ * 
+ * <p>
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSuite</code>
  * approach shown previously is that two of the <code>FixtureSuite</code>'s test methods take a <code>FileReader</code> as

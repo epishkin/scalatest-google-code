@@ -26,10 +26,10 @@ import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 
 /**
- * A sister trait to <code>org.scalatest.WordSpec</code>, which passes a fixture object into each test.
+ * A sister trait to <code>org.scalatest.WordSpec</code> that can pass a fixture object into its tests.
  *
  * <p>
- * This trait behaves similarly to trait <code>org.scalatest.WordSpec</code>, except that each test takes a fixture object. The type of the
+ * This trait behaves similarly to trait <code>org.scalatest.WordSpec</code>, except that tests may take a fixture object. The type of the
  * fixture object passed is defined by the abstract <code>Fixture</code> type, which is declared as a member of this trait (inherited
  * from supertrait <code>FixtureSuite</code>).
  * This trait also inherits the abstract method <code>withFixture</code> from supertrait <code>FixtureSuite</code>. The <code>withFixture</code> method
@@ -48,7 +48,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <ol>
  * <li>define the type of the fixture object by specifying type <code>Fixture</code></li>
  * <li>define the <code>withFixture</code> method</li>
- * <li>write tests that take a <code>Fixture</code></li>
+ * <li>write tests that take a <code>Fixture</code> (You can also define test methods that don't take a <code>Fixture</code>.)</li>
  * </ol>
  *
  * <p>
@@ -67,7 +67,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   type Fixture = FileReader
  *
  *   // 2. define the withFixture method
- *   def withFixture(testFunction: TestFunction) {
+ *   def withFixture(fun: TestFunction) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -85,7 +85,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -110,12 +110,17 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     "read the first char of the temp file" in { reader =>
  *       assert(reader.read() === 'H')
  *     }
+ * 
+ *     // (You can also write tests that don't take a Fixture.)
+ *     "not be required" in {
+ *       assert(1 + 1 === 2)
+ *     }
  *   }
  * }
  * </pre>
  *
  * <p>
- * If the fixture you want to pass into each test consists of multiple objects, you will need to combine
+ * If the fixture you want to pass into your tests consists of multiple objects, you will need to combine
  * them into one object to use this trait. One good approach to passing multiple fixture objects is
  * to encapsulate them in a tuple. Here's an example that takes the tuple approach:
  * </p>
@@ -128,14 +133,14 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = (StringBuilder, ListBuffer[String])
  *
- *   def withFixture(testFunction: TestFunction) {
+ *   def withFixture(fun: TestFunction) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
  *     val listBuffer = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     testFunction(stringBuilder, listBuffer)
+ *     fun(stringBuilder, listBuffer)
  *   }
  *
  *   "Another contrived example" should {
@@ -182,14 +187,14 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FixtureHolder
  *
- *   def withFixture(testFunction: TestFunction) {
+ *   def withFixture(fun: TestFunction) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
  *     val listBuffer = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     testFunction(FixtureHolder(stringBuilder, listBuffer))
+ *     fun(FixtureHolder(stringBuilder, listBuffer))
  *   }
  *
  *   "Another contrived example" should {
@@ -267,15 +272,15 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(testFunction: TestFunction) {
+ *   def withFixture(fun: TestFunction) {
  *
  *     require(
- *       testFunction.configMap.contains("TempFileName"),
+ *       fun.configMap.contains("TempFileName"),
  *       "This suite requires a TempFileName to be passed in the configMap"
  *     )
  *
  *     // Grab the file name from the configMap
- *     val FileName = testFunction.configMap("TempFileName")
+ *     val FileName = fun.configMap("TempFileName")
  *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)
@@ -291,7 +296,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -344,6 +349,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  *    }
  *  }
  * </pre>
+ *
+ * <p>
+ * <code>ConfigMapFixture</code> can also be used to facilitate writing <code>FixtureWordSpec</code>s that include tests
+ * that take different fixture types. See the documentation for <a href="MultipleFixtureWordSpec.html"><code>MultipleFixtureWordSpec</code></a> for more information.
+ * </p>
  *
  * @author Bill Venners
  */
@@ -1055,6 +1065,6 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   val behave = new BehaveWord
 
-  implicit def withNoFixture(testFunction: => Unit) =
-    (fixture: this.Fixture) => testFunction
+  implicit def withNoFixture(fun: => Unit) =
+    (fixture: this.Fixture) => fun
 }

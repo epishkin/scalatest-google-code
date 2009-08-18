@@ -273,7 +273,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(testFunction: FileReader => Unit) {
+ *   def withFixture(fun: FileReader => Unit) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -291,7 +291,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -393,6 +393,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * </p>
+ * 
+ * <p>
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureFeatureSpec</code>
  * approach shown previously is that two of the <code>FixtureFeatureSpec</code>'s test functions take a <code>FileReader</code> as
@@ -402,6 +405,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
  * In this case, the <code>FixtureFeatureSpec</code> provides documentation indicating which
  * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
+ * (If you have want to combine tests that take different fixtures in the same <code>FeatureSpec</code>, you can
+ * use <a href="fixture/MultipleFixtureFeatureSpec.html">MultipleFixtureFeatureSpec</a>.)
  * </p>
  *
  * <p>
@@ -1442,7 +1447,7 @@ trait FeatureSpec extends Suite { thisSuite =>
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FeatureSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to 
@@ -1949,14 +1954,14 @@ trait FeatureSpec extends Suite { thisSuite =>
  *
  * class MySpec extends Spec {
  *
- *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
+ *   def withFixture(fun: (StringBuilder, ListBuffer[String]) => Unit) {
  *
  *     // Create needed mutable objects
  *     val sb = new StringBuilder("ScalaTest is ")
  *     val lb = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     testFunction(sb, lb)
+ *     fun(sb, lb)
  *   }
  *
  *   it("should mutate shared fixture objects") {
@@ -1996,7 +2001,7 @@ trait FeatureSpec extends Suite { thisSuite =>
  * 
  * class MySpec extends Spec {
  * 
- *   def withTempFile(testFunction: FileReader => Unit) {
+ *   def withTempFile(fun: FileReader => Unit) {
  * 
  *     val FileName = "TempFile.txt"
  *  
@@ -2014,7 +2019,7 @@ trait FeatureSpec extends Suite { thisSuite =>
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file

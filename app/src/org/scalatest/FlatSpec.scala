@@ -306,7 +306,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(testFunction: TestFunction) {
+ *   def withFixture(fun: TestFunction) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -324,7 +324,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -421,6 +421,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * </p>
+ * 
+ * <p>
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureFlatSpec</code>
  * approach shown previously is that two of the <code>FixtureFlatSpec</code>'s test functions take a <code>FileReader</code> as
@@ -430,6 +433,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
  * In this case, the <code>FixtureFlatSpec</code> provides documentation indicating which
  * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
+ * (If you have want to combine tests that take different fixtures in the same <code>FlatSpec</code>, you can
+ * use <a href="fixture/MultipleFixtureFlatSpec.html">MultipleFixtureFlatSpec</a>.)
  * </p>
  *
  * <p>
@@ -881,7 +886,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * will collect and report information about the running suite of tests.
  * Information about suites and tests that were run, whether tests succeeded or failed, 
  * and tests that were ignored will be passed to the <code>Reporter</code> as the suite runs.
- * Most often the reporting done by default by <code>FunSuite</code>'s methods will be sufficient, but
+ * Most often the reporting done by default by <code>FlatSpec</code>'s methods will be sufficient, but
  * occasionally you may wish to provide custom information to the <code>Reporter</code> from a test.
  * For this purpose, an <code>Informer</code> that will forward information to the current <code>Reporter</code>
  * is provided via the <code>info</code> parameterless method.
@@ -1501,7 +1506,7 @@ trait FlatSpec extends Suite { thisSuite =>
   
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FlatSpec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to 
