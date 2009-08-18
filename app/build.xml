@@ -2,16 +2,21 @@
          xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
     <!-- set global properties for this build -->
-    <property name="src" value="src" />
-    <property name="tests" value="tests" />
-    <property name="examples" value="examples" />
+    <property name="scalasrc" value="src/main/scala" />
+    <property name="javasrc" value="src/main/java" />
+    <property name="scalasrc.test" value="src/test/scala" />
+    <property name="javasrc.test" value="src/test/java" />
+    <property name="scalasrc.examples" value="src/examples/scala" />
+    <property name="javasrc.examples" value="src/examples/java" />
+    <property name="resources" value="src/main/resources" />
+    <property name="images" value="${resources}/images" />
     <property name="build" value="target" />
     <property name="jar.contents" value="${build}/jar_contents" />
     <!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
     <property name="classes" value="${jar.contents}" />
     <property name="generators" value="generators" />
-    <property name="build.generated.src" value="${build}/generated/src" />
-    <property name="build.generated.tests" value="${build}/generated/tests" />
+    <property name="build.generated.src" value="${build}/generated/src/main/scala" />
+    <property name="build.generated.tests" value="${build}/generated/src/test/scala" />
     <property name="build.tests" value="${build}/tests" />
     <property name="build.tests.jar" value="${build}/tests.jar" />
     <property name="build.examples" value="${build}/examples" />
@@ -98,7 +103,7 @@
         </taskdef>
 
         <path id="scaladoc.source.path">
-            <pathelement location="${src}" />
+            <pathelement location="${scalasrc}" />
             <pathelement location="${build.generated.src}" />
         </path>
 
@@ -146,14 +151,14 @@
 
     <target name="compile-main" depends="init">
 
-        <!-- Compile the Scala code from ${src} into ${classes}. Scalac will parse the referenced .java files. -->
-        <scalac srcdir="${src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-Xno-varargs-conversion" fork="true" jvmargs="${jvmargs}" />
+        <!-- Compile the Scala code from ${scalasrc} into ${classes}. Scalac will parse the referenced .java files. -->
+        <scalac srcdir="${scalasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-Xno-varargs-conversion" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
-        <!-- Compile the Java code from ${src} into ${classes} -->
-        <javac srcdir="${src}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
+        <!-- Compile the Java code from ${javasrc} into ${classes} -->
+        <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
             <include name="org/scalatest/Ignore.java" />
             <include name="org/scalatest/tools/ScalaTestTask.java" />
         </javac>
@@ -161,23 +166,23 @@
 
     <target name="compile-tests" depends="compile-main">
 
-        <!-- Compile the Scala code from ${tests} into ${build.tests} -->
-        <scalac srcdir="${tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
+        <!-- Compile the Scala code from ${scalasrc.test} into ${build.tests} -->
+        <scalac srcdir="${scalasrc.test}:${javasrc.test}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
 
         <!-- Compile the Scala code from ${build.generated.tests} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs}" />
 
-        <!-- Compile the Java code from ${tests} into ${build.tests} -->
-        <javac srcdir="${tests}" destdir="${build.tests}" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${lib}/scala-library.jar:${lib}/junit-4.4.jar" debug="yes" />
+        <!-- Compile the Java code from ${javasrc.test} into ${build.tests} -->
+        <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${lib}/scala-library.jar:${lib}/junit-4.4.jar" debug="yes" />
     </target>
 
     <target name="compile-examples" depends="compile-main">
 
-        <!-- Compile the Scala code from ${examples} into ${build.examples} -->
-        <scalac srcdir="${examples}" destdir="${build.examples}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
+        <!-- Compile the Scala code from ${scalasrc.examples} into ${build.examples} -->
+        <scalac srcdir="${scalasrc.examples}:${javasrc.examples}" destdir="${build.examples}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
 
         <!-- Compile the Java code from ${examples} into ${build.examples} -->
-        <javac srcdir="${examples}" destdir="${build.examples}" classpath="${classes}:${lib}/easymock-2.5.1.jar:${lib}/scala-library.jar" debug="yes" />
+        <javac srcdir="${javasrc.examples}" destdir="${build.examples}" classpath="${classes}:${lib}/easymock-2.5.1.jar:${lib}/scala-library.jar" debug="yes" />
     </target>
 
     <!-- Compile demo into its own directory. I.e., the class files will sit alongside the java files
@@ -192,7 +197,7 @@
     </target>
 
     <target name="doc" depends="compile-main">
-        <javadoc sourcepath="${src}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
+        <javadoc sourcepath="${javasrc}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
         <scaladoc addparams="-Xno-varargs-conversion" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${releaseCapitalized}" doctitle="ScalaTest ${releaseCapitalized}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
             <include name="**/*.scala" />
@@ -213,9 +218,9 @@
         <mkdir dir="${dist}/lib" />
         <delete file="${dist}/lib/scalatest.jar" />
 
-        <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
+        <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
         <copy todir="${jar.contents}/images">
-            <fileset dir="${src}/images" />
+            <fileset dir="${images}" />
         </copy>
 
         <!-- Put everything in ${jar.contents} into the MyProject-${DSTAMP}.jar file -->
@@ -246,11 +251,7 @@
         </copy>
 
         <copy todir="${zipper}/scalatest-${release}/src">
-            <fileset dir="${src}/" />
-        </copy>
-
-        <copy todir="${zipper}/scalatest-${release}/tests">
-            <fileset dir="${tests}/" />
+            <fileset dir="src/" />
         </copy>
 
         <!--
@@ -262,9 +263,9 @@
     </target>
 
     <target name="copyprops">
-        <copy file="${src}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
+        <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
         <copy todir="${jar.contents}/images">
-            <fileset dir="${src}/images" />
+            <fileset dir="${images}" />
         </copy>
     </target>
 
@@ -389,7 +390,9 @@
             <arg value="-m" />
             <arg value="org.scalatest.prop" />
         </java>
-        <cobertura-report srcdir="${src}" destdir="${build.coverage}"/>
+        <echo message="starting cobertura-report..." />
+        <cobertura-report srcdir="${scalasrc}" destdir="${build.coverage}"/>
+        <echo message="... finished cobertura-report" />
     </target>
 
     <target name="bvtest" depends="compile-main,compile-tests,copyprops,taskdefscalatest">
