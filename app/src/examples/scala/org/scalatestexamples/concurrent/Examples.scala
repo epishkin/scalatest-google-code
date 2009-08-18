@@ -16,16 +16,16 @@
 
 package org.scalatestexamples.concurrent
 
-import org.scalatest.FunSuite
-import org.scalatest.concurrent.ConductorMethods
+import org.scalatest.fixture.FixtureFunSuite
 import org.scalatest.matchers.ShouldMatchers
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.{TimeUnit, Semaphore, ArrayBlockingQueue}
 import org.scalatest.matchers.ShouldMatchers
+import scalatest.concurrent.ConductorFixture
 
-class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatchers {
+class ConductorExamples extends FixtureFunSuite with ConductorFixture with ShouldMatchers {
   
-  test("call to put on a full queue blocks the producer thread") {
+  test("call to put on a full queue blocks the producer thread") { conductor => import conductor._
     val buf = new ArrayBlockingQueue[Int](1)
 
     thread("producer") {
@@ -45,7 +45,7 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
     }
   }
 
-  test("compare and set") {
+  test("compare and set") { conductor => import conductor._
     val ai = new AtomicInteger(1)
 
     thread {
@@ -61,7 +61,7 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
     }
   }
 
-  test("interrupted aquire") {
+  test("interrupted aquire") { conductor => import conductor._
     val s = new Semaphore(0)
 
     val nice = thread("nice") {
@@ -75,7 +75,7 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
     }
   }
 
-  test("thread ordering") {
+  test("thread ordering") { conductor => import conductor._
     val ai = new AtomicInteger(0)
 
     thread {
@@ -97,7 +97,7 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
     }
   }
 
-  test("timed offer") {
+  test("timed offer") { conductor => import conductor._
     val q = new ArrayBlockingQueue[String](2)
 
     val producer = thread("producer") {
@@ -115,11 +115,9 @@ class ConductorExamples extends FunSuite with ConductorMethods with ShouldMatche
       beat should be (1)
     }
 
-    val consumer = thread("consumer") {
+    thread("consumer") {
       waitForBeat(1)
       producer.interrupt()
     }
-
-    ()
   }
 }
