@@ -21,9 +21,10 @@ trait ConductorFixture { this: FixtureSuite =>
 
   type Fixture = Conductor
   
-  def withFixture(testFun: TestFunction) {
+  def withFixture(fun: TestFunction) {
     val conductor = new Conductor
-    testFun(conductor)
-    conductor.conductTest()
+    fun(conductor)
+    if (!conductor.testWasStarted)
+      conductor.conductTest()
   }
 }
