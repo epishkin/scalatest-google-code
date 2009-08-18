@@ -14,7 +14,7 @@
     <property name="jar.contents" value="${build}/jar_contents" />
     <!-- classes go in jar.contents. redundant, but makes the rest of build.xml easier to read -->
     <property name="classes" value="${jar.contents}" />
-    <property name="generators" value="generators" />
+    <property name="generators" value="src/generators/scala" />
     <property name="build.generated.src" value="${build}/generated/src/main/scala" />
     <property name="build.generated.tests" value="${build}/generated/src/test/scala" />
     <property name="build.tests" value="${build}/tests" />
