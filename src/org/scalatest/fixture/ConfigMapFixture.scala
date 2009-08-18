@@ -31,10 +31,10 @@ trait ConfigMapFixture { this: FixtureSuite =>
    * Invoke the test function, passing to the the test function the <code>configMap</code>
    * obtained by invoking <code>configMap</code> on the passed <code>TestFunction</code>.
    *
-   * @param testFunction the <code>TestFunction</code> to invoke, passing in the
+   * @param fun the <code>TestFunction</code> to invoke, passing in the
    *   <code>configMap</code> fixture
    */
-  def withFixture(testFunction: this.TestFunction) {
-    testFunction(testFunction.configMap)
+  def withFixture(fun: this.TestFunction) {
+    fun(fun.configMap)
   }
 }

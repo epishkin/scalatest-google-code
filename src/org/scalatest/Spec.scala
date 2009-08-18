@@ -179,7 +179,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * If different tests in the same <code>FunSuite</code> require different fixtures, you can create multiple create-fixture methods and
+ * If different tests in the same <code>Spec</code> require different fixtures, you can create multiple create-fixture methods and
  * call the method (or methods) needed by each test at the begining of the test. If every test method requires the same set of
  * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
  * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
@@ -211,7 +211,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(testFunction: FileReader => Unit) {
+ *   def withFixture(fun: FileReader => Unit) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -229,7 +229,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -325,6 +325,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * </p>
+ * 
+ * <p>
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSpec</code>
  * approach shown previously is that two of the <code>FixtureSpec</code>'s test functions take a <code>FileReader</code> as
@@ -334,6 +337,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
  * In this case, the <code>FixtureSpec</code> provides documentation indicating which
  * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
+ * (If you have want to combine tests that take different fixtures in the same <code>Spec</code>, you can
+ * use <a href="fixture/MultipleFixtureSpec.html">MultipleFixtureSpec</a>.)
  * </p>
  *
  * <p>
@@ -1085,7 +1090,7 @@ trait Spec extends Suite { thisSuite =>
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
+   * the <code>Set</code> of test names that belong to each tag. If this <code>Spec</code> contains no tags, this method returns an empty <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to 

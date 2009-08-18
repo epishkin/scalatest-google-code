@@ -190,7 +190,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(testFunction: FileReader => Unit) {
+ *   def withFixture(fun: FileReader => Unit) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -208,7 +208,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       testFunction(reader)
+ *       fun(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -304,6 +304,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
+ * </p>
+ * 
+ * <p>
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureFunSuite</code>
  * approach shown previously is that two of the <code>FixtureFunSuite</code>'s test functions take a <code>FileReader</code> as
@@ -313,6 +316,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
  * In this case, the <code>FixtureFunSuite</code> provides documentation indicating which
  * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
+ * (If you have want to combine tests that take different fixtures in the same <code>FunSuite</code>, you can
+ * use <a href="fixture/MultipleFixtureFunSuite.html">MultipleFixtureFunSuite</a>.)
  * </p>
  *
  * <p>
@@ -628,7 +633,7 @@ trait FunSuite extends Suite { thisSuite =>
   private val IgnoreTagName = "org.scalatest.Ignore"
 
   private abstract class FunNode
-  private case class Test(testName: String, testFunction: () => Unit) extends FunNode
+  private case class Test(testName: String, fun: () => Unit) extends FunNode
   private case class Info(message: String) extends FunNode
 
   // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
@@ -857,7 +862,7 @@ trait FunSuite extends Suite { thisSuite =>
 
       atomicInformer.set(informerForThisTest)
       try {
-        theTest.testFunction()
+        theTest.fun()
       }
       finally {
         val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)

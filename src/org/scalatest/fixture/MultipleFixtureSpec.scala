@@ -15,4 +15,9 @@
  */
 package org.scalatest.fixture
 
+/**
+ * A sister trait to <code>org.scalatest.FeatureSpec</code> that can pass multiple types of fixture objects into its tests.
+ *
+ * @author Bill Venners
+ */
 trait MultipleFixtureSpec extends FixtureSpec with ConfigMapFixture
