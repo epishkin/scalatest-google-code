@@ -48,7 +48,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <ol>
  * <li>define the type of the fixture object by specifying type <code>Fixture</code></li>
  * <li>define the <code>withFixture</code> method</li>
- * <li>write tests that take a <code>Fixture</code> (You can also define test methods that don't take a <code>Fixture</code>.)</li>
+ * <li>write tests that take a <code>Fixture</code> (You can also define tests that don't take a <code>Fixture</code>.)</li>
  * </ol>
  *
  * <p>
@@ -219,7 +219,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * When using a case class to pass multiple fixture objects, it can be helpful to make the names of each
  * individual object available as a single identifier with an import statement. This is the approach
  * taken by the <code>testEasy</code> method in the previous example. Because it imports the members
- * of the fixture object, the test method code can just use them as unqualified identifiers:
+ * of the fixture object, the test code can just use them as unqualified identifiers:
  * </p>
  *
  * <pre>
@@ -235,7 +235,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * Alternatively, you may sometimes prefer to qualify each use of a fixture object with the name
  * of the fixture parameter. This approach, taken by the <code>testFun</code> method in the previous
- * example, makes it more obvious which variables in your test method
+ * example, makes it more obvious which variables in your test 
  * are part of the passed-in fixture:
  * </p>
  *
@@ -542,7 +542,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
+   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
    * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
@@ -575,7 +575,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   /**
    * Register a test to ignore, which has the given spec text and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
+   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
    * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
