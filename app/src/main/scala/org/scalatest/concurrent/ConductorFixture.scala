@@ -20,6 +20,41 @@ import org.scalatest.fixture.FixtureSuite
 /**
  * Trait that can pass a new <code>Conductor</code> fixture into tests.
  *
+ * <p>
+ * Here's an example of the use of this trait to test the <code>ArrayBlockingQueue</code>
+ * concurrency abstraction from <code>java.util.concurrent</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureFunSuite
+ * import org.scalatest.concurrent.ConductorFixture
+ * import org.scalatest.matchers.ShouldMatchers
+ * import java.util.concurrent.ArrayBlockingQueue
+ *
+ * class ArrayBlockingQueueSuite extends FixtureFunSuite with ConductorFixture with ShouldMatchers {
+ * 
+ *   test("calling put on a full queue blocks the producer thread") { conductor => import conductor._
+ *
+ *     @volatile val buf = new ArrayBlockingQueue[Int](1)
+ * 
+ *     thread("producer") {
+ *       buf put 42
+ *       buf put 17
+ *       beat should be (1)
+ *     }
+ * 
+ *     thread("consumer") {
+ *       waitForBeat(1)
+ *       buf.take should be (42)
+ *       buf.take should be (17)
+ *     }
+ * 
+ *     whenFinished {
+ *       buf should be ('empty)
+ *     }
+ *   }
+ * </pre>
+ *
  * @author Bill Venners
  */
 trait ConductorFixture { this: FixtureSuite =>
