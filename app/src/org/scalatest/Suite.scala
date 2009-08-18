@@ -538,7 +538,7 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
  * test, they don't address the problem of cleaning up a fixture after the test completes. One approach that addresses
- * the clean up problem but still avoids <code>var</code>s is to use <code>FixtureSuite</code> trait in the
+ * the clean up problem but still avoids <code>var</code>s is to use <a href="fixture/FixtureSuite.html"><code>FixtureSuite</code></a> trait in the
  * <code>org.scalatest.fixture</code> package.  Tests in an <code>org.scalatest.fixture.FixtureSuite</code> can have a fixture
  * object passed in as a parameter. You must indicate the type of the fixture object
  * by defining the <code>Fixture</code> type member and define a <code>withFixture</code> method that takes a test function.
@@ -676,11 +676,11 @@ import org.scalatest.tools.StandardOutReporter
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureSuite</code>
- * approach shown previously is that the <code>FixtureSuite</code>'s test methods take a <code>FileReader</code> as
+ * approach shown previously is that two of the <code>FixtureSuite</code>'s test methods take a <code>FileReader</code> as
  * a parameter. Otherwise the test code is identical. One benefit of the explicit parameter is that, as demonstrated
  * by the <code>testWithoutAFixture</code> method, a <code>FixtureSuite</code>
  * test method need not take the fixture. So you can have some tests that take a fixture, and others that don't.
- * In this case, the <code>FixtureSuite</code> provides documentation of which
+ * In this case, the <code>FixtureSuite</code> provides documentation indicating which
  * test methods use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
  * </p>
  *

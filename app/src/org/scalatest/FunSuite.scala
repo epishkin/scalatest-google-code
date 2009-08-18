@@ -121,7 +121,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s
- * between tests. Before going that route, you should consider two approaches that
+ * between tests. Before going that route, you should consider some approaches that
  * avoid <code>var</code>s. One approach is to write one or more <em>create-fixture</em> methods
  * that return a new instance of a needed object (or a tuple or case class holding new instances of
  * multiple objects) each time it is called. You can then call a create-fixture method at the beginning of each
@@ -159,122 +159,25 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * If different tests in the same <code>FunSuite</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the begining of the test.
+ * call the method (or methods) needed by each test at the begining of the test. If every test method requires the same set of
+ * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
+ * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
+ * will be run in its own instance of the <code>FunSuite</code>, similar to the way JUnit tests are executed.
  * </p>
  *
  * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create with-fixture methods,
- * which take test code as a function that takes the fixture objects as parameters, and wrap test code in calls to the
- * with-fixture method. Here's an example:
- * </p>
- *
- * <pre>
- * import org.scalatest.FunSuite
- * import scala.collection.mutable.ListBuffer
- *
- * class MySuite extends FunSuite {
- *
- *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
- *
- *     // Create needed mutable objects
- *     val sb = new StringBuilder("ScalaTest is ")
- *     val lb = new ListBuffer[String]
- *
- *     // Invoke the test function, passing in the mutable objects
- *     testFunction(sb, lb)
- *   }
- *
- *   test("easy") {
- *     withFixture { (builder, lbuf) =>
- *       builder.append("easy!")
- *       assert(builder.toString === "ScalaTest is easy!")
- *       assert(lbuf.isEmpty)
- *       lbuf += "sweet"
- *     }
- *   }
- *
- *   test("fun") {
- *     withFixture { (builder, lbuf) =>
- *       builder.append("fun!")
- *       assert(builder.toString === "ScalaTest is fun!")
- *       assert(lbuf.isEmpty)
- *     }
- *   }
- * }
- * </pre>
- * 
- * One advantage of this approach compared to the create-fixture approach shown previously is that
- * you can more easily perform cleanup after each test runs. For example, you
- * could create a temporary file before each test, and delete it afterwords, by
- * doing so before and after invoking the test function in a <code>withTempFile</code>
- * method. Here's an example:
- *
- * <pre>
- * import org.scalatest.FunSuite
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- * 
- * class MySuite extends FunSuite {
- * 
- *   def withTempFile(testFunction: FileReader => Unit) {
- * 
- *     val FileName = "TempFile.txt"
- *  
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *  
- *     // Create the reader needed by the test
- *     val reader = new FileReader(FileName)
- *  
- *     try {
- *       // Run the test using the temp file
- *       testFunction(reader)
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
- *     }
- *   }
- * 
- *   test("reading from the temp file") {
- *     withTempFile { (reader) =>
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
- *       }
- *       assert(builder.toString === "Hello, test!")
- *     }
- *   }
- * 
- *   test("first char of the temp file") {
- *     withTempFile { (reader) =>
- *       assert(reader.read() === 'H')
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If different tests in the same <code>FunSuite</code> require different fixtures, you can create multiple with-fixture methods and
- * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
- * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
- * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
- * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
- * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FunSuite</code> behaves exactly like
- * <code>org.scalatest.FunSuite</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
- * <a href="fixture/FunSuite.html"><code>FunSuite</code></a>. To get the idea, however, here's what the previous example would
- * look like rewritten to use an <code>org.scalatest.fixture.FunSuite</code>:
+ * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
+ * test, they don't address the problem of cleaning up a fixture after the test completes. One approach that addresses
+ * the clean up problem but still avoids <code>var</code>s is to use <a href="fixture/FixtureFunSuite.html"><code>FixtureFunSuite</code></a> trait in the
+ * <code>org.scalatest.fixture</code> package.  Tests in an <code>org.scalatest.fixture.FixtureFunSuite</code> can have a fixture
+ * object passed in as a parameter. You must indicate the type of the fixture object
+ * by defining the <code>Fixture</code> type member and define a <code>withFixture</code> method that takes a test function.
+ * Inside the <code>withFixture</code> method, you create the fixture, pass it into the test function, then perform any
+ * necessary cleanup after the test function returns. Instead of invoking each test directly, a <code>FixtureFunSuite</code> will
+ * pass a function that invokes the code of a test to <code>withFixture</code>. Your <code>withFixture</code> method, therefore,
+ * is responsible for actually running the code of the test by invoking the test function.
+ * For example, you could create a temporary file before each test, and delete it afterwords, by
+ * doing so before and after invoking the test function in the <code>withFixture</code> method of a <code>FixtureFunSuite</code>:
  * </p>
  *
  * <pre>
@@ -327,6 +230,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  *   test("first char of the temp file") { reader =>
  *     assert(reader.read() === 'H')
+ *   }
+ * 
+ *   test("without a fixture") {
+ *     assert(1 + 1 === 2)
  *   }
  * }
  * </pre>
@@ -387,16 +294,25 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   test("first char of the temp file") {
  *     assert(reader.read() === 'H')
  *   }
+ * 
+ *   test("without a fixture") {
+ *     assert(1 + 1 === 2)
+ *   }
  * }
  * </pre>
  *
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
- * (It is worth noting that the only difference in the test code between the mutable
+ * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureFunSuite</code>
- * approach shown previously is that the <code>FixtureFunSuite</code>'s test functions take a <code>FileReader</code> as
- * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.)
+ * approach shown previously is that two of the <code>FixtureFunSuite</code>'s test functions take a <code>FileReader</code> as
+ * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.
+ * One benefit of the explicit parameter is that, as demonstrated
+ * by the "<code>without a fixture</code>" test, a <code>FixtureFunSuite</code>
+ * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
+ * In this case, the <code>FixtureFunSuite</code> provides documentation indicating which
+ * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
  * </p>
  *
  * <p>
