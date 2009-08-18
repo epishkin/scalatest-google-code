@@ -1,3 +1,5 @@
+Make all function parameters named fun.
+
 Finally found my syntax:
 
     configMap.size should be === 7

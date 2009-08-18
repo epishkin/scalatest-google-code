@@ -380,128 +380,25 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * If different tests in the same <code>WordSpec</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the begining of the test.
+ * call the method (or methods) needed by each test at the begining of the test. If every test method requires the same set of
+ * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
+ * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
+ * will be run in its own instance of the <code>WordSpec</code>, similar to the way JUnit tests are executed.
  * </p>
  *
  * <p>
- * Another approach to mutable fixture objects that avoids <code>var</code>s is to create <em>with-fixture</em> methods,
- * and wrap test code in calls to the with-fixture
- * method. The with-fixture method accepts a test function as a parameter, creates the fixture, invokes the test function, passing in the
- * newly created fixture object or objects. If necessary, the with-fixture method can also perform any cleanup after the test function returns. Here's an example:
- * </p>
- *
- * <pre>
- * import org.scalatest.WordSpec
- * import scala.collection.mutable.ListBuffer
- *
- * class MySuite extends WordSpec {
- *
- *   def withFixture(testFunction: (StringBuilder, ListBuffer[String]) => Unit) {
- *
- *     // Create needed mutable objects
- *     val sb = new StringBuilder("ScalaTest is ")
- *     val lb = new ListBuffer[String]
- *
- *     // Invoke the test function, passing in the mutable objects
- *     testFunction(sb, lb)
- *   }
- *
- *  "ScalaTest" should {
- *
- *     "be easy " in {
- *       withFixture { (builder, lbuf) =>
- *         builder.append("fun!")
- *         assert(builder.toString === "ScalaTest is fun!")
- *         assert(lbuf.isEmpty)
- *       }
- *     }
- *
- *     "be fun" in {
- *       withFixture { (builder, lbuf) =>
- *         builder.append("easy!")
- *         assert(builder.toString === "ScalaTest is easy!")
- *         assert(lbuf.isEmpty)
- *         lbuf += "sweet"
- *       }
- *     }
- *   }
- * }
- * </pre>
- * 
- * One advantage of this approach compared to the create-fixture approach shown previously is that
- * you can more easily perform cleanup after each test runs. For example, you
- * could create a temporary file before each test, and delete it afterwords, by
- * doing so before and after invoking the test function in a <code>withTempFile</code>
- * method. Here's an example:
- *
- * <pre>
- * import org.scalatest.WordSpec
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- * 
- * class MySuite extends WordSpec {
- * 
- *   def withTempFile(testFunction: FileReader => Unit) {
- * 
- *     val FileName = "TempFile.txt"
- *  
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *  
- *     // Create the reader needed by the test
- *     val reader = new FileReader(FileName)
- *  
- *     try {
- *       // Run the test using the temp file
- *       testFunction(reader)
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
- *     }
- *   }
- * 
- *  "A FileReader" must {
- *     "read in the contents of a file correctly" in {
- *       withTempFile { (reader) =>
- *         var builder = new StringBuilder
- *         var c = reader.read()
- *         while (c != -1) {
- *           builder.append(c.toChar)
- *           c = reader.read()
- *         }
- *         assert(builder.toString === "Hello, test!")
- *       }
- *     }
- * 
- *     "read in the first character of a file correctly" in {
- *       withTempFile { (reader) =>
- *         assert(reader.read() === 'H')
- *       }
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If different tests in the same <code>Wordspec</code> require different fixtures, you can create multiple with-fixture methods and
- * call the method (or methods) needed by each test at the beginning of the test. A common case, however, will be that all
- * the tests in a suite need to share the same fixture. To facilitate the with-fixture approach in this common case of a single, shared fixture,
- * ScalaTest provides sister traits in the <code>org.scalatest.fixture</code> package that
- * directly support the with-fixture approach. Every test in an <code>org.scalatest.fixture</code> trait takes a fixture whose type
- * is defined by the <code>Fixture</code> type. For example, trait <code>org.scalatest.fixture.FixtureWordSpec</code> behaves exactly like
- * <code>org.scalatest.WordSpec</code>, except each test method takes a <code>Fixture</code>. For the details, see the documentation for
- * <a href="fixture/FixtureWordSpec.html"><code>FixtureWordSpec</code></a>. To get the idea, however, here's what the previous example would
- * look like rewritten to use an <code>org.scalatest.fixture.FixtureWordSpec</code>:
+ * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
+ * test, they don't address the problem of cleaning up a fixture after the test completes. One approach that addresses
+ * the clean up problem but still avoids <code>var</code>s is to use <a href="fixture/FixtureWordSpec.html"><code>FixtureWordSpec</code></a> trait in the
+ * <code>org.scalatest.fixture</code> package.  Tests in an <code>org.scalatest.fixture.FixtureWordSpec</code> can have a fixture
+ * object passed in as a parameter. You must indicate the type of the fixture object
+ * by defining the <code>Fixture</code> type member and define a <code>withFixture</code> method that takes a test function.
+ * Inside the <code>withFixture</code> method, you create the fixture, pass it into the test function, then perform any
+ * necessary cleanup after the test function returns. Instead of invoking each test directly, a <code>FixtureWordSpec</code> will
+ * pass a function that invokes the code of a test to <code>withFixture</code>. Your <code>withFixture</code> method, therefore,
+ * is responsible for actually running the code of the test by invoking the test function.
+ * For example, you could create a temporary file before each test, and delete it afterwords, by
+ * doing so before and after invoking the test function in the <code>withFixture</code> method of a <code>FixtureWordSpec</code>:
  * </p>
  *
  * <pre>
@@ -555,6 +452,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  *     "read in the first character of a file correctly" in { reader =>
  *       assert(reader.read() === 'H')
+ *     }
+ *
+ *     "not be required" in {
+ *       assert(1 + 1 === 2)
  *     }
  *   }
  * }
@@ -617,6 +518,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     "read in the first character of a file correctly" in {
  *       assert(reader.read() === 'H')
  *     }
+ *
+ *     "not be required" in {
+ *       assert(1 + 1 === 2)
+ *     }
  *   }
  * }
  * </pre>
@@ -624,10 +529,15 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * In this example, the instance variable <code>reader</code> is a <code>var</code>, so
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
- * (It is worth noting that the only difference in the test code between the mutable
+ * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureWordSpec</code>
- * approach shown previously is that the <code>FixtureWordSpec</code>'s test functions take a <code>FileReader</code> as
- * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.)
+ * approach shown previously is that two of the <code>FixtureWordSpec</code>'s test functions take a <code>FileReader</code> as
+ * a parameter via the "<code>reader =></code>" at the beginning of the function. Otherwise the test code is identical.
+ * One benefit of the explicit parameter is that, as demonstrated
+ * by the "<code>A FileReader must not be required</code>" test, a <code>FixtureWordSpec</code>
+ * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
+ * In this case, the <code>FixtureWordSpec</code> provides documentation indicating which
+ * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
  * </p>
  *
  * <p>
