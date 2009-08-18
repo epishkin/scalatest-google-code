@@ -135,7 +135,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * In some cases, however, shared <em>mutable</em> fixture objects may be changed by test methods such that
+ * In some cases, however, shared <em>mutable</em> fixture objects may be changed by tests such that
  * it needs to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
  * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
@@ -180,7 +180,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * If different tests in the same <code>Spec</code> require different fixtures, you can create multiple create-fixture methods and
- * call the method (or methods) needed by each test at the begining of the test. If every test method requires the same set of
+ * call the method (or methods) needed by each test at the begining of the test. If every test requires the same set of
  * mutable fixture objects, one other approach you can take is make them simply <code>val</code>s and mix in trait
  * <a href="OneInstancePerTest.html"><code>OneInstancePerTest</code></a>.  If you mix in <code>OneInstancePerTest</code>, each test
  * will be run in its own instance of the <code>Spec</code>, similar to the way JUnit tests are executed.
@@ -1000,7 +1000,7 @@ trait Spec extends Suite { thisSuite =>
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
+   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
    * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
@@ -1033,7 +1033,7 @@ trait Spec extends Suite { thisSuite =>
   /**
    * Register a test to ignore, which has the given spec text and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test method by changing the call to <code>it</code>
+   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
    * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
    * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
    * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
