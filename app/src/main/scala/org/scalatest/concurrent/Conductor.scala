@@ -236,43 +236,27 @@ class Conductor(val informer: Option[Informer]){
 
   /////////////////////// error handling end //////////////////////////////
 
-  /////////////////////// finish handler end //////////////////////////////
-
   /**
-   * Registers a function to be executed after all threads involved in the test have
-   * completed.
+   * Invokes <code>conductTest</code> and after <code>conductTest</code> returns,
+   * if <code>conductTest</code> returns normally (<em>i.e.</em>, without throwing
+   * an exception), invokes the passed function.
    *
-   * @param fun the function to execute after all threads have completed
+   * <p>
+   * If <code>conductTest</code> completes abruptly with an exception, this method
+   * will complete abruptly with the same exception and not execute the passed
+   * function.
+   * </p>
+   *
+   * @param fun the function to execute after <code>conductTest</code> test returns
    */
   def whenFinished(fun: => Unit) {
-    if( currentThread != mainThread )
+    if(currentThread != mainThread)
       throw new IllegalStateException("whenFinished can only be called by thread that created Conductor.")
 
-    finishFunction match {
-      case Some(_) =>
-        throw new IllegalStateException("whenFinished can only be called once.")
-      case None => finishFunction = Some(fun _)
-    }
+    conductTest()
+
+    fun
   }
-
-  /**
-   * An option that might contain a function to run after all threads have finished.
-   * By default, there is no finish function. A user must call finish  {...}
-   * in order to have a function executed. If the user does call finish  {...}
-   * then that function gets saved in this Option, as Some(f)
-   */
-  private var finishFunction: Option[() => Unit] = None
-
-  /**
-   * This method is invoked in a test after after all test threads have
-   * finished.
-   */
-  private def runFinishFunction() = finishFunction match {
-    case Some(f) => f()
-    case _ =>
-  }
-
-  /////////////////////// finish handler end //////////////////////////////
 
   /////////////////////// clock management start //////////////////////////
 
@@ -376,9 +360,6 @@ class Conductor(val informer: Option[Informer]){
 
     // wait until all threads have ended
     waitForThreads
-
-    // if there are any errors, get out and dont run the finish function
-    if (errorsQueue.isEmpty) { runFinishFunction() }
 
     // change state to test finished
     currentState set TestFinished

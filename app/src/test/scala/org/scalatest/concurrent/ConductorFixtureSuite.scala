@@ -5,12 +5,8 @@ import org.scalatest.matchers.ShouldMatchers
 import _root_.java.util.concurrent.{Callable, CountDownLatch}
 import java.lang.Thread.State._
 
-/**
- * @author Josh Cough
- */
-
 class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with ShouldMatchers {
-
+    
   test("metronome order") { conductor => import conductor._
 
     @volatile var s = ""
