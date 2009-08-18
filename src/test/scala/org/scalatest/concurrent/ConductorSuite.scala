@@ -42,13 +42,13 @@ class ConductorSuite extends FunSuite with ShouldMatchers with MustBeSugar {
 
   test("if conductTest has not been called, testWasStarted should return false"){
     val conductor = new Conductor
-    conductor.testWasStarted mustBe false
+    conductor.conductTestWasCalled mustBe false
   }
 
   test("if conductTest has been called, testWasStarted should return true") {
     val conductor = new Conductor
     conductor.conductTest
-    conductor.testWasStarted mustBe true
+    conductor.conductTestWasCalled mustBe true
   }
 
   test("if thread {} is called after the test has been conducted, it throws an IllegalStateException" +

@@ -49,7 +49,7 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
     }
 
     whenFinished {
-      s should equal ("ABCDEFGHI") // "Threads were not called in correct order"
+      s should be ("ABCDEFGHI") // "Threads were not called in correct order"
     }
   }
 
@@ -68,14 +68,14 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
     thread {
       waitForBeat(1)
-      c.getCount should equal (1)
+      c.getCount should be (1)
       waitForBeat(2) // advances quickly
-      c.getCount should equal (1)
+      c.getCount should be (1)
       c.countDown()
     }
 
     whenFinished {
-      c.getCount() should equal (0)
+      c.getCount() should be (0)
     }
   }
 
@@ -93,12 +93,12 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
   test("thread terminates before finish called") { conductor => import conductor._
 
-    val t1 = thread {1 should equal (1)}
-    val t2 = thread {1 should equal (1)}
+    val t1 = thread {1 should be (1)}
+    val t2 = thread {1 should be (1)}
 
     whenFinished {
-      t1.getState should equal (TERMINATED)
-      t2.getState should equal (TERMINATED)
+      t1.getState should be (TERMINATED)
+      t2.getState should be (TERMINATED)
     }
   }
 
@@ -109,7 +109,7 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
     thread {
       waitForBeat(1)
-      t1.getThreadGroup should equal (t2.getThreadGroup)
+      t1.getThreadGroup should be (t2.getThreadGroup)
     }
   }
 
@@ -117,17 +117,17 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
     thread {
       val t2 = thread {waitForBeat(2)}
       waitForBeat(1)
-      t2.getThreadGroup should equal (currentThread.getThreadGroup)
+      t2.getThreadGroup should be (currentThread.getThreadGroup)
     }
   }
 
   test("whenFinished can only be called by thread that created Conductor.") { conductor => import conductor._
     thread {
       intercept[IllegalStateException] {
-        whenFinished {1 should equal (1)}
-      }.getMessage should equal ("whenFinished can only be called by thread that created Conductor.")
+        whenFinished {1 should be (1)}
+      }.getMessage should be ("whenFinished can only be called by thread that created Conductor.")
     }
-    whenFinished {1 should equal (1)}
+    whenFinished {1 should be (1)}
   }
 
 
@@ -135,26 +135,28 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
   test("top level thread calls result in a running thread that is blocked such that it doesn't execute " +
        "prior to conductTest being called.") { conductor => import conductor._
     val anotherConductor = new Conductor
-    val t = anotherConductor.thread{ 1 should equal (1) }
-    thread{ t.getState should equal (WAITING) }
+    val t = anotherConductor.thread{ 1 should be (1) }
+    thread{ t.getState should be (WAITING) }
   }
 
   test("nested thread calls result in a running thread that is allowed to execute immediately") (pending)
 
-  test("runnables are run") { conductor => import conductor._
+  // Ignoring the next four tests, because temporarily at least commented out
+  // the forms of thread that take runnables and callables.
+  ignore("runnables are run") { conductor => import conductor._
     val r = new Runnable{
       var runCount = 0
-      def run = { runCount+=1 }
+      def run = { runCount += 1 }
     }
     thread(r)
-    whenFinished{ r.runCount should equal (1) }
+    whenFinished{ r.runCount should be (1) } // FAILING
   }
 
   // Josh, you have been neglecting to synchonize mutable variables shared by multiple
   // threads. You must always synchronize these in some way. This test also failed
   // intermittently. I will make the var volatile so that threads are guaranteed to
   // see each others' changes.
-  test("runnables can wait for beats") { conductor => import conductor._
+  ignore("runnables can wait for beats") { conductor => import conductor._
     val r = new Runnable {
       @volatile var runCount = 0
       def run = {
@@ -163,22 +165,22 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
       }
     }
     thread(r)
-    thread{ r.runCount should equal (0) } // This failed even with the volatile. Is there a race condition?
-    whenFinished{ r.runCount should equal (1) }
+    thread{ r.runCount should be (0) } // This failed even with the volatile. Is there a race condition?
+    whenFinished{ r.runCount should be (1) } // FAILING
   }
 
-  test("callables are called") { conductor => import conductor._
+  ignore("callables are called") { conductor => import conductor._
     val c = new Callable[Unit]{
       var callCount = 0
       def call = { callCount+=1 }
     }
     thread(c)
-    whenFinished{ c.callCount should equal (1) }
+    whenFinished{ c.callCount should be (1) } // FAILING
   }
 
 
   // Got a: 1 was not equal to 0 test failure, even with the var
-  test("callables can wait for beats") { conductor => import conductor._
+  ignore("callables can wait for beats") { conductor => import conductor._
     val c = new Callable[Unit]{
       @volatile var callCount = 0
       def call = {
@@ -187,8 +189,8 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
       }
     }
     thread(c)
-    thread{ c.callCount should equal (0) } // This failed even with the volatile. Is there a race condition?
-    whenFinished{ c.callCount should equal (1) }
+    thread{ c.callCount should be (0) } // This failed even with the volatile. Is there a race condition?
+    whenFinished{ c.callCount should be (1) }  // FAILING
   }
 
   /////////////////////////////////////////////////
@@ -223,4 +225,15 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
   // TODO: ask bill, dont think we should expose this in CM's
   test("if conductTest is not called from within the test itself, the test still executes (because " +
          "ConductorFixture calls it given testWasConducted is false") (pending)
+
+  test("waitForBeat throws IllegalArgumentException if is called with a negative number") (pending)
+
+  test("calling withConductorFrozen by two threads or twice will not screw things up. In other words, " +
+          "whether or not the conductor is frozen should probably be a counting semaphor, not a flag") (pending)
+
+  test("whenFinished throws an IllegalStateException if it is invoked during the running or" +
+          "defunct phases,") (pending)
+  test("conductTest throws an IllegalStateException if it is invoked more than once.") (pending)
+  // TODO: Should we have whenFinished just conduct the test and invoke the passed function when it is
+  // done conducting the test? If so, then there's no need to "register" the finish function.
 }

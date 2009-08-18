@@ -15,21 +15,18 @@
  */
 package org.scalatest.concurrent
 
-import org.scalatest.fixture.FixtureSuite
+import fixture.{ConfigMapFixture, FixtureSuite}
 
 /**
- * Trait that can pass a new <code>Conductor</code> fixture into tests.
+ * Trait that can pass a new <code>Conductor</code> fixture into tests, for use
+ * in suites such as <code>MultipleFixtureFunSuite</code> or <code>MultipleFixtureSpec</code>,
+ * which facilitate writing tests that take different types of fixtures.
  *
  * @author Bill Venners
  */
-trait ConductorFixture { this: FixtureSuite =>
 
+trait ConductorMultiFixture { this: FixtureSuite with ConfigMapFixture =>
 
-  /**
-   * Defines type <code>Fixture</code> to be <code>Conductor</code>.
-   */
-  type Fixture = Conductor
-  
   /**
    * Creates a new <code>Conductor</code>, passes the <code>Conductor</code> to the
    * specified test function, and ensures that <code>conductTest</code> gets invoked
@@ -45,7 +42,7 @@ trait ConductorFixture { this: FixtureSuite =>
    * </p>
    *
    */
-  def withFixture(fun: TestFunction) {
+  implicit def withConductorFixture(fun: Conductor => Unit): this.Fixture => Unit = { configMap =>
     val conductor = new Conductor
     fun(conductor)
     if (!conductor.conductTestWasCalled)

@@ -22,8 +22,44 @@ import _root_.java.util.concurrent._
 import _root_.java.util.concurrent.atomic.AtomicReference
 
 /**
+ * Class that facilitates the testing of concurrency abstractions.
+ *
+ * <p>
+ * A <code>Conductor</code> conducts a multi-threaded test by maintaining
+ * a clock of "beats." Beats are numbered starting with 0. You can ask a
+ * <code>Conductor</code> to run threads that interact with the concurrency
+ * abstraction you want to test. A thread can call the <code>Conductor</code>'s
+ * <code>waitForBeat</code> method, which will cause the thread to block
+ * until that beat has been reached. The <code>Conductor</code> will advance
+ * the beat only when all threads participating in the test are blocked. By
+ * tying the timing of thread activities to specific beats, you can write
+ * tests for concurrency abstractions that have specific interleavings of
+ * threads.
+ * </p>
+ *
+ * <p>
+ * A <code>Conductor</code> object has a three-phase lifecycle. It begins its life
+ * in the <em>setup</em> phase. During this phase, you can start threads by
+ * invoking the <code>thread</code> method on the <code>Conductor</code>.
+ * When <code>conductTest</code> is invoked on a <code>Conductor</code>, it enters
+ * the <em>conducting</em> phase. During this phase it conducts the one multi-threaded
+ * test it was designed to conduct. After all participating threads have exited, either by
+ * returning normally or throwing an exception, the <code>conductTest</code> method
+ * will complete, either by returning normally or throwing an exception. As soon as
+ * the <code>conductTest</code> method completes, the <code>Conductor</code>
+ * enters its <em>defunct</em> phase. Once the <code>Conductor</code> has conducted
+ * a multi-threaded test, it is defunct and can't be reused. To run the same test again,
+ * you'll need to create a new instance of <code>Conductor</code>.
+ * </p>
+ *
+ * <p>
+ * Class <code>Conductor</code> was inspired by the
+ * <a href="http://www.cs.umd.edu/projects/PL/multithreadedtc/">MultithreadedTC project</a>,
+ * created by Bill Pugh and Nat Ayewah of the University of Maryland.
+ * </p>
  *
  * @author Josh Cough
+ * @author Bill Venners
  */
 class Conductor(val informer: Option[Informer]){
 
@@ -38,7 +74,6 @@ class Conductor(val informer: Option[Informer]){
 
   /////////////////////// thread management start //////////////////////////////
 
-  // These were protected.
   // place all threads in a new thread group
   private val threadGroup = new ThreadGroup("Orchestra")
 
@@ -49,45 +84,49 @@ class Conductor(val informer: Option[Informer]){
   private val mainThread = currentThread
 
   /**
-   * Create a new thread that will execute the given function
-   * @param f the function to be executed by the thread
+   * Creates a new thread that will execute the given function.
+   *
+   * @param fun the function to be executed by the thread
+   * @return the newly created thread
    */
-  def thread[T](f: => T): Thread = thread("thread" + threads.size) {f}
+  def thread[T](fun: => T): Thread = thread("thread" + threads.size) { fun }
 
-  /**
+  /*
    * Create a new thread that will execute the given Runnable
    * @param runnable the Runnable to be executed by the thread
    */
-  def thread[T](runnable: Runnable): Thread = thread("thread" + threads.size) {runnable.run}
+  // def thread[T](runnable: Runnable): Thread = thread("thread" + threads.size) {runnable.run}
 
-  /**
+  /*
    * Create a new thread that will execute the given Runnable
    * @param runnable the Runnable to be executed by the thread
    */
-  def thread[T](name: String, runnable: Runnable): Thread = thread(name) {runnable.run}
+  // def thread[T](name: String, runnable: Runnable): Thread = thread(name) {runnable.run}
 
-  /**
+  /*
    * Create a new thread that will execute the given Callable
    * @param callable the Callable to be executed by the thread
    */
-  def thread[T](callable: Callable[T]): Thread = thread("thread" + threads.size) {callable.call}
+  // def thread[T](callable: Callable[T]): Thread = thread("thread" + threads.size) {callable.call}
 
-  /**
+  /*
    * Create a new thread that will execute the given Callable
    * @param callable the Callable to be executed by the thread
    */
-  def thread[T](name: String, callable: Callable[T]): Thread = thread(name) {callable.call}
+  // def thread[T](name: String, callable: Callable[T]): Thread = thread(name) {callable.call}
 
   /**
-   * Create a new thread that will execute the given function
+   * Creates a new thread that will execute the given function.
+   *
    * @param name the name of the thread
-   * @param f the function to be executed by the thread
+   * @param fun the function to be executed by the thread
+   * @return the newly created thread
    */
-  def thread[T](name: String)(f: => T): Thread = {
+  def thread[T](name: String)(fun: => T): Thread = {
     currentState.get match {
       case TestFinished => throw new IllegalStateException("Test already completed.")
       case _ =>
-        val t = TestThread(name, f _)
+        val t = TestThread(name, fun _)
         threads add t
         startThread(t)
     }
@@ -96,15 +135,17 @@ class Conductor(val informer: Option[Informer]){
   // The reason that the thread is started immediately, is do that nested threads
   // will start immediately, without requiring the user to explicitly start() them.
 
-  /**
+  /*
    * Adds threads methods to int, so one can say:<br/>
    * val threads:List[Thread] = 5.threads("some name"){ ... }<br/>
    * val anonymous_threads:List[Thread] = 10 threads { ... }<br/>
    * @param nrThreads the number of threads to be created
    */
-  implicit def addThreadsMethodToInt(nrThreads:Int) = new ThreadedInt(nrThreads)
 
-  class ThreadedInt(nrThreads:Int) {
+  /*
+  private implicit def addThreadsMethodToInt(nrThreads:Int) = new ThreadedInt(nrThreads)
+
+  private class ThreadedInt(nrThreads:Int) {
     def threads[T](name: String)(f: => T): List[Thread] = {
       val seq = for( i <- 1 to nrThreads) yield thread(name + "("+i+")") {f}
       seq.toList
@@ -114,7 +155,8 @@ class Conductor(val informer: Option[Informer]){
       seq.toList
     }
   }
-
+*/
+  
   /**
    * A test thread runs the given function.
    * It only does so after it is given permission to do so by the main thread.
@@ -122,7 +164,7 @@ class Conductor(val informer: Option[Informer]){
    * all test threads are ready to go.
    */
   private case class TestThread[T](name: String, f: () => T) extends Thread(threadGroup, name){
-    override def run(){
+    override def run() {
       try {
         // notify the main thread that we are indeed ready to go.
         mainThreadStartLatch.countDown
@@ -142,10 +184,13 @@ class Conductor(val informer: Option[Informer]){
   }
 
   /**
-   * start a thread, logging before and after
+   * Starts a thread, logging before and after
    */
-  private def startThread(t: Thread): Thread = {
-    logAround("starting: " + t) {t.start(); t}
+  private def startThread(thread: Thread): Thread = {
+    logAround("starting: " + thread) {
+      thread.start()
+      thread
+    }
   }
 
   /////////////////////// thread management end /////////////////////////////
@@ -158,9 +203,10 @@ class Conductor(val informer: Option[Informer]){
    */
   private val errorsQueue = new ArrayBlockingQueue[Throwable](20)
 
-  /**
+  /*
    * A list of any errors thrown by test threads at the time this method is called.
    */
+  /*
   def exceptions: List[Throwable] = {
     def exceptions(errorList: List[Throwable], it: java.util.Iterator[Throwable]): List[Throwable] = {
       if(it.hasNext) exceptions( errorList ::: List(it.next), it)
@@ -168,7 +214,7 @@ class Conductor(val informer: Option[Informer]){
     }
     exceptions(Nil, errorsQueue.iterator)
   }
-
+    */
 
   /**
    * Stop all test case threads and clock thread, except the thread from
@@ -193,7 +239,10 @@ class Conductor(val informer: Option[Informer]){
   /////////////////////// finish handler end //////////////////////////////
 
   /**
-   * Register a function to be executed after the simulation has finished.
+   * Registers a function to be executed after all threads involved in the test have
+   * completed.
+   *
+   * @param fun the function to execute after all threads have completed
    */
   def whenFinished(fun: => Unit) {
     if( currentThread != mainThread )
@@ -228,31 +277,41 @@ class Conductor(val informer: Option[Informer]){
   /////////////////////// clock management start //////////////////////////
 
   /**
-   * Force the current thread to block until the thread beat reaches the
-   * specified value, at which point the current thread is unblocked.
+   * Blocks the current thread until the thread beat reaches the
+   * specified value, at which point the current thread will be unblocked.
    *
-   * @param c the tick value to wait for
+   * @param beat the tick value to wait for
    */
-  def waitForBeat(beat: Int) {clock waitForBeat beat}
+  def waitForBeat(beat: Int) { clock waitForBeat beat }
 
   /**
-   * Gets the current value of the thread clock. Primarily useful in
-   * assert statements.
+   * The current value of the thread clock.
    *
-   * @return the current tick value
+   * @return the current beat value
    */
   def beat: Int = clock.currentBeat
 
   /**
-   * Freezes the conductor so that the beat cannot advance.
-   * Runs the given function.
-   * Unfreezes the conductor.
+   * Executes the passed function with the <code>Conductor</code> <em>frozen</em> so that it
+   * won't advance the clock.
+   *
+   * <p>
+   * While the <code>Conductor</code> is frozen, the beat will not advance. Once the
+   * passed function has completed executing, the <code>Conductor</code> will be unfrozen
+   * so that the beat will advance when all threads are blocked as normal.
+   * </p>
+   *
+   * @param fun the function to execute while the <code>Conductor</code> is frozen.
    */
-  def withConductorFrozen[T](f: => T) = clock.withClockFrozen(f _)
+  def withConductorFrozen[T](fun: => T) = clock.withClockFrozen(fun _)
 
   /**
-   * Check if the conductor has been frozen by any threads. (The only way a thread
-   * can freeze the conductor is by calling withConductorFrozen.)
+   * Indicates whether the conductor has been frozen.
+   *
+   * <p>
+   * Note: The only way a thread
+   * can freeze the conductor is by calling <code>withConductorFrozen</code>.
+   * </p>
    */
   def isConductorFrozen: Boolean = clock.isFrozen
 
@@ -273,8 +332,8 @@ class Conductor(val informer: Option[Informer]){
   private val testThreadStartLatch = new CountDownLatch(1)
 
   /**
-   * Run multithreaded test with the default parameters,
-   * or the parameters set at the command line.
+   * Conducts a multithreaded test with a default clock period of 10 milliseconds
+   * and default run limit of 5 seconds.
    */
   def conductTest() {
     val DEFAULT_CLOCKPERIOD = 10
@@ -284,11 +343,17 @@ class Conductor(val informer: Option[Informer]){
 
   private val currentState: AtomicReference[ConductorState] = new AtomicReference(Setup)
 
-  def testWasStarted = currentState.get.testWasStarted
+  /**
+   * Indicates whether either of the two overloaded <code>conductTest</code> methods
+   * have been invoked.
+   */
+  def conductTestWasCalled = currentState.get.testWasStarted
 
   /**
-   * Start a multithreaded test.
-   * @param clockPeriod The period (in ms) between checks for the clock 
+   * Conducts a multithreaded test with the specified clock period (in milliseconds)
+   * and run limit (in seconds).
+   *
+   * @param clockPeriod The period (in ms) between checks for the clock
    * @param runLimit The limit to run the test in seconds
    * @throws Throwable The first error or exception that is thrown by one of the threads
    */
@@ -296,7 +361,7 @@ class Conductor(val informer: Option[Informer]){
 
     // if the test was started already, explode
     // otherwise, change state to TestStarted
-    if( testWasStarted ) throw new IllegalStateException("Conductor can only be run once!")
+    if( conductTestWasCalled ) throw new IllegalStateException("Conductor can only be run once!")
     else currentState set TestStarted
 
     // wait until all threads are definitely ready to go
@@ -355,26 +420,9 @@ class Conductor(val informer: Option[Informer]){
     }
   }
 
-  /////////////////////// logging start /////////////////////////////
-
-  private var trace: AtomicReference[Boolean] = new AtomicReference(false)
-
-  /**
-   * Turn logging on
-   */
-  def enableLogging() = trace set true
-
-  /**
-   * Turn logging off
-   */
-  def disableLogging() = trace set false
-
-  /**
-   * Logs the given object by calling toString on it
-   */
-  def log(a:Any) = {
-    if( trace.get ) informer match {
-      case Some(inf) => inf(a.toString)
+  private def log(a: Any) = {
+    informer match {
+      case Some(info) => info(a.toString)
       case None => 
     }
   }
@@ -382,10 +430,10 @@ class Conductor(val informer: Option[Informer]){
   /**
    * Logs before and after executing the given function.
    */
-  def logAround[T](a: => Any)(f: => T): T = {
-    log("|starting: " + a)
+  private def logAround[T](msg: String)(f: => T): T = {
+    log("|starting: " + msg)
     val t = f
-    log("|done with: " + a)
+    log("|done with: " + msg)
     t
   }
 
