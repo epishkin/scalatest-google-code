@@ -4537,6 +4537,42 @@ trait Matchers extends Assertions { matchers =>
           )
       }
 
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * result should be === (7)
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * Note that the === operator will be invoked on <code>be</code> in this expression, not
+     * on a result of passing <code>be</code> to <code>should</code>, as with most other operators
+     * in the matchers DSL, because the ===n operator has a higher precedence than <code>should</code>.
+     * Thus in the above case the first expression evaluated will be <code>be === (7)</code>, which results
+     * in a matcher that is passed to <code>should</code>.
+     * </p>
+     *
+     * <p>
+     * This method also enables the following syntax:
+     * </p>
+     *
+     * <pre>
+     * result should not (be === (7))
+     *                       ^
+     * </pre>
+     */
+    def ===(right: Any): Matcher[Any] =
+      new Matcher[Any] {
+        def apply(left: Any) =
+          MatchResult(
+            left == right,
+            FailureMessages("wasNotEqualTo", left, right),
+            FailureMessages("wasEqualTo", left, right)
+          )
+      }
+
     /**
      * This method enables the following syntax: 
      *
@@ -6647,6 +6683,35 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
+  class ResultOfTripleEqualsApplication(val right: Any) {
+
+    /**
+     * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
+     * enables syntax such as:
+     *
+     * <pre>
+     * result should not be === (7)
+     *                   ^  ... invoked by this be method
+     * </pre>
+     *
+     * <p>
+     * or
+     * </p>
+     *
+     * <pre>
+     * num should (not be === (10) and not be > (17))
+     *                 ^  ... invoked by this be method
+     * </pre>
+     */
+    def apply(left: Any): Boolean = left == right
+  }
+
+  /**
    * This method enables the following syntax: 
    *
    * <pre>
@@ -6689,5 +6754,16 @@ trait Matchers extends Assertions { matchers =>
    */
   def >=[T <% Ordered[T]] (right: T): ResultOfGreaterThanOrEqualToComparison[T] =
     new ResultOfGreaterThanOrEqualToComparison(right)
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * num should not be === (10)
+     *                   ^
+     * </pre>
+     */
+    def === (right: Any): ResultOfTripleEqualsApplication =
+      new ResultOfTripleEqualsApplication(right)
 }
 

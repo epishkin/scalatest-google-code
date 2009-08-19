@@ -29,68 +29,74 @@ class ShouldBeTripleEqualsSpec extends Spec with ShouldMatchers with Checkers wi
     describe("on Int") {
 
       it("should do nothing if the comparison holds true") {
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should be < (right)))
-        pending
+        check((i: Int) => returnsNormally(i should be === (i)))
+        check((i: Int) => returnsNormally(i should be === i))
       }
 
       it("should do nothing if the comparison fails and used with not") {
 
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should not be < (right)))
-
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should not (be < (right))))
-        pending
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should not be === (right)))
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should not (be === (right))))
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should not (be === right)))
       }
 
       it("should do nothing when comparison succeeds and used in a logical-and expression") {
 
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((be < (right)) and (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and be < (right + 1))))
-        pending
+        check((i: Int) => returnsNormally(i should ((be === (i)) and (be === (i)))))
+        check((i: Int) => returnsNormally(i should (be === (i) and (be === i))))
+        check((i: Int) => returnsNormally(i should (be === i and be === (i))))
+        check((i: Int) => returnsNormally(i should (be === i and be === i)))
       }
 
       it("should do nothing when comparison succeeds and used in a logical-or expression") {
 
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((be < (right - 1)) or (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right - 1) or (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right - 1) or be < (right + 1))))
-        pending
+        check((i: Int) => returnsNormally(i should ((be === (i)) or (be === (i)))))
+        check((i: Int) => returnsNormally(i should (be === (i) or (be === i))))
+        check((i: Int) => returnsNormally(i should (be === i or be === (i))))
+        check((i: Int) => returnsNormally(i should (be === i or be === i)))
+
+        check((i: Int) => returnsNormally(i should ((not equal (i)) or (be === (i)))))
+        check((i: Int) => returnsNormally(i should (not equal (i) or (be === i))))
+        check((i: Int) => returnsNormally(i should ((not equal i or be === (i)))))
+        check((i: Int) => returnsNormally(i should ((not equal i) or be === i)))
       }
 
       it("should do nothing when comparison fails and used in a logical-and expression with not") {
 
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not (be < (right)) and not (be < (right + 1)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((not be < (right)) and (not be < (right + 1)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not be < (right) and not be < (right + 1))))
-        pending
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should (not (be === (right)) and not (be === (right)))))
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should ((not be === (right)) and (not be === (right)))))
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should (not be === (right) and not be === (right))))
       }
 
       it("should do nothing when comparison fails and used in a logical-or expression with not") {
 
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not (be >= (right)) or not (be < (right)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((not be >= (right)) or (not be < (right)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (not be >= (right) or not be < (right))))
-        pending
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should (not (be === (right)) or not (be === (right)))))
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should ((not be === (right)) or (not be === (right)))))
+        check((left: Int, right: Int) => left != right ==> returnsNormally(left should (not be === (right) or not be === (right))))
       }
 
       it("should throw TestFailedException if comparison does not succeed") {
 
         val caught1 = intercept[TestFailedException] {
-          1 should be < (1)
+          1 should be === (2)
         }
-        assert(caught1.getMessage === "1 was not less than 1")
-        check((left: Int, right: Int) => left >= right ==> throwsTestFailedException(left should be < (right)))
-        pending
+        assert(caught1.getMessage === "1 was not equal to 2")
+        check((left: Int, right: Int) => left != right ==> throwsTestFailedException(left should be === (right)))
+
+        val caught2 = intercept[TestFailedException] {
+          1 should be === 2
+        }
+        assert(caught2.getMessage === "1 was not equal to 2")
+        check((left: Int, right: Int) => left != right ==> throwsTestFailedException(left should be === right))
       }
 
-      it("should throw TestFailedException if comparison succeeds but used with not") {
+      ignore("should throw TestFailedException if comparison succeeds but used with not") {
 
         val caught1 = intercept[TestFailedException] {
-          1 should not be < (2)
+          1 should not be === (1)
         }
-        assert(caught1.getMessage === "1 was less than 2")
-        check((left: Int, right: Int) => left < right ==> throwsTestFailedException(left should not be < (right)))
-        pending
+        assert(caught1.getMessage === "1 was equal to 1")
+        check((i: Int) => throwsTestFailedException(i should not be === (i)))
       }
 
       // Comparison with and
