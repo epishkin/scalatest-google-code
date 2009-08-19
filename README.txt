@@ -13,7 +13,7 @@ GETTING STARTED
 
 To learn how to use ScalaTest, please
 open in your browser the scaladoc documentation in the
-/scalatest-1.0-snapshot/doc directory. Look first at the documentation for trait
+/scalatest-1.0-SNAPSHOT/doc directory. Look first at the documentation for trait
 org.scalatest.Suite, which gives a decent intro. All the other types are
 documented as well, so you can hop around to learn more.
 org.scalatest.tools.Runner explains how to use the application. The
@@ -22,13 +22,13 @@ Ignore class is written in Java, and isn't currently shown in the Scaladoc.
 To try it out, you can use ScalaTest to run its own tests, i.e., the tests
 used to test ScalaTest itself. This command will run the GUI:
 
-scala -classpath scalatest-1.0-snapshot.jar org.scalatest.tools.Runner -p "scalatest-1.0-snapshot-tests.jar" -g -s org.scalatest.SuiteSuite
+scala -classpath scalatest-1.0-SNAPSHOT.jar org.scalatest.tools.Runner -p "scalatest-1.0-SNAPSHOT-tests.jar" -g -s org.scalatest.SuiteSuite
 
 This command will run and just print results to the standard output:
 
-scala -classpath scalatest-1.0-snapshot.jar org.scalatest.tools.Runner -p "scalatest-1.0-snapshot-tests.jar" -o -s org.scalatest.SuiteSuite
+scala -classpath scalatest-1.0-SNAPSHOT.jar org.scalatest.tools.Runner -p "scalatest-1.0-SNAPSHOT-tests.jar" -o -s org.scalatest.SuiteSuite
 
-ScalaTest 1.0-snapshot was tested with Scala version 2.7.3.final, so it is not
+ScalaTest 1.0-SNAPSHOT was tested with Scala version 2.7.3.final, so it is not
 guaranteed to work with earlier Scala versions.
 
 ABOUT SCALATEST
