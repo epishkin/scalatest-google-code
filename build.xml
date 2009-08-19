@@ -586,7 +586,7 @@
       -   </servers>
       - 
       -->
-    <target name="deploy-snapshot" depends="gencode,jar,jarsrc">
+    <target name="deploy-snapshot" depends="gencode,jar,jarsrc,doc">
         <path id="maven-ant-tasks.classpath"
               path="lib/maven-ant-tasks-2.0.10.jar" />
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
@@ -599,9 +599,17 @@
             </filterset>
         </copy>
 
+        <jar jarfile="${build}/scalatest-scaladoc.jar" basedir="${doc}"/>
+        <jar jarfile="${build}/scalatest-javadoc.jar"  basedir="${jdoc}"/>
+
         <artifact:deploy file="${dist}/lib/scalatest.jar">
             <pom file="${build}/pom.xml"/>
-            <attach file="target/scalatest-sources.jar" classifier="sources"/>
+            <attach file="${build}/scalatest-sources.jar"
+                    classifier="sources"/>
+            <attach file="${build}/scalatest-scaladoc.jar"
+                    classifier="scaladoc"/>
+            <attach file="${build}/scalatest-javadoc.jar"
+                    classifier="javadoc"/>
         </artifact:deploy>
     </target>
 </project>
