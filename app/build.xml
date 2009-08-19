@@ -561,39 +561,47 @@
 
     <target name="jar" depends="dist"></target>
 
+    <target name="jarsrc">
+      <jar jarfile="${build}/scalatest-sources.jar">
+        <fileset dir="src/main/scala"/>
+        <fileset dir="src/main/java"/>
+        <fileset dir="src/main/resources" includes="org/**"/>
+        <fileset dir="src/examples/scala"/>
+        <fileset dir="src/examples/java"/>
+      </jar>
+    </target>
+
     <!--
-      - Deploy snapshot to remote repository.  Define -Ddeployment-username
-      - and -Ddeployment-password on command line.
+      - Deploy snapshot to remote repository.
+      -
+      - Requires username and password for repository to be defined in your
+      - ~/.m2/settings.xml file, e.g.:
+      -
+      -   <servers>
+      -     <server>
+      -       <id>scala-tools.org</id>
+      -       <username>username</username>
+      -       <password>password</password>
+      -     </server>
+      -   </servers>
+      - 
       -->
-    <target name="deploy-snapshot" depends="gencode,jar">
-
-        <fail message="deployment-username not defined (use -Ddeployment-username=username)"
-              unless="deployment-username" />
-        <fail message="deployment-password not defined (use -Ddeployment-password=password)"
-              unless="deployment-password" />
-
+    <target name="deploy-snapshot" depends="gencode,jar,jarsrc">
         <path id="maven-ant-tasks.classpath"
               path="lib/maven-ant-tasks-2.0.10.jar" />
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
                  uri="antlib:org.apache.maven.artifact.ant"
                  classpathref="maven-ant-tasks.classpath" />
 
-        <copy file="${dist}/lib/scalatest.jar"
-              tofile="target/scalatest-${release}.jar" />
-
-        <copy file="pom.xml" todir="target" overwrite="true">
-          <filterset>
-            <filter token="RELEASE" value="${release}" />
-          </filterset>
+        <copy file="pom.xml" todir="${build}" overwrite="true">
+            <filterset>
+                <filter token="RELEASE" value="${release}" />
+            </filterset>
         </copy>
 
-        <artifact:deploy file="target/scalatest-${release}.jar">
-            <remoteRepository
-                url="http://nexus.scala-tools.org/content/repositories/snapshots/">
-                <authentication username="${deployment-username}"
-                                password="${deployment-password}"/>
-            </remoteRepository>
-            <pom file="target/pom.xml"/>
+        <artifact:deploy file="${dist}/lib/scalatest.jar">
+            <pom file="${build}/pom.xml"/>
+            <attach file="target/scalatest-sources.jar" classifier="sources"/>
         </artifact:deploy>
     </target>
 </project>

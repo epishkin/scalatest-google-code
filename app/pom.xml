@@ -25,4 +25,18 @@
     </dependency>
   </dependencies>
 
+  <distributionManagement>
+    <repository>
+      <id>scala-tools.org</id>
+      <url>
+      http://nexus.scala-tools.org/content/repositories/releases/</url>
+    </repository>
+
+    <snapshotRepository>
+      <id>scala-tools.org</id>
+      <url>
+      http://nexus.scala-tools.org/content/repositories/snapshots/</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
