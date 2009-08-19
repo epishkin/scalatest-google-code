@@ -75,7 +75,7 @@ class ConductorSuite extends FunSuite with ShouldMatchers with MustBeSugar {
     conductor.whenFinished{ 1 mustBe 1 }
     intercept[IllegalStateException] {
       conductor.whenFinished{ 1 mustBe 1 }
-    }.getMessage mustBe "whenFinished can only be called once."
+    }.getMessage mustBe "Conductor can only be run once!"
   }
 
   // TODO: should we really have this rule? i dont think we should
