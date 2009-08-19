@@ -3394,6 +3394,26 @@ trait Matchers extends Assertions { matchers =>
     }
 
     /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * result should not be === (7)
+     *                   ^
+     * </pre>
+     */
+    def be(comparison: ResultOfTripleEqualsApplication){
+      if (comparison(left) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "wasNotEqualTo" else "wasEqualTo",
+            left,
+            comparison.right
+          )
+        )
+      }
+    }
+
+    /**
      * This method enables the following syntax, where <code>odd</code> refers to
      * a <code>BeMatcher[Int]</code>:
      *
