@@ -82,4 +82,8 @@ class ConductorSuite extends FunSuite with ShouldMatchers with MustBeSugar {
   // test("if thread(String) is called twice with the same String name, the second invocation results" +
   //        "in an IllegalArgumentException that explains each thread in a multi-threaded test" +
   //        "must have a unique name") (pending)
+ // TODO: I think withConductorFrozen may just be returning a function rather
+ // than executing it? Judging from the inferred result type. Write a test
+ // that makes sure the function actually gets invoked before withConductorFrozen
+ // returns.
 }

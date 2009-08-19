@@ -26,6 +26,11 @@ import org.scalatest.events.TestStarting
 import org.scalatest.events.TestSucceeded
 import org.scalatest.events.TestFailed
 
+/**
+ * A <code>Suite</code> that is also a <code>junit.framework.TestCase</code>. 
+ *
+ * @author Bill Venners
+ */
 class JUnit3Suite extends TestCase with Suite {
 
   private var theTracker = new Tracker
