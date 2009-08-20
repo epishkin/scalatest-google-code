@@ -17,7 +17,7 @@ package org.scalatest.matchers
 
 class ShouldThrowSpec extends WordSpec with ShouldMatchers {
 
-  "The {} shouldThrow [ExceptionType] syntax" should {
+  "The evaluating { ... } should produce [ExceptionType] syntax" should {
 
     "fail if a different exception is thrown" in {
       val caught1 = intercept[TestFailedException] {
@@ -33,9 +33,20 @@ class ShouldThrowSpec extends WordSpec with ShouldMatchers {
       assert(caught2.getMessage === "Expected exception java.lang.IllegalArgumentException to be thrown, but no exception was thrown.")
     }
 
-    "succeed if the expected exception is thrown" is (pending)
-    "succeed if a subtype of the expected exception is thrown, where the expected type is a class" is (pending)
-    "succeed if a subtype of the expected exception is thrown, where the expected type is a trait" is (pending)
+    "succeed if the expected exception is thrown" in {
+      evaluating { "hi".charAt(-1) } should produce [StringIndexOutOfBoundsException]
+    }
+    
+    "succeed if a subtype of the expected exception is thrown, where the expected type is a class" in {
+      evaluating { "hi".charAt(-1) } should produce [Exception]
+    }
+
+    "succeed if a subtype of the expected exception is thrown, where the expected type is a trait" in {
+      trait Excitement
+      def kaboom(): Unit = throw new Exception with Excitement
+      evaluating { kaboom() } should produce [Excitement]
+    }
+    
     "return the caught exception" is (pending)
   }
 }
