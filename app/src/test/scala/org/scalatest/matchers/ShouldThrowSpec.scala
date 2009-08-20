@@ -28,16 +28,14 @@ class ShouldThrowSpec extends WordSpec with ShouldMatchers {
 
     "fail if no exception is thrown" in {
       val caught2 = intercept[TestFailedException] {
-        intercept[IllegalArgumentException] {
-          "hi"
-        }
+        evaluating { "hi" } should produce [IllegalArgumentException]
       }
       assert(caught2.getMessage === "Expected exception java.lang.IllegalArgumentException to be thrown, but no exception was thrown.")
-      pending
     }
 
     "succeed if the expected exception is thrown" is (pending)
     "succeed if a subtype of the expected exception is thrown, where the expected type is a class" is (pending)
     "succeed if a subtype of the expected exception is thrown, where the expected type is a trait" is (pending)
+    "return the caught exception" is (pending)
   }
 }
