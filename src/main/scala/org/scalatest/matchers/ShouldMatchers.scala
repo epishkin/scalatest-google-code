@@ -136,6 +136,50 @@ import org.scalatest.verb.ShouldVerb
  * one should be >= (0)
  * </pre>
  * 
+ * <h2>Checking equality with <code>be ===</code></h2>
+ *
+ * <p>
+ * An alternate way to check for equality of two objects is to use <code>be</code> with
+ * <code>===</code>. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * object should be === (3)
+ * </pre>
+ *
+ * <p>
+ * Here <code>object</code> is a variable, and can be of any type. If the object is an
+ * <code>Int</code> with the value 3, execution will continue (<em>i.e.</em>, the expression will result
+ * in the unit value, <code>()</code>). Otherwise, a <code>TestFailedException</code>
+ * will be thrown with a detail message that explains the problem, such as <code>"7 was not equal to 3"</code>.
+ * This <code>TestFailedException</code> will cause the test to fail.
+ * </p>
+ *
+ * <p>
+ * The <code>left should be === (right)</code> syntax works by calling <code>==</code>  on the <code>left</code>
+ * value, passing in the <code>right</code> value, on every type except arrays. If <code>left</code> is an array, <code>deepEquals</code>
+ * will be invoked on <code>left</code>, passing in <code>right</code>. Thus, even though this expression
+ * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
+ * </p>
+ *
+ * <pre class="indent">
+ * Array(1, 2) == Array(1, 2) // yields false
+ * </pre>
+ *
+ * <p>
+ * The following expression will <em>not</em> result in a <code>TestFailedException</code>, because <code>deepEquals</code> compares
+ * the two arrays structurally, taking into consideration the equality of the array's contents:
+ * </p>
+ *
+ * <pre class="indent">
+ * Array(1, 2) should be === (Array(1, 2)) // succeeds (i.e., does not throw TestFailedException)
+ * </pre>
+ *
+ * <p>
+ * If you ever do want to verify that two arrays are actually the same object (have the same identity), you can use the
+ * <code>be theSameInstanceAs</code> syntax, described below.
+ * </p>
+ *
  * <h2>Checking <code>Boolean</code> properties with <code>be</code></h2>
  * 
  * <p>
@@ -719,6 +763,32 @@ import org.scalatest.verb.ShouldVerb
  * always surrounding custom matchers with parentheses, and if you ever leave them off when they are needed, you'll get a compiler error.)
  * For more information about how to create custom <code>Matcher</code>s, please see the documentation for the <a href="Matcher.html"><code>Matcher</code></a> trait.
  * </p>
+ *
+ * <h2>Checking for expected exceptions</h2>
+ *
+ * <p>
+ * Sometimes you need to test whether a method throws an expected exception under certain circumstances, such
+ * as when invalid arguments are passed to the method. With <code>ShouldMatchers</code> mixed in, you can
+ * check for an expected exception like this:
+ * </p>
+ *
+ * <pre>
+ * evaluating { s.charAt(-1) } should produce [IndexOutOfBoundsException]
+ * </pre>
+ *
+ * <p>
+ * If <code>charAt</code> throws an instance of <code>StringIndexOutOfBoundsException</code>,
+ * this expression will result in that exception. But if <code>charAt</code> completes normally, or throws a different
+ * exception, this expression will complete abruptly with a <code>TestFailedException</code>.
+ * This expression returns the caught exception so that you can inspect it further if you wish, for
+ * example, to ensure that data contained inside the exception has the expected values. Here's an
+ * example:
+ * </p>
+ *
+ * <pre>
+ * val thrown = evaluating { s.charAt(-1) } should produce [IndexOutOfBoundsException]
+ * thrown.getMessage should equal ("String index out of range: -1")
+ * </pre>
  *
  * <h2>Those pesky parens</h2>
  * 

@@ -267,18 +267,6 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       assert(tfe.cause.isEmpty)
       assert(tfe.getCause == null)
     }
-
-    //it("bla bla bla") {
-      // fail("message")
-      // fail(new Throwable)
-      // fail("message", new Throwable)
-      // assert(1 === 2, "some message")
-      // assert(1 === 2)
-      // val cause0 = new IllegalArgumentException("this is cause 0")
-      // val cause1 = new IllegalStateException("this is cause 1", cause0)
-      // intercept[IllegalArgumentException] { if (false) 1 else throw new RuntimeException(cause1) }
-      // intercept[IllegalArgumentException] {}
-    //}
   }
 }
  

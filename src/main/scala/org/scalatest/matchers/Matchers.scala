@@ -4608,11 +4608,20 @@ trait Matchers extends Assertions { matchers =>
     def ===(right: Any): Matcher[Any] =
       new Matcher[Any] {
         def apply(left: Any) =
-          MatchResult(
-            left == right,
-            FailureMessages("wasNotEqualTo", left, right),
-            FailureMessages("wasEqualTo", left, right)
-          )
+          left match {
+            case leftArray: Array[_] =>
+              MatchResult(
+                leftArray.deepEquals(right),
+                FailureMessages("wasNotEqualTo", left, right),
+                FailureMessages("wasEqualTo", left, right)
+              )
+            case _ =>
+              MatchResult(
+                left == right,
+                FailureMessages("wasNotEqualTo", left, right),
+                FailureMessages("wasEqualTo", left, right)
+              )
+        }
       }
 
     /**

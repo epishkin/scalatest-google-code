@@ -25,6 +25,10 @@ class ShouldBeAnySpec extends Spec with ShouldMatchers with Checkers with Return
   // Checking for equality with "be"
   describe("The be token") {
 
+    it("should compare arrays structurally") {
+      Array(1, 2) should be (Array(1, 2))
+    }
+
     it("should do nothing when equal") {
       1 should be (1)
 

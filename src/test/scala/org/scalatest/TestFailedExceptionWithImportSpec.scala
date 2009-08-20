@@ -203,16 +203,55 @@ class TestFailedExceptionWithImportSpec extends Spec {
       }
     }
 
-    it("bla bla bla") {
-      // fail("message")
-      // fail(new Throwable)
-      // fail("message", new Throwable)
-      // assert(1 === 2, "some message")
-      // assert(1 === 2)
-      // val cause0 = new IllegalArgumentException("this is cause 0")
-      // val cause1 = new IllegalStateException("this is cause 1", cause0)
-      // intercept[IllegalArgumentException] { if (false) 1 else throw new RuntimeException(cause1) }
-      // intercept[IllegalArgumentException] {}
+    it("should give the proper line on 1 should be === 2") {
+      try {
+        1 should be === 2
+      }
+      catch {
+        case e: TestFailedException =>
+          e.failedCodeFileNameAndLineNumberString match {
+            case Some(s) =>
+              if (s != ("TestFailedExceptionWithImportSpec.scala:" + (baseLineNumber + 186))) {
+                fail("s was: " + s, e)
+              }
+            case None => fail("assert(1 === 2) didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("assert(1 === 2) didn't produce a TestFailedException", e)
+      }
+    }
+
+    it("should give the proper line on evaluating {} should produce [IllegalArgumentException] {}") {
+      try {
+        evaluating {} should produce [IllegalArgumentException]
+      }
+      catch {
+        case e: TestFailedException =>
+          e.failedCodeFileNameAndLineNumberString match {
+            case Some(s) => 
+            if (s != ("TestFailedExceptionWithImportSpec.scala:" + (baseLineNumber + 204))) {
+                fail("s was: " + s, e)
+              }
+            case None => fail("evaluating {} should produce [IllegalArgumentException] didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("evaluating {} should produce [IllegalArgumentException] didn't produce a TestFailedException", e)
+      }
+    }
+
+    it("should give the proper line on evaluating { throw new RuntimeException } should produce [IllegalArgumentException]") {
+      try {
+        evaluating { if (false) 1 else throw new RuntimeException } should produce [IllegalArgumentException]
+      }
+      catch {
+        case e: TestFailedException =>
+          e.failedCodeFileNameAndLineNumberString match {
+            case Some(s) => s should equal ("TestFailedExceptionWithImportSpec.scala:" + (baseLineNumber + 222))
+            case None => fail("evaluating { throw new RuntimeException } should produce [IllegalArgumentException] didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("evaluating { throw new RuntimeException } should produce [IllegalArgumentException] didn't produce a TestFailedException", e)
+      }
     }
   }
 }
