@@ -221,6 +221,39 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       }
     }
 
+    it("should give the proper line on evaluating {} should produce [IllegalArgumentException] {}") {
+      try {
+        evaluating {} should produce [IllegalArgumentException]
+      }
+      catch {
+        case e: TestFailedException =>
+          e.failedCodeFileNameAndLineNumberString match {
+            case Some(s) => // s should equal ("TestFailedExceptionSpec.scala:" + (baseLineNumber + 204))
+            if (s != ("TestFailedExceptionSpec.scala:" + (baseLineNumber + 204))) {
+                fail("s was: " + s, e)
+              }
+            case None => fail("evaluating {} should produce [IllegalArgumentException] didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("evaluating {} should produce [IllegalArgumentException] didn't produce a TestFailedException", e)
+      }
+    }
+
+    it("should give the proper line on evaluating { throw new RuntimeException } should produce [IllegalArgumentException]") {
+      try {
+        evaluating { if (false) 1 else throw new RuntimeException } should produce [IllegalArgumentException]
+      }
+      catch {
+        case e: TestFailedException =>
+          e.failedCodeFileNameAndLineNumberString match {
+            case Some(s) => s should equal ("TestFailedExceptionSpec.scala:" + (baseLineNumber + 222))
+            case None => fail("evaluating { throw new RuntimeException } should produce [IllegalArgumentException] didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("evaluating { throw new RuntimeException } should produce [IllegalArgumentException] didn't produce a TestFailedException", e)
+      }
+    }
+
     it("should return the cause in both cause and getCause") {
       val theCause = new IllegalArgumentException("howdy")
       val tfe = new TestFailedException(Some("doody"), Some(theCause), 3)
