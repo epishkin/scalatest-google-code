@@ -157,40 +157,39 @@ class ShouldBeTripleEqualsSpec extends Spec with ShouldMatchers with Checkers wi
       it("should throw throw TestFailedException when comparison doesn't succeed and used in a logical-and expression used with not") {
 
         val caught1 = intercept[TestFailedException] {
-          5 should { not { be < (2) } and not { be < (6) }}
+          5 should { not { be === (2) } and not { be === (5) }}
         }
-        assert(caught1.getMessage === "5 was not less than 2, but 5 was less than 6")
+        assert(caught1.getMessage === "5 was not equal to 2, but 5 was equal to 5")
 
         val caught2 = intercept[TestFailedException] {
-          5 should ((not be < (2)) and (not be < (6)))
+          5 should ((not be === (2)) and (not be === (5)))
         }
-        assert(caught2.getMessage === "5 was not less than 2, but 5 was less than 6")
+        assert(caught2.getMessage === "5 was not equal to 2, but 5 was equal to 5")
 
         val caught3 = intercept[TestFailedException] {
-          5 should (not be < (2) and not be < (6))
+          5 should (not be === (2) and not be === (5))
         }
-        assert(caught3.getMessage === "5 was not less than 2, but 5 was less than 6")
-        pending
+        assert(caught3.getMessage === "5 was not equal to 2, but 5 was equal to 5")
       }
 
       // Comparison with or not
       it("should throw throw TestFailedException when comparison doesn't succeed and used in a logical-or expression used with not") {
 
         val caught1 = intercept[TestFailedException] {
-          5 should { not { be < (7) } or not { be < (8) }}
+          5 should { not { be === (5) } or not { be === (5) }}
         }
-        assert(caught1.getMessage === "5 was less than 7, and 5 was less than 8")
+        assert(caught1.getMessage === "5 was equal to 5, and 5 was equal to 5")
 
         val caught2 = intercept[TestFailedException] {
-          5 should ((not be < (7)) or (not be < (8)))
+          5 should ((not be === (5)) or (not be === (5)))
         }
-        assert(caught2.getMessage === "5 was less than 7, and 5 was less than 8")
+        assert(caught2.getMessage === "5 was equal to 5, and 5 was equal to 5")
 
         val caught3 = intercept[TestFailedException] {
-          5 should (not be < (7) or not be < (8))
+          // 5 should ((not be === (5)).or(not).be(===(5)))
+          5 should (not be === (5) or not be === (5))
         }
-        assert(caught3.getMessage === "5 was less than 7, and 5 was less than 8")
-        pending
+        assert(caught3.getMessage === "5 was equal to 5, and 5 was equal to 5")
       }
     }
 

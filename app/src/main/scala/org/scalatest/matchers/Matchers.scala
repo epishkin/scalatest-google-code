@@ -687,6 +687,17 @@ trait Matchers extends Assertions { matchers =>
        * This method enables the following syntax:
        *
        * <pre>
+       * 5 should (not be === (2) and not be === (6))
+       *                                  ^
+       * </pre>
+       */
+      def be(resultOfTripleEqualsApplication: ResultOfTripleEqualsApplication) =
+        matchersWrapper.and(matchers.not.be(resultOfTripleEqualsApplication))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
        * notEmptyMock should (not be ('empty) and not be ('empty))
        *                                              ^
        * </pre>
@@ -1422,6 +1433,17 @@ trait Matchers extends Assertions { matchers =>
        */
       def be[T](resultOfGreaterThanOrEqualToComparison: ResultOfGreaterThanOrEqualToComparison[T]) =
         matchersWrapper.or(matchers.not.be(resultOfGreaterThanOrEqualToComparison))
+
+      /**
+       * This method enables the following syntax:
+       *
+       * <pre>
+       * 5 should (not be === (7) or not be === (8))
+       *                                 ^
+       * </pre>
+       */
+      def be(resultOfTripleEqualsApplication: ResultOfTripleEqualsApplication) =
+        matchersWrapper.or(matchers.not.be(resultOfTripleEqualsApplication))
 
       /**
        * This method enables the following syntax:
@@ -5154,6 +5176,25 @@ trait Matchers extends Assertions { matchers =>
             !resultOfGreaterThanOrEqualToComparison(left),
             FailureMessages("wasGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right),
             FailureMessages("wasNotGreaterThanOrEqualTo", left, resultOfGreaterThanOrEqualToComparison.right)
+          )
+      }
+    }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * num should (not be === (7) and not be === (10))
+     *                 ^
+     * </pre>
+     */
+    def be(resultOfTripleEqualsApplication: ResultOfTripleEqualsApplication): Matcher[Any] = {
+      new Matcher[Any] {
+        def apply(left: Any) =
+          MatchResult(
+            !resultOfTripleEqualsApplication(left),
+            FailureMessages("wasEqualTo", left, resultOfTripleEqualsApplication.right),
+            FailureMessages("wasNotEqualTo", left, resultOfTripleEqualsApplication.right)
           )
       }
     }
