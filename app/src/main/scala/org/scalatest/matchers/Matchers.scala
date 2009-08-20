@@ -143,7 +143,7 @@ trait Matchers extends Assertions { matchers =>
   private[scalatest] def newTestFailedException(message: String): Throwable = {
     val fileNames = List("Matchers.scala", "ShouldMatchers.scala", "MustMatchers.scala")
     val temp = new RuntimeException
-    val stackDepth = temp.getStackTrace.takeWhile(stackTraceElement => fileNames.exists(_ == stackTraceElement.getFileName)).length
+    val stackDepth = temp.getStackTrace.takeWhile(stackTraceElement => fileNames.exists(_ == stackTraceElement.getFileName) || stackTraceElement.getMethodName == "newTestFailedException").length
     new TestFailedException(message, stackDepth)
   }
 
