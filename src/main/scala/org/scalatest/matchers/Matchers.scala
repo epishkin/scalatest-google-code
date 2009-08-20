@@ -15,6 +15,7 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import scala.util.matching.Regex
@@ -1832,7 +1833,8 @@ trait Matchers extends Assertions { matchers =>
     new Matcher[java.util.Collection[T]] {
       def apply(left: java.util.Collection[T]) = {
         val iterable = new Iterable[T] {
-          def elements = new Iterator[T] {
+          // override def iterator = new Iterator[T] { // For 2.8
+          def elements = new Iterator[T] { // For 2.7
             private val javaIterator = left.iterator
             def next: T = javaIterator.next
             def hasNext: Boolean = javaIterator.hasNext
@@ -1858,6 +1860,36 @@ trait Matchers extends Assertions { matchers =>
       def apply(left: java.util.Map[K, V]) = {
         // Even though the java map is mutable I just wrap it it to a plain old Scala map, because
         // I have no intention of mutating it.
+/* For 2.8
+        class MapWrapper[Z](javaMap: java.util.Map[K, Z]) extends scala.collection.Map[K, Z] {
+          override def size: Int = javaMap.size
+          def get(key: K): Option[Z] =
+            if (javaMap.containsKey(key)) Some(javaMap.get(key)) else None
+          override def iterator = new Iterator[(K, Z)] {
+            private val javaIterator = javaMap.keySet.iterator
+            def next: (K, Z) = {
+              val nextKey = javaIterator.next
+              (nextKey, javaMap.get(nextKey))
+            }
+            def hasNext: Boolean = javaIterator.hasNext
+          }
+          override def +[W >: Z] (kv: (K, W)): scala.collection.Map[K, W] = {
+            val newJavaMap = new java.util.HashMap[K, W](javaMap)
+            val (key, value) = kv
+            newJavaMap.put(key, value)
+            new MapWrapper[W](newJavaMap)
+          }
+          override def - (key: K): scala.collection.Map[K, Z] = {
+            val newJavaMap = new java.util.HashMap[K, Z](javaMap)
+            newJavaMap.remove(key)
+            new MapWrapper[Z](newJavaMap)
+          }
+          override def toString = javaMap.toString
+        }
+        val scalaMap = new MapWrapper[V](left)
+        mapMatcher.apply(scalaMap)
+*/
+// Start For 2.7
         val scalaMap = new scala.collection.Map[K, V] {
           def size: Int = left.size
           def get(key: K): Option[V] =
@@ -1873,6 +1905,7 @@ trait Matchers extends Assertions { matchers =>
           override def toString = left.toString
         }
         mapMatcher.apply(scalaMap)
+// End For 2.7
       }
     }
 

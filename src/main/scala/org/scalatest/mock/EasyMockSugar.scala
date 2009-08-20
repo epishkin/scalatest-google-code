@@ -15,6 +15,7 @@
  */
 package org.scalatest.mock
 
+import org.scalatest._
 import org.easymock.{IExpectationSetters, EasyMock}
 import scala.reflect.Manifest
 

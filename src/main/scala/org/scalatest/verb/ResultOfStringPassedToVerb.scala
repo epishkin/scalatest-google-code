@@ -15,6 +15,8 @@
  */
 package org.scalatest.verb
 
+import org.scalatest._
+
 /**
  * Trait used to enable  syntax such as the following in a <code>FlatSpec</code> that
  * mixes in <code>ShouldMatchers</code>:

@@ -15,6 +15,8 @@
  */
 package org.scalatest.verb
 
+import org.scalatest._
+
 // Used to make an implicit conversion more specific. If there were ever another
 // implicit (String, String, () => Unit) lying around in scope, it would clash with
 // if the implicit was just based on that more general type. This is used in

@@ -15,7 +15,7 @@
  */
 package org.scalatest.mock
 
-import hamcrest.Description
+import org.scalatest._
 import org.jmock.api.ExpectationError
 import org.jmock.{Expectations, Mockery}
 import scala.reflect.Manifest

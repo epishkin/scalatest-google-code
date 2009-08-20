@@ -15,6 +15,7 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
 import scala.reflect.Manifest
 import org.scalatest.verb.ShouldVerb
 

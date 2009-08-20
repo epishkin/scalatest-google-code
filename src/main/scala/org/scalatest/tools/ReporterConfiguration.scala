@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 /**
  * This file has types that are used in parsing command line arguments to Runner.
  *
@@ -54,6 +56,7 @@ private[tools] case class ReporterConfigurations(
 
   override def length = reporterConfigurationList.length
   override def elements = reporterConfigurationList.elements
+  // override def iterator = reporterConfigurationList.iterator // For 2.8
   override def apply(i: Int) = reporterConfigurationList(i)
 }
 

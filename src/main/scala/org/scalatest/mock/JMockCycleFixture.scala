@@ -15,6 +15,7 @@
  */
 package org.scalatest.mock
 
+import org.scalatest._
 import fixture.FixtureSuite
 
 trait JMockCycleFixture { this: FixtureSuite =>

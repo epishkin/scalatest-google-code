@@ -15,6 +15,7 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
 import FixtureNodeFamily._
 import verb.{CanVerb, ResultOfAfterWordApplication, ShouldVerb, BehaveWord, MustVerb,
   StringVerbBlockRegistration}

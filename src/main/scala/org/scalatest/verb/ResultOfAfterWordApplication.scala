@@ -15,5 +15,7 @@
  */
 package org.scalatest.verb
 
+import org.scalatest._
+
 class ResultOfAfterWordApplication(val text: String, val f: () => Unit)
 

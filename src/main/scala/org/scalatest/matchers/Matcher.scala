@@ -15,6 +15,8 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
+
 /**
  * Trait extended by objects that can match a value of the specified type. The value to match is
  * passed to the matcher's <code>apply</code> method. The result is a <code>MatchResult</code>.

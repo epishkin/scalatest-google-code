@@ -15,6 +15,7 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
 import java.awt.BorderLayout
 import java.awt.FlowLayout
 import java.awt.GridLayout

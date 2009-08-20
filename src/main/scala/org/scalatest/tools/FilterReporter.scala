@@ -15,6 +15,7 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
 import org.scalatest.events._
 import DispatchReporter.propagateDispose
 

@@ -15,6 +15,7 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
 import javax.swing.JDialog
 import javax.swing.JFrame
 import javax.swing.SwingConstants

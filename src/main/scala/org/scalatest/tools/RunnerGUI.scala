@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 /**
  * Trait implemented by RunnerJFrame, which can be passed to the RunnerGUI State objects,
  * allowing them to call back into RunnerJFrame.

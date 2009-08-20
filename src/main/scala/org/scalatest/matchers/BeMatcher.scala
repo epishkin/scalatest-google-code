@@ -15,6 +15,8 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
+
 /**
  * Trait extended by matcher objects, which may appear after the word <code>be</code>, that can match a value of the specified type.
  * The value to match is passed to the <code>BeMatcher</code>'s <code>apply</code> method. The result is a <code>MatchResult</code>.

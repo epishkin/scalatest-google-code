@@ -15,6 +15,7 @@
  */
 package org.scalatest.concurrent
 
+import org.scalatest._
 import fixture.{ConfigMapFixture, FixtureSuite}
 
 /**

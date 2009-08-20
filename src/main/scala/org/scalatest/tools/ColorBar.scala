@@ -15,6 +15,7 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
 import java.awt.Color
 import java.awt.Dimension
 import java.awt.Graphics

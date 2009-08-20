@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 /**
  * A set of state objects for the GUI. This is the Gang of Four state pattern.
  *

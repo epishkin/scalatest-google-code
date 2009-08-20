@@ -15,6 +15,7 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
 import scala.collection.mutable.ListBuffer
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier

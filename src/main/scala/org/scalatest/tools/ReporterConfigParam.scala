@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 private[tools] sealed abstract class ReporterConfigParam(val character: String)
 
 private[tools] case object FilterTestStarting extends ReporterConfigParam("N")

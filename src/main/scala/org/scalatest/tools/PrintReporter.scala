@@ -15,6 +15,7 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream

@@ -15,7 +15,9 @@
  */
 package org.scalatest.matchers
 
- /**
+import org.scalatest._
+
+/**
  * The result of a property match operation such as one performed by a
  * <a href="HavePropertyMatcher.html"><code>HavePropertyMatcher</code></a>,
  * which contains one field that indicates whether the match succeeded (<em>i.e.</em>, the 

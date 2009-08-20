@@ -15,6 +15,7 @@
  */
 package org.scalatest.junit
 
+import org.scalatest._
 import org.junit.runner.notification.RunNotifier
 import org.junit.runner.Description
 import org.junit.runner.notification.Failure
