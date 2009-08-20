@@ -203,6 +203,24 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       }
     }
 
+    it("should give the proper line on 1 should be === 2") {
+      try {
+        1 should be === 2
+      }
+      catch {
+        case e: TestFailedException =>
+          e.failedCodeFileNameAndLineNumberString match {
+            case Some(s) =>
+              if (s != ("TestFailedExceptionSpec.scala:" + (baseLineNumber + 186))) {
+                fail("s was: " + s, e)
+              }
+            case None => fail("assert(1 === 2) didn't produce a file name and line number string", e)
+          }
+        case e =>
+          fail("assert(1 === 2) didn't produce a TestFailedException", e)
+      }
+    }
+
     it("should return the cause in both cause and getCause") {
       val theCause = new IllegalArgumentException("howdy")
       val tfe = new TestFailedException(Some("doody"), Some(theCause), 3)
@@ -216,6 +234,7 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       assert(tfe.cause.isEmpty)
       assert(tfe.getCause == null)
     }
+
     //it("bla bla bla") {
       // fail("message")
       // fail(new Throwable)
