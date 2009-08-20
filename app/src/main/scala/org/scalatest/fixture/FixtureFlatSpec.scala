@@ -15,6 +15,7 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
 import FixtureNodeFamily._
 import verb.{SubjectVerbStringTaggedAs, ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord}
 import scala.collection.immutable.ListSet

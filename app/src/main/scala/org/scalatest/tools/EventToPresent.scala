@@ -15,7 +15,7 @@
  */
 package org.scalatest.tools
 
-
+import org.scalatest._
 import org.scalatest.events._
 
 /**

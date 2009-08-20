@@ -15,6 +15,8 @@
  */
 package org.scalatest.verb
 
+import org.scalatest._
+
 /**
  * This class enables syntax such as the following, which works in a <code>WordSpec</code>:
  *

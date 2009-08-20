@@ -15,6 +15,7 @@
  */
 package org.scalatest.junit
 
+import org.scalatest._
 import _root_.junit.framework.TestCase
 import _root_.junit.framework.TestResult
 import _root_.junit.framework.TestSuite

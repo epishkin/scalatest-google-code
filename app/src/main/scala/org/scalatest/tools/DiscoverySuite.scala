@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 /**
  * A Suite that contains as nested suites accessible suites on the runpath whose fully qualified
  * names start with the specified path. If wildcard is true, then any accessible suite whose fully

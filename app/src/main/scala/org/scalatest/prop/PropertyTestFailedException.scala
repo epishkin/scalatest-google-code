@@ -15,6 +15,8 @@
  */
 package org.scalatest.prop
 
+import org.scalatest._
+
 /**
  * Exception that indicates a test failed. The purpose of this exception is to encapsulate information about
  * the stack depth at which the line of test code that failed resides, so that information can be presented to

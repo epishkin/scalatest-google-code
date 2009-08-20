@@ -15,6 +15,7 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
 import java.lang.reflect.Constructor
 import java.lang.reflect.Modifier
 import org.scalatest.events._

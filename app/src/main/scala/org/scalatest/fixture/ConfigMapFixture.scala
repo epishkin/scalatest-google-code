@@ -15,6 +15,8 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
+
 /**
  * Trait that when mixed into a <code>FixtureSuite</code> ensures the
  * <code>configMap</code> passed to <code>runTest</code> is passed along

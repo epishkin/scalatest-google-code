@@ -15,6 +15,8 @@
  */
 package org.scalatest.verb
 
+import org.scalatest._
+
 trait ResultOfBehaveWordPassedToVerb {
 
   def like(unit: Unit)

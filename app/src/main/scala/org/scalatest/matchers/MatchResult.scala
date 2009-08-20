@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package org.scalatest.matchers
+ 
+import org.scalatest._
 
 /**
  * The result of a match operation, such as one performed by a <a href="Matcher.html"><code>Matcher</code></a> or

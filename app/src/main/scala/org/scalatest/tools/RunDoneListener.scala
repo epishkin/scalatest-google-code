@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 /**
  * Called when the run has been finished. TODO: Justify this one.
  *

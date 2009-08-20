@@ -15,9 +15,9 @@
  */
 package org.scalatest.concurrent
 
+import org.scalatest._
 import Thread.State._
 import PimpedThreadGroup._
-import scala.collection.jcl.Conversions.convertList
 import _root_.java.util.concurrent._
 import _root_.java.util.concurrent.atomic.AtomicReference
 

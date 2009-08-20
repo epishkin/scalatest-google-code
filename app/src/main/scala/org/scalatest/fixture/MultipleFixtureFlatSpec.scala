@@ -15,6 +15,8 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
+
 /**
  * A sister trait to <code>org.scalatest.FeatureSpec</code> that can pass multiple types of fixture objects into its tests.
  *

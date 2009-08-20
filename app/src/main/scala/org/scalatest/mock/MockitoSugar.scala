@@ -15,6 +15,7 @@
  */
 package org.scalatest.mock
 
+import org.scalatest._
 import org.mockito.Mockito.{mock => mockitoMock}
 import reflect.Manifest
 

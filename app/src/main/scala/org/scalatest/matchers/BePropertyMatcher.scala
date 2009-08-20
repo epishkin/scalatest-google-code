@@ -15,6 +15,8 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
+
 // T is the type of the object that has a Boolean property to verify with an instance of this trait
 // This is not a subtype of BeMatcher, because BeMatcher only works after "be", but 
 // BePropertyMatcher will work after "be", "be a", or "be an"

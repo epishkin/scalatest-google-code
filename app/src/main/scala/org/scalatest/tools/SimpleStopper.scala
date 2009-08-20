@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 /**
  * A basic Stopper used by the RunnerJFrame to request tests to stop when
  * its Stop button is pressed.

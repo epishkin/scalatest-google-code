@@ -15,6 +15,7 @@
  */
 package org.scalatest.prop
 
+import org.scalatest._
 import org.scalatest.Suite
 import org.scalacheck.Arbitrary
 import org.scalacheck.Shrink
@@ -278,9 +279,9 @@ trait Checkers {
 
     val (scalaCheckArgs, scalaCheckLabels) =
       result.status match {
-        case Test.Proved(args) => (args, List())
-        case Test.Failed(args, labels) => (args, labels)
-        case Test.PropException(args, _, labels) => (args, labels)
+        case Test.Proved(args) => (args.toList, List())
+        case Test.Failed(args, labels) => (args.toList, labels.toList)
+        case Test.PropException(args, _, labels) => (args.toList, labels.toList)
         case _ => (List(), List())
       }
 

@@ -15,6 +15,8 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
+
 private[fixture] object FixtureNodeFamily  {
 
   sealed abstract class Node(parentOption: Option[Branch])

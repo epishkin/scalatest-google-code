@@ -15,6 +15,8 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
+
 /**
  * The result of a <code>Boolean</code> property match operation, such as one performed by a
  * <a href="BePropertyMatcher.html"><code>BePropertyMatcher</code></a>,

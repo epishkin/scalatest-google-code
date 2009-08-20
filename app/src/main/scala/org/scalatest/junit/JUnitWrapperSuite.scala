@@ -15,6 +15,7 @@
  */
 package org.scalatest.junit;
 
+import org.scalatest._
 import org.scalatest.Suite
 import org.junit.runner.JUnitCore
 import org.junit.runner.Request
