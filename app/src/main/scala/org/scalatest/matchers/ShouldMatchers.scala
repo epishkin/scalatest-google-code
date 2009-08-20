@@ -1859,7 +1859,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      *                                ^
      * </pre>
      */
-     def should[T](resultOfProduceApplication: ResultOfProduceInvocation[T]) {
+     def should[T](resultOfProduceApplication: ResultOfProduceInvocation[T]): T =  {
        val clazz = resultOfProduceApplication.clazz
        val caught = try {
          left.fun()
