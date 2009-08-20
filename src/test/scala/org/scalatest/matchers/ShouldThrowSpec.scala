@@ -47,6 +47,10 @@ class ShouldThrowSpec extends WordSpec with ShouldMatchers {
       evaluating { kaboom() } should produce [Excitement]
     }
     
-    "return the caught exception" is (pending)
+    "return the caught exception" in {
+      def kaboom(): Unit = throw new Exception("howdy")
+      val thrown = evaluating { kaboom() } should produce [Exception]
+      thrown.getMessage should be === "howdy"
+    }
   }
 }
