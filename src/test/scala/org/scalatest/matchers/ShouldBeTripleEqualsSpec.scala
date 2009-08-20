@@ -196,148 +196,167 @@ class ShouldBeTripleEqualsSpec extends Spec with ShouldMatchers with Checkers wi
     describe("on String") {
 
       it("should do nothing if the comparison holds true") {
-        check((left: String, right: String) => left < right ==> returnsNormally(left should be < (right)))
-        pending
+        check((s: String) => returnsNormally(s should be === (s)))
+        check((s: String) => returnsNormally(s should be === s))
       }
 
       it("should do nothing if the comparison fails and used with not") {
 
-        check((left: String, right: String) => left >= right ==> returnsNormally(left should not be < (right)))
-
-        check((left: String, right: String) => left >= right ==> returnsNormally(left should not (be < (right))))
-        pending
+        check((left: String, right: String) => left != right ==> returnsNormally(left should not be === (right)))
+        check((left: String, right: String) => left != right ==> returnsNormally(left should not (be === (right))))
+        check((left: String, right: String) => left != right ==> returnsNormally(left should not (be === right)))
       }
 
       it("should do nothing when comparison succeeds and used in a logical-and expression") {
 
-        check((left: String, right: String) => left < right ==> returnsNormally(left should ((be < (right)) and (be < (right)))))
-        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) and (be < (right)))))
-        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) and be < (right))))
-        pending
+        check((s: String) => returnsNormally(s should ((be === (s)) and (be === (s)))))
+        check((s: String) => returnsNormally(s should (be === (s) and (be === s))))
+        check((s: String) => returnsNormally(s should (be === s and be === (s))))
+        check((s: String) => returnsNormally(s should (be === s and be === s)))
       }
 
       it("should do nothing when comparison succeeds and used in a logical-or expression") {
 
-        check((left: String, right: String) => left < right ==> returnsNormally(left should ((be < (right)) or (be < (right)))))
-        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) or (be < (right)))))
-        check((left: String, right: String) => left < right ==> returnsNormally(left should (be < (right) or be < (right))))
-        pending
+        check((s: String) => returnsNormally(s should ((be === (s)) or (be === (s)))))
+        check((s: String) => returnsNormally(s should (be === (s) or (be === s))))
+        check((s: String) => returnsNormally(s should (be === s or be === (s))))
+        check((s: String) => returnsNormally(s should (be === s or be === s)))
+
+        check((s: String) => returnsNormally(s should ((not equal (s)) or (be === (s)))))
+        check((s: String) => returnsNormally(s should (not equal (s) or (be === s))))
+        check((s: String) => returnsNormally(s should ((not equal s or be === (s)))))
+        check((s: String) => returnsNormally(s should ((not equal s) or be === s)))
       }
 
       it("should do nothing when comparison fails and used in a logical-and expression with not") {
 
-        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not (be < (right)) and not (be < (right)))))
-        check((left: String, right: String) => left >= right ==> returnsNormally(left should ((not be < (right)) and (not be < (right)))))
-        check((left: String, right: String) => left >= right ==> returnsNormally(left should (not be < (right) and not be < (right))))
-        pending
+        check((left: String, right: String) => left != right ==> returnsNormally(left should (not (be === (right)) and not (be === (right)))))
+        check((left: String, right: String) => left != right ==> returnsNormally(left should ((not be === (right)) and (not be === (right)))))
+        check((left: String, right: String) => left != right ==> returnsNormally(left should (not be === (right) and not be === (right))))
       }
 
       it("should do nothing when comparison fails and used in a logical-or expression with not") {
 
-        check((left: String, right: String) => left > right ==> returnsNormally(left should (not (be >= (right)) or not (be < (right)))))
-        check((left: String, right: String) => left > right ==> returnsNormally(left should ((not be >= (right)) or (not be < (right)))))
-        check((left: String, right: String) => left > right ==> returnsNormally(left should (not be >= (right) or not be < (right))))
-        pending
+        check((left: String, right: String) => left != right ==> returnsNormally(left should (not (be === (right)) or not (be === (right)))))
+        check((left: String, right: String) => left != right ==> returnsNormally(left should ((not be === (right)) or (not be === (right)))))
+        check((left: String, right: String) => left != right ==> returnsNormally(left should (not be === (right) or not be === (right))))
       }
 
       it("should throw TestFailedException if comparison does not succeed") {
 
         val caught1 = intercept[TestFailedException] {
-          "aaa" should be < ("aaa")
+          1 should be === (2)
         }
-        assert(caught1.getMessage === "\"aaa\" was not less than \"aaa\"")
-        check((left: String, right: String) => left >= right ==> throwsTestFailedException(left should be < (right)))
-        pending
+        assert(caught1.getMessage === "1 was not equal to 2")
+        check((left: String, right: String) => left != right ==> throwsTestFailedException(left should be === (right)))
+
+        val caught2 = intercept[TestFailedException] {
+          1 should be === 2
+        }
+        assert(caught2.getMessage === "1 was not equal to 2")
+        check((left: String, right: String) => left != right ==> throwsTestFailedException(left should be === right))
       }
 
       it("should throw TestFailedException if comparison succeeds but used with not") {
 
         val caught1 = intercept[TestFailedException] {
-          "aaa" should not be < ("bbb")
+          1 should not be === (1)
         }
-        assert(caught1.getMessage === "\"aaa\" was less than \"bbb\"")
-        check((left: String, right: String) => left < right ==> throwsTestFailedException(left should not be < (right)))
-        pending
+        assert(caught1.getMessage === "1 was equal to 1")
+        check((s: String) => throwsTestFailedException(s should not be === (s)))
       }
 
       // Comparison with and
-      it("should throw throw TestFailedException when comparison doesn't succeed and used in a logical-and expression") {
+      it("should throw TestFailedException when comparison doesn't succeed and used in a logical-and expression") {
 
         val caught1 = intercept[TestFailedException] {
-          "2" should { be < ("5") and (be < ("2")) }
+          2 should { be === (2) and (be === (5)) }
         }
-        assert(caught1.getMessage === "\"2\" was less than \"5\", but \"2\" was not less than \"2\"")
+        assert(caught1.getMessage === "2 was equal to 2, but 2 was not equal to 5")
 
         val caught2 = intercept[TestFailedException] {
-          "2" should ((be < ("5")) and (be < ("2")))
+          2 should ((be === (2)) and (be === (5)))
         }
-        assert(caught2.getMessage === "\"2\" was less than \"5\", but \"2\" was not less than \"2\"")
+        assert(caught2.getMessage === "2 was equal to 2, but 2 was not equal to 5")
 
         val caught3 = intercept[TestFailedException] {
-          "2" should (be < ("5") and be < ("2"))
+          2 should (be === (2) and be === (5))
         }
-        assert(caught3.getMessage === "\"2\" was less than \"5\", but \"2\" was not less than \"2\"")
-        pending
+        assert(caught3.getMessage === "2 was equal to 2, but 2 was not equal to 5")
+
+        val caught4 = intercept[TestFailedException] {
+          2 should (be === 2 and be === 5)
+        }
+        assert(caught4.getMessage === "2 was equal to 2, but 2 was not equal to 5")
+
+        val caught5 = intercept[TestFailedException] {
+          2 should (be === 5 and be === 2)
+        }
+        assert(caught5.getMessage === "2 was not equal to 5")
       }
 
       // Comparison with or
       it("should throw throw TestFailedException when comparison doesn't succeed and used in a logical-or expression") {
 
+
         val caught1 = intercept[TestFailedException] {
-          "2" should { be < ("2") or (be < ("1")) }
+          2 should { be === (3) or (be === (5)) }
         }
-        assert(caught1.getMessage === "\"2\" was not less than \"2\", and \"2\" was not less than \"1\"")
+        assert(caught1.getMessage === "2 was not equal to 3, and 2 was not equal to 5")
 
         val caught2 = intercept[TestFailedException] {
-          "2" should ((be < ("2")) or (be < ("1")))
+          2 should ((be === (3)) or (be === (5)))
         }
-        assert(caught2.getMessage === "\"2\" was not less than \"2\", and \"2\" was not less than \"1\"")
+        assert(caught2.getMessage === "2 was not equal to 3, and 2 was not equal to 5")
 
         val caught3 = intercept[TestFailedException] {
-          "2" should (be < ("2") or be < ("1"))
+          2 should (be === (3) or be === (5))
         }
-        assert(caught3.getMessage === "\"2\" was not less than \"2\", and \"2\" was not less than \"1\"")
-        pending
+        assert(caught3.getMessage === "2 was not equal to 3, and 2 was not equal to 5")
+
+        val caught4 = intercept[TestFailedException] {
+          2 should (be === 3 or be === 5)
+        }
+        assert(caught4.getMessage === "2 was not equal to 3, and 2 was not equal to 5")
       }
 
       // Comparison with and not
       it("should throw throw TestFailedException when comparison doesn't succeed and used in a logical-and expression used with not") {
 
         val caught1 = intercept[TestFailedException] {
-          "5" should { not { be < ("2") } and not { be < ("6") }}
+          5 should { not { be === (2) } and not { be === (5) }}
         }
-        assert(caught1.getMessage === "\"5\" was not less than \"2\", but \"5\" was less than \"6\"")
+        assert(caught1.getMessage === "5 was not equal to 2, but 5 was equal to 5")
 
         val caught2 = intercept[TestFailedException] {
-          "5" should ((not be < ("2")) and (not be < ("6")))
+          5 should ((not be === (2)) and (not be === (5)))
         }
-        assert(caught2.getMessage === "\"5\" was not less than \"2\", but \"5\" was less than \"6\"")
+        assert(caught2.getMessage === "5 was not equal to 2, but 5 was equal to 5")
 
         val caught3 = intercept[TestFailedException] {
-          "5" should (not be < ("2") and not be < ("6"))
+          5 should (not be === (2) and not be === (5))
         }
-        assert(caught3.getMessage === "\"5\" was not less than \"2\", but \"5\" was less than \"6\"")
-        pending
+        assert(caught3.getMessage === "5 was not equal to 2, but 5 was equal to 5")
       }
 
       // Comparison with or not
       it("should throw throw TestFailedException when comparison doesn't succeed and used in a logical-or expression used with not") {
 
         val caught1 = intercept[TestFailedException] {
-          "5" should { not { be < ("7") } or not { be < ("8") }}
+          5 should { not { be === (5) } or not { be === (5) }}
         }
-        assert(caught1.getMessage === "\"5\" was less than \"7\", and \"5\" was less than \"8\"")
+        assert(caught1.getMessage === "5 was equal to 5, and 5 was equal to 5")
 
         val caught2 = intercept[TestFailedException] {
-          "5" should ((not be < ("7")) or (not be < ("8")))
+          5 should ((not be === (5)) or (not be === (5)))
         }
-        assert(caught2.getMessage === "\"5\" was less than \"7\", and \"5\" was less than \"8\"")
+        assert(caught2.getMessage === "5 was equal to 5, and 5 was equal to 5")
 
         val caught3 = intercept[TestFailedException] {
-          "5" should (not be < ("7") or not be < ("8"))
+          // 5 should ((not be === (5)).or(not).be(===(5)))
+          5 should (not be === (5) or not be === (5))
         }
-        assert(caught3.getMessage === "\"5\" was less than \"7\", and \"5\" was less than \"8\"")
-        pending
+        assert(caught3.getMessage === "5 was equal to 5, and 5 was equal to 5")
       }
     }
   }
