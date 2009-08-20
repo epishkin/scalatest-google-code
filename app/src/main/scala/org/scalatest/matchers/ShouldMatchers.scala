@@ -1869,7 +1869,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
          case u: Throwable => {
            if (!clazz.isAssignableFrom(u.getClass)) {
              val s = Resources("wrongException", clazz.getName, u.getClass.getName)
-             throw newAssertionFailedException(Some(s), Some(u), 4)
+             throw newTestFailedException(s)
              // throw new TestFailedException(s, u, 2)
            }
            else {
@@ -1880,7 +1880,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
        caught match {
          case None =>
            val message = Resources("exceptionExpected", clazz.getName)
-           throw newAssertionFailedException(Some(message), None, 4)
+           throw newTestFailedException(message)
            // throw new TestFailedException(message, 2)
          case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
        }
