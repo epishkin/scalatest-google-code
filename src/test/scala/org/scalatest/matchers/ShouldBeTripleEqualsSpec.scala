@@ -20,7 +20,6 @@ import org.scalacheck._
 import Arbitrary._
 import Prop._
 
-
 class ShouldBeTripleEqualsSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
   // Checking for a specific size
