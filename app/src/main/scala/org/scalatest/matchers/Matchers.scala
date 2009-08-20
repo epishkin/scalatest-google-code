@@ -6816,15 +6816,53 @@ trait Matchers extends Assertions { matchers =>
   def >=[T <% Ordered[T]] (right: T): ResultOfGreaterThanOrEqualToComparison[T] =
     new ResultOfGreaterThanOrEqualToComparison(right)
 
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * num should not be === (10)
-     *                   ^
-     * </pre>
-     */
-    def === (right: Any): ResultOfTripleEqualsApplication =
-      new ResultOfTripleEqualsApplication(right)
+  /**
+   * This method enables the following syntax:
+   *
+   * <pre>
+   * num should not be === (10)
+   *                   ^
+   * </pre>
+   */
+  def === (right: Any): ResultOfTripleEqualsApplication =
+    new ResultOfTripleEqualsApplication(right)
+
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
+  class ResultOfEvaluatingApplication(val fun: () => Any)
+
+  /**
+   * This method enables syntax such as the following:
+   *
+   * <pre>
+   * evaluating { "hi".charAt(-1) } should produce [StringIndexOutOfBoundsException]
+   * ^
+   * </pre>
+   */
+  def evaluating(fun: => Any): ResultOfEvaluatingApplication =
+    new ResultOfEvaluatingApplication(fun _)
+
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
+  class ResultOfProduceInvocation[T](val clazz: Class[T])
+
+  /**
+   * This method enables the following syntax:
+   *
+   * <pre>
+   * evaluating { "hi".charAt(-1) } should produce [StringIndexOutOfBoundsException]
+   * ^
+   * </pre>
+   */
+  def produce[T](implicit manifest: Manifest[T]): ResultOfProduceInvocation[T] =
+    new ResultOfProduceInvocation(manifest.erasure.asInstanceOf[Class[T]])
 }
 

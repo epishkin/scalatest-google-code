@@ -1849,6 +1849,50 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
     }
   }
 
+  class EvaluatingApplicationShouldWrapper(left: ResultOfEvaluatingApplication) {
+
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * evaluating { "hi".charAt(-1) } should produce [StringIndexOutOfBoundsException]
+     *                                ^
+     * </pre>
+     */
+     def should[T](resultOfProduceApplication: ResultOfProduceInvocation[T]) {
+       val clazz = resultOfProduceApplication.clazz
+       val caught = try {
+         left.fun()
+         None
+       }
+       catch {
+         case u: Throwable => {
+           if (!clazz.isAssignableFrom(u.getClass)) {
+             val s = Resources("wrongException", clazz.getName, u.getClass.getName)
+             throw newAssertionFailedException(Some(s), Some(u), 4)
+             // throw new TestFailedException(s, u, 2)
+           }
+           else {
+             Some(u)
+           }
+         }
+       }
+       caught match {
+         case None =>
+           val message = Resources("exceptionExpected", clazz.getName)
+           throw newAssertionFailedException(Some(message), None, 4)
+           // throw new TestFailedException(message, 2)
+         case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
+       }
+     }
+  }
+
+  /**
+   * Implicitly converts an object of type <code>T</code> to a <code>EvaluatingApplicationShouldWrapper[T]</code>,
+   * to enable <code>should</code> methods to be invokable on that object.
+   */
+  implicit def convertToEvaluatingApplicationShouldWrapper(o: ResultOfEvaluatingApplication): EvaluatingApplicationShouldWrapper = new EvaluatingApplicationShouldWrapper(o)
+
   /**
    * Implicitly converts an object of type <code>T</code> to a <code>AnyShouldWrapper[T]</code>,
    * to enable <code>should</code> methods to be invokable on that object.
