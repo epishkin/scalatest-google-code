@@ -20,7 +20,6 @@ import org.scalatest.verb.ShouldVerb
 import org.scalatest.verb.MustVerb
 import org.scalatest.verb.CanVerb
 import org.scalatest.events._
-import org.scalatest.mytags._
 
 class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
@@ -136,8 +135,8 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val e = new FlatSpec {
-        it should "test this" taggedAs(SlowAsMolasses) in {}
-        ignore should "test that" taggedAs(SlowAsMolasses) in {}
+        it should "test this" taggedAs(mytags.SlowAsMolasses) in {}
+        ignore should "test that" taggedAs(mytags.SlowAsMolasses) in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
         e.tags
@@ -149,8 +148,8 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val g = new FlatSpec {
-        it should "test this" taggedAs(SlowAsMolasses, mytags.WeakAsAKitten) in {}
-        it should "test that" taggedAs(SlowAsMolasses) in {}
+        it should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
+        it should "test that" taggedAs(mytags.SlowAsMolasses) in {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
         g.tags
@@ -285,7 +284,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends FlatSpec {
           it should "blow up" in {
-            it should "never run" taggedAs(SlowAsMolasses) in {
+            it should "never run" taggedAs(mytags.SlowAsMolasses) in {
               assert(1 === 2)
             }
           }
@@ -325,7 +324,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends FlatSpec {
           it should "blow up" in {
-            ignore should "never run" taggedAs(SlowAsMolasses) in {
+            ignore should "never run" taggedAs(mytags.SlowAsMolasses) in {
               assert(1 === 2)
             }
           }
@@ -957,7 +956,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(h.theTestThatCalled)
       assert(h.theTestTheOtherCalled)
 
-      // No tagsToInclude set, SlowAsMolasses excluded
+      // No tagsToInclude set, mytags.SlowAsMolasses excluded
       val i = new FlatSpec {
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -973,7 +972,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(!i.theTestThatCalled)
       assert(i.theTestTheOtherCalled)
 
-      // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
+      // No tagsToInclude set, mytags.SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
       val j = new FlatSpec {
         var theTestThisCalled = false
         var theTestThatCalled = false

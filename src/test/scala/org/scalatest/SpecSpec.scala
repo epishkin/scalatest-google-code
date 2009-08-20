@@ -16,7 +16,6 @@
 package org.scalatest
 
 import org.scalatest.events._
-import org.scalatest.mytags._
 
 class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
@@ -203,8 +202,8 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val e = new Spec {
-        it("should test this", SlowAsMolasses) {}
-        ignore("should test that", SlowAsMolasses) {}
+        it("should test this", mytags.SlowAsMolasses) {}
+        ignore("should test that", mytags.SlowAsMolasses) {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses"), "should test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
         e.tags
@@ -216,8 +215,8 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       val g = new Spec {
-        it("should test this", SlowAsMolasses, WeakAsAKitten) {}
-        it("should test that", SlowAsMolasses) {}
+        it("should test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) {}
+        it("should test that", mytags.SlowAsMolasses) {}
       }
       expect(Map("should test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "should test that" -> Set("org.scalatest.SlowAsMolasses"))) {
         g.tags
@@ -270,7 +269,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends Spec {
           it("should blow up") {
-            it("should never run", SlowAsMolasses) {
+            it("should never run", mytags.SlowAsMolasses) {
               assert(1 === 2)
             }
           }
@@ -311,7 +310,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
         class MySpec extends Spec {
           it("should blow up") {
-            ignore("should never run", SlowAsMolasses) {
+            ignore("should never run", mytags.SlowAsMolasses) {
               assert(1 === 2)
             }
           }
@@ -648,7 +647,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(h.theTestThatCalled)
       assert(h.theTestTheOtherCalled)
 
-      // No tagsToInclude set, SlowAsMolasses excluded
+      // No tagsToInclude set, mytags.SlowAsMolasses excluded
       val i = new Spec {
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -664,7 +663,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(!i.theTestThatCalled)
       assert(i.theTestTheOtherCalled)
 
-      // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
+      // No tagsToInclude set, mytags.SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
       val j = new Spec {
         var theTestThisCalled = false
         var theTestThatCalled = false
