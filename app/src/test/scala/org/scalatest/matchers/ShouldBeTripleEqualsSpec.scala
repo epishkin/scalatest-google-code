@@ -25,6 +25,22 @@ class ShouldBeTripleEqualsSpec extends Spec with ShouldMatchers with Checkers wi
   // Checking for a specific size
   describe("The 'be === (x)' syntax") {
 
+    describe("when used with Arrays") {
+      it("should compare arrays structurally") {
+        Array(1, 2) should be === Array(1, 2)
+      }
+    }
+    
+    describe("when used with nulls") {
+      it("should not throw NullPointerException") {
+        val s: String = null
+        intercept[TestFailedException] {
+          s should be === Array(1, 2)
+        }
+        s should be === null
+      }
+    }
+
     describe("on Int") {
 
       it("should do nothing if the comparison holds true") {
