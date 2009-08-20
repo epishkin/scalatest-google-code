@@ -116,6 +116,12 @@ package org.scalatest.testng {
        @Test{val groups = Array("runMeToo")} def testThatRunsInAnotherGroup() {}
        @Test{val groups = Array("runMeToo")} def anotherTestThatRunsInAnotherGroup() {}
        @Test{val groups = Array("runMeThree")} def yetAnotherTestThatRunsInYetAnotherGroup() {}
+/* For 2.8
+       @Test(groups = Array("runMe")) def testThatRuns() {}
+       @Test(groups = Array("runMeToo")) def testThatRunsInAnotherGroup() {}
+       @Test(groups = Array("runMeToo")) def anotherTestThatRunsInAnotherGroup() {}
+       @Test(groups = Array("runMeThree")) def yetAnotherTestThatRunsInYetAnotherGroup() {}
+*/
      }
    }
 }
