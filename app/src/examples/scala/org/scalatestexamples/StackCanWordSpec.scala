@@ -16,7 +16,7 @@
 package org.scalatestexamples
 
 import org.scalatest.matchers.ShouldMatchers
-import scalatest.{Tag, WordSpec}
+import org.scalatest.{Tag, WordSpec}
 import org.scalatestexamples.helpers.Stack
 
 object SlowTest extends Tag("SlowTest")

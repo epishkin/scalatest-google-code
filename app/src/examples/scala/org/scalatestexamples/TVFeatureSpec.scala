@@ -15,7 +15,7 @@
  */
 package org.scalatestexamples
 
-import scalatest.{FeatureSpec, GivenWhenThen}
+import org.scalatest.{FeatureSpec, GivenWhenThen}
 
 class TVFeatureSpec extends FeatureSpec with GivenWhenThen {
 
