@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.junit
 
+import org.scalatestexamples._
 import org.scalatest.junit.JUnitSuite
 import org.junit.Test
 

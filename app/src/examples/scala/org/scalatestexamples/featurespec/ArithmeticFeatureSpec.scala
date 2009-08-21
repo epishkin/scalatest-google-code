@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.featurespec
 
+import org.scalatestexamples._
 import org.scalatest.FeatureSpec
 
 class ArithmeticFeatureSpec extends FeatureSpec {

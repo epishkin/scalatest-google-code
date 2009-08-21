@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.fixture
 
+import org.scalatestexamples._
 import org.scalatest.GivenWhenThen
 
 class TVFixtureFeatureSpec extends org.scalatest.fixture.FixtureFeatureSpec

@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.matchers
 
+import org.scalatestexamples._
 import org.scalatest.Spec
 import org.scalatest.matchers.ShouldMatchers
 import scala.collection.mutable.ListBuffer

@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.easymock
 
+import org.scalatestexamples._
 import org.easymock.EasyMock.{expect => expectCall, _}
 import org.junit.Assert._
 

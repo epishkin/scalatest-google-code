@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.funsuite
 
+import org.scalatestexamples._
 import org.scalatest.FunSuite
 import org.scalatest.BeforeAndAfterEach
 import java.io.FileReader

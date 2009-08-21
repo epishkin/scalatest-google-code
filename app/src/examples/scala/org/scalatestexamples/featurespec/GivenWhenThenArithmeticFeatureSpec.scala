@@ -15,12 +15,11 @@
  */
 package org.scalatestexamples.featurespec
 
-class GivenWhenThenArithmeticFeatureSpec
-
+import org.scalatestexamples._
 import org.scalatest.FeatureSpec
 import org.scalatest.GivenWhenThen
 
-class GivenWhenThenArithmeticSpec extends FeatureSpec with GivenWhenThen {
+class GivenWhenThenArithmeticFeatureSpec extends FeatureSpec with GivenWhenThen {
 
   feature("Integer arithmetic") {
 

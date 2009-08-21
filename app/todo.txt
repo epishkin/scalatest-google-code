@@ -1,7 +1,4 @@
 - see if extending AssertionError would make JUnit 4 report regular ShouldMatchers and Assertions as failures
-- make sure should be === syntax works with Arrays the same way that should equal does (and make sure should be used for equality does too)
-- implement { "hi".charAt(-1) } shouldThrow [IllegalArgumentException] (1 hr)
-- implement configMap.size should be === 7 (3 hrs)
 - add a LogRecorder trait (1 hr)
 - show 5 lines of stack trace in PrintReporter (30 min)
 - document the Error policy (10 min)
