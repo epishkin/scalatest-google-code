@@ -17,7 +17,7 @@ package org.scalatestexamples.testng
 
 import org.scalatestexamples._
 import org.testng.annotations.Test
-import scalatest.testng.TestNGSuite
+import org.scalatest.testng.TestNGSuite
 
 class ErrorTestNGSuite extends TestNGSuite {
   @Test def testThrownException {
