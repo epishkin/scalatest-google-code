@@ -1,0 +1,11 @@
+
+In main:
+
+org.scalatest.matchers.Matchers
+org.scalatest.tools.ReporterConfiguration
+
+In test:
+
+org.scalatest.testng.TestNGSuiteSuite
+org.scalatest.testng.example.ExampleTestNGSuite
+org.scalatest.testng.TestNGSuiteGroupsSuite
