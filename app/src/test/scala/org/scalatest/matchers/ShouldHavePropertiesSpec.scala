@@ -31,7 +31,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
 
       val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
       val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
-      val bookshelf = new Bookshelf(book, badBook, book)
+      // val bookshelf = new Bookshelf(book, badBook, book)
 
       it("should do nothing if there's just one property and it matches") {
         book should have (title ("A Tale of Two Cities"))
@@ -525,6 +525,10 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         assert(caught31.getMessage === "All properties had their expected values, respectively, on object Book(A Tale of Two Cities,Dickens,1859,45,true), and all properties had their expected values, respectively, on object Book(A Tale of Two Cities,Dickens,1859,45,true)")
       }
 
+/*
+The book1 result class doesn't compile in 2.8, and rightly so. It had a type error that the 2.7 compiler didn't find. Had already
+decided that I didn't like nesting, so not too concerned if there's not a way for it to work. Trouble is that it looks too
+hard to read. Better to have people pull things out and then just do a non-nested match on that. More readable.
       it("should throw TestFailedException if a nested property matcher expression is used and a nested property doesn't match") {
 
         // I'm not too hot on this syntax, but can't prevent it and wouldn't want to. If people want do to nested property
@@ -540,6 +544,7 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         }
         assert(caught1.getMessage === "The book1.author property had value \"Dickens\", instead of its expected value \"Gibson\", on object Bookshelf(Book(A Tale of Two Cities,Dickens,1859,45,true),Book(A Tale of Two Cities,Dickens,1859,45,false),Book(A Tale of Two Cities,Dickens,1859,45,true))")
       }
+*/
 
       it("should work with length not a symbol without anything special, in case someone forgets you don't need the parens with length") {
 

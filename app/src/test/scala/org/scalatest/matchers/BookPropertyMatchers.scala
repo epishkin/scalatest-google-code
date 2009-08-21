@@ -46,6 +46,12 @@ trait BookPropertyMatchers { this: Matchers =>
   }
 */
 
+/*
+
+The  BookPropertiesMatcher didn't compile in 2.8, and rightly so. There was a type error in it that wasn't caught by the 2.7 compiler.
+Since I'd already decided I didn't like the nested syntax because it isn't readable enough, I am not too concerned this doesn't compile.
+Probably better that it doesn't.
+
   case class Bookshelf(
     val book1: Book,
     val book2: Book,
@@ -65,7 +71,6 @@ trait BookPropertyMatchers { this: Matchers =>
       firstFailure match {
         case Some(failure) =>
           new HavePropertyMatchResult(false, "book1." + failure.propertyName, failure.expectedValue, failure.actualValue)
-          // new HavePropertyMatchResult(false, "book1." + failure.propertyName, failure.expectedValue.asInstanceOf[Book], failure.actualValue.asInstanceOf[Book]) // For 2.8
         case None =>
           new HavePropertyMatchResult(true, "book1", null, null) // What to do here?
       }
@@ -74,6 +79,7 @@ trait BookPropertyMatchers { this: Matchers =>
 
   def book1(firstPropertyMatcher: HavePropertyMatcher[Book, _], propertyMatchers: HavePropertyMatcher[Book, _]*) =
     new BookPropertiesMatcher(firstPropertyMatcher, propertyMatchers: _*)
+*/
 
   class TitleMatcher(expectedValue: String) extends HavePropertyMatcher[Book, String] {
     def apply(book: Book) = {
