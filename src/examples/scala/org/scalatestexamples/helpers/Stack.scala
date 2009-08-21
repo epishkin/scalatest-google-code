@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.helpers
 
+import org.scalatestexamples._
 import scala.collection.mutable.ListBuffer
 
 class Stack[T] {

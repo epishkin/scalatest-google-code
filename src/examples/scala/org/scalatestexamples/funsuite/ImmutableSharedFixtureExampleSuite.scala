@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.funsuite
 
+import org.scalatestexamples._
 import org.scalatest.FunSuite
 
 class ImmutableSharedFixtureExampleSuite extends FunSuite {

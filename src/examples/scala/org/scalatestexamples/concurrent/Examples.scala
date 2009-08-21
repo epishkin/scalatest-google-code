@@ -16,6 +16,7 @@
 
 package org.scalatestexamples.concurrent
 
+import org.scalatestexamples._
 import org.scalatest.fixture.FixtureFunSuite
 import org.scalatest.matchers.ShouldMatchers
 import java.util.concurrent.atomic.AtomicInteger

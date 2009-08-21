@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.matchers
 
+import org.scalatestexamples._
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatestexamples.helpers.Stack

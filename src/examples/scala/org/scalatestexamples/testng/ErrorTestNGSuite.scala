@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.testng
 
+import org.scalatestexamples._
 import org.testng.annotations.Test
 import scalatest.testng.TestNGSuite
 

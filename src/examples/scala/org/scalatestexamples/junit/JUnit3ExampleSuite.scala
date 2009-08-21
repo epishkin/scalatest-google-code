@@ -15,6 +15,7 @@
  */
 package org.scalatestexamples.junit
 
+import org.scalatestexamples._
 import _root_.junit.framework.AssertionFailedError
 import scalatest.junit.JUnit3Suite
 
