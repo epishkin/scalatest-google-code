@@ -1,5 +1,6 @@
 package org.scalatest.concurrent
 
+import org.scalatest._
 import org.scalatest.fixture.FixtureFunSuite
 import org.scalatest.matchers.ShouldMatchers
 import _root_.java.util.concurrent.{Callable, CountDownLatch}

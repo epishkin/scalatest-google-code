@@ -15,6 +15,8 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
+
 class ShouldBeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
 
   describe("The be ('symbol) syntax") {

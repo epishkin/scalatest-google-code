@@ -15,6 +15,7 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
 import scala.collection.mutable.ListBuffer
 
 trait CustomMatchers {

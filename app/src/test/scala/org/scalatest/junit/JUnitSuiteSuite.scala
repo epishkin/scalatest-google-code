@@ -15,6 +15,7 @@
  */
 package org.scalatest.junit {
 
+  import org.scalatest._
   import org.scalatest.events._
 
   // Put fixture suites in a subpackage, so they won't be discovered by

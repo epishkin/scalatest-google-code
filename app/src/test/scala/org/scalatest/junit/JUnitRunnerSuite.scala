@@ -16,6 +16,8 @@
 
 package org.scalatest.junit {
 
+  import org.scalatest._
+
   // Put fixture suites in a subpackage, so they won't be discovered by
   // -m org.scalatest.junit when running the test target for this project.
   package helpers {

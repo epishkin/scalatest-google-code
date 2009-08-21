@@ -15,6 +15,7 @@
  */
 package org.scalatest.verb
 
+import org.scalatest._
 import events.TestSucceeded
 
 class CanVerbSuite extends FunSuite with SharedHelpers {

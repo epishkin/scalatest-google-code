@@ -15,6 +15,7 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
 import collection.immutable.TreeSet
 import events.TestFailed
 import mock.MockitoSugar

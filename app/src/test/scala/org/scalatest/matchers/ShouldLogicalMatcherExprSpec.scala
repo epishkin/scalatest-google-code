@@ -15,6 +15,7 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
 import org.scalatest.prop.Checkers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar

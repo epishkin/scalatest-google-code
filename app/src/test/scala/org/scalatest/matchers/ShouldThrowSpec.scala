@@ -15,6 +15,8 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
+
 class ShouldThrowSpec extends WordSpec with ShouldMatchers {
 
   "The evaluating { ... } should produce [ExceptionType] syntax" should {

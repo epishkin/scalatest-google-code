@@ -15,6 +15,7 @@
  */
 package org.scalatest.prop
 
+import org.scalatest._
 import org.scalacheck._
 import Arbitrary._
 import Prop._

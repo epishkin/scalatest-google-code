@@ -15,6 +15,8 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
+
 class ConfigMapFixtureSpec extends Spec with SharedHelpers {
   describe("A ConfigMapFixture") {
     it("should pass the config map to each test") {

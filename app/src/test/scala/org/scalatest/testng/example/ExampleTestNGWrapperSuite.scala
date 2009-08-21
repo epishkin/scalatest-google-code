@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.testng.example;
+package org.scalatest.testng.example
 
 import org.scalatest._
 import org.scalatest.testng._
