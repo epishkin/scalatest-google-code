@@ -11,20 +11,6 @@
 
 Make all function parameters named fun.
 
-Finally found my syntax:
-
-    configMap.size should be === 7
-
-    configMap.size must be === 7
-
-This gives Ola his equals sign. And it lets people who don't want to write parens for assertEquals things
-a way out, which is consistent with the rest of ScalaTest matchers. It fits right in with:
-
-    configMap.size must be < 7
-    configMap.size must be > 7
-    configMap.size must be <= 7
-    configMap.size must be >= 7
-
 Log4j has appenders. java.util.logging has handlers. I think the model would be you'd ask runner
 to register a handler or an appender, and it could do that, then it would get a LogMessages object
 or something from that, and pass it to run. There would be an Option[LogMessages] param in there.
@@ -79,10 +65,6 @@ Unit always means some side effect must be going on somewhere, and its the same 
 Document the Error policy.
 
 Show 5 lines of stack trace in print reporter.
-
-Maybe I can keep JUnit3Suite and have it extend junit.framework.Test instead. 
-If that will still allow it to be run by JUnit3, that would be cool. People are
-using JUnit3 to 
 
 Had the problem of a missing exception message in the GUI again:
 

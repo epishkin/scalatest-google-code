@@ -51,7 +51,6 @@ class ShouldBePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers
 
     val book = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
     val badBook = new Book("A Tale of Two Cities", "Dickens", 1859, 45, false)
-    val bookshelf = new Bookshelf(book, badBook, book)
 
     it("should do nothing if the property is true") {
       book should be (goodRead)
