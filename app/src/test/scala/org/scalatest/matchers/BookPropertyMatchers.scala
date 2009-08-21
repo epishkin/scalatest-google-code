@@ -65,6 +65,7 @@ trait BookPropertyMatchers { this: Matchers =>
       firstFailure match {
         case Some(failure) =>
           new HavePropertyMatchResult(false, "book1." + failure.propertyName, failure.expectedValue, failure.actualValue)
+          // new HavePropertyMatchResult(false, "book1." + failure.propertyName, failure.expectedValue.asInstanceOf[Book], failure.actualValue.asInstanceOf[Book]) // For 2.8
         case None =>
           new HavePropertyMatchResult(true, "book1", null, null) // What to do here?
       }
