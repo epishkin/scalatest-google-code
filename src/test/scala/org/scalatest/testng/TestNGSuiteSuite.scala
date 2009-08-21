@@ -15,6 +15,7 @@
  */
 package org.scalatest.testng {
 
+  import org.scalatest._
   import org.scalatest.TestRerunner
   import org.scalatest.jmock._
   import testng.testpackage._

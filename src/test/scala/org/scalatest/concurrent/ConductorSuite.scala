@@ -15,6 +15,7 @@
  */
 package org.scalatest.concurrent
 
+import org.scalatest._
 import matchers.ShouldMatchers
 import Thread.State._
 

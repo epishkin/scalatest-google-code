@@ -15,6 +15,7 @@
  */
 package org.scalatest.fixture
 
+import org.scalatest._
 import org.scalatest.events.{TestStarting, TestFailed}
 import org.scalatest.verb.ShouldVerb
 import org.scalatest.verb.CanVerb

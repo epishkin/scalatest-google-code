@@ -15,6 +15,8 @@
  */
 package org.scalatest.tools
 
+import org.scalatest._
+
 class RunnerSuite() extends Suite with PrivateMethodTester {
 
   def testParseArgsIntoLists() {

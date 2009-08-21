@@ -15,11 +15,10 @@
  */
 package org.scalatest.mock
 
+import org.scalatest._
 import matchers.ShouldMatchers
 
 class EasyMockSugarSpec extends FlatSpec with ShouldMatchers {
   "The EasyMockSugar trait" should "provide a shorthand for the mock command" in {
-    
   }
-
 }

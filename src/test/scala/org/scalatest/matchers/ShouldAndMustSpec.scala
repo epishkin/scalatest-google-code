@@ -17,6 +17,8 @@
 // commenting out because I don't automatically build MustMatchers yet, but it does work
 package org.scalatest.matchers
 
+import org.scalatest._
+
 class ShouldAndMustSpec extends Spec with ShouldMatchers with MustMatchers {
 
   describe("people who want both should and must at the same time") {

@@ -15,6 +15,8 @@
  */
 package org.scalatest.matchers
 
+import org.scalatest._
+
 /*
 This has a bit of redundancy with several other specs, but was the
 original file I used to develop the matchers syntax, and it has a few
