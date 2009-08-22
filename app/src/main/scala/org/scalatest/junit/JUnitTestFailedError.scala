@@ -18,6 +18,53 @@ package org.scalatest.junit
 import org.scalatest.StackDepth
 import _root_.junit.framework.AssertionFailedError
 
+/**
+ * Exception that indicates a test failed.
+ *
+ * <p>
+ * The purpose of this exception is to encapsulate the same stack depth information provided by
+ * <a href="../TestFailedException.html"><code>TestFailedException</code></a>, which is used
+ * when running with ScalaTest, but be reported as
+ * a failure not an error when running with JUnit.
+ * The stack depth information indicates which line of test code failed, so that when running
+ * with ScalaTest information can be presented to
+ * the user that makes it quick to find the failing line of test code. (In other words, when
+ * running with ScalaTest the user need not scan through the stack trace to find the correct filename
+ * and line number of the failing test.)
+ * </p>
+ *
+ * <p>
+ * JUnit distinguishes between <em>failures</em> and <em>errors</em>.
+ * If a test fails because of a failed assertion, that is considered a <em>failure</em> in JUnit. If a test
+ * fails for any other reason, either the test code or the application being tested threw an unexpected
+ * exception, that is considered an <em>error</em> in JUnit. This class differs from
+ * <a href="../TestFailedException.html"><code>TestFailedException</code></a> in that it extends
+ * <code>junit.framework.AssertionFailedError</code>. Instances of this class are thrown by the
+ * assertions provided by <a href="AssertionsForJUnit.html"><code>AssertionsForJUnit</code></a>, and matcher
+ * expressions provided by <a href="ShouldMatchersForJUnit.html"><code>ShouldMatchersForJUnit</code></a>, and
+ * <a href="MustMatchersForJUnit.html"><code>MustMatchersForJUnit</code></a>.
+ * </p>
+ *
+ * <p>
+ * The way JUnit 3 (JUnit 3.8 and earlier releases) decided whether an exception represented a failure or error
+ * is that only thrown <code>junit.framework.AssertionFailedError</code>s were considered failures. Any other
+ * exception type was considered an error. The exception type thrown by the JUnit 3 assertion methods declared
+ * in <code>junit.framework.Assert</code> (such as <code>assertEquals</code>, <code>assertTrue</code>,
+ * and <code>fail</code>) was, therefore, <code>AssertionFailedError</code>. In JUnit 4, <code>AssertionFailedError</code>
+ * was made to extend <code>java.lang.AssertionError</code>, and the distinction between failures and errors
+ * was essentially dropped. However, some tools that integrate with JUnit carry on this distinction, so even
+ * if you are using JUnit 4 you may want to use the "<code>ForJUnit</code>" of ScalaTest assertions and matchers.
+ * </p>
+ *
+ * @param message an optional detail message for this <code>TestFailedException</code>.
+ * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
+ * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+ *
+ * @throws NullPointerException if <code>message</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ *
+ * @author Bill Venners
+ */
 class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwable], val failedCodeStackDepth: Int)
     extends AssertionFailedError(if (message.isDefined) message.get else "") with StackDepth {
 

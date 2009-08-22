@@ -19,31 +19,32 @@ import org.scalatest._
 import _root_.junit.framework.AssertionFailedError
 
 /**
- * Trait that contains ScalaTest's basic assertion methods, suitable for use with JUnit 3.
+ * Trait that contains ScalaTest's basic assertion methods, suitable for use with JUnit.
  *
  * <p>
- * The assertion methods provided in this trait look and behave exactly like the ones in <code>org.scalatest.Assertions</code>,
- * except instead of throwing <code>org.scalatest.TestFailedException</code> they throw <code>junit.framework.AssertionFailedError</code>.
- * In JUnit version 3 and earlier, JUnit distinguished between <em>failures</em> and <em>errors</em>. (JUnit 4 dropped this distinction.)
- * If a test failed because of a failed assertion, that was considered a <em>failure</em> in JUnit 3. If a test failed for any other
- * reason, either the test code or the application being tested threw an unexpected exception, that was considered an <em>error</em> in JUnit 3.
- * </p>
+ * The assertion methods provided in this trait look and behave exactly like the ones in
+ * <a href="../Assertions.html"><code>Assertions</code></a>, except instead of throwing
+ * <a href="../TestFailedException.html"><code>TestFailedException</code></a> they throw
+ * <a href="JUnitTestFailedError.html"><code>JUnitTestFailedError</code></a>,
+ * which extends <code>junit.framework.AssertionFailedError</code>.
  *
  * <p>
- * The way JUnit 3 decided whether an exception represented a failure or error is that only thrown
- * <code>junit.framework.AssertionFailedError</code>s were considered failures. Any other exception type was considered an error. The
- * exception type thrown by the JUnit 3 assertion methods declared in <code>junit.framework.Assert</code> (such as
- * <code>assertEquals</code>, <code>assertTrue</code>, and <code>fail</code>) was, therefore, <code>AssertionFailedError</code>.
+ * JUnit 3 (release 3.8 and earlier) distinguishes between <em>failures</em> and <em>errors</em>.
+ * If a test fails because of a failed assertion, that is considered a <em>failure</em>. If a test
+ * fails for any other reason, either the test code or the application being tested threw an unexpected
+ * exception, that is considered an <em>error</em>. The way JUnit 3 decides whether an exception represents
+ * a failure or error is that only thrown <code>junit.framework.AssertionFailedError</code>s are considered
+ * failures. Any other exception type is considered an error. The exception type thrown by the JUnit 3
+ * assertion methods declared in <code>junit.framework.Assert</code> (such as <code>assertEquals</code>,
+ * <code>assertTrue</code>, and <code>fail</code>) is, therefore, <code>AssertionFailedError</code>.
  * </p>
  * 
  * <p>
- * The assertions provided by <code>org.scalatest.Assertions</code> throw <code>TestFailedException</code>, which does 
- * not extend <code>junit.framework.AssertionFailedError</code>. As a result, JUnit 3 will report a failed
- * <code>org.scalatest.Assertions</code> assertion as an error, not a failure. If <code>TestFailedException</code>
- * extended <code>AssertionFailedError</code>, anyone using ScalaTest would need to have JUnit on the
- * class path. To avoid this dependency, ScalaTest provides <code>org.scalatest.junit.AssertionsForJUnit</code>, which gives JUnit 3 users
- * the same ScalaTest assertion syntax as <code>org.scalatest.Assertions</code> but with failed assertions
- * reported as failures, not errors, in JUnit 3.
+ * In JUnit 4, <code>AssertionFailedError</code> was made to extend <code>java.lang.AssertionError</code>,
+ * and the distinction between failures and errors was essentially dropped. However, some tools that integrate
+ * with JUnit carry on this distinction, so even if you are using JUnit 4 you may want to use this
+ * <code>AssertionsForJUnit</code> trait instead of plain-old ScalaTest
+ * <a href="../Assertions.html"><code>Assertions</code></a>.
  * </p>
  *
  * <p>
