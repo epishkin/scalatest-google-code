@@ -3,7 +3,6 @@
   rename ShouldMatchersForJUnit3 to ShouldMatchersForJUnit.
 - add a LogRecorder trait (1 hr)
 - show 5 lines of stack trace in PrintReporter (30 min)
-- document the Error policy (10 min)
 - document JUnit3Suite (30 min)
 - sort the GUI report list box in ordinal order (1 hr)
 

@@ -948,6 +948,50 @@ import org.scalatest.tools.StandardOutReporter
  * </p>
  *
  * <p>
+ * <strong>Treatement of <code>java.lang.Error</code>s</strong>
+ * </p>
+ *
+ * <p>
+ * The Javadoc documentation for <code>java.lang.Error</code> states:
+ * </p>
+ *
+ * <blockquote>
+ * An <code>Error</code> is a subclass of <code>Throwable</code> that indicates serious problems that a reasonable application should not try to catch. Most
+ * such errors are abnormal conditions.
+ * </blockquote>
+ *
+ * <p>
+ * Because <code>Error</code>s are used to denote serious errors, trait <code>Suite</code> and its subtypes in the ScalaTest API do not always treat a test
+ * that completes abruptly with an <code>Error</code> as a test failure, but sometimes as an indication that serious problems
+ * have arisen that should cause the run to abort. For example, if a test completes abruptly with an <code>OutOfMemoryError</code>, 
+ * it will not be reported as a test failure, but will instead cause the run to abort. Because not everyone uses <code>Error</code>s only to represent serious
+ * problems, however, ScalaTest only behaves this way for the following exception types (and their subclasses):
+ * <p>
+ *
+ * <ul>
+ * <li><code>java.lang.annotation.AnnotationFormatError</code></li>
+ * <li><code>java.awt.AWTError</code></li>
+ * <li><code>java.nio.charset.CoderMalfunctionError</code></li>
+ * <li><code>javax.xml.parsers.FactoryConfigurationError</code></li>
+ * <li><code>java.lang.LinkageError</code></li>
+ * <li><code>java.lang.ThreadDeath</code></li>
+ * <li><code>javax.xml.transform.TransformerFactoryConfigurationError</code></li>
+ * <li><code>java.lang.VirtualMachineError</code></li>
+ * </ul>
+ *
+ * <p>
+ * The previous list includes all <code>Error</code>s that exist as part of Java 1.5 API, excluding <code>java.lang.AssertionError</code>. ScalaTest
+ * does treat a thrown <code>AssertionError</code> as an indication of a test failure. In addition, any other <code>Error</code> that is not an instance of a
+ * type mentioned in the previous list will be caught by the <code>Suite</code> traits in the ScalaTest API and reported as the cause of a test failure. 
+ * </p>
+ *
+ * <p>
+ * Although trait <code>Suite</code> and all its subtypes in the ScalaTest API consistently behave this way with regard to <code>Error</code>s,
+ * this behavior is not required by the contract of <code>Suite</code>. Subclasses and subtraits that you define, for example, may treat all
+ * <code>Error</code>s as test failures, or indicate errors in some other way that has nothing to do with exceptions.
+ * </p>
+ *
+ * <p>
  * <strong>Extensibility</strong>
  * </p>
  *
