@@ -1,5 +1,5 @@
+- Look for StackDepth, not StackDepthException, in reporters
 - reproduce 2.8 bug and put in trac
-- document StackDepth and JUnitTestFailedError
 - add a LogRecorder trait (1 hr)
 - show 5 lines of stack trace in PrintReporter (30 min)
 - finish writing tests for new core traits

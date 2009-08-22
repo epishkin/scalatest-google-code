@@ -74,7 +74,7 @@ import org.scalatest.events._
  * @author Daniel Watson
  * @author Joel Neely
  */
-trait JUnitSuite extends Suite { thisSuite =>
+trait JUnitSuite extends Suite with AssertionsForJUnit { thisSuite =>
 
   // TODO: This may need to be made thread safe, because who knows what Thread JUnit will fire through this
   private var theTracker = new Tracker

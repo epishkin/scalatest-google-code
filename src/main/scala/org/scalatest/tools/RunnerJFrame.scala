@@ -270,8 +270,8 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
               holder.throwable match {
                 case Some(throwable) =>
                   throwable match {
-                    case tfe: TestFailedException =>
-                      tfe.failedCodeFileNameAndLineNumberString 
+                    case stackDepth: StackDepth =>
+                      stackDepth.failedCodeFileNameAndLineNumberString
                     case _ => None
                   }
                 case None => None
