@@ -19,7 +19,7 @@ import org.scalatest._
 import _root_.junit.framework.AssertionFailedError
 import org.scalatest.WordSpec
 
-class ShouldMatchersForJUnit3WordSpec extends WordSpec with ShouldMatchersForJUnit3
+class ShouldMatchersForJUnitWordSpec extends WordSpec with ShouldMatchersForJUnit
   with AssertionsForJUnit3SharedTests {
 
   val throwAssertionFailedError = afterWord("throw AssertionFailedError")

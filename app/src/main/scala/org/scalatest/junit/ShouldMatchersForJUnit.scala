@@ -93,7 +93,7 @@ import org.scalatest.matchers.ShouldMatchers
  *
  * @author Bill Venners
  */
-trait ShouldMatchersForJUnit3 extends ShouldMatchers with AssertionsForJUnit3 {
+trait ShouldMatchersForJUnit extends ShouldMatchers with AssertionsForJUnit {
   private[scalatest] override def newTestFailedException(message: String): Throwable = new AssertionFailedError(message)
 }
 
@@ -134,4 +134,4 @@ trait ShouldMatchersForJUnit3 extends ShouldMatchers with AssertionsForJUnit3 {
  *
  * @author Bill Venners
  */
-object ShouldMatchersForJUnit3 extends ShouldMatchersForJUnit3
+object ShouldMatchersForJUnit extends ShouldMatchersForJUnit

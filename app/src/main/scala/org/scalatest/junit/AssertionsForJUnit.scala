@@ -91,7 +91,7 @@ import _root_.junit.framework.AssertionFailedError
  *
  * @author Bill Venners
  */
-trait AssertionsForJUnit3 extends Assertions {
+trait AssertionsForJUnit extends Assertions {
   private[scalatest] override def newAssertionFailedException(optionalMessage: Option[Any], optionalCause: Option[Throwable], stackDepth: Int): Throwable = {
 
     val assertionFailedError =
@@ -145,4 +145,4 @@ trait AssertionsForJUnit3 extends Assertions {
  *
  * @author Bill Venners
  */
-object AssertionsForJUnit3 extends AssertionsForJUnit3
+object AssertionsForJUnit extends AssertionsForJUnit
