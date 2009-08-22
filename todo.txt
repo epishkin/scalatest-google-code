@@ -1,10 +1,11 @@
-- see if extending AssertionError would make JUnit 4 report regular ShouldMatchers and Assertions as failures
+- reproduce 2.8 bug and put in trac
+- see if extending AssertionError would make JUnit 4 report regular ShouldMatchers and Assertions as failures. If not, probably
+  rename ShouldMatchersForJUnit3 to ShouldMatchersForJUnit.
 - add a LogRecorder trait (1 hr)
 - show 5 lines of stack trace in PrintReporter (30 min)
 - document the Error policy (10 min)
 - document JUnit3Suite (30 min)
 - sort the GUI report list box in ordinal order (1 hr)
-- JUnit 4 reported TestFailedException as an Error not a Failure, Check the dox, but probably rename ShouldMatchersForJUnit3 to ShouldMatchersForJUnit.
 
 Make all function parameters named fun.
 

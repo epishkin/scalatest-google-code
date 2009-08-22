@@ -1,11 +1,2 @@
+vi src/main/scala/org/scalatest/matchers/Matchers.scala src/main/scala/org/scalatest/tools/ReporterConfiguration.scala src/test/scala/org/scalatest/testng/TestNGSuiteSuite.scala src/test/scala/org/scalatest/testng/example/ExampleTestNGSuite.scala src/test/scala/org/scalatest/testng/TestNGSuiteGroupsSuite.scala
 
-In main:
-
-org.scalatest.matchers.Matchers
-org.scalatest.tools.ReporterConfiguration
-
-In test:
-
-org.scalatest.testng.TestNGSuiteSuite
-org.scalatest.testng.example.ExampleTestNGSuite
-org.scalatest.testng.TestNGSuiteGroupsSuite
