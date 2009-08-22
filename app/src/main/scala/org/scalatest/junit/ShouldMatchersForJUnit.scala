@@ -43,7 +43,7 @@ import org.scalatest.matchers.ShouldMatchers
  * not extend <code>junit.framework.AssertionFailedError</code>. As a result, JUnit 3 will report a failed
  * <code>org.scalatest.matchers.ShouldMatchers</code> match as an error, not a failure. If <code>TestFailedException</code>
  * extended <code>AssertionFailedError</code>, anyone using ScalaTest would need to have JUnit on the
- * class path. To avoid this dependency, ScalaTest provides <code>org.scalatest.junit.ShouldMatchersForJUnit3</code>, which gives JUnit 3 users
+ * class path. To avoid this dependency, ScalaTest provides <code>org.scalatest.junit.ShouldMatchersForJUnit</code>, which gives JUnit 3 users
  * the same ScalaTest matcher DSL syntax as <code>org.scalatest.matchers.ShouldMatchers</code> but with failed matches
  * reported as failures, not errors, in JUnit 3.
  * </p>
@@ -54,9 +54,9 @@ import org.scalatest.matchers.ShouldMatchers
  *
  * <pre>
  * import junit.framework.TestCase
- * import org.scalatest.junit.ShouldMatchersForJUnit3
+ * import org.scalatest.junit.ShouldMatchersForJUnit
  *
- * class MyTestCase extends TestCase with ShouldMatchersForJUnit3 {
+ * class MyTestCase extends TestCase with ShouldMatchersForJUnit {
  *
  *   def testSomething() {
  *     "hello, world!" should startWith ("hello")
@@ -72,7 +72,7 @@ import org.scalatest.matchers.ShouldMatchers
  *
  * <pre>
  * import junit.framework.TestCase
- * import org.scalatest.junit.ShouldMatchersForJUnit3._
+ * import org.scalatest.junit.ShouldMatchersForJUnit._
  *
  * class MyTestCase extends TestCase {
  *
@@ -86,8 +86,8 @@ import org.scalatest.matchers.ShouldMatchers
  *
  * <p>
  * For details on the importing approach, see the documentation
- * for the <a href="ShouldMatchersForJUnit3$object.html"><code>ShouldMatchersForJUnit3</code> companion object</a>.
- * For the details on the <code>ShouldMatchersForJUnit3</code> syntax, see the Scaladoc documentation for
+ * for the <a href="ShouldMatchersForJUnit$object.html"><code>ShouldMatchersForJUnit</code> companion object</a>.
+ * For the details on the <code>ShouldMatchersForJUnit</code> syntax, see the Scaladoc documentation for
  * <a href="../matchers/ShouldMatchers.html"><code>org.scalatest.matchers.ShouldMatchers</code></a>
  * </p>
  *
@@ -98,8 +98,8 @@ trait ShouldMatchersForJUnit extends ShouldMatchers with AssertionsForJUnit {
 }
 
 /**
- * Companion object that facilitates the importing of <code>ShouldMatchersForJUnit3</code> members as 
- * an alternative to mixing it in. One use case is to import <code>ShouldMatchersForJUnit3</code> members so you can use
+ * Companion object that facilitates the importing of <code>ShouldMatchersForJUnit</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>ShouldMatchersForJUnit</code> members so you can use
  * them in the Scala interpreter:
  *
  * <pre>
@@ -108,27 +108,27 @@ trait ShouldMatchersForJUnit extends ShouldMatchers with AssertionsForJUnit {
  * Type in expressions to have them evaluated.
  * Type :help for more information.
  * 
- * scala> import org.scalatest.junit.ShouldMatchersForJUnit3._
- * import org.scalatest.junit.ShouldMatchersForJUnit3._
+ * scala> import org.scalatest.junit.ShouldMatchersForJUnit._
+ * import org.scalatest.junit.ShouldMatchersForJUnit._
  * 
  * scala> "hi" should have length (3)
  * junit.framework.AssertionFailedError: "hi" did not have length 3
- * 	at org.scalatest.junit.ShouldMatchersForJUnit3$class.newTestFailedException(ShouldMatchersForJUnit3.scala:22)
- * 	at org.scalatest.junit.ShouldMatchersForJUnit3$.newTestFailedException(ShouldMatchersForJUnit3.scala:63)
+ * 	at org.scalatest.junit.ShouldMatchersForJUnit$class.newTestFailedException(ShouldMatchersForJUnit.scala:22)
+ * 	at org.scalatest.junit.ShouldMatchersForJUnit$.newTestFailedException(ShouldMatchersForJUnit.scala:63)
  * 	at org.scalatest.matchers.Matchers$ResultOfHaveWordForString.length(Matchers.scala:4102)
  * 	at .<init>(<co...
  * scala> 1 should equal (2)
  * junit.framework.AssertionFailedError: 1 did not equal 2
- * 	at org.scalatest.junit.ShouldMatchersForJUnit3$class.newTestFailedException(ShouldMatchersForJUnit3.scala:22)
- * 	at org.scalatest.junit.ShouldMatchersForJUnit3$.newTestFailedException(ShouldMatchersForJUnit3.scala:63)
+ * 	at org.scalatest.junit.ShouldMatchersForJUnit$class.newTestFailedException(ShouldMatchersForJUnit.scala:22)
+ * 	at org.scalatest.junit.ShouldMatchersForJUnit$.newTestFailedException(ShouldMatchersForJUnit.scala:63)
  * 	at org.scalatest.matchers.ShouldMatchers$ShouldMethodHelper$.shouldMatcher(ShouldMatchers.scala:800)
  * 	at org.scal...
  * scala> "hello, world" should startWith ("hello")
  * 
  * scala> 7 should (be >= (3) and not be <= (7))
  * junit.framework.AssertionFailedError: 7 was greater than or equal to 3, but 7 was less than or equal to 7
- * 	at org.scalatest.junit.ShouldMatchersForJUnit3$class.newTestFailedException(ShouldMatchersForJUnit3.scala:22)
- * 	at org.scalatest.junit.ShouldMatchersForJUnit3$.newTestFailedException(ShouldMatchersForJUnit3.scala:63)
+ * 	at org.scalatest.junit.ShouldMatchersForJUnit$class.newTestFailedException(ShouldMatchersForJUnit.scala:22)
+ * 	at org.scalatest.junit.ShouldMatchersForJUnit$.newTestFailedException(ShouldMatchersForJUnit.scala:63)
  * 	at org.scalatest.matchers.ShouldMatchers$ShouldMethodHelper$.sh...
  * <pre>
  *
