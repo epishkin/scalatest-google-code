@@ -100,7 +100,7 @@ trait AssertionsForJUnit3SharedTests { this: WordSpec =>
   }
 }
 
-class AssertionsForJUnit3WordSpec extends WordSpec with AssertionsForJUnit3
+class AssertionsForJUnitWordSpec extends WordSpec with AssertionsForJUnit
   with AssertionsForJUnit3SharedTests {
 
   val throwAssertionFailedError = afterWord("throw AssertionFailedError")
