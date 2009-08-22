@@ -59,8 +59,8 @@ import org.scalatest.tools.StandardOutReporter
  *
  * <p>
  * If you are using JUnit 3 (version 3.8 or earlier releases) and you want to write JUnit 3 tests in Scala, look at
- * <a href="junit/AssertionsForJUnit3.html"><code>AssertionsForJUnit3</code></a>, 
- * <a href="junit/ShouldMatchersForJUnit3.html"><code>ShouldMatchersForJUnit3</code></a>, and
+ * <a href="junit/AssertionsForJUnit.html"><code>AssertionsForJUnit</code></a>, 
+ * <a href="junit/ShouldMatchersForJUnit.html"><code>ShouldMatchersForJUnit</code></a>, and
  * <a href="junit/JUnit3Suite.html"><code>JUnit3Suite</code></a>. 
  * </p>
  *
