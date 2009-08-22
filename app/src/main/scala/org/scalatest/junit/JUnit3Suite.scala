@@ -137,7 +137,7 @@ import org.scalatest.events.TestFailed
  *
  * @author Bill Venners
  */
-class JUnit3Suite extends TestCase with Suite {
+class JUnit3Suite extends TestCase with Suite with AssertionsForJUnit {
 
   private var theTracker = new Tracker
 

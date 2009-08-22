@@ -90,8 +90,8 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
   private def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
     throwable match {
-      case Some(testFailedException: TestFailedException) =>
-        testFailedException.failedCodeFileNameAndLineNumberString match {
+      case Some(stackDepth: StackDepth) =>
+        stackDepth.failedCodeFileNameAndLineNumberString match {
           case Some(lineNumberString) =>
             Resources("printedReportPlusLineNumber", stringToPrint, lineNumberString)
           case None => stringToPrint
