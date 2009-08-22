@@ -32,7 +32,7 @@ package org.scalatest
  * @author Bill Venners
  */
 abstract class StackDepthException(val message: Option[String], val cause: Option[Throwable], val failedCodeStackDepth: Int)
-    extends RuntimeException(if (message.isDefined) message.get else "", if (cause.isDefined) cause.get else null) {
+    extends RuntimeException(if (message.isDefined) message.get else "", if (cause.isDefined) cause.get else null) with StackDepth {
   
   if (message == null) throw new NullPointerException("message was null")
   message match {
@@ -44,28 +44,6 @@ abstract class StackDepthException(val message: Option[String], val cause: Optio
   cause match {
     case Some(null) => throw new NullPointerException("cause was a Some(null)")
     case _ =>
-  }
-
-  /*
-  * Throws <code>IllegalStateException</code>, because <code>StackDepthException</code>s are
-  * always initialized with a cause passed to the constructor of superclass <code>
-  */
-  override final def initCause(throwable: Throwable): Throwable = { throw new IllegalStateException }
-
-  /**
-   * A string that provides the filename and line number of the line of code that failed, suitable
-   * for presenting to a user, which is taken from this exception's <code>StackTraceElement</code> at the depth specified
-   * by <code>failedCodeStackDepth</code>.
-   *
-   * @return a user-presentable string containing the filename and line number that caused the failed test
-   */
-  val failedCodeFileNameAndLineNumberString: Option[String] = {
-    val stackTraceElement = getStackTrace()(failedCodeStackDepth)
-    val fileName = stackTraceElement.getFileName
-    if (fileName != null) {
-      Some(fileName + ":" + stackTraceElement.getLineNumber)
-    }
-    else None
   }
 }
 
