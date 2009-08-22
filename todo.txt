@@ -1,11 +1,17 @@
 - reproduce 2.8 bug and put in trac
-- see if extending AssertionError would make JUnit 4 report regular ShouldMatchers and Assertions as failures. If not, probably
-  rename ShouldMatchersForJUnit3 to ShouldMatchersForJUnit.
-- Or maybe make StackDepth a trait, and throw a subtype of AssertionFailedError that also has the StackDepth info in it.
+- document StackDepth and JUnitTestFailedError
 - add a LogRecorder trait (1 hr)
 - show 5 lines of stack trace in PrintReporter (30 min)
-- document JUnit3Suite (30 min)
-- sort the GUI report list box in ordinal order (1 hr)
+- finish writing tests for new core traits
+- make 2nd pass at writing main docs of core traits
+- document internal parts of new core traits
+- rename extra in ant task
+- JUnit XML reporter
+- HTML reporter
+- Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.) (15 min)
+- Try sorting the GUI reports with the ordinal (1 hour)
+- make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error
+- write tests for JUnit3Suite
 
 Make all function parameters named fun.
 
@@ -36,31 +42,6 @@ overriding these methods and calling super. versions of them. It will render a r
 one of these methods when they really don't work. (Actually, could implement them to work correctly, things like
 testNames, suiteName, tags, maybe these should always be implemented. I should decide this and say it as part of the
 contract. But testNames may not be known, right?)
-
-Can use this for the side-effecty fixture style:
-
-import org.scalatest.fixture.FixtureFunSuite
-
-class MySuite extends FixtureFunSuite {
-
-  type Fixture = Unit
-
-  def withFixture(fun: TestFunction) {
-    fun()
-  }
-
-  test("did this work") {
-    assert(1 + 1 === 3)
-  }
-
-  test("did this work yup") {
-    assert(1 + 1 === 3)
-  }
-}
-
-Unit always means some side effect must be going on somewhere, and its the same here.
-
-Document the Error policy.
 
 Show 5 lines of stack trace in print reporter.
 
@@ -116,49 +97,6 @@ compile-examples:
 I get an error in FlatSpec when the inferred result type isn't Unit for the in block. Had to put a () at the end.
 I think the fix is that this type shouldn't be Unit, it should be Any.
 
-trait MutableFixture affixes Fixture to type Unused.type, which has one instance, a singleton object.
-
-trait CreateFixtureMethod { this: FixtureSuite =>
-  def createFixture: this.Fixture
-}
-
-trait NoOtherFixture extends CreateFixtureMethod { this: FixtureSuite =>
-
-  object Unused
-
-  type Fixture = Unused.type
-
-  def createFixture = Unused
-}
-
-trait NewConductorEachTest extends CreateFixtureMethod {
-  // Does not define Fixture
-  def withFixture(testFunction: TestFunction) {
-    conductor = new Conductor // mutate the implicit var thing
-    testFunction(createFixture)
-    if (!conductor.testWasStarted) {
-      conductor.runTest()
-    }
-  }
-  def createFixture: Fixture
-}
-
-Then to use, can just say
-
-class MySuite extends FixtureFunSuite with NewConductorEachTest with NoOtherFixture {
-  test("bla bla bla") {
-    // Just use it, because don't need the fixture param
-  }
-}
-
-Or I can provide:
-
-trait ConductorSugar extends NewConductorEachTest with NoOtherFixture
-
-ConductorFixture would be mutable. Could have methods that take an implicit, and just
-redo the implicit. If I could just override the fixture type. Ah!!!! Got it. I delegate
-to ta method. (Ye olde template pattern), for the fixture object. 
-
 Transform detail messages printed out in Graphic view, so that any \n characters become <br />.
 
 Make sure all the SharedBehavior examples use by-name parameters to pass a stack creation function in, because
@@ -166,9 +104,6 @@ that object is mutable. Also add a little bit of text to the docs to point out t
 simply passed in, but mutable ones need to be passed in as a function that can be called (most likely a by-name
 parameter is most appropriate, as is used here.) (15 min)
 
-Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.) (15 min)
-
-Try sorting the GUI reports with the ordinal (1 hour)
 
 In Spec (and probably at least WordSpec, and the fixture sisters) this needs to be changed to this. Because if the first thing inside a describe with
 tests is an info, then it was not printing anything out. May need to be more tricky than this too,
@@ -194,16 +129,9 @@ setup => setUp
 BeforeAndAfter => BeforeAndAfterEach
 consider two approaches => consider some approaches
 
-Add tests and error messages for the dynamic error of registering a test that takes no fixture in one
-that requires fixtures, and vice versa, for WordSpec and FlatSpec, or at least just FlatSpec. (45 min)
-
-Continue going through the tests for nesting and what not for all the suite traits. (2 days)
-
 In RunnerSuite, 'parseConfigSet was 'parseCOnfigSet, and it was passing, which tells me if invokePrivate
 doesn't find the requested method name maybe it isn't failing. It needs to fail. No, I think the problem
 was probably simply that tools wasn't being run.
-
-Add back in Report and SpecReport. (15 min)
 
 Put deprecated final execute methods in that forward as best they can to the regular one, though
 perhaps I just need the final execute forms for the interpreter and the one public execute. (1 hour)
@@ -212,8 +140,6 @@ Make a trait that can be mixed into
 Reporter called TransitionalReporter, which has an apply method that forwards to the old methods, so people can bring existing reporters
 up to date with a quick mix in. Or, consider whether I can just do that directly in Reporter itself. Oh, no, because then people's would
 extensions would automatically work. No, that's OK. Just deprecate all the old testStarting, etc., methods. (4 hours)
-
-Write tests for JUnit3ComfortSuite. (30 min)
 
 Port whole thing to 2.8, and see how default params will change things. (1 day)
 
@@ -378,24 +304,7 @@ In FlatSpec, just support "it should behave like X" and if ShouldMatchers is mix
 In Spec, just support "it should behave like X." No SharedTests mix in needed. So it("test name") will have to be an apply method on
 the it object.
 
-ask about sugar forms for shouldEqual and mustEqual to Should/MustMatchers:
-
-    stack.peek mustEqual lastItemAdded
-    stack.size mustEqual size
-    
-    stack.peek shouldEqual lastItemAdded
-    stack.size shouldEqual size
-    
-    stack.peek must_== lastItemAdded
-    stack.size must_== size
-    
-    stack.peek should_== lastItemAdded
-    stack.size should_== size
-
-Put these into ShouldEqual and MustEqual traits, which Should/MustMatchers mix in. So that way people can get
-them by themselves if they want? Or maybe not. Just add them to the Matchers traits.
-    
-0.9.7
+1.1
 Do the parallel afterAll thing.
 Add BeforeAndAfterEach, BeforeAndAfterAll. Make BeforeAndAfter just an extension of BeforeAndAfterEach and BeforeAndAfterAll and deprecate it.
 BeforeAndAfterAll will need to look for some object sent down in goodies from OneInstancePerTest, so it knows not to do it if it is an
@@ -941,4 +850,27 @@ assert(seq.find("bla") != -1)
 
 Could offer a CollectorFixture that will fail if there's no Collector. Else it passes it in,
 and tests can do tests based on standard input and output.
+
+Can use this for the side-effecty fixture style:
+
+import org.scalatest.fixture.FixtureFunSuite
+
+class MySuite extends FixtureFunSuite {
+
+  type Fixture = Unit
+
+  def withFixture(fun: TestFunction) {
+    fun()
+  }
+
+  test("did this work") {
+    assert(1 + 1 === 3)
+  }
+
+  test("did this work yup") {
+    assert(1 + 1 === 3)
+  }
+}
+
+Unit always means some side effect must be going on somewhere, and its the same here.
 

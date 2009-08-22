@@ -25,7 +25,7 @@ import java.util.Date
  *
  * <p>
  * <strong>As of version 1.0, class <code>SpecReport</code> is no longer used by the ScalaTest API. It has essentially been replaced
- * by the event mechanism in package <code>org.scalatest.event</code>. It will be removed after a two-release deprecation cycle.
+ * by the event mechanism in package <code>org.scalatest.events</code>. It will be removed after a two-release deprecation cycle.
  * Please migrate any uses of <code>SpecReport</code> to use the new event mechanism.</strong>
  * </p>
  *
