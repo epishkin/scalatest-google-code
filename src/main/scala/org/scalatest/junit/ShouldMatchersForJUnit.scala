@@ -94,7 +94,13 @@ import org.scalatest.matchers.ShouldMatchers
  * @author Bill Venners
  */
 trait ShouldMatchersForJUnit extends ShouldMatchers with AssertionsForJUnit {
-  private[scalatest] override def newTestFailedException(message: String): Throwable = new AssertionFailedError(message)
+  //private[scalatest] override def newTestFailedException(message: String): Throwable = new AssertionFailedError(message)
+  private[scalatest] override def newTestFailedException(message: String): Throwable = {
+    val fileNames = List("Matchers.scala", "ShouldMatchers.scala", "MustMatchers.scala", "ShouldMatchersForJUnit.scala", "MustMatchersForJUnit.scala")
+    val temp = new RuntimeException
+    val stackDepth = temp.getStackTrace.takeWhile(stackTraceElement => fileNames.exists(_ == stackTraceElement.getFileName) || stackTraceElement.getMethodName == "newTestFailedException").length
+    new JUnitTestFailedError(message, stackDepth)
+  }
 }
 
 /**

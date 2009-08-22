@@ -92,6 +92,15 @@ import _root_.junit.framework.AssertionFailedError
  * @author Bill Venners
  */
 trait AssertionsForJUnit extends Assertions {
+
+  private[scalatest] override def newAssertionFailedException(optionalMessage: Option[Any], optionalCause: Option[Throwable], stackDepth: Int): Throwable =
+    (optionalMessage, optionalCause) match {
+      case (None, None) => new JUnitTestFailedError(stackDepth)
+      case (None, Some(cause)) => new JUnitTestFailedError(cause, stackDepth)
+      case (Some(message), None) => new JUnitTestFailedError(message.toString, stackDepth)
+      case (Some(message), Some(cause)) => new JUnitTestFailedError(message.toString, cause, stackDepth)
+    }
+ /*
   private[scalatest] override def newAssertionFailedException(optionalMessage: Option[Any], optionalCause: Option[Throwable], stackDepth: Int): Throwable = {
 
     val assertionFailedError =
@@ -104,7 +113,7 @@ trait AssertionsForJUnit extends Assertions {
       assertionFailedError.initCause(cause)
       
     assertionFailedError
-  }
+  }  */
 }
 
 /**

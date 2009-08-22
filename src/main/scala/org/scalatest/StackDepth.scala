@@ -15,17 +15,11 @@
  */
 package org.scalatest
 
-trait StackDepth extends Throwable {
+trait StackDepth { this: Throwable =>
 
   val message: Option[String]
   val cause: Option[Throwable]
   val failedCodeStackDepth: Int
-
-  /*
-  * Throws <code>IllegalStateException</code>, because <code>StackDepthException</code>s are
-  * always initialized with a cause passed to the constructor of superclass <code>
-  */
-  override final def initCause(throwable: Throwable): Throwable = { throw new IllegalStateException }
 
   /**
    * A string that provides the filename and line number of the line of code that failed, suitable
@@ -42,5 +36,4 @@ trait StackDepth extends Throwable {
     }
     else None
   }
-
 }

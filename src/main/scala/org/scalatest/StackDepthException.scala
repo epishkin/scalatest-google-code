@@ -45,6 +45,12 @@ abstract class StackDepthException(val message: Option[String], val cause: Optio
     case Some(null) => throw new NullPointerException("cause was a Some(null)")
     case _ =>
   }
+
+  /*
+  * Throws <code>IllegalStateException</code>, because <code>StackDepthException</code>s are
+  * always initialized with a cause passed to the constructor of superclass <code>
+  */
+  override final def initCause(throwable: Throwable): Throwable = { throw new IllegalStateException }
 }
 
 /*
