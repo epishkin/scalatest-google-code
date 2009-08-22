@@ -30,6 +30,111 @@ import org.scalatest.events.TestFailed
 /**
  * A <code>Suite</code> that is also a <code>junit.framework.TestCase</code>. 
  *
+ * <p>
+ * A <code>JUnit3Suite</code> may be run by either JUnit 3 (such as JUnit 3.8) or ScalaTest's runner. You write it the way
+ * you write a JUnit 3 <code>TestCase</code>. Tests are methods that start with <code>test</code>, take no parameters, and
+ * have a <code>Unit</code> return type. You manage fixtures with methods <code>setUp</code> and <code>tearDown</code>.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.junit.JUnit3Suite
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class BlastFromThePastSuite extends JUnit3Suite {
+ *
+ *   var sb: StringBuilder = _
+ *   var lb: ListBuffer[String] = _
+ *
+ *   override def setUp() {
+ *     sb = new StringBuilder("ScalaTest is ")
+ *     lb = new ListBuffer[String]
+ *   }
+ *
+ *   def testEasy() { // Uses JUnit-style assertions
+ *     sb.append("easy!")
+ *     assertEquals("ScalaTest is easy!", sb.toString)
+ *     assertTrue(lb.isEmpty)
+ *     lb += "sweet"
+ *   }
+ *
+ *   def testFun() { // Uses ScalaTest assertions
+ *     sb.append("fun!")
+ *     assert(sb.toString === "ScalaTest is fun!")
+ *     assert(lb.isEmpty)
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * You can use either JUnit's assertions, inherited from <code>TestCase</code>, or ScalaTest's, inherited from <code>AssertionsForJUnit</code>.
+ * You can also mix in <code>ShouldMatchersForJUnit</code> or <code>MustMatchersForJUnit</code> if you want to use ScalaTests's matchers DSL.
+ * Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.junit.JUnit3Suite
+ * import org.scalatest.junit.MustMatchersForJUnit
+ * import scala.collection.mutable.ListBuffer
+ *
+ * class BlastFromThePastSuite extends JUnit3Suite with MustMatchersForJUnit {
+ *
+ *   var stringBuilder: StringBuilder = _
+ *   var listBuffer: ListBuffer[String] = _
+ *
+ *   override def setUp() {
+ *     stringBuilder = new StringBuilder("ScalaTest is ")
+ *     listBuffer = new ListBuffer[String]
+ *   }
+ *
+ *   def testEasy() {
+ *     stringBuilder.append("easy!")
+ *     stringBuilder.toString must be ("ScalaTest is easy!")
+ *     listBuffer must be ('empty)
+ *     listBuffer += "sweet"
+ *   }
+ *
+ *   def testFun() {
+ *     stringBuilder.append("fun!")
+ *     stringBuilder.toString must be ("ScalaTest is fun!")
+ *     listBuffer must be ('empty)
+ *   }
+ * }
+ * </pre>
+ * 
+ * <p>
+ * The reason you would ordinarily want to mix in <code>MustMatchersForJUnit</code> or <code>ShouldMatchersForJUnit</code> rather than <code>MustMatchers</code>
+ * or <code>ShouldMatchers</code> is that <code>MustMatchersForJUnit</code> and <code>ShouldMatchersForJUnit</code> throw
+ * <code>junit.framework.AssertionFailedError</code>s, which JUnit 3 will report as failures, not errors.
+ * </p>
+ *
+ * <p>
+ * When writing JUnit 3 tests in Scala, you should keep in mind that JUnit 3 will not run tests that have a return type other than
+ * <code>Unit</code>. Thus it is best to leave off the equals sign before the curly braces of the body of the test, like this:
+ * </p>
+ * 
+ * <pre>
+ * def testGoodIdea() { // result type will be Unit
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * Instead of this:
+ * </p>
+ *
+ * <pre>
+ * def testBadIdea() = { // result type will be inferred
+ *   // ...
+ * }
+ * </pre>
+ *
+ * <p>
+ * If the <code>testBadIdea</code> method ends in an expression that has a result type other than <code>Unit</code>, the Scala
+ * compiler will infer a result type to the <code>testBadIdea</code> method to be the same non-<code>Unit</code> type. As a "result,"
+ * JUnit 3 will not discover or run the <code>testBadIdea</code> method at all.
+ * </p>
+ *
  * @author Bill Venners
  */
 class JUnit3Suite extends TestCase with Suite {

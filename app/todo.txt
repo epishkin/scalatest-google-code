@@ -1,6 +1,7 @@
 - reproduce 2.8 bug and put in trac
 - see if extending AssertionError would make JUnit 4 report regular ShouldMatchers and Assertions as failures. If not, probably
   rename ShouldMatchersForJUnit3 to ShouldMatchersForJUnit.
+- Or maybe make StackDepth a trait, and throw a subtype of AssertionFailedError that also has the StackDepth info in it.
 - add a LogRecorder trait (1 hr)
 - show 5 lines of stack trace in PrintReporter (30 min)
 - document JUnit3Suite (30 min)
