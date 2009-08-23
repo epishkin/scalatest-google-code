@@ -1,7 +1,6 @@
-- Look for StackDepth, not StackDepthException, in reporters
+- pass a message in the RuntimeException for the ResultOfSTringPassedToVerb in FlatSpec and WordSpec
 - reproduce 2.8 bug and put in trac
 - add a LogRecorder trait (1 hr)
-- show 5 lines of stack trace in PrintReporter (30 min)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
 - document internal parts of new core traits
