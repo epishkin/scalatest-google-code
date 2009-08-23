@@ -28,7 +28,7 @@ import java.util.Set
 import java.io.StringWriter
 import org.scalatest.events._
 import PrintReporter._
-
+import org.scalatest.junit.JUnitTestFailedError
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -103,8 +103,61 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
   private def printPossiblyInColor(text: String, ansiColor: String) {
     pw.println(if (presentInColor) ansiColor + text + ansiReset else text)
   }
+/*
+I either want to print the full stack trace, like this:
 
-  // Called for TestFailed, InfoProvided (because it can have a throwable in it), and SuiteAborted
+[scalatest] TEST FAILED - JUnitTestCaseSuite: testSomething(org.scalatestexamples.junit.JUnitTestCaseSuite) (JUnitTestCaseSuite.scala:22)
+[scalatest]   hi there
+[scalatest]   org.scalatest.junit.JUnitTestFailedError: hi there
+[scalatest]   at org.scalatest.junit.AssertionsForJUnit$class.newAssertionFailedException(AssertionsForJUnit.scala:101)
+[scalatest]   at org.scalatest.junit.JUnit3Suite.newAssertionFailedException(JUnit3Suite.scala:140)
+[scalatest]   at org.scalatest.Assertions$class.fail(Assertions.scala:601)
+[scalatest]   at org.scalatest.junit.JUnit3Suite.fail(JUnit3Suite.scala:140)
+[scalatest]   at org.scalatestexamples.junit.JUnitTestCaseSuite.testSomething(JUnitTestCaseSuite.scala:22)
+[scalatest]   at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+[scalatest]   at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+[scalatest]   at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+[scalatest]   at java.lang.reflect.Method.invoke(Method.java:585)
+[scalatest]   at junit.framework.TestCase.runTest(TestCase.java:168)
+[scalatest]   at junit.framework.TestCase.runBare(TestCase.java:134)
+[scalatest]   at junit.framework.TestResult$1.protect(TestResult.java:110)
+[scalatest]   at junit.framework.TestResult.runProtected(TestResult.java:128)
+[scalatest]   at junit.framework.TestResult.run(TestResult.java:113)
+[scalatest]   at junit.framework.TestCase.run(TestCase.java:124)
+[scalatest]   at junit.framework.TestSuite.runTest(TestSuite.java:232)
+[scalatest]   at junit.framework.TestSuite.run(TestSuite.java:227)
+[scalatest]   at junit.framework.TestSuite.runTest(TestSuite.java:232)
+[scalatest]   at junit.framework.TestSuite.run(TestSuite.java:227)
+[scalatest]   at org.scalatest.junit.JUnit3Suite.run(JUnit3Suite.scala:151)
+[scalatest]   at org.scalatest.tools.SuiteRunner.run(SuiteRunner.scala:59)
+[scalatest]   at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$2.apply(Runner.scala:1430)
+[scalatest]   at org.scalatest.tools.Runner$$anonfun$doRunRunRunADoRunRun$2.apply(Runner.scala:1427)
+[scalatest]   at scala.List.foreach(List.scala:834)
+[scalatest]   at org.scalatest.tools.Runner$.doRunRunRunADoRunRun(Runner.scala:1427)
+[scalatest]   at org.scalatest.tools.RunnerJFrame$RunnerThread$$anonfun$run$1.apply(RunnerJFrame.scala:1352)
+[scalatest]   at org.scalatest.tools.RunnerJFrame$RunnerThread$$anonfun$run$1.apply(RunnerJFrame.scala:1350)
+[scalatest]   at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1471)
+[scalatest]   at org.scalatest.tools.RunnerJFrame$RunnerThread.run(RunnerJFrame.scala:1349)
+
+Or show a truncated one like this:
+
+[scalatest] TEST FAILED - JUnitTestCaseSuite: testSomething(org.scalatestexamples.junit.JUnitTestCaseSuite) (JUnitTestCaseSuite.scala:22)
+[scalatest]   hi there
+[scalatest] org.scalatest.junit.JUnitTestFailedError: hi there
+[scalatest]   ...
+[scalatest]   at org.scalatestexamples.junit.JUnitTestCaseSuite.testSomething(JUnitTestCaseSuite.scala:22)
+[scalatest]   at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+[scalatest]   at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+[scalatest]   at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+[scalatest]   at java.lang.reflect.Method.invoke(Method.java:585)
+[scalatest]   at junit.framework.TestCase.runTest(TestCase.java:168)
+[scalatest]   at junit.framework.TestCase.runBare(TestCase.java:134)
+[scalatest]   ...
+
+If F is specified for the reporter, then show the full stack trace (or if it is not a StackDepth). But
+if a StackDepth and no F specified, then show the truncated form.
+ */
+  // Called for TestFailed, InfoProvided (because it can have a throwable in it), SuiteAborted, and RunAborted
   private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable],
     formatter: Option[Formatter], suiteName: Option[String], testName: Option[String], duration: Option[Long]): List[String] = {
 
@@ -114,15 +167,15 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
           Resources("specTextAndNote", formattedText, Resources(noteResourceName))
         case _ =>
           // Deny MotionToSuppress directives in error events, because error info needs to be seen by users
-            suiteName match {
-              case Some(sn) =>
-                testName match {
-                  case Some(tn) => Resources(errorResourceName, sn + ": " + tn)
-                  case None => Resources(errorResourceName, sn)
-                }
-              // Should not get here with built-in ScalaTest stuff, but custom stuff could get here.
-              case None => Resources(errorResourceName, Resources("noNameSpecified"))
-            }
+          suiteName match {
+            case Some(sn) =>
+              testName match {
+                case Some(tn) => Resources(errorResourceName, sn + ": " + tn)
+                case None => Resources(errorResourceName, sn)
+              }
+            // Should not get here with built-in ScalaTest stuff, but custom stuff could get here.
+            case None => Resources(errorResourceName, Resources("noNameSpecified"))
+          }
     }
 
     val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
@@ -147,10 +200,10 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
 
     // I don't want to put a second line out there if the event's message contains the throwable's message,
     // or if niether the event message or throwable message has any message in it.
-    val throwableIsATestFailedExceptionWithRedundantMessage =
+    val throwableIsAStackDepthWithRedundantMessage =
       throwable match {
-        case Some(t) =>
-          t.isInstanceOf[TestFailedException] && ((t.getMessage != null &&
+        case Some(t: Throwable with StackDepth) =>
+          ((t.getMessage != null &&
           !t.getMessage.trim.isEmpty && possiblyEmptyMessage.indexOf(t.getMessage.trim) != -1) || // This part is where a throwable message exists
           (possiblyEmptyMessage.isEmpty && (t.getMessage == null || t.getMessage.trim.isEmpty))) // This part detects when both have no message
         case None => false
@@ -160,10 +213,10 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
       throwable match {
         case Some(throwable) =>
 
-          def useConciseTestFailedExceptionForm =
+          def useTruncatedStackTrace =
             !presentTestFailedExceptionStackTraces && (
               throwable match {
-                case tfe: TestFailedException => tfe.cause.isEmpty // If there's a cause inside, show the whole stack trace
+                case e: Throwable with StackDepth => e.cause.isEmpty // If there's a cause inside, show the whole stack trace
                 case _ => false
               }
             )
@@ -171,17 +224,16 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
           def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
             val className = throwable.getClass.getName 
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
-            val labeledClassNameWithMessage =
+            val colonMessageOrEmptyString =
               if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
-                if (!useConciseTestFailedExceptionForm)
-                  "  " + labeledClassName + ": " + throwable.getMessage.trim
-                else
-                  "  " + throwable.getMessage.trim // Don't show "org.scalatest.TestFailedException: " if no stack trace to follow
+                ": " + throwable.getMessage.trim
               else
-                "  " + labeledClassName
+                ""
+            val labeledClassNameWithMessage =
+              "  " + labeledClassName + colonMessageOrEmptyString
 
-            if (!useConciseTestFailedExceptionForm) {
-              val stackTraceElements = throwable.getStackTrace.toList map { "  " + _.toString } // Indent each stack trace item two spaces
+            if (!useTruncatedStackTrace) {
+              val stackTraceElements = throwable.getStackTrace.toList map { "  at " + _.toString } // Indent each stack trace item two spaces
               val cause = throwable.getCause
 
               val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
@@ -192,7 +244,7 @@ private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurat
             }
             else List(labeledClassNameWithMessage)
           }
-          if (!throwableIsATestFailedExceptionWithRedundantMessage || !useConciseTestFailedExceptionForm)
+          if (!throwableIsAStackDepthWithRedundantMessage || !useTruncatedStackTrace)
             stackTrace(throwable, false)
           else List()
         case None => List()

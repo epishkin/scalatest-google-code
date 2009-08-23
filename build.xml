@@ -477,7 +477,7 @@
 -->
             <excludes>SlowTest</excludes>
             <reporter type="graphic"/>
-            <reporter type="stdout" config="N"/>
+            <reporter type="stdout" config="F"/>
             <suite classname="${class}"/>
         </scalatest>
     </target>
