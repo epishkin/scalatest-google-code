@@ -19,6 +19,6 @@ import org.scalatest.junit.JUnit3Suite
 
 class JUnitTestCaseSuite extends JUnit3Suite {
   def testSomething() {
-    fail()
+    fail("hi there")
   }
 }
