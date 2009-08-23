@@ -250,7 +250,7 @@ if a StackDepth and no F specified, then show the truncated form.
                     case _ => 0
                   }
 
-                "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
+                stackTraceThisThrowable.head :: "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
               }
           }
           stackTrace(throwable, false)
