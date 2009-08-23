@@ -232,21 +232,31 @@ if a StackDepth and no F specified, then show the truncated form.
             val labeledClassNameWithMessage =
               "  " + labeledClassName + colonMessageOrEmptyString
 
-            if (!useTruncatedStackTrace) {
-              val stackTraceElements = throwable.getStackTrace.toList map { "  at " + _.toString } // Indent each stack trace item two spaces
+               // Indent each stack trace item two spaces, and prepend that with an "at "
+              val stackTraceElements = throwable.getStackTrace.toList map { "  at " + _.toString }
               val cause = throwable.getCause
 
               val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
-              if (cause == null)
-                stackTraceThisThrowable
-              else
-                stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
-            }
-            else List(labeledClassNameWithMessage)
+              if (!useTruncatedStackTrace) {
+                if (cause == null)
+                  stackTraceThisThrowable
+                else
+                  stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
+              }
+              else {
+                val stackDepth =
+                  throwable match {
+                    case e: Throwable with StackDepth => e.failedCodeStackDepth
+                    case _ => 0
+                  }
+
+                "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
+              }
           }
-          if (!throwableIsAStackDepthWithRedundantMessage || !useTruncatedStackTrace)
+          stackTrace(throwable, false)
+         /* if (!throwableIsAStackDepthWithRedundantMessage || !useTruncatedStackTrace)
             stackTrace(throwable, false)
-          else List()
+          else List() */
         case None => List()
       }
 
