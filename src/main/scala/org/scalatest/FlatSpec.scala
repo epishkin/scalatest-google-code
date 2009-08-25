@@ -1336,13 +1336,13 @@ trait FlatSpec extends Suite { thisSuite =>
 
     // "A Stack" should "bla bla" taggedAs(SlowTest) in { fixture =>
     //                                               ^
-    def in(testFun: Any => Unit) {
+    def in(testFun: Any => Any) {
       throw new RuntimeException() // TODO: add a message and tests
     }
 
     // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { fixture =>
     //                                               ^
-    def ignore(testFun: Any => Unit) {
+    def ignore(testFun: Any => Any) {
       throw new RuntimeException() // TODO: add a message and tests
     }
   }
@@ -1401,12 +1401,12 @@ trait FlatSpec extends Suite { thisSuite =>
         def ignore(testFun: => Unit) {
           registerTestToIgnore(verb + " " + right, List(), testFun _)
         }
-        def in(testFun: Any => Unit) { // TODO pass some message
+        def in(testFun: Any => Any) { // TODO pass some message
           throw new RuntimeException
         }
         // Note, won't have a fixture => PendingNothing one, because don't want
         // to say is (fixture => pending), rather just say is (pending)
-        def ignore(testFun: Any => Unit) { // TODO pass some message
+        def ignore(testFun: Any => Any) { // TODO pass some message
           throw new RuntimeException
         }
         def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
