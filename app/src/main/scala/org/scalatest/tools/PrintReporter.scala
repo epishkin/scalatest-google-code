@@ -206,7 +206,7 @@ if a StackDepth and no F specified, then show the truncated form.
           ((t.getMessage != null &&
           !t.getMessage.trim.isEmpty && possiblyEmptyMessage.indexOf(t.getMessage.trim) != -1) || // This part is where a throwable message exists
           (possiblyEmptyMessage.isEmpty && (t.getMessage == null || t.getMessage.trim.isEmpty))) // This part detects when both have no message
-        case None => false
+        case _ => false
       }
 
     def getStackTrace(throwable: Option[Throwable]): List[String] =
