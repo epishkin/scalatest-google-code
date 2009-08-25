@@ -414,7 +414,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: (Fixture) => Unit) = {
+  private def registerTest(specText: String, f: Fixture => Any) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -424,7 +424,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
     }
     val testShortName = specText
-    val test = FixtureTestLeaf(currentBranch, testName, specText, f)
+    val test = FixtureTestLeaf(currentBranch, testName, specText, f.asInstanceOf[Fixture => Unit])
     currentBranch.subNodes ::= test
     testsList ::= test
 
@@ -498,7 +498,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
@@ -558,7 +558,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
@@ -641,7 +641,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   }
 
   protected class StringTaggedAs(specText: String, tags: List[Tag]) {
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToRun(specText, tags, testFun)
     }
     // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -650,19 +650,19 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       registerTestToRun(specText, tags, unusedFixture => testFun)
     }
     // "hi" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
-    def ignore(testFun: Fixture => Unit) {
+    def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(specText, tags, testFun)
     }
   }
 
   protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToIgnore(specText, tags, testFun)
     }
   }
 
   protected class WordSpecStringWrapper(string: String) {
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToRun(string, List(), testFun)
     }
     // "test that" is (pending)
@@ -670,7 +670,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     def is(testFun: => PendingNothing) {
       registerTestToRun(string, List(), unusedFixtre => testFun)
     }
-    def ignore(testFun: Fixture => Unit) {
+    def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(string, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
@@ -703,7 +703,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
 
   protected class IgnoredTest(specText: String) {
-    def in(f: Fixture => Unit) {
+    def in(f: Fixture => Any) {
       registerTestToIgnore(specText, List(), f)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
@@ -1066,6 +1066,6 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   val behave = new BehaveWord
 
-  implicit def withNoFixture(fun: => Unit) =
-    (fixture: this.Fixture) => fun
+  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+    new NoArgTestWrapper(fun)
 }
