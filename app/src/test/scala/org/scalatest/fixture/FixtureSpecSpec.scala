@@ -732,7 +732,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       assert(a.takesAFixtureInvoked)
     }
     it("should work with ignored tests whose inferred result type is not Unit") {
-      val a = new FixtureFunSuite {
+      val a = new FixtureSpec {
         type Fixture = String
         def withFixture(fun: TestFunction) { fun("hi") }
         var theTestThisCalled = false
