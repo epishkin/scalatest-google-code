@@ -73,13 +73,13 @@ trait ResultOfStringPassedToVerb[Fixture] {
    */
   def in(testFun: => Unit)
 
-  def in(testFun: Fixture => Unit)
+  def in(testFun: Fixture => Any)
 
   def is(testFun: => PendingNothing)
 
   def ignore(testFun: => Unit)
 
-  def ignore(testFun: Fixture => Unit)
+  def ignore(testFun: Fixture => Any)
 
   def taggedAs(firstTestTag: Tag, otherTestTags: Tag*): SubjectVerbStringTaggedAs[Fixture]
 }

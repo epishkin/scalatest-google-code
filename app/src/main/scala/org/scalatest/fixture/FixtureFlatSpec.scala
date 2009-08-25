@@ -403,7 +403,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: Fixture => Unit) = {
+  private def registerTest(specText: String, f: Fixture => Any) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -413,7 +413,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
       throw new DuplicateTestNameException(testName, getStackDepth("FlatSpec.scala", "it"))
     }
     val testShortName = specText
-    val test = FixtureTestLeaf(currentBranch, testName, specText, f)
+    val test = FixtureTestLeaf(currentBranch, testName, specText, f.asInstanceOf[Fixture => Unit])
     currentBranch.subNodes ::= test
     testsList ::= test
 
@@ -487,7 +487,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
@@ -531,7 +531,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
   protected val behavior = new BehaviorWord
 
   protected class ItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToRun(verb + " " + name, tags, testFun)
     }
     // it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -539,13 +539,13 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
     def is(testFun: => PendingNothing) {
       registerTestToRun(verb + " " + name, tags, unusedFixture => testFun)
     }
-    def ignore(testFun: Fixture => Unit) {
+    def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
   }
 
   protected class ItVerbString(verb: String, name: String) {
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToRun(verb + " " + name, List(), testFun)
     }
     // it should "test that" is (pending)
@@ -554,7 +554,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
       registerTestToRun(verb + " " + name, List(), unusedFixture => testFun)
     }
 
-    def ignore(testFun: Fixture => Unit) {
+    def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
@@ -575,7 +575,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
   protected val it = new ItWord
 
   protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
     // ignore must "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -586,7 +586,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
   }
 
   protected class IgnoreVerbString(verb: String, name: String) {
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
 
@@ -625,7 +625,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
 
     // "A Stack" should "bla bla" taggedAs(SlowTest) in {
     //                                               ^
-    def in(testFun: Fixture => Unit) {
+    def in(testFun: Fixture => Any) {
       registerTestToRun(verbAndname, tags, testFun)
     }
 
@@ -637,7 +637,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
 
     // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
     //                                               ^
-    def ignore(testFun: Fixture => Unit) {
+    def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(verbAndname, tags, testFun)
     }
   }
@@ -654,13 +654,13 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
         def ignore(testFun: => Unit) {
           throw new RuntimeException // TODO: Explain why in msg
         }
-        def in(testFun: Fixture => Unit) {
+        def in(testFun: Fixture => Any) {
           registerTestToRun(verb + " " + right, List(), testFun)
         }
         def is(testFun: => PendingNothing) {
           registerTestToRun(verb + " " + right, List(), unusedFixture => testFun)
         }
-        def ignore(testFun: Fixture => Unit) {
+        def ignore(testFun: Fixture => Any) {
           registerTestToIgnore(verb + " " + right, List(), testFun)
         }
         def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
@@ -720,7 +720,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Unit) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)
@@ -1105,6 +1105,6 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
 
   val behave = new BehaveWord
 
-  implicit def withNoFixture(fun: => Unit) =
-      (fixture: this.Fixture) => fun
+  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+    new NoArgTestWrapper(fun)
 }

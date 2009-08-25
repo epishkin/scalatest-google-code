@@ -33,9 +33,9 @@ trait SubjectVerbStringTaggedAs[T] {
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) in { fixture =>
   //                                               ^
-  def in(testFun: T => Unit)
+  def in(testFun: T => Any)
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { fixture =>
   //                                               ^
-  def ignore(testFun: T => Unit)
+  def ignore(testFun: T => Any)
 }
