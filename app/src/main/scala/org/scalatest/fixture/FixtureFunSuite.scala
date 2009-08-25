@@ -456,7 +456,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
-  protected def test(testName: String, testTags: Tag*)(f: Fixture => Unit) {
+  protected def test(testName: String, testTags: Tag*)(f: Fixture => Any) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -472,7 +472,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
 
-    val testNode = Test(testName, f)
+    val testNode = Test(testName, f.asInstanceOf[Fixture => Unit])
     testsMap += (testName -> testNode)
     testNamesList ::= testName
     doList ::= testNode
@@ -498,7 +498,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
-  protected def ignore(testName: String, testTags: Tag*)(f: Fixture => Unit) {
+  protected def ignore(testName: String, testTags: Tag*)(f: Fixture => Any) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -736,10 +736,10 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
   val testsFor = new TestsForPhrase
 
-  implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
+  implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
     fixture => f
   }
 
-  implicit def withNoFixture(fun: => Unit) =
-    (fixture: this.Fixture) => fun
+  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+    new NoArgTestWrapper(fun)
 }

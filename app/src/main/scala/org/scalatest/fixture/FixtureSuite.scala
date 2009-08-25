@@ -386,6 +386,43 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
   }
 
   /**
+   * Object that encapsulates a test function, which does not take a fixture,
+   * and a config map.
+   *
+   * <p>
+   * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
+   * to <code>FixtureSuite</code>'s <code>withFixture</code> method for tests that do not require a fixture to
+   * be passed.  For more detail and examples, see the
+   * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
+   * </p>
+   */
+  protected trait FixturelessTestFunction extends TestFunction {
+
+    /**
+     * Run the test, ignoring the passed <code>Fixture</code>.
+     *
+     * <p>
+     * This traits implementation of this method invokes the overloaded form
+     * of <code>apply</code> that takes no parameters.
+     * </p>
+     */
+    final def apply(fixture: Fixture) {
+      apply()
+    }
+
+    /**
+     * Run the test without a <code>Fixture</code>.
+     */
+    def apply()
+
+    /**
+     * Return a <code>Map[String, Any]</code> containing objects that can be used
+     * to configure the fixture and test.
+     */
+    def configMap: Map[String, Any]
+  }
+
+  /**
    * Run the passed test function with a fixture created by this method.
    *
    * <p>

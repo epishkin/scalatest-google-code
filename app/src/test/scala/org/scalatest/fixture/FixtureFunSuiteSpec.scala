@@ -641,7 +641,7 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
           pending
         }
 
-        test("should do that without a fixture") {
+        test("should do that without a fixture") { () =>
           assert(2 + 2 === 4)
           theTestWithoutFixtureWasRun = true
         }
@@ -693,7 +693,7 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
         }
 
         var takesNoArgsInvoked = false
-        test("take no args") { takesNoArgsInvoked = true }
+        test("take no args") { () => takesNoArgsInvoked = true }
 
         var takesAFixtureInvoked = false
         test("takes a fixture") { s => takesAFixtureInvoked = true }
@@ -703,6 +703,48 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(a.testNames.size === 2, a.testNames)
       assert(a.takesNoArgsInvoked)
       assert(a.takesAFixtureInvoked)
+    }
+
+    it("should work with test functions whose inferred result type is not Unit") {
+      val a = new FixtureFunSuite {
+
+        type Fixture = String
+        def withFixture(fun: TestFunction) {
+          fun("Hello, world!")
+        }
+
+        var takesNoArgsInvoked = false
+        test("take no args") { () => takesNoArgsInvoked = true; true }
+
+        var takesAFixtureInvoked = false
+        test("takes a fixture") { s => takesAFixtureInvoked = true; true }
+      }
+
+      assert(!a.takesNoArgsInvoked)
+      assert(!a.takesAFixtureInvoked)
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 2, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAFixtureInvoked)
+    }
+
+    it("should work with ignored tests whose inferred result type is not Unit") {
+      val a = new FixtureFunSuite {
+        type Fixture = String
+        def withFixture(fun: TestFunction) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        ignore("test this") { () => theTestThisCalled = true; "hi" }
+        ignore("test that") { fixture => theTestThatCalled = true; 42 }
+      }
+
+      assert(!a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
+      val reporter = new EventRecordingReporter
+      a.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(reporter.testIgnoredEventsReceived.size === 2)
+      assert(!a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
     }
   }
 }

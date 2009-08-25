@@ -698,7 +698,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
         }
 
         var takesNoArgsInvoked = false
-        it("take no args") { takesNoArgsInvoked = true }
+        it("take no args") { () => takesNoArgsInvoked = true }
 
         var takesAFixtureInvoked = false
         it("takes a fixture") { s => takesAFixtureInvoked = true }
@@ -708,6 +708,46 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       assert(a.testNames.size === 2, a.testNames)
       assert(a.takesNoArgsInvoked)
       assert(a.takesAFixtureInvoked)
+    }
+    it("should work with test functions whose inferred result type is not Unit") {
+      val a = new FixtureSpec {
+
+        type Fixture = String
+        def withFixture(fun: TestFunction) {
+          fun("Hello, world!")
+        }
+
+        var takesNoArgsInvoked = false
+        it("should take no args") { () => takesNoArgsInvoked = true; true }
+
+        var takesAFixtureInvoked = false
+        it("should take a fixture") { s => takesAFixtureInvoked = true; true }
+      }
+
+      assert(!a.takesNoArgsInvoked)
+      assert(!a.takesAFixtureInvoked)
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 2, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAFixtureInvoked)
+    }
+    it("should work with ignored tests whose inferred result type is not Unit") {
+      val a = new FixtureFunSuite {
+        type Fixture = String
+        def withFixture(fun: TestFunction) { fun("hi") }
+        var theTestThisCalled = false
+        var theTestThatCalled = false
+        ignore("should test this") { () => theTestThisCalled = true; "hi" }
+        ignore("should test that") { fixture => theTestThatCalled = true; 42 }
+      }
+
+      assert(!a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
+      val reporter = new EventRecordingReporter
+      a.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(reporter.testIgnoredEventsReceived.size === 2)
+      assert(!a.theTestThisCalled)
+      assert(!a.theTestThatCalled)
     }
   }
 }

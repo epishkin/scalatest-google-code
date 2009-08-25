@@ -20,18 +20,17 @@ import org.scalatest.fixture.MultipleFixtureFunSuite
 
 class MultiFixtureFunSuite extends MultipleFixtureFunSuite {
 
-   // Uses the implicit conversion from by-name to Fixture => Unit
-  implicit def withStringFixture(testFunction: String => Unit): Fixture => Unit =
-    testFunction("howdy")
+  implicit def withStringFixture(testFunction: String => Any): Fixture => Any =
+    () => testFunction("howdy")
 
-  implicit def withListFixture(testFunction: List[Int] => Unit): Fixture => Unit =
+  implicit def withListFixture(testFunction: List[Int] => Any): Fixture => Any =
     configMap => testFunction(List(configMap.size))
 
-  test("a by name version") {
+  test("a by name version") { () =>
     assert(1 === 1)
   }
 
-  test("a configMap version") { configMap =>
+  test("a configMap version") { (configMap) =>
     assert(configMap.isEmpty)
   }
 

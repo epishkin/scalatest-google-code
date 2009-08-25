@@ -11,6 +11,7 @@
 - Try sorting the GUI reports with the ordinal (1 hour)
 - make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error
 - write tests for JUnit3Suite
+- add a name to TestFunction in FixtureSuite?
 
 Make all function parameters named fun.
 
