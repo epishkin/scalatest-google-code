@@ -23,8 +23,8 @@ class TVFixtureFeatureSpec extends org.scalatest.fixture.FixtureFeatureSpec
 
   type Fixture = String
   
-  def withFixture(testFun: TestFunction) {
-    testFun("hi")
+  def withFixture(test: TestFunction) {
+    test("hi")
   }
 
   feature("Ability to change the channel on the TV remotely") {
