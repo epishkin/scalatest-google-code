@@ -793,7 +793,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         var takesAFixtureInvoked = false
 
         "A WordSpec" should {
-          "take no args" in { takesNoArgsInvoked = true }
+          "take no args" in { () => takesNoArgsInvoked = true }
           "take a fixture" in { s => takesAFixtureInvoked = true }
         }
       }
@@ -802,6 +802,49 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(a.testNames.size === 2, a.testNames)
       assert(a.takesNoArgsInvoked)
       assert(a.takesAFixtureInvoked)
+    }
+    it("should work with test functions whose inferred result type is not Unit") {
+      val a = new FixtureWordSpec {
+
+        type Fixture = String
+        def withFixture(fun: TestFunction) {
+          fun("Hello, world!")
+        }
+
+        var takesNoArgsInvoked = false
+        var takesAFixtureInvoked = false
+        "A WordSpec" should {
+          "take no args" in { () => takesNoArgsInvoked = true; true }
+          "take a fixture" in { s => takesAFixtureInvoked = true; true }
+        }
+      }
+
+      assert(!a.takesNoArgsInvoked)
+      assert(!a.takesAFixtureInvoked)
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.testNames.size === 2, a.testNames)
+      assert(a.takesNoArgsInvoked)
+      assert(a.takesAFixtureInvoked)
+    }
+    it("should work with ignored tests whose inferred result type is not Unit") {
+      val a = new FixtureWordSpec {
+        type Fixture = String
+        def withFixture(fun: TestFunction) { fun("hi") }
+        var takeNoArgsInvoked = false
+        var takeAFixtureInvoked = false
+        "A WordSpec" should {
+          "take no args" ignore { () => takeNoArgsInvoked = true; "hi" }
+          "take a fixture" ignore { s => takeAFixtureInvoked = true; 42 }
+        }
+      }
+
+      assert(!a.takeNoArgsInvoked)
+      assert(!a.takeAFixtureInvoked)
+      val reporter = new EventRecordingReporter
+      a.run(None, reporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(reporter.testIgnoredEventsReceived.size === 2)
+      assert(!a.takeNoArgsInvoked)
+      assert(!a.takeAFixtureInvoked)
     }
   }
 }
