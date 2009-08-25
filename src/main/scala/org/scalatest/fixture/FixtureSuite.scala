@@ -39,11 +39,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * This trait behaves similarly to trait <code>org.scalatest.Suite</code>, except that tests may take a fixture object. The type of the
  * fixture object passed is defined by the abstract <code>Fixture</code> type, which is declared as a member of this trait.
  * This trait also declares the abstract method <code>withFixture</code>. The <code>withFixture</code> method
- * takes a <code>TestFunction</code>, which is a nested trait defined as a member of this trait.
- * <code>TestFunction</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
+ * takes a <code>Test</code>, which is a nested trait defined as a member of this trait.
+ * <code>Test</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
  * This <code>apply</code> method is responsible for running a test.
  * This trait's <code>runTest</code> method delegates the actual running of each test to <code>withFixture</code>, passing
- * in the test code to run via the <code>TestFunction</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
+ * in the test code to run via the <code>Test</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
  * for creating the fixture and passing it to the test function.
  * </p>
  * 
@@ -73,7 +73,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   type Fixture = FileReader
  *
  *   // 2. define the withFixture method
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -91,7 +91,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       fun(reader)
+ *       test(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -117,8 +117,10 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   }
  * 
  *   // (You can also write tests methods that don't take a Fixture.)
- *   def testWithoutAFixture() {
- *     assert(1 + 1 === 2)
+ *   def testWithoutAFixture() { 
+ *     without fixture {
+ *       assert(1 + 1 === 2)
+ *     }
  *   }
  * }
  * </pre>
@@ -137,14 +139,14 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = (StringBuilder, ListBuffer[String])
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
  *     val listBuffer = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     fun(stringBuilder, listBuffer)
+ *     test(stringBuilder, listBuffer)
  *   }
  *
  *   def testEasy(fixture: Fixture) {
@@ -189,14 +191,14 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FixtureHolder
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
  *     val listBuffer = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     fun(FixtureHolder(stringBuilder, listBuffer))
+ *     test(FixtureHolder(stringBuilder, listBuffer))
  *   }
  *
  *   def testEasy(fixture: Fixture) {
@@ -255,9 +257,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Sometimes you may want to write tests that are configurable. For example, you may want to write
  * a suite of tests that each take an open temp file as a fixture, but whose file name is specified
  * externally so that the file name can be can be changed from run to run. To accomplish this
- * the <code>TestFunction</code> trait has a <code>configMap</code>
+ * the <code>Test</code> trait has a <code>configMap</code>
  * method, which will return a <code>Map[String, Any]</code> from which configuration information may be obtained.
- * The <code>runTest</code> method of this trait will pass a <code>TestFunction</code> to <code>withFixture</code>
+ * The <code>runTest</code> method of this trait will pass a <code>Test</code> to <code>withFixture</code>
  * whose <code>configMap</code> method returns the <code>configMap</code> passed to <code>runTest</code>.
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
@@ -272,15 +274,15 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     require(
- *       fun.configMap.contains("TempFileName"),
+ *       test.configMap.contains("TempFileName"),
  *       "This suite requires a TempFileName to be passed in the configMap"
  *     )
  *
  *     // Grab the file name from the configMap
- *     val FileName = fun.configMap("TempFileName")
+ *     val FileName = test.configMap("TempFileName")
  *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)
@@ -296,7 +298,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       fun(reader)
+ *       test(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -371,7 +373,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait TestFunction extends (Fixture => Unit) {
+  protected trait Test extends (Fixture => Unit) {
 
     /**
      * Run the test, using the passed <code>Fixture</code>.
@@ -384,44 +386,6 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
      */
     def configMap: Map[String, Any]
   }
-
-  /**
-   * Object that encapsulates a test function, which does not take a fixture,
-   * and a config map.
-   *
-   * <p>
-   * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
-   * to <code>FixtureSuite</code>'s <code>withFixture</code> method for tests that do not require a fixture to
-   * be passed.  For more detail and examples, see the
-   * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
-   * </p>
-   */
-  protected trait FixturelessTestFunction extends TestFunction {
-
-    /**
-     * Run the test, ignoring the passed <code>Fixture</code>.
-     *
-     * <p>
-     * This traits implementation of this method invokes the overloaded form
-     * of <code>apply</code> that takes no parameters.
-     * </p>
-     */
-    final def apply(fixture: Fixture) {
-      apply()
-    }
-
-    /**
-     * Run the test without a <code>Fixture</code>.
-     */
-    def apply()
-
-    /**
-     * Return a <code>Map[String, Any]</code> containing objects that can be used
-     * to configure the fixture and test.
-     */
-    def configMap: Map[String, Any]
-  }
-
   /**
    * Run the passed test function with a fixture created by this method.
    *
@@ -432,15 +396,15 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * For more detail and examples, see the <a href="FixtureSuite.html">main documentation for this trait</a>.
    * </p>
    *
-   * @param fun the <code>TestFunction</code> to invoke, passing in a fixture
+   * @param fun the <code>Test</code> to invoke, passing in a fixture
    */
-  protected def withFixture(fun: TestFunction)
+  protected def withFixture(test: Test)
 
-  private[fixture] class TestFunAndConfigMap(fun: (Fixture) => Any, val configMap: Map[String, Any])
-    extends TestFunction {
+  private[fixture] class TestFunAndConfigMap(test: Fixture => Any, val configMap: Map[String, Any])
+    extends Test {
     
     def apply(fixture: Fixture) {
-      fun(fixture)
+      test(fixture)
     }
   }
 
@@ -635,6 +599,48 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
          throw new IllegalArgumentException(Resources("testNotFound", testName))
      }
   }
+
+   /*
+  /*
+   * Object that encapsulates a test function, which does not take a fixture,
+   * and a config map.
+   *
+   * <p>
+   * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
+   * to <code>FixtureSuite</code>'s <code>withFixture</code> method for tests that do not require a fixture to
+   * be passed.  For more detail and examples, see the
+   * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
+   * </p>
+   */
+  protected trait NoArgTestFunction extends (Fixture => Any) {
+
+    /**
+     * Run the test, ignoring the passed <code>Fixture</code>.
+     *
+     * <p>
+     * This traits implementation of this method invokes the overloaded form
+     * of <code>apply</code> that takes no parameters.
+     * </p>
+     */
+    final def apply(fixture: Fixture): Any = {
+      apply()
+    }
+
+    /**
+     * Run the test without a <code>Fixture</code>.
+     */
+    def apply()
+  }
+
+  protected class WithoutWord {
+    def fixture(fun: => Any): NoArgTestFunction = {
+      new NoArgTestFunction {
+        def apply() { fun }
+      }
+    }
+  }
+
+  protected def without = new WithoutWord  */
 }
 
 private object FixtureSuite {

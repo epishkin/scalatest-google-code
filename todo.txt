@@ -1,3 +1,32 @@
+
+
+
+        test("should do that without a fixture") { () =>
+          assert(2 + 2 === 4)
+          theTestWithoutFixtureWasRun = true
+        }
+
+        test(without fixture)("should do that without a fixture") {
+          assert(2 + 2 === 4)
+          theTestWithoutFixtureWasRun = true
+        }
+
+        test("should do that without a fixture") (without fixture) { 
+          assert(2 + 2 === 4)
+          theTestWithoutFixtureWasRun = true
+        }
+
+        test("should do that without a fixture") (without fixture { 
+          assert(2 + 2 === 4)
+          theTestWithoutFixtureWasRun = true
+        })
+
+How about this (without fixture) registers a test that has nothing in it, and then 
+it returns something with an apply method, which registers the by name that goes up
+into the apply method as being for that test.
+
+without fixture results in something with an apply method, which 
+
 - pass a message in the RuntimeException for the ResultOfSTringPassedToVerb in FlatSpec and WordSpec
 - reproduce 2.8 bug and put in trac
 - add a LogRecorder trait (1 hr)

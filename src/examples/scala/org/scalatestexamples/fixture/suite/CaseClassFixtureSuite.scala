@@ -9,7 +9,7 @@ class CaseClassFixtureSuite extends FixtureSuite {
 
   type Fixture = FixtureHolder
 
-  def withFixture(testFunction: TestFunction) {
+  def withFixture(testFunction: Test) {
 
     // Create needed mutable objects
     val stringBuilder = new StringBuilder("ScalaTest is ")

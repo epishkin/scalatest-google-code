@@ -7,7 +7,7 @@ class TupleFixtureSuite extends FixtureSuite {
 
   type Fixture = (StringBuilder, ListBuffer[String])
 
-  def withFixture(testFunction: TestFunction) {
+  def withFixture(testFunction: Test) {
 
     // Create needed mutable objects
     val sb = new StringBuilder("ScalaTest is ")

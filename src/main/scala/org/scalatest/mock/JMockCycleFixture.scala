@@ -20,7 +20,7 @@ import fixture.FixtureSuite
 
 trait JMockCycleFixture { this: FixtureSuite =>
   type Fixture = JMockCycle
-  def withFixture(testFunction: this.TestFunction) {
+  def withFixture(testFunction: Test) {
     testFunction(new JMockCycle)
   }
 }

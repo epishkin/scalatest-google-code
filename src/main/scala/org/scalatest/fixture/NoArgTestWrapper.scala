@@ -15,8 +15,9 @@
  */
 package org.scalatest.fixture
 
-private[fixture] class NoArgTestWrapper[T](fun: () => Any) extends (T => Any) {
+private[fixture] class NoArgTestWrapper[T](test: () => Any) extends (T => Any) {
   def apply(fixture: T): Any = {
-    fun()
+    test()
   }
 }
+
