@@ -20,7 +20,7 @@ import org.easymock.{IExpectationSetters, EasyMock}
 import scala.reflect.Manifest
 
 /**
- * Trait that provides some basic syntax sugar for <a href="http://easymock.org/">EasyMock</a>.
+ * Trait that provides some basic syntax sugar for <a href="http://easymock.org/" target="_blank">EasyMock</a>.
  *
  * <p>
  * Using the EasyMock API directly, you create a mock with:
@@ -85,7 +85,7 @@ import scala.reflect.Manifest
  * </pre>
  *
  * <p>
- * This trait enables you to use the following, more concise syntax instead:
+ * This trait enables you to use the following, more declarative syntax instead:
  * </p>
  *
  * <pre>
@@ -127,6 +127,35 @@ import scala.reflect.Manifest
  */
 trait EasyMockSugar {
 
+  /**
+   * Invokes the <code>expect</code> method on the <code>EasyMock</code> companion object (<em>i.e.</em>, the
+   * static <code>expect</code> method in Java class <code>org.easymock.EasyMock</code>).
+   *
+   * <p>
+   * In a ScalaTest <code>Suite</code>, the <code>expect</code> method defined in <code>Assertions</code>, and inherited by <code>Suite</code>,
+   * interferes with the <code>expect</code> method if imported from <code>EasyMock</code>. You can invoke it by qualifying it, <em>i.e.</em>,
+   * <code>EasyMock.expect</code>, or by changing its name on import, like this:
+   *
+   * <pre>
+   * import org.easymock.EasyMock.{expect => easyMockExpect, _}
+   * </pre>
+   *
+   * <p>
+   * But if you mix in this trait, you can just invoke <code>expectCall</code> instead.
+   * </p>
+   *
+   * <p>
+   * You can use this method, for example, to chain expectations like this:
+   * </p>
+   *
+   * <pre>
+   * expecting {
+   *   expectCall(mock.getName).andReturn("Ben Franklin")
+   * }
+   * </pre>
+   * 
+   * @param value - the result of invoking a method on mock prior to invoking <code>replay</code>.
+   */
   def expectCall[T](value: T): IExpectationSetters[T] = EasyMock.expect(value)
 
   /**
