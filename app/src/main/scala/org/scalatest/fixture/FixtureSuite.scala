@@ -371,7 +371,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait TestFunction extends ((Fixture) => Unit) {
+  protected trait TestFunction extends (Fixture => Unit) {
 
     /**
      * Run the test, using the passed <code>Fixture</code>.
@@ -436,7 +436,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    */
   protected def withFixture(fun: TestFunction)
 
-  private[fixture] class TestFunAndConfigMap(fun: (Fixture) => Unit, val configMap: Map[String, Any])
+  private[fixture] class TestFunAndConfigMap(fun: (Fixture) => Any, val configMap: Map[String, Any])
     extends TestFunction {
     
     def apply(fixture: Fixture) {
@@ -542,7 +542,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     try {
       val testFun: Fixture => Unit = {
         (fixture: Fixture) => {
-          val anyRefFixture: AnyRef = fixture.asInstanceOf[AnyRef]
+          val anyRefFixture: AnyRef = fixture.asInstanceOf[AnyRef] // TODO zap this cast
           val args: Array[Object] =
             if (testMethodTakesAFixtureAndInformer(testName) || testMethodTakesAnInformer(testName)) {
               val informer =

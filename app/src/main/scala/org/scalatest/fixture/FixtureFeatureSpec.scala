@@ -414,7 +414,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
     }
     val testShortName = specText
-    val test = FixtureTestLeaf(currentBranch, testName, specText, f.asInstanceOf[Fixture => Unit])
+    val test = FixtureTestLeaf(currentBranch, testName, specText, f)
     currentBranch.subNodes ::= test
     testsList ::= test
 
