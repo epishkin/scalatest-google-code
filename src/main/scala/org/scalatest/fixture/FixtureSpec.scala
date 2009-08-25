@@ -402,7 +402,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  private def registerTest(specText: String, f: Fixture => Unit) = {
+  private def registerTest(specText: String, f: Fixture => Any) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -412,7 +412,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
     }
     val testShortName = specText
-    val test = FixtureTestLeaf[Fixture](currentBranch, testName, specText, f)
+    val test = FixtureTestLeaf[Fixture](currentBranch, testName, specText, f.asInstanceOf[Fixture => Unit])
     currentBranch.subNodes ::= test
     testsList ::= test
 
@@ -488,7 +488,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
      * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
-    def apply(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
+    def apply(specText: String, testTags: Tag*)(testFun: Fixture => Any) {
 
       if (atomic.get.registrationClosed)
         throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
@@ -524,14 +524,14 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
      * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
-    def apply(specText: String)(testFun: Fixture => Unit) {
+    def apply(specText: String)(testFun: Fixture => Any) {
       if (atomic.get.registrationClosed)
         throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
       apply(specText, Array[Tag](): _*)(testFun)
     }
 
-    def should(behaveWord: FixureBehaveWord) = behaveWord
-    def must(behaveWord: FixureBehaveWord) = behaveWord
+    def should(behaveWord: FixtureBehaveWord) = behaveWord
+    def must(behaveWord: FixtureBehaveWord) = behaveWord
   }
 
   protected val it = new ItWord
@@ -554,7 +554,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String, testTags: Tag*)(testFun: Fixture => Unit) {
+  protected def ignore(specText: String, testTags: Tag*)(testFun: Fixture => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
@@ -586,7 +586,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String)(testFun: Fixture => Unit) {
+  protected def ignore(specText: String)(testFun: Fixture => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
@@ -972,26 +972,25 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
     }
   }
 
-  class FixureBehaveWord {
+  class FixtureBehaveWord {
 
     /**
      * This method enables the following syntax:
      *
      * <pre>
-     * scenariosFor(nonEmptyStack(lastValuePushed))
-     *             ^
+     * it should behave like nonEmptyStack(lastValuePushed)
+     *                  ^
      * </pre>
      */
     def like(unit: Unit) {}
   }
 
-  val behave = new FixureBehaveWord
+  val behave = new FixtureBehaveWord
 
-  implicit def convertToFixtureFunction(f: => PendingNothing): (Fixture) => Unit = {
+  implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
     fixture => f
   }
 
-  // TODO: Can I combine this with the previous one, or just remove the previous one?
-  implicit def withNoFixture(fun: => Unit) =
-    (fixture: this.Fixture) => fun
+  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+    new NoArgTestWrapper(fun)
 }

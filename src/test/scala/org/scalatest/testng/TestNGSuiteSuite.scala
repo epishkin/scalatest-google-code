@@ -55,7 +55,7 @@ package org.scalatest.testng {
       }
     }
 
-    test("If a test fails due to an exception, Report should have the exception") {
+    test("If a test fails due to an exception, Report should have the exception") { () =>
       
       val testReporter = new TestReporter
 
@@ -117,7 +117,7 @@ package org.scalatest.testng {
       }
     }
 
-    test("Report for failing tests should include rerunner") {
+    test("Report for failing tests should include rerunner") { () =>
       
       val testReporter = new TestReporter
 
@@ -132,7 +132,7 @@ package org.scalatest.testng {
       }
     }
 
-    test("Report for passing tests should include rerunner") {
+    test("Report for passing tests should include rerunner") { () =>
       
       val testReporter = new TestReporter
 
@@ -145,11 +145,11 @@ package org.scalatest.testng {
     }
     
     
-    test("infoProvided should be available for BeforeMethod/Class/Suite annotations") {
+    test("infoProvided should be available for BeforeMethod/Class/Suite annotations") { () =>
       // this needs to be written after i figure out the mock integration
     }     
     
-    test("infoProvided should be available for AfterMethod/Class/Suite annotations") {
+    test("infoProvided should be available for AfterMethod/Class/Suite annotations") { () =>
       // this needs to be written after i figure out the mock integration
     }     
   }
