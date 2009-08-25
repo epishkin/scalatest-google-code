@@ -633,8 +633,8 @@ trait FunSuite extends Suite { thisSuite =>
   private val IgnoreTagName = "org.scalatest.Ignore"
 
   private abstract class FunNode
-  private case class Test(testName: String, fun: () => Unit) extends FunNode
-  private case class Info(message: String) extends FunNode
+  private case class TestNode(testName: String, fun: () => Unit) extends FunNode
+  private case class InfoNode(message: String) extends FunNode
 
   // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, tags, and runTest get invoked directly or indirectly
@@ -648,7 +648,7 @@ trait FunSuite extends Suite { thisSuite =>
   private class Bundle private(
     val testNamesList: List[String],
     val doList: List[FunNode],
-    val testsMap: Map[String, Test],
+    val testsMap: Map[String, TestNode],
     val tagsMap: Map[String, Set[String]],
     val registrationClosed: Boolean
   ) {
@@ -659,7 +659,7 @@ trait FunSuite extends Suite { thisSuite =>
     def apply(
       testNamesList: List[String],
       doList: List[FunNode],
-      testsMap: Map[String, Test],
+      testsMap: Map[String, TestNode],
       tagsMap: Map[String, Set[String]],
       registrationClosed: Boolean
     ): Bundle =
@@ -708,7 +708,7 @@ trait FunSuite extends Suite { thisSuite =>
           throw new NullPointerException
         val oldBundle = atomic.get
         var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-        doList ::= Info(message)
+        doList ::= InfoNode(message)
         updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
       }
     }
@@ -755,7 +755,7 @@ trait FunSuite extends Suite { thisSuite =>
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
 
-    val testNode = Test(testName, f _)
+    val testNode = TestNode(testName, f _)
     testsMap += (testName -> testNode)
     testNamesList ::= testName
     doList ::= testNode
@@ -968,8 +968,8 @@ trait FunSuite extends Suite { thisSuite =>
         val doList = atomic.get.doList.reverse
         for (node <- doList) {
           node match {
-            case Info(message) => info(message)
-            case Test(tn, _) =>
+            case InfoNode(message) => info(message)
+            case TestNode(tn, _) =>
               val (filterTest, ignoreTest) = filter(tn, tags)
               if (!filterTest)
                 if (ignoreTest)

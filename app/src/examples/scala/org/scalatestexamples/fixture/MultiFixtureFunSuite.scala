@@ -20,11 +20,11 @@ import org.scalatest.fixture.MultipleFixtureFunSuite
 
 class MultiFixtureFunSuite extends MultipleFixtureFunSuite {
 
-  implicit def withStringFixture(testFunction: String => Any): Fixture => Any =
-    () => testFunction("howdy")
+  implicit def withStringFixture(test: String => Any): Fixture => Any =
+    () => test("howdy")
 
-  implicit def withListFixture(testFunction: List[Int] => Any): Fixture => Any =
-    configMap => testFunction(List(configMap.size))
+  implicit def withListFixture(test: List[Int] => Any): Fixture => Any =
+    configMap => test(List(configMap.size))
 
   test("a by name version") { () =>
     assert(1 === 1)
