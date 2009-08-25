@@ -23,7 +23,7 @@ class TVFixtureFeatureSpec extends org.scalatest.fixture.FixtureFeatureSpec
 
   type Fixture = String
   
-  def withFixture(test: TestFunction) {
+  def withFixture(test: Test) {
     test("hi")
   }
 

@@ -81,7 +81,7 @@ trait ConductorFixture { this: FixtureSuite =>
    * </p>
    *
    */
-  def withFixture(fun: TestFunction) {
+  def withFixture(fun: Test) {
     val conductor = new Conductor
     fun(conductor)
     if (!conductor.conductTestWasCalled)

@@ -34,11 +34,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * fixture object passed is defined by the abstract <code>Fixture</code> type, which is declared as a member of this trait (inherited
  * from supertrait <code>FixtureSuite</code>).
  * This trait also inherits the abstract method <code>withFixture</code> from supertrait <code>FixtureSuite</code>. The <code>withFixture</code> method
- * takes a <code>TestFunction</code>, which is a nested trait defined as a member of supertrait <code>FixtureSuite</code>.
- * <code>TestFunction</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
+ * takes a <code>Test</code>, which is a nested trait defined as a member of supertrait <code>FixtureSuite</code>.
+ * <code>Test</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
  * This <code>apply</code> method is responsible for running a test.
  * This trait's <code>runTest</code> method delegates the actual running of each test to <code>withFixture</code>, passing
- * in the test code to run via the <code>TestFunction</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
+ * in the test code to run via the <code>Test</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
  * for creating the fixture and passing it to the test function.
  * </p>
  * 
@@ -68,7 +68,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   type Fixture = FileReader
  *
  *   // 2. define the withFixture method
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -86,7 +86,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       fun(reader)
+ *       test(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -114,7 +114,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  *     // (You can also write tests that don't take a Fixture.)
  *     "not be required" in {
- *       assert(1 + 1 === 2)
+ *       without fixture {
+ *         assert(1 + 1 === 2)
+ *       }
  *     }
  *   }
  * }
@@ -134,14 +136,14 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = (StringBuilder, ListBuffer[String])
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
  *     val listBuffer = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     fun(stringBuilder, listBuffer)
+ *     test(stringBuilder, listBuffer)
  *   }
  *
  *   "Another contrived example" should {
@@ -188,14 +190,14 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FixtureHolder
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
  *     val listBuffer = new ListBuffer[String]
  *
  *     // Invoke the test function, passing in the mutable objects
- *     fun(FixtureHolder(stringBuilder, listBuffer))
+ *     test(FixtureHolder(stringBuilder, listBuffer))
  *   }
  *
  *   "Another contrived example" should {
@@ -256,9 +258,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Sometimes you may want to write tests that are configurable. For example, you may want to write
  * a suite of tests that each take an open temp file as a fixture, but whose file name is specified
  * externally so that the file name can be can be changed from run to run. To accomplish this
- * the <code>TestFunction</code> trait has a <code>configMap</code>
+ * the <code>Test</code> trait has a <code>configMap</code>
  * method, which will return a <code>Map[String, Any]</code> from which configuration information may be obtained.
- * The <code>runTest</code> method of this trait will pass a <code>TestFunction</code> to <code>withFixture</code>
+ * The <code>runTest</code> method of this trait will pass a <code>Test</code> to <code>withFixture</code>
  * whose <code>configMap</code> method returns the <code>configMap</code> passed to <code>runTest</code>.
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
@@ -273,15 +275,15 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     require(
- *       fun.configMap.contains("TempFileName"),
+ *       test.configMap.contains("TempFileName"),
  *       "This suite requires a TempFileName to be passed in the configMap"
  *     )
  *
  *     // Grab the file name from the configMap
- *     val FileName = fun.configMap("TempFileName")
+ *     val FileName = test.configMap("TempFileName")
  *
  *     // Set up the temp file needed by the test
  *     val writer = new FileWriter(FileName)
@@ -297,7 +299,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       fun(reader)
+ *       test(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
