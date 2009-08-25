@@ -15,7 +15,6 @@
  */
 package org.scalatest.fixture
 
-import org.scalatest._
 import scala.collection.immutable.ListSet
 import java.util.ConcurrentModificationException
 import java.util.concurrent.atomic.AtomicReference
@@ -350,7 +349,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   private val IgnoreTagName = "org.scalatest.Ignore"
 
   private abstract class FunNode
-  private case class Test(testName: String, fun: Fixture => Unit) extends FunNode
+  private case class Test(testName: String, fun: Fixture => Any) extends FunNode
   private case class Info(message: String) extends FunNode
 
   // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
@@ -472,7 +471,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
 
-    val testNode = Test(testName, f.asInstanceOf[Fixture => Unit])
+    val testNode = Test(testName, f)
     testsMap += (testName -> testNode)
     testNamesList ::= testName
     doList ::= testNode

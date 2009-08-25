@@ -31,7 +31,7 @@ private[fixture] object FixtureNodeFamily  {
     parent: Branch,
     testName: String,
     specText: String,
-    f: Fixture => Unit
+    f: Fixture => Any
   ) extends Node(Some(parent))
 
   case class InfoLeaf(parent: Branch, message: String) extends Node(Some(parent))
