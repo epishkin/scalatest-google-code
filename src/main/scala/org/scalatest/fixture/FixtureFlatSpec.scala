@@ -530,7 +530,12 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
    */
   protected val behavior = new BehaviorWord
 
+  // TODO: Do a walk through. Are all these being used. I guess I'll find out when
+  // I document them.
   protected class ItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+    def in(testFun: () => Any) {
+      registerTestToRun(verb + " " + name, tags, new NoArgTestWrapper(testFun))
+    }
     def in(testFun: Fixture => Any) {
       registerTestToRun(verb + " " + name, tags, testFun)
     }
@@ -539,12 +544,18 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
     def is(testFun: => PendingNothing) {
       registerTestToRun(verb + " " + name, tags, unusedFixture => testFun)
     }
+    def ignore(testFun: () => Any) {
+      registerTestToIgnore(verb + " " + name, tags, new NoArgTestWrapper(testFun))
+    }
     def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
   }
 
   protected class ItVerbString(verb: String, name: String) {
+    def in(testFun: () => Any) {
+      registerTestToRun(verb + " " + name, List(), new NoArgTestWrapper(testFun))
+    }
     def in(testFun: Fixture => Any) {
       registerTestToRun(verb + " " + name, List(), testFun)
     }
@@ -554,6 +565,9 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
       registerTestToRun(verb + " " + name, List(), unusedFixture => testFun)
     }
 
+    def ignore(testFun: () => Any) {
+      registerTestToIgnore(verb + " " + name, List(), new NoArgTestWrapper(testFun))
+    }
     def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
@@ -575,6 +589,9 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
   protected val it = new ItWord
 
   protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+    def in(testFun: () => Any) {
+      registerTestToIgnore(verb + " " + name, tags, new NoArgTestWrapper(testFun))
+    }
     def in(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
@@ -586,6 +603,9 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
   }
 
   protected class IgnoreVerbString(verb: String, name: String) {
+    def in(testFun: () => Any) {
+      registerTestToIgnore(verb + " " + name, List(), new NoArgTestWrapper(testFun))
+    }
     def in(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
@@ -608,68 +628,88 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
     def can(string: String) = new IgnoreVerbString("can", string)
   }
 
-  protected class FlatSpecSubjectVerbStringTaggedAs(verbAndname: String, tags: List[Tag])
-      extends SubjectVerbStringTaggedAs[Fixture] {
+  protected val ignore = new IgnoreWord
 
-    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
-    //                                               ^
-    def in(testFun: => Unit) {
-      throw new RuntimeException() // TODO: add a message and tests
+  protected class InAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) {
+    import resultOfStringPassedToVerb.verb
+    import resultOfStringPassedToVerb.rest
+    def in(testFun: () => Any) {
+      registerTestToRun(verb + " " + rest, List(), new NoArgTestWrapper(testFun))
     }
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
-    //                                               ^
-    def ignore(testFun: => Unit) {
-      throw new RuntimeException() // TODO: add a message and tests
+    def ignore(testFun: () => Any) {
+      registerTestToIgnore(verb + " " + rest, List(), new NoArgTestWrapper(testFun))
     }
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
-    //                                               ^
     def in(testFun: Fixture => Any) {
-      registerTestToRun(verbAndname, tags, testFun)
+      registerTestToRun(verb + " " + rest, List(), testFun)
     }
-
-    // "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
-    //                                                            ^
-    def is(testFun: => PendingNothing) {
-      registerTestToRun(verbAndname, tags, unusedFixture => testFun)
-    }
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
-    //                                               ^
     def ignore(testFun: Fixture => Any) {
-      registerTestToIgnore(verbAndname, tags, testFun)
+      registerTestToIgnore(verb + " " + rest, List(), testFun)
     }
   }
 
-  protected val ignore = new IgnoreWord
+  // For after "subject" should "rest", which yields a ResultOfStringPassedToVerb. This
+  // provides in and ignore after that.
+  implicit def convertToInAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) =
+    new InAndIgnoreMethods(resultOfStringPassedToVerb)
 
-  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb[Fixture] = {
-    (left, right, verb) => {
-      behavior.of(left)
-      new ResultOfStringPassedToVerb[Fixture] {
-        def in(testFun: => Unit) {
-          throw new RuntimeException // TODO: Explain why in msg
-        }
-        def ignore(testFun: => Unit) {
-          throw new RuntimeException // TODO: Explain why in msg
-        }
-        def in(testFun: Fixture => Any) {
-          registerTestToRun(verb + " " + right, List(), testFun)
-        }
+  protected class InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) {
+
+    import subjectVerbStringTaggedAs.verb
+    import subjectVerbStringTaggedAs.rest
+    import subjectVerbStringTaggedAs.{tags => tagsList}
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in { () =>
+    //                                               ^
+    def in(testFun: () => Any) {
+      registerTestToRun(verb + " " + rest, tagsList, new NoArgTestWrapper(testFun))
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { () =>
+    //                                               ^
+    def ignore(testFun: () => Any) {
+      registerTestToIgnore(verb + " " + rest, tagsList, new NoArgTestWrapper(testFun))
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in { fixture =>
+    //                                               ^
+    def in(testFun: Fixture => Any) {
+      registerTestToRun(verb + " " + rest, tagsList, testFun)
+    }
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { fixture =>
+    //                                               ^
+    def ignore(testFun: Fixture => Any) {
+      registerTestToIgnore(verb + " " + rest, tagsList, testFun)
+    }
+  }
+
+  // For after "subject" should "rest" taggedAs(...), which yields a SubjectVerbStringTaggedAs. This
+  // provides in and ignore after that.
+  implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
+    new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
+
+  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
+    (subject, verb, rest) => {
+      behavior.of(subject)
+      new ResultOfStringPassedToVerb(verb, rest) {
         def is(testFun: => PendingNothing) {
-          registerTestToRun(verb + " " + right, List(), unusedFixture => testFun)
-        }
-        def ignore(testFun: Fixture => Any) {
-          registerTestToIgnore(verb + " " + right, List(), testFun)
+          registerTestToRun(verb + " " + rest, List(), unusedFixture => testFun)
         }
         def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
           val tagList = firstTestTag :: otherTestTags.toList
-          new FlatSpecSubjectVerbStringTaggedAs(verb + " " + right, tagList)
+          new SubjectVerbStringTaggedAs(verb, rest, tagList) {
+            // "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
+            //                                                            ^
+            def is(testFun: => PendingNothing) {
+              registerTestToRun(verb + " " + rest, tags, new NoArgTestWrapper(testFun _))
+            }
+          }
         }
       }
     }
   }
+
+  // TODO: Get ride of unusedfixture, and use NoArgTestFunction instead
 
   implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
     (left) => {
@@ -1104,7 +1144,7 @@ trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
   }
 
   val behave = new BehaveWord
-
+ /*
   implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
-    new NoArgTestWrapper(fun)
+    new NoArgTestWrapper(fun) */
 }

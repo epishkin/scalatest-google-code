@@ -48,8 +48,8 @@ trait MustVerb {
      * <code>"must"</code>.
      * </p>
      */
-    def must(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb[_]): ResultOfStringPassedToVerb[_] = {
-      fun(left, right, "must")
+    def must(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb): ResultOfStringPassedToVerb = {
+      fun(left, "must", right)
     }
 
     // For FlatSpec "bla" must behave like bla syntax

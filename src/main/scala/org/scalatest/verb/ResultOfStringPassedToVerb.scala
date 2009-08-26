@@ -48,7 +48,7 @@ import org.scalatest._
  * then means any of this trait's methods, such as <code>in</code>, can be invoked next.
  * </p>
  */
-trait ResultOfStringPassedToVerb[Fixture] {
+abstract class ResultOfStringPassedToVerb(val verb: String, val rest: String) {
 
   /**
    * Register the test function passed as <code>testFun</code> in a <code>FlatSpec</code>.
@@ -71,15 +71,15 @@ trait ResultOfStringPassedToVerb[Fixture] {
    *                                          ^
    * </pre>
    */
-  def in(testFun: => Unit)
+  // def in(testFun: => Unit)
 
-  def in(testFun: Fixture => Any)
+  // def in(testFun: Fixture => Any)
 
   def is(testFun: => PendingNothing)
 
-  def ignore(testFun: => Unit)
+  // def ignore(testFun: => Unit)
 
-  def ignore(testFun: Fixture => Any)
+  // def ignore(testFun: Fixture => Any)
 
-  def taggedAs(firstTestTag: Tag, otherTestTags: Tag*): SubjectVerbStringTaggedAs[Fixture]
+  def taggedAs(firstTestTag: Tag, otherTestTags: Tag*): SubjectVerbStringTaggedAs
 }

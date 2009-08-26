@@ -75,17 +75,15 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * By default a <code>FlatSpec</code> gives you no implicit conversions except the one for the <code>===</code> operator inherited from <code>Suite</code>.
- * If you don't mind bringing in one more implicit conversion, you can mix in <code>ShouldVerb</code>, <code>MustVerb</code>, or <code>CanVerb</code> to
- * enable the following shorthand syntax:
+ * Instead of using a <code>behavior of</code> clause, you can alternatively use a shorthand syntax in which you replace
+ * the first <code>it</code> with the subject string, like this:
  * </p>
  *
  * <pre>
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.Stack
- * import org.scalatest.verb.ShouldVerb
  *
- * class StackSpec extends FlatSpec with ShouldVerb {
+ * class StackSpec extends FlatSpec {
  *
  *   "A Stack" should "pop values in last-in-first-out order" in {
  *     val stack = new Stack[Int]
@@ -105,36 +103,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * <code>ShouldMatchers</code> extends <code>ShouldVerb</code> (and likewise, <code>MustMatchers</code> extends <code>MustVerb</code>), so if you
- * want to use ScalaTest's matchers DSL in a <code>FlatSpec</code> you can use the shorthand by default:
- * </p>
- *
- * <pre>
- * import org.scalatest.FlatSpec
- * import scala.collection.mutable.Stack
- * import org.scalatest.matchers.ShouldMatchers
- *
- * class StackSpec extends FlatSpec with ShouldMatchers {
- *
- *   "A Stack" should "pop values in last-in-first-out order" in {
- *     val stack = new Stack[Int]
- *     stack.push(1)
- *     stack.push(2)
- *     stack.pop() should equal (2)
- *     stack.pop() should equal (1)
- *   }
- *
- *   it should "throw NoSuchElementException if an empty stack is popped" in {
- *     val emptyStack = new Stack[String]
- *     intercept[NoSuchElementException] {
- *       emptyStack.pop()
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * Running any of the previous three versions of <code>StackSpec</code> in the Scala interpreter would yield:
+ * Running either of the two previous three versions of <code>StackSpec</code> in the Scala interpreter would yield:
  * </p>
  * 
  * <pre>
@@ -149,7 +118,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * "subject," which is sometimes called the <em>system under test</em> (or SUT). The 
  * subject is the entity being specified and tested and also serves as the subject of the sentences you write for each test.
  * Often you will want to write multiple tests for the same subject. In a <code>FlatSpec</code>, you name the subject once,
- * with a <code>behavior of</code> clause, then write tests for that subject with <code>it should</code>/<code>must</code><code>can "do something"</code> phrases.
+ * with a <code>behavior of</code> clause or its shorthand, then write tests for that subject with <code>it should</code>/<code>must</code><code>can "do something"</code> phrases.
  * Each <code>it</code> refers to the most recently declared subject. For example, the four tests shown in this snippet are all testing
  * a stack that contains one item:
  * </p>
@@ -208,9 +177,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.MustVerb
  *
- * class ArithmeticSpec extends FlatSpec with MustVerb {
+ * class ArithmeticSpec extends FlatSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
@@ -245,9 +213,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <pre>
  * import org.scalatest.FlatSpec
  * import scala.collection.mutable.ListBuffer
- * import org.scalatest.verb.CanVerb
  *
- * class MySuite extends FlatSpec with CanVerb {
+ * class MySuite extends FlatSpec {
  *
  *   // create objects needed by tests and return as a tuple
  *   def createFixture = (
@@ -297,12 +264,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.fixture.FixtureFlatSpec
- * import org.scalatest.verb.ShouldVerb
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends FixtureFlatSpec with ShouldVerb {
+ * class MySuite extends FixtureFlatSpec {
  *
  *   type Fixture = FileReader
  *
@@ -366,13 +332,12 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.ShouldVerb
  * import org.scalatest.BeforeAndAfterEach
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  *
- * class MySuite extends FlatSpec with ShouldVerb with BeforeAndAfterEach {
+ * class MySuite extends FlatSpec with BeforeAndAfterEach {
  *
  *   private val FileName = "TempFile.txt"
  *   private var reader: FileReader = _
@@ -580,7 +545,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * class SharedTestExampleSpec extends FlatSpec with ShouldVerb with StackBehaviors {
+ * class SharedTestExampleSpec extends FlatSpec with StackBehaviors {
  * 
  *   // Stack fixture creation methods
  *   def emptyStack = new Stack[Int]
@@ -742,9 +707,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.MustVerb
  *
- * class MySuite extends FlatSpec with MustVerb {
+ * class MySuite extends FlatSpec {
  *
  *   "The Scala language" must "add correctly" taggedAs(SlowTest) in {
  *       val sum = 1 + 1
@@ -788,10 +752,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.ShouldVerb
  * import scala.collection.mutable.Stack
  *
- * class StackSpec extends FlatSpec with ShouldVerb {
+ * class StackSpec extends FlatSpec {
  *
  *   "A Stack" should "pop values in last-in-first-out order" in {
  *       val stack = new Stack[Int]
@@ -837,10 +800,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.ShouldVerb
  * import scala.collection.mutable.Stack
  *
- * class StackSpec extends FlatSpec with ShouldVerb {
+ * class StackSpec extends FlatSpec {
  *
  *   "A Stack" should "pop values in last-in-first-out order" ignore {
  *       val stack = new Stack[Int]
@@ -897,9 +859,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.MustVerb
  *
- * class ArithmeticSpec extends FlatSpec with MustVerb {
+ * class ArithmeticSpec extends FlatSpec {
  *
  *  "The Scala language" must "add correctly" in {
  *     val sum = 2 + 3
@@ -935,10 +896,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.MustVerb
  * import org.scalatest.GivenWhenThen
  * 
- * class ArithmeticSpec extends FlatSpec with MustVerb with GivenWhenThen {
+ * class ArithmeticSpec extends FlatSpec with GivenWhenThen {
  * 
  *  "The Scala language" must "add correctly" in { 
  * 
@@ -1008,9 +968,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * import org.scalatest.FlatSpec
- * import org.scalatest.verb.MustVerb
  *
- * class ArithmeticSpec extends FlatSpec with MustVerb {
+ * class ArithmeticSpec extends FlatSpec {
  *
  *   // Sharing fixture objects via instance variables
  *   val shared = 5
@@ -1313,40 +1272,6 @@ trait FlatSpec extends Suite { thisSuite =>
 
   protected val it = new ItWord
 
-  protected class FlatSpecSubjectVerbStringTaggedAs(verbAndname: String, tags: List[Tag])
-      extends SubjectVerbStringTaggedAs[Any] {
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
-    //                                               ^
-    def in(testFun: => Unit) {
-      registerTestToRun(verbAndname, tags, testFun _)
-    }
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) is (pending)
-    //                                               ^
-    def is(testFun: => PendingNothing) {
-      registerTestToRun(verbAndname, tags, testFun _)
-    }
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
-    //                                               ^
-    def ignore(testFun: => Unit) {
-      registerTestToIgnore(verbAndname, tags, testFun _)
-    }
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) in { fixture =>
-    //                                               ^
-    def in(testFun: Any => Any) {
-      throw new RuntimeException() // TODO: add a message and tests
-    }
-
-    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { fixture =>
-    //                                               ^
-    def ignore(testFun: Any => Any) {
-      throw new RuntimeException() // TODO: add a message and tests
-    }
-  }
-
   protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
     // I think this one is "ignore should "bla bla" taggedAs(SlowTest) in {
     //                                                                 ^
@@ -1388,30 +1313,64 @@ trait FlatSpec extends Suite { thisSuite =>
 
   protected val ignore = new IgnoreWord
 
-  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb[Any] = {
-    (subject, right, verb) => {
+  protected class InAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) {
+    import resultOfStringPassedToVerb.verb
+    import resultOfStringPassedToVerb.rest
+    def in(testFun: => Unit) {
+      registerTestToRun(verb + " " + rest, List(), testFun _)
+    }
+    def ignore(testFun: => Unit) {
+      registerTestToIgnore(verb + " " + rest, List(), testFun _)
+    }
+  }
+
+  // For after "subject" should "rest", which yields a ResultOfStringPassedToVerb. This
+  // provides in and ignore after that.
+  implicit def convertToInAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) =
+    new InAndIgnoreMethods(resultOfStringPassedToVerb)
+  
+  protected class InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) {
+
+    import subjectVerbStringTaggedAs.verb
+    import subjectVerbStringTaggedAs.rest
+    import subjectVerbStringTaggedAs.{tags => tagsList}
+
+    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
+    //                                              ^
+    def in(testFun: => Unit) {
+      registerTestToRun(verb + " " + rest, tagsList, testFun _)
+    }
+    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
+    //                                               ^
+    def ignore(testFun: => Unit) {
+      registerTestToIgnore(verb + " " + rest, tagsList, testFun _)
+    }
+  }
+
+  // For after "subject" should "rest" taggedAs(...), which yields a SubjectVerbStringTaggedAs. This
+  // provides in and ignore after that.
+  implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
+    new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
+
+  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
+    (subject, verb, rest) => {
       behavior.of(subject)
-      new ResultOfStringPassedToVerb[Any] {
-        def in(testFun: => Unit) {
-          registerTestToRun(verb + " " + right, List(), testFun _)
-        }
+      new ResultOfStringPassedToVerb(verb, rest) {
+
         def is(testFun: => PendingNothing) {
-          registerTestToRun(verb + " " + right, List(), testFun _)
+          registerTestToRun(verb + " " + rest, List(), testFun _)
         }
-        def ignore(testFun: => Unit) {
-          registerTestToIgnore(verb + " " + right, List(), testFun _)
-        }
-        def in(testFun: Any => Any) { // TODO pass some message
-          throw new RuntimeException
-        }
-        // Note, won't have a fixture => PendingNothing one, because don't want
+        // Note, won't have an is method that takes fixture => PendingNothing one, because don't want
         // to say is (fixture => pending), rather just say is (pending)
-        def ignore(testFun: Any => Any) { // TODO pass some message
-          throw new RuntimeException
-        }
         def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
           val tagList = firstTestTag :: otherTestTags.toList
-          new FlatSpecSubjectVerbStringTaggedAs(verb + " " + right, tagList)
+          new SubjectVerbStringTaggedAs(verb, rest, tagList) {
+            // "A Stack" should "bla bla" taggedAs(SlowTest) is (pending)
+            //                                               ^
+            def is(testFun: => PendingNothing) {
+              registerTestToRun(verb + " " + rest, tags, testFun _)
+            }
+          }
         }
       }
     }

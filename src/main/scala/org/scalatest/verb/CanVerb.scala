@@ -47,8 +47,8 @@ trait CanVerb {
      * <code>"can"</code>.
      * </p>
      */
-    def can(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb[_]): ResultOfStringPassedToVerb[_] = {
-      fun(left, right, "can")
+    def can(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb): ResultOfStringPassedToVerb = {
+      fun(left, "can", right)
     }
 
     // For FlatSpec "bla" should behave like bla syntax

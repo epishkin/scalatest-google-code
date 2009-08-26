@@ -47,8 +47,8 @@ trait ShouldVerb {
      * <code>"should"</code>.
      * </p>
      */
-    def should(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb[_]): ResultOfStringPassedToVerb[_] = {
-      fun(left, right, "should")
+    def should(right: String)(implicit fun: (String, String, String) => ResultOfStringPassedToVerb): ResultOfStringPassedToVerb = {
+      fun(left, "should", right)
     }
 
     // For FlatSpec "bla" should behave like bla syntax
