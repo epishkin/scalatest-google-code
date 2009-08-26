@@ -190,7 +190,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(fun: FileReader => Unit) {
+ *   def withFixture(test: Test) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -208,7 +208,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       fun(reader)
+ *       test(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -232,7 +232,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     assert(reader.read() === 'H')
  *   }
  * 
- *   test("without a fixture") {
+ *   test("without a fixture") { () => 
  *     assert(1 + 1 === 2)
  *   }
  * }
@@ -316,7 +316,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
  * In this case, the <code>FixtureFunSuite</code> provides documentation indicating which
  * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
- * (If you have want to combine tests that take different fixtures in the same <code>FunSuite</code>, you can
+ * (If you have want to combine tests that take different fixture types in the same <code>FunSuite</code>, you can
  * use <a href="fixture/MultipleFixtureFunSuite.html">MultipleFixtureFunSuite</a>.)
  * </p>
  *
