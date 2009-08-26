@@ -612,5 +612,35 @@
                     classifier="javadoc"/>
         </artifact:deploy>
     </target>
+
+    <target name="test-junit">
+        <junit>
+           <batchtest fork="yes" todir="target/argh">
+                <fileset dir="${build.examples}">
+                    <include name="org/scalatestexamples/junit/*Suite.class"/>
+                </fileset>
+                <formatter type="xml"/>
+                <formatter type="plain"/>
+            </batchtest>
+ <!--
+            <test name="org.scalatestexamples.junit.JUnitTestCaseSuite">
+                <formatter type="xml"/>
+            </test>
+-->
+            <classpath>
+                <pathelement location="${classes}" />
+                <pathelement location="${build.examples}" />
+                <pathelement location="${lib}/scala-library.jar" />
+                <pathelement location="${lib}/junit-4.4.jar" />
+                <pathelement location="${lib}/ScalaCheck-1.5.jar" />
+                <pathelement location="${lib}/mockito-all-1.6.jar" />
+                <pathelement location="${lib}/testng-5.7-jdk15.jar" />
+                <pathelement location="${lib}/jmock-2.4.0.jar" />
+                <pathelement location="${lib}/easymock-2.5.1.jar" />
+                <pathelement location="${lib}/hamcrest-all-1.1.jar" />
+                <pathelement location="${lib}/commons-io-1.3.2.jar" />
+            </classpath>
+        </junit>
+    </target>
 </project>
 
