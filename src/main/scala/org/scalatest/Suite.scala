@@ -560,7 +560,7 @@ import org.scalatest.tools.StandardOutReporter
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -578,7 +578,7 @@ import org.scalatest.tools.StandardOutReporter
  *  
  *     try {
  *       // Run the test using the temp file
- *       fun(reader)
+ *       test(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file

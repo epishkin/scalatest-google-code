@@ -411,7 +411,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(fun: TestFunction) {
+ *   def withFixture(test: Test) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -429,7 +429,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *  
  *     try {
  *       // Run the test using the temp file
- *       fun(reader)
+ *       test(reader)
  *     }
  *     finally {
  *       // Close and delete the temp file
@@ -454,7 +454,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *       assert(reader.read() === 'H')
  *     }
  *
- *     "not be required" in {
+ *     "not be required" in { () =>
  *       assert(1 + 1 === 2)
  *     }
  *   }
@@ -541,7 +541,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * test need not take the fixture. So you can have some tests that take a fixture, and others that don't.
  * In this case, the <code>FixtureWordSpec</code> provides documentation indicating which
  * tests use the fixture and which don't, whereas the <code>BeforeAndAfterEach</code> approach does not.
- * (If you have want to combine tests that take different fixtures in the same <code>WordSpec</code>, you can
+ * (If you have want to combine tests that take different fixture types in the same <code>WordSpec</code>, you can
  * use <a href="fixture/MultipleFixtureWordSpec.html">MultipleFixtureWordSpec</a>.)
  * </p>
  *
