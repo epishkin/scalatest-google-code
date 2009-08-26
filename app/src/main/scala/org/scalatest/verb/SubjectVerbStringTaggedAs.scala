@@ -17,11 +17,11 @@ package org.scalatest.verb
 
 import org.scalatest._
 
-trait SubjectVerbStringTaggedAs[T] {
+abstract class SubjectVerbStringTaggedAs(val verb: String, val rest: String, val tags: List[Tag]) {
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) in {
   //                                               ^
-  def in(testFun: => Unit)
+  // def in(testFun: => Unit)
 
   // "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
   //                                                            ^
@@ -29,13 +29,13 @@ trait SubjectVerbStringTaggedAs[T] {
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
   //                                               ^
-  def ignore(testFun: => Unit)
+  // def ignore(testFun: => Unit)
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) in { fixture =>
   //                                               ^
-  def in(testFun: T => Any)
+ //  def in(testFun: T => Any)
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) ignore { fixture =>
   //                                               ^
-  def ignore(testFun: T => Any)
+  // def ignore(testFun: T => Any)
 }
