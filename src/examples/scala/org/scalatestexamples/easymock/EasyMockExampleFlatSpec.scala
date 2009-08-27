@@ -43,7 +43,6 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
   "ClassTested" should "not call the collaborator when removing a non-existing document" in {
     replay(mockCollaborator)
     classUnderTest.removeDocument("Does not exist")
-    ()
   }
 
   it should "call documentAdded on the Collaborator when a new document is added" in {
@@ -60,7 +59,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
     expecting {
       mockCollaborator.documentAdded("Document")
       mockCollaborator.documentChanged("Document")
-      expectLastCall().times(3)
+      lastCall().times(3)
     }
     
     whenExecuting(mockCollaborator) {
@@ -79,7 +78,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       // expect document addition
       mockCollaborator.documentAdded("Document");
       // expect to be asked to vote, and vote for it
-      expectCall(mockCollaborator.voteForRemoval("Document")).andReturn((42).asInstanceOf[Byte]);
+      call(mockCollaborator.voteForRemoval("Document")).andReturn((42).asInstanceOf[Byte]);
       // expect document removal
       mockCollaborator.documentRemoved("Document");
     }
@@ -98,7 +97,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       // expect document addition
       mockCollaborator.documentAdded("Document");
       // expect to be asked to vote, and vote against it
-      expectCall(mockCollaborator.voteForRemoval("Document")).andReturn((-42).asInstanceOf[Byte]); //
+      call(mockCollaborator.voteForRemoval("Document")).andReturn((-42).asInstanceOf[Byte]); //
       // document removal is *not* expected
     }
 
@@ -116,7 +115,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       mockCollaborator.documentAdded("Document 1");
       mockCollaborator.documentAdded("Document 2");
       val documents = Array("Document 1", "Document 2")
-      expectCall(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((42).asInstanceOf[Byte]);
+      call(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((42).asInstanceOf[Byte]);
       mockCollaborator.documentRemoved("Document 1");
       mockCollaborator.documentRemoved("Document 2");
     }
@@ -137,7 +136,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       mockCollaborator.documentAdded("Document 1");
       mockCollaborator.documentAdded("Document 2");
       val documents = Array("Document 1", "Document 2")
-      expectCall(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((-42).asInstanceOf[Byte]);
+      call(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((-42).asInstanceOf[Byte]);
     }
 
     whenExecuting(mockCollaborator) {
@@ -154,14 +153,14 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
 
     expecting {
       // andAnswer style
-      expectCall(list.remove(10)).andAnswer(new IAnswer[String]() {
+      call(list.remove(10)).andAnswer(new IAnswer[String]() {
         def answer(): String = {
           return getCurrentArguments()(0).toString();
         }
       });
 
       // andDelegateTo style
-      expectCall(list.remove(10)).andDelegateTo(new ArrayList[String]() {
+      call(list.remove(10)).andDelegateTo(new ArrayList[String]() {
         // private static final long serialVersionUID = 1L;
 
         override def remove(index: Int): String = {
