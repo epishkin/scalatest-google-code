@@ -288,13 +288,13 @@ trait Assertions {
    * specified <code>message</code> as the exception's detail message.
    *
    * @param condition the boolean condition to assert
-   * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
+   * @param clue An objects whose <code>toString</code> method returns a message to include in a failure report.
    * @throws TestFailedException if the condition is <code>false</code>.
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
-  def assert(condition: Boolean, message: Any) {
+  def assert(condition: Boolean, clue: Any) {
     if (!condition)
-      throw newAssertionFailedException(Some(message), None, 4)
+      throw newAssertionFailedException(Some(clue), None, 4)
       //throw new TestFailedException(message.toString, 2)
   }
 
@@ -322,13 +322,13 @@ trait Assertions {
    * </p>
    *
    * @param o the <code>Option[String]</code> to assert
-   * @param message An objects whose <code>toString</code> method returns a message to include in a failure report.
+   * @param clue An objects whose <code>toString</code> method returns a message to include in a failure report.
    * @throws TestFailedException if the <code>Option[String]</code> is <code>Some</code>.
    * @throws NullPointerException if <code>message</code> is <code>null</code>.
    */
-  def assert(o: Option[String], message: Any) {
+  def assert(o: Option[String], clue: Any) {
     o match {
-      case Some(s) => throw newAssertionFailedException(Some(message + "\n" + s), None, 4)
+      case Some(s) => throw newAssertionFailedException(Some(clue + "\n" + s), None, 4)
       // case Some(s) => throw new TestFailedException(message + "\n" + s, 2)
       case None =>
     }
@@ -546,15 +546,15 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * obtained by invoking <code>toString</code> on the passed <code>message</code>.
    *
    * @param expected the expected value
-   * @param message An object whose <code>toString</code> method returns a message to include in a failure report.
+   * @param clue An object whose <code>toString</code> method returns a message to include in a failure report.
    * @param actual the actual value, which should equal the passed <code>expected</code> value
    * @throws TestFailedException if the passed <code>actual</code> value does not equal the passed <code>expected</code> value.
    */
-  def expect(expected: Any, message: Any)(actual: Any) {
+  def expect(expected: Any, clue: Any)(actual: Any) {
     if (actual != expected) {
       val (act, exp) = Suite.getObjectsForFailureMessage(actual, expected)
       val s = FailureMessages("expectedButGot", exp, act)
-      throw newAssertionFailedException(Some(message + "\n" + s), None, 4)
+      throw newAssertionFailedException(Some(clue + "\n" + s), None, 4)
       // throw new TestFailedException(message + "\n" + s, 2)
     }
   }
