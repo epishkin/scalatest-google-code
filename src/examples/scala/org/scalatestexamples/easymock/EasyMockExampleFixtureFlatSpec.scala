@@ -26,26 +26,27 @@ import org.junit.Test
 import org.scalatest.verb.ShouldVerb
 import org.scalatest.mock.EasyMockSugar
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
+import org.scalatest.fixture.FixtureFlatSpec
 
-class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with EasyMockSugar {
+class EasyMockExampleFixtureFlatSpec extends FixtureFlatSpec with EasyMockSugar {
 
-  // Sorry about the nulls and vars, this was ported from Java from an EasyMock example
-  private var classUnderTest: ClassTested = _
+  case class FixtureHolder(classUnderTest: ClassTested, mockCollaborator: Collaborator)
 
-  private var mockCollaborator: Collaborator = _
+  type Fixture = FixtureHolder
 
-  override def beforeEach() {
-    mockCollaborator = mock[Collaborator]
-    classUnderTest = new ClassTested()
+  def withFixture(test: Test) {
+    val mockCollaborator = mock[Collaborator]
+    val classUnderTest = new ClassTested()
     classUnderTest.addListener(mockCollaborator)
+    test(FixtureHolder(classUnderTest, mockCollaborator))
   }
 
-  "ClassTested" should "not call the collaborator when removing a non-existing document" in {
+  "ClassTested" should "not call the collaborator when removing a non-existing document" in { fixture => import fixture._
     replay(mockCollaborator)
     classUnderTest.removeDocument("Does not exist")
   }
 
-  it should "call documentAdded on the Collaborator when a new document is added" in {
+  it should "call documentAdded on the Collaborator when a new document is added" in { fixture => import fixture._
     expecting {
       mockCollaborator.documentAdded("New Document")
     }
@@ -54,14 +55,14 @@ class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with Easy
     }
   }
 
-  it should "call documentChanged on the Collaborator when a document is changed" in {
+  it should "call documentChanged on the Collaborator when a document is changed" in { fixture => import fixture._
 
-    expecting {  
+    expecting {
       mockCollaborator.documentAdded("Document")
       mockCollaborator.documentChanged("Document")
       lastCall.times(3)
     }
-    
+
     whenExecuting(mockCollaborator) {
       classUnderTest.addDocument("Document", new Array[Byte](0))
       classUnderTest.addDocument("Document", new Array[Byte](0))
@@ -72,7 +73,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with Easy
 
   it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested, and " +
           "if a POSITIVE number is returned (i.e., a vote FOR removal), documentRemoved " +
-          "should be called on Collaborator" in {
+          "should be called on Collaborator" in { fixture => import fixture._
 
     expecting {
       // expect document addition
@@ -91,7 +92,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with Easy
 
   it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested, and " +
           "if a NEGATIVE number is returned (i.e., a vote AGAINST removal), documentRemoved " +
-          "should NOT be called on Collaborator" in {
+          "should NOT be called on Collaborator" in { fixture => import fixture._
 
     expecting {
       // expect document addition
@@ -109,7 +110,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with Easy
 
   it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested " +
           "to remove multiple documents, and if a POSITIVE number is returned (i.e., a vote " +
-          "FOR removal), documentRemoved should be called on Collaborator" in {
+          "FOR removal), documentRemoved should be called on Collaborator" in { fixture => import fixture._
 
     expecting {
       mockCollaborator.documentAdded("Document 1");
@@ -130,7 +131,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with Easy
 
   it should "call voteForRemoval on Collaborator when removeDocument is called on ClassTested " +
           "to remove multiple documents, and if a NEGATIVE number is returned (i.e., a vote " +
-          "AGAINST removal), documentRemoved should NOT be called on Collaborator" in {
+          "AGAINST removal), documentRemoved should NOT be called on Collaborator" in { fixture => import fixture._
 
     expecting {
       mockCollaborator.documentAdded("Document 1");
@@ -147,8 +148,8 @@ class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with Easy
     }
   }
 
-  "EasyMock" should "work with both andAnswer and andDelegateTo styles" in {
-    
+  "EasyMock" should "work with both andAnswer and andDelegateTo styles" in { () =>
+
     val list = mock[List[String]]
 
     expecting {
@@ -168,7 +169,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with Easy
         }
       });
     }
-        
+
     whenExecuting(list) {
       assert("10" === list.remove(10))
       assert("10" === list.remove(10))
