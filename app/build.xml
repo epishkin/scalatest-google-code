@@ -263,7 +263,11 @@
     </target>
 
     <target name="copyprops">
-        <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" />
+        <copy file="${resources}/org/scalatest/ScalaTestBundle.properties" todir="${jar.contents}/org/scalatest" overwrite="true">
+            <filterset>
+                <filter token="RELEASE" value="${release}" />
+            </filterset>
+        </copy>
         <copy todir="${jar.contents}/images">
             <fileset dir="${images}" />
         </copy>
