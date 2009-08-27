@@ -16,9 +16,6 @@
 package org.scalatest
 
 import org.scalatest.matchers.ShouldMatchers
-import org.scalatest.verb.ShouldVerb
-import org.scalatest.verb.MustVerb
-import org.scalatest.verb.CanVerb
 import org.scalatest.events._
 
 class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
@@ -521,7 +518,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
     it("should return a correct tags map from the tags method, when using shorthand notation") {
 
-      val a = new FlatSpec with ShouldVerb {
+      val a = new FlatSpec {
         "A Stack" should "test this" ignore {}
         "A Stack" should "test that" in {}
       }
@@ -529,7 +526,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         a.tags
       }
 
-      val b = new FlatSpec with CanVerb {
+      val b = new FlatSpec {
         "A Stack" can "test this" in {}
         "A Stack" can "test that" ignore {}
       }
@@ -537,7 +534,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         b.tags
       }
 
-      val c = new FlatSpec with MustVerb {
+      val c = new FlatSpec {
         "A Stack" must "test this" ignore {}
         "A Stack" must "test that" ignore {}
       }
@@ -545,7 +542,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         c.tags
       }
 
-      val d = new FlatSpec with MustVerb {
+      val d = new FlatSpec {
         "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) in {}
         "A Stack" must "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
       }
@@ -553,7 +550,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         d.tags
       }
 
-      val e = new FlatSpec with MustVerb {
+      val e = new FlatSpec {
         "A Stack" must "test this" in {}
         "A Stack" must "test that" in {}
       }
@@ -561,7 +558,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         e.tags
       }
 
-      val f = new FlatSpec with CanVerb {
+      val f = new FlatSpec {
         "A Stack" can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
         "A Stack" can "test that" taggedAs(mytags.SlowAsMolasses) in  {}
       }
@@ -569,7 +566,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         f.tags
       }
 
-      val g = new FlatSpec with ShouldVerb {
+      val g = new FlatSpec {
         "A Stack" should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in {}
         "A Stack" should "test that" taggedAs(mytags.SlowAsMolasses) in  {}
       }
@@ -675,7 +672,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
     it("should return a correct tags map from the tags method is (pending), when using shorthand notation") {
 
-      val a = new FlatSpec with ShouldVerb {
+      val a = new FlatSpec {
         "A Stack" should "test this" ignore {}
         "A Stack" should "test that" is (pending)
       }
@@ -683,7 +680,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         a.tags
       }
 
-      val b = new FlatSpec with CanVerb {
+      val b = new FlatSpec {
         "A Stack" can "test this" is (pending)
         "A Stack" can "test that" ignore {}
       }
@@ -691,7 +688,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         b.tags
       }
 
-      val c = new FlatSpec with MustVerb {
+      val c = new FlatSpec {
         "A Stack" must "test this" ignore {}
         "A Stack" must "test that" ignore {}
       }
@@ -699,7 +696,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         c.tags
       }
 
-      val d = new FlatSpec with MustVerb {
+      val d = new FlatSpec {
         "A Stack" must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
         "A Stack" must "test that" taggedAs(mytags.SlowAsMolasses) ignore {}
       }
@@ -707,7 +704,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         d.tags
       }
 
-      val e = new FlatSpec with MustVerb {
+      val e = new FlatSpec {
         "A Stack" must "test this" is (pending)
         "A Stack" must "test that" is (pending)
       }
@@ -715,7 +712,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         e.tags
       }
 
-      val f = new FlatSpec with CanVerb {
+      val f = new FlatSpec {
         "A Stack" can "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
         "A Stack" can "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
       }
@@ -723,7 +720,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         f.tags
       }
 
-      val g = new FlatSpec with ShouldVerb {
+      val g = new FlatSpec {
         "A Stack" should "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
         "A Stack" should "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
       }

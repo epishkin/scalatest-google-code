@@ -17,7 +17,7 @@ package org.scalatest.fixture
 
 import org.scalatest._
 import FixtureNodeFamily._
-import verb.{SubjectVerbStringTaggedAs, ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord}
+import verb.{SubjectVerbStringTaggedAs, ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord, ShouldVerb, MustVerb, CanVerb}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
@@ -347,7 +347,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * @author Bill Venners
  */
-trait FixtureFlatSpec extends FixtureSuite { thisSuite =>
+trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 

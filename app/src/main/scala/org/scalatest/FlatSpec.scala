@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-import verb.{SubjectVerbStringTaggedAs, ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb, BehaveWord}
+import verb.{SubjectVerbStringTaggedAs, ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb, BehaveWord, ShouldVerb, MustVerb, CanVerb}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
@@ -1048,7 +1048,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * @author Bill Venners
  */
-trait FlatSpec extends Suite { thisSuite =>
+trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
   private val IgnoreTagName = "org.scalatest.Ignore"
 
