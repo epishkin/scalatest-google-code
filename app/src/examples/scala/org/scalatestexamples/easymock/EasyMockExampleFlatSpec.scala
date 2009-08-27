@@ -27,7 +27,7 @@ import org.scalatest.verb.ShouldVerb
 import org.scalatest.mock.EasyMockSugar
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 
-class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAfterEach with EasyMockSugar {
+class EasyMockExampleFlatSpec extends FlatSpec with BeforeAndAfterEach with EasyMockSugar {
 
   // Sorry about the nulls and vars, this was ported from Java from an EasyMock example
   private var classUnderTest: ClassTested = _
@@ -78,14 +78,14 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       // expect document addition
       mockCollaborator.documentAdded("Document");
       // expect to be asked to vote, and vote for it
-      call(mockCollaborator.voteForRemoval("Document")).andReturn((42).asInstanceOf[Byte]);
+      mockCollaborator.voteForRemoval("Document").andReturn((42).asInstanceOf[Byte]);
       // expect document removal
       mockCollaborator.documentRemoved("Document");
     }
 
     whenExecuting(mockCollaborator) {
       classUnderTest.addDocument("Document", new Array[Byte](0));
-      assertTrue(classUnderTest.removeDocument("Document"));
+      assert(classUnderTest.removeDocument("Document"))
     }
   }
 
@@ -97,13 +97,13 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       // expect document addition
       mockCollaborator.documentAdded("Document");
       // expect to be asked to vote, and vote against it
-      call(mockCollaborator.voteForRemoval("Document")).andReturn((-42).asInstanceOf[Byte]); //
+      mockCollaborator.voteForRemoval("Document").andReturn((-42).asInstanceOf[Byte]); //
       // document removal is *not* expected
     }
 
     whenExecuting(mockCollaborator) {
       classUnderTest.addDocument("Document", new Array[Byte](0));
-      assertFalse(classUnderTest.removeDocument("Document"));
+      assert(!classUnderTest.removeDocument("Document"))
     }
   }
 
@@ -115,7 +115,7 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       mockCollaborator.documentAdded("Document 1");
       mockCollaborator.documentAdded("Document 2");
       val documents = Array("Document 1", "Document 2")
-      call(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((42).asInstanceOf[Byte]);
+      mockCollaborator.voteForRemovals(aryEq(documents)).andReturn((42).asInstanceOf[Byte]);
       mockCollaborator.documentRemoved("Document 1");
       mockCollaborator.documentRemoved("Document 2");
     }
@@ -123,8 +123,8 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
     whenExecuting(mockCollaborator) {
       classUnderTest.addDocument("Document 1", new Array[Byte](0));
       classUnderTest.addDocument("Document 2", new Array[Byte](0));
-      assertTrue(classUnderTest.removeDocuments(Array("Document 1",
-              "Document 2")));
+      assert(classUnderTest.removeDocuments(Array("Document 1",
+              "Document 2")))
     }
   }
 
@@ -136,14 +136,14 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
       mockCollaborator.documentAdded("Document 1");
       mockCollaborator.documentAdded("Document 2");
       val documents = Array("Document 1", "Document 2")
-      call(mockCollaborator.voteForRemovals(aryEq(documents))).andReturn((-42).asInstanceOf[Byte]);
+      mockCollaborator.voteForRemovals(aryEq(documents)).andReturn((-42).asInstanceOf[Byte]);
     }
 
     whenExecuting(mockCollaborator) {
       classUnderTest.addDocument("Document 1", new Array[Byte](0));
       classUnderTest.addDocument("Document 2", new Array[Byte](0));
-      assertFalse(classUnderTest.removeDocuments(Array("Document 1",
-              "Document 2")));
+      assert(!classUnderTest.removeDocuments(Array("Document 1",
+              "Document 2")))
     }
   }
 
@@ -153,14 +153,14 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
 
     expecting {
       // andAnswer style
-      call(list.remove(10)).andAnswer(new IAnswer[String]() {
+      list.remove(10).andAnswer(new IAnswer[String]() {
         def answer(): String = {
           return getCurrentArguments()(0).toString();
         }
       });
 
       // andDelegateTo style
-      call(list.remove(10)).andDelegateTo(new ArrayList[String]() {
+      list.remove(10).andDelegateTo(new ArrayList[String]() {
         // private static final long serialVersionUID = 1L;
 
         override def remove(index: Int): String = {
@@ -170,8 +170,8 @@ class EasyMockExampleFlatSpec extends FlatSpec with ShouldVerb with BeforeAndAft
     }
         
     whenExecuting(list) {
-      assertEquals("10", list.remove(10));
-      assertEquals("10", list.remove(10));
+      assert("10" === list.remove(10))
+      assert("10" === list.remove(10))
     }
   }
 }
