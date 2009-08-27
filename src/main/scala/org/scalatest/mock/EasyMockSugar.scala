@@ -310,12 +310,34 @@ trait EasyMockSugar {
    *   classUnderTest.addDocument("Document", new Array[Byte](0))
    * }
    * </pre>
+   *
+   * <p>
+   * If you are working with multiple mock objects at once, you simply pass
+   * them all to <code>whenExecuting</code>, like this:
+   * </p>
+   *
+   * <pre>
+   * whenExecuting(mock1, mock2, mock3) {
+   *   // ...
+   * }
+   * </pre>
+   *
+   * <p>
+   * The <code>whenExecuting</code> method will first invoke <code>EasyMock.reply</code>
+   * once for each mock you supplied, execute the passed function, then
+   * invoke <code>EasyMock.verify</code> once for each mock you supplied.
+   * </p>
    */
-  def whenExecuting(mock: AnyRef)(f: => Unit) = {
-    EasyMock.replay(mock)
-    f
-    EasyMock.verify(mock)
-  }
+  def whenExecuting(mock: AnyRef, moreMocks: AnyRef*)(fun: => Unit) = {
 
-  // TODO: create an overloaded form of whenExecuting that takes varargs
+    EasyMock.replay(mock)
+    for (m <- moreMocks)
+      EasyMock.replay(m)
+
+    fun
+
+    EasyMock.verify(mock)
+    for (m <- moreMocks)
+      EasyMock.verify(m)
+  }
 }

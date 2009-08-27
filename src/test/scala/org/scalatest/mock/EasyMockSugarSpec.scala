@@ -18,7 +18,57 @@ package org.scalatest.mock
 import org.scalatest._
 import matchers.ShouldMatchers
 
-class EasyMockSugarSpec extends FlatSpec with ShouldMatchers {
-  "The EasyMockSugar trait" should "provide a shorthand for the mock command" in {
+class EasyMockSugarSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
+  "The EasyMockSugar trait's whenExecuting method" should
+          "work with multiple mocks passed in" in {
+    val a = new Suite with EasyMockSugar {
+      def testThatShouldFail() {
+        trait OneFish {
+          def eat(food: String) = ()
+        }
+        trait TwoFish {
+          def eat(food: String) = ()
+        }
+        val oneFishMock = mock[OneFish]
+        val twoFishMock = mock[TwoFish]
+
+        expecting {
+          oneFishMock.eat("red fish")
+          twoFishMock.eat("blue fish")
+        }
+
+        whenExecuting(oneFishMock, twoFishMock) {
+          oneFishMock.eat("red fish")
+          twoFishMock.eat("green fish")
+        }
+      }
+
+      def testThatShouldSucceed() {
+        trait OneFish {
+          def eat(food: String) = ()
+        }
+        trait TwoFish {
+          def eat(food: String) = ()
+        }
+        val oneFishMock = mock[OneFish]
+        val twoFishMock = mock[TwoFish]
+
+        expecting {
+          oneFishMock.eat("red fish")
+          twoFishMock.eat("blue fish")
+        }
+
+        whenExecuting(oneFishMock, twoFishMock) {
+          oneFishMock.eat("red fish")
+          twoFishMock.eat("blue fish")
+        }
+      }
+    }
+    val rep = new EventRecordingReporter
+    a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker)
+    val tf = rep.testFailedEventsReceived
+    tf.size should be === 1
+    val ts = rep.testSucceededEventsReceived
+    ts.size should be === 1
   }
 }
