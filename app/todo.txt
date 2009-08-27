@@ -12,7 +12,7 @@
 - Try sorting the GUI reports with the ordinal (1 hour)
 - make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error
 - write tests for JUnit3Suite
-- add a name to TestFunction in FixtureSuite?
+- add a name to Test in FixtureSuite?
 
 Make all function parameters named fun.
 
@@ -874,4 +874,50 @@ class MySuite extends FixtureFunSuite {
 }
 
 Unit always means some side effect must be going on somewhere, and its the same here.
+
+
+MockitoSugar:
+
+val mockedList = Mock[List]
+
+// Nice. It is given when then, but doesn't clash with anything else, and make this clear what
+// it's about. And it is completely optional.
+givenThat {
+  mockedList.get(0) returns "first"
+  mockedList.get(1) throws new RuntimeException("bla bla bla")
+  mockedList.get(2) returns "first" thenReturns "second" thenReturns "third" thenThrows new RuntimeException("too many times!")
+}
+
+whenExecuting {
+  mockedList.get(0)
+  intercept[RuntimeException] {
+    mockedList.get(1)
+  }
+}
+
+thenExpect {
+  mockedList.get(0) was called
+  mockedList.get(2) was never called
+}
+
+val mockedList = Mock[List]
+
+// Trying again
+mockedList.get(0) was called
+mockedList.get(2) was never called
+
+mockedList.get(2) was called (once)
+mockedList.get(2) was called (twice)
+mockedList.get(2) was called (3 times)
+
+mockedList.get(2) was called (at most once)
+mockedList.get(2) was called (at most twice)
+mockedList.get(2) was called (at most 3 times)
+
+mockedList.get(2) was called (at least once)
+mockedList.get(2) was called (at least twice)
+
+mockedList.get(2) was called (at least 3 times)
+
+mockedList had no more calls
 
