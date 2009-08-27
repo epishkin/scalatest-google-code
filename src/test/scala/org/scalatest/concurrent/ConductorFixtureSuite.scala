@@ -72,7 +72,7 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
     }
 
     whenFinished {
-      c.getCount() should be (0)
+      c.getCount() should be (0) // TODO: This failed once. 1 was not equal to 0
     }
   }
 
