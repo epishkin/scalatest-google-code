@@ -1,3 +1,4 @@
+- add withClue to Assertions, and rename message to clue in assert and expect
 - deprecate -x with a warning message, and use -l for tags to exclude. Next time can comandeer -x for ScalaTest XML output
 - pass multiple mock objects in EasyMock and JMock sugar traits
 - reproduce 2.8 bug and put in trac
@@ -875,27 +876,26 @@ class MySuite extends FixtureFunSuite {
 
 Unit always means some side effect must be going on somewhere, and its the same here.
 
-
 MockitoSugar:
 
 val mockedList = Mock[List]
 
 // Nice. It is given when then, but doesn't clash with anything else, and make this clear what
 // it's about. And it is completely optional.
-givenThat {
+given that {
   mockedList.get(0) returns "first"
   mockedList.get(1) throws new RuntimeException("bla bla bla")
   mockedList.get(2) returns "first" thenReturns "second" thenReturns "third" thenThrows new RuntimeException("too many times!")
 }
 
-whenExecuting {
+when executing {
   mockedList.get(0)
   intercept[RuntimeException] {
     mockedList.get(1)
   }
 }
 
-thenExpect {
+then expect that {
   mockedList.get(0) was called
   mockedList.get(2) was never called
 }
@@ -920,4 +920,21 @@ mockedList.get(2) was called (at least twice)
 mockedList.get(2) was called (at least 3 times)
 
 mockedList had no more calls
+
+// This is boolean
+class WhenWord {
+  def apply(s: String)(implicit info: Informer) // pass "when " + s to info
+  def executing(f: => Unit) // Just executes the thing.
+}
+
+(i: Int) => whenever (1 > 0) { i should be > 1 }
+
+In that case of using whenever in properties, simply mixing in given when then is enough to 
+get this, since "given that", "when executing", and "then expect that" all take => Unit.
+
+Possibly have MockitoSugar extend GivenWhenThen, or just let people decide. They may prefer comments or nothing.
+
+GivenWhenThen would need to have a ThatWord. Probably fine. People use that a lot, but it just hides this that.
+
+Actually, maybe want to have MockitoSugar extend GivenWhenThen, and override the ...
 
