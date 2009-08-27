@@ -58,7 +58,7 @@ import scala.reflect.Manifest
  * expecting {
  *   mockCollaborator.documentAdded("Document")
  *   mockCollaborator.documentChanged("Document")
- *   lastCall().times(3)
+ *   lastCall.times(3)
  * }
  * </pre>
  *
@@ -115,7 +115,7 @@ import scala.reflect.Manifest
  * expecting {
  *   mockCollaborator.documentAdded("Document")
  *   mockCollaborator.documentChanged("Document")
- *   lastCall().times(3)
+ *   lastCall.times(3)
  * }
  *
  * whenExecuting(mockCollaborator) {
@@ -129,7 +129,7 @@ import scala.reflect.Manifest
 trait EasyMockSugar {
 
   /**
-   * Invokes the <code>expect</code> method on the <code>EasyMock</code> companion object (<em>i.e.</em>, the
+   * Implicit conversion that invokes the <code>expect</code> method on the <code>EasyMock</code> companion object (<em>i.e.</em>, the
    * static <code>expect</code> method in Java class <code>org.easymock.EasyMock</code>).
    *
    * <p>
@@ -160,45 +160,56 @@ trait EasyMockSugar {
    * "expect" appears in the surrounding <code>expecting</code> clause provided by this trait.
    * </p>
    *
+   * <p>
+   * Moreover, because this method is marked <code>implicit</code>, you will usually be able to simply
+   * leave it off. So long as the result of the method call you are expecting doesn't have
+   * a method that satisfies the subsequent invocation (such as <code>andReturn</code> in this
+   * example), the Scala compiler will invoke <code>call</code> for you
+   * implicitly. Here's how that looks:
+   * </p>
+   *
+   * <pre>
+   * expecting {
+   *   mock.getName.andReturn("Ben Franklin")
+   * }
+   * </pre>
+   *
    * @param value - the result of invoking a method on mock prior to invoking <code>replay</code>.
    */
-  def call[T](value: T): IExpectationSetters[T] = EasyMock.expect(value)
+  implicit def call[T](value: T): IExpectationSetters[T] = EasyMock.expect(value)
 
   /**
    * Invokes the <code>expectLastCall</code> method on the <code>EasyMock</code> companion object (<em>i.e.</em>, the
    * static <code>expect</code> method in Java class <code>org.easymock.EasyMock</code>).
    *
    * <p>
-   * In a ScalaTest <code>Suite</code>, the <code>expect</code> method defined in <code>Assertions</code>, and inherited by <code>Suite</code>,
-   * interferes with the <code>expect</code> method if imported from <code>EasyMock</code>. By mixing in this trait,
-   * however, you can just invoke <code>call</code> instead, like this:
+   * This method is provided simply to allow you to avoid repeating "expect" inside an
+   * <code>expecting</code> clause. Here's an example that uses the <code>expectLastCall</code> directly
+   * to express the expectation that the <code>getName</code> method will be invoked three times
+   * on a mock, each time returning <code>"Ben Franklin"</code>:
    * </p>
    *
    * <pre>
    * expecting {
-   *   call(mock.getName).andReturn("Ben Franklin")
+   *   mock.getName.andReturn("Ben Franklin")
+   *   expectLastCall.times(3)
    * }
    * </pre>
    *
    * <p>
-   * The <code>call</code> method is not named <code>expectCall</code> because
-   * "expect" appears in the surrounding <code>expecting</code> clause provided by this trait.
-   * For the same reason, and to be consistent with <code>call</code>, this trait provides
-   * this method an alternative to EasyMock's <code>expectLastCallMethod</code>. Here's an example
-   * in which the expectation that the <code>getName</code> method will be invoked three times,
-   * each time returning <code>"Ben Franklin"</code>:
+   * Using this method, you can compress this to:
    * </p>
    *
    * <pre>
    * expecting {
-   *   call(mock.getName).andReturn("Ben Franklin")
-   *   lastCall().times(3)
+   *   mock.getName.andReturn("Ben Franklin")
+   *   lastCall.times(3)
    * }
    * </pre>
    *
    * @param value - the result of invoking a method on mock prior to invoking <code>replay</code>.
    */
-  def lastCall[T](): IExpectationSetters[T] = EasyMock.expectLastCall()
+  def lastCall[T]: IExpectationSetters[T] = EasyMock.expectLastCall()
 
   /**
    * Invokes the <code>createMock</code> method on the <code>EasyMock</code> companion object (<em>i.e.</em>, the
@@ -247,7 +258,7 @@ trait EasyMockSugar {
    * expecting {
    *   mockCollaborator.documentAdded("Document")
    *   mockCollaborator.documentChanged("Document")
-   *   lastCall().times(3)
+   *   lastCall.times(3)
    * }
    * </pre>
    *
@@ -255,7 +266,7 @@ trait EasyMockSugar {
    * Using an <code>expecting</code> clause is optional, because it does nothing besides visually indicate
    * which statements are setting expectations on mocks. Note: this trait also provides the <code>lastCall</code>
    * method, which just calls <code>expectLastCall</code>. This allows you to avoid writing "expect" twice.
-   * Also, the reason <code>expecting<code> doesn't take a by-name parameter, execute that, then call
+   * Also, the reason <code>expecting</code> doesn't take a by-name parameter, execute that, then call
    * <code>replay</code> is because you would then need to pass your mock object or objects into
    * <code>expecting</code>. Since you already need to pass the mocks into <code>whenExecuting</code> so
    * that <code>verify</code> can be invoked on them, it yields more concise client code to have
