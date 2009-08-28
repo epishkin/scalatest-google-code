@@ -81,7 +81,7 @@ an example whose text output when run looks like:
 A Map
 - should only contain keys and values that were added to it
 - should report its size as the number of key/value pairs it contains
-*/
+*/ /*
 import org.scalatest.Spec
 import org.scalatest.matchers.MustMatchers
 
@@ -101,4 +101,4 @@ class MapSpec extends Spec with MustMatchers {
     }
   }
 }
-
+commenting out here because don't always build MustMatchers */

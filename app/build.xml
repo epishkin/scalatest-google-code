@@ -126,7 +126,7 @@
                 <pathelement location="${lib}/ScalaCheck-1.5.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
-                <pathelement location="${lib}/jmock-2.4.0.jar" />
+                <pathelement location="${lib}/jmock-2.5.1.jar" />
                 <pathelement location="${lib}/easymock-2.5.1.jar" />
                 <pathelement location="${lib}/hamcrest-all-1.1.jar" />
                 <pathelement location="${lib}/commons-io-1.3.2.jar" />
@@ -639,7 +639,7 @@
                 <pathelement location="${lib}/ScalaCheck-1.5.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
-                <pathelement location="${lib}/jmock-2.4.0.jar" />
+                <pathelement location="${lib}/jmock-2.5.1.jar" />
                 <pathelement location="${lib}/easymock-2.5.1.jar" />
                 <pathelement location="${lib}/hamcrest-all-1.1.jar" />
                 <pathelement location="${lib}/commons-io-1.3.2.jar" />
