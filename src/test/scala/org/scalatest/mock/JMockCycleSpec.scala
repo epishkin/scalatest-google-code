@@ -77,7 +77,7 @@ class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
     ts.size should be === 1
   }
 
-  it should "provide sugar for invoking with methods" in {
+  it should "provide sugar for invoking with methods that take matchers" in {
     val a = new FixtureSuite with JMockCycleFixture {
       def testThatShouldSucceed(cycle: JMockCycle) {
         import cycle._
@@ -95,15 +95,63 @@ class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
         val oneFishMock = mock[OneFish]
 
         expecting { e => import e._
-          oneOf (oneFishMock).doString(`with`(jMockEqual("red fish")))
-          oneOf (oneFishMock).doInt(`with`(jMockEqual(5)))
-          oneOf (oneFishMock).doShort(`with`(jMockEqual(5.asInstanceOf[Short])))
-          oneOf (oneFishMock).doByte(`with`(jMockEqual(5.asInstanceOf[Byte])))
-          oneOf (oneFishMock).doLong(`with`(jMockEqual(5L)))
-          oneOf (oneFishMock).doBoolean(`with`(jMockEqual(true)))
-          oneOf (oneFishMock).doFloat(`with`(jMockEqual(5.0f)))
-          oneOf (oneFishMock).doDouble(`with`(jMockEqual(5.0d)))
-          oneOf (oneFishMock).doChar(`with`(jMockEqual('5')))
+          oneOf (oneFishMock).doString(withArg(jMockEqual("red fish")))
+          oneOf (oneFishMock).doInt(withArg(jMockEqual(5)))
+          oneOf (oneFishMock).doShort(withArg(jMockEqual(5.asInstanceOf[Short])))
+          oneOf (oneFishMock).doByte(withArg(jMockEqual(5.asInstanceOf[Byte])))
+          oneOf (oneFishMock).doLong(withArg(jMockEqual(5L)))
+          oneOf (oneFishMock).doBoolean(withArg(jMockEqual(true)))
+          oneOf (oneFishMock).doFloat(withArg(jMockEqual(5.0f)))
+          oneOf (oneFishMock).doDouble(withArg(jMockEqual(5.0d)))
+          oneOf (oneFishMock).doChar(withArg(jMockEqual('5')))
+        }
+
+        whenExecuting {
+          oneFishMock.doString("red fish")
+          oneFishMock.doInt(5)
+          oneFishMock.doShort(5)
+          oneFishMock.doByte(5)
+          oneFishMock.doLong(5L)
+          oneFishMock.doBoolean(true)
+          oneFishMock.doFloat(5.0f)
+          oneFishMock.doDouble(5.0d)
+          oneFishMock.doChar('5')
+        }
+      }
+    }
+    val rep = new EventRecordingReporter
+    a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker)
+    val ts = rep.testSucceededEventsReceived
+    ts.size should be === 1
+  }
+
+  it should "provide sugar for invoking with methods that take non-matcher values" in {
+    val a = new FixtureSuite with JMockCycleFixture {
+      def testThatShouldSucceed(cycle: JMockCycle) {
+        import cycle._
+        trait OneFish {
+          def doString(food: String) = ()
+          def doInt(food: Int) = ()
+          def doShort(food: Short) = ()
+          def doByte(food: Byte) = ()
+          def doLong(food: Long) = ()
+          def doBoolean(food: Boolean) = ()
+          def doFloat(food: Float) = ()
+          def doDouble(food: Double) = ()
+          def doChar(food: Char) = ()
+        }
+        val oneFishMock = mock[OneFish]
+
+        expecting { e => import e._
+          oneOf (oneFishMock).doString(withArg("red fish"))
+          oneOf (oneFishMock).doInt(withArg(5))
+          oneOf (oneFishMock).doShort(withArg(5.asInstanceOf[Short]))
+          oneOf (oneFishMock).doByte(withArg(5.asInstanceOf[Byte]))
+          oneOf (oneFishMock).doLong(withArg(5L))
+          oneOf (oneFishMock).doBoolean(withArg(true))
+          oneOf (oneFishMock).doFloat(withArg(5.0f))
+          oneOf (oneFishMock).doDouble(withArg(5.0d))
+          oneOf (oneFishMock).doChar(withArg('5'))
         }
 
         whenExecuting {

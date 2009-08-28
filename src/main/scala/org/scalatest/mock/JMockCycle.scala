@@ -192,8 +192,8 @@ class JMockCycle {
    * }
    * </pre>
    */
-  def expecting(expectationsFunction: Expectations => Unit) {
-    val e = new Expectations
+  def expecting(expectationsFunction: JMockExpectations => Unit) {
+    val e = new JMockExpectations
     expectationsFunction(e)
     context.checking(e)
   }
