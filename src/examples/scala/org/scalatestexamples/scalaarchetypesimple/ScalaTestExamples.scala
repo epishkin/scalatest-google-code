@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatestexamples.scalaarchtetypesimple
+package org.scalatestexamples.scalaarchetypesimple
 // package ${package}
 
 /*
@@ -63,13 +63,13 @@ class ListSuite extends FunSuite with ShouldMatchers {
 
   test("A non-empty list should not be empty") {
     List(1, 2, 3) should not be ('empty)
-    List("fee", "fie", "foe") should not be ('empty)
+    List("fee", "fie", "foe", "fum") should not be ('empty)
   }
 
   test("A list's length should equal the number of elements it contains") {
     List() should have length (0)
     List(1, 2) should have length (2)
-    List("fee", "fie", "foe") should have length (3)
+    List("fee", "fie", "foe", "fum") should have length (4)
   }
 }
 
@@ -101,5 +101,4 @@ class MapSpec extends Spec with MustMatchers {
     }
   }
 }
-
 
