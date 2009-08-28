@@ -125,6 +125,8 @@ import scala.reflect.Manifest
  *   classUnderTest.addDocument("Document", new Array[Byte](0))
  * }
  * </pre>
+ *
+ * @author Bill Venners
  */
 trait EasyMockSugar {
 
