@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2009 Artima, Inc.
+  * Copyright 2001-2009 Artima, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,31 @@ package org.scalatest.mock
 import org.scalatest._
 import fixture.FixtureSuite
 
+/**
+ * Trait that will pass a new <code>JMockCycle</code> into any test that needs one.
+ *
+ * <p>
+ * This trait, which must be mixed into a <code>FixtureSuite</code>, defines the
+ * <code>Fixture</code> type to be <code>JMockCycle</code> and defines a
+ * <code>withFixture</code> method that instantiates a new <code>JMockCycle</code>
+ * and passes it to the test function.
+ * </p>
+ *
+ * @author Bill Venners
+ */
 trait JMockCycleFixture { this: FixtureSuite =>
+
+  /**
+   * Defines the <code>Fixture</code> type to be <code>JMockCycle</code>.
+   */
   type Fixture = JMockCycle
-  def withFixture(testFunction: Test) {
-    testFunction(new JMockCycle)
+
+  /**
+   * Instantiates a new <code>JMockCycle</code> and passes it to the test function.
+   *
+   * @param test the test function to which to pass a new <code>JMockCycle</code>
+   */
+  def withFixture(test: Test) {
+    test(new JMockCycle)
   }
 }
