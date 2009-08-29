@@ -18,7 +18,7 @@ package org.scalatest.mock
 import org.scalatest._
 import org.scalatest.fixture.FixtureSuite
 import matchers.ShouldMatchers
-import org.jmock.Expectations.{equal => jMockEqual}
+import org.jmock.Expectations.{equal => thatEquals}
 
 class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
 
@@ -95,15 +95,15 @@ class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
         val oneFishMock = mock[OneFish]
 
         expecting { e => import e._
-          oneOf (oneFishMock).doString(withArg(jMockEqual("red fish")))
-          oneOf (oneFishMock).doInt(withArg(jMockEqual(5)))
-          oneOf (oneFishMock).doShort(withArg(jMockEqual(5.asInstanceOf[Short])))
-          oneOf (oneFishMock).doByte(withArg(jMockEqual(5.asInstanceOf[Byte])))
-          oneOf (oneFishMock).doLong(withArg(jMockEqual(5L)))
-          oneOf (oneFishMock).doBoolean(withArg(jMockEqual(true)))
-          oneOf (oneFishMock).doFloat(withArg(jMockEqual(5.0f)))
-          oneOf (oneFishMock).doDouble(withArg(jMockEqual(5.0d)))
-          oneOf (oneFishMock).doChar(withArg(jMockEqual('5')))
+          oneOf (oneFishMock).doString(withArg(thatEquals("red fish")))
+          oneOf (oneFishMock).doInt(withArg(thatEquals(5)))
+          oneOf (oneFishMock).doShort(withArg(thatEquals(5.asInstanceOf[Short])))
+          oneOf (oneFishMock).doByte(withArg(thatEquals(5.asInstanceOf[Byte])))
+          oneOf (oneFishMock).doLong(withArg(thatEquals(5L)))
+          oneOf (oneFishMock).doBoolean(withArg(thatEquals(true)))
+          oneOf (oneFishMock).doFloat(withArg(thatEquals(5.0f)))
+          oneOf (oneFishMock).doDouble(withArg(thatEquals(5.0d)))
+          oneOf (oneFishMock).doChar(withArg(thatEquals('5')))
         }
 
         whenExecuting {
