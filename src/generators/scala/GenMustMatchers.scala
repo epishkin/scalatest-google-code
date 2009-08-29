@@ -40,7 +40,7 @@ import Helper._
 
 object GenMustMatchers extends Application {
   generateFile("matchers/ShouldMatchers.scala", "matchers/MustMatchers.scala")
-  generateFile("junit/ShouldMatchersForJUnit3.scala", "junit/MustMatchersForJUnit3.scala")
+  generateFile("junit/ShouldMatchersForJUnit.scala", "junit/MustMatchersForJUnit.scala")
 }
 
 object GenMustMatchersTests extends Application {
@@ -97,9 +97,9 @@ object GenMustMatchersTests extends Application {
 
   val junitDir = new File("target/generated/src/test/scala/org/scalatest/junit")
   junitDir.mkdirs()
-  val writer = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/junit/" + "MustMatchersForJUnit3WordSpec.scala"))
+  val writer = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/junit/" + "MustMatchersForJUnitWordSpec.scala"))
   try {
-    val shouldLines = Source.fromFile("src/test/scala/org/scalatest/junit/" + "ShouldMatchersForJUnit3WordSpec.scala").getLines.toList
+    val shouldLines = Source.fromFile("src/test/scala/org/scalatest/junit/" + "ShouldMatchersForJUnitWordSpec.scala").getLines.toList
     for (shouldLine <- shouldLines) {
       val mustLine = translateShouldToMust(shouldLine)
       writer.write(mustLine.toString)
