@@ -83,6 +83,7 @@ import org.apache.tools.ant.taskdefs.Java;
  * <ul>
  *   <li>  graphic          </li>
  *   <li>  file             </li>
+ *   <li>  xml              </li>
  *   <li>  stdout           </li>
  *   <li>  stderr           </li>
  *   <li>  reporterclass    </li>
@@ -90,14 +91,15 @@ import org.apache.tools.ant.taskdefs.Java;
  *
  * <p>
  * Each may include a config attribute to specify the reporter configuration.
- * Types 'file' and 'reporterclass' require additional attributes 'filename'
- * and 'classname', respectively.  E.g.:
+ * Types 'file', 'xml' and 'reporterclass' require additional attributes
+ * 'filename', 'directory', and 'classname', respectively.  E.g.:
  * </p>
  *
  * <pre>
  *   &lt;scalatest&gt;
  *     &lt;reporter type="stdout"        config="FAB"/&gt;
  *     &lt;reporter type="file"          filename="test.out"/&gt;
+ *     &lt;reporter type="xml"           directory="target"/&gt;
  *     &lt;reporter type="reporterclass" classname="my.ReporterClass"/&gt;
  * </pre>
  *
@@ -405,6 +407,9 @@ public class ScalaTestTask extends Task {
             else if (type.equals("file")) {
                 addFileReporter(args, reporter);
             }
+            else if (type.equals("xml")) {
+                addXmlReporter(args, reporter);
+            }
             else if (type.equals("html")) {
                 addHtmlReporter(args, reporter);
             }
@@ -453,7 +458,23 @@ public class ScalaTestTask extends Task {
     }
 
     //
-    // Adds '-h' file reporter option to args.  Appends reporter
+    // Adds '-u' xml reporter option to args.  Adds reporter's
+    // directory as additional argument, e.g. "-u", "directory".
+    //
+    private void addXmlReporter(ArrayList<String> args,
+                                ReporterElement   reporter)
+    throws BuildException {
+        addReporterOption(args, reporter, "-u");
+
+        if (reporter.getDirectory() == null) {
+            throw new BuildException(
+                "reporter type 'xml' requires 'directory' attribute");
+        }
+        args.add(reporter.getDirectory());
+    }
+
+    //
+    // Adds '-h' html reporter option to args.  Appends reporter
     // config string to option if specified.  Adds reporter's
     // filename as additional argument, e.g. "-hFAB", "filename".
     //
@@ -736,11 +757,15 @@ public class ScalaTestTask extends Task {
         private String type;
         private String config;
         private String filename;
+        private String directory;
         private String classname;
 
         public void setType(String type)         { this.type      = type;     }
         public void setConfig(String config)     { this.config    = config;   }
         public void setFilename(String filename) { this.filename  = filename; }
+        public void setDirectory(String directory) {
+            this.directory  = directory;
+        }
         public void setClassName(String classname) {
             this.classname = classname;
         }
@@ -748,6 +773,7 @@ public class ScalaTestTask extends Task {
         public String getType()      { return type;      }
         public String getConfig()    { return config;    }
         public String getFilename()  { return filename;  }
+        public String getDirectory() { return directory; }
         public String getClassName() { return classname; }
     }
 

@@ -276,6 +276,7 @@
         <scalatest fork="true" runpath="${build.tests.jar}" concurrent="true" haltonfailure="true">
             <jvmarg value="-XX:MaxPermSize=128m"/>
             <reporter type="graphic" />
+            <reporter type="xml" directory="target"/>
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
