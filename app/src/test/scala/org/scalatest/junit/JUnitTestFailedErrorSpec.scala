@@ -15,9 +15,11 @@
  */
 package org.scalatest.junit
 
+import org.scalatest._
+
 class JUnitTestFailedErrorSpec extends Spec with ShouldMatchersForJUnit {
 
-  val baseLineNumber = 20
+  val baseLineNumber = 22
 
   describe("The JUnitTestFailedError") {
 
