@@ -115,6 +115,8 @@ import org.scalatest.junit.JUnitWrapperSuite
  *    tests to be run and results to be investigated
  * <li> <code><b>-f[configs...] &lt;filename&gt;</b></code> - causes test results to be written to
  *     the named file
+ * <li> <code><b>-u &lt;directory&gt;</b></code> - causes test results to be written to
+ *      xml files in the named directory
  * <li> <code><b>-o[configs...]</b></code> - causes test results to be written to
  *     the standard output
  * <li> <code><b>-e[configs...]</b></code> - causes test results to be written to
@@ -533,7 +535,7 @@ object Runner {
     val fullReporterConfigurations: ReporterConfigurations =
       if (reporterArgsList.isEmpty)
         // If no reporters specified, just give them a graphic reporter
-        new ReporterConfigurations(Some(GraphicReporterConfiguration(Set())), Nil, None, None, Nil, Nil)
+        new ReporterConfigurations(Some(GraphicReporterConfiguration(Set())), Nil, Nil, None, None, Nil, Nil)
       else
         parseReporterArgsIntoConfigurations(reporterArgsList)
 
@@ -561,6 +563,7 @@ object Runner {
           new ReporterConfigurations(
             None,
             fullReporterConfigurations.fileReporterConfigurationList,
+            fullReporterConfigurations.xmlReporterConfigurationList,
             fullReporterConfigurations.standardOutReporterConfiguration,
             fullReporterConfigurations.standardErrReporterConfiguration,
             fullReporterConfigurations.htmlReporterConfigurationList,
@@ -623,7 +626,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
         if (it.hasNext)
           it.next
       }
@@ -675,6 +678,11 @@ object Runner {
         reporters += s
       }
       else if (s.startsWith("-f")) {
+        reporters += s
+        if (it.hasNext)
+          reporters += it.next
+      }
+      else if (s.startsWith("-u")) {
         reporters += s
         if (it.hasNext)
           reporters += it.next
@@ -843,6 +851,17 @@ object Runner {
             it.next // scroll past the filename
           else
             throw new IllegalArgumentException("-f needs to be followed by a file name arg: ")
+        case "-u" =>
+          if (it.hasNext) {
+            val directory = it.next
+            if (!(new File(directory).isDirectory))
+              throw new IllegalArgumentException(
+                "arg for -u option is not a directory [" + directory + "]")
+            else {}
+          }
+          else {
+            throw new IllegalArgumentException("-u needs to be followed by a directory name arg: ")
+          }
         case "-h" =>
           if (it.hasNext)
             it.next // scroll past the filename
@@ -884,6 +903,22 @@ object Runner {
       lb.toList
     }
     val fileReporterConfigurationList = buildFileReporterConfigurationList(args)
+
+    def buildXmlReporterConfigurationList(args: List[String]) = {
+      val it = args.elements
+      val lb = new ListBuffer[XmlReporterConfiguration]
+      while (it.hasNext) {
+        val arg = it.next
+        arg.substring(0,2) match {
+          case "-u" =>
+            lb += new XmlReporterConfiguration(Set[ReporterConfigParam](),
+                                               it.next)
+          case _ => 
+        }
+      }
+      lb.toList
+    }
+    val xmlReporterConfigurationList = buildXmlReporterConfigurationList(args)
 
     def buildHtmlReporterConfigurationList(args: List[String]) = {
       val it = args.elements
@@ -939,6 +974,7 @@ object Runner {
     new ReporterConfigurations(
       graphicReporterConfigurationOption,
       fileReporterConfigurationList,
+      xmlReporterConfigurationList,
       standardOutReporterConfigurationOption,
       standardErrReporterConfigurationOption,
       htmlReporterConfigurationList,
@@ -1188,6 +1224,9 @@ object Runner {
             ),
             configSet
           )
+
+      case XmlReporterConfiguration(configSet, directory) =>
+        new XmlReporter(directory)
 
         case HtmlReporterConfiguration(configSet, fileName) =>
           if (configSetMinusNonFilterParams(configSet).isEmpty)
