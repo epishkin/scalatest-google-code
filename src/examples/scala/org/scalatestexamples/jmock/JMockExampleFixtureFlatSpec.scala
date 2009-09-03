@@ -27,7 +27,7 @@ import org.junit.Test
 import org.scalatest.verb.ShouldVerb
 import org.scalatest.{BeforeAndAfterEach, FlatSpec}
 import org.scalatest.fixture.FixtureFlatSpec
-import scalatest.mock.{JMockCycleFixture, JMockCycle}
+import org.scalatest.mock.{JMockCycleFixture, JMockCycle}
 import org.jmock.Expectations.returnValue
 import org.jmock.Expectations.equal
 
