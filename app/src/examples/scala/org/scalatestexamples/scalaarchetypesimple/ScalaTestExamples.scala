@@ -30,6 +30,8 @@ import scala.collection.mutable.Stack
 import org.scalatest.Assertions
 import org.junit.Test
 
+class ScalaTestExamples {} // prevents unnecessary recompilation
+
 class StackSuite extends Assertions {
 
   @Test def stackShouldPopValuesIinLastInFirstOutOrder() {

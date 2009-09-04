@@ -18,6 +18,8 @@ package org.scalatest
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.verb.ShouldVerb
 
+private class VariousWordSpec {} // prevents unnecessary recompilation
+
 class AmpersandWordSpec extends WordSpec with ShouldMatchers {
 
   "The Scala language" should {
