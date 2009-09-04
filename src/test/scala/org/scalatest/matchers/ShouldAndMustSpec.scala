@@ -29,3 +29,6 @@ class ShouldAndMustSpec extends Spec with ShouldMatchers with MustMatchers {
   }
 }
 */
+
+package org.scalatest.matchers  // prevents unnecessary recompilation
+class ShouldAndMustSpec {}      // prevents unnecessary recompilation
