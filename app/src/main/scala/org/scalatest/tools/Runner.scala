@@ -823,6 +823,22 @@ object Runner {
   }
 
   private[scalatest] def parseReporterArgsIntoConfigurations(args: List[String]) = {
+    //
+    // Checks to see if any args are smaller than two characters in length.
+    // Allows a one-character arg if it's a directory-name parameter, to
+    // permit use of "." for example.
+    //
+    def argTooShort(args: List[String]): Boolean = {
+      args match {
+        case Nil => false
+
+        case "-u" :: directory :: list => argTooShort(list)
+
+        case x :: list =>
+          if (x.length < 2) true
+          else              argTooShort(list)
+      }
+    }
 
     if (args == null)
       throw new NullPointerException("args was null")
@@ -830,11 +846,11 @@ object Runner {
     if (args.exists(_ == null))
       throw new NullPointerException("an arg String was null")
 
-    if (args.exists(_.length < 2)) // TODO: check and print out a user friendly message for this
+    if (argTooShort(args)) // TODO: check and print out a user friendly message for this
       throw new IllegalArgumentException("an arg String was less than 2 in length: " + args)
 
     for (dashX <- List("-g", "-o", "-e")) {
-      if (args.toList.count(_.substring(0, 2) == dashX) > 1) // TODO: also check and print a user friendly message for this
+      if (args.toList.count(_.startsWith(dashX)) > 1) // TODO: also check and print a user friendly message for this
         throw new IllegalArgumentException("Only one " + dashX + " allowed")
     }
 
@@ -842,7 +858,7 @@ object Runner {
     // again here, i had to skip some things, so I had to use an iterator.
     val it = args.elements
     while (it.hasNext)
-      it.next.substring(0, 2) match {
+      it.next.take(2).toString match {
         case "-g" =>
         case "-o" =>
         case "-e" =>
@@ -877,7 +893,7 @@ object Runner {
       }
 
     val graphicReporterConfigurationOption =
-      args.find(arg => arg.substring(0, 2) == "-g") match {
+      args.find(arg => arg.startsWith("-g")) match {
         case Some(dashGString) =>
           val configSet = parseConfigSet(dashGString)
           if (configSet.contains(PresentTestFailedExceptionStackTraces))
@@ -895,10 +911,8 @@ object Runner {
       val lb = new ListBuffer[FileReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
-        arg.substring(0,2) match {
-          case "-f" => lb += new FileReporterConfiguration(parseConfigSet(arg), it.next)
-          case _ => 
-        }
+        if (arg.startsWith("-f"))
+          lb += new FileReporterConfiguration(parseConfigSet(arg), it.next)
       }
       lb.toList
     }
@@ -909,12 +923,9 @@ object Runner {
       val lb = new ListBuffer[XmlReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
-        arg.substring(0,2) match {
-          case "-u" =>
-            lb += new XmlReporterConfiguration(Set[ReporterConfigParam](),
-                                               it.next)
-          case _ => 
-        }
+        if (arg.startsWith("-u"))
+          lb += new XmlReporterConfiguration(Set[ReporterConfigParam](),
+                                             it.next)
       }
       lb.toList
     }
@@ -925,23 +936,21 @@ object Runner {
       val lb = new ListBuffer[HtmlReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
-        arg.substring(0,2) match {
-          case "-h" => lb += new HtmlReporterConfiguration(parseConfigSet(arg), it.next)
-          case _ =>
-        }
+        if (arg.startsWith("-h"))
+          lb += new HtmlReporterConfiguration(parseConfigSet(arg), it.next)
       }
       lb.toList
     }
     val htmlReporterConfigurationList = buildHtmlReporterConfigurationList(args)
 
     val standardOutReporterConfigurationOption =
-      args.find(arg => arg.substring(0, 2) == "-o") match {
+      args.find(arg => arg.startsWith("-o")) match {
         case Some(dashOString) => Some(new StandardOutReporterConfiguration(parseConfigSet(dashOString)))
         case None => None
       }
 
     val standardErrReporterConfigurationOption =
-      args.find(arg => arg.substring(0, 2) == "-e") match {
+      args.find(arg => arg.startsWith("-e")) match {
         case Some(dashEString) => Some(new StandardErrReporterConfiguration(parseConfigSet(dashEString)))
         case None => None
       }
@@ -951,19 +960,17 @@ object Runner {
       val lb = new ListBuffer[CustomReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
-        arg.substring(0,2) match {
-          case "-r" =>
-            val dashRString = arg
-            val customReporterClassName = it.next
-            val configSet = parseConfigSet(dashRString)
-            if (configSet.contains(PresentTestFailedExceptionStackTraces))
-              throw new IllegalArgumentException("Cannot specify an F (present TestFailedException stack traces) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
-            if (configSet.contains(PresentWithoutColor))
-              throw new IllegalArgumentException("Cannot specify a W (without color) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
-            if (configSet.contains(PresentAllDurations))
-              throw new IllegalArgumentException("Cannot specify a D (present all durations) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
-            lb += new CustomReporterConfiguration(configSet, customReporterClassName)
-          case _ => 
+        if (arg.startsWith("-r")) {
+          val dashRString = arg
+          val customReporterClassName = it.next
+          val configSet = parseConfigSet(dashRString)
+          if (configSet.contains(PresentTestFailedExceptionStackTraces))
+            throw new IllegalArgumentException("Cannot specify an F (present TestFailedException stack traces) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
+          if (configSet.contains(PresentWithoutColor))
+            throw new IllegalArgumentException("Cannot specify a W (without color) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
+          if (configSet.contains(PresentAllDurations))
+            throw new IllegalArgumentException("Cannot specify a D (present all durations) configuration parameter for a custom reporter: " + dashRString + " " + customReporterClassName)
+          lb += new CustomReporterConfiguration(configSet, customReporterClassName)
         }
       }
       lb.toList
@@ -1491,7 +1498,7 @@ object Runner {
       }
     }
     finally {
-      dispatch.dispatchDispose()
+      dispatch.dispatchDisposeAndWaitUntilDone()
       doneListener.done()
     }
   }
@@ -1510,7 +1517,7 @@ object Runner {
           f(loader, dispatchReporter)
         }
         finally {
-          dispatchReporter.dispatchDispose()
+          dispatchReporter.dispatchDisposeAndWaitUntilDone()
         }
       }
       catch {

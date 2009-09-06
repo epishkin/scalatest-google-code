@@ -127,6 +127,23 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
   }
 
   //
+  // Returns string representation of stack trace for specified Throwable,
+  // including any nested exceptions.
+  //
+  def getStackTrace(throwable: Throwable): String = {
+    "" + throwable +
+    Array.concat(throwable.getStackTrace).mkString("\n      at ",
+                                                   "\n      at ", "\n") +
+    {
+      if (throwable.getCause != null) {
+        "      Cause: " +
+        getStackTrace(throwable.getCause)
+      }
+      else ""
+    }
+  }
+
+  //
   // Generates <failure> xml for TestFailed event, if Option contains one.
   //
   private def failureXml(failureOption: Option[TestFailed]): xml.NodeSeq = {
@@ -139,11 +156,10 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
             (failure.throwable: @unchecked) match
             { case Some(x) => x }
 
+          
           val throwableType = "" + throwable.getClass
-          val throwableText =
-            "" + throwable +
-            Array.concat(throwable.getStackTrace).mkString("\n      at ",
-                                                           "\n      at ", "\n")
+          val throwableText = getStackTrace(throwable)
+
           (throwableType, throwableText)
         }
         else ("", "")
@@ -368,6 +384,9 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
     testsuites.toList
   }
 
+  //
+  // Class to hold information about an execution of a test suite.
+  //
   private case class Testsuite(name: String, timeStamp: Long) {
     var errors   = 0
     var failures = 0
@@ -376,6 +395,9 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
     val testcases = new ListBuffer[Testcase]
   }
 
+  //
+  // Class to hold information about an execution of a testcase.
+  //
   private case class Testcase(name: String, className: Option[String],
                               timeStamp: Long) {
     var time = 0L
