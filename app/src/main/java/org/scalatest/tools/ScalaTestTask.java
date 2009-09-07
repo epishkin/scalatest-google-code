@@ -320,12 +320,12 @@ public class ScalaTestTask extends Task {
     }
 
     //
-    // Adds '-x excludes-list' arg pair to args list if an <excludes>
+    // Adds '-l excludes-list' arg pair to args list if an <excludes>
     // element was supplied for task.
     //
     private void addExcludesArgs(ArrayList<String> args) {
         if (excludes != null) {
-            args.add("-x");
+            args.add("-l");
             args.add(singleSpace(excludes));
         }
     }
@@ -587,17 +587,17 @@ public class ScalaTestTask extends Task {
     // DEPRECATED in 0.9.6
     //
     public void addConfiguredProperty(NameValuePair property) {
-        System.err.println("WARNING: 'property' is deprecated - " +
-                           "use 'extra' instead [name: " + property.name +
-                           "]");
+        System.err.println("WARNING: <property> is deprecated - " +
+                           "please use <config> instead [name: " +
+                           property.name + "]");
         properties.add(property);
     }
 
     //
-    // Sets values from nested element 'extra'.
+    // Sets values from nested element 'config'.
     //
-    public void addConfiguredExtra(NameValuePair extra) {
-        properties.add(extra);
+    public void addConfiguredConfig(NameValuePair config) {
+        properties.add(config);
     }
 
     //

@@ -133,14 +133,14 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     verify(
       Array("-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
             "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out",
-            "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo"),
+            "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo"),
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
       Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
-      List("-x", "SlowTests"),
+      List("-l", "SlowTests"),
       Nil,
       Nil,
       Nil,
@@ -150,14 +150,14 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     verify(
       Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
             "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out",
-            "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo"),
+            "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo"),
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
       List("-s", "SuiteOne", "-s", "SuiteTwo"),
       Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
-      List("-x", "SlowTests"),
+      List("-l", "SlowTests"),
       List("-c"),
       Nil,
       Nil,
@@ -167,7 +167,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     verify(
       Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
           "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out",
-          "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo", "-m", "com.example.webapp",
+          "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo", "-m", "com.example.webapp",
           "-w", "com.example.root"),
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
@@ -175,7 +175,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
-      List("-x", "SlowTests"),
+      List("-l", "SlowTests"),
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
@@ -185,7 +185,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     verify(
       Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
           "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out",
-          "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo", "-m", "com.example.webapp",
+          "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-s", "SuiteTwo", "-m", "com.example.webapp",
           "-w", "com.example.root", "-t", "some/path/file.xml"),
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
@@ -193,7 +193,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
-      List("-x", "SlowTests"),
+      List("-l", "SlowTests"),
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
@@ -203,7 +203,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     verify(
       Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
           "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-f", "file.out",
-          "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne", "-j", "junitTest", "-j", "junitTest2",
+          "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne", "-j", "junitTest", "-j", "junitTest2",
           "-m", "com.example.webapp", "-w", "com.example.root", "-t", "some/path/file.xml"),
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-f", "file.out"),
@@ -211,7 +211,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       List("-j", "junitTest", "-j", "junitTest2"),
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
-      List("-x", "SlowTests"),
+      List("-l", "SlowTests"),
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
@@ -221,7 +221,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
     verify(
       Array("-c", "-g", "-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188", "-p",
           "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\"", "-g", "-u", "directory/",
-          "-n", "One Two Three", "-x", "SlowTests", "-s", "SuiteOne",
+          "-n", "One Two Three", "-l", "SlowTests", "-s", "SuiteOne",
           "-m", "com.example.webapp", "-w", "com.example.root", "-t", "some/path/file.xml"),
       List("-p", "\"serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar\""),
       List("-g", "-g", "-u", "directory/"),
@@ -229,7 +229,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Nil,
       List("-Dincredible=whatshername", "-Ddbname=testdb", "-Dserver=192.168.1.188"),
       List("-n", "One Two Three"),
-      List("-x", "SlowTests"),
+      List("-l", "SlowTests"),
       List("-c"),
       List("-m", "com.example.webapp"),
       List("-w", "com.example.root"),
@@ -340,7 +340,7 @@ class RunnerSuite() extends Suite with PrivateMethodTester {
       Runner.parseReporterArgsIntoConfigurations(List("Hello", "", "World"))
     }
     intercept[IllegalArgumentException] {
-      Runner.parseReporterArgsIntoConfigurations(List("-g", "-x", "-o"))
+      Runner.parseReporterArgsIntoConfigurations(List("-g", "-l", "-o"))
     }
     intercept[IllegalArgumentException] {
       Runner.parseReporterArgsIntoConfigurations(List("Hello", " there", " world!"))

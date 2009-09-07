@@ -43,7 +43,7 @@ import org.scalatest.junit.JUnitWrapperSuite
  * </p>
  *
  * <p>
- * <code>scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.tools.Runner [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] [-n &lt;includes&gt;] [-x &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; [...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; [...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file path&gt; [...]]</code>
+ * <code>scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.tools.Runner [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] [-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; [...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; [...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file path&gt; [...]]</code>
  * </p>
  *
  * <p>
@@ -280,7 +280,7 @@ import org.scalatest.junit.JUnitWrapperSuite
  * You can specify tag names of tests to include or exclude from a run. To specify tags to include,
  * use <code>-n</code> followed by a white-space-separated list of tag names to include, surrounded by
  * double quotes. (The double quotes are not needed if specifying just one tag.)  Similarly, to specify tags
- * to exclude, use <code>-x</code> followed by a white-space-separated
+ * to exclude, use <code>-l</code> followed by a white-space-separated
  * list of tag names to exclude, surrounded by double quotes. (As before, the double quotes are not needed
  * if specifying just one tag.) If tags to include is not specified, then all tests
  * except those mentioned in the tags to exclude (and in the <code>org.scalatest.Ignore</code> tag), will be executed.
@@ -293,8 +293,8 @@ import org.scalatest.junit.JUnitWrapperSuite
  * <p>
  * <ul>
  * <li><code>-n CheckinTests</code></li>
- * <li><code>-n FunctionalTests -x SlowTests</code></li>
- * <li><code>-n "CheckinTests FunctionalTests"-x "SlowTests NetworkTests"</code></li>
+ * <li><code>-n FunctionalTests -l SlowTests</code></li>
+ * <li><code>-n "CheckinTests FunctionalTests" -l "SlowTests NetworkTests"</code></li>
  * </ul>
  * </p>
  *
@@ -544,7 +544,7 @@ object Runner {
     val runpathList: List[String] = parseRunpathArgIntoList(runpathArgsList)
     val propertiesMap: Map[String, String] = parsePropertiesArgsIntoMap(propertiesArgsList)
     val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
-    val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-x")
+    val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
     val concurrent: Boolean = !concurrentList.isEmpty
     val membersOnlyList: List[String] = parseSuiteArgsIntoNameStrings(membersOnlyArgsList, "-m")
     val wildcardList: List[String] = parseSuiteArgsIntoNameStrings(wildcardArgsList, "-w")
@@ -626,7 +626,7 @@ object Runner {
       // Style advice
       // If it is multiple else ifs, then make it symetrical. If one needs an open curly brace, put it on all
       // If an if just has another if, a compound statement, go ahead and put the open curly brace's around the outer one
-      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
+      if (s.startsWith("-p") || s.startsWith("-f") || s.startsWith("-u") || s.startsWith("-h") || s.startsWith("-r") || s.startsWith("-n") || s.startsWith("-x") || s.startsWith("-l") || s.startsWith("-s") || s.startsWith("-j") || s.startsWith("-m") || s.startsWith("-w") || s.startsWith("-t")) {
         if (it.hasNext)
           it.next
       }
@@ -698,6 +698,12 @@ object Runner {
           includes += it.next
       }
       else if (s.startsWith("-x")) {
+        System.err.println(Resources("dashXDeprecated"))
+        excludes += s.replace("-x", "-l")
+        if (it.hasNext)
+          excludes += it.next
+      }
+      else if (s.startsWith("-l")) {
         excludes += s
         if (it.hasNext)
           excludes += it.next

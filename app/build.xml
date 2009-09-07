@@ -287,7 +287,7 @@
             <membersonly package="org.scalatest.prop" />
             <membersonly package="org.scalatest.tools" />
             <membersonly package="org.scalatest.matchers" />
-            <extra name="dbname" value="testdb" />
+            <config name="dbname" value="testdb" />
         </scalatest>
     </target>
 
