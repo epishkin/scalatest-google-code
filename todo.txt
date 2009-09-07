@@ -1,3 +1,4 @@
+- Test that -x prints out warning message, but still works 
 - add withClue to Assertions, and rename message to clue in assert and expect
 - deprecate -x with a warning message, and use -l for tags to exclude. Next time can comandeer -x for ScalaTest XML output
 - pass multiple mock objects in EasyMock and JMock sugar traits
