@@ -40,16 +40,12 @@ import scala.xml
  * @author George Berger
  */
 private[scalatest] class XmlReporter(directory: String) extends Reporter {
-  val events = Set.empty[Event]
+
+  private val events = Set.empty[Event]
 
   //
   // Record events in 'events' set.  Generate xml from events upon receipt of
   // RunCompleted event.
-  //
-  // TODO: fix race condition that kills this thread before it can write
-  // files.  Workaround is to run gui reporter as well, which causes a wait
-  // for user to close gui, providing enough time for thread to finish.
-  //
   def apply(event: Event) {
     events += event
 

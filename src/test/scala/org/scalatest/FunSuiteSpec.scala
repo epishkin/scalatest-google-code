@@ -635,6 +635,61 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       }
     }
+    describe("(when a nesting rule has been violated)") {
+
+      it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySuite extends FunSuite {
+          test("should blow up") {
+            test("should never run") {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySuite
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySuite extends FunSuite {
+          test("should blow up") {
+            test("should never run", mytags.SlowAsMolasses) {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySuite
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySuite extends FunSuite {
+          test("should blow up") {
+            ignore("should never run") {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySuite
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySuite extends FunSuite {
+          test("should blow up") {
+            ignore("should never run", mytags.SlowAsMolasses) {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySuite
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+    }
   }
 }
 

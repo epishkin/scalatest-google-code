@@ -102,6 +102,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
         }
       }
     }
+
     it("should pass in the fixture to every test method") {
       val a = new FixtureSpec {
         type Fixture = String
@@ -748,6 +749,117 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       assert(reporter.testIgnoredEventsReceived.size === 2)
       assert(!a.theTestThisCalled)
       assert(!a.theTestThatCalled)
+    }
+    describe("(when a nesting rule has been violated)") {
+
+      it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FixtureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          it("should blow up") { fixture =>
+            describe("in the wrong place, at the wrong time") {
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a describe with a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FixtureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          it("should blow up") { fixture =>
+            describe("in the wrong place, at the wrong time") {
+              it("should never run") { fixture =>
+                assert(1 === 1)
+              }
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FixtureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          it("should blow up") { fixture =>
+            it("should never run") { fixture =>
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FixtureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          it("should blow up") { fixture =>
+            it("should never run", mytags.SlowAsMolasses) { fixture =>
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FixtureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          it("should blow up") { fixture =>
+            describe("in the wrong place, at the wrong time") {
+              ignore("should never run") { fixture =>
+                assert(1 === 1)
+              }
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FixtureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          it("should blow up") { fixture =>
+            ignore("should never run") { fixture =>
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FixtureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          it("should blow up") { fixture =>
+            ignore("should never run", mytags.SlowAsMolasses) { fixture =>
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
     }
   }
 }

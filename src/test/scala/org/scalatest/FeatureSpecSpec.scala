@@ -589,5 +589,102 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
         assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
+    describe("(when a nesting rule has been violated)") {
+
+      it("should, if they call a feature from within an scenario clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FeatureSpec {
+          scenario("should blow up") {
+            feature("in the wrong place, at the wrong time") {
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a feature with a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FeatureSpec {
+          scenario("should blow up") {
+            feature("in the wrong place, at the wrong time") {
+              scenario("should never run") {
+                assert(1 === 1)
+              }
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FeatureSpec {
+          scenario("should blow up") {
+            scenario("should never run") {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FeatureSpec {
+          scenario("should blow up") {
+            scenario("should never run", mytags.SlowAsMolasses) {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a feature with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FeatureSpec {
+          scenario("should blow up") {
+            feature("in the wrong place, at the wrong time") {
+              ignore("should never run") {
+                assert(1 === 1)
+              }
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FeatureSpec {
+          scenario("should blow up") {
+            ignore("should never run") {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+      it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
+
+        class MySpec extends FeatureSpec {
+          scenario("should blow up") {
+            ignore("should never run", mytags.SlowAsMolasses) {
+              assert(1 === 1)
+            }
+          }
+        }
+
+        val spec = new MySpec
+        ensureTestFailedEventReceived(spec, "should blow up")
+      }
+    }
   }
 }

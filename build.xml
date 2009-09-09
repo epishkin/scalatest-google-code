@@ -404,7 +404,8 @@
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
 
-            <suite classname="org.scalatest.SuiteSuite" />
+            <suite classname="org.scalatest.SuiteSuite7" />
+<!--
             <suite classname="org.scalatest.FunSuiteSuite" />
 
             <suite classname="org.scalatest.SuiteSpec" />
@@ -421,7 +422,6 @@
             <suite classname="org.scalatest.fixture.FixtureWordSpecSpec" />
             <suite classname="org.scalatest.fixture.FixtureFeatureSpecSpec" /> 
             <membersonly package="org.scalatest.concurrent" />
-<!--
             <suite classname="org.scalatest.concurrent.ConductorSuite" />
             <suite classname="org.scalatest.fixture.FixtureFlatSpecSuite" />
             <suite classname="org.scalatest.FlatSpecSpec" />
