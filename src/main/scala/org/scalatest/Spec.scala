@@ -73,6 +73,22 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
+ * A <code>Spec</code>'s lifecycle has two phases: the <em>registration</em> phase and the
+ * <em>ready</em> phase. It starts in registration phase and enters ready phase the first time
+ * <code>run</code> is called on it. It then remains in ready phase for the remainder of its lifetime.
+ * </p>
+ *
+ * <p>
+ * Tests can only be registered with the <code>it</code> method while the <code>Spec</code> is
+ * in its registration phase. Any attempt to register a test after the <code>Spec</code> has
+ * entered its ready phase, <em>i.e.</em>, after <code>run</code> has been invoked on the <code>Spec</code>,
+ * will be met with a thrown <code>TestRegistrationClosedException</code>. The recommended style
+ * of using <code>Spec</code> is to register tests during object construction as is done in all
+ * the examples shown here. If you keep to the recommended style, you should never see a
+ * <code>TestRegistrationClosedException</code>.
+ * </p>
+ *
+ * <p>
  * When you execute a <code>Spec</code>, it will send <code>Formatter</code>s in the events it sends to the
  * <code>Reporter</code>. ScalaTest's built-in reporters will report these events in such a way
  * that the output is easy to read as an informal specification of the <em>subject</em> being tested.

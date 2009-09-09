@@ -15,9 +15,6 @@
  */
 package org.scalatest
 
-
-import scalatest.DuplicateTestNameException
-
 /**
  * Exception that indicates something was attempted in test code that is not allowed.
  * For example, in a <code>FeatureSpec</code>, it is not allowed to nest a <code>feature</code>
@@ -32,8 +29,6 @@ import scalatest.DuplicateTestNameException
  *
  * @author Bill Venners
  */
-
-
 class NotAllowedException(message: String, failedCodeStackDepth: Int)
     extends StackDepthException(Some(message), None, failedCodeStackDepth) {
 
