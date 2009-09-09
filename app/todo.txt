@@ -1,29 +1,28 @@
-- describeCannotAppearInsideAnIt should be featureCannotAppearInsideAScenario in FeatureSpec and FixtureFeatureSpec
-- make ScalaCheckSugar extend Checkers, and make it not have a Suite self type if possible, and make it a selfless trait
+
 - Test that -x prints out warning message, but still works 
-- add withClue to Assertions, and rename message to clue in assert and expect
 - pass multiple mock objects in EasyMock and JMock sugar traits
-- reproduce 2.8 bug and put in trac
+- make sure can mock classes with JMock and EasyMock
+- reproduce 2.8 bug and put in trac (do I remember what this was?)
 - add a LogRecorder trait (1 hr)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
 - document internal parts of new core traits
-- Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.) (15 min)
 - Try sorting the GUI reports with the ordinal (1 hour)
 - make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error
 - write tests for JUnit3Suite
 - add a name to Test in FixtureSuite?
+- check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
 
 Make all function parameters named fun.
 
 Log4j has appenders. java.util.logging has handlers. I think the model would be you'd ask runner
-to register a handler or an appender, and it could do that, then it would get a LogMessages object
-or something from that, and pass it to run. There would be an Option[LogMessages] param in there.
-A test would call testStarting on the LogMessages, to let it know it is starting. I think testStarting
+to register a handler or an appender, and it could do that, then it would get a LogRecorder object
+or something from that, and pass it to run. There would be an Option[LogRecorder] param in there.
+A test would call testStarting on the LogRecorder, to let it know it is starting. I think testStarting
 would return a ID object, which the runTest method would store in a local variable. If the test
-succeeds, it would call testSucceeded on the LogMessages, passing in the ID, so that the LogMessages
+succeeds, it would call testSucceeded on the LogRecorder, passing in the ID, so that the LogRecorder
 could forget about that one. Then, if the test failed, through, it would call testFailed on the
-LogMessages object, passing in the ID, and LogMessages would return a collection of log messages
+LogRecorder object, passing in the ID, and LogRecorder would return a collection of log messages
 that were received since the testStarting invocation that returned that ID. It would forget about
 that ID also. The test would forward those log messages to the reporter via InfoProvided events.
 

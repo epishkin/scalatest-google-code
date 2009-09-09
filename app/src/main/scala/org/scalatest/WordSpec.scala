@@ -289,6 +289,22 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
+ * A <code>WordSpec</code>'s lifecycle has two phases: the <em>registration</em> phase and the
+ * <em>ready</em> phase. It starts in registration phase and enters ready phase the first time
+ * <code>run</code> is called on it. It then remains in ready phase for the remainder of its lifetime.
+ * </p>
+ *
+ * <p>
+ * Tests can only be registered while the <code>WordSpec</code> is
+ * in its registration phase. Any attempt to register a test after the <code>WordSpec</code> has
+ * entered its ready phase, <em>i.e.</em>, after <code>run</code> has been invoked on the <code>WordSpec</code>,
+ * will be met with a thrown <code>TestRegistrationClosedException</code>. The recommended style
+ * of using <code>WordSpec</code> is to register tests during object construction as is done in all
+ * the examples shown here. If you keep to the recommended style, you should never see a
+ * <code>TestRegistrationClosedException</code>.
+ * </p>
+ *
+ * <p>
  * <strong>Shared fixtures</strong>
  * </p>
  *

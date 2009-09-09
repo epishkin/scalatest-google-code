@@ -75,7 +75,7 @@ package org.scalatest
  * if it was previously <code>null</code>).   
  * </p>
  */
-trait AppendClueMethod[T <: Throwable] { this: Throwable =>
+private[scalatest] trait AppendClueMethod[T <: Throwable] { this: Throwable =>
 
   /**
    * Returns an instance of this exception's class, identical to this exception,
