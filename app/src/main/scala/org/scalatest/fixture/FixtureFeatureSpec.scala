@@ -491,7 +491,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
   protected def scenario(specText: String, testTags: Tag*)(testFun: Fixture => Any) {
 
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+      throw new TestRegistrationClosedException(Resources("scenarioCannotAppearInsideAnotherScenario"), getStackDepth("FixtureFeatureSpec.scala", "scenario"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
@@ -526,7 +526,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    */
   protected def scenario(specText: String)(testFun: Fixture => Any) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
+      throw new TestRegistrationClosedException(Resources("scenarioCannotAppearInsideAnotherScenario"), getStackDepth("FixtureFeatureSpec.scala", "scenario"))
     scenario(specText, Array[Tag](): _*)(testFun)
   }
 
@@ -550,7 +550,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: Fixture => Any) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
@@ -582,7 +582,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    */
   protected def ignore(specText: String)(testFun: Fixture => Any) {
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
   }
 
@@ -595,11 +595,15 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
   protected def feature(description: String)(f: => Unit) {
 
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
+      throw new TestRegistrationClosedException(Resources("featureCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "feature"))
 
     def createNewBranch() = {
       val oldBundle = atomic.get
       var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
+
+      // features cannot nest
+      if (currentBranch != trunk)
+        throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepth("FixtureFeatureSpec.scala", "feature"))
 
       val newBranch = DescriptionBranch(currentBranch, Resources("feature", description))
       val oldBranch = currentBranch

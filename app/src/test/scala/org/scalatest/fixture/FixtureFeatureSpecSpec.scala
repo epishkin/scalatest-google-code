@@ -867,6 +867,23 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         val spec = new MySpec
         ensureTestFailedEventReceived(spec, "should blow up")
       }
+      it("should, if they call a nested feature from within a feature clause, result in a SuiteAborted event when constructing the FeatureSpec") {
+
+        class MySpec extends FixtureFeatureSpec {
+          type Fixture = String
+          def withFixture(test: Test) { test("hi") }
+          feature("should blow up") {
+            feature("should never run") {
+            }
+          }
+        }
+
+        val caught =
+          intercept[NotAllowedException] {
+            new MySpec
+          }
+        assert(caught.getMessage === "Feature clauses cannot be nested.")
+      }
     }
   }
 }
