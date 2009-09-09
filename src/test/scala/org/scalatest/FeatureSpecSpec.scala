@@ -685,6 +685,19 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
         val spec = new MySpec
         ensureTestFailedEventReceived(spec, "should blow up")
       }
+      it("should, if they call a nested feature from within a feature clause, result in a SuiteAborted event when constructing the FeatureSpec") {
+
+        class MySpec extends FeatureSpec {
+          feature("should blow up") {
+            feature("should never run") {
+            }
+          }
+        }
+
+        intercept[NotAllowedException] {
+          new MySpec
+        }
+      }
     }
   }
 }

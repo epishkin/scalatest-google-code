@@ -1,3 +1,4 @@
+- describeCannotAppearInsideAnIt should be featureCannotAppearInsideAScenario in FeatureSpec and FixtureFeatureSpec
 - make ScalaCheckSugar extend Checkers, and make it not have a Suite self type if possible, and make it a selfless trait
 - Test that -x prints out warning message, but still works 
 - add withClue to Assertions, and rename message to clue in assert and expect
