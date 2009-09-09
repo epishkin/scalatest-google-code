@@ -698,7 +698,7 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
           intercept[NotAllowedException] {
             new MySpec
           }
-        assert(caught.getMessage === "Feature clauses cannot be nested in a FeatureSpec.")
+        assert(caught.getMessage === "Feature clauses cannot be nested.")
       }
     }
   }
