@@ -1,15 +1,12 @@
+- make ScalaCheckSugar extend Checkers, and make it not have a Suite self type if possible, and make it a selfless trait
 - Test that -x prints out warning message, but still works 
 - add withClue to Assertions, and rename message to clue in assert and expect
-- deprecate -x with a warning message, and use -l for tags to exclude. Next time can comandeer -x for ScalaTest XML output
 - pass multiple mock objects in EasyMock and JMock sugar traits
 - reproduce 2.8 bug and put in trac
 - add a LogRecorder trait (1 hr)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
 - document internal parts of new core traits
-- rename extra in ant task
-- JUnit XML reporter
-- HTML reporter
 - Add text about registration and ready mode to Spec and others. (In FunSuite and FeatureSpec now.) (15 min)
 - Try sorting the GUI reports with the ordinal (1 hour)
 - make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error

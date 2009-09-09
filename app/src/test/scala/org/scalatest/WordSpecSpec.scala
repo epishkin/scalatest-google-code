@@ -41,7 +41,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           "should blow up" in {
             "in the wrong place, at the wrong time" should {
               "should never run" in {
-                assert(1 === 2)
+                assert(1 === 1)
               }
             }
           }
@@ -55,7 +55,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends WordSpec {
           "should blow up" in {
             "should never run" in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -68,7 +68,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends WordSpec {
           "should blow up" in {
             "should never run" taggedAs(mytags.SlowAsMolasses) in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -82,7 +82,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           "should blow up" in {
             "in the wrong place, at the wrong time" should {
               "should never run" ignore {
-                assert(1 === 2)
+                assert(1 === 1)
               }
             }
           }
@@ -96,7 +96,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends WordSpec {
           "should blow up" in {
             "should never run" ignore {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -109,7 +109,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends WordSpec {
           "should blow up" in {
             "should never run" taggedAs(mytags.SlowAsMolasses) ignore {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }

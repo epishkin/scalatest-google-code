@@ -243,7 +243,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           it("should blow up") {
             describe("in the wrong place, at the wrong time") {
               it("should never run") {
-                assert(1 === 2)
+                assert(1 === 1)
               }
             }
           }
@@ -257,7 +257,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends Spec {
           it("should blow up") {
             it("should never run") {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -270,7 +270,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends Spec {
           it("should blow up") {
             it("should never run", mytags.SlowAsMolasses) {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -284,7 +284,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           it("should blow up") {
             describe("in the wrong place, at the wrong time") {
               ignore("should never run") {
-                assert(1 === 2)
+                assert(1 === 1)
               }
             }
           }
@@ -298,7 +298,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends Spec {
           it("should blow up") {
             ignore("should never run") {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -311,7 +311,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends Spec {
           it("should blow up") {
             ignore("should never run", mytags.SlowAsMolasses) {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }

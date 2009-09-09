@@ -256,7 +256,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           it should "blow up" in {
             behavior of "in the wrong place, at the wrong time"
             it should "never run" in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -269,7 +269,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends FlatSpec {
           it should "blow up" in {
             it should "never run" in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -282,7 +282,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends FlatSpec {
           it should "blow up" in {
             it should "never run" taggedAs(mytags.SlowAsMolasses) in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -296,7 +296,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           it should "blow up" in {
             behavior of "in the wrong place, at the wrong time"
             ignore should "never run" in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -309,7 +309,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends FlatSpec {
           it should "blow up" in {
             ignore should "never run" in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
@@ -322,7 +322,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         class MySpec extends FlatSpec {
           it should "blow up" in {
             ignore should "never run" taggedAs(mytags.SlowAsMolasses) in {
-              assert(1 === 2)
+              assert(1 === 1)
             }
           }
         }
