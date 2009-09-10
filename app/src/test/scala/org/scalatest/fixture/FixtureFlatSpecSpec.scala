@@ -1143,6 +1143,27 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(!s.aFixturelessTestWasPassed)
     }
+    it("should pass a FixturelessTest that invokes the no-arg test when the " +
+            "FixturelessTest's no-arg apply method is invoked") {
+
+      class MySpec extends FixtureFlatSpec {
+        type Fixture = String
+        var theFixturelessTestWasInvoked = false
+        def withFixture(test: Test) {
+          test match {
+            case ft: FixturelessTest => ft()
+            case _ => // Don't invoke a non FixturelessTest
+          }
+        }
+        it should "do something" in { () =>
+          theFixturelessTestWasInvoked = true
+        }
+      }
+
+      val s = new MySpec
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(s.theFixturelessTestWasInvoked)
+    }
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a behavior-of from within an it clause, result in a TestFailedException when running the test") {

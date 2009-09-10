@@ -789,6 +789,27 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(!s.aFixturelessTestWasPassed)
     }
+    it("should pass a FixturelessTest that invokes the no-arg test when the " +
+            "FixturelessTest's no-arg apply method is invoked") {
+
+      class MySuite extends FixtureFeatureSpec {
+        type Fixture = String
+        var theFixturelessTestWasInvoked = false
+        def withFixture(test: Test) {
+          test match {
+            case ft: FixturelessTest => ft()
+            case _ => // Don't invoke a non FixturelessTest
+          }
+        }
+        scenario("something") { () =>
+          theFixturelessTestWasInvoked = true
+        }
+      }
+
+      val s = new MySuite
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(s.theFixturelessTestWasInvoked)
+    }
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a feature from within an scenario clause, result in a TestFailedException when running the test") {
