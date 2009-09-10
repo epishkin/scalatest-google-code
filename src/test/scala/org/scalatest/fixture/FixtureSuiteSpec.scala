@@ -842,5 +842,47 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(!s.aFixturelessTestWasPassed)
     }
+    it("should pass a FixturelessTest that invokes the no-arg test when the " +
+            "FixturelessTest's no-arg apply method is invoked") {
+
+      class MySuite extends FixtureSuite {
+        type Fixture = String
+        var theFixturelessTestWasInvoked = false
+        def withFixture(test: Test) {
+          test match {
+            case ft: FixturelessTest => ft()
+            case _ => // Don't invoke a non FixturelessTest
+          }
+        }
+        def testSomething() {
+          theFixturelessTestWasInvoked = true
+        }
+      }
+
+      val s = new MySuite
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(s.theFixturelessTestWasInvoked)
+    }
+    it("should pass a FixturelessTest that invokes a test that takse an Informer when the " +
+            "FixturelessTest's no-arg apply method is invoked") {
+
+      class MySuite extends FixtureSuite {
+        type Fixture = String
+        var theFixturelessTestWasInvoked = false
+        def withFixture(test: Test) {
+          test match {
+            case ft: FixturelessTest => ft()
+            case _ => // Don't invoke a non FixturelessTest
+          }
+        }
+        def testSomething(info: Informer) {
+          theFixturelessTestWasInvoked = true
+        }
+      }
+
+      val s = new MySuite
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(s.theFixturelessTestWasInvoked)
+    }
   }
 }
