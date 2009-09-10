@@ -583,7 +583,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
           theTest.fun match {
             case wrapper: NoArgTestWrapper[_] =>
               new FixturelessTestFunAndConfigMap(wrapper.test, configMap)
-            case _ => new TestFunAndConfigMap(theTest.fun, configMap)
+            case fun => new TestFunAndConfigMap(fun, configMap)
           }
         )
       }
