@@ -579,7 +579,13 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
       atomicInformer.set(informerForThisTest)
       try {
-        withFixture(new TestFunAndConfigMap(theTest.fun, configMap))
+        withFixture(
+          theTest.fun match {
+            case wrapper: NoArgTestWrapper[_] =>
+              new FixturelessTestFunAndConfigMap(wrapper.test, configMap)
+            case _ => new TestFunAndConfigMap(theTest.fun, configMap)
+          }
+        )
       }
       finally {
         val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
