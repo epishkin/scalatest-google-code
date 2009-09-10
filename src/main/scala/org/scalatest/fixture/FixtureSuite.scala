@@ -365,11 +365,24 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
   protected type Fixture
 
   /**
-   * Object that encapsulates a test function and config map.
+   * Trait whose instances encapsulate a test function that takes a fixture and config map.
    *
    * <p>
    * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
-   * to <code>FixtureSuite</code>'s <code>withFixture</code> method.  For more detail and examples, see the
+   * to <code>FixtureSuite</code>'s <code>withFixture</code> method, such as:
+   * </p>
+   *
+   * <pre>
+   * def testSomething(fixture: Fixture) {
+   *   // ...
+   * }
+   * def testSomethingElse(fixture: Fixture, info: Informer) {
+   *   // ...
+   * }
+   * </pre>
+   *
+   * <p>
+   * For more detail and examples, see the
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
@@ -386,8 +399,43 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
      */
     def configMap: Map[String, Any]
   }
+
   /**
-   * Run the passed test function with a fixture created by this method.
+   * Trait whose instances encapsulate a test function that takes no fixture and config map.
+   *
+   * <p>
+   * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
+   * to <code>FixtureSuite</code>'s <code>withFixture</code> method for test methods that take no
+   * fixture, such as:
+   * </p>
+   *
+   * <pre>
+   * def testSomething() {
+   *   // ...
+   * }
+   * def testSomethingElse(info: Informer) {
+   *   // ...
+   * }
+   * </pre>
+   *
+   * <p>
+   * This trait enables <code>withFixture</code> method implementatinos to detect test that
+   * don't require a fixture. If a fixture is expensive to create and cleanup, <code>withFixture</code>
+   * method implementations can opt to not create fixtures for tests that don't need them.
+   * For more detail and examples, see the
+   * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
+   * </p>
+   */
+  protected trait FixturelessTest extends Test with (() => Unit) {
+
+    /**
+     * Run the test that takes no <code>Fixture</code>.
+     */
+    def apply()
+  }
+
+  /**
+   *  Run the passed test function with a fixture created by this method.
    *
    * <p>
    * This method should create the fixture object needed by the tests of the
@@ -406,6 +454,12 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     def apply(fixture: Fixture) {
       test(fixture)
     }
+  }
+
+  private[fixture] class FixturelessTestFunAndConfigMap(test: () => Any, configMap: Map[String, Any])
+    extends TestFunAndConfigMap((Fixture) => test(), configMap) with FixturelessTest {
+
+    def apply() { test() }
   }
 
   // Need to override this one becaue it call getMethodForTestName
@@ -504,33 +558,53 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
 
     try {
-      val testFun: Fixture => Unit = {
-        (fixture: Fixture) => {
-          val anyRefFixture: AnyRef = fixture.asInstanceOf[AnyRef] // TODO zap this cast
-          val args: Array[Object] =
-            if (testMethodTakesAFixtureAndInformer(testName) || testMethodTakesAnInformer(testName)) {
-              val informer =
-                new Informer {
-                  def apply(message: String) {
-                    if (message == null)
-                      throw new NullPointerException
-                    report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+      if (testMethodTakesAFixtureAndInformer(testName) || testMethodTakesAFixture(testName)) {
+        val testFun: Fixture => Unit = {
+          (fixture: Fixture) => {
+            val anyRefFixture: AnyRef = fixture.asInstanceOf[AnyRef] // TODO zap this cast
+            val args: Array[Object] =
+              if (testMethodTakesAFixtureAndInformer(testName)) {
+                val informer =
+                  new Informer {
+                    def apply(message: String) {
+                      if (message == null)
+                        throw new NullPointerException
+                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+                    }
                   }
-                }
-              if (testMethodTakesAFixtureAndInformer(testName))
                 Array(anyRefFixture, informer)
+              }
               else
-                Array(informer)
-            }
-            else if (testMethodTakesAFixture(testName))
-              Array(anyRefFixture)
-            else
-              Array()
+                Array(anyRefFixture)
 
-          method.invoke(this, args: _*)
+            method.invoke(this, args: _*)
+          }
         }
+        withFixture(new TestFunAndConfigMap(testFun, configMap))
       }
-      withFixture(new TestFunAndConfigMap(testFun, configMap))
+      else { // Test method does not take a fixture
+        val testFun: () => Unit = {
+          () => {
+            val args: Array[Object] =
+              if (testMethodTakesAnInformer(testName)) {
+                val informer =
+                  new Informer {
+                    def apply(message: String) {
+                      if (message == null)
+                        throw new NullPointerException
+                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+                    }
+                  }
+                Array(informer)
+              }
+              else
+                Array()
+
+            method.invoke(this, args: _*)
+          }
+        }
+        withFixture(new FixturelessTestFunAndConfigMap(testFun, configMap))
+      }
 
       val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
