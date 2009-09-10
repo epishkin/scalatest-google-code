@@ -852,7 +852,13 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
         atomicInformer.set(informerForThisTest)
         var testWasPending = false
         try {
-          withFixture(new TestFunAndConfigMap(test.f, configMap))
+          withFixture(
+            test.f match {
+              case wrapper: NoArgTestWrapper[_] =>
+                new FixturelessTestFunAndConfigMap(wrapper.test, configMap)
+              case f => new TestFunAndConfigMap(f, configMap)
+            }
+          )
 
           val duration = System.currentTimeMillis - testStartTime
           report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))
