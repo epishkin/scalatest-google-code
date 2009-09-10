@@ -1111,6 +1111,38 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(!a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
+    it("should pass a FixturelessTest to withFixture for tests that take no fixture") {
+      class MySpec extends FixtureFlatSpec {
+        type Fixture = String
+        var aFixturelessTestWasPassed = false
+        def withFixture(test: Test) {
+          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+        }
+        it should "do something" in { () =>
+          assert(1 + 1 === 2)
+        }
+      }
+
+      val s = new MySpec
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(s.aFixturelessTestWasPassed)
+    }
+    it("should not pass a FixturelessTest to withFixture for tests that take a Fixture") {
+      class MySpec extends FixtureFlatSpec {
+        type Fixture = String
+        var aFixturelessTestWasPassed = false
+        def withFixture(test: Test) {
+          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+        }
+        it should "do something" in { fixture =>
+          assert(1 + 1 === 2)
+        }
+      }
+
+      val s = new MySpec
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(!s.aFixturelessTestWasPassed)
+    }
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a behavior-of from within an it clause, result in a TestFailedException when running the test") {
