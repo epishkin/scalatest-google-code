@@ -1,9 +1,7 @@
 
-- Test that -x prints out warning message, but still works 
 - pass multiple mock objects in EasyMock and JMock sugar traits
 - make sure can mock classes with JMock and EasyMock
 - reproduce 2.8 bug and put in trac (do I remember what this was?)
-- add a LogRecorder trait (1 hr)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
 - document internal parts of new core traits
@@ -12,6 +10,7 @@
 - write tests for JUnit3Suite
 - add a name to Test in FixtureSuite?
 - check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
+- check out problem with Conductor
 
 Make all function parameters named fun.
 
@@ -21,7 +20,7 @@ or something from that, and pass it to run. There would be an Option[LogRecorder
 A test would call testStarting on the LogRecorder, to let it know it is starting. I think testStarting
 would return a ID object, which the runTest method would store in a local variable. If the test
 succeeds, it would call testSucceeded on the LogRecorder, passing in the ID, so that the LogRecorder
-could forget about that one. Then, if the test failed, through, it would call testFailed on the
+could forget about that one. Then, if the test failed, though, it would call testFailed on the
 LogRecorder object, passing in the ID, and LogRecorder would return a collection of log messages
 that were received since the testStarting invocation that returned that ID. It would forget about
 that ID also. The test would forward those log messages to the reporter via InfoProvided events.
