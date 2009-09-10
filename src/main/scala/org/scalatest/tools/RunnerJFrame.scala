@@ -734,6 +734,11 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
     refreshEventsJList()
   }
 
+  private def reorderEventsJList() {
+    collectedEvents = collectedEvents.sort((a,b)=>a.event.ordinal>b.event.ordinal)
+    refreshEventsJList()
+  }
+
   private def refreshEventsJList() {
 
     val formerlySelectedItem: EventHolder = eventsJList.getSelectedValue().asInstanceOf[EventHolder]
@@ -849,6 +854,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
           // and that looks bad and is wrong to boot.
           usingEventDispatchThread {
             registerEvent(event)
+            reorderEventsJList()
           }
   
         case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
