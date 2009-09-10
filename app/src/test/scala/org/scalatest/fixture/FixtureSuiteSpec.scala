@@ -778,5 +778,69 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.takesAFixtureInvoked)
       assert(a.takesAFixtureAndInformerInvoked)
     }
+    it("should pass a FixturelessTest to withFixture for test methods that take no arguments") {
+      class MySuite extends FixtureSuite {
+        type Fixture = String
+        var aFixturelessTestWasPassed = false
+        def withFixture(test: Test) {
+          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+        }
+        def testSomething() {
+          assert(1 + 1 === 2)
+        }
+      }
+
+      val s = new MySuite
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(s.aFixturelessTestWasPassed)
+    }
+    it("should pass a FixturelessTest to withFixture for test methods that take only an Informer") {
+      class MySuite extends FixtureSuite {
+        type Fixture = String
+        var aFixturelessTestWasPassed = false
+        def withFixture(test: Test) {
+          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+        }
+        def testSomething(info: Informer) {
+          assert(1 + 1 === 2)
+        }
+      }
+
+      val s = new MySuite
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(s.aFixturelessTestWasPassed)
+    }
+    it("should not pass a FixturelessTest to withFixture for test methods that a Fixture and an Informer") {
+      class MySuite extends FixtureSuite {
+        type Fixture = String
+        var aFixturelessTestWasPassed = false
+        def withFixture(test: Test) {
+          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+        }
+        def testSomething(fixture: Fixture, info: Informer) {
+          assert(1 + 1 === 2)
+        }
+      }
+
+      val s = new MySuite
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(!s.aFixturelessTestWasPassed)
+    }
+    it("should not pass a FixturelessTest to withFixture for test methods that a Fixture") {
+      class MySuite extends FixtureSuite {
+        type Fixture = String
+        var aFixturelessTestWasPassed = false
+        def withFixture(test: Test) {
+          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+        }
+        def testSomething(fixture: Fixture) {
+          assert(1 + 1 === 2)
+        }
+      }
+
+      val s = new MySuite
+      s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(!s.aFixturelessTestWasPassed)
+    }
   }
 }
