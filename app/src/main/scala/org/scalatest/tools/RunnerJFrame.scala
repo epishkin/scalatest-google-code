@@ -105,7 +105,8 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
 
   // The list of events collected from the most recent run
   // The most recently added event is at the head of the list.
-  private var collectedEvents: List[EventHolder] = Nil
+  // This is volatile because it is sorted outside the event handler thread.
+  @volatile private var collectedEvents: List[EventHolder] = Nil
 
   // The eventsListModel and eventsJList are used to display the current
   // collected events of types selected by the view menu
@@ -734,9 +735,8 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
     refreshEventsJList()
   }
 
-  private def reorderEventsJList() {
-    collectedEvents = collectedEvents.sort((a,b)=>a.event.ordinal>b.event.ordinal)
-    refreshEventsJList()
+  private def reorderCollectedEvents() {
+    collectedEvents = collectedEvents.sort((a, b) => a.event.ordinal > b.event.ordinal)
   }
 
   private def refreshEventsJList() {
@@ -852,9 +852,13 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
           // Create the Report outside of the event handler thread, because otherwise
           // the event handler thread shows up as the originating thread of this event,
           // and that looks bad and is wrong to boot.
+          // Reordering this outside the event handler thread so that the GUI won't be frozen
+          // during a long sort. The RunCompleted event isn't yet in the list when the sort happens, so
+          // it will just be added at the end. 
+          reorderCollectedEvents()
           usingEventDispatchThread {
             registerEvent(event)
-            reorderEventsJList()
+            refreshEventsJList()
           }
   
         case RunAborted(ordinal, message, throwable, duration, summary, formatter, payload, threadName, timeStamp) => 
