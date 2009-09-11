@@ -7,9 +7,9 @@
 - document internal parts of new core traits
 - check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
 - check out problem with Conductor
-- add wrapTest
-- put ConductorMethods in using wrapTest
-- put final overriden wrapTest in JUnit and TestNG traits
+- create Test0, pass it to wrapTest instead of just a plain function. Include name and configMap.
+- put ConductorMethods in using withFixture(Test0)
+- put final overridden withFixture(Test0) in JUnit and TestNG traits
 
 Make all function parameters named fun.
 

@@ -24,7 +24,7 @@ class WithTempFileExampleSuite extends FixtureFunSuite {
 
   type Fixture = FileReader
 
-  def withFixture(testFunction: Test) {
+  def withFixture(test: Test1) {
 
     val FileName = "TempFile.txt"
 
@@ -42,7 +42,7 @@ class WithTempFileExampleSuite extends FixtureFunSuite {
 
     try {
       // Run the test using the temp file
-      testFunction(reader)
+      test(reader)
     }
     finally {
       // Close and delete the temp file

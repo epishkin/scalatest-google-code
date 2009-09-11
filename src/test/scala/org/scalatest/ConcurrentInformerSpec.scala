@@ -28,12 +28,12 @@ class ConcurrentInformerSpec extends FixtureSpec {
 
   // The ConcurrentInformer must be passed in rather than constructed in the constructor
   // and shared that way, to make sure it is created by the same thread that runs the tests
-  def withFixture(fun: Test) {
+  def withFixture(test: Test1) {
     val informer =
       new ConcurrentInformer(nameInfo) {
         def apply(message: String) = ()
       }
-    fun(informer)
+    test(informer)
   }
 
   describe("A ConcurrentInformer") {

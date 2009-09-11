@@ -39,11 +39,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * This trait behaves similarly to trait <code>org.scalatest.Suite</code>, except that tests may take a fixture object. The type of the
  * fixture object passed is defined by the abstract <code>Fixture</code> type, which is declared as a member of this trait.
  * This trait also declares the abstract method <code>withFixture</code>. The <code>withFixture</code> method
- * takes a <code>Test</code>, which is a nested trait defined as a member of this trait.
- * <code>Test</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
+ * takes a <code>Test1</code>, which is a nested trait defined as a member of this trait.
+ * <code>Test1</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
  * This <code>apply</code> method is responsible for running a test.
  * This trait's <code>runTest</code> method delegates the actual running of each test to <code>withFixture</code>, passing
- * in the test code to run via the <code>Test</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
+ * in the test code to run via the <code>Test1</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
  * for creating the fixture and passing it to the test function.
  * </p>
  * 
@@ -73,7 +73,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   type Fixture = FileReader
  *
  *   // 2. define the withFixture method
- *   def withFixture(test: Test) {
+ *   def withFixture(test: Test1) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -139,7 +139,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = (StringBuilder, ListBuffer[String])
  *
- *   def withFixture(test: Test) {
+ *   def withFixture(test: Test1) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
@@ -191,7 +191,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FixtureHolder
  *
- *   def withFixture(test: Test) {
+ *   def withFixture(test: Test1) {
  *
  *     // Create needed mutable objects
  *     val stringBuilder = new StringBuilder("ScalaTest is ")
@@ -257,9 +257,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * Sometimes you may want to write tests that are configurable. For example, you may want to write
  * a suite of tests that each take an open temp file as a fixture, but whose file name is specified
  * externally so that the file name can be can be changed from run to run. To accomplish this
- * the <code>Test</code> trait has a <code>configMap</code>
+ * the <code>Test1</code> trait has a <code>configMap</code>
  * method, which will return a <code>Map[String, Any]</code> from which configuration information may be obtained.
- * The <code>runTest</code> method of this trait will pass a <code>Test</code> to <code>withFixture</code>
+ * The <code>runTest</code> method of this trait will pass a <code>Test1</code> to <code>withFixture</code>
  * whose <code>configMap</code> method returns the <code>configMap</code> passed to <code>runTest</code>.
  * Here's an example in which the name of a temp file is taken from the passed <code>configMap</code>:
  * </p>
@@ -274,7 +274,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(test: Test) {
+ *   def withFixture(test: Test1) {
  *
  *     require(
  *       test.configMap.contains("TempFileName"),
@@ -386,7 +386,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait Test extends (Fixture => Unit) {
+  protected trait Test1 extends (Fixture => Unit) {
 
     /**
      * Run the test, using the passed <code>Fixture</code>.
@@ -426,7 +426,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait FixturelessTest extends Test with (() => Unit) {
+  protected trait FixturelessTest extends Test1 with (() => Unit) {
 
     /**
      * Run the test that takes no <code>Fixture</code>.
@@ -444,12 +444,12 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * For more detail and examples, see the <a href="FixtureSuite.html">main documentation for this trait</a>.
    * </p>
    *
-   * @param fun the <code>Test</code> to invoke, passing in a fixture
+   * @param fun the <code>Test1</code> to invoke, passing in a fixture
    */
-  protected def withFixture(test: Test)
+  protected def withFixture(test: Test1)
 
   private[fixture] class TestFunAndConfigMap(test: Fixture => Any, val configMap: Map[String, Any])
-    extends Test {
+    extends Test1 {
     
     def apply(fixture: Fixture) {
       test(fixture)
