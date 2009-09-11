@@ -6,9 +6,10 @@
 - make 2nd pass at writing main docs of core traits
 - document internal parts of new core traits
 - make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error
-- write tests for JUnit3Suite
 - check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
 - check out problem with Conductor
+- add wrapTest
+- put ConductorMethods in using wrapTest
 
 Make all function parameters named fun.
 
@@ -936,3 +937,7 @@ GivenWhenThen would need to have a ThatWord. Probably fine. People use that a lo
 
 Actually, maybe want to have MockitoSugar extend GivenWhenThen, and override the ...
 
+trait TestWrapper {
+
+overrides runTest. Calls wrapTest
+}
