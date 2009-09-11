@@ -15,13 +15,13 @@
  */
 package org.scalatest.junit;
 
+import collection.immutable.TreeSet
+import java.lang.reflect.{Method, Modifier}
+import org.junit.runner.{Request, JUnitCore, Description, Result}
 import org.scalatest._
 import org.scalatest.Suite
-import org.junit.runner.JUnitCore
 import org.junit.runner.notification.RunListener
 import org.junit.runner.notification.Failure
-import org.junit.runner.Description
-import org.junit.runner.Result
 import org.scalatest.events._
 
 /**
@@ -75,20 +75,96 @@ import org.scalatest.events._
  * @author Joel Neely
  */
 trait JUnitSuite extends Suite with AssertionsForJUnit { thisSuite =>
+                 
+  // This is volatile, because who knows what Thread JUnit will fire through this.
+  @volatile private var theTracker = new Tracker
 
-  // TODO: This may need to be made thread safe, because who knows what Thread JUnit will fire through this
-  private var theTracker = new Tracker
+  /**
+   * Returns the set of test names that will be executed by JUnit when <code>run</code> is invoked
+   * on an instance of this class, or the instance is passed directly to JUnit for running.
+   *
+   * <p>
+   * The iterator obtained by invoking <code>elements</code> on this
+   * returned <code>Set</code> will produce the test names in their <em>natural order</em>, as determined by <code>String</code>'s
+   * <code>compareTo</code> method. Nevertheless, this method is not consulted by JUnit when it
+   * runs the tests, and JUnit may run the tests in any order.
+   * </p>
+   */
+  override def testNames: Set[String] = {
 
-  // TODO: Should this not handle the case where testName is defined?
+    // TODO: Check to see if JUnit discovers static methods, private methods, etc.
+    // Also, JUnit has something about test methods that can be parameterized. Will
+    // eventually need to find those here too. What a pain.
+    def isTestMethod(m: Method) = {
+
+      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+
+      val paramTypes = m.getParameterTypes
+      val hasNoParams = paramTypes.length == 0
+      // val hasVoidReturnType = m.getReturnType == Void.TYPE
+      val hasTestAnnotation = m.getAnnotation(classOf[org.junit.Test]) != null
+
+      isInstanceMethod && hasNoParams && hasTestAnnotation
+    }
+
+    val testNameArray =
+      for (m <- getClass.getMethods; if isTestMethod(m))
+      yield m.getName
+
+    TreeSet[String]() ++ testNameArray
+  }
+
+  /**
+   * Returns the number of tests expected to be run by JUnit when <code>run</code> is invoked
+   * on this <code>JUnitSuite</code>.
+   *
+   * <p>
+   * If <code>tagsToInclude</code> in the passed <code>Filter</code> is defined, this class's
+   * implementation of this method returns 0. Else this class's implementation of this method
+   * returns the size of the set returned by <code>testNames</code> on the current instance,
+   * less the number of tests that were annotated with <code>org.junit.Ignore</code>.
+   * </p>
+   */
+  override def expectedTestCount(filter: Filter) =
+    if (filter.tagsToInclude.isDefined) 0 else (testNames.size - tags.size)
+
+  // Returns just tests that have org.junit.Ignore on them, but calls it org.scalatest.Ignore!
+  override def tags: Map[String, Set[String]] = {
+
+    def hasIgnoreTag(testName: String) = getMethodForTestName(testName).getAnnotation(classOf[org.junit.Ignore]) != null
+      /*for {
+        a <- getMethodForTestName(testName).getDeclaredAnnotations
+        annotationClass = a.annotationType
+        if annotationClass == classOf[Ignore])
+      } yield annotationClass.getName   */
+
+    val elements =
+      for (testName <- testNames; if hasIgnoreTag(testName))
+        yield testName -> Set("org.scalatest.Ignore")
+
+    Map() ++ elements
+  }
+
+  private def getMethodForTestName(testName: String) =
+    getClass.getMethod(testName, new Array[Class[_]](0): _*)
+
   override def run(testName: Option[String], report: Reporter, stopper: Stopper,
       filter: Filter, configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     theTracker = tracker
 
-    val jUnitCore = new JUnitCore
-    jUnitCore.addListener(new MyRunListener(report, configMap, tracker))
-    val myClass = getClass
-    jUnitCore.run(myClass)
+    if (!filter.tagsToInclude.isDefined) {
+      val jUnitCore = new JUnitCore
+      jUnitCore.addListener(new MyRunListener(report, configMap, tracker))
+      val myClass = getClass
+      testName match {
+        case None => jUnitCore.run(myClass)
+        case Some(tn) =>
+          if (!testNames.contains(tn))
+            throw new IllegalArgumentException(Resources("testNotFound", testName))
+          jUnitCore.run(Request.method(myClass, tn))
+      }
+    }
   }
 
 // verifySomething(org.scalatest.junit.helpers.HappySuite)

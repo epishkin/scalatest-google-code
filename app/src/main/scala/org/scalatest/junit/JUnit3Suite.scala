@@ -141,7 +141,8 @@ import org.scalatest.events.TestFailed
  */
 class JUnit3Suite extends TestCase with Suite with AssertionsForJUnit {
 
-  private var theTracker = new Tracker
+  // This is volatile, because who knows what Thread JUnit will fire through this.
+  @volatile private var theTracker = new Tracker
 
   /**
    * Returns the set of test names that will be executed by JUnit when <code>run</code> is invoked
