@@ -589,6 +589,22 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
         assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
+    it("should invoke wrapTest from runTest") {
+      val a = new FeatureSpec {
+        var wrapTestWasInvoked = false
+        var testWasInvoked = false
+        override def wrapTest(test: () => Unit) {
+          wrapTestWasInvoked = true
+          super.wrapTest(test)
+        }
+        scenario("something") {
+          testWasInvoked = true
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.wrapTestWasInvoked)
+      assert(a.testWasInvoked)
+    }
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a feature from within an scenario clause, result in a TestFailedException when running the test") {

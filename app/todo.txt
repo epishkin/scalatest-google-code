@@ -5,11 +5,11 @@
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
 - document internal parts of new core traits
-- make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error
 - check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
 - check out problem with Conductor
 - add wrapTest
 - put ConductorMethods in using wrapTest
+- put final overriden wrapTest in JUnit and TestNG traits
 
 Make all function parameters named fun.
 

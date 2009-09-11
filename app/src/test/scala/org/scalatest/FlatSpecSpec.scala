@@ -153,6 +153,22 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
     }
 
+    it("should invoke wrapTest from runTest") {
+      val a = new FlatSpec {
+        var wrapTestWasInvoked = false
+        var testWasInvoked = false
+        override def wrapTest(test: () => Unit) {
+          wrapTestWasInvoked = true
+          super.wrapTest(test)
+        }
+        it should "do something" in {
+          testWasInvoked = true
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.wrapTestWasInvoked)
+      assert(a.testWasInvoked)
+    }
     describe("(with info calls)") {
       class InfoInsideTestFlatSpec extends FlatSpec {
         val msg = "hi there, dude"

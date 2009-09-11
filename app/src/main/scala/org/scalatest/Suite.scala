@@ -1370,6 +1370,13 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     )
 
   /**
+   * Wrap a test.
+   */
+  protected def wrapTest(test: () => Unit) {
+    test()
+  }
+
+  /**
    * Run a test.
    *
    * <p>
@@ -1432,7 +1439,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       else Array()
 
     try {
-      method.invoke(this, args: _*)
+      wrapTest(() => method.invoke(this, args: _*))
 
       val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))

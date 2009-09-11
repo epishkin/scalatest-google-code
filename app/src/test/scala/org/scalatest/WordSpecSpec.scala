@@ -21,6 +21,23 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
 
   describe("A WordSpec") {
 
+    it("should invoke wrapTest from runTest") {
+      val a = new WordSpec {
+        var wrapTestWasInvoked = false
+        var testWasInvoked = false
+        override def wrapTest(test: () => Unit) {
+          wrapTestWasInvoked = true
+          super.wrapTest(test)
+        }
+        "do something" in {
+          testWasInvoked = true
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.wrapTestWasInvoked)
+      assert(a.testWasInvoked)
+    }
+
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
