@@ -24,9 +24,9 @@ class WithTempFileFromConfigMapExampleSuite extends FixtureFunSuite {
 
   type Fixture = FileReader
 
-  def withFixture(testFun: Test) {
+  def withFixture(test: Test1) {
 
-    import testFun.configMap
+    import test.configMap
 
     val FileName = configMap("tempFileName").asInstanceOf[String]
 
@@ -44,7 +44,7 @@ class WithTempFileFromConfigMapExampleSuite extends FixtureFunSuite {
 
     try {
       // Run the test using the temp file
-      testFun(reader)
+      test(reader)
     }
     finally {
       // Close and delete the temp file

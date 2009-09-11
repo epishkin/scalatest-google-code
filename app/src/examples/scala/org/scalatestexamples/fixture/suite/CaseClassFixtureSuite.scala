@@ -9,14 +9,14 @@ class CaseClassFixtureSuite extends FixtureSuite {
 
   type Fixture = FixtureHolder
 
-  def withFixture(testFunction: Test) {
+  def withFixture(test: Test1) {
 
     // Create needed mutable objects
     val stringBuilder = new StringBuilder("ScalaTest is ")
     val listBuffer = new ListBuffer[String]
 
     // Invoke the test function, passing in the mutable objects
-    testFunction(FixtureHolder(stringBuilder, listBuffer))
+    test(FixtureHolder(stringBuilder, listBuffer))
   }
 
   def testEasy(fixture: Fixture) {
