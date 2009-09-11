@@ -62,7 +62,12 @@ import _root_.java.util.concurrent.atomic.AtomicReference
  * @author Bill Venners
  */
 class Conductor(val informer: Option[Informer]){
-
+   // TODO: Make informer not a val, and instead just fire messages on test failures.
+  /**
+   * Creates a new <code>Conductor</code> that takes no <code>Informer</code> (<em>i.e.</em>,
+   * this auxiliary constructor passes <code>None</code> as the primary constructor's
+   * <code>informer</code> parameter).
+   */
   def this() = this(None)
 
   /**
@@ -70,21 +75,23 @@ class Conductor(val informer: Option[Informer]){
    * This clock is advanced by the clock thread.
    * The clock will not advance if it is frozen.
    */
-  private val clock = new Clock
+  private final val clock = new Clock
 
   /////////////////////// thread management start //////////////////////////////
 
   // place all threads in a new thread group
-  private val threadGroup = new ThreadGroup("Orchestra")
+  private final val threadGroup = new ThreadGroup("Orchestra")
 
   // all the threads in this test
-  private val threads = new CopyOnWriteArrayList[Thread]()
+  // This need not be volatile, because it is initialized with one object and
+  // that stays forever. Because it is final, it 
+  private final val threads = new CopyOnWriteArrayList[Thread]()
 
   // the main test thread
-  private val mainThread = currentThread
-
+  private final val mainThread = currentThread
+  // TODO: change default name from threadN to thread-N?
   /**
-   * Creates a new thread that will execute the given function.
+   * Creates a new thread that will execute the specified function.
    *
    * @param fun the function to be executed by the thread
    * @return the newly created thread
@@ -116,7 +123,7 @@ class Conductor(val informer: Option[Informer]){
   // def thread[T](name: String, callable: Callable[T]): Thread = thread(name) {callable.call}
 
   /**
-   * Creates a new thread that will execute the given function.
+   * Creates a new thread with the specified name that will execute the specified function.
    *
    * @param name the name of the thread
    * @param fun the function to be executed by the thread

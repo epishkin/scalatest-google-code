@@ -60,7 +60,33 @@ package org.scalatest
 trait RunMethods { this: Suite =>
 
   /**
-   * Execute this suite of tests.
+   *  Runs the passed test function with a fixture created by this method.
+   *
+   * <p>
+   * This method should set up the fixture needed by the tests of the
+   * current suite, invoke the test function, and if needed, perform any clean
+   * up needed after the test completes. Because the <code>NoArgTest</code> function
+   * passed to this method takes no parameters, preparing the fixture will require
+   * side effects, such as reassigning instance <code>var</code>s in this <code>Suite</code> or initializing
+   * a globally accessible external database. If you want to avoid reassigning instance <code>var</code>s
+   * you can use <a href="FixtureSuite.html">FixtureSuite</a>.
+   * </p>
+   *
+   * <p>
+   * This trait's implementation of <code>runTest</code> invokes this method for each test, passing
+   * in a <code>OneArgTest</code> whose <code>apply</code> method will execute the code of the test.
+   * </p>
+   *
+   * <p>
+   * This trait's implementation of this method simply invokes the passed <code>NoArgTest</code> function.
+   * </p>
+   *
+   * @param test the no-arg test function to run with a fixture
+   */
+  protected def withFixture(test: NoArgTest)
+
+  /**
+   * Runs this suite of tests.
    *
    * @param testName an optional name of one test to execute. If <code>None</code>, all relevant tests should be executed.
    *                 I.e., <code>None</code> acts like a wildcard that means execute all relevant tests in this <code>Suite</code>.
@@ -86,7 +112,7 @@ trait RunMethods { this: Suite =>
 
   /**
    *
-   * Run zero to many of this suite's nested suites.
+   * Runs zero to many of this suite's nested suites.
    *
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
@@ -102,7 +128,7 @@ trait RunMethods { this: Suite =>
                                 configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
 
   /**
-   * Run zero to many of this suite's tests.
+   * Runs zero to many of this suite's tests.
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
    *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
@@ -122,7 +148,7 @@ trait RunMethods { this: Suite =>
                              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker)
 
   /**
-   * Run a test.
+   * Runs a test.
    *
    * @param testName the name of one test to execute.
    * @param reporter the <code>Reporter</code> to which results will be reported
