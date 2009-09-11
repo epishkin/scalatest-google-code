@@ -757,12 +757,16 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(!a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
-    it("should pass a FixturelessTest to withFixture for tests that take no fixture") {
+    it("should pass a NoArgTest to withFixture for tests that take no fixture") {
       class MySpec extends FixtureFeatureSpec {
         type Fixture = String
-        var aFixturelessTestWasPassed = false
+        var aNoArgTestWasPassed = false
+        var aOneArgTestWasPassed = false
+        override def withFixture(test: NoArgTest) {
+          aNoArgTestWasPassed = true
+        }
         def withFixture(test: OneArgTest) {
-          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+          aOneArgTestWasPassed = true
         }
         scenario("something") { () =>
           assert(1 + 1 === 2)
@@ -771,14 +775,19 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       val s = new MySpec
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(s.aFixturelessTestWasPassed)
+      assert(s.aNoArgTestWasPassed)
+      assert(!s.aOneArgTestWasPassed)
     }
-    it("should not pass a FixturelessTest to withFixture for tests that take a Fixture") {
+    it("should not pass a NoArgTest to withFixture for tests that take a Fixture") {
       class MySpec extends FixtureFeatureSpec {
         type Fixture = String
-        var aFixturelessTestWasPassed = false
+        var aNoArgTestWasPassed = false
+        var aOneArgTestWasPassed = false
+        override def withFixture(test: NoArgTest) {
+          aNoArgTestWasPassed = true
+        }
         def withFixture(test: OneArgTest) {
-          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+          aOneArgTestWasPassed = true
         }
         scenario("something") { fixture =>
           assert(1 + 1 === 2)
@@ -787,28 +796,26 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       val s = new MySpec
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(!s.aFixturelessTestWasPassed)
+      assert(!s.aNoArgTestWasPassed)
+      assert(s.aOneArgTestWasPassed)
     }
-    it("should pass a FixturelessTest that invokes the no-arg test when the " +
-            "FixturelessTest's no-arg apply method is invoked") {
+    it("should pass a NoArgTest that invokes the no-arg test when the " +
+            "NoArgTest's no-arg apply method is invoked") {
 
       class MySuite extends FixtureFeatureSpec {
         type Fixture = String
-        var theFixturelessTestWasInvoked = false
+        var theNoArgTestWasInvoked = false
         def withFixture(test: OneArgTest) {
-          test match {
-            case ft: FixturelessTest => ft()
-            case _ => // Don't invoke a non FixturelessTest
-          }
+          // Shouldn't be called, but just in case don't invoke a OneArgTest
         }
         scenario("something") { () =>
-          theFixturelessTestWasInvoked = true
+          theNoArgTestWasInvoked = true
         }
       }
 
       val s = new MySuite
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(s.theFixturelessTestWasInvoked)
+      assert(s.theNoArgTestWasInvoked)
     }
     describe("(when a nesting rule has been violated)") {
 

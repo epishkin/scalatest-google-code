@@ -1574,7 +1574,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         var testWasPending = false
         try {
           val theConfigMap = configMap
-          wrapTest(
+          withFixture(
             new NoArgTest {
               def name = testName
               def apply() { test.f() }

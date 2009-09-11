@@ -758,13 +758,11 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
         atomicInformer.set(informerForThisTest)
         var testWasPending = false
         try {
-          withFixture(
-            test.f match {
-              case wrapper: NoArgTestWrapper[_] =>
-                new FixturelessTestFunAndConfigMap(wrapper.test, configMap)
-              case f => new TestFunAndConfigMap(f, configMap)
-            }
-          )
+          test.f match {
+            case wrapper: NoArgTestWrapper[_] =>
+              withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
+            case f => withFixture(new TestFunAndConfigMap(f, configMap))
+          }
 
           val duration = System.currentTimeMillis - testStartTime
           report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))

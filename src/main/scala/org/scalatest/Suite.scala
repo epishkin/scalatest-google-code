@@ -1421,7 +1421,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * This trait's implementation of this method simply invokes the passed <code>NoArgTest</code> function.
    * </p>
    */
-  protected def wrapTest(test: NoArgTest) {
+  protected def withFixture(test: NoArgTest) {
     test()
   }
 
@@ -1489,7 +1489,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 
     try {
       val theConfigMap = configMap
-      wrapTest(
+      withFixture(
         new NoArgTest {
           def name = testName
           def apply() { method.invoke(thisSuite, args: _*) }

@@ -778,12 +778,16 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.takesAFixtureInvoked)
       assert(a.takesAFixtureAndInformerInvoked)
     }
-    it("should pass a FixturelessTest to withFixture for test methods that take no arguments") {
+    it("should pass a NoArgTest to withFixture for test methods that take no arguments") {
       class MySuite extends FixtureSuite {
         type Fixture = String
-        var aFixturelessTestWasPassed = false
+        var aNoArgTestWasPassed = false
+        var aOneArgTestWasPassed = false
+        override def withFixture(test: NoArgTest) {
+          aNoArgTestWasPassed = true
+        }
         def withFixture(test: OneArgTest) {
-          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+          aOneArgTestWasPassed = true
         }
         def testSomething() {
           assert(1 + 1 === 2)
@@ -792,14 +796,19 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       val s = new MySuite
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(s.aFixturelessTestWasPassed)
+      assert(s.aNoArgTestWasPassed)
+      assert(!s.aOneArgTestWasPassed)
     }
-    it("should pass a FixturelessTest to withFixture for test methods that take only an Informer") {
+    it("should pass a NoArgTest to withFixture for test methods that take only an Informer") {
       class MySuite extends FixtureSuite {
         type Fixture = String
-        var aFixturelessTestWasPassed = false
+        var aNoArgTestWasPassed = false
+        var aOneArgTestWasPassed = false
+        override def withFixture(test: NoArgTest) {
+          aNoArgTestWasPassed = true
+        }
         def withFixture(test: OneArgTest) {
-          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+          aOneArgTestWasPassed = true
         }
         def testSomething(info: Informer) {
           assert(1 + 1 === 2)
@@ -808,14 +817,19 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       val s = new MySuite
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(s.aFixturelessTestWasPassed)
+      assert(s.aNoArgTestWasPassed)
+      assert(!s.aOneArgTestWasPassed)
     }
-    it("should not pass a FixturelessTest to withFixture for test methods that a Fixture and an Informer") {
+    it("should not pass a NoArgTest to withFixture for test methods that take a Fixture and an Informer") {
       class MySuite extends FixtureSuite {
         type Fixture = String
-        var aFixturelessTestWasPassed = false
+        var aNoArgTestWasPassed = false
+        var aOneArgTestWasPassed = false
+        override def withFixture(test: NoArgTest) {
+          aNoArgTestWasPassed = true
+        }
         def withFixture(test: OneArgTest) {
-          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+          aOneArgTestWasPassed = true
         }
         def testSomething(fixture: Fixture, info: Informer) {
           assert(1 + 1 === 2)
@@ -824,14 +838,18 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       val s = new MySuite
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(!s.aFixturelessTestWasPassed)
+      assert(!s.aNoArgTestWasPassed)
+      assert(s.aOneArgTestWasPassed)
     }
-    it("should not pass a FixturelessTest to withFixture for test methods that a Fixture") {
+    it("should not pass a NoArgTest to withFixture for test methods that take a Fixture") {
       class MySuite extends FixtureSuite {
         type Fixture = String
-        var aFixturelessTestWasPassed = false
+        var aNoArgTestWasPassed = false
         def withFixture(test: OneArgTest) {
-          aFixturelessTestWasPassed = test.isInstanceOf[FixturelessTest]
+          // Shouldn't be called
+        }
+        override def withFixture(test: NoArgTest) {
+          aNoArgTestWasPassed = true
         }
         def testSomething(fixture: Fixture) {
           assert(1 + 1 === 2)
@@ -840,49 +858,43 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       val s = new MySuite
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(!s.aFixturelessTestWasPassed)
+      assert(!s.aNoArgTestWasPassed)
     }
-    it("should pass a FixturelessTest that invokes the no-arg test when the " +
-            "FixturelessTest's no-arg apply method is invoked") {
+    it("should pass a NoArgTest that invokes the no-arg test when the " +
+            "NoArgTest's no-arg apply method is invoked") {
 
       class MySuite extends FixtureSuite {
         type Fixture = String
-        var theFixturelessTestWasInvoked = false
+        var theNoArgTestWasInvoked = false
         def withFixture(test: OneArgTest) {
-          test match {
-            case ft: FixturelessTest => ft()
-            case _ => // Don't invoke a non FixturelessTest
-          }
+          // Shouldn't be called, but just in case don't invoke a OneArgTest
         }
         def testSomething() {
-          theFixturelessTestWasInvoked = true
+          theNoArgTestWasInvoked = true
         }
       }
 
       val s = new MySuite
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(s.theFixturelessTestWasInvoked)
+      assert(s.theNoArgTestWasInvoked)
     }
-    it("should pass a FixturelessTest that invokes a test that takse an Informer when the " +
-            "FixturelessTest's no-arg apply method is invoked") {
+    it("should pass a NoArgTest that invokes a test that takse an Informer when the " +
+            "NoArgTest's no-arg apply method is invoked") {
 
       class MySuite extends FixtureSuite {
         type Fixture = String
-        var theFixturelessTestWasInvoked = false
+        var theNoArgTestWasInvoked = false
         def withFixture(test: OneArgTest) {
-          test match {
-            case ft: FixturelessTest => ft()
-            case _ => // Don't invoke a non FixturelessTest
-          }
+          // Shouldn't be called, but just in case don't invoke a OneArgTest
         }
         def testSomething(info: Informer) {
-          theFixturelessTestWasInvoked = true
+          theNoArgTestWasInvoked = true
         }
       }
 
       val s = new MySuite
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(s.theFixturelessTestWasInvoked)
+      assert(s.theNoArgTestWasInvoked)
     }
   }
 }

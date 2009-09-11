@@ -400,7 +400,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     def configMap: Map[String, Any]
   }
 
-  /**
+  /*
    * Trait whose instances encapsulate a test function that takes no fixture and config map.
    *
    * <p>
@@ -426,13 +426,13 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait FixturelessTest extends OneArgTest with (() => Unit) {
+  /* protected trait FixturelessTest extends OneArgTest with (() => Unit) {
 
     /**
      * Run the test that takes no <code>Fixture</code>.
      */
     def apply()
-  }
+  } */
 
   /**
    *  Run the passed test function with a fixture created by this method.
@@ -456,8 +456,8 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     }
   }
 
-  private[fixture] class FixturelessTestFunAndConfigMap(test: () => Any, configMap: Map[String, Any])
-    extends TestFunAndConfigMap((Fixture) => test(), configMap) with FixturelessTest {
+  private[fixture] class FixturelessTestFunAndConfigMap(override val name: String, test: () => Any, override val configMap: Map[String, Any])
+    extends NoArgTest {
 
     def apply() { test() }
   }
@@ -603,7 +603,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
             method.invoke(this, args: _*)
           }
         }
-        withFixture(new FixturelessTestFunAndConfigMap(testFun, configMap))
+        withFixture(new FixturelessTestFunAndConfigMap(testName, testFun, configMap))
       }
 
       val duration = System.currentTimeMillis - testStartTime
