@@ -15,6 +15,8 @@
  */
 package org.scalatest.junit
 
+import collection.immutable.TreeSet
+import java.lang.reflect.{Method, Modifier}
 import org.scalatest._
 import _root_.junit.framework.TestCase
 import _root_.junit.framework.TestResult
@@ -141,14 +143,77 @@ class JUnit3Suite extends TestCase with Suite with AssertionsForJUnit {
 
   private var theTracker = new Tracker
 
+  /**
+   * Returns the set of test names that will be executed by JUnit when <code>run</code> is invoked
+   * on an instance of this class, or the instance is passed directly to JUnit for running.
+   *
+   * <p>
+   * The iterator obtained by invoking <code>elements</code> on this
+   * returned <code>Set</code> will produce the test names in their <em>natural order</em>, as determined by <code>String</code>'s
+   * <code>compareTo</code> method. Nevertheless, this method is not consulted by JUnit when it
+   * runs the tests, and JUnit may run the tests in any order.
+   * </p>
+   */
+  override def testNames: Set[String] = {
+
+    def isTestMethod(m: Method) = {
+
+      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+
+      // name must have at least 4 chars (minimum is "test")
+      val simpleName = m.getName
+      val firstFour = if (simpleName.length >= 4) simpleName.substring(0, 4) else ""
+
+      val paramTypes = m.getParameterTypes
+      val hasNoParams = paramTypes.length == 0
+      val hasVoidReturnType = m.getReturnType == Void.TYPE
+
+      // won't discover testNames because it has a non-Unit return type
+      isInstanceMethod && (firstFour == "test") && hasNoParams && hasVoidReturnType
+    }
+
+    val testNameArray =
+      for (m <- getClass.getMethods; if isTestMethod(m))
+      yield m.getName
+
+    TreeSet[String]() ++ testNameArray
+  }
+
+  /**
+   * Returns an empty <code>Map</code>, because tags are not supported by JUnit 3.
+   */
+  override def tags = Map()
+
+  /**
+   * Returns the number of tests expected to be run by JUnit when <code>run</code> is invoked
+   * on this <code>Suite</code>.
+   *
+   * <p>
+   * If <code>tagsToInclude</code> in the passed <code>Filter</code> is defined, this class's
+   * implementation of this method returns 0. Else this class's implementation of this method
+   * returns the size of the set returned by <code>testNames</code> on the current instance.
+   * </p>
+   */
+  override def expectedTestCount(filter: Filter) =
+    if (filter.tagsToInclude.isDefined) 0 else testNames.size
+
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper,
       filter: Filter, configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     theTracker = tracker
 
-    val testResult = new TestResult
-    testResult.addListener(new MyTestListener(reporter, tracker))
-    new TestSuite(this.getClass).run(testResult)
+    if (!filter.tagsToInclude.isDefined) {
+      val testResult = new TestResult
+      testResult.addListener(new MyTestListener(reporter, tracker))
+      testName match {
+        case None => new TestSuite(this.getClass).run(testResult)
+        case Some(tn) =>
+          if (!testNames.contains(tn))
+            throw new IllegalArgumentException(Resources("testNotFound", testName))
+          setName(tn)
+          run(testResult)
+      }
+    }
   }
 }
 
