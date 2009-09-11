@@ -1420,6 +1420,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * <p>
    * This trait's implementation of this method simply invokes the passed <code>NoArgTest</code> function.
    * </p>
+   *
+   * @param test the no-arg test function to run with a fixture
    */
   protected def withFixture(test: NoArgTest) {
     test()
