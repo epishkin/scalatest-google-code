@@ -114,6 +114,18 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(a.wrapTestWasInvoked)
       assert(a.testWasInvoked)
     }
+    it("should pass the correct test name in the NoArgTest passed to wrapTest") {
+      val a = new Spec {
+        var correctTestNameWasPassed = false
+        override def wrapTest(test: NoArgTest) {
+          correctTestNameWasPassed = test.name == "should do something"
+          super.wrapTest(test)
+        }
+        it("should do something") {}
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.correctTestNameWasPassed)
+    }
     describe("(with info calls)") {
       class InfoInsideTestSpec extends Spec {
         val msg = "hi there, dude"

@@ -1078,9 +1078,20 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
   protected trait NoArgTest extends (() => Unit) {
 
     /**
-     * Run the test.
+     * The name of this test.
+     */
+    def name: String
+
+    /**
+     * Runs the code of the test.
      */
     def apply()
+
+    /**
+     * A <code>Map[String, Any]</code> containing objects that can be used
+     * to configure the fixture and test.
+     */
+    //def configMap: Map[String, Any]
   }
 
   // should nestedSuites return a Set[String] instead?
@@ -1479,6 +1490,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     try {
       wrapTest(
         new NoArgTest {
+          def name = testName
           def apply() { method.invoke(thisSuite, args: _*) }
         }
       )

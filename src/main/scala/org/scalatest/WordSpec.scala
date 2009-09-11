@@ -1575,6 +1575,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         try {
           wrapTest(
             new NoArgTest {
+              def name = testName
               def apply() { test.f() }
             }
           )
