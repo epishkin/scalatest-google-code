@@ -1237,6 +1237,7 @@ trait Spec extends Suite { thisSuite =>
         try {
           wrapTest(
             new NoArgTest {
+              def name = testName
               def apply() { test.f() }
             }
           )

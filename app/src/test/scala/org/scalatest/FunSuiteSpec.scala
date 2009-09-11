@@ -135,6 +135,18 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       assert(a.wrapTestWasInvoked)
       assert(a.testWasInvoked)
     }
+    it("should pass the correct test name in the NoArgTest passed to wrapTest") {
+      val a = new FunSuite {
+        var correctTestNameWasPassed = false
+        override def wrapTest(test: NoArgTest) {
+          correctTestNameWasPassed = test.name == "something"
+          super.wrapTest(test)
+        }
+        test("something") {}
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.correctTestNameWasPassed)
+    }
 
     describe("(with info calls)") {
       it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {

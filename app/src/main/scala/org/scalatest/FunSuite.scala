@@ -864,6 +864,7 @@ trait FunSuite extends Suite { thisSuite =>
       try {
       wrapTest(
         new NoArgTest {
+          def name = testName
           def apply() { theTest.fun() }
         }
       )
