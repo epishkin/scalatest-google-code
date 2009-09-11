@@ -102,7 +102,7 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       val a = new Spec {
         var wrapTestWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: () => Unit) {
+        override def wrapTest(test: NoArgTest) {
           wrapTestWasInvoked = true
           super.wrapTest(test)
         }

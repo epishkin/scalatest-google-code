@@ -532,7 +532,7 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       val a = new Suite {
         var wrapTestWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: () => Unit) {
+        override def wrapTest(test: NoArgTest) {
           wrapTestWasInvoked = true
           super.wrapTest(test)
         }
@@ -548,7 +548,7 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       val a = new Suite {
         var wrapTestWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: () => Unit) {
+        override def wrapTest(test: NoArgTest) {
           wrapTestWasInvoked = true
           super.wrapTest(test)
         }

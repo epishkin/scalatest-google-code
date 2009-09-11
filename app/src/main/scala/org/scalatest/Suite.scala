@@ -560,7 +560,7 @@ import org.scalatest.tools.StandardOutReporter
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(test: Test) {
+ *   def withFixture(test: OneArgTest) {
  *
  *     val FileName = "TempFile.txt"
  *
@@ -1064,6 +1064,25 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
 * set is <CODE>null</CODE>.
 */
   
+  /**
+   * A test function taking no arguments, which also provides a test name and config map.
+   *
+   * <p>
+   * <code>Suite</code>'s implementation of <code>runTest</code> passes instances of this trait
+   * to <code>withFixture</code> for every test method it executes. It invokes <code>withFixture</code>
+   * for every test, including test methods that take an <code>Informer</code>. For the latter case,
+   * the <code>Informer</code> to pass to the test method is already contained inside the
+   * <code>NoArgTest</code> instance passed to <code>withFixture</code>.
+   * </p>
+   */
+  protected trait NoArgTest extends (() => Unit) {
+
+    /**
+     * Run the test.
+     */
+    def apply()
+  }
+
   // should nestedSuites return a Set[String] instead?
   /**
   * A <code>List</code> of this <code>Suite</code> object's nested <code>Suite</code>s. If this <code>Suite</code> contains no nested <code>Suite</code>s,
@@ -1370,9 +1389,28 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     )
 
   /**
-   * Wrap a test.
+   *  Run the passed test function with a fixture created by this method.
+   *
+   * <p>
+   * This method should set up the fixture needed by the tests of the
+   * current suite, invoke the test function, and if needed, perform any clean
+   * up needed after the test completes. Because the <code>NoArgTest</code> function
+   * passed to this method takes no parameters, preparing the fixture will require
+   * side effects, such as reassigning instance <code>var</code>s in this <code>Suite</code> or initializing
+   * a globally accessible external database. If you want to avoid reassigning instance <code>var</code>s
+   * you can use <a href="FixtureSuite.html">FixtureSuite</a>.
+   * </p>
+   *
+   * <p>
+   * This trait's implementation of <code>runTest</code> invokes this method for each test, passing
+   * in a <code>OneArgTest</code> whose <code>apply</code> method will execute the code of the test.
+   * </p>
+   *
+   * <p>
+   * This trait's implementation of this method simply invokes the passed <code>NoArgTest</code> function.
+   * </p>
    */
-  protected def wrapTest(test: () => Unit) {
+  protected def wrapTest(test: NoArgTest) {
     test()
   }
 
@@ -1439,8 +1477,11 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       else Array()
 
     try {
-      wrapTest(() => method.invoke(this, args: _*))
-
+      wrapTest(
+        new NoArgTest {
+          def apply() { method.invoke(thisSuite, args: _*) }
+        }
+      )
       val duration = System.currentTimeMillis - testStartTime
       report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
     }

@@ -24,7 +24,7 @@ class WithTempFileFromConfigMapExampleSuite extends FixtureFunSuite {
 
   type Fixture = FileReader
 
-  def withFixture(test: Test1) {
+  def withFixture(test: OneArgTest) {
 
     import test.configMap
 

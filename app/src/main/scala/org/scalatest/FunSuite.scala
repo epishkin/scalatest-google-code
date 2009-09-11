@@ -862,7 +862,12 @@ trait FunSuite extends Suite { thisSuite =>
 
       atomicInformer.set(informerForThisTest)
       try {
-        wrapTest(() => theTest.fun())
+      wrapTest(
+        new NoArgTest {
+          def apply() { theTest.fun() }
+        }
+      )
+
       }
       finally {
         val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)

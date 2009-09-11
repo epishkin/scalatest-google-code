@@ -123,7 +123,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       val a = new FunSuite {
         var wrapTestWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: () => Unit) {
+        override def wrapTest(test: NoArgTest) {
           wrapTestWasInvoked = true
           super.wrapTest(test)
         }
