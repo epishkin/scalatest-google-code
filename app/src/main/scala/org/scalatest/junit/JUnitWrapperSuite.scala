@@ -121,4 +121,83 @@ class JUnitWrapperSuite(junitClassName: String, loader: ClassLoader) extends Sui
     }
   }
 
+  /**
+   * Throws <code>UnsupportedOperationException</code>, because this method is unused by this
+   * class, given this class's <code>run</code> method delegates to JUnit to run
+   * its tests.
+   *
+   * <p>
+   * The main purpose of this method implementation is to render a compiler error an attempt
+   * to mix in a trait that overrides <code>runNestedSuites</code>. Because this
+   * trait does not actually use <code>runNestedSuites</code>, the attempt to mix
+   * in behavior would very likely not work.
+   * </p>
+   *
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
+   *
+   * @throws UnsupportedOperationException always.
+   */
+  override final protected def runNestedSuites(reporter: Reporter, stopper: Stopper, filter: Filter,
+                                configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    throw new UnsupportedOperationException
+  }
+
+  /**
+   * Throws <code>UnsupportedOperationException</code>, because this method is unused by this
+   * class, given this class's <code>run</code> method delegates to JUnit to run
+   * its tests.
+   *
+   * <p>
+   * The main purpose of this method implementation is to render a compiler error an attempt
+   * to mix in a trait that overrides <code>runTests</code>. Because this
+   * trait does not actually use <code>runTests</code>, the attempt to mix
+   * in behavior would very likely not work.
+   * </p>
+   *
+   * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
+   *                 I.e., <code>None</code> acts like a wildcard that means run all relevant tests in this <code>Suite</code>.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param filter a <code>Filter</code> with which to filter tests based on their tags
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param distributor an optional <code>Distributor</code>, into which to put nested <code>Suite</code>s to be run
+   *              by another entity, such as concurrently by a pool of threads. If <code>None</code>, nested <code>Suite</code>s will be run sequentially.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
+   * @throws UnsupportedOperationException always.
+   */
+  override protected final def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+                            configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+    throw new UnsupportedOperationException
+  }
+
+  /**
+   * Throws <code>UnsupportedOperationException</code>, because this method is unused by this
+   * class, given this class's <code>run</code> method delegates to JUnit to run
+   * its tests.
+   *
+   * <p>
+   * The main purpose of this method implementation is to render a compiler error an attempt
+   * to mix in a trait that overrides <code>runTest</code>. Because this
+   * trait does not actually use <code>runTest</code>, the attempt to mix
+   * in behavior would very likely not work.
+   * </p>
+   *
+   * @param testName the name of one test to run.
+   * @param reporter the <code>Reporter</code> to which results will be reported
+   * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
+   * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
+   * @param tracker a <code>Tracker</code> tracking <code>Ordinal</code>s being fired by the current thread.
+   * @throws UnsupportedOperationException always.
+   */
+  override protected final def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
+
+        throw new UnsupportedOperationException
+  }
 }
