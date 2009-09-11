@@ -157,7 +157,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       val a = new FlatSpec {
         var wrapTestWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: () => Unit) {
+        override def wrapTest(test: NoArgTest) {
           wrapTestWasInvoked = true
           super.wrapTest(test)
         }
