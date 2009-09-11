@@ -589,40 +589,40 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
         assert(event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
-    it("should invoke wrapTest from runTest") {
+    it("should invoke withFixture from runTest") {
       val a = new FeatureSpec {
-        var wrapTestWasInvoked = false
+        var withFixtureWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: NoArgTest) {
-          wrapTestWasInvoked = true
-          super.wrapTest(test)
+        override def withFixture(test: NoArgTest) {
+          withFixtureWasInvoked = true
+          super.withFixture(test)
         }
         scenario("something") {
           testWasInvoked = true
         }
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(a.wrapTestWasInvoked)
+      assert(a.withFixtureWasInvoked)
       assert(a.testWasInvoked)
     }
-    it("should pass the correct test name in the NoArgTest passed to wrapTest") {
+    it("should pass the correct test name in the NoArgTest passed to withFixture") {
       val a = new FeatureSpec {
         var correctTestNameWasPassed = false
-        override def wrapTest(test: NoArgTest) {
+        override def withFixture(test: NoArgTest) {
           correctTestNameWasPassed = test.name == "should do something"
-          super.wrapTest(test)
+          super.withFixture(test)
         }
         scenario("should do something") {}
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
-    it("should pass the correct config map in the NoArgTest passed to wrapTest") {
+    it("should pass the correct config map in the NoArgTest passed to withFixture") {
       val a = new FeatureSpec {
         var correctConfigMapWasPassed = false
-        override def wrapTest(test: NoArgTest) {
+        override def withFixture(test: NoArgTest) {
           correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
-          super.wrapTest(test)
+          super.withFixture(test)
         }
         scenario("should do something") {}
       }

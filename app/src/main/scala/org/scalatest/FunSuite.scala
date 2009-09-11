@@ -863,7 +863,7 @@ trait FunSuite extends Suite { thisSuite =>
       atomicInformer.set(informerForThisTest)
       try {
         val theConfigMap = configMap
-        wrapTest(
+        withFixture(
           new NoArgTest {
             def name = testName
             def apply() { theTest.fun() }

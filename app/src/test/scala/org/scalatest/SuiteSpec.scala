@@ -528,56 +528,56 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
         a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       }
     }
-    it("should invoke wrapTest from runTest for no-arg test method") {
+    it("should invoke withFixture from runTest for no-arg test method") {
       val a = new Suite {
-        var wrapTestWasInvoked = false
+        var withFixtureWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: NoArgTest) {
-          wrapTestWasInvoked = true
-          super.wrapTest(test)
+        override def withFixture(test: NoArgTest) {
+          withFixtureWasInvoked = true
+          super.withFixture(test)
         }
         def testSomething() {
           testWasInvoked = true
         }
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(a.wrapTestWasInvoked)
+      assert(a.withFixtureWasInvoked)
       assert(a.testWasInvoked)
     }
-    it("should invoke wrapTest from runTest for a test method that takes an Informer") {
+    it("should invoke withFixture from runTest for a test method that takes an Informer") {
       val a = new Suite {
-        var wrapTestWasInvoked = false
+        var withFixtureWasInvoked = false
         var testWasInvoked = false
-        override def wrapTest(test: NoArgTest) {
-          wrapTestWasInvoked = true
-          super.wrapTest(test)
+        override def withFixture(test: NoArgTest) {
+          withFixtureWasInvoked = true
+          super.withFixture(test)
         }
         def testSomething(info: Informer) {
           testWasInvoked = true
         }
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
-      assert(a.wrapTestWasInvoked)
+      assert(a.withFixtureWasInvoked)
       assert(a.testWasInvoked)
     }
-    it("should pass the correct test name in the NoArgTest passed to wrapTest") {
+    it("should pass the correct test name in the NoArgTest passed to withFixture") {
       val a = new Suite {
         var correctTestNameWasPassed = false
-        override def wrapTest(test: NoArgTest) {
+        override def withFixture(test: NoArgTest) {
           correctTestNameWasPassed = test.name == "testSomething(Informer)"
-          super.wrapTest(test)
+          super.withFixture(test)
         }
         def testSomething(info: Informer) {}
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
-    it("should pass the correct config map in the NoArgTest passed to wrapTest") {
+    it("should pass the correct config map in the NoArgTest passed to withFixture") {
       val a = new Suite {
         var correctConfigMapWasPassed = false
-        override def wrapTest(test: NoArgTest) {
+        override def withFixture(test: NoArgTest) {
           correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
-          super.wrapTest(test)
+          super.withFixture(test)
         }
         def testSomething(info: Informer) {}
       }
