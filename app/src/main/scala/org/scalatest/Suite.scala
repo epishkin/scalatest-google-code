@@ -1091,7 +1091,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
      * A <code>Map[String, Any]</code> containing objects that can be used
      * to configure the fixture and test.
      */
-    //def configMap: Map[String, Any]
+    def configMap: Map[String, Any]
   }
 
   // should nestedSuites return a Set[String] instead?
@@ -1488,10 +1488,12 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
       else Array()
 
     try {
+      val theConfigMap = configMap
       wrapTest(
         new NoArgTest {
           def name = testName
           def apply() { method.invoke(thisSuite, args: _*) }
+          def configMap = theConfigMap
         }
       )
       val duration = System.currentTimeMillis - testStartTime

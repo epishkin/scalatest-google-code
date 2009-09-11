@@ -617,6 +617,18 @@ class FeatureSpecSpec extends Spec with SharedHelpers {
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
+    it("should pass the correct config map in the NoArgTest passed to wrapTest") {
+      val a = new FeatureSpec {
+        var correctConfigMapWasPassed = false
+        override def wrapTest(test: NoArgTest) {
+          correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
+          super.wrapTest(test)
+        }
+        scenario("should do something") {}
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
+      assert(a.correctConfigMapWasPassed)
+    }
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a feature from within an scenario clause, result in a TestFailedException when running the test") {

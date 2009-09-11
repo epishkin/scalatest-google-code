@@ -147,6 +147,18 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
+    it("should pass the correct config map in the NoArgTest passed to wrapTest") {
+      val a = new FunSuite {
+        var correctConfigMapWasPassed = false
+        override def wrapTest(test: NoArgTest) {
+          correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
+          super.wrapTest(test)
+        }
+        test("something") {}
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
+      assert(a.correctConfigMapWasPassed)
+    }
 
     describe("(with info calls)") {
       it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
