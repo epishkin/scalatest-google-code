@@ -389,6 +389,11 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
   protected trait OneArgTest extends (Fixture => Unit) {
 
     /**
+     * The name of this test.
+     */
+    def name: String
+
+    /**
      * Run the test, using the passed <code>Fixture</code>.
      */
     def apply(fixture: Fixture)
@@ -448,7 +453,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    */
   protected def withFixture(test: OneArgTest)
 
-  private[fixture] class TestFunAndConfigMap(test: Fixture => Any, val configMap: Map[String, Any])
+  private[fixture] class TestFunAndConfigMap(val name: String, test: Fixture => Any, val configMap: Map[String, Any])
     extends OneArgTest {
     
     def apply(fixture: Fixture) {
@@ -580,7 +585,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
             method.invoke(thisSuite, args: _*)
           }
         }
-        withFixture(new TestFunAndConfigMap(testFun, configMap))
+        withFixture(new TestFunAndConfigMap(testName, testFun, configMap))
       }
       else { // Test method does not take a fixture
         val testFun: () => Unit = {

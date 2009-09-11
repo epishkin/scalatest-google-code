@@ -757,7 +757,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
           test.f match {
             case wrapper: NoArgTestWrapper[_] =>
               withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
-            case f => withFixture(new TestFunAndConfigMap(f, configMap))
+            case f => withFixture(new TestFunAndConfigMap(testName, f, configMap))
           }
 
           val duration = System.currentTimeMillis - testStartTime

@@ -946,4 +946,30 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
     }
   }
+  it("should pass the correct test name in the OneArgTest passed to withFixture") {
+    val a = new FixtureFeatureSpec {
+      type Fixture = String
+      var correctTestNameWasPassed = false
+      def withFixture(test: OneArgTest) {
+        correctTestNameWasPassed = test.name == "should do something"
+        test("hi")
+      }
+      scenario("should do something") { fixture => }
+    }
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+    assert(a.correctTestNameWasPassed)
+  }
+  it("should pass the correct config map in the OneArgTest passed to withFixture") {
+    val a = new FixtureFeatureSpec {
+      type Fixture = String
+      var correctConfigMapWasPassed = false
+      def withFixture(test: OneArgTest) {
+        correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
+        test("hi")
+      }
+      scenario("should do something") { fixture => }
+    }
+    a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
+    assert(a.correctConfigMapWasPassed)
+  }
 }
