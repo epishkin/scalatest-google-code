@@ -7,11 +7,13 @@
 - document internal parts of new core traits
 - make final runX method overriders in traits that don't use them, to make mixing in a trait that overrides them a compiler error
 - write tests for JUnit3Suite
-- add a name to Test in FixtureSuite?
 - check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
 - check out problem with Conductor
 
 Make all function parameters named fun.
+
+Future enhancements:
+- add a name to Test in FixtureSuite?
 
 Log4j has appenders. java.util.logging has handlers. I think the model would be you'd ask runner
 to register a handler or an appender, and it could do that, then it would get a LogRecorder object
