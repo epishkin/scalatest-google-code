@@ -1573,7 +1573,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         atomicInformer.set(informerForThisTest)
         var testWasPending = false
         try {
-          test.f()
+          wrapTest(() => test.f())
 
           val duration = System.currentTimeMillis - testStartTime
           report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))

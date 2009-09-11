@@ -528,6 +528,38 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
         a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       }
     }
+    it("should invoke wrapTest from runTest for no-arg test method") {
+      val a = new Suite {
+        var wrapTestWasInvoked = false
+        var testWasInvoked = false
+        override def wrapTest(test: () => Unit) {
+          wrapTestWasInvoked = true
+          super.wrapTest(test)
+        }
+        def testSomething() {
+          testWasInvoked = true
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.wrapTestWasInvoked)
+      assert(a.testWasInvoked)
+    }
+    it("should invoke wrapTest from runTest for a test method that takes an Informer") {
+      val a = new Suite {
+        var wrapTestWasInvoked = false
+        var testWasInvoked = false
+        override def wrapTest(test: () => Unit) {
+          wrapTestWasInvoked = true
+          super.wrapTest(test)
+        }
+        def testSomething(info: Informer) {
+          testWasInvoked = true
+        }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.wrapTestWasInvoked)
+      assert(a.testWasInvoked)
+    }
 
     describe("(when its pendingUntilFixed method is invoked)") {
       it("should throw TestPendingException if the code block throws an exception") {
