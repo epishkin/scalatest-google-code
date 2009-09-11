@@ -1610,10 +1610,12 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         atomicInformer.set(informerForThisTest)
         var testWasPending = false
         try {
+          val theConfigMap = configMap
           wrapTest(
             new NoArgTest {
               def name = testName
               def apply() { test.f() }
+              def configMap = theConfigMap
             }
           )
 

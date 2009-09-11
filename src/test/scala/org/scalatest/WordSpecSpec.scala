@@ -49,6 +49,18 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
+    it("should pass the correct config map in the NoArgTest passed to wrapTest") {
+      val a = new WordSpec {
+        var correctConfigMapWasPassed = false
+        override def wrapTest(test: NoArgTest) {
+          correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
+          super.wrapTest(test)
+        }
+        "do something" in {}
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
+      assert(a.correctConfigMapWasPassed)
+    }
 
     describe("(when a nesting rule has been violated)") {
 

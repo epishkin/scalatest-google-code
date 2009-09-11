@@ -126,6 +126,18 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
+    it("should pass the correct config map in the NoArgTest passed to wrapTest") {
+      val a = new Spec {
+        var correctConfigMapWasPassed = false
+        override def wrapTest(test: NoArgTest) {
+          correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
+          super.wrapTest(test)
+        }
+        it("should do something") {}
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
+      assert(a.correctConfigMapWasPassed)
+    }
     describe("(with info calls)") {
       class InfoInsideTestSpec extends Spec {
         val msg = "hi there, dude"

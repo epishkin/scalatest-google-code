@@ -572,6 +572,18 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
+    it("should pass the correct config map in the NoArgTest passed to wrapTest") {
+      val a = new Suite {
+        var correctConfigMapWasPassed = false
+        override def wrapTest(test: NoArgTest) {
+          correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
+          super.wrapTest(test)
+        }
+        def testSomething(info: Informer) {}
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
+      assert(a.correctConfigMapWasPassed)
+    }
 
     describe("(when its pendingUntilFixed method is invoked)") {
       it("should throw TestPendingException if the code block throws an exception") {
