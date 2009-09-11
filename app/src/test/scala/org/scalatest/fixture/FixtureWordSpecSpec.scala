@@ -906,6 +906,32 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       s.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(s.theNoArgTestWasInvoked)
     }
+    it("should pass the correct test name in the OneArgTest passed to withFixture") {
+      val a = new FixtureWordSpec {
+        type Fixture = String
+        var correctTestNameWasPassed = false
+        def withFixture(test: OneArgTest) {
+          correctTestNameWasPassed = test.name == "do something"
+          test("hi")
+        }
+        "do something" in { fixture => }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(a.correctTestNameWasPassed)
+    }
+    it("should pass the correct config map in the OneArgTest passed to withFixture") {
+      val a = new FixtureWordSpec {
+        type Fixture = String
+        var correctConfigMapWasPassed = false
+        def withFixture(test: OneArgTest) {
+          correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
+          test("hi")
+        }
+        "do something" in { fixture => }
+      }
+      a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
+      assert(a.correctConfigMapWasPassed)
+    }
     describe("(when a nesting rule has been violated)") {
 
       it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
