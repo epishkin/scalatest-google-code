@@ -7,8 +7,6 @@
 - document internal parts of new core traits
 - check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
 - check out problem with Conductor
-- put ConductorMethods in using withFixture(Test0)
-- put final overridden withFixture(Test0) in JUnit and TestNG traits
 
 Make all function parameters named fun.
 

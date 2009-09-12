@@ -89,14 +89,22 @@ class Conductor(val informer: Option[Informer]){
 
   // the main test thread
   private final val mainThread = currentThread
-  // TODO: change default name from threadN to thread-N?
+
   /**
    * Creates a new thread that will execute the specified function.
    *
-   * @param fun the function to be executed by the thread
+   * <p>
+   * The name of the thread will be of the form Conductor-Thread-N, where N is some integer.
+   * </p>
+   *
+   * <p>
+   * This method may be safely called by any thread.
+   * </p>
+   *
+   * @param fun the function to be executed by the newly created thread
    * @return the newly created thread
    */
-  def thread[T](fun: => T): Thread = thread("thread" + threads.size) { fun }
+  def thread[T](fun: => T): Thread = thread("Conductor-Thread-" + threads.size) { fun }
 
   /*
    * Create a new thread that will execute the given Runnable
@@ -125,13 +133,17 @@ class Conductor(val informer: Option[Informer]){
   /**
    * Creates a new thread with the specified name that will execute the specified function.
    *
-   * @param name the name of the thread
-   * @param fun the function to be executed by the thread
+   * <p>
+   * This method may be safely called by any thread.
+   * </p>
+   *
+   * @param name the name of the newly created thread
+   * @param fun the function to be executed by the newly created thread
    * @return the newly created thread
    */
   def thread[T](name: String)(fun: => T): Thread = {
     currentState.get match {
-      case TestFinished => throw new IllegalStateException("Test already completed.")
+      case TestFinished => throw new IllegalStateException("Test already completed.")  // TODO grab from resource
       case _ =>
         val t = TestThread(name, fun _)
         threads add t
@@ -164,19 +176,24 @@ class Conductor(val informer: Option[Informer]){
   }
 */
   
-  /**
+  /*
    * A test thread runs the given function.
    * It only does so after it is given permission to do so by the main thread.
    * The main thread grants permission after it receives notication that
    * all test threads are ready to go.
    */
-  private case class TestThread[T](name: String, f: () => T) extends Thread(threadGroup, name){
+  private case class TestThread[T](name: String, f: () => T) extends Thread(threadGroup, name) {
+
+    testThreadsStartingCounter.increment()
+
     override def run() {
       try {
         // notify the main thread that we are indeed ready to go.
-        mainThreadStartLatch.countDown
+        // mainThreadStartLatch.countDown  RACE CONDITION
+        testThreadsStartingCounter.decrement()
+
         // wait for the main thread to say its ok to go.
-        testThreadStartLatch.await
+        greenLightForTestThreads.await
         // go
         f()
       } catch {
@@ -310,17 +327,44 @@ class Conductor(val informer: Option[Informer]){
 
   /////////////////////// run methods start /////////////////////////////////
 
+  /*
+   * I think the race condition may be that CountDownLatch can get created before
+   * all the threads have been created, so thread.size is too low.
+   */
   /**
    * Keeps the main thread from allowing the test threads to execute their bodies
    * until all of them are started, and ready to go.
    */
-  private lazy val mainThreadStartLatch = new CountDownLatch(threads.size)
+  // private lazy val mainThreadStartLatch = new CountDownLatch(threads.size) RACE CONDITION
+
+  private class TestThreadsStartingCounter {
+    private var count: Int = 0
+    def increment() {
+      synchronized {
+        count += 1
+      }
+    }
+    def decrement() {
+      synchronized {
+        count -= 1
+        notifyAll()
+      }
+    }
+    def waitUntilAllTestThreadsHaveStarted() {
+      synchronized {
+        while (count != 0) {
+          wait()
+        }
+      }
+    }
+  }
+  private val testThreadsStartingCounter = new TestThreadsStartingCounter
 
   /**
    * Keeps the test threads from executing their bodies until the main thread
    * allows them to.
    */
-  private val testThreadStartLatch = new CountDownLatch(1)
+  private val greenLightForTestThreads = new CountDownLatch(1)
 
   /**
    * Conducts a multithreaded test with a default clock period of 10 milliseconds
@@ -356,11 +400,12 @@ class Conductor(val informer: Option[Informer]){
     else currentState set TestStarted
 
     // wait until all threads are definitely ready to go
-    mainThreadStartLatch.await()
+    // mainThreadStartLatch.await()  RACE CONDITION
+    testThreadsStartingCounter.waitUntilAllTestThreadsHaveStarted()
 
     // release the latch, allowing all threads to start
     // wait for all the test threads to start before starting the clock
-    testThreadStartLatch.countDown()
+    greenLightForTestThreads.countDown()
 
     // start the clock thread
     val clockThread = startThread(ClockThread(clockPeriod, runLimit))
