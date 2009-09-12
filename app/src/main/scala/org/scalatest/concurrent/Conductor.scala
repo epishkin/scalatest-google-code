@@ -466,7 +466,8 @@ class Conductor(val informer: Option[Informer]){
       case e: InterruptedException => {
         log("killed waiting for threads. probably deadlock or timeout.")
         errorsQueue offer new AssertionError(e)
-      }
+      }                                          // TODO: CHECK JCIP. NEED TO RESET THE INTERRUPTED FLAG?
+      // THE MAIN THREAD CAN GET INTERRUPTED BY THE Clock Thread's DEADLOCK DETECTOR
     }
   }
 
@@ -516,7 +517,17 @@ class Conductor(val informer: Option[Informer]){
 
     /**
      * Read locks are acquired when clock is frozen and must be
-     * released before the clock can advance in a waitForBeat().
+     * released before the clock can advance in a advance(). (In a
+     * ReentrantReadWriteLock, multiple threads can hold the read lock (and these
+     * threads might read the value of currentTime (the currentBeat method), or just execute a
+     * function with the clock frozen (the withClockFrozen method). The write lock
+     * of a ReentrantReadWriteLock is exclusive, so only one can hold it, and it
+     * can't be held if there are a thread or threads holding the read lock. This
+     * is why the clock can't advance during a withClockFrozen, because the read
+     * lock is grabbed before the function is executed in withClockFrozen, thus
+     * advance will not be able to acquire the write lock to update currentTime
+     * until after withClockFrozen has released the read lock (and there are no other
+     * threads holding a read lock or the write lock).
      */
     private val rwLock = new ReentrantReadWriteLock
 
@@ -558,8 +569,6 @@ class Conductor(val informer: Option[Informer]){
      * When wait for beat is called, the current thread will block until
      * the given beat is reached by the clock.
      */
-    // TODO: Could just notify in the advance() method the folks that are waiting on that
-    // particular beat, but then that's more complicated. Not a big deal.
     def waitForBeat(beat: Int) {
       lock.synchronized {
         if (beat > highestBeatBeingWaitedOn)
@@ -570,7 +579,7 @@ class Conductor(val informer: Option[Informer]){
               lock.wait()
             } catch {     // TODO: this is probably fine, but check JCIP about InterEx again
               case e: InterruptedException => throw new AssertionError(e)
-            }
+            }         // Actually I"m not sure. Maybe should reset the interupted status
           }
         }
       }
@@ -583,16 +592,16 @@ class Conductor(val informer: Option[Informer]){
     // on the lock.
 
     /**
-     * Returns true if any thread is waiting for a tick in the future ( greater than the current time )
+     * Returns true if any thread is waiting for a beat in the future (greater than the current beat)
      */
     def isAnyThreadWaitingForABeat = {
-      lock.synchronized {highestBeatBeingWaitedOn > currentTime}
+      lock.synchronized { highestBeatBeingWaitedOn > currentTime }
     }
 
     /**
      * When the clock is frozen, it will not advance even when all threads
      * are blocked. Use this to block the current thread with a time limit,
-     * but prevent the clock from advancing due to a    { @link # waitForTick ( int ) } in
+     * but prevent the clock from advancing due to a waitForBeat(Int) in
      * another thread.
      */
     def withClockFrozen[T](f: => T): T = rwLock read f
@@ -604,10 +613,10 @@ class Conductor(val informer: Option[Informer]){
   }
 
   /**
-   * The clock thread is the manager of the MultiThreadedTest.
-   * Periodically checks all the test case threads and regulates them.
-   * If all the threads are blocked and at least one is waiting for a tick,
-   * the clock advances to the next tick and the waiting thread is notified.
+   * The clock thread is the manager of the multi-threaded test.
+   * Periodically checks all the test threads and regulates them.
+   * If all the threads are blocked and at least one is waiting for a beat,
+   * the clock advances to the next beat and all waiting threads are notified.
    * If none of the threads are waiting for a tick or in timed waiting,
    * a deadlock is detected. The clock thread times out if a thread is in runnable
    * or all are blocked and one is in timed waiting for longer than the runLimit.
@@ -622,7 +631,7 @@ class Conductor(val informer: Option[Informer]){
    *
    *          stop the test with a timeout error
    *
-   *    else if there are threads waiting for a clock tick
+   *    else if there are threads waiting for a beat
    *
    *       advance the clock
    *
@@ -630,7 +639,7 @@ class Conductor(val informer: Option[Informer]){
    *
    *       increment the deadlock counter
    *
-   *       if the deadlock counter has reached a threadshold
+   *       if the deadlock counter has reached a threshold
    *
    *          stop the test due to potential deadlock
    *
@@ -645,7 +654,7 @@ class Conductor(val informer: Option[Informer]){
    *
    * @param maxRunTime The limit to run the test in seconds
    */
-  private case class ClockThread(clockPeriod: Int, maxRunTime: Int) extends Thread("Clock") {
+  private case class ClockThread(clockPeriod: Int, maxRunTime: Int) extends Thread("Conductor-Clock") {
     this setDaemon true // TODO: Why is this a daemon thread? If no good reason, drop it.
 
     // used in detecting timeouts
@@ -653,7 +662,7 @@ class Conductor(val informer: Option[Informer]){
 
     // used in detecting deadlocks
     private var deadlockCount = 0
-    private val MAX_DEADLOCK_DETECTIONS_BEFORE_DEADLOCK = 50
+    private val MaxDeadlockDetectionsBeforeDeadlock = 50
 
     /**
      * Runs the steps described above.
@@ -695,9 +704,13 @@ class Conductor(val informer: Option[Informer]){
      * Determine if there is a deadlock and if so, stop the test.
      */
     private def detectDeadlock() {
-      if (deadlockCount == MAX_DEADLOCK_DETECTIONS_BEFORE_DEADLOCK) {
+      // Should never get to >= before ==, but just playing it safe
+      if (deadlockCount >= MaxDeadlockDetectionsBeforeDeadlock) {
         val errorMessage = "Apparent Deadlock! Threads waiting 50 clock periods (" + (clockPeriod * 50) + "ms)"
         signalError(new IllegalStateException(errorMessage))
+
+        // The mainThread may be joined to a thread, and this would break it out of its doldrums?
+        // I'm not sure why this is necessary. 
         mainThread.interrupt()
       }
       else deadlockCount += 1
@@ -707,7 +720,7 @@ class Conductor(val informer: Option[Informer]){
   /**
    * Base class for the possible states of the Conductor.
    */
-  private sealed case class ConductorState(testWasStarted:Boolean, testIsFinished: Boolean)
+  private sealed case class ConductorState(testWasStarted: Boolean, testIsFinished: Boolean)
 
   /**
    * The initial state of the Conductor.
