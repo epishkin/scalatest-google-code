@@ -54,6 +54,7 @@ import org.scalatest.fixture.FixtureSuite
  *       buf should be ('empty)
  *     }
  *   }
+ * }
  * </pre>
  *
  * @author Bill Venners

@@ -22,7 +22,8 @@ import _root_.java.util.concurrent._
 import _root_.java.util.concurrent.atomic.AtomicReference
 
 /**
- * Class that facilitates the testing of concurrency abstractions.
+ * Class that facilitates the testing of classes, traits, and systems designed
+ * to be used by multiple threads concurrently.
  *
  * <p>
  * A <code>Conductor</code> conducts a multi-threaded test by maintaining
@@ -33,7 +34,7 @@ import _root_.java.util.concurrent.atomic.AtomicReference
  * until that beat has been reached. The <code>Conductor</code> will advance
  * the beat only when all threads participating in the test are blocked. By
  * tying the timing of thread activities to specific beats, you can write
- * tests for concurrency abstractions that have specific interleavings of
+ * tests for concurrent systems that have specific interleavings of
  * threads.
  * </p>
  *
@@ -61,14 +62,16 @@ import _root_.java.util.concurrent.atomic.AtomicReference
  * @author Josh Cough
  * @author Bill Venners
  */
-class Conductor(val informer: Option[Informer]){
-   // TODO: Make informer not a val, and instead just fire messages on test failures.
-  /**
+class Conductor {
+
+  /*
+   * Dropping this for 1.0.
    * Creates a new <code>Conductor</code> that takes no <code>Informer</code> (<em>i.e.</em>,
    * this auxiliary constructor passes <code>None</code> as the primary constructor's
    * <code>informer</code> parameter).
-   */
+   *
   def this() = this(None)
+   */
 
   /**
    * The metronome used to coordinate between threads.
@@ -260,6 +263,8 @@ class Conductor(val informer: Option[Informer]){
     for (t <- threadGroup.getThreads; if (t != currentThread)) {
       log("signaling error to " + t.getName)
       val assertionError = new java.lang.AssertionError(t.getName + " killed by " + currentThread.getName)
+   // TODO: Fix bug: t.getStackTrace could be null for some reason. I got
+      // a NPE here.
       assertionError setStackTrace t.getStackTrace
       t stop assertionError
     }
@@ -479,11 +484,16 @@ class Conductor(val informer: Option[Informer]){
     }
   }
 
+  // For 1.0, don't offer logging as a feature, to reduce the documentation
+  // and work load for 1.0, and also to find out what real users really want
+  // in terms of logging from Conductor, if anything.
   private def log(a: Any) = {
+/*
     informer match {
       case Some(info) => info(a.toString)
       case None => 
     }
+*/
   }
 
   /**

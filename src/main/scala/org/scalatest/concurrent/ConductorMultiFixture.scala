@@ -34,7 +34,7 @@ import fixture.{ConfigMapFixture, FixtureSuite}
  * import org.scalatest.matchers.ShouldMatchers
  * import java.util.concurrent.ArrayBlockingQueue
  *
- * class ArrayBlockingQueueSuite extends MultipleFixtureFunSuite with ConductorFixture with ShouldMatchers {
+ * class ArrayBlockingQueueSuite extends MultipleFixtureFunSuite with ConductorMultiFixture with ShouldMatchers {
  * 
  *   test("calling put on a full queue blocks the producer thread") { (conductor: Conductor) => import conductor._
  *
@@ -56,6 +56,7 @@ import fixture.{ConfigMapFixture, FixtureSuite}
  *       buf should be ('empty)
  *     }
  *   }
+ * }
  * </pre>
  *
  * @author Bill Venners
