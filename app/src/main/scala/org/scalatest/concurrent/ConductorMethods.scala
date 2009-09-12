@@ -123,8 +123,8 @@ trait ConductorMethods extends RunMethods { this: Suite =>
       new Conductor(Some(new Informer { def apply(s: String) { println(s) } }))
     )
     test()
-    if (!conductor.get.conductTestWasCalled)
-      conductor.get.conductTest()
+    if (!conductor.get.conductingHasBegun)
+      conductor.get.conduct()
   }
   /*
    * Secretly sets the conductor to a new Conductor.
@@ -194,7 +194,7 @@ trait ConductorMethods extends RunMethods { this: Suite =>
     var caughtException = false
 
     try {
-      conductor.get.conductTest()
+      conductor.get.conduct()
     } catch {
       // handle the main thread throwing an exception      
       case e => {

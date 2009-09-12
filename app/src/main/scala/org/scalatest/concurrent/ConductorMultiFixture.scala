@@ -65,15 +65,15 @@ trait ConductorMultiFixture { this: FixtureSuite with ConfigMapFixture =>
 
   /**
    * Creates a new <code>Conductor</code>, passes the <code>Conductor</code> to the
-   * specified test function, and ensures that <code>conductTest</code> gets invoked
+   * specified test function, and ensures that <code>conduct</code> gets invoked
    * on the <code>Conductor</code>.
    *
    * <p>
    * After the test function returns (so long as it returns normally and doesn't
    * complete abruptly with an exception), this method will determine whether the
-   * <code>conductTest</code> method has already been called (by invoking
-   * <code>conductTestWasCalled</code> on the <code>Conductor</code>). If not,
-   * this method will invoke <code>conductTest</code> to ensure that the
+   * <code>conduct</code> method has already been called (by invoking
+   * <code>conductingHasBegun</code> on the <code>Conductor</code>). If not,
+   * this method will invoke <code>conduct</code> to ensure that the
    * multi-threaded test is actually conducted.
    * </p>
    *
@@ -81,7 +81,7 @@ trait ConductorMultiFixture { this: FixtureSuite with ConfigMapFixture =>
   implicit def withConductorFixture(fun: Conductor => Unit): this.Fixture => Unit = { configMap =>
     val conductor = new Conductor
     fun(conductor)
-    if (!conductor.conductTestWasCalled)
-      conductor.conductTest()
+    if (!conductor.conductingHasBegun)
+      conductor.conduct()
   }
 }
