@@ -151,8 +151,9 @@ class Conductor(val informer: Option[Informer]){
     }
   }
   
-  // The reason that the thread is started immediately, is do that nested threads
+  // The reason that the thread is started immediately, is so that nested threads
   // will start immediately, without requiring the user to explicitly start() them.
+  // Also, so that the thread method can return a Thread object.
 
   /*
    * Adds threads methods to int, so one can say:<br/>
@@ -189,29 +190,35 @@ class Conductor(val informer: Option[Informer]){
     override def run() {
       try {
         // notify the main thread that we are indeed ready to go.
-        // mainThreadStartLatch.countDown  RACE CONDITION
         testThreadsStartingCounter.decrement()
 
         // wait for the main thread to say its ok to go.
         greenLightForTestThreads.await
+
         // go
         f()
       } catch {
         // The reason this is a catch Throwable is because you want to let ThreadDeath through
         // without signalling errors. Otherwise the signalError could have been in a finally.
         // If the simulation is aborted, then stop will be called,
-        // which will cause ThreadDeath, so just die and do nothing
-        case e: ThreadDeath =>
+        // which will cause ThreadDeath, so just die and do nothing.
+        case e: ThreadDeath => // Do nothing and return from run()
         case t: Throwable => signalError(t)
       }
     }
   }
-
+  // TODO: I'm not sure signalError isn't going to not cause threads to be stopped that no longer exist,
+  // because it caues AssertionErrors to be thrown in the other threads, so they'll also end up here
+  // and call signalError, and so multiple threads will be attempting to kill the same threads. Sloppy.
+  // Possibly throw a special exception that indicates a thread was killed because a test failure has
+  // already been detected. This can be detected here and then *not* call signalError, but simply be
+  // added to the errors queue. So the first thread to get an exception would be responsible for stopping
+  // all the other threads.
   /**
    * Starts a thread, logging before and after
    */
   private def startThread(thread: Thread): Thread = {
-    logAround("starting: " + thread) {
+    logAround("Starting thread named: " + thread) {
       thread.start()
       thread
     }
@@ -222,8 +229,8 @@ class Conductor(val informer: Option[Informer]){
   /////////////////////// error handling start //////////////////////////////
 
   /**
-   * a BlockingQueue containing the first Error/Exception that occured
-   * in thread methods or that are thrown by the clock thread
+   * A BlockingQueue containing the first Error/Exception that occured
+   * in thread methods or that are thrown by the clock thread.
    */
   private val errorsQueue = new ArrayBlockingQueue[Throwable](20)
 
@@ -252,7 +259,7 @@ class Conductor(val informer: Option[Informer]){
     errorsQueue offer t
     for (t <- threadGroup.getThreads; if (t != currentThread)) {
       log("signaling error to " + t.getName)
-      val assertionError = new AssertionError(t.getName + " killed by " + currentThread.getName)
+      val assertionError = new java.lang.AssertionError(t.getName + " killed by " + currentThread.getName)
       assertionError setStackTrace t.getStackTrace
       t stop assertionError
     }
@@ -271,10 +278,10 @@ class Conductor(val informer: Option[Informer]){
    * function.
    * </p>
    *
-   * @param fun the function to execute after <code>conductTest</code> test returns
+   * @param fun the function to execute after <code>conductTest</code> call returns
    */
   def whenFinished(fun: => Unit) {
-    if(currentThread != mainThread)
+    if(currentThread != mainThread)  // TODO: Get from resources
       throw new IllegalStateException("whenFinished can only be called by thread that created Conductor.")
 
     conductTest()
@@ -306,7 +313,7 @@ class Conductor(val informer: Option[Informer]){
    * <p>
    * While the <code>Conductor</code> is frozen, the beat will not advance. Once the
    * passed function has completed executing, the <code>Conductor</code> will be unfrozen
-   * so that the beat will advance when all threads are blocked as normal.
+   * so that the beat will advance when all threads are blocked, as normal.
    * </p>
    *
    * @param fun the function to execute while the <code>Conductor</code> is frozen.
@@ -328,15 +335,20 @@ class Conductor(val informer: Option[Informer]){
   /////////////////////// run methods start /////////////////////////////////
 
   /*
-   * I think the race condition may be that CountDownLatch can get created before
-   * all the threads have been created, so thread.size is too low.
-   */
-  /**
    * Keeps the main thread from allowing the test threads to execute their bodies
-   * until all of them are started, and ready to go.
+   * until all of them are started, and ready to go. When a test thread is started,
+   * it will call increment from its constructor. It then calls decrement from its
+   * run method. Test threads are started immediately by the thread() methods, and
+   * so this allows the main thread to block until all test threads have started.
+   * It does this by calling the waitUntilAllTestThreadsHaveStarted method, which
+   * blocks in the wait set if the count is not 0. (The count is only non-zero when
+   * one or more test threads have been created but not yet gotten their run methods
+   * going.) This is only used for threads started by the main thread. By the time
+   * conductTest is invoked, all threads started by the main thread will have called
+   * increment. (Increment in this case will be called by the main thread.) After
+   * those threads go, they may actually call thread method again, but the main thread
+   * will only call waitUntilAllTestThreadsHaveStarted once, so it won't matter. - bv
    */
-  // private lazy val mainThreadStartLatch = new CountDownLatch(threads.size) RACE CONDITION
-
   private class TestThreadsStartingCounter {
     private var count: Int = 0
     def increment() {
@@ -358,6 +370,7 @@ class Conductor(val informer: Option[Informer]){
       }
     }
   }
+
   private val testThreadsStartingCounter = new TestThreadsStartingCounter
 
   /**
@@ -371,9 +384,9 @@ class Conductor(val informer: Option[Informer]){
    * and default run limit of 5 seconds.
    */
   def conductTest() {
-    val DEFAULT_CLOCKPERIOD = 10
-    val DEFAULT_RUNLIMIT = 5
-    conductTest(DEFAULT_CLOCKPERIOD, DEFAULT_RUNLIMIT)
+    val DefaultClockPeriod = 10 // milliseconds
+    val DefaultRunLimit = 5 // seconds
+    conductTest(DefaultClockPeriod, DefaultRunLimit)
   }
 
   private val currentState: AtomicReference[ConductorState] = new AtomicReference(Setup)
@@ -395,8 +408,8 @@ class Conductor(val informer: Option[Informer]){
   def conductTest(clockPeriod: Int, runLimit: Int) {
 
     // if the test was started already, explode
-    // otherwise, change state to TestStarted
-    if( conductTestWasCalled ) throw new IllegalStateException("Conductor can only be run once!")
+    // otherwise, change state to TestStarted                           // TODO: Grab from resources
+    if (conductTestWasCalled) throw new IllegalStateException("Conductor can only be run once!")
     else currentState set TestStarted
 
     // wait until all threads are definitely ready to go
@@ -434,7 +447,7 @@ class Conductor(val informer: Option[Informer]){
   // thread inside createTestThread, the signalling error happens in a catch Throwable block before the thread
   // returns.
   private def waitForThreads{
-    while(threadGroup.anyThreadsAlive_?){
+    while(threadGroup.areAnyThreadsAlive){
       threadGroup.getThreads foreach waitForThread
     }
   }
@@ -442,8 +455,8 @@ class Conductor(val informer: Option[Informer]){
   private def waitForThread(t: Thread) {
     log("waiting for: " + t.getName + " which is in state:" + t.getState)
     try {
-      if (t.isAlive && !errorsQueue.isEmpty) logAround("stopping: " + t) {t.stop()}
-      else logAround("joining: " + t) {t.join()}
+      if (t.isAlive && !errorsQueue.isEmpty) logAround("stopping: " + t) { t.stop() }
+      else logAround("joining: " + t) { t.join() }
       assert(t.getState == TERMINATED)
     } catch {
       case e: InterruptedException => {
@@ -633,16 +646,16 @@ class Conductor(val informer: Option[Informer]){
      * Runs the steps described above.
      */
     override def run {
-      while (threadGroup.anyThreadsAlive_?) {
-        if (threadGroup.anyThreadsRunning_?) {
-          if (runningTooLong_?) timeout()
+      while (threadGroup.areAnyThreadsAlive) {
+        if (threadGroup.areAnyThreadsRunning) {
+          if (runningTooLong) timeout()
         }
         else if (clock.isAnyThreadWaitingForABeat) {
           clock.advance()
           deadlockCount = 0
           lastProgress = System.currentTimeMillis
         }
-        else if (!threadGroup.anyThreadsInTimedWaiting_?) {
+        else if (!threadGroup.areAnyThreadsInTimedWaiting) {
           detectDeadlock()
         }
         Thread sleep clockPeriod
@@ -654,7 +667,7 @@ class Conductor(val informer: Option[Informer]){
      * The number of seconds since the last progress are more
      * than the allowed maximum run time.
      */
-    private def runningTooLong_? = System.currentTimeMillis - lastProgress > 1000L * maxRunTime
+    private def runningTooLong = System.currentTimeMillis - lastProgress > 1000L * maxRunTime
 
     /**
      * Stop the test tue to a timeout.
@@ -685,7 +698,8 @@ class Conductor(val informer: Option[Informer]){
 
   /**
    * The initial state of the Conductor.
-   * Any calls the thread{ ... } will result in blocked Threads.
+   * Any calls the thread{ ... } will result in started Threads that quickly block waiting for the
+   * main thread to give it the green light.
    * Any call to conductTest will start the test.
    */
   private case object Setup extends ConductorState(false, false)

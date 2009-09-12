@@ -88,17 +88,17 @@ private[concurrent] class PimpedThreadGroup(threadGroup: ThreadGroup) {
    * Returns true if any Threads in this ThreadGroup are in a State
    * other than NEW or TERMINATED, false otherwise.
    */
-  def anyThreadsAlive_? = getThreads.exists(t => t.getState != NEW && t.getState != TERMINATED)
+  def areAnyThreadsAlive = getThreads.exists(t => t.getState != NEW && t.getState != TERMINATED)
 
   /**
    * Returns true if any Threads in this ThreadGroup are in a State RUNNING,
    * false otherwise.
    */
-  def anyThreadsRunning_? = getThreads.exists(_.getState == RUNNABLE)
+  def areAnyThreadsRunning = getThreads.exists(_.getState == RUNNABLE)
 
   /**
    * Returns true if any Threads in this ThreadGroup are in a State TIMED_WAITING,
    * false otherwise.
    */
-  def anyThreadsInTimedWaiting_? = getThreads.exists(_.getState == TIMED_WAITING)
+  def areAnyThreadsInTimedWaiting = getThreads.exists(_.getState == TIMED_WAITING)
 }
