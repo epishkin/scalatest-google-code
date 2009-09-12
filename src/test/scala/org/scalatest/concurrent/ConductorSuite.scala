@@ -35,27 +35,27 @@ trait MustBeSugar { this: ShouldMatchers =>
 
 class ConductorSuite extends FunSuite with ShouldMatchers with MustBeSugar {
 
-  test("if conductTest is called twice, the second time it throws an IllegalStateException") {
+  test("if conduct is called twice, the second time it throws an IllegalStateException") {
     val conductor = new Conductor
-    conductor.conductTest()
-    intercept[IllegalStateException] { conductor.conductTest() }
+    conductor.conduct()
+    intercept[IllegalStateException] { conductor.conduct() }
   }
 
-  test("if conductTest has not been called, testWasStarted should return false"){
+  test("if conduct has not been called, testWasStarted should return false"){
     val conductor = new Conductor
-    conductor.conductTestWasCalled mustBe false
+    conductor.conductingHasBegun mustBe false
   }
 
-  test("if conductTest has been called, testWasStarted should return true") {
+  test("if conduct has been called, testWasStarted should return true") {
     val conductor = new Conductor
-    conductor.conductTest
-    conductor.conductTestWasCalled mustBe true
+    conductor.conduct
+    conductor.conductingHasBegun mustBe true
   }
 
   test("if thread {} is called after the test has been conducted, it throws an IllegalStateException" +
            "with a detail message that explains the problem") {
     val conductor = new Conductor
-    conductor.conductTest
+    conductor.conduct
     intercept[IllegalStateException] {
       conductor.thread("name"){ 1 mustBe 1 }
     }.getMessage mustBe "Test already completed."
@@ -64,7 +64,7 @@ class ConductorSuite extends FunSuite with ShouldMatchers with MustBeSugar {
   test("if thread(String) {} is called after the test has been conducted, it throws IllegalStateException" +
           "with a detail message that explains the problem"){
     val conductor = new Conductor    
-    conductor.conductTest
+    conductor.conduct
     intercept[IllegalStateException] {
       conductor.thread("name"){ 1 mustBe 1 }
     }.getMessage mustBe "Test already completed."

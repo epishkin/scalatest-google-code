@@ -41,12 +41,12 @@ import _root_.java.util.concurrent.atomic.AtomicReference
  * A <code>Conductor</code> object has a three-phase lifecycle. It begins its life
  * in the <em>setup</em> phase. During this phase, you can start threads by
  * invoking the <code>thread</code> method on the <code>Conductor</code>.
- * When <code>conductTest</code> is invoked on a <code>Conductor</code>, it enters
+ * When <code>conduct</code> is invoked on a <code>Conductor</code>, it enters
  * the <em>conducting</em> phase. During this phase it conducts the one multi-threaded
  * test it was designed to conduct. After all participating threads have exited, either by
- * returning normally or throwing an exception, the <code>conductTest</code> method
+ * returning normally or throwing an exception, the <code>conduct</code> method
  * will complete, either by returning normally or throwing an exception. As soon as
- * the <code>conductTest</code> method completes, the <code>Conductor</code>
+ * the <code>conduct</code> method completes, the <code>Conductor</code>
  * enters its <em>defunct</em> phase. Once the <code>Conductor</code> has conducted
  * a multi-threaded test, it is defunct and can't be reused. To run the same test again,
  * you'll need to create a new instance of <code>Conductor</code>.
@@ -268,23 +268,23 @@ class Conductor(val informer: Option[Informer]){
   /////////////////////// error handling end //////////////////////////////
 
   /**
-   * Invokes <code>conductTest</code> and after <code>conductTest</code> returns,
-   * if <code>conductTest</code> returns normally (<em>i.e.</em>, without throwing
+   * Invokes <code>conduct</code> and after <code>conduct</code> returns,
+   * if <code>conduct</code> returns normally (<em>i.e.</em>, without throwing
    * an exception), invokes the passed function.
    *
    * <p>
-   * If <code>conductTest</code> completes abruptly with an exception, this method
+   * If <code>conduct</code> completes abruptly with an exception, this method
    * will complete abruptly with the same exception and not execute the passed
    * function.
    * </p>
    *
-   * @param fun the function to execute after <code>conductTest</code> call returns
+   * @param fun the function to execute after <code>conduct</code> call returns
    */
   def whenFinished(fun: => Unit) {
     if (currentThread != mainThread)  // TODO: Get from resources
       throw new IllegalStateException("whenFinished can only be called by the thread that created Conductor.")
 
-    conductTest()
+    conduct()
 
     fun
   }
@@ -345,7 +345,7 @@ class Conductor(val informer: Option[Informer]){
    * blocks in the wait set if the count is not 0. (The count is only non-zero when
    * one or more test threads have been created but not yet gotten their run methods
    * going.) This is only used for threads started by the main thread. By the time
-   * conductTest is invoked, all threads started by the main thread will have called
+   * conduct is invoked, all threads started by the main thread will have called
    * increment. (Increment in this case will be called by the main thread.) After
    * those threads go, they may actually call thread method again, but the main thread
    * will only call waitUntilAllTestThreadsHaveStarted once, so it won't matter. - bv
@@ -384,19 +384,27 @@ class Conductor(val informer: Option[Informer]){
    * Conducts a multithreaded test with a default clock period of 10 milliseconds
    * and default run limit of 5 seconds.
    */
-  def conductTest() {
+  def conduct() {
     val DefaultClockPeriod = 10 // milliseconds
     val DefaultRunLimit = 5 // seconds
-    conductTest(DefaultClockPeriod, DefaultRunLimit)
+    conduct(DefaultClockPeriod, DefaultRunLimit)
   }
 
   private val currentState: AtomicReference[ConductorState] = new AtomicReference(Setup)
 
   /**
-   * Indicates whether either of the two overloaded <code>conductTest</code> methods
+   * Indicates whether either of the two overloaded <code>conduct</code> methods
    * have been invoked.
+   *
+   * <p>
+   * This method returns true if either <code>conduct</code> method has been invoked. The
+   * <code>conduct</code> method may have returned or not. (In other words, a <code>true</code>
+   * result from this method does not mean the <code>conduct</code> method has returned,
+   * just that it was already been invoked and,therefore, the multi-threaded test it
+   * conducts has definitely begun.)
+   * </p>
    */
-  def conductTestWasCalled = currentState.get.testWasStarted
+  def conductingHasBegun = currentState.get.testWasStarted
 
   /**
    * Conducts a multithreaded test with the specified clock period (in milliseconds)
@@ -406,11 +414,11 @@ class Conductor(val informer: Option[Informer]){
    * @param runLimit The limit to run the test in seconds
    * @throws Throwable The first error or exception that is thrown by one of the threads
    */
-  def conductTest(clockPeriod: Int, runLimit: Int) {
+  def conduct(clockPeriod: Int, runLimit: Int) {
 
     // if the test was started already, explode
     // otherwise, change state to TestStarted                           // TODO: Grab from resources
-    if (conductTestWasCalled) throw new IllegalStateException("Conductor can only be run once!")
+    if (conductingHasBegun) throw new IllegalStateException("Conductor can only be run once!")
     else currentState set TestStarted
 
     // wait until all threads are definitely ready to go
@@ -726,14 +734,14 @@ class Conductor(val informer: Option[Informer]){
    * The initial state of the Conductor.
    * Any calls the thread{ ... } will result in started Threads that quickly block waiting for the
    * main thread to give it the green light.
-   * Any call to conductTest will start the test.
+   * Any call to conduct will start the test.
    */
   private case object Setup extends ConductorState(false, false)
 
   /**
    * The state of the Conductor while its running.
    * Any calls the thread{ ... } will result in running Threads.
-   * Any further call to conductTest will result in an exception.
+   * Any further call to conduct will result in an exception.
    */
   private case object TestStarted extends ConductorState(true, false)
 
@@ -741,7 +749,7 @@ class Conductor(val informer: Option[Informer]){
    * The state of the Conductor after all threads have finished,
    * and the whenFinished method has completed.
    * Any calls the thread{ ... } will result in an exception
-   * Any call to conductTest will result in an exception.
+   * Any call to conduct will result in an exception.
    */
   private case object TestFinished extends ConductorState(true, true)
 }

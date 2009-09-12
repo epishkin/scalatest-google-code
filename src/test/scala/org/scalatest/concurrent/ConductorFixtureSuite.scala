@@ -130,7 +130,7 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
   // TODO: I don't understand this test. Josh, can you clarify?
   test("top level thread calls result in a running thread that is blocked such that it doesn't execute " +
-       "prior to conductTest being called.") { conductor => import conductor._
+       "prior to conduct being called.") { conductor => import conductor._
     val anotherConductor = new Conductor
     val t = anotherConductor.thread{ 1 should be (1) }
     thread{ t.getState should be (WAITING) }
@@ -192,14 +192,14 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
   /////////////////////////////////////////////////
 
-  // One issue is whther ConductorMethods should have a conductTest on it at all. Possibly not, but the trouble
+  // One issue is whther ConductorMethods should have a conduct on it at all. Possibly not, but the trouble
   // is then that Conductor does have this method, and ConductorMethods wouldn't be being completely honest.
   // Also there would be something you could call in ConductorFixture that you couldn't call in ConductorMethods.
   // So my feeling is go ahead and add it to be consistent, but I'm not sure. Please check also to see if there are any
   // other public methods on Conductor that are not in ConductorMethods. If this is the only one, then probably we
   // should add it.
 
-  // TODO: i dont think we should expose conductTest on CM's. it just doesn't make sense.
+  // TODO: i dont think we should expose conduct on CM's. it just doesn't make sense.
   // even if it is the only method that isn't exposed (still need to check) if it simply doesnt
   // make sense to the api, and causes problems, then why add it?
   // wed have to do MORE documentation if we add it than if we dont.
@@ -207,20 +207,20 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
   // For ConductorMethods (probably in a ConductorMethodsSuite)
   // TODO: ask bill, dont think we should expose this in CM's
-  test("if conductTest is called from within the test itself, the test still succeeds (in other words," +
+  test("if conduct is called from within the test itself, the test still succeeds (in other words," +
           "ConductorMethods doesn't call it if testWasConducted is true.") (pending)
 
   // TODO: ask bill, dont think we should expose this in CM's
-  test("if conductTest is not called from within the test itself, the test still executes (because " +
+  test("if conduct is not called from within the test itself, the test still executes (because " +
          "ConductorMethods calls it given testWasConducted is false") (pending)
 
   // TODO: ask bill, dont think we should expose this in CM's
   // ConductorFixture  (probably in a ConductorMethodsSuite)
-  test("if conductTest is called from within the test itself, the test still succeeds (in other words," +
+  test("if conduct is called from within the test itself, the test still succeeds (in other words," +
           "ConductorFixture doesn't call it if testWasConducted is true.") (pending)
 
   // TODO: ask bill, dont think we should expose this in CM's
-  test("if conductTest is not called from within the test itself, the test still executes (because " +
+  test("if conduct is not called from within the test itself, the test still executes (because " +
          "ConductorFixture calls it given testWasConducted is false") (pending)
 
   test("waitForBeat throws IllegalArgumentException if is called with a negative number") (pending)
@@ -230,7 +230,7 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
   test("whenFinished throws an IllegalStateException if it is invoked during the running or" +
           "defunct phases,") (pending)
-  test("conductTest throws an IllegalStateException if it is invoked more than once.") (pending)
+  test("conduct throws an IllegalStateException if it is invoked more than once.") (pending)
   // TODO: Should we have whenFinished just conduct the test and invoke the passed function when it is
   // done conducting the test? If so, then there's no need to "register" the finish function.
 }
