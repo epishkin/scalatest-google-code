@@ -281,8 +281,8 @@ class Conductor(val informer: Option[Informer]){
    * @param fun the function to execute after <code>conductTest</code> call returns
    */
   def whenFinished(fun: => Unit) {
-    if(currentThread != mainThread)  // TODO: Get from resources
-      throw new IllegalStateException("whenFinished can only be called by thread that created Conductor.")
+    if (currentThread != mainThread)  // TODO: Get from resources
+      throw new IllegalStateException("whenFinished can only be called by the thread that created Conductor.")
 
     conductTest()
 
