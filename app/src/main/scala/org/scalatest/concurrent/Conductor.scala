@@ -549,7 +549,10 @@ class Conductor(val informer: Option[Informer]){
     /**
      * The current beat.
      */
-    def currentBeat: Int = rwLock read currentTime
+    def currentBeat: Int =
+      lock.synchronized {
+        rwLock read currentTime
+      }
 
     /**
      * When wait for beat is called, the current thread will block until
