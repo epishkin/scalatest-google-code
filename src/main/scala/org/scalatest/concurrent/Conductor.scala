@@ -509,6 +509,9 @@ class Conductor(val informer: Option[Informer]){
 
     // clock starts at time 0
     private var currentTime = 0
+
+    // methods in Clock that access or modify the private instance vars of this
+    // Clock are synchronized on the object referenced from lock
     private val lock = new AnyRef
 
     /**
@@ -520,17 +523,18 @@ class Conductor(val informer: Option[Informer]){
     private var highestBeatBeingWaitedOn = 0
 
     /**
-     * Advance the current tick. In order to do so, the clock will wait
+     * Advance the current beat. In order to do so, the clock will wait
      * until it has become unfrozen.
      *
-     * All threads waiting for the clock to tick will be notified after the advance.
+     * All threads waiting for the clock to advance (they would have been put in the lock
+     * object's wait set by invoking the waitForBeat method) will be notified after the advance.
      *
      * Only the clock thread should be calling this.
      *
      * If the clock has been frozen by a thread, then that thread will own the readLock. Write
      * lock can only be acquired when there are no readers, so ticks won't progress while someone
      * has the clock frozen. Other methods also grab the read lock, like time (which gets
-     * the current tick.)
+     * the current beat.)
      */
     def advance() {
       lock.synchronized {
@@ -548,29 +552,31 @@ class Conductor(val informer: Option[Informer]){
     def currentBeat: Int = rwLock read currentTime
 
     /**
-     * When wait for tick is called, the current thread will block until
-     * the given tick is reached by the clock.
+     * When wait for beat is called, the current thread will block until
+     * the given beat is reached by the clock.
      */
     // TODO: Could just notify in the advance() method the folks that are waiting on that
     // particular beat, but then that's more complicated. Not a big deal.
     def waitForBeat(beat: Int) {
       lock.synchronized {
-        if (beat > highestBeatBeingWaitedOn) highestBeatBeingWaitedOn = beat
-        logAround(currentThread.getName + " is waiting for time " + beat) {
+        if (beat > highestBeatBeingWaitedOn)
+          highestBeatBeingWaitedOn = beat
+        logAround(currentThread.getName + " is waiting for beat " + beat) {
           while (currentBeat < beat) {
             try {
               lock.wait()
-            } catch {
+            } catch {     // TODO: this is probably fine, but check JCIP about InterEx again
               case e: InterruptedException => throw new AssertionError(e)
             }
           }
         }
       }
     }
-    // The reason there's no race condition between calling time() in the while and calling
-    // lock.wait() later (between that) and some other thread incrementing the tick and doing
+
+    // The reason there's no race condition between calling currentBeat in the while and calling
+    // lock.wait() later (between that) and some other thread incrementing the beat and doing
     // a notify that this thread would miss (which it would want to know about if that's the
-    // new time that it's waiting for) is becauswe both this and the tick method are synchronized
+    // new time that it's waiting for) is because both this and the currentBeat method are synchronized
     // on the lock.
 
     /**
