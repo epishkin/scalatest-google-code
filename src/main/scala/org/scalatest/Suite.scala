@@ -1400,7 +1400,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
     )
 
   /**
-   *  Run the passed test function with a fixture created by this method.
+   *  Run the passed test function in the context of a fixture established by this method.
    *
    * <p>
    * This method should set up the fixture needed by the tests of the
@@ -1414,7 +1414,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *
    * <p>
    * This trait's implementation of <code>runTest</code> invokes this method for each test, passing
-   * in a <code>OneArgTest</code> whose <code>apply</code> method will execute the code of the test.
+   * in a <code>NoArgTest</code> whose <code>apply</code> method will execute the code of the test.
    * </p>
    *
    * <p>
