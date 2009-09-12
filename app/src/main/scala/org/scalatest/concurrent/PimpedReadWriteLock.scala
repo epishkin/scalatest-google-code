@@ -38,8 +38,13 @@ private[concurrent] object PimpedReadWriteLock {
    */
   def withLock[T](lock: Lock)(f: => T): T = {
     lock.lock
-    val t = f
-    lock.unlock
+    val t =
+      try {
+        f
+      }
+      finally {
+        lock.unlock
+      }
     t
   }
 }

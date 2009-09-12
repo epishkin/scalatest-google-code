@@ -290,7 +290,8 @@ class Conductor(val informer: Option[Informer]){
   }
 
   /////////////////////// clock management start //////////////////////////
-
+  // TODO: Throw an illegalArgEx if they pass an int <= 0
+  // And document that the beat starts at zero
   /**
    * Blocks the current thread until the thread beat reaches the
    * specified value, at which point the current thread will be unblocked.
@@ -452,12 +453,15 @@ class Conductor(val informer: Option[Informer]){
     }
   }
 
+  // TODO: Grab strings from resources for all log messages
   private def waitForThread(t: Thread) {
     log("waiting for: " + t.getName + " which is in state:" + t.getState)
     try {
+      // TODO: Why is this stopping the threads too? Isn't the signalError approach sufficient?
+      // This one just kills them.
       if (t.isAlive && !errorsQueue.isEmpty) logAround("stopping: " + t) { t.stop() }
       else logAround("joining: " + t) { t.join() }
-      assert(t.getState == TERMINATED)
+      assert(t.getState == TERMINATED) // TODO: Drop this for the release
     } catch {
       case e: InterruptedException => {
         log("killed waiting for threads. probably deadlock or timeout.")
@@ -487,7 +491,7 @@ class Conductor(val informer: Option[Informer]){
 
 
   /**
-   * A Clock manages the current beat in a MultiThreadedTest.
+   * A Clock manages the current beat in a Conductor.
    * Several duties stem from that responsibility.
    *
    * The clock will:
@@ -670,7 +674,7 @@ class Conductor(val informer: Option[Informer]){
     private def runningTooLong = System.currentTimeMillis - lastProgress > 1000L * maxRunTime
 
     /**
-     * Stop the test tue to a timeout.
+     * Stop the test due to a timeout.
      */
     private def timeout() {
       val errorMessage = "Timeout! Test ran longer than " + maxRunTime + " seconds."
