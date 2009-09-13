@@ -61,31 +61,31 @@ trait ConductorMethods extends RunMethods { this: Suite =>
    */
   protected def thread[T](name: String)(f: => T): Thread = conductor.get.thread(name){ f }
 
-  /**
+  /*
    * Create a new thread that will execute the given Runnable
    * @param runnable the Runnable to be executed by the thread
    */
-  def thread[T](runnable: Runnable): Thread = conductor.get.thread(runnable)
+  // def thread[T](runnable: Runnable): Thread = conductor.get.thread(runnable)
 
-  /**
+  /*
    * Create a new thread that will execute the given Runnable
    * @param name the name of the thread
    * @param runnable the Runnable to be executed by the thread
    */
-  def thread[T](name: String, runnable: Runnable): Thread = conductor.get.thread(name,runnable)
+  // def thread[T](name: String, runnable: Runnable): Thread = conductor.get.thread(name,runnable)
 
-  /**
+  /*
    * Create a new thread that will execute the given Callable
    * @param callable the Callable to be executed by the thread
    */
-  def thread[T](callable: Callable[T]): Thread = conductor.get.thread(callable)
+  // def thread[T](callable: Callable[T]): Thread = conductor.get.thread(callable)
 
-  /**
+  /*
    * Create a new thread that will execute the given Callable
    * @param name the name of the thread
    * @param callable the Callable to be executed by the thread
    */
-  def thread[T](name: String, callable: Callable[T]): Thread = conductor.get.thread(name,callable)
+  // def thread[T](name: String, callable: Callable[T]): Thread = conductor.get.thread(name,callable)
 
   /**
    * Force the current thread to block until the thread clock reaches the
