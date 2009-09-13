@@ -64,15 +64,6 @@ import _root_.java.util.concurrent.atomic.AtomicReference
  */
 class Conductor {
 
-  /*
-   * Dropping this for 1.0.
-   * Creates a new <code>Conductor</code> that takes no <code>Informer</code> (<em>i.e.</em>,
-   * this auxiliary constructor passes <code>None</code> as the primary constructor's
-   * <code>informer</code> parameter).
-   *
-  def this() = this(None)
-   */
-
   /**
    * The metronome used to coordinate between threads.
    * This clock is advanced by the clock thread.
@@ -273,7 +264,7 @@ class Conductor {
   /////////////////////// error handling end //////////////////////////////
 
   /**
-   * Invokes <code>conduct</code> and after <code>conduct</code> returns,
+   * Invokes <code>conduct</code> and after <code>conduct</code> method returns,
    * if <code>conduct</code> returns normally (<em>i.e.</em>, without throwing
    * an exception), invokes the passed function.
    *
@@ -283,7 +274,15 @@ class Conductor {
    * function.
    * </p>
    *
+   * <p>
+   * This method must be called by the thread that instantiated this <code>Conductor</code>,
+   * and that same thread will invoke <code>conduct</code> and, if it returns noramlly, execute
+   * the passed function.
+   * </p>
+   *
    * @param fun the function to execute after <code>conduct</code> call returns
+   * @throws IllegalStateException if the calling thread is not the thread that
+   *   instantiated this <code>Conductor</code>
    */
   def whenFinished(fun: => Unit) {
     if (currentThread != mainThread)  // TODO: Get from resources

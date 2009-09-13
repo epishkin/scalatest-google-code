@@ -138,88 +138,8 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
   test("nested thread calls result in a running thread that is allowed to execute immediately") (pending)
 
-  // Ignoring the next four tests, because temporarily at least commented out
-  // the forms of thread that take runnables and callables.
-  ignore("runnables are run") { conductor => import conductor._
-    val r = new Runnable{
-      var runCount = 0
-      def run = { runCount += 1 }
-    }
-    thread(r)
-    whenFinished{ r.runCount should be (1) } // FAILING
-  }
-
-  // Josh, you have been neglecting to synchonize mutable variables shared by multiple
-  // threads. You must always synchronize these in some way. This test also failed
-  // intermittently. I will make the var volatile so that threads are guaranteed to
-  // see each others' changes.
-  ignore("runnables can wait for beats") { conductor => import conductor._
-    val r = new Runnable {
-      @volatile var runCount = 0
-      def run = {
-        waitForBeat(1)
-        runCount += 1
-      }
-    }
-    thread(r)
-    thread{ r.runCount should be (0) } // This failed even with the volatile. Is there a race condition?
-    whenFinished{ r.runCount should be (1) } // FAILING
-  }
-
-  ignore("callables are called") { conductor => import conductor._
-    val c = new Callable[Unit]{
-      var callCount = 0
-      def call = { callCount+=1 }
-    }
-    thread(c)
-    whenFinished{ c.callCount should be (1) } // FAILING
-  }
-
-
-  // Got a: 1 was not equal to 0 test failure, even with the var
-  ignore("callables can wait for beats") { conductor => import conductor._
-    val c = new Callable[Unit]{
-      @volatile var callCount = 0
-      def call = {
-        waitForBeat(1)
-        callCount+=1
-      }
-    }
-    thread(c)
-    thread{ c.callCount should be (0) } // This failed even with the volatile. Is there a race condition?
-    whenFinished{ c.callCount should be (1) }  // FAILING
-  }
-
   /////////////////////////////////////////////////
 
-  // One issue is whther ConductorMethods should have a conduct on it at all. Possibly not, but the trouble
-  // is then that Conductor does have this method, and ConductorMethods wouldn't be being completely honest.
-  // Also there would be something you could call in ConductorFixture that you couldn't call in ConductorMethods.
-  // So my feeling is go ahead and add it to be consistent, but I'm not sure. Please check also to see if there are any
-  // other public methods on Conductor that are not in ConductorMethods. If this is the only one, then probably we
-  // should add it.
-
-  // TODO: i dont think we should expose conduct on CM's. it just doesn't make sense.
-  // even if it is the only method that isn't exposed (still need to check) if it simply doesnt
-  // make sense to the api, and causes problems, then why add it?
-  // wed have to do MORE documentation if we add it than if we dont.
-
-
-  // For ConductorMethods (probably in a ConductorMethodsSuite)
-  // TODO: ask bill, dont think we should expose this in CM's
-  test("if conduct is called from within the test itself, the test still succeeds (in other words," +
-          "ConductorMethods doesn't call it if testWasConducted is true.") (pending)
-
-  // TODO: ask bill, dont think we should expose this in CM's
-  test("if conduct is not called from within the test itself, the test still executes (because " +
-         "ConductorMethods calls it given testWasConducted is false") (pending)
-
-  // TODO: ask bill, dont think we should expose this in CM's
-  // ConductorFixture  (probably in a ConductorMethodsSuite)
-  test("if conduct is called from within the test itself, the test still succeeds (in other words," +
-          "ConductorFixture doesn't call it if testWasConducted is true.") (pending)
-
-  // TODO: ask bill, dont think we should expose this in CM's
   test("if conduct is not called from within the test itself, the test still executes (because " +
          "ConductorFixture calls it given testWasConducted is false") (pending)
 
