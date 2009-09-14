@@ -29,8 +29,8 @@ import _root_.java.util.concurrent.Callable
  * </p>
  *
  * <pre>
- * import org.scalatest.fixture.FixtureFunSuite
- * import org.scalatest.concurrent.ConductorFixture
+ * import org.scalatest.FunSuite
+ * import org.scalatest.concurrent.ConductorMethods
  * import org.scalatest.matchers.ShouldMatchers
  * import java.util.concurrent.ArrayBlockingQueue
  *
@@ -56,8 +56,33 @@ import _root_.java.util.concurrent.Callable
  *       buf should be ('empty)
  *     }
  *   }
+ *
+ *   test("calling take on an empty queue blocks the consumer thread") {
+ *
+ *     val buf = new ArrayBlockingQueue[Int](1)
+ *
+ *     thread("producer") {
+ *       waitForBeat(1)
+ *       buf put 42
+ *       buf put 17
+ *     }
+ *
+ *     thread("consumer") {
+ *       buf.take should be (42)
+ *       buf.take should be (17)
+ *       beat should be (1)
+ *     }
+ *
+ *     whenFinished {
+ *       buf should be ('empty)
+ *     }
+ *   }
  * }
  * </pre>
+ *
+ * <p>
+ * For an explanation of how these tests work, see the documentation for <a href="Conductor.html"><code>Conductor</code></a>.
+ * </p>
  *
  * @author Josh Cough
  * @author Bill Venners
