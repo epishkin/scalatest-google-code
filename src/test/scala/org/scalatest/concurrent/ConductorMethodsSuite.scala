@@ -1,5 +1,6 @@
 package org.scalatest.concurrent
 
+import org.scalatest._
 import matchers.ShouldMatchers
 import _root_.java.util.concurrent.{Callable, CountDownLatch}
 import Thread.State._

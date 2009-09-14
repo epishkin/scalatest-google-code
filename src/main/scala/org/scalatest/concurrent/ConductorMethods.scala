@@ -15,7 +15,8 @@
  */
 package org.scalatest.concurrent
 
-import events._
+import org.scalatest._
+import org.scalatest.events._
 import java.util.concurrent.atomic.AtomicReference
 import _root_.java.util.concurrent.Callable
 
