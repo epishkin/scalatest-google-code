@@ -56,8 +56,33 @@ import fixture.{ConfigMapFixture, FixtureSuite}
  *       buf should be ('empty)
  *     }
  *   }
+ *
+ *   test("calling take on an empty queue blocks the consumer thread") { (conductor: Conductor) => import conductor._
+ *
+ *     val buf = new ArrayBlockingQueue[Int](1)
+ *
+ *     thread("producer") {
+ *       waitForBeat(1)
+ *       buf put 42
+ *       buf put 17
+ *     }
+ *
+ *     thread("consumer") {
+ *       buf.take should be (42)
+ *       buf.take should be (17)
+ *       beat should be (1)
+ *     }
+ *
+ *     whenFinished {
+ *       buf should be ('empty)
+ *     }
+ *   }
  * }
  * </pre>
+ *
+ * <p>
+ * For an explanation of how these tests work, see the documentation for <a href="Conductor.html"><code>Conductor</code></a>.
+ * </p>
  *
  * @author Bill Venners
  */
