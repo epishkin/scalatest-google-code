@@ -1,4 +1,4 @@
-ScalaTest 1.0-Snapshot
+ScalaTest 1.0-SNAPSHOT
 
 ScalaTest is a free, open-source testing toolkit for Scala and
 Java programmers.  Because different developers take different approaches to creating
