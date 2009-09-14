@@ -22,19 +22,20 @@ import _root_.java.util.concurrent._
 import _root_.java.util.concurrent.atomic.AtomicReference
 
 /**
- * Class that facilitates the testing of classes, traits, and systems designed
+ * Class that facilitates the testing of classes, traits, and libraries designed
  * to be used by multiple threads concurrently.
  *
  * <p>
- * A <code>Conductor</code> conducts a multi-threaded test by maintaining
+ * A <code>Conductor</code> conducts a multi-threaded scenario by maintaining
  * a clock of "beats." Beats are numbered starting with 0. You can ask a
- * <code>Conductor</code> to run threads that interact with the concurrency
- * abstraction you want to test. A thread can call the <code>Conductor</code>'s
+ * <code>Conductor</code> to run threads that interact with the class, trait,
+ * or library (the <em>subject</em>)
+ * you want to test. A thread can call the <code>Conductor</code>'s
  * <code>waitForBeat</code> method, which will cause the thread to block
  * until that beat has been reached. The <code>Conductor</code> will advance
  * the beat only when all threads participating in the test are blocked. By
  * tying the timing of thread activities to specific beats, you can write
- * tests for concurrent systems that have specific interleavings of
+ * tests for concurrent systems that have deterministic interleavings of
  * threads.
  * </p>
  *
@@ -44,13 +45,187 @@ import _root_.java.util.concurrent.atomic.AtomicReference
  * invoking the <code>thread</code> method on the <code>Conductor</code>.
  * When <code>conduct</code> is invoked on a <code>Conductor</code>, it enters
  * the <em>conducting</em> phase. During this phase it conducts the one multi-threaded
- * test it was designed to conduct. After all participating threads have exited, either by
+ * scenario it was designed to conduct. After all participating threads have exited, either by
  * returning normally or throwing an exception, the <code>conduct</code> method
  * will complete, either by returning normally or throwing an exception. As soon as
  * the <code>conduct</code> method completes, the <code>Conductor</code>
  * enters its <em>defunct</em> phase. Once the <code>Conductor</code> has conducted
- * a multi-threaded test, it is defunct and can't be reused. To run the same test again,
+ * a multi-threaded scenario, it is defunct and can't be reused. To run the same test again,
  * you'll need to create a new instance of <code>Conductor</code>.
+ * </p>
+ *
+ * <p>
+ * Here's an example of the use of <code>Conductor</code> to test the <code>ArrayBlockingQueue</code>
+ * class from <code>java.util.concurrent</code>:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FunSuite
+ * import org.scalatest.matchers.ShouldMatchers
+ * import java.util.concurrent.ArrayBlockingQueue
+ *
+ * class ArrayBlockingQueueSuite extends FunSuite with ShouldMatchers {
+ * 
+ *   test("calling put on a full queue blocks the producer thread") {
+ *
+ *     val conductor = new Conductor
+ *     import conductor._
+ *
+ *     val buf = new ArrayBlockingQueue[Int](1)
+ * 
+ *     thread("producer") {
+ *       buf put 42
+ *       buf put 17
+ *       beat should be (1)
+ *     }
+ * 
+ *     thread("consumer") {
+ *       waitForBeat(1)
+ *       buf.take should be (42)
+ *       buf.take should be (17)
+ *     }
+ * 
+ *     whenFinished {
+ *       buf should be ('empty)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * When the test shown is run, it will create one thread named <em>producer</em> and another named
+ * <em>consumer</em>. The producer thread will eventually execute the code passed as a by-name
+ * parameter to <code>thread("producer")</code>:
+ * </p>
+ *
+ * <pre>
+ * buf put 42
+ * buf put 17
+ * beat should be (1)
+ * </pre>
+ *
+ * Similarly, the consumer thread will eventually execute the code passed as a by-name parameter
+ * to <code>thread("consumer")</code>:
+ * </p>
+ *
+ * <pre>
+ * waitForBeat(1)
+ * buf.take should be (42)
+ * buf.take should be (17)
+ * </pre>
+ *
+ * <p>
+ * The <code>thread</code> calls create the threads and starts them, but they will not immediately
+ * execute the by-name parameter passed to them. They will first block, waiting for the <code>Conductor</code>
+ * to give them a green light to proceed.
+ * </p>
+ *
+ * <p>
+ * The next call in the test is <code>whenFinished</code>. This method will first call <code>conduct</code> on
+ * the <code>Conductor</code>, which will wait until all threads that were created (in this case, producer and consumer) are
+ * at the "starting line", <em>i.e.</em>, they have all started and are blocked, waiting on the green light.
+ * The <code>conduct</code> method will then give these threads the green light and they will
+ * all start executing their blocks concurrently.
+ * </p>
+ * 
+ * <p>
+ * When the threads are given the green light, the beat is 0. The first thing the producer thread does is put 42 in
+ * into the queue. As the queue is empty at this point, this succeeds. The producer thread next attempts to put a 17
+ * into the queue, but because the queue has size 1, this can't succeed until the consumer thread has read the 42
+ * from the queue. This hasn't happened yet, so producer blocks. Meanwhile, the consumer thread's first act is to
+ * call <code>waitForBeat(1)</code>. Because the beat starts out at 0, this call will block the consumer thread.
+ * As a result, once the producer thread has executed <code>buf put 17</code> and the consumer thread has executed
+ * <code>waitForBeat(1)</code>, both threads will be blocked.
+ * </p>
+ *
+ * <p>
+ * The <code>Conductor</code> maintains a clock that wakes up periodically and checks to see if all threads
+ * participating in the multi-threaded scenario (in this case, producer and consumer) are blocked. If so, it
+ * increments the beat. Thus sometime later the beat will be incremented, from 0 to 1. Because consumer was
+ * waiting for beat 1, it will wake up (<em>i.e.</em>, the <code>waitForBeat(1)</code> call will return) and
+ * execute the next line of code in its block, <code>buf.take should be (42)</code>. This will succeed, because
+ * the producer thread had previously (during beat 0) put 42 into the queue. This act will also make
+ * producer runnable again, because it was blocked on the second <code>put</code>, which was waiting for another
+ * thread to read that 42.
+ * </p>
+ *
+ * <p>
+ * Now both threads are unblocked and able to execute their next statement. The order is
+ * non-deterministic, and can even be simultaneous if running on multiple cores. If the <code>consumer</code> thread
+ * happens to execute <code>buf.take should be (17)</code> first, it will block (<code>buf.take</code> will not return), because the queue is
+ * at that point empty. At some point later, the producer thread will execute <code>buf put 17</code>, which will
+ * unblock the consumer thread. Again both threads will be runnable and the order non-deterministic and
+ * possibly simulataneous. The producer thread may charge ahead and run its next statement, <code>beat should be (1)</code>.
+ * This will succeed because the beat is indeed 1 at this point. As this is the last statement in the producer's block,
+ * the producer thread will exit normally (it won't throw an exception). At some point later the consumer thread will
+ * be allowed to complete its last statement, the <code>buf.take</code> call will return 17. The consumer thread will
+ * execute <code>17 should be (17)</code>. This will succeed and as this was the last statement in its block, the consumer will return
+ * normally.
+ * </p>
+ *
+ * <p>
+ * If either the producer or consumer thread had completed abruptbly with an exception, the <code>conduct</code> method
+ * (which was called by <code>whenFinished</code>) would have completed abruptly with an exception to indicate the test
+ * failed. However, since both threads returned normally, <code>conduct</code> will return. Because <code>conduct</code> doesn't
+ * throw an exception, <code>whenFinished</code> will execute the block of code passed as a by-name parameter to it: <code>buf should be ('empty)</code>.
+ * This will succeed, because the queue is indeed empty at this point. The <code>whenFinished</code> method will then return, and
+ * because the <code>whenFinished</code> call was the last statement in the test and it didn't throw an exception, the test completes successfully.
+ * </p>
+ *
+ * <p>
+ * This test tests <code>ArrayBlockingQueue</code>, to make sure it works as expected. If there were a bug in <code>ArrayBlockingQueue</code>
+ * such as a <code>put</code> called on a full queue didn't block, but instead overwrote the previous value, this test would detect
+ * it. However, if there were a bug in <code>ArrayBlockingQueue</code> such that a call to <code>take</code> called on an empty queue
+ * never blocked and always returned 0, this test might not detect it. The reason is that whether the consumer thread will ever call
+ * <code>take</code> on an empty queue during this test is non-deterministic. It depends on how the threads get scheduled during beat 1.
+ * What is deterministic in this test, because the consumer thread blocks during beat 0, is that the producer thread will definitely 
+ * attempt to write to a full queue. To make sure the other scenario is tested, you'd need a different test:
+ * </p>
+ *
+ * <pre>
+ * test("calling take on an empty queue blocks the consumer thread") {
+ *
+ *   val conductor = new Conductor
+ *   import conductor._
+ *
+ *   val buf = new ArrayBlockingQueue[Int](1)
+ *
+ *   thread("producer") {
+ *     waitForBeat(1)
+ *     buf put 42
+ *     buf put 17
+ *   }
+ *
+ *   thread("consumer") {
+ *     buf.take should be (42)
+ *     buf.take should be (17)
+ *     beat should be (1)
+ *   }
+ *
+ *   whenFinished {
+ *     buf should be ('empty)
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * In this test, the producer thread will block, waiting for beat 1. The consumer thread will invoke <code>buf.take</code>
+ * as its first act. This will block, because the queue is empty. Because both threads are blocked, the <code>Conductor</code>
+ * will at some point later increment the beat to 1. This will awaken the producer thread. It will return from its
+ * <code>waitForBeat(1)</code> call and execute <code>buf put 42</code>. This will unblock the consumer thread, which will
+ * take the 42, and so on.
+ * </p>
+ *
+ * <p>
+ * The problem that <code>Conductor</code> is designed to address is the difficulty, caused by the non-deterministic nature
+ * of thread scheduling, of testing classes, traits, and libraries that are intended to be used by multiple threads.
+ * If you just create a test in which one thread reads from an <code>ArrayBlockingQueue</code> and
+ * another writes to it, you can't be sure that you have tested all possible interleavings of threads, no matter
+ * how many times you run the test. The purpose of <code>Conductor</code>
+ * is to enable you to write tests with deterministic interleavings of threads. If you write one test for each possible
+ * interleaving of threads, then you can be sure you have all the scenarios tested. The two tests shown here, for example,
+ * ensure that both the scenario in which a producer thread tries to write to a full queue and the scenario in which a
+ * consumer thread tries to take from an empty queue are tested.
  * </p>
  *
  * <p>
@@ -404,7 +579,7 @@ class Conductor {
    * This method returns true if either <code>conduct</code> method has been invoked. The
    * <code>conduct</code> method may have returned or not. (In other words, a <code>true</code>
    * result from this method does not mean the <code>conduct</code> method has returned,
-   * just that it was already been invoked and,therefore, the multi-threaded test it
+   * just that it was already been invoked and,therefore, the multi-threaded scenario it
    * conducts has definitely begun.)
    * </p>
    */
@@ -630,7 +805,7 @@ class Conductor {
   }
 
   /**
-   * The clock thread is the manager of the multi-threaded test.
+   * The clock thread is the manager of the multi-threaded scenario.
    * Periodically checks all the test threads and regulates them.
    * If all the threads are blocked and at least one is waiting for a beat,
    * the clock advances to the next beat and all waiting threads are notified.
