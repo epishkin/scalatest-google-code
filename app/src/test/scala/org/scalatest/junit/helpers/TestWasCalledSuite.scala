@@ -15,6 +15,9 @@
  */
 package org.scalatest.junit.helpers
 
+import org.scalatest._
+import org.scalatest.junit._
+
 // This needs to be top level, not nested, because JUnit3 can't instantiate it
 // to run each test in its own instance if it is nested (no no-arg construtor).
 class TestWasCalledSuite extends JUnit3Suite {

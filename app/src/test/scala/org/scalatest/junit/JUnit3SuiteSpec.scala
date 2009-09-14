@@ -15,6 +15,7 @@
  */
 package org.scalatest.junit
 
+import org.scalatest._
 import collection.immutable.TreeSet
 import helpers._
 import org.scalatest.events._
