@@ -38,7 +38,7 @@ import fixture.{ConfigMapFixture, FixtureSuite}
  * 
  *   test("calling put on a full queue blocks the producer thread") { (conductor: Conductor) => import conductor._
  *
- *     @volatile val buf = new ArrayBlockingQueue[Int](1)
+ *     val buf = new ArrayBlockingQueue[Int](1)
  * 
  *     thread("producer") {
  *       buf put 42

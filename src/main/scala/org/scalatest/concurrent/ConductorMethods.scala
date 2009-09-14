@@ -20,23 +20,47 @@ import java.util.concurrent.atomic.AtomicReference
 import _root_.java.util.concurrent.Callable
 
 /**
- * A Scala port of <a href="http://code.google.com/p/multithreadedtc/">MultithreadedTC</a>
- * (also <a href="http://www.cs.umd.edu/projects/PL/multithreadedtc/overview.html">here</a>)
- * which was built by Bill Pugh and Nat Ayewah at the University of Maryland.
+ * Trait that provides each test with access to a new <code>Conductor</code> 
+ * via methods.
  *
- * <blockquote>"The MultithreadedTC framework was created to make it easier to test small concurrent abstractions.
- * It enables test designers to guarantee a specific interleaving of two or more threads,
- * even in the presence of blocking and timing issues."</blockquote>
+ * <p>
+ * Here's an example of the use of this trait to test the <code>ArrayBlockingQueue</code>
+ * concurrency abstraction from <code>java.util.concurrent</code>:
+ * </p>
  *
- * <blockquote>"MultithreadedTC is a framework for testing concurrent applications.
- * It features a metronome that is used to provide fine control over the sequence
- * of activities in multiple threads."</blockquote>
+ * <pre>
+ * import org.scalatest.fixture.FixtureFunSuite
+ * import org.scalatest.concurrent.ConductorFixture
+ * import org.scalatest.matchers.ShouldMatchers
+ * import java.util.concurrent.ArrayBlockingQueue
  *
- * The Scala version offers significant API improvements over the original Java version,
- * while maintaining most of the intent. Some original ideas were introduced, while some
- * non-scala-like features were cut.  
+ * class ArrayBlockingQueueSuite extends FunSuite with ConductorMethods with ShouldMatchers {
+ * 
+ *   test("calling put on a full queue blocks the producer thread") {
+ *
+ *     val buf = new ArrayBlockingQueue[Int](1)
+ * 
+ *     thread("producer") {
+ *       buf put 42
+ *       buf put 17
+ *       beat should be (1)
+ *     }
+ * 
+ *     thread("consumer") {
+ *       waitForBeat(1)
+ *       buf.take should be (42)
+ *       buf.take should be (17)
+ *     }
+ * 
+ *     whenFinished {
+ *       buf should be ('empty)
+ *     }
+ *   }
+ * }
+ * </pre>
  *
  * @author Josh Cough
+ * @author Bill Venners
  */
 trait ConductorMethods extends RunMethods { this: Suite =>
 
