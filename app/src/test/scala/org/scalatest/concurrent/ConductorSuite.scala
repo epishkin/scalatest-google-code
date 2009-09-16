@@ -75,13 +75,19 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     }
   }
 
-  test("if whenFinished is called twice on the same conductor, an IllegalStateException is thrown that explains it " +
+  test("if whenFinished is called twice on the same conductor, a NotAllowedException is thrown that explains it " +
           "can only be called once") {
     val conductor = new Conductor    
     conductor.whenFinished { 1 should be (1) }
-    intercept[IllegalStateException] {
-      conductor.whenFinished { 1 should be (1) }
-    }.getMessage should be ("Cannot invoke whenFinished after conduct (which is called by whenFinished) has been invoked.")
+    val caught =
+      intercept[NotAllowedException] {
+        conductor.whenFinished { 1 should be (1) }
+      }
+    caught.getMessage should be ("Cannot invoke whenFinished after conduct (which is called by whenFinished) has been invoked.")
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 60))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
   }
 
   test("if thread(String) is called twice with the same String name, the second invocation results " +
@@ -96,7 +102,7 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
       }
     caught.getMessage should be ("Cannot register two threads with the same name. Duplicate name: Fiesta del Mar.")
     caught.failedCodeFileNameAndLineNumberString match {
-      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 71))
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 77))
       case None => fail("Didn't produce a file name and line number string: ", caught)
     }
   }

@@ -484,7 +484,7 @@ class Conductor {
       throw new IllegalStateException("whenFinished can only be called by the thread that created Conductor.")
 
     if (conductingHasBegun)
-      throw new IllegalStateException(Resources("cannotInvokeWhenFinishedAfterConduct"))
+      throw new NotAllowedException(Resources("cannotInvokeWhenFinishedAfterConduct"), getStackDepth("Conductor.scala", "whenFinished"))
     
     conduct()
 
