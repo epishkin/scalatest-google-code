@@ -317,7 +317,8 @@ class Conductor {
    */
   def thread[T](name: String)(fun: => T): Thread = {
     currentState.get match {
-      case TestFinished => throw new IllegalStateException(Resources("threadCalledAfterConductingHasCompleted"))
+      case TestFinished =>
+        throw new NotAllowedException(Resources("threadCalledAfterConductingHasCompleted"), getStackDepth("Conductor.scala", "thread"))
       case _ =>
         if (threadNames contains name)
           throw new NotAllowedException(Resources("cantRegisterThreadsWithSameName", name), getStackDepth("Conductor.scala", "thread"))
