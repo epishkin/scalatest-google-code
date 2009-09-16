@@ -45,20 +45,20 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     conductor.conductingHasBegun should be (true)
   }
 
-  test("if thread {} is called after the test has been conducted, it throws an IllegalStateException" +
+  test("if thread {} is called after the test has been conducted, it throws an NotAllowedException" +
            "with a detail message that explains the problem") {
     val conductor = new Conductor
     conductor.conduct
-    intercept[IllegalStateException] {
+    intercept[NotAllowedException] {
       conductor.thread("name") { 1 should be (1) }
     }.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
   }
 
-  test("if thread(String) {} is called after the test has been conducted, it throws IllegalStateException" +
+  test("if thread(String) {} is called after the test has been conducted, it throws NotAllowedException" +
           "with a detail message that explains the problem"){
     val conductor = new Conductor    
     conductor.conduct
-    intercept[IllegalStateException] {
+    intercept[NotAllowedException] {
       conductor.thread("name") { 1 should be (1) }
     }.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
   }
