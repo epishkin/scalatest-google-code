@@ -165,8 +165,14 @@ trait ConductorMethods extends RunMethods { this: Suite =>
   /**
    * Register a function to be executed after the simulation has finished.
    */
-  protected def whenFinished(f: => Unit) = conductor.get.whenFinished{ f }
+  protected def whenFinished(fun: => Unit) = conductor.get.whenFinished{ fun }
 
+  /**
+   * Creates and initializes a private instance variable with a new Conductor,
+   * ensuring it is visible to any thread, invokes the passed test function,
+   * and invokes <code>conduct</code> on the <code>Conductor</code>, if it
+   * was not already invoked by the test.
+   */
   override def withFixture(test: NoArgTest) {
     conductor.compareAndSet(conductor.get, new Conductor)
     test()

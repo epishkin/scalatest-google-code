@@ -107,6 +107,30 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     }
   }
 
+  test("waitForBeat throws NotAllowedException if is called with zero or a negative number") {
+    val conductor = new Conductor
+    val caught =
+      intercept[NotAllowedException] {
+        conductor.waitForBeat(0)
+      }
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 90))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
+    val caught2 =
+      intercept[NotAllowedException] {
+        conductor.waitForBeat(-1)
+      }
+    caught2.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 98))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
+  }
+
+  test("If a non-positive number is passed to conduct for clockPeriod, it will throw NotAllowedException") (pending)
+
+  test("If a non-positive number is passed to conduct for runLimit, it will throw NotAllowedException") (pending)
+
  // TODO: I think withConductorFrozen may just be returning a function rather
  // than executing it? Judging from the inferred result type. Write a test
  // that makes sure the function actually gets invoked before withConductorFrozen
