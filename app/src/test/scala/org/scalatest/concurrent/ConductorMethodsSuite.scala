@@ -145,7 +145,6 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
   test("the test still executes (because " +
          "ConductorMethods calls conduct)") (pending)
 
-  test("waitForBeat throws IllegalArgumentException if is called with a negative number") (pending)
 
   test("calling withConductorFrozen by two threads or twice will not screw things up. In other words, " +
           "whether or not the conductor is frozen should probably be a counting semaphor, not a flag") (pending)

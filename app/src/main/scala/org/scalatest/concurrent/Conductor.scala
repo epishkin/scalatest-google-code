@@ -474,14 +474,14 @@ class Conductor {
    * </p>
    *
    * @param fun the function to execute after <code>conduct</code> call returns
-   * @throws IllegalStateException if the calling thread is not the thread that
+   * @throws NotAllowedException if the calling thread is not the thread that
    *   instantiated this <code>Conductor</code>, or if <code>conduct</code> has already
    *    been invoked on this conductor.
    */
   def whenFinished(fun: => Unit) {
 
     if (currentThread != mainThread)  // TODO: Get from resources, write a test
-      throw new IllegalStateException("whenFinished can only be called by the thread that created Conductor.")
+      throw new NotAllowedException("whenFinished can only be called by the thread that created Conductor.", getStackDepth("Conductor.scala", "whenFinished"))
 
     if (conductingHasBegun)
       throw new NotAllowedException(Resources("cannotInvokeWhenFinishedAfterConduct"), getStackDepth("Conductor.scala", "whenFinished"))
@@ -492,16 +492,20 @@ class Conductor {
   }
 
   /////////////////////// clock management start //////////////////////////
-  // TODO: Throw an illegalArgEx if they pass an int <= 0
-  // And document that the beat starts at zero
-  // or actually a beat less than the current beat, right? That would wait forever.
   /**
    * Blocks the current thread until the thread beat reaches the
    * specified value, at which point the current thread will be unblocked.
    *
    * @param beat the tick value to wait for
+   * @throws NotAllowedException if the a <code>beat</code> less than or equal to zero is passed
    */
-  def waitForBeat(beat: Int) { clock waitForBeat beat }
+  def waitForBeat(beat: Int) {
+    if (beat == 0)
+      throw new NotAllowedException(Resources("cannotWaitForBeatZero"), getStackDepth("Conductor.scala", "waitForBeat")) 
+    if (beat < 0)
+      throw new NotAllowedException(Resources("cannotWaitForNegativeBeat"), getStackDepth("Conductor.scala", "waitForBeat")) 
+    clock waitForBeat beat
+  }
 
   /**
    * The current value of the thread clock.
@@ -611,13 +615,25 @@ class Conductor {
 
   /**
    * Conducts a multithreaded test with the specified clock period (in milliseconds)
-   * and run limit (in seconds).
+   * and timeout (in seconds).
    *
-   * @param clockPeriod The period (in ms) between checks for the clock
-   * @param runLimit The limit to run the test in seconds
-   * @throws Throwable The first error or exception that is thrown by one of the threads
+   * <p>
+   * A <code>Conductor</code> instance maintains an internal clock, which will wake up
+   * periodically and check to see if it should advance the beat, abort the test, or go back to sleep.
+   * It sleeps <code>clockPeriod</code> milliseconds each time. It will abort the test
+   * if either deadlock is suspected or the beat has not advanced for the number of
+   * seconds specified as <code>timeout</code>. Suspected deadlock will be declared if
+   * for some number of consecutive clock cycles, all test threads are in the <code>BLOCKED</code> or
+   * <code>WAITING</code> states and none of them are waiting for a beat.
+   * </p>
+   *
+   * @param clockPeriod The period (in ms) the clock will sleep each time it sleeps
+   * @param timeout The maximum allowed time between successive advances of the beat. If this time
+   *    is exceeded, the Conductor will abort the test.
+   * @throws Throwable The first error or exception that is thrown by one of the test threads, or
+   *    a <code>TestFailedException</code> if the test was aborted due to a timeout or suspected deadlock.
    */
-  def conduct(clockPeriod: Int, runLimit: Int) {
+  def conduct(clockPeriod: Int, timeout: Int) {
 
     // if the test was started already, explode
     // otherwise, change state to TestStarted                          
@@ -635,7 +651,7 @@ class Conductor {
     greenLightForTestThreads.countDown()
 
     // start the clock thread
-    val clockThread = startThread(ClockThread(clockPeriod, runLimit))
+    val clockThread = startThread(ClockThread(clockPeriod, timeout))
 
     // wait until all threads have ended
     waitForThreads
@@ -886,16 +902,32 @@ class Conductor {
      * Runs the steps described above.
      */
     override def run {
+      
+      // While there are threads that are not NEW or TERMINATED. (A thread is
+      // NEW after it has been instantiated, but run() hasn't been called yet.)
+      // So this means there are threads that are RUNNABLE, BLOCKED, WAITING, or
+      // TIMED_WAITING. (BLOCKED is waiting for a lock. WAITING is in the wait set.)
       while (threadGroup.areAnyThreadsAlive) {
+
+        // If any threads are in the RUNNABLE state, just check to see if there's been
+        // no progress for more than the timeout amount of time. If RUNNABLE threads
+        // exist, but the timeout limit has not been reached, then just go
+        // back to sleep.
         if (threadGroup.areAnyThreadsRunning) {
           if (runningTooLong) timeout()
         }
+        // No RUNNABLE threads, so if any threads are waiting for a beat, advance
+        // the beat.
         else if (clock.isAnyThreadWaitingForABeat) {
           clock.advance()
           deadlockCount = 0
           lastProgress = System.currentTimeMillis
         }
         else if (!threadGroup.areAnyThreadsInTimedWaiting) {
+          // At this point, no threads are RUNNABLE, None
+          // are waiting for a beat, and none are in TimedWaiting.
+          // If this persists for MaxDeadlockDetectionsBeforeDeadlock,
+          // go ahead and abort.
           detectDeadlock()
         }
         Thread sleep clockPeriod
