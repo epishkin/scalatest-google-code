@@ -21,6 +21,8 @@ import Thread.State._
 
 class ConductorSuite extends FunSuite with ShouldMatchers {
 
+  val baseLineNumber = 24
+
   test("if conduct is called twice, the second time it throws an IllegalStateException") {
     val conductor = new Conductor
     conductor.conduct()
@@ -57,17 +59,32 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
   }
 
   test("if whenFinished is called twice on the same conductor, an IllegalStateException is thrown that explains it " +
-          "can only be called once"){
+          "can only be called once") {
     val conductor = new Conductor    
-    conductor.whenFinished{ 1 should be (1) }
+    conductor.whenFinished { 1 should be (1) }
     intercept[IllegalStateException] {
-      conductor.whenFinished{ 1 should be (1) }
+      conductor.whenFinished { 1 should be (1) }
     }.getMessage should be ("Cannot invoke whenFinished after conduct (which is called by whenFinished) has been invoked.")
   }
 
-  test("if thread(String) is called twice with the same String name, the second invocation results" +
-          "in an IllegalArgumentException that explains each thread in a multi-threaded test" +
-          "must have a unique name") (pending)
+  test("if thread(String) is called twice with the same String name, the second invocation results " +
+          "in an IllegalArgumentException that explains each thread in a multi-threaded test " +
+          "must have a unique name") {
+
+    val conductor = new Conductor
+    conductor.thread("Fiesta del Mar") { 1 should be (1) }
+    val caught =
+      intercept[NotAllowedException] {
+        conductor.thread("Fiesta del Mar") { 2 should be (2) }
+      }
+    caught.getMessage should be ("Cannot register two threads with the same name. Duplicate name: Fiesta del Mar.")
+
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 54))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
+
+  }
 
  // TODO: I think withConductorFrozen may just be returning a function rather
  // than executing it? Judging from the inferred result type. Write a test

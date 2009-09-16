@@ -20,6 +20,7 @@ import Thread.State._
 import PimpedThreadGroup._
 import _root_.java.util.concurrent._
 import _root_.java.util.concurrent.atomic.AtomicReference
+import org.scalatest.StackDepthExceptionHelper.getStackDepth
 
 /**
  * Class that facilitates the testing of classes, traits, and libraries designed
@@ -256,6 +257,10 @@ class Conductor {
   // that stays forever. Because it is final, it 
   private final val threads = new CopyOnWriteArrayList[Thread]()
 
+  // Used to keep track of what names have been created so far, so that
+  // it can be enforced that the names are unique.
+  private final val threadNames = new CopyOnWriteArrayList[String]()
+
   // the main test thread
   private final val mainThread = currentThread
 
@@ -314,8 +319,11 @@ class Conductor {
     currentState.get match {
       case TestFinished => throw new IllegalStateException(Resources("threadCalledAfterConductingHasCompleted"))
       case _ =>
+        if (threadNames contains name)
+          throw new NotAllowedException(Resources("cantRegisterThreadsWithSameName", name), getStackDepth("Conductor.scala", "thread"))
         val t = TestThread(name, fun _)
         threads add t
+        threadNames add name
         startThread(t)
     }
   }
@@ -471,7 +479,7 @@ class Conductor {
    */
   def whenFinished(fun: => Unit) {
 
-    if (currentThread != mainThread)  // TODO: Get from resources
+    if (currentThread != mainThread)  // TODO: Get from resources, write a test
       throw new IllegalStateException("whenFinished can only be called by the thread that created Conductor.")
 
     if (conductingHasBegun)
@@ -485,6 +493,7 @@ class Conductor {
   /////////////////////// clock management start //////////////////////////
   // TODO: Throw an illegalArgEx if they pass an int <= 0
   // And document that the beat starts at zero
+  // or actually a beat less than the current beat, right? That would wait forever.
   /**
    * Blocks the current thread until the thread beat reaches the
    * specified value, at which point the current thread will be unblocked.
