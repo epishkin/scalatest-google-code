@@ -129,14 +129,15 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     }
   }
 
-  ignore("If a non-positive number is passed to conduct for clockPeriod, it will throw NotAllowedException") {
+  test("If a non-positive number is passed to conduct for clockPeriod, it will throw NotAllowedException") {
     val conductor = new Conductor
     val caught =
       intercept[NotAllowedException] {
         conductor.conduct(0, 100)
       }
+    caught.getMessage should be ("The clockPeriod passed to conduct must be greater than zero. Value passed was: 0.")
     caught.failedCodeFileNameAndLineNumberString match {
-      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 111))
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 112))
       case None => fail("Didn't produce a file name and line number string: ", caught)
     }
     val caught2 =
@@ -144,9 +145,10 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
         conductor.conduct(-1, 100)
       }
     caught2.failedCodeFileNameAndLineNumberString match {
-      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 98))
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 121))
       case None => fail("Didn't produce a file name and line number string: ", caught)
     }
+    caught2.getMessage should be ("The clockPeriod passed to conduct must be greater than zero. Value passed was: -1.")
   }
 
   test("If a non-positive number is passed to conduct for runLimit, it will throw NotAllowedException") (pending)
