@@ -635,6 +635,9 @@ class Conductor {
    */
   def conduct(clockPeriod: Int, timeout: Int) {
 
+    if (clockPeriod <= 0)
+      throw new NotAllowedException(Resources("cannotPassNonPositiveClockPeriod", clockPeriod.toString), getStackDepth("Conductor.scala", "conduct"))
+    
     // if the test was started already, explode
     // otherwise, change state to TestStarted                          
     if (conductingHasBegun)
