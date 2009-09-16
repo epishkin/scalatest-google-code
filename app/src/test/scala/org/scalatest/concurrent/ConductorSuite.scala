@@ -23,10 +23,15 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
 
   val baseLineNumber = 24
 
-  test("if conduct is called twice, the second time it throws an IllegalStateException") {
+  test("if conduct is called twice, the second time it throws an NotAllowedException") {
     val conductor = new Conductor
     conductor.conduct()
-    intercept[IllegalStateException] { conductor.conduct() }
+    val caught = intercept[NotAllowedException] { conductor.conduct() }
+    caught.getMessage should be ("A Conductor's conduct method can only be invoked once.")
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 5))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
   }
 
   test("if conduct has not been called, conductingHasBegun should return false"){
@@ -78,12 +83,10 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
         conductor.thread("Fiesta del Mar") { 2 should be (2) }
       }
     caught.getMessage should be ("Cannot register two threads with the same name. Duplicate name: Fiesta del Mar.")
-
     caught.failedCodeFileNameAndLineNumberString match {
-      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 54))
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 59))
       case None => fail("Didn't produce a file name and line number string: ", caught)
     }
-
   }
 
  // TODO: I think withConductorFrozen may just be returning a function rather

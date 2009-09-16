@@ -619,9 +619,11 @@ class Conductor {
   def conduct(clockPeriod: Int, runLimit: Int) {
 
     // if the test was started already, explode
-    // otherwise, change state to TestStarted                           // TODO: Grab from resources
-    if (conductingHasBegun) throw new IllegalStateException("A Conductor's multi-threaded scenario can only be tested once!")
-    else currentState set TestStarted
+    // otherwise, change state to TestStarted                          
+    if (conductingHasBegun)
+      throw new NotAllowedException(Resources("cannotCallConductTwice"), getStackDepth("Conductor.scala", "conduct"))
+    else
+      currentState set TestStarted
 
     // wait until all threads are definitely ready to go
     // mainThreadStartLatch.await()  RACE CONDITION
