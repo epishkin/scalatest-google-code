@@ -27,12 +27,12 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     intercept[IllegalStateException] { conductor.conduct() }
   }
 
-  test("if conduct has not been called, testWasStarted should return false"){
+  test("if conduct has not been called, conductingHasBegun should return false"){
     val conductor = new Conductor
     conductor.conductingHasBegun should be (false)
   }
 
-  test("if conduct has been called, testWasStarted should return true") {
+  test("if conduct has been called, conductingHasBegun should return true") {
     val conductor = new Conductor
     conductor.conduct
     conductor.conductingHasBegun should be (true)
@@ -43,8 +43,8 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     val conductor = new Conductor
     conductor.conduct
     intercept[IllegalStateException] {
-      conductor.thread("name"){ 1 should be (1) }
-    }.getMessage should be ("Test already completed.")
+      conductor.thread("name") { 1 should be (1) }
+    }.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
   }
 
   test("if thread(String) {} is called after the test has been conducted, it throws IllegalStateException" +
@@ -52,17 +52,17 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     val conductor = new Conductor    
     conductor.conduct
     intercept[IllegalStateException] {
-      conductor.thread("name"){ 1 should be (1) }
-    }.getMessage should be ("Test already completed.")
+      conductor.thread("name") { 1 should be (1) }
+    }.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
   }
 
-  test("if whenFinished is called twice on the same conductor, an IllegalStateException is thrown that explains it" +
+  test("if whenFinished is called twice on the same conductor, an IllegalStateException is thrown that explains it " +
           "can only be called once"){
     val conductor = new Conductor    
     conductor.whenFinished{ 1 should be (1) }
     intercept[IllegalStateException] {
       conductor.whenFinished{ 1 should be (1) }
-    }.getMessage should be ("Conductor can only be run once!")
+    }.getMessage should be ("Cannot invoke whenFinished after conduct (which is called by whenFinished) has been invoked.")
   }
 
   test("if thread(String) is called twice with the same String name, the second invocation results" +
