@@ -478,7 +478,7 @@ class Conductor {
    *   instantiated this <code>Conductor</code>, or if <code>conduct</code> has already
    *    been invoked on this conductor.
    */
-  def whenFinished(fun: => Unit) {
+  def whenFinished(fun: => Unit) { // TODO: Dang, need one that takes clockPeriod and timeout
 
     if (currentThread != mainThread)  // TODO: Get from resources, write a test
       throw new NotAllowedException("whenFinished can only be called by the thread that created Conductor.", getStackDepth("Conductor.scala", "whenFinished"))
@@ -637,7 +637,9 @@ class Conductor {
 
     if (clockPeriod <= 0)
       throw new NotAllowedException(Resources("cannotPassNonPositiveClockPeriod", clockPeriod.toString), getStackDepth("Conductor.scala", "conduct"))
-    
+    if (timeout <= 0)
+      throw new NotAllowedException(Resources("cannotPassNonPositiveTimeout", timeout.toString), getStackDepth("Conductor.scala", "conduct"))
+
     // if the test was started already, explode
     // otherwise, change state to TestStarted                          
     if (conductingHasBegun)

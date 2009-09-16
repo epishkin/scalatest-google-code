@@ -151,7 +151,27 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     caught2.getMessage should be ("The clockPeriod passed to conduct must be greater than zero. Value passed was: -1.")
   }
 
-  test("If a non-positive number is passed to conduct for runLimit, it will throw NotAllowedException") (pending)
+  test("If a non-positive number is passed to conduct for runLimit, it will throw NotAllowedException") {
+    val conductor = new Conductor
+    val caught =
+      intercept[NotAllowedException] {
+        conductor.conduct(100, 0)
+      }
+    caught.getMessage should be ("The timeout passed to conduct must be greater than zero. Value passed was: 0.")
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 134))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
+    val caught2 =
+      intercept[NotAllowedException] {
+        conductor.conduct(100, -1)
+      }
+    caught2.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 143))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
+    caught2.getMessage should be ("The timeout passed to conduct must be greater than zero. Value passed was: -1.")
+  }
 
  // TODO: I think withConductorFrozen may just be returning a function rather
  // than executing it? Judging from the inferred result type. Write a test
