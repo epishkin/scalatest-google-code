@@ -117,17 +117,37 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
       case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 90))
       case None => fail("Didn't produce a file name and line number string: ", caught)
     }
+    caught.getMessage should be ("A Conductor starts at beat zero, so you can't wait for beat zero.")
     val caught2 =
       intercept[NotAllowedException] {
         conductor.waitForBeat(-1)
+      }
+    caught2.getMessage should be ("A Conductor starts at beat zero, so you can only wait for a beat greater than zero.")
+    caught2.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 99))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
+  }
+
+  ignore("If a non-positive number is passed to conduct for clockPeriod, it will throw NotAllowedException") {
+    val conductor = new Conductor
+    val caught =
+      intercept[NotAllowedException] {
+        conductor.conduct(0, 100)
+      }
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 111))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
+    val caught2 =
+      intercept[NotAllowedException] {
+        conductor.conduct(-1, 100)
       }
     caught2.failedCodeFileNameAndLineNumberString match {
       case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 98))
       case None => fail("Didn't produce a file name and line number string: ", caught)
     }
   }
-
-  test("If a non-positive number is passed to conduct for clockPeriod, it will throw NotAllowedException") (pending)
 
   test("If a non-positive number is passed to conduct for runLimit, it will throw NotAllowedException") (pending)
 
