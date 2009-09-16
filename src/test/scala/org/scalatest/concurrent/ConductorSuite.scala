@@ -49,18 +49,30 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
            "with a detail message that explains the problem") {
     val conductor = new Conductor
     conductor.conduct
-    intercept[NotAllowedException] {
-      conductor.thread("name") { 1 should be (1) }
-    }.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
+    val caught =
+      intercept[NotAllowedException] {
+        conductor.thread("name") { 1 should be (1) }
+      }
+    caught.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 30))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
   }
 
   test("if thread(String) {} is called after the test has been conducted, it throws NotAllowedException" +
           "with a detail message that explains the problem"){
     val conductor = new Conductor    
     conductor.conduct
-    intercept[NotAllowedException] {
-      conductor.thread("name") { 1 should be (1) }
-    }.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
+    val caught =
+      intercept[NotAllowedException] {
+        conductor.thread("name") { 1 should be (1) }
+      }
+    caught.getMessage should be ("Cannot invoke the thread method on Conductor after its multi-threaded test has completed.")
+    caught.failedCodeFileNameAndLineNumberString match {
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 45))
+      case None => fail("Didn't produce a file name and line number string: ", caught)
+    }
   }
 
   test("if whenFinished is called twice on the same conductor, an IllegalStateException is thrown that explains it " +
@@ -84,7 +96,7 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
       }
     caught.getMessage should be ("Cannot register two threads with the same name. Duplicate name: Fiesta del Mar.")
     caught.failedCodeFileNameAndLineNumberString match {
-      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 59))
+      case Some(s) => s should equal ("ConductorSuite.scala:" + (baseLineNumber + 71))
       case None => fail("Didn't produce a file name and line number string: ", caught)
     }
   }
