@@ -312,7 +312,7 @@ class Conductor {
    */
   def thread[T](name: String)(fun: => T): Thread = {
     currentState.get match {
-      case TestFinished => throw new IllegalStateException("Test already completed.")  // TODO grab from resource
+      case TestFinished => throw new IllegalStateException(Resources("threadCalledAfterConductingHasCompleted"))
       case _ =>
         val t = TestThread(name, fun _)
         threads add t
@@ -455,14 +455,28 @@ class Conductor {
    * the passed function.
    * </p>
    *
+   * <p>
+   * Because <code>whenFinished</code> invokes <code>conduct</code>, it can only be invoked
+   * once on a <code>Conductor</code> instance. As a result, if you need to pass a block of
+   * code to <code>whenFinished</code> it should be the last statement of your test. If you
+   * don't have a block of code that needs to be run once all the threads have finished
+   * successfully, then you can simply invoke <code>conduct</code> and never invoke
+   * <code>whenFinished</code>.
+   * </p>
+   *
    * @param fun the function to execute after <code>conduct</code> call returns
    * @throws IllegalStateException if the calling thread is not the thread that
-   *   instantiated this <code>Conductor</code>
+   *   instantiated this <code>Conductor</code>, or if <code>conduct</code> has already
+   *    been invoked on this conductor.
    */
   def whenFinished(fun: => Unit) {
+
     if (currentThread != mainThread)  // TODO: Get from resources
       throw new IllegalStateException("whenFinished can only be called by the thread that created Conductor.")
 
+    if (conductingHasBegun)
+      throw new IllegalStateException(Resources("cannotInvokeWhenFinishedAfterConduct"))
+    
     conduct()
 
     fun
@@ -583,7 +597,7 @@ class Conductor {
    * conducts has definitely begun.)
    * </p>
    */
-  def conductingHasBegun = currentState.get.testWasStarted
+  def conductingHasBegun: Boolean = currentState.get.testWasStarted
 
   /**
    * Conducts a multithreaded test with the specified clock period (in milliseconds)
@@ -597,7 +611,7 @@ class Conductor {
 
     // if the test was started already, explode
     // otherwise, change state to TestStarted                           // TODO: Grab from resources
-    if (conductingHasBegun) throw new IllegalStateException("Conductor can only be run once!")
+    if (conductingHasBegun) throw new IllegalStateException("A Conductor's multi-threaded scenario can only be tested once!")
     else currentState set TestStarted
 
     // wait until all threads are definitely ready to go

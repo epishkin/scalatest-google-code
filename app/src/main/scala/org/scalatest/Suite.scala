@@ -1409,7 +1409,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    * passed to this method takes no parameters, preparing the fixture will require
    * side effects, such as reassigning instance <code>var</code>s in this <code>Suite</code> or initializing
    * a globally accessible external database. If you want to avoid reassigning instance <code>var</code>s
-   * you can use <a href="FixtureSuite.html">FixtureSuite</a>.
+   * you can use <a href="fixture/FixtureSuite.html">FixtureSuite</a>.
    * </p>
    *
    * <p>
