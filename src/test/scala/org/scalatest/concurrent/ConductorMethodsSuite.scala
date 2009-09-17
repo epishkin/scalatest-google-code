@@ -134,7 +134,7 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
   test("top level thread calls result in a running thread that is blocked such that it doesn't execute " +
        "prior to conduct being called.") {
     val anotherConductor = new Conductor
-    val t = anotherConductor.thread{ 1 should be (1) }
+    val t = anotherConductor.thread { 1 should be (1) }
     thread{ t.getState should be (WAITING) }
   }
 

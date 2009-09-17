@@ -377,22 +377,23 @@ class Conductor {
         // go
         f()
       } catch {
-        // The reason this is a catch Throwable is because you want to let ThreadDeath through
-        // without signalling errors. Otherwise the signalError could have been in a finally.
-        // If the simulation is aborted, then stop will be called,
-        // which will cause ThreadDeath, so just die and do nothing.
-        case e: ThreadDeath => // Do nothing and return from run()
-        case t: Throwable => signalError(t)
+        case t =>
+          if (firstExceptionThrown.isEmpty) {
+            // The mainThread is likely joined to some test thread, so it needs to be awakened. If it
+            // is joined to this thread, it will wake up shortly because this thread is about to die
+            // by returning. If it is joined to a different thread, then it needs to be interrupted,
+            // but this thread can't interrupt it, because then there's a race condition if it is
+            // actually joined to this thread, between join returning because this thread returns
+            // or join throwing an InterruptedException. So here just offer the throwable to
+            // the firstExceptionThrown queue and return. Only the first will be accepted by the queue.
+            // ThreadDeath exceptions that arise from being stopped will not go in because the queue
+            // is already full. The clock thread checks the firestExceptionThrown queue each cycle, and
+            // if it finds it is non-empty, it stops any live thread.
+            firstExceptionThrown offer t
+        }
       }
     }
   }
-  // TODO: I'm not sure signalError isn't going to not cause threads to be stopped that no longer exist,
-  // because it caues AssertionErrors to be thrown in the other threads, so they'll also end up here
-  // and call signalError, and so multiple threads will be attempting to kill the same threads. Sloppy.
-  // Possibly throw a special exception that indicates a thread was killed because a test failure has
-  // already been detected. This can be detected here and then *not* call signalError, but simply be
-  // added to the errors queue. So the first thread to get an exception would be responsible for stopping
-  // all the other threads.
   /**
    * Starts a thread, logging before and after
    */
@@ -408,23 +409,10 @@ class Conductor {
   /////////////////////// error handling start //////////////////////////////
 
   /**
-   * A BlockingQueue containing the first Error/Exception that occured
-   * in thread methods or that are thrown by the clock thread.
+   * A BlockingQueue containing the first exception that occured
+   * in test threads, or that was thrown by the clock thread.
    */
-  private val errorsQueue = new ArrayBlockingQueue[Throwable](20)
-
-  /*
-   * A list of any errors thrown by test threads at the time this method is called.
-   */
-  /*
-  def exceptions: List[Throwable] = {
-    def exceptions(errorList: List[Throwable], it: java.util.Iterator[Throwable]): List[Throwable] = {
-      if(it.hasNext) exceptions( errorList ::: List(it.next), it)
-      else errorList
-    }
-    exceptions(Nil, errorsQueue.iterator)
-  }
-    */
+  private val firstExceptionThrown = new ArrayBlockingQueue[Throwable](1)
 
   /*
   The reason the first guy to fail must kill everyone is because the main thread
@@ -440,19 +428,12 @@ class Conductor {
    * Clock thread will return normally when no threads are running.
    */
   private def signalError(t: Throwable) {
-    log(t)
-    errorsQueue offer t
+    firstExceptionThrown offer t
 
     // The clock thread is not in the thread group, just the test threads, the ones
     // started by thread method or the threads they create.
-    for (t <- threadGroup.getThreads; if (t != currentThread && t.isAlive)) {
-      log("signaling error to " + t.getName)
-      val assertionError = new java.lang.AssertionError(t.getName + " killed by " + currentThread.getName)
-   // TODO: Fix bug: t.getStackTrace could be null for some reason. I got
-      // a NPE here.
-      assertionError setStackTrace t.getStackTrace
-      t stop assertionError
-    }
+    for (t <- threadGroup.getThreads; if (t != currentThread && t.isAlive))
+      t.stop()
   }
 
   /////////////////////// error handling end //////////////////////////////
@@ -691,38 +672,23 @@ class Conductor {
   // returns, and after that the error gets into the errors. Because if you look in run() in the
   // thread inside createTestThread, the signaling error happens in a catch Throwable block before the thread
   // returns.
-  private def waitForThreads{
-    while(threadGroup.areAnyThreadsAlive){
-      threadGroup.getThreads foreach waitForThread
-    }
-  }
-
-  // Why not let the main thread be the bad guy and shoot all the test threads on an error.
-  // If there's an error, just interrupt the main thread. Once interrupted, it can look
-  // at the one error queue slot. If non-empty, then it loops around and stops all the
-  // test threads, ignoring everything. Oh, we wanted stack traces for those things, right?
-  // Can we just get one from the thread? No. Have to get it from the ... No, hell yes I can
-  // get it. So the main thread grabs the stack track from the killed thread and puts it in
-  // a different queue. Then just stops that thread. Then goes to the next one. Or loops around
-  // and grabs stack traces for all, then loops a second time and stops all. Then it reports
-  // an exception that highlights the original problem, then shows here are thread dumps of
-  // all the others.
-  // TODO: Grab strings from resources for all log messages
-  private def waitForThread(t: Thread) {
-    log("waiting for: " + t.getName + " which is in state:" + t.getState)
-    try {
-      // TODO: Why is this stopping the threads too? Isn't the signalError approach sufficient?
-      // This one just kills them.
-      if (t.isAlive && !errorsQueue.isEmpty) logAround("stopping: " + t) { t.stop() }
-      else logAround("joining: " + t) { t.join() }
-      val state = t.getState // And drop this too
-      assert(state == TERMINATED, "thread state was not TERMINATED, but was: " + state) // TODO: Drop this for the release
-    } catch {
-      case e: InterruptedException => {
-        log("killed waiting for threads. probably deadlock or timeout.")
-        errorsQueue offer new AssertionError(e)
-      }                                          // TODO: CHECK JCIP. NEED TO RESET THE INTERRUPTED FLAG?
-      // THE MAIN THREAD CAN GET INTERRUPTED BY THE Clock Thread's DEADLOCK DETECTOR
+  private def waitForThreads {
+    var interrupted = false
+    while(!interrupted && threadGroup.areAnyThreadsAlive) {
+      threadGroup.getThreads.foreach { t =>
+        if (!interrupted && t.isAlive && firstExceptionThrown.isEmpty)
+          try {
+            t.join()
+          }
+          catch {
+            // main thread will be interrupted if a timeout occurs, deadlock is suspected,
+            // or a test thread completes abruptly with an exception. Just loop here, because
+            // firstExceptionThrown should be non-empty after InterruptedException is caught, and
+            // if not, then I don't know how it got interrupted, but just keep looping.
+            case e: InterruptedException => println("GOT INTERRUPTED HERE TOO")
+              interrupted = true
+          }
+      }
     }
   }
 
@@ -915,7 +881,14 @@ class Conductor {
    * @param maxRunTime The limit to run the test in seconds
    */
   private case class ClockThread(clockPeriod: Int, maxRunTime: Int) extends Thread("Conductor-Clock") {
-    this setDaemon true // TODO: Why is this a daemon thread? If no good reason, drop it.
+
+    // When a test thread throws an exception, the main thread will stop all the other threads,
+    // but won't stop the clock thread. This is because the clock thread will simply return after
+    // all the other threads have died. Thus the clock thread could last beyond the end of the
+    // application, if the clock period was set high. Thus by making the clock thread a daemon
+    // thread, it won't keep the application up just because it is still asleep and hasn't noticed
+    // yet that all the test threads are gone.
+    this setDaemon true
 
     // used in detecting timeouts
     private var lastProgress = System.currentTimeMillis
@@ -935,11 +908,18 @@ class Conductor {
       // TIMED_WAITING. (BLOCKED is waiting for a lock. WAITING is in the wait set.)
       while (threadGroup.areAnyThreadsAlive) {
 
+        if (!firstExceptionThrown.isEmpty) {
+          // If any exception has been thrown, stop any live test thread.
+          threadGroup.getThreads.foreach { t =>
+            if (t.isAlive)
+              t.stop()
+          }
+        }
         // If any threads are in the RUNNABLE state, just check to see if there's been
         // no progress for more than the timeout amount of time. If RUNNABLE threads
         // exist, but the timeout limit has not been reached, then just go
         // back to sleep.
-        if (threadGroup.areAnyThreadsRunning) {
+        else if (threadGroup.areAnyThreadsRunning) {
           if (runningTooLong) timeout()
         }
         // No RUNNABLE threads, so if any threads are waiting for a beat, advance
@@ -970,23 +950,27 @@ class Conductor {
     /**
      * Stop the test due to a timeout.
      */
-    private def timeout() {
+    private def timeout() {  // TODO: Resources
       val errorMessage = "Timeout! Test ran longer than " + maxRunTime + " seconds."
-      signalError(new IllegalStateException(errorMessage))
+      // The mainThread is likely joined to some test thread, so wake it up. It will look and
+      // notice that the firstExceptionThrown is no longer empty, and will stop all live test threads,
+      // then rethrow the rirst exception thrown.
+      firstExceptionThrown offer new IllegalStateException(errorMessage)
       mainThread.interrupt()
     }
 
     /**
      * Determine if there is a deadlock and if so, stop the test.
      */
-    private def detectDeadlock() {
+    private def detectDeadlock() { // TODO: Resources
       // Should never get to >= before ==, but just playing it safe
       if (deadlockCount >= MaxDeadlockDetectionsBeforeDeadlock) {
         val errorMessage = "Apparent Deadlock! Threads waiting 50 clock periods (" + (clockPeriod * 50) + "ms)"
-        signalError(new IllegalStateException(errorMessage))
+        firstExceptionThrown offer new IllegalStateException(errorMessage)
 
-        // The mainThread may be joined to a thread, and this would break it out of its doldrums?
-        // I'm not sure why this is necessary. 
+        // The mainThread is likely joined to some test thread, so wake it up. It will look and
+        // notice that the firstExceptionThrown is no longer empty, and will stop all live test threads,
+        // then rethrow the rirst exception thrown.
         mainThread.interrupt()
       }
       else deadlockCount += 1
