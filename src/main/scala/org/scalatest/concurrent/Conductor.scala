@@ -363,11 +363,12 @@ class Conductor {
    */
   private case class TestThread[T](name: String, f: () => T) extends Thread(threadGroup, name) {
 
+    // Indicate a TestThread has been created that has not yet started running
     testThreadsStartingCounter.increment()
 
     override def run() {
       try {
-        // notify the main thread that we are indeed ready to go.
+        // Indicate to the TestThreadsStartingCounter that one more thread is ready to go 
         testThreadsStartingCounter.decrement()
 
         // wait for the main thread to say its ok to go.
@@ -425,6 +426,12 @@ class Conductor {
   }
     */
 
+  /*
+  The reason the first guy to fail must kill everyone is because the main thread
+  is joining all the threads in the group. So it may be joined to the wrong one. So in that
+  case, why would the main thread ever stop a thread.
+  */
+  
   /**
    * Stop all test case threads and clock thread, except the thread from
    * which this method is called. This method is used when a thread is
@@ -435,7 +442,10 @@ class Conductor {
   private def signalError(t: Throwable) {
     log(t)
     errorsQueue offer t
-    for (t <- threadGroup.getThreads; if (t != currentThread)) {
+
+    // The clock thread is not in the thread group, just the test threads, the ones
+    // started by thread method or the threads they create.
+    for (t <- threadGroup.getThreads; if (t != currentThread && t.isAlive)) {
       log("signaling error to " + t.getName)
       val assertionError = new java.lang.AssertionError(t.getName + " killed by " + currentThread.getName)
    // TODO: Fix bug: t.getStackTrace could be null for some reason. I got
@@ -557,6 +567,7 @@ class Conductor {
    * those threads go, they may actually call thread method again, but the main thread
    * will only call waitUntilAllTestThreadsHaveStarted once, so it won't matter. - bv
    */
+  // TODO write a test for this, the first real one
   private class TestThreadsStartingCounter {
     private var count: Int = 0
     def increment() {
@@ -648,7 +659,6 @@ class Conductor {
       currentState set TestStarted
 
     // wait until all threads are definitely ready to go
-    // mainThreadStartLatch.await()  RACE CONDITION
     testThreadsStartingCounter.waitUntilAllTestThreadsHaveStarted()
 
     // release the latch, allowing all threads to start
@@ -675,11 +685,11 @@ class Conductor {
    * @param threads List of all the test case threads and the clock thread
    */
   // Explain how we understand it works: if the thread that's been joined already dies with an exception
-  // that will go into errors, and this thread the join will return. If the thread returns and doesn't
+  // that will go into errors, and this thread that called join will return. If the thread that's been joined returns and doesn't
   // die, that means all went well, and join will return and it can loop to the next one.
   // There should be no race condition between the last thread being waited on by join, it dies, join
   // returns, and after that the error gets into the errors. Because if you look in run() in the
-  // thread inside createTestThread, the signalling error happens in a catch Throwable block before the thread
+  // thread inside createTestThread, the signaling error happens in a catch Throwable block before the thread
   // returns.
   private def waitForThreads{
     while(threadGroup.areAnyThreadsAlive){
@@ -687,6 +697,16 @@ class Conductor {
     }
   }
 
+  // Why not let the main thread be the bad guy and shoot all the test threads on an error.
+  // If there's an error, just interrupt the main thread. Once interrupted, it can look
+  // at the one error queue slot. If non-empty, then it loops around and stops all the
+  // test threads, ignoring everything. Oh, we wanted stack traces for those things, right?
+  // Can we just get one from the thread? No. Have to get it from the ... No, hell yes I can
+  // get it. So the main thread grabs the stack track from the killed thread and puts it in
+  // a different queue. Then just stops that thread. Then goes to the next one. Or loops around
+  // and grabs stack traces for all, then loops a second time and stops all. Then it reports
+  // an exception that highlights the original problem, then shows here are thread dumps of
+  // all the others.
   // TODO: Grab strings from resources for all log messages
   private def waitForThread(t: Thread) {
     log("waiting for: " + t.getName + " which is in state:" + t.getState)
