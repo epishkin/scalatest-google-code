@@ -29,8 +29,9 @@ import java.util.concurrent.Future
 private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporter, stopper: Stopper, filter: Filter,
     configMap: Map[String, Any]) extends Distributor {
 
-  //private val execSvc: ExecutorService = Executors.newCachedThreadPool()
-  private val execSvc: ExecutorService = Executors.newFixedThreadPool(4)
+  // Because some tests may do IO, will create a pool of 2 times the number of processors reported
+  // by the Runtime's availableProcessors method.
+  private val execSvc: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors * 2)
   private val futureQueue = new LinkedBlockingQueue[Future[T] forSome { type T }]
 
   def apply(suite: Suite, tracker: Tracker) {
