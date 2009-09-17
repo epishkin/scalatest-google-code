@@ -695,7 +695,8 @@ class Conductor {
       // This one just kills them.
       if (t.isAlive && !errorsQueue.isEmpty) logAround("stopping: " + t) { t.stop() }
       else logAround("joining: " + t) { t.join() }
-      assert(t.getState == TERMINATED) // TODO: Drop this for the release
+      val state = t.getState // And drop this too
+      assert(state == TERMINATED, "thread state was not TERMINATED, but was: " + state) // TODO: Drop this for the release
     } catch {
       case e: InterruptedException => {
         log("killed waiting for threads. probably deadlock or timeout.")
