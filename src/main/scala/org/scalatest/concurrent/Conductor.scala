@@ -526,7 +526,7 @@ class Conductor {
    *
    * @param fun the function to execute while the <code>Conductor</code> is frozen.
    */
-  def withConductorFrozen[T](fun: => T) = clock.withClockFrozen(fun _)
+  def withConductorFrozen[T](fun: => T) { clock.withClockFrozen(fun) }
 
   /**
    * Indicates whether the conductor has been frozen.
@@ -844,7 +844,7 @@ class Conductor {
      * but prevent the clock from advancing due to a waitForBeat(Int) in
      * another thread.
      */
-    def withClockFrozen[T](f: => T): T = rwLock read f
+    def withClockFrozen[T](fun: => T): T = rwLock read fun
 
     /**
      * Check if the clock has been frozen by any threads.
