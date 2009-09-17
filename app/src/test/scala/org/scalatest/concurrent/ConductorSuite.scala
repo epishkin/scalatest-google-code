@@ -173,6 +173,15 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
     caught2.getMessage should be ("The timeout passed to conduct must be greater than zero. Value passed was: -1.")
   }
 
+  test("withConductorFrozen executes the passed function once") {
+    val conductor = new Conductor
+    var functionExecutionCount = 0
+    conductor.withConductorFrozen { // Function will be executed by the calling thread
+      functionExecutionCount += 1
+    }
+    functionExecutionCount should be (1)
+  }
+
  // TODO: I think withConductorFrozen may just be returning a function rather
  // than executing it? Judging from the inferred result type. Write a test
  // that makes sure the function actually gets invoked before withConductorFrozen
