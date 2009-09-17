@@ -165,7 +165,7 @@ trait ConductorMethods extends RunMethods { this: Suite =>
   /**
    * Register a function to be executed after the simulation has finished.
    */
-  protected def whenFinished(fun: => Unit) = conductor.get.whenFinished{ fun }
+  protected def whenFinished(fun: => Unit) = conductor.get.whenFinished { fun }
 
   /**
    * Creates and initializes a private instance variable with a new Conductor,
