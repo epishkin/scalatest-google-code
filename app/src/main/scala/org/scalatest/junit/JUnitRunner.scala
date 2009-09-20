@@ -48,6 +48,10 @@ import org.junit.runner.Description
  * This <code>RunWith</code> annotation will enable the <code>MySuite</code> class
  * to be run by JUnit 4.
  * </p>
+ *
+ * @author Bill Venners
+ * @author Daniel Watson
+ * @author Jon-Anders Teigen
  */
 class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.Runner {
 
