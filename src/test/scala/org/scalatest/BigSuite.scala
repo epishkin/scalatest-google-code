@@ -20,6 +20,32 @@ import Suite.formatterForSuiteAborted
 import Suite.formatterForSuiteCompleted
 import Suite.formatterForSuiteStarting
 
+/*
+java -Dorg.scalatest.BigSuite.size=5 -Dorg.scalatest.SuiteCompletedStatusReporter.max=100 -classpath scalatest-1.0-CLICKDEMO.jar:/usr/artima/scala/lib/scala-library.jar org.scalatest.tools.Runner -c4 -p "scalatest-1.0-CLICKDEMO-tests.jar" -oNCXEHLO -r org.scalatest.SuiteCompletedStatusReporter -s org.scalatest.BigSuite -s org.scalatest.BigSuite -s org.scalatest.BigSuite -s org.scalatest.BigSuite -s org.scalatest.BigSuite
+
+BigSuite.size determines how many suites will be in each BigSuite tree. I haven't taken time to figure out the function, but it looks like this:
+size => number of suites in the tree
+1 => 2
+2 => 5
+3 => 16
+4 => 65
+5 => 326
+6 => 1957
+7 => 13700
+
+Each -s org.scalatest.BigSuite will create one BigSuite instance using the size specified by the property.
+
+By saying -r org.scalatest.SuiteCompletedStatusReporter, you get a custom reporter that prints out a duration note to the standard output
+for every <configurable number> of SuiteCompleted events it receives. It defaults to 10, and can be set via the
+-Dorg.scalatest.SuiteCompletedStatusReporter.max=100 setting.
+
+So the knobs we can turn are:
+
+-cN N is the number of threads in the thread pool
+-Dorg.scalatest.BigSuite.size=M, M determines the number of suites in the tree via some mysterious function
+-s org.scalatest.BigSuite..., repeating this gets you more instances of these trees sized by M
+-Dorg.scalatest.SuiteCompletedStatusReporter.max=X, where X is the number of SuiteCompleted events between duration notes
+*/
 class BigSuite(nestedSuiteCount: Option[Int]) extends Suite { thisSuite =>
 
   def this() = this(None)
