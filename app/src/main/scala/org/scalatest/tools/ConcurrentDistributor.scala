@@ -27,11 +27,15 @@ import java.util.concurrent.Future
  * @author Bill Venners
  */
 private[scalatest] class ConcurrentDistributor(dispatchReporter: DispatchReporter, stopper: Stopper, filter: Filter,
-    configMap: Map[String, Any]) extends Distributor {
+    configMap: Map[String, Any], numThreads: Int) extends Distributor {
 
   // Because some tests may do IO, will create a pool of 2 times the number of processors reported
   // by the Runtime's availableProcessors method.
-  private val execSvc: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime.availableProcessors * 2)
+  private val poolSize =
+    if (numThreads > 0) numThreads
+    else                Runtime.getRuntime.availableProcessors * 2
+
+  private val execSvc: ExecutorService = Executors.newFixedThreadPool(poolSize)
   private val futureQueue = new LinkedBlockingQueue[Future[T] forSome { type T }]
 
   def apply(suite: Suite, tracker: Tracker) {

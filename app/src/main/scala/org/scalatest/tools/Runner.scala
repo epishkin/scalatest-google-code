@@ -312,6 +312,14 @@ import org.scalatest.junit.JUnitWrapperSuite
  * </p>
  *
  * <p>
+ * The <code>-c</code> option may optionally be appended with a number (e.g.
+ * "<code>-c10</code>" -- no intervening space) to specify the number of
+ * threads to be created in the thread pool.  If no number (or 0) is
+ * specified, the number of threads will be decided based on the number of
+ * processors available.
+ * </p>
+ *
+ * <p>
  * <strong>Specifying <code>Suite</code>s</strong>
  * </p>
  *
@@ -546,6 +554,7 @@ object Runner {
     val tagsToInclude: Set[String] = parseCompoundArgIntoSet(includesArgsList, "-n")
     val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
     val concurrent: Boolean = !concurrentList.isEmpty
+    val numThreads: Int = parseConcurrentNumArg(concurrentList)
     val membersOnlyList: List[String] = parseSuiteArgsIntoNameStrings(membersOnlyArgsList, "-m")
     val wildcardList: List[String] = parseSuiteArgsIntoNameStrings(wildcardArgsList, "-w")
     val testNGList: List[String] = parseSuiteArgsIntoNameStrings(testNGArgsList, "-t")
@@ -588,7 +597,7 @@ object Runner {
         val abq = new ArrayBlockingQueue[RunnerJFrame](1)
         usingEventDispatchThread {
           val rjf = new RunnerJFrame(graphicEventsToPresent, reporterConfigs, suitesList, junitsList, runpathList,
-            filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter)
+            filter, propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, passFailReporter, numThreads)
           rjf.setLocation(RUNNER_JFRAME_START_X, RUNNER_JFRAME_START_Y)
           rjf.setVisible(true)
           rjf.prepUIForRunning()
@@ -604,7 +613,7 @@ object Runner {
         withClassLoaderAndDispatchReporter(runpathList, reporterConfigs, None, passFailReporter) {
           (loader, dispatchReporter) => {
             doRunRunRunADoRunRun(dispatchReporter, suitesList, junitsList, new Stopper {}, filter,
-                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1) 
+                propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1, numThreads) 
           }
         }
       }
@@ -639,6 +648,25 @@ object Runner {
       Some("Unrecognized argument" + (if (argsList.isEmpty) ": " else "s: ") + argsList.mkString("", ", ", "."))
     else
       None
+  }
+
+  //
+  // Examines concurrent option arg to see if it contains an optional numeric
+  // value representing the number of threads to use, e.g. -c10 for 10 threads.
+  //
+  // It's possible for user to specify the -c option multiple times on the
+  // command line, although it isn't particularly useful.  This method scans
+  // through multiples until it finds one with a number appended and uses
+  // that.  If none have a number it just returns 0.
+  //
+  private[scalatest] def parseConcurrentNumArg(concurrentList: List[String]):
+  Int = {
+    val opt = concurrentList.find(_.matches("-c\\d+"))
+
+    opt match {
+      case Some(arg) => arg.replace("-c", "").toInt
+      case None      => 0
+    }
   }
 
   private[scalatest] def parseArgs(args: Array[String]) = {
@@ -1342,7 +1370,8 @@ object Runner {
     runpath: List[String],
     loader: ClassLoader,
     doneListener: RunDoneListener,
-    runStamp: Int
+    runStamp: Int,
+    numThreads: Int
   ) = {
 
     // TODO: add more, and to RunnerThread too
@@ -1469,7 +1498,7 @@ object Runner {
           dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount, configMap))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, configMap)
+            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, configMap, numThreads)
             for (suite <- suiteInstances) {
               distributor.apply(suite, tracker.nextTracker())
             }
