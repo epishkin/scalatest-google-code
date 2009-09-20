@@ -280,30 +280,6 @@ class Conductor {
    */
   def thread[T](fun: => T): Thread = thread("Conductor-Thread-" + threads.size) { fun }
 
-  /*
-   * Create a new thread that will execute the given Runnable
-   * @param runnable the Runnable to be executed by the thread
-   */
-  // def thread[T](runnable: Runnable): Thread = thread("thread" + threads.size) {runnable.run}
-
-  /*
-   * Create a new thread that will execute the given Runnable
-   * @param runnable the Runnable to be executed by the thread
-   */
-  // def thread[T](name: String, runnable: Runnable): Thread = thread(name) {runnable.run}
-
-  /*
-   * Create a new thread that will execute the given Callable
-   * @param callable the Callable to be executed by the thread
-   */
-  // def thread[T](callable: Callable[T]): Thread = thread("thread" + threads.size) {callable.call}
-
-  /*
-   * Create a new thread that will execute the given Callable
-   * @param callable the Callable to be executed by the thread
-   */
-  // def thread[T](name: String, callable: Callable[T]): Thread = thread(name) {callable.call}
-
   /**
    * Creates a new thread with the specified name that will execute the specified function.
    *
@@ -325,7 +301,8 @@ class Conductor {
         val t = TestThread(name, fun _)
         threads add t
         threadNames add name
-        startThread(t)
+        t.start()
+        t
     }
   }
   
@@ -333,28 +310,6 @@ class Conductor {
   // will start immediately, without requiring the user to explicitly start() them.
   // Also, so that the thread method can return a Thread object.
 
-  /*
-   * Adds threads methods to int, so one can say:<br/>
-   * val threads:List[Thread] = 5.threads("some name"){ ... }<br/>
-   * val anonymous_threads:List[Thread] = 10 threads { ... }<br/>
-   * @param nrThreads the number of threads to be created
-   */
-
-  /*
-  private implicit def addThreadsMethodToInt(nrThreads:Int) = new ThreadedInt(nrThreads)
-
-  private class ThreadedInt(nrThreads:Int) {
-    def threads[T](name: String)(f: => T): List[Thread] = {
-      val seq = for( i <- 1 to nrThreads) yield thread(name + "("+i+")") {f}
-      seq.toList
-    }
-    def threads[T](f: => T): List[Thread] = {
-      val seq = for( i <- 1 to nrThreads) yield thread{f}
-      seq.toList
-    }
-  }
-*/
-  
   /*
    * A test thread runs the given function.
    * It only does so after it is given permission to do so by the main thread.
@@ -394,15 +349,6 @@ class Conductor {
       }
     }
   }
-  /**
-   * Starts a thread, logging before and after
-   */
-  private def startThread(thread: Thread): Thread = {
-    logAround("Starting thread named: " + thread) {
-      thread.start()
-      thread
-    }
-  }
 
   /////////////////////// thread management end /////////////////////////////
 
@@ -414,12 +360,6 @@ class Conductor {
    */
   private val firstExceptionThrown = new ArrayBlockingQueue[Throwable](1)
 
-  /*
-  The reason the first guy to fail must kill everyone is because the main thread
-  is joining all the threads in the group. So it may be joined to the wrong one. So in that
-  case, why would the main thread ever stop a thread.
-  */
-  
   /**
    * Stop all test case threads and clock thread, except the thread from
    * which this method is called. This method is used when a thread is
@@ -647,7 +587,8 @@ class Conductor {
     greenLightForTestThreads.countDown()
 
     // start the clock thread
-    val clockThread = startThread(ClockThread(clockPeriod, timeout))
+    val clockThread = ClockThread(clockPeriod, timeout)
+    clockThread.start()
 
     // wait until all threads have ended
     waitForThreads
@@ -692,29 +633,6 @@ class Conductor {
     }
   }
 
-  // For 1.0, don't offer logging as a feature, to reduce the documentation
-  // and work load for 1.0, and also to find out what real users really want
-  // in terms of logging from Conductor, if anything.
-  private def log(a: Any) = {
-/*
-    informer match {
-      case Some(info) => info(a.toString)
-      case None => 
-    }
-*/
-  }
-
-  /**
-   * Logs before and after executing the given function.
-   */
-  private def logAround[T](msg: String)(f: => T): T = {
-    log("|starting: " + msg)
-    val t = f
-    log("|done with: " + msg)
-    t
-  }
-
-  /////////////////////// logging end /////////////////////////////
 
 
   /**
@@ -776,7 +694,6 @@ class Conductor {
     def advance() {
       lock.synchronized {
         rwLock.write {
-          log("clock advancing from: " + currentTime + " to: " + (currentTime + 1))
           currentTime += 1
         }
         lock.notifyAll()
@@ -799,14 +716,12 @@ class Conductor {
       lock.synchronized {
         if (beat > highestBeatBeingWaitedOn)
           highestBeatBeingWaitedOn = beat
-        logAround(currentThread.getName + " is waiting for beat " + beat) {
-          while (currentBeat < beat) {
-            try {
-              lock.wait()
-            } catch {     // TODO: this is probably fine, but check JCIP about InterEx again
-              case e: InterruptedException => throw new AssertionError(e)
-            }         // Actually I"m not sure. Maybe should reset the interupted status
-          }
+        while (currentBeat < beat) {
+          try {
+            lock.wait()
+          } catch {     // TODO: this is probably fine, but check JCIP about InterEx again
+            case e: InterruptedException => throw new AssertionError(e)
+          }         // Actually I"m not sure. Maybe should reset the interupted status
         }
       }
     }
