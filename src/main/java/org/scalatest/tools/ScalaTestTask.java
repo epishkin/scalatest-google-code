@@ -168,6 +168,12 @@ import org.apache.tools.ant.taskdefs.Java;
  * </pre>
  *
  * <p>
+ * Use attribute parallel="true" to specify parallel execution of Suites.
+ * When parallel is true, use optional numthreads attribute to specify number
+ * of threads to be included in thread pool (e.g. numthreads="10").
+ * </p>
+ *
+ * <p>
  * Use attribute haltonfailure="true" to cause ant to fail the
  * build if there's a test failure.
  * </p>
@@ -207,9 +213,10 @@ public class ScalaTestTask extends Task {
     private String includes;
     private String excludes;
     private String maxMemory;
-    private boolean concurrent;
+    private boolean parallel;
     private boolean haltonfailure;
     private boolean fork;
+    private int numthreads;
     private ArrayList<String> runpath = new ArrayList<String>();
     private ArrayList<String> jvmArgs = new ArrayList<String>();
     private ArrayList<String> suites = new ArrayList<String>();
@@ -234,7 +241,7 @@ public class ScalaTestTask extends Task {
         addExcludesArgs(args);
         addRunpathArgs(args);
         addTestNGSuiteArgs(args);
-        addConcurrentArg(args);
+        addParallelArg(args);
 
         String[] argsArray = args.toArray(new String[args.size()]);
 
@@ -299,12 +306,12 @@ public class ScalaTestTask extends Task {
     }
     
     //
-    // Adds '-c' arg to args list if 'concurrent' attribute was
+    // Adds '-c' arg to args list if 'parallel' attribute was
     // specified true for task.
     //
-    private void addConcurrentArg(ArrayList<String> args) {
-        if (concurrent) {
-            args.add("-c");
+    private void addParallelArg(ArrayList<String> args) {
+        if (parallel) {
+            args.add("-c" + ((numthreads > 0) ? "" + numthreads : ""));
         }
     }
 
@@ -548,8 +555,26 @@ public class ScalaTestTask extends Task {
     //
     // Sets value of 'concurrent' attribute.
     //
+    // DEPRECATED in 1.0
+    //
     public void setConcurrent(boolean concurrent) {
-        this.concurrent = concurrent;
+        System.err.println("WARNING: 'concurrent' attribute is deprecated " +
+                           "- please use 'parallel' instead");
+        this.parallel = concurrent;
+    }
+
+    //
+    // Sets value of 'numthreads' attribute.
+    //
+    public void setNumthreads(int numthreads) {
+        this.numthreads = numthreads;
+    }
+
+    //
+    // Sets value of 'parallel' attribute.
+    //
+    public void setParallel(boolean parallel) {
+        this.parallel = parallel;
     }
 
     //
