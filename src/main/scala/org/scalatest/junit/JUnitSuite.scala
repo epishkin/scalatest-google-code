@@ -79,9 +79,6 @@ trait JUnitSuite extends Suite with AssertionsForJUnit { thisSuite =>
   // This is volatile, because who knows what Thread JUnit will fire through this.
   @volatile private var theTracker = new Tracker
 
-  // TODO: Override runTest, runTests, runNestedSuites to throw unupportedOpEx, and
-  // be final
-
   /**
    * Throws <code>UnsupportedOperationException</code>, because this method is unused by this
    * class, given this class's <code>run</code> method delegates to JUnit to run
