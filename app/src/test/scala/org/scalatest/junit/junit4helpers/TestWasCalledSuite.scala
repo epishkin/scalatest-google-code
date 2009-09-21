@@ -15,6 +15,7 @@
  */
 package org.scalatest.junit.junit4helpers
 
+import org.scalatest._
 import org.scalatest.junit.JUnitSuite
 import org.junit.Test
 import org.junit.Ignore

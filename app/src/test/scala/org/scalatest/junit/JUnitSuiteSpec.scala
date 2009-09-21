@@ -15,6 +15,7 @@
  */
 package org.scalatest.junit
 
+import org.scalatest._
 import scala.collection.immutable.TreeSet
 import org.scalatest.junit.junit4helpers._
 import org.junit.Test
