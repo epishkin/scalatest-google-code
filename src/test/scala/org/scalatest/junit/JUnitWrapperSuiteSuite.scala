@@ -60,7 +60,8 @@ package org.scalatest.junit {
 
       assert(startingEventsTestA.size === 1)
 
-      val startingEventTestA = startingEventsTestA.toArray(0)
+      val startingEventTestA = startingEventsTestA.toArray(0) // For 2.7
+      // val startingEventTestA = startingEventsTestA.toArray.apply(0) // For 2.8
 
       assert(startingEventTestA.suiteName === "JUnit3TestCase")
       assert(startingEventTestA.suiteClassName.get ===
@@ -75,7 +76,8 @@ package org.scalatest.junit {
 
       assert(successEventsTestA.size === 1)
 
-      val successEventTestA = successEventsTestA.toArray(0)
+      val successEventTestA = successEventsTestA.toArray(0) // For 2.7
+      // val successEventTestA = successEventsTestA.toArray.apply(0) // For 2.8
 
       assert(successEventTestA.suiteName === "JUnit3TestCase")
       assert(successEventTestA.suiteClassName.get ===
@@ -105,7 +107,8 @@ package org.scalatest.junit {
       //
       assert(repA.testStartingEvents.size === 1)
 
-      val startingEvent = repA.testStartingEvents.toArray(0)
+      val startingEvent = repA.testStartingEvents.toArray(0) // For 2.7
+      // val startingEvent = repA.testStartingEvents.toArray.apply(0) // For 2.8
 
       assert(startingEvent.testName === "verifySomething")
       assert(startingEvent.suiteName === "JHappySuite")
@@ -117,7 +120,8 @@ package org.scalatest.junit {
       //
       assert(repA.testSucceededEvents.size === 1)
 
-      val succeededEvent = repA.testSucceededEvents.toArray(0)
+      val succeededEvent = repA.testSucceededEvents.toArray(0) // For 2.7
+      // val succeededEvent = repA.testSucceededEvents.toArray.apply(0) // For 2.8
 
       assert(succeededEvent.testName === "verifySomething")
       assert(succeededEvent.suiteName === "JHappySuite")
@@ -139,7 +143,8 @@ package org.scalatest.junit {
       //
       assert(repA.testStartingEvents.size === 1)
 
-      val startingEvent = repA.testStartingEvents.toArray(0)
+      val startingEvent = repA.testStartingEvents.toArray(0) // For 2.7
+      // val startingEvent = repA.testStartingEvents.toArray.apply(0) // For 2.8
 
       assert(startingEvent.testName === "verifySomething")
       assert(startingEvent.suiteName === "JBitterSuite")
@@ -172,7 +177,8 @@ package org.scalatest.junit {
 
       assert(startingEventsTestB.size === 1)
 
-      val startingEventTestB = startingEventsTestB.toArray(0)
+      val startingEventTestB = startingEventsTestB.toArray(0) // For 2.7
+      // val startingEventTestB = startingEventsTestB.toArray.apply(0) // For 2.8
 
       assert(startingEventTestB.testName === "testB")
       assert(startingEventTestB.suiteName === "JUnit3TestCase")
@@ -188,7 +194,8 @@ package org.scalatest.junit {
 
       assert(successEventsTestB.size === 1)
 
-      val successEventTestB = successEventsTestB.toArray(0)
+      val successEventTestB = successEventsTestB.toArray(0) // For 2.7
+      // val successEventTestB = successEventsTestB.toArray.apply(0) // For 2.8
 
       assert(successEventTestB.suiteName === "JUnit3TestCase")
       assert(successEventTestB.suiteClassName.get ===
