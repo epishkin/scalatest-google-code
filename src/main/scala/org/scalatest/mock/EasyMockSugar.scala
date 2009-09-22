@@ -129,6 +129,7 @@ import scala.reflect.Manifest
  * </pre>
  *
  * @author Bill Venners
+ * @author George Berger
  */
 trait EasyMockSugar {
 
