@@ -425,7 +425,7 @@ object Runner {
   private val RUNNER_JFRAME_START_X: Int = 150
   private val RUNNER_JFRAME_START_Y: Int = 100
 
-  //
+  //                     TO
   // We always include a PassFailReporter on runs in order to determine
   // whether or not all tests passed.
   //
@@ -1095,9 +1095,9 @@ object Runner {
   //
   // See comments for isCompleteToken() below for exceptions.
   //
-  val START_TOKEN_PATTERN = Pattern.compile("""^\s*(.*?)(\s|$)""")
-  val FULL_TOKEN_PATTERN  = Pattern.compile("""^\s*(.+?)(((?<=[^\\])\s)|$)""")
-  def splitPath(pathArg: String): List[String] = {
+  private val START_TOKEN_PATTERN = Pattern.compile("""^\s*(.*?)(\s|$)""")
+  private val FULL_TOKEN_PATTERN  = Pattern.compile("""^\s*(.+?)(((?<=[^\\])\s)|$)""")
+  private def splitPath(pathArg: String): List[String] = {
     val path = pathArg.trim
 
     if (path.isEmpty) Nil
@@ -1137,8 +1137,8 @@ object Runner {
   // a valid representation of a root directory on a windows system,
   // e.g. "c:\" or just "\".
   //
-  val ROOT_DIR_PATTERN = Pattern.compile("""(?i)\\|[a-z]:\\""")
-  def isCompleteToken(token: String): Boolean = {
+  private val ROOT_DIR_PATTERN = Pattern.compile("""(?i)\\|[a-z]:\\""")
+  private def isCompleteToken(token: String): Boolean = {
     val matcher = ROOT_DIR_PATTERN.matcher(token)
 
     matcher.matches() || (token(token.length - 1) != '\\')
