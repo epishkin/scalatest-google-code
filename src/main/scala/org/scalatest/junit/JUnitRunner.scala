@@ -52,6 +52,7 @@ import org.junit.runner.Description
  * @author Bill Venners
  * @author Daniel Watson
  * @author Jon-Anders Teigen
+ * @author Colin Howe
  */
 class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.Runner {
 
