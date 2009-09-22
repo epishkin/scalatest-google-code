@@ -242,4 +242,24 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
       beat should equal (2)
     }
   }
+
+  test("if I wait for a beat that's lower than the current beat, I just keep going") {
+    val conductor = new Conductor
+    import conductor._
+    beat should equal (0)
+    thread {
+      beat should equal (0)
+      waitForBeat(1)
+      beat should equal (1)
+      waitForBeat(1) // This should also work
+      beat should equal (1)
+      waitForBeat(2)
+      beat should equal (2)
+      waitForBeat(1) // This should also work
+      beat should equal (2)
+    }
+    whenFinished {
+      beat should equal (2)
+    }
+  }
 }
