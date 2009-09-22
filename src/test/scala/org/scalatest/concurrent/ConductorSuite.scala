@@ -18,10 +18,11 @@ package org.scalatest.concurrent
 import org.scalatest._
 import matchers.ShouldMatchers
 import Thread.State._
+import java.util.concurrent.atomic.AtomicBoolean
 
 class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
 
-  val baseLineNumber = 24
+  val baseLineNumber = 25
 
   test("if conduct is called twice, the second time it throws an NotAllowedException") {
     val conductor = new Conductor
@@ -263,16 +264,18 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
     }
   }
 
+  class Forevermore {
+    def waitForever() {
+      synchronized {
+        wait()
+      }
+    }
+  }
+
   test("deadlock is detected") {
     val conductor = new Conductor
     import conductor._
-    val monitor = new AnyRef {
-      def waitForever() {
-        synchronized {
-          wait()
-        }
-      }
-    }
+    val monitor = new Forevermore
     thread {
       monitor.waitForever()
     }
@@ -284,5 +287,31 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
         conduct()
       }
     caught.getMessage should be ("Test aborted because of suspected deadlock. No progress has been made for 50 clock periods (500 ms).")
+  }
+
+  test("other threads are killed when one thread throws an exception") {
+    val conductor = new Conductor
+    import conductor._
+    val monitor = new Forevermore
+    val threadWasKilled = new AtomicBoolean()
+    thread {
+      try {
+        monitor.waitForever()
+      }
+      catch {
+        case t: ThreadDeath =>
+          threadWasKilled.set(true)
+          throw t
+      }
+    }
+    thread {
+      waitForBeat(1)
+      fail()
+      ()
+    }
+    intercept[RuntimeException] {
+      conduct()
+    }
+    threadWasKilled.get should be (true)
   }
 }
