@@ -450,44 +450,6 @@ class Conductor {
    */
   def isConductorFrozen: Boolean = clock.isFrozen
 
-  /*
-   * Keeps the main thread from allowing the test threads to execute their bodies
-   * until all of them are started, and ready to go. When a test thread is started,
-   * it will call increment from its constructor. It then calls decrement from its
-   * run method. Test threads are started immediately by the thread() methods, and
-   * so this allows the main thread to block until all test threads have started.
-   * It does this by calling the waitUntilAllTestThreadsHaveStarted method, which
-   * blocks in the wait set if the count is not 0. (The count is only non-zero when
-   * one or more test threads have been created but not yet gotten their run methods
-   * going.) This is only used for threads started by the main thread. By the time
-   * conduct is invoked, all threads started by the main thread will have called
-   * increment. (Increment in this case will be called by the main thread.) After
-   * those threads go, they may actually call thread method again, but the main thread
-   * will only call waitUntilAllTestThreadsHaveStarted once, so it won't matter. - bv
-   */
-  // TODO write a test for this, the first real one
-  private class TestThreadsStartingCounter {
-    private var count: Int = 0
-    def increment() {
-      synchronized {
-        count += 1
-      }
-    }
-    def decrement() {
-      synchronized {
-        count -= 1
-        notifyAll()
-      }
-    }
-    def waitUntilAllTestThreadsHaveStarted() {
-      synchronized {
-        while (count != 0) {
-          wait()
-        }
-      }
-    }
-  }
-
   private val testThreadsStartingCounter = new TestThreadsStartingCounter
 
   /**
@@ -849,24 +811,24 @@ println("top of while")
     /**
      * Stop the test due to a timeout.
      */
-    private def timeout() {  // TODO: Resources
-      val errorMessage = "Timeout! Test ran longer than " + maxRunTime + " seconds."
+    private def timeout() {
+      val errorMessage = Resources("testTimedOut", maxRunTime.toString)
       // The mainThread is likely joined to some test thread, so wake it up. It will look and
       // notice that the firstExceptionThrown is no longer empty, and will stop all live test threads,
       // then rethrow the rirst exception thrown.
-      firstExceptionThrown offer new IllegalStateException(errorMessage)
+      firstExceptionThrown offer new RuntimeException(errorMessage)
       mainThread.interrupt()
     }
 
     /**
      * Determine if there is a deadlock and if so, stop the test.
      */
-    private def detectDeadlock() { // TODO: Resources
+    private def detectDeadlock() {
       // Should never get to >= before ==, but just playing it safe
       if (deadlockCount >= MaxDeadlockDetectionsBeforeDeadlock) {
         // val errorMessage = "Apparent Deadlock! Threads waiting 50 clock periods (" + (clockPeriod * 50) + "ms)"
-         val errMsg = Resources("suspectedDeadlock", MaxDeadlockDetectionsBeforeDeadlock.toString, (clockPeriod * MaxDeadlockDetectionsBeforeDeadlock).toString)
-        firstExceptionThrown offer new RuntimeException(errMsg)
+         val errorMessage = Resources("suspectedDeadlock", MaxDeadlockDetectionsBeforeDeadlock.toString, (clockPeriod * MaxDeadlockDetectionsBeforeDeadlock).toString)
+        firstExceptionThrown offer new RuntimeException(errorMessage)
 
         // The mainThread is likely joined to some test thread, so wake it up. It will look and
         // notice that the firstExceptionThrown is no longer empty, and will stop all live test threads,
