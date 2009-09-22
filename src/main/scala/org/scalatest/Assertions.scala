@@ -581,8 +581,50 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
   
   /**
    * Throws <code>TestFailedException</code> to indicate a test failed.
+   *
+   * <p>
+   * The result type of this and the other overloaded <code>fail</code> methods is
+   * <code>Unit</code> instead of <code>Nothing</code>, because <code>Nothing</code>
+   * is a subtype of all other types. If the result type of <code>fail</code> were
+   * <code>Nothing</code>, a block of code that ends in a call to <code>fail()</code> may
+   * fail to compile if the block being passed as a by-name parameter or function to an
+   * overloaded method. The reason is that the compiler selects which overloaded
+   * method to call based on the static types of the parameters passed. Since
+   * <code>Nothing</code> is an instance of everything, it can often make the overloaded
+   * method selection ambiguous.
+   * </p>
+   *
+   * <p>
+   * For a concrete example, the <code>Conductor</code> class
+   * in package <code>org.scalatest.concurrent</code> has two overloaded variants of the
+   * <code>thread</code> method:
+   * </p>
+   *
+   * <pre>
+   * def thread[T](fun: => T): Thread
+   *
+   * def thread[T](name: String)(fun: => T): Thread
+   * </pre>
+   *
+   * <p>
+   * Given these two overloaded methods, the following code will compile given the result type
+   * of <code>fail</code> is <code>Unit</code>, but would not compile if the result type were
+   * <code>Nothing</code>:
+   * </p>
+   *
+   * <pre>
+   * thread { fail() }
+   * </pre>
+   *
+   * <p>
+   * If the result type of <code>fail</code> were <code>Nothing</code>, the type of the by-name parameter
+   * would be inferred to be <code>Nothing</code>, which is a subtype of both <code>T</code> and
+   * <code>String</code>. Thus the call is ambiguous, because the type matches the first parameter type
+   * of both overloaded <code>thread</code> methods. <code>Unit</code>, by constrast, is <em>not</em>
+   * a subtype of <code>String</code>, so it only matches one overloaded variant and compiles just fine.
+   * </p>
    */
-  def fail() = throw newAssertionFailedException(None, None, 4)
+  def fail() { throw newAssertionFailedException(None, None, 4) }
   // def fail() = throw new TestFailedException(2)
 
   /**
@@ -593,7 +635,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * @param message A message describing the failure.
    * @throws NullPointerException if <code>message</code> is <code>null</code>
    */
-  def fail(message: String) = {
+  def fail(message: String) {
 
     if (message == null)
         throw new NullPointerException("message is null")
@@ -611,7 +653,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * @param cause A <code>Throwable</code> that indicates the cause of the failure.
    * @throws NullPointerException if <code>message</code> or <code>cause</code> is <code>null</code>
    */
-  def fail(message: String, cause: Throwable) = {
+  def fail(message: String, cause: Throwable) {
 
     if (message == null)
       throw new NullPointerException("message is null")
@@ -632,7 +674,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * @param cause a <code>Throwable</code> that indicates the cause of the failure.
    * @throws NullPointerException if <code>cause</code> is <code>null</code>
    */
-  def fail(cause: Throwable) = {
+  def fail(cause: Throwable) {
 
     if (cause == null)
       throw new NullPointerException("cause is null")
