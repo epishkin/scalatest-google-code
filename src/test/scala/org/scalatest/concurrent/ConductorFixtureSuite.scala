@@ -120,9 +120,9 @@ class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with S
 
   test("whenFinished can only be called by thread that created Conductor.") { conductor => import conductor._
     thread {
-      intercept[IllegalStateException] {
+      intercept[NotAllowedException] {
         whenFinished {1 should be (1)}
-      }.getMessage should be ("whenFinished can only be called by thread that created Conductor.")
+      }.getMessage should be ("whenFinished can only be called by the thread that created Conductor.")
     }
     whenFinished {1 should be (1)}
   }

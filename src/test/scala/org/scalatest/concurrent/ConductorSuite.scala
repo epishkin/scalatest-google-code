@@ -19,7 +19,7 @@ import org.scalatest._
 import matchers.ShouldMatchers
 import Thread.State._
 
-class ConductorSuite extends FunSuite with ShouldMatchers {
+class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
 
   val baseLineNumber = 24
 
@@ -180,5 +180,41 @@ class ConductorSuite extends FunSuite with ShouldMatchers {
       functionExecutionCount += 1
     }
     functionExecutionCount should be (1)
+  }
+
+  test("first exception thrown is reported") {
+    val e = new RuntimeException("howdy")
+    class MySuite extends FunSuite {
+      test("this will fail") {
+        val conductor = new Conductor
+        import conductor._
+        thread {
+          waitForBeat(1)
+        }
+        thread {
+          throw e
+          ()
+        }
+        conductor.conduct()
+      }
+    }
+    val a = new MySuite
+    val rep = new EventRecordingReporter
+    a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+    val tf = rep.testFailedEventsReceived
+    tf.size should be === 1
+    tf.head.throwable should be ('defined)
+    tf.head.throwable.get should be theSameInstanceAs e
+  }
+
+  test("whenFinished can only be called by thread that created Conductor.") {
+    val conductor = new Conductor
+    import conductor._
+    thread {
+      intercept[NotAllowedException] {
+        whenFinished { 1 should be (1) }
+      }.getMessage should be ("whenFinished can only be called by the thread that created Conductor.")
+    }
+    whenFinished { 1 should be (1) }
   }
 }

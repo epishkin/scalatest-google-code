@@ -122,9 +122,9 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
 
   test("whenFinished can only be called by thread that created Conductor.") {
     thread {
-      intercept[IllegalStateException] {
+      intercept[NotAllowedException] {
         whenFinished {1 should be (1)}
-      }.getMessage should be ("whenFinished can only be called by thread that created Conductor.")
+      }.getMessage should be ("whenFinished can only be called by the thread that created Conductor.")
     }
     whenFinished {1 should be (1)}
   }
