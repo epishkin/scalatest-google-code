@@ -65,8 +65,14 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    *
    * return a <code>Description</code> of this suite of tests
    */
-  val getDescription = Description.createSuiteDescription(suiteClass)
-
+  val getDescription = {
+    val description = Description.createSuiteDescription(suiteClass)
+    // If we don't add the testNames in, we get Unrooted Tests show up in Eclipse
+    for (name <- suiteToRun.testNames) {
+      description.addChild(Description.createTestDescription(suiteClass, name))
+    }
+    description
+  }
   /**
    * Run this <code>Suite</code> of tests, reporting results to the passed <code>RunNotifier</code>.
    * This class's implementation of this method invokes <code>run</code> on an instance of the
