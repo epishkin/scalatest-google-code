@@ -333,6 +333,7 @@ class Conductor {
         f()
       } catch {
         case t =>
+          println("got an exception in thread " + name + ", ex was: " + t.getClass.getName + " " + (if (t.getMessage == null) "null" else t.getMessage))
           if (firstExceptionThrown.isEmpty) {
             // The mainThread is likely joined to some test thread, so it needs to be awakened. If it
             // is joined to this thread, it will wake up shortly because this thread is about to die
@@ -350,34 +351,15 @@ class Conductor {
     }
   }
 
-  /////////////////////// thread management end /////////////////////////////
-
-  /////////////////////// error handling start //////////////////////////////
-
   /**
    * A BlockingQueue containing the first exception that occured
    * in test threads, or that was thrown by the clock thread.
    */
   private val firstExceptionThrown = new ArrayBlockingQueue[Throwable](1)
 
-  /**
-   * Stop all test case threads and clock thread, except the thread from
-   * which this method is called. This method is used when a thread is
-   * ready to end in failure and it wants to make sure all the other
-   * threads have ended before throwing an exception.
-   * Clock thread will return normally when no threads are running.
-   */
-  private def signalError(t: Throwable) {
-    firstExceptionThrown offer t
-
-    // The clock thread is not in the thread group, just the test threads, the ones
-    // started by thread method or the threads they create.
-    for (t <- threadGroup.getThreads; if (t != currentThread && t.isAlive))
-      t.stop()
-  }
-
-  /////////////////////// error handling end //////////////////////////////
-
+  // Won't write one that takes clockPeriod and timeout for 1.0. For now people
+  // can just call conduct(a, b) directly followed by the code they want to run
+  // afterwords. See if anyone asks for a whenFinished(a, b) {}
   /**
    * Invokes <code>conduct</code> and after <code>conduct</code> method returns,
    * if <code>conduct</code> returns normally (<em>i.e.</em>, without throwing
@@ -409,10 +391,10 @@ class Conductor {
    *   instantiated this <code>Conductor</code>, or if <code>conduct</code> has already
    *    been invoked on this conductor.
    */
-  def whenFinished(fun: => Unit) { // TODO: Dang, need one that takes clockPeriod and timeout
+  def whenFinished(fun: => Unit) {
 
-    if (currentThread != mainThread)  // TODO: Get from resources, write a test
-      throw new NotAllowedException("whenFinished can only be called by the thread that created Conductor.", getStackDepth("Conductor.scala", "whenFinished"))
+    if (currentThread != mainThread)
+      throw new NotAllowedException(Resources("whenFinishedCanOnlyBeCalledByMainThread"), getStackDepth("Conductor.scala", "whenFinished"))
 
     if (conductingHasBegun)
       throw new NotAllowedException(Resources("cannotInvokeWhenFinishedAfterConduct"), getStackDepth("Conductor.scala", "whenFinished"))
@@ -422,7 +404,6 @@ class Conductor {
     fun
   }
 
-  /////////////////////// clock management start //////////////////////////
   /**
    * Blocks the current thread until the thread beat reaches the
    * specified value, at which point the current thread will be unblocked.
@@ -468,10 +449,6 @@ class Conductor {
    * </p>
    */
   def isConductorFrozen: Boolean = clock.isFrozen
-
-  /////////////////////// clock management end //////////////////////////////
-
-  /////////////////////// run methods start /////////////////////////////////
 
   /*
    * Keeps the main thread from allowing the test threads to execute their bodies
@@ -595,6 +572,9 @@ class Conductor {
 
     // change state to test finished
     currentState set TestFinished
+
+    if (!firstExceptionThrown.isEmpty)
+      throw firstExceptionThrown.peek
   }
 
   /**
@@ -822,8 +802,9 @@ class Conductor {
       // So this means there are threads that are RUNNABLE, BLOCKED, WAITING, or
       // TIMED_WAITING. (BLOCKED is waiting for a lock. WAITING is in the wait set.)
       while (threadGroup.areAnyThreadsAlive) {
-
+println("top of while")
         if (!firstExceptionThrown.isEmpty) {
+          println("!firstExceptionThrown.isEmpty")
           // If any exception has been thrown, stop any live test thread.
           threadGroup.getThreads.foreach { t =>
             if (t.isAlive)
@@ -835,16 +816,19 @@ class Conductor {
         // exist, but the timeout limit has not been reached, then just go
         // back to sleep.
         else if (threadGroup.areAnyThreadsRunning) {
+          println("threadGroup.areAnyThreadsRunning")
           if (runningTooLong) timeout()
         }
         // No RUNNABLE threads, so if any threads are waiting for a beat, advance
         // the beat.
         else if (clock.isAnyThreadWaitingForABeat) {
+          println("clock.isAnyThreadWaitingForABeat")
           clock.advance()
           deadlockCount = 0
           lastProgress = System.currentTimeMillis
         }
         else if (!threadGroup.areAnyThreadsInTimedWaiting) {
+          println("!threadGroup.areAnyThreadsInTimedWaiting")
           // At this point, no threads are RUNNABLE, None
           // are waiting for a beat, and none are in TimedWaiting.
           // If this persists for MaxDeadlockDetectionsBeforeDeadlock,
