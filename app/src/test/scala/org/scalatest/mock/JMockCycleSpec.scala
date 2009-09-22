@@ -68,13 +68,35 @@ class JMockCycleSpec extends FlatSpec with ShouldMatchers with SharedHelpers {
           twoFishMock.eat("blue fish")
         }
       }
+
+      def testThatShouldSucceedWithClass(cycle: JMockCycle) {
+        import cycle._
+        class OneFish {
+          def eat(food: String) = ()
+        }
+        class TwoFish {
+          def eat(food: String) = ()
+        }
+        val oneFishMock = mock[OneFish]
+        val twoFishMock = mock[TwoFish]
+
+        expecting { e => import e._
+          oneOf (oneFishMock).eat("red fish")
+          oneOf (twoFishMock).eat("blue fish")
+        }
+
+        whenExecuting {
+          oneFishMock.eat("red fish")
+          twoFishMock.eat("blue fish")
+        }
+      }
     }
     val rep = new EventRecordingReporter
     a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker)
     val tf = rep.testFailedEventsReceived
     tf.size should be === 1
     val ts = rep.testSucceededEventsReceived
-    ts.size should be === 1
+    ts.size should be === 2
   }
 
   it should "provide sugar for invoking with methods that take matchers" in {
