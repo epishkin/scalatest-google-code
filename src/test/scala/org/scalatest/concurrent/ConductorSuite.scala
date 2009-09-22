@@ -262,4 +262,27 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
       beat should equal (2)
     }
   }
+
+  test("deadlock is detected") {
+    val conductor = new Conductor
+    import conductor._
+    val monitor = new AnyRef {
+      def waitForever() {
+        synchronized {
+          wait()
+        }
+      }
+    }
+    thread {
+      monitor.waitForever()
+    }
+    thread {
+      monitor.waitForever()
+    }
+    val caught =
+      intercept[RuntimeException] {
+        conduct()
+      }
+    caught.getMessage should be ("Test aborted because of suspected deadlock. No progress has been made for 50 clock periods (500 ms).")
+  }
 }

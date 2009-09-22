@@ -864,8 +864,9 @@ println("top of while")
     private def detectDeadlock() { // TODO: Resources
       // Should never get to >= before ==, but just playing it safe
       if (deadlockCount >= MaxDeadlockDetectionsBeforeDeadlock) {
-        val errorMessage = "Apparent Deadlock! Threads waiting 50 clock periods (" + (clockPeriod * 50) + "ms)"
-        firstExceptionThrown offer new IllegalStateException(errorMessage)
+        // val errorMessage = "Apparent Deadlock! Threads waiting 50 clock periods (" + (clockPeriod * 50) + "ms)"
+         val errMsg = Resources("suspectedDeadlock", MaxDeadlockDetectionsBeforeDeadlock.toString, (clockPeriod * MaxDeadlockDetectionsBeforeDeadlock).toString)
+        firstExceptionThrown offer new RuntimeException(errMsg)
 
         // The mainThread is likely joined to some test thread, so wake it up. It will look and
         // notice that the firstExceptionThrown is no longer empty, and will stop all live test threads,
