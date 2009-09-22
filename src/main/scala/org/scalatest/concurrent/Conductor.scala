@@ -333,7 +333,6 @@ class Conductor {
         f()
       } catch {
         case t =>
-          println("got an exception in thread " + name + ", ex was: " + t.getClass.getName + " " + (if (t.getMessage == null) "null" else t.getMessage))
           if (firstExceptionThrown.isEmpty) {
             // The mainThread is likely joined to some test thread, so it needs to be awakened. If it
             // is joined to this thread, it will wake up shortly because this thread is about to die
@@ -568,7 +567,7 @@ class Conductor {
             // or a test thread completes abruptly with an exception. Just loop here, because
             // firstExceptionThrown should be non-empty after InterruptedException is caught, and
             // if not, then I don't know how it got interrupted, but just keep looping.
-            case e: InterruptedException => println("GOT INTERRUPTED HERE TOO")
+            case e: InterruptedException =>
               interrupted = true
           }
       }
@@ -764,9 +763,7 @@ class Conductor {
       // So this means there are threads that are RUNNABLE, BLOCKED, WAITING, or
       // TIMED_WAITING. (BLOCKED is waiting for a lock. WAITING is in the wait set.)
       while (threadGroup.areAnyThreadsAlive) {
-println("top of while")
         if (!firstExceptionThrown.isEmpty) {
-          println("!firstExceptionThrown.isEmpty")
           // If any exception has been thrown, stop any live test thread.
           threadGroup.getThreads.foreach { t =>
             if (t.isAlive)
@@ -778,19 +775,16 @@ println("top of while")
         // exist, but the timeout limit has not been reached, then just go
         // back to sleep.
         else if (threadGroup.areAnyThreadsRunning) {
-          println("threadGroup.areAnyThreadsRunning")
           if (runningTooLong) timeout()
         }
         // No RUNNABLE threads, so if any threads are waiting for a beat, advance
         // the beat.
         else if (clock.isAnyThreadWaitingForABeat) {
-          println("clock.isAnyThreadWaitingForABeat")
           clock.advance()
           deadlockCount = 0
           lastProgress = System.currentTimeMillis
         }
         else if (!threadGroup.areAnyThreadsInTimedWaiting) {
-          println("!threadGroup.areAnyThreadsInTimedWaiting")
           // At this point, no threads are RUNNABLE, None
           // are waiting for a beat, and none are in TimedWaiting.
           // If this persists for MaxDeadlockDetectionsBeforeDeadlock,
