@@ -65,11 +65,17 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    *
    * return a <code>Description</code> of this suite of tests
    */
-  val getDescription = {
-    val description = Description.createSuiteDescription(suiteClass)
-    // If we don't add the testNames in, we get Unrooted Tests show up in Eclipse
-    for (name <- suiteToRun.testNames) {
-      description.addChild(Description.createTestDescription(suiteClass, name))
+  val getDescription = createDescription(suiteToRun)
+
+  private def createDescription(suite: Suite): Description = {
+    val description = Description.createSuiteDescription(suite.getClass)
+    // If we don't add the testNames and nested suites in, we get
+    // Unrooted Tests show up in Eclipse
+    for (name <- suite.testNames) {
+      description.addChild(Description.createTestDescription(suite.getClass, name))
+    }
+    for (nestedSuite <- suite.nestedSuites) {
+      description.addChild(createDescription(nestedSuite))
     }
     description
   }
@@ -94,7 +100,5 @@ class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.R
    *  @return the expected number of tests that will run when this suite is run
    */
   override def testCount() = suiteToRun.expectedTestCount(Filter())
-
-  println(getDescription)
 }
 
