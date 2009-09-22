@@ -153,9 +153,9 @@ trait SharedHelpers extends Assertions {
       case Some(infoProvided: InfoProvided) =>
         infoProvided.formatter match {
           case Some(indentedText: IndentedText) => indentedText
-          case _ => fail("An InfoProvided was received that didn't include an IndentedText formatter: " + infoProvided.formatter)
+          case _ => fail("An InfoProvided was received that didn't include an IndentedText formatter: " + infoProvided.formatter).asInstanceOf[Nothing]
         }
-      case _ => fail("No InfoProvided was received by the Reporter during the run.")
+      case _ => fail("No InfoProvided was received by the Reporter during the run.").asInstanceOf[Nothing]
     }
   }
 

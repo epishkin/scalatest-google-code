@@ -18,6 +18,7 @@ package org.scalatest.mock
 import org.scalatest._
 import org.jmock.api.ExpectationError
 import org.jmock.{Expectations, Mockery}
+import org.jmock.lib.legacy.ClassImposteriser
 import scala.reflect.Manifest
 
 /**
@@ -34,8 +35,17 @@ import scala.reflect.Manifest
  * </pre>
  *
  * <p>
+ * JMockCycle uses jMock's ClassImposterizer to support mocking of classes, so the following line
+ * would also be needed if you wanted that functionality as well:
+ * </p>
+ *
+ * <pre>
+ * context.setImposteriser(ClassImposteriser.INSTANCE)
+ * </pre>
+ *
+ * <p>
  * When using this class, you would instead create an instance of this class (which will create and
- * wrap a <code>Mocker</code> object) and import its members, like this:
+ * wrap a <code>Mockery</code> object) and import its members, like this:
  * </p>
  *
  * <pre>
@@ -178,6 +188,7 @@ import scala.reflect.Manifest
 class JMockCycle {
 
   private val context = new Mockery
+  context.setImposteriser(ClassImposteriser.INSTANCE)
 
   /**
    * Invokes the <code>mock</code> method on this <code>JMockCycle</code>'s internal
