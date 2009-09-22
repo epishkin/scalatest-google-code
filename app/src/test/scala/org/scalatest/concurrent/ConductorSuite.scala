@@ -217,4 +217,13 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
     }
     whenFinished { 1 should be (1) }
   }
+
+  test("isConductorFrozen returns true if the conductor is frozen, false otherwise") {
+    val conductor = new Conductor
+    import conductor._
+    conductor.isConductorFrozen should be (false)
+    withConductorFrozen {
+      conductor.isConductorFrozen should be (true)
+    }
+  }
 }

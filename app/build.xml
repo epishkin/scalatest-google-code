@@ -398,8 +398,8 @@
             <arg value="-m" />
             <arg value="org.scalatest.prop" />
 -->
-            <arg value="-m" />
-            <arg value="org.scalatest.concurrent" />
+            <arg value="-s" />
+            <arg value="org.scalatest.concurrent.ConductorSuite" />
         </java>
         <echo message="starting cobertura-report..." />
         <cobertura-report srcdir="${scalasrc}" destdir="${build.coverage}"/>
