@@ -286,7 +286,7 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
       intercept[RuntimeException] {
         conduct()
       }
-    caught.getMessage should be ("Test aborted because of suspected deadlock. No progress has been made for 50 clock periods (500 ms).")
+    caught.getMessage should be ("Test aborted because of suspected deadlock. No progress has been made (the beat did not advance) for 50 clock periods (500 ms).")
   }
 
   test("other threads are killed when one thread throws an exception") {
@@ -312,5 +312,27 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
       conduct()
     }
     threadWasKilled.get should be (true)
+  }
+
+  test("runaway threads will cause a test to be timed out") {
+    val conductor = new Conductor
+    import conductor._
+    class Counter {
+      @volatile var count = 0
+    }
+    val counter = new Counter
+    thread {
+      while (true)
+        counter.count += 1
+    }
+    thread {
+      while (true)
+        counter.count -= 1
+    }
+    val caught =
+      intercept[RuntimeException] {
+        conduct(10, 1)
+      }
+    caught.getMessage should be ("Test timed out because threads existed that were runnable while no progress was made (the beat did not advance) for 1 seconds.")
   }
 }
