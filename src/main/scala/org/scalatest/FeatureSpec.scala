@@ -195,7 +195,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by tests such that
- * it needs to be recreated or reinitialized before each test. Shared resources such
+ * they need to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to be created and initialized before,
  * and cleaned up after, each test. JUnit offers methods <code>setUp</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
@@ -250,88 +250,12 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <p>
  * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
- * test, they don't address the problem of cleaning up a fixture after the test completes. One approach that addresses
- * the clean up problem but still avoids <code>var</code>s is to use <a href="fixture/FixtureFeatureSpec.html"><code>FixtureFeatureSpec</code></a> trait in the
- * <code>org.scalatest.fixture</code> package.  Tests in an <code>org.scalatest.fixture.FixtureFeatureSpec</code> can have a fixture
- * object passed in as a parameter. You must indicate the type of the fixture object
- * by defining the <code>Fixture</code> type member and define a <code>withFixture</code> method that takes a test function.
- * Inside the <code>withFixture</code> method, you create the fixture, pass it into the test function, then perform any
- * necessary cleanup after the test function returns. Instead of invoking each test directly, a <code>FixtureFeatureSpec</code> will
- * pass a function that invokes the code of a test to <code>withFixture</code>. Your <code>withFixture</code> method, therefore,
- * is responsible for actually running the code of the test by invoking the test function.
- * For example, you could create a temporary file before each test, and delete it afterwords, by
- * doing so before and after invoking the test function in the <code>withFixture</code> method of a <code>FixtureFeatureSpec</code>:
- * </p>
- *
- * <pre>
- * import org.scalatest.fixture.FixtureFeatureSpec
- * import java.io.FileReader
- * import java.io.FileWriter
- * import java.io.File
- * 
- * class MySuite extends FixtureFeatureSpec {
- *
- *   type Fixture = FileReader
- *
- *   def withFixture(test: Test) {
- *
- *     val FileName = "TempFile.txt"
- *
- *     // Set up the temp file needed by the test
- *     val writer = new FileWriter(FileName)
- *     try {
- *       writer.write("Hello, test!")
- *     }
- *     finally {
- *       writer.close()
- *     }
- *
- *     // Create the reader needed by the test
- *     val reader = new FileReader(FileName)
- *  
- *     try {
- *       // Run the test using the temp file
- *       test(reader)
- *     }
- *     finally {
- *       // Close and delete the temp file
- *       reader.close()
- *       val file = new File(FileName)
- *       file.delete()
- *     }
- *   }
- * 
- *   feature("Reading and writing files") {
- *
- *     scenario("reading from a temp file") { reader =>
- *       var builder = new StringBuilder
- *       var c = reader.read()
- *       while (c != -1) {
- *         builder.append(c.toChar)
- *         c = reader.read()
- *       }
- *       assert(builder.toString === "Hello, test!")
- *     }
- * 
- *     scenario("reading first char of a temp file") { reader =>
- *       assert(reader.read() === 'H')
- *     }
- * 
- *     scenario("no fixture is passed") { () =>
- *       assert(1 + 1 === 2)
- *     }
- *   }
- * }
- * </pre>
- *
- * <p>
- * If you are more comfortable with reassigning instance variables, however, you can
- * instead use the <code>BeforeAndafterEach</code> trait, which provides
- * methods that will be run before and after each test. <code>BeforeAndAfterEach</code>'s
- * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * test, they don't address the problem of cleaning up a fixture after the test completes. In this situation,
+ * one option is to mix in the <a href="BeforeAndAfterEach.html"><code>BeforeAndAfterEach</code></a> trait.
+ * <code>BeforeAndAfterEach</code>'s <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
  * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
- * methods, respectively). For example, here's how you'd write the previous
- * test that uses a temp file with <code>BeforeAndAfterEach</code>:
+ * methods, respectively). 
+ * For example, you could create a temporary file before each test, and delete it afterwords, like this:
  * </p>
  *
  * <pre>
@@ -395,6 +319,166 @@ import Suite.anErrorThatShouldCauseAnAbort
  * it can be reinitialized between tests by the <code>beforeEach</code> method.
  * </p>
  * 
+ * <p>
+ * Although the <code>BeforeAndAfterEach</code> approach should be familiar to the users of most
+ * test other frameworks, ScalaTest provides another alternative that also allows you to perform cleanup
+ * after each test: overriding <code>withFixture(NoArgTest)</code>.
+ * To execute each test, <code>Suite</code>'s implementation of the <code>runTest</code> method wraps an invocation
+ * of the appropriate test method in a no-arg function. <code>runTest</code> passes that test function to the <code>withFixture(NoArgTest)</code>
+ * method, which is responsible for actually running the test by invoking the function. <code>Suite</code>'s
+ * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
+ * </p>
+ *
+ * <pre>
+ * // Default implementation
+ * protected def withFixture(test: NoArgTest) {
+ *   test()
+ * }
+ * </pre>
+ *
+ * <p>
+ * The <code>withFixture(NoArgTest)</code> method exists so that you can override it and set a fixture up before, and clean it up after, each test.
+ * Thus, the previous temp file example could also be implemented without mixing in <code>BeforeAndAfterEach</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FeatureSpec
+ * import org.scalatest.BeforeAndAfterEach
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ *
+ * class FileIoFeatureSpec extends FeatureSpec {
+ *
+ *   private var reader: FileReader = _
+ *
+ *   override def withFixture(test: NoArgTest) {
+ *
+ *     val FileName = "TempFile.txt"
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     reader = new FileReader(FileName)
+ *
+ *     try {
+ *       test() // Invoke the test function
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ *
+ *   feature("Reading and writing files") {
+ *
+ *     scenario("reading from a temp file") {
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
+ *     }
+ *
+ *     scenario("reading first char of a temp file") {
+ *       assert(reader.read() === 'H')
+ *     }
+ * 
+ *     scenario("no fixture is passed") { 
+ *       assert(1 + 1 === 2)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you prefer to keep your test classes immutable, one final variation is to use the
+ * <a href="fixture/FixtureFeatureSpec.html"><code>FixtureFeatureSpec</code></a> trait from the
+ * <code>org.scalatest.fixture</code> package.  Tests in an <code>org.scalatest.fixture.FixtureFeatureSpec</code> can have a fixture
+ * object passed in as a parameter. You must indicate the type of the fixture object
+ * by defining the <code>Fixture</code> type member and define a <code>withFixture</code> method that takes a <em>one-arg</em> test function.
+ * (A <code>FixtureFeatureSpec</code> has two overloaded <code>withFixture</code> methods, therefore, one that takes a <code>OneArgTest</code>
+ * and the other, inherited from <code>Suite</code>, that takes a <code>NoArgTest</code>.)
+ * Inside the <code>withFixture(OneArgTest)</code> method, you create the fixture, pass it into the test function, then perform any
+ * necessary cleanup after the test function returns. Instead of invoking each test directly, a <code>FixtureFeatureSpec</code> will
+ * pass a function that invokes the code of a test to <code>withFixture(OneArgTest)</code>. Your <code>withFixture(OneArgTest)</code> method, therefore,
+ * is responsible for actually running the code of the test by invoking the test function.
+ * For example, you could pass the temp file reader fixture to each test that needs it
+ * by overriding the <code>withFixture(OneArgTest)</code> method of a <code>FixtureFeatureSpec</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.fixture.FixtureFeatureSpec
+ * import java.io.FileReader
+ * import java.io.FileWriter
+ * import java.io.File
+ * 
+ * class MySuite extends FixtureFeatureSpec {
+ *
+ *   type Fixture = FileReader
+ *
+ *   def withFixture(test: Test) {
+ *
+ *     val FileName = "TempFile.txt"
+ *
+ *     // Set up the temp file needed by the test
+ *     val writer = new FileWriter(FileName)
+ *     try {
+ *       writer.write("Hello, test!")
+ *     }
+ *     finally {
+ *       writer.close()
+ *     }
+ *
+ *     // Create the reader needed by the test
+ *     val reader = new FileReader(FileName)
+ *  
+ *     try {
+ *       // Run the test using the temp file
+ *       test(reader)
+ *     }
+ *     finally {
+ *       // Close and delete the temp file
+ *       reader.close()
+ *       val file = new File(FileName)
+ *       file.delete()
+ *     }
+ *   }
+ * 
+ *   feature("Reading and writing files") {
+ *
+ *     scenario("reading from a temp file") { reader =>
+ *       var builder = new StringBuilder
+ *       var c = reader.read()
+ *       while (c != -1) {
+ *         builder.append(c.toChar)
+ *         c = reader.read()
+ *       }
+ *       assert(builder.toString === "Hello, test!")
+ *     }
+ * 
+ *     scenario("reading first char of a temp file") { reader =>
+ *       assert(reader.read() === 'H')
+ *     }
+ * 
+ *     scenario("no fixture is passed") { () =>
+ *       assert(1 + 1 === 2)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
  * <p>
  * It is worth noting that the only difference in the test code between the mutable
  * <code>BeforeAndAfterEach</code> approach shown here and the immutable <code>FixtureFeatureSpec</code>
@@ -1913,7 +1997,7 @@ trait FeatureSpec extends Suite { thisSuite =>
  *
  * <p>
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by tests such that
- * it needs to be recreated or reinitialized before each test. Shared resources such
+ * they need to be recreated or reinitialized before each test. Shared resources such
  * as files or database connections may also need to 
  * be cleaned up after each test. JUnit offers methods <code>setup</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfter</code> trait,

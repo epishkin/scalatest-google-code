@@ -538,9 +538,8 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * Although the create-fixture and <code>OneInstancePerTest</code> approaches take care of setting up a fixture before each
  * test, they don't address the problem of cleaning up a fixture after the test completes. In this situation,
- * one option is to mix in the <a href="BeforeAndAfterEach.html"><code>BeforeAndAfterEach</code></a> trait, which provides
- * methods that will be run before and after each test: <code>BeforeAndAfterEach</code>'s
- * <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
+ * one option is to mix in the <a href="BeforeAndAfterEach.html"><code>BeforeAndAfterEach</code></a> trait.
+ * <code>BeforeAndAfterEach</code>'s <code>beforeEach</code> method will be run before, and its <code>afterEach</code>
  * method after, each test (like JUnit's <code>setUp</code>  and <code>tearDown</code>
  * methods, respectively). 
  * For example, you could create a temporary file before each test, and delete it afterwords, like this:
@@ -607,22 +606,22 @@ import org.scalatest.tools.StandardOutReporter
  * <p>
  * Although the <code>BeforeAndAfterEach</code> approach should be familiar to the users of most
  * test other frameworks, ScalaTest provides another alternative that also allows you to perform cleanup
- * after each test: overriding <code>withFixture</code>.
+ * after each test: overriding <code>withFixture(NoArgTest)</code>.
  * To execute each test, <code>Suite</code>'s implementation of the <code>runTest</code> method wraps an invocation
- * of the appropriate test method in a no-arg function. <code>runTest</code> passes that test function to the <code>withFixture</code>
+ * of the appropriate test method in a no-arg function. <code>runTest</code> passes that test function to the <code>withFixture(NoArgTest)</code>
  * method, which is responsible for actually running the test by invoking the function. <code>Suite</code>'s
- * implementation of <code>withFixture</code> simply invokes the function, like this:
+ * implementation of <code>withFixture(NoArgTest)</code> simply invokes the function, like this:
  * </p>
  *
  * <pre>
- * // Called to run each test
+ * // Default implementation
  * protected def withFixture(test: NoArgTest) {
  *   test()
  * }
  * </pre>
  *
  * <p>
- * The <code>withFixture</code> method exists so that you can override it and set a fixture up before, and clean it up after, each test.
+ * The <code>withFixture(NoArgTest)</code> method exists so that you can override it and set a fixture up before, and clean it up after, each test.
  * Thus, the previous temp file example could also be implemented without mixing in <code>BeforeAndAfterEach</code>, like this:
  * </p>
  *
