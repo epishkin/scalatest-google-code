@@ -278,7 +278,7 @@ class Conductor {
    * @param fun the function to be executed by the newly created thread
    * @return the newly created thread
    */
-  def thread[T](fun: => T): Thread = thread("Conductor-Thread-" + threads.size) { fun }
+  def thread(fun: => Unit): Thread = thread("Conductor-Thread-" + threads.size) { fun }
 
   /**
    * Creates a new thread with the specified name that will execute the specified function.
@@ -291,7 +291,7 @@ class Conductor {
    * @param fun the function to be executed by the newly created thread
    * @return the newly created thread
    */
-  def thread[T](name: String)(fun: => T): Thread = {
+  def thread(name: String)(fun: => Unit): Thread = {
     currentState.get match {
       case TestFinished =>
         throw new NotAllowedException(Resources("threadCalledAfterConductingHasCompleted"), getStackDepth("Conductor.scala", "thread"))
@@ -316,7 +316,7 @@ class Conductor {
    * The main thread grants permission after it receives notication that
    * all test threads are ready to go.
    */
-  private case class TestThread[T](name: String, f: () => T) extends Thread(threadGroup, name) {
+  private case class TestThread(name: String, f: () => Unit) extends Thread(threadGroup, name) {
 
     // Indicate a TestThread has been created that has not yet started running
     testThreadsStartingCounter.increment()

@@ -307,6 +307,7 @@ class ConductorSuite extends FunSuite with ShouldMatchers with SharedHelpers {
     thread {
       waitForBeat(1)
       fail()
+      ()
     }
     intercept[RuntimeException] {
       conduct()

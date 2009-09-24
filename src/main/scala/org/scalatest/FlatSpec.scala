@@ -184,7 +184,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * If a fixture is used by only one test, then the definitions of the fixture objects should
+ * If a fixture is used by only one test, then the definitions of the fixture objects can
  * be local to the test function, such as the objects assigned to <code>stack</code> and <code>emptyStack</code> in the
  * previous <code>StackSpec</code> examples. If multiple tests need to share an immutable fixture, one approach
  * is to assign them to instance variables. Here's a (very contrived) example, in which the object assigned
@@ -196,7 +196,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * class ArithmeticSpec extends FlatSpec {
  *
- *   // Sharing fixture objects via instance variables
+ *   // Sharing immutable fixture objects via instance variables
  *   val shared = 5
  *
  *  "The Scala language" must "add correctly" in {
@@ -214,8 +214,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * In some cases, however, shared <em>mutable</em> fixture objects may be changed by tests such that
  * they need to be recreated or reinitialized before each test. Shared resources such
- * as files or database connections may also need to 
- * be cleaned up after each test. JUnit offers methods <code>setUp</code> and
+ * as files or database connections may also need to be created and initialized before, and
+ * cleaned up after, each test. JUnit offers methods <code>setUp</code> and
  * <code>tearDown</code> for this purpose. In ScalaTest, you can use the <code>BeforeAndAfterEach</code> trait,
  * which will be described later, to implement an approach similar to JUnit's <code>setUp</code>
  * and <code>tearDown</code>, however, this approach often involves reassigning <code>var</code>s

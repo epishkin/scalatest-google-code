@@ -579,9 +579,8 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     }
   }
   
-  /**
-   * Throws <code>TestFailedException</code> to indicate a test failed.
-   *
+/*
+   * TODO: Delete this if sticking with Nothing instead of Unit as result type of fail.
    * <p>
    * The result type of this and the other overloaded <code>fail</code> methods is
    * <code>Unit</code> instead of <code>Nothing</code>, because <code>Nothing</code>
@@ -623,9 +622,11 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * of both overloaded <code>thread</code> methods. <code>Unit</code>, by constrast, is <em>not</em>
    * a subtype of <code>String</code>, so it only matches one overloaded variant and compiles just fine.
    * </p>
+*/
+  /**
+   * Throws <code>TestFailedException</code> to indicate a test failed.
    */
-  def fail() { throw newAssertionFailedException(None, None, 4) }
-  // def fail() = throw new TestFailedException(2)
+  def fail() = { throw newAssertionFailedException(None, None, 4) }
 
   /**
    * Throws <code>TestFailedException</code>, with the passed
@@ -635,13 +636,12 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * @param message A message describing the failure.
    * @throws NullPointerException if <code>message</code> is <code>null</code>
    */
-  def fail(message: String) {
+  def fail(message: String) = {
 
     if (message == null)
         throw new NullPointerException("message is null")
      
     throw newAssertionFailedException(Some(message),  None, 4)
-    // throw new TestFailedException(message, 2)
   }
 
   /**
@@ -653,7 +653,7 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * @param cause A <code>Throwable</code> that indicates the cause of the failure.
    * @throws NullPointerException if <code>message</code> or <code>cause</code> is <code>null</code>
    */
-  def fail(message: String, cause: Throwable) {
+  def fail(message: String, cause: Throwable) = {
 
     if (message == null)
       throw new NullPointerException("message is null")
@@ -662,7 +662,6 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
       throw new NullPointerException("cause is null")
 
     throw newAssertionFailedException(Some(message), Some(cause), 4)
-    // throw new TestFailedException(message, cause, 2)
   }
 
   /**
@@ -674,13 +673,12 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
    * @param cause a <code>Throwable</code> that indicates the cause of the failure.
    * @throws NullPointerException if <code>cause</code> is <code>null</code>
    */
-  def fail(cause: Throwable) {
+  def fail(cause: Throwable) = {
 
     if (cause == null)
       throw new NullPointerException("cause is null")
         
     throw newAssertionFailedException(None, Some(cause), 4)
-    // throw new TestFailedException(cause, 2)
   }
 }
 
