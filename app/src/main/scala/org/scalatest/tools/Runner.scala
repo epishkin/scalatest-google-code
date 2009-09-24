@@ -1498,11 +1498,22 @@ object Runner {
           dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount, configMap))
 
           if (concurrent) {
-            val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, configMap, numThreads)
-            for (suite <- suiteInstances) {
-              distributor.apply(suite, tracker.nextTracker())
+            if (System.getProperty("org.scalatest.tools.Runner.forever", "false") == "true") {
+              val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, configMap, numThreads)
+              while (true) {
+                for (suite <- suiteInstances) {
+                  distributor.apply(suite, tracker.nextTracker())
+                }
+                distributor.waitUntilDone()
+              }
             }
-            distributor.waitUntilDone()
+            else {
+              val distributor = new ConcurrentDistributor(dispatch, stopRequested, filter, configMap, numThreads)
+              for (suite <- suiteInstances) {
+                distributor.apply(suite, tracker.nextTracker())
+              }
+              distributor.waitUntilDone()
+            }
           }
           else {
             for (suite <- suiteInstances) {
