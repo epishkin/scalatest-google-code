@@ -392,10 +392,10 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     )
 
   private val shouldRarelyIfEverBeSeen = """
-    Two threads attempted to modify Spec's internal data, which should only be
+    Two threads attempted to modify FixtureFeatureSpec's internal data, which should only be
     modified by the thread that constructs the object. This likely means that a subclass
     has allowed the this reference to escape during construction, and some other thread
-    attempted to invoke the "describe" or "it" method on the object before the first
+    attempted to invoke the "feature" or "scenario" method on the object before the first
     thread completed its construction.
   """
 
@@ -993,5 +993,4 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
   implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun)
 }
-
 
