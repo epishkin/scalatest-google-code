@@ -998,14 +998,6 @@ trait FunSuite extends Suite { thisSuite =>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
-  private[scalatest] override def getTestNameForReport(testName: String) = {
-
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-
-    suiteName + ", " + testName
-  }
-  
   /**
    * Run zero to many of this <code>Spec</code>'s tests.
    *

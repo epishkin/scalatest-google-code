@@ -1564,8 +1564,6 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         // Call getPrefix and pass in this Desc, to get the full name
         val descriptionFullName = getPrefixWithoutVerb(desc).trim
 
-        // Call getTestNameForReport with the description, because that puts the Suite name
-        // in front of the description, which looks good in the regular report.
         report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
 
       case _ =>
@@ -1695,14 +1693,6 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         }
       }
     }
-  }
-
-  private[scalatest] override def getTestNameForReport(testName: String) = {
-
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-
-    suiteName + ", " + testName
   }
 
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,

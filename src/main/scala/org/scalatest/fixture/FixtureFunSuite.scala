@@ -631,14 +631,6 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
-  private[scalatest] override def getTestNameForReport(testName: String) = {
-
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-
-    suiteName + ", " + testName
-  }
-
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 

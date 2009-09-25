@@ -1,4 +1,5 @@
 
+- fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored.
 - pass multiple mock objects in EasyMock and JMock sugar traits
 - reproduce 2.8 bug and put in trac (do I remember what this was?)
 - finish writing tests for new core traits
