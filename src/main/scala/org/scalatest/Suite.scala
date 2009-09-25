@@ -2021,14 +2021,6 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
         throw new TestFailedException(Resources("pendingUntilFixed"), 2)
   }
 
-  private[scalatest] def getTestNameForReport(testName: String) = {
-
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-
-    suiteName + ", " + testName
-  }
-
   /**
    * The total number of tests that are expected to run when this <code>Suite</code>'s <code>run</code> method is invoked.
    *
