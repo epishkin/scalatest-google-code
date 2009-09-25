@@ -1,17 +1,57 @@
 
 - pass multiple mock objects in EasyMock and JMock sugar traits
-- make sure can mock classes with JMock and EasyMock
 - reproduce 2.8 bug and put in trac (do I remember what this was?)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
 - document internal parts of new core traits
 - check out the problem with taggedAs clauses in nested describes or something. It was reported on scalatest-users.
-- check out problem with Conductor
+- check to make sure that immutable objects are final so can't be subclassed, such as in or.scalatest.events
 
 Make all function parameters named fun.
 
+Literally following the Spec/Group example using only it() works fine
+with Spec. However, using it() inside describe() with a Group
+generates a scalac internal error: class
+java.lang.reflect.InvocationTargetException.
+The compilation error is not present after removing the group from the
+nested it() statement. Here's the code to reproduce the issue:
+
+Was from Scott Tran:
+
+import collection.mutable.Stack
+import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.{Group, Spec}
+
+object Fast extends Group("Fast")
+object Slow extends Group("Slow")
+
+class StackSpec extends Spec with ShouldMatchers {
+
+ it ("should test something", Fast) {
+ }
+
+ it("should test something slow", Slow) {
+
+ }
+
+ describe("A Stack") {
+
+   it("should pop values in last-in-first-out order", Fast) {
+     val stack = new Stack[Int]
+     stack.push(1)
+     stack.push(2)
+     stack.pop() should equal (2)
+     stack.pop() should equal (1)
+   }
+
+   it("should be empty when created") {
+     val stack = new Stack[Int]
+     stack should be ('empty)
+   }
+ }
+}
+
 Future enhancements:
-- add a name to Test in FixtureSuite?
 
 Log4j has appenders. java.util.logging has handlers. I think the model would be you'd ask runner
 to register a handler or an appender, and it could do that, then it would get a LogRecorder object
