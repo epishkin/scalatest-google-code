@@ -567,7 +567,6 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
       val theTest = atomic.get.testsMap(testName)
 
-      val oldInformer = atomicInformer.get
       val informerForThisTest =
         new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
           def apply(message: String) {
@@ -577,7 +576,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
           }
         }
 
-      atomicInformer.set(informerForThisTest)
+      val oldInformer = atomicInformer.getAndSet(informerForThisTest)
       var compareAndSwapSucceeded = false
       try {
         theTest.fun match {

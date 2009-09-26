@@ -737,7 +737,6 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
         report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
 
         val formatter = IndentedText(formattedSpecText, test.specText, 1)
-        val oldInformer = atomicInformer.get
         val informerForThisTest =
           new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
             def apply(message: String) {
@@ -753,7 +752,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
             }
           }
 
-        atomicInformer.set(informerForThisTest)
+        val oldInformer = atomicInformer.getAndSet(informerForThisTest)
         var testWasPending = false
         var compareAndSwapSucceeded = false
         try {
