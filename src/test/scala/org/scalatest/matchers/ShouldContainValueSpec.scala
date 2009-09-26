@@ -758,7 +758,8 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
         val caught1 = intercept[TestFailedException] {
           javaMap should contain value (3)
         }
-        assert(caught1.getMessage === "{one=1, two=2} did not contain value 3")
+        caught1.getMessage should (be === "{one=1, two=2} did not contain value 3" or
+          be === "{two=2, one=1} did not contain value 3")
       }
 
       it("should throw TestFailedException if contains the specified value when used with not") {
@@ -766,17 +767,20 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
         val caught1 = intercept[TestFailedException] {
           javaMap should (not contain value (2))
         }
-        assert(caught1.getMessage === "{one=1, two=2} contained value 2")
+        caught1.getMessage should (be === "{one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} contained value 2")
 
         val caught2 = intercept[TestFailedException] {
           javaMap should not (contain value (2))
         }
-        assert(caught2.getMessage === "{one=1, two=2} contained value 2")
+        caught2.getMessage should (be === "{one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} contained value 2")
 
         val caught3 = intercept[TestFailedException] {
           javaMap should not contain value (2)
         }
-        assert(caught3.getMessage === "{one=1, two=2} contained value 2")
+        caught3.getMessage should (be === "{one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} contained value 2")
       }
 
       it("should throw an TestFailedException when map doesn't contain specified value and used in a logical-and expression") {
@@ -784,17 +788,20 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
         val caught1 = intercept[TestFailedException] {
           javaMap should { contain value (5) and (contain value (2)) }
         }
-        assert(caught1.getMessage === "{one=1, two=2} did not contain value 5")
+        caught1.getMessage should (be === "{one=1, two=2} did not contain value 5" or
+          be === "{two=2, one=1} did not contain value 5")
 
         val caught2 = intercept[TestFailedException] {
           javaMap should ((contain value (5)) and (contain value (2)))
         }
-        assert(caught2.getMessage === "{one=1, two=2} did not contain value 5")
+        caught2.getMessage should (be === "{one=1, two=2} did not contain value 5" or
+          be === "{two=2, one=1} did not contain value 5")
 
         val caught3 = intercept[TestFailedException] {
           javaMap should (contain value (5) and contain value (2))
         }
-        assert(caught3.getMessage === "{one=1, two=2} did not contain value 5")
+        caught3.getMessage should (be === "{one=1, two=2} did not contain value 5" or
+          be === "{two=2, one=1} did not contain value 5")
       }
 
       it("should throw an TestFailedException when map doesn't contain specified value and used in a logical-or expression") {
@@ -802,17 +809,20 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
         val caught1 = intercept[TestFailedException] {
           javaMap should { contain value (55) or (contain value (22)) }
         }
-        assert(caught1.getMessage === "{one=1, two=2} did not contain value 55, and {one=1, two=2} did not contain value 22")
+        caught1.getMessage should (be === "{one=1, two=2} did not contain value 55, and {one=1, two=2} did not contain value 22" or
+          be === "{two=2, one=1} did not contain value 55, and {two=2, one=1} did not contain value 22")
 
         val caught2 = intercept[TestFailedException] {
           javaMap should ((contain value (55)) or (contain value (22)))
         }
-        assert(caught2.getMessage === "{one=1, two=2} did not contain value 55, and {one=1, two=2} did not contain value 22")
+        caught2.getMessage should (be === "{one=1, two=2} did not contain value 55, and {one=1, two=2} did not contain value 22" or
+          be === "{two=2, one=1} did not contain value 55, and {two=2, one=1} did not contain value 22")
 
         val caught3 = intercept[TestFailedException] {
           javaMap should (contain value (55) or contain value (22))
         }
-        assert(caught3.getMessage === "{one=1, two=2} did not contain value 55, and {one=1, two=2} did not contain value 22")
+        caught3.getMessage should (be === "{one=1, two=2} did not contain value 55, and {one=1, two=2} did not contain value 22" or
+          be === "{two=2, one=1} did not contain value 55, and {two=2, one=1} did not contain value 22")
       }
 
       it("should throw an TestFailedException when map contains specified value and used in a logical-and expression with not") {
@@ -820,17 +830,20 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
         val caught1 = intercept[TestFailedException] {
           javaMap should { not { contain value (3) } and not { contain value (2) }}
         }
-        assert(caught1.getMessage === "{one=1, two=2} did not contain value 3, but {one=1, two=2} contained value 2")
+        caught1.getMessage should (be === "{one=1, two=2} did not contain value 3, but {one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} did not contain value 3, but {two=2, one=1} contained value 2")
 
         val caught2 = intercept[TestFailedException] {
           javaMap should ((not contain value (3)) and (not contain value (2)))
         }
-        assert(caught2.getMessage === "{one=1, two=2} did not contain value 3, but {one=1, two=2} contained value 2")
+        caught2.getMessage should (be === "{one=1, two=2} did not contain value 3, but {one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} did not contain value 3, but {two=2, one=1} contained value 2")
 
         val caught3 = intercept[TestFailedException] {
           javaMap should (not contain value (3) and not contain value (2))
         }
-        assert(caught3.getMessage === "{one=1, two=2} did not contain value 3, but {one=1, two=2} contained value 2")
+        caught3.getMessage should (be === "{one=1, two=2} did not contain value 3, but {one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} did not contain value 3, but {two=2, one=1} contained value 2")
       }
 
       it("should throw an TestFailedException when map contains specified value and used in a logical-or expression with not") {
@@ -838,17 +851,20 @@ class ShouldContainValueSpec extends Spec with ShouldMatchers with Checkers with
         val caught1 = intercept[TestFailedException] {
           javaMap should { not { contain value (2) } or not { contain value (2) }}
         }
-        assert(caught1.getMessage === "{one=1, two=2} contained value 2, and {one=1, two=2} contained value 2")
+        caught1.getMessage should (be === "{one=1, two=2} contained value 2, and {one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} contained value 2, and {two=2, one=1} contained value 2")
 
         val caught2 = intercept[TestFailedException] {
           javaMap should ((not contain value (2)) or (not contain value (2)))
         }
-        assert(caught2.getMessage === "{one=1, two=2} contained value 2, and {one=1, two=2} contained value 2")
+        caught2.getMessage should (be === "{one=1, two=2} contained value 2, and {one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} contained value 2, and {two=2, one=1} contained value 2")
 
         val caught3 = intercept[TestFailedException] {
           javaMap should (not contain value (2) or not contain value (2))
         }
-        assert(caught3.getMessage === "{one=1, two=2} contained value 2, and {one=1, two=2} contained value 2")
+        caught3.getMessage should (be === "{one=1, two=2} contained value 2, and {one=1, two=2} contained value 2" or
+          be === "{two=2, one=1} contained value 2, and {two=2, one=1} contained value 2")
       }
     }
   }
