@@ -696,20 +696,27 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  class TestsForPhrase {
-
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * testsFor(nonEmptyStack(lastValuePushed))
-     *         ^
-     * </pre>
-     */
-    def apply(unit: Unit) {}
-  }
-
-  val testsFor = new TestsForPhrase
+  /**
+   * Registers shared tests.
+   *
+   * <p>
+   * This method enables the following syntax for shared tests in a <code>FixtureFunSuite</code>:
+   * </p>
+   *
+   * <pre>
+   * testsFor(nonEmptyStack(lastValuePushed))
+   * </pre>
+   *
+   * <p>
+   * This method just provides syntax sugar intended to make the intent of the code clearer.
+   * Because the parameter passed to it is
+   * type <code>Unit</code>, the expression will be evaluated before being passed, which
+   * is sufficient to register the shared tests. For examples of shared tests, see the
+   * <a href="../FunSuite.html#SharedTests">Shared tests section</a> in the main documentation for
+   * trait <code>FunSuite</code>.
+   * </p>
+   */
+  def testsFor(unit: Unit) {}
 
   implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture => Any) = {
     fixture => f

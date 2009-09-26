@@ -502,7 +502,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * <strong>Shared tests</strong>
+ * <a name="SharedScenarios"><strong>Shared scenarios</strong></a>
  * </p>
  *
  * <p>
@@ -1841,18 +1841,24 @@ trait FeatureSpec extends Suite { thisSuite =>
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  class ScenariosForPhrase {
-
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * scenariosFor(nonEmptyStack(lastValuePushed))
-     *             ^
-     * </pre>
-     */
-    def apply(unit: Unit) {}
-  }
-
-  val scenariosFor = new ScenariosForPhrase
+  /**
+   * Registers shared scenarios.
+   *
+   * <p>
+   * This method enables the following syntax for shared scenarios in a <code>FeatureSpec</code>:
+   * </p>
+   *
+   * <pre>
+   * scenariosFor(nonEmptyStack(lastValuePushed))
+   * </pre>
+   *
+   * <p>
+   * This method just provides syntax sugar intended to make the intent of the code clearer.
+   * Because the parameter passed to it is
+   * type <code>Unit</code>, the expression will be evaluated before being passed, which
+   * is sufficient to register the shared scenarios. For examples of shared scenarios, see the
+   * <a href="#SharedScenarios">Shared scenarios section</a> in the main documentation for this trait.
+   * </p>
+   */
+  def scenariosFor(unit: Unit) {}
 }
