@@ -1040,8 +1040,25 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  val behave = new BehaveWord
+  /**
+   * Supports shared test registration in <code>FixtureWordSpec</code>s.
+   *
+   * <p>
+   * This field enables syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="../WordSpec.html#SharedTests">Shared tests section</a>
+   * in the main documentation for trait <code>WordSpec</code>.
+   * </p>
+   */
+  protected val behave = new BehaveWord
 
-  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun)
 }

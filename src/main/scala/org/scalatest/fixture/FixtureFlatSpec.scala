@@ -1117,6 +1117,23 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
+  /**
+   * Supports shared test registration in <code>FixtureFlatSpec</code>s.
+   *
+   * <p>
+   * This field supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   *           ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of <code>behave</code>, see the <a href="../FlatSpec.html#SharedTests">Shared tests section</a>
+   * in the main documentation for trait <code>FlatSpec</code>.
+   * </p>
+   */
   protected val behave = new BehaveWord
 
  /*
