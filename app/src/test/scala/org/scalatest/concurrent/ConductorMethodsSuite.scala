@@ -129,15 +129,6 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
     whenFinished {1 should be (1)}
   }
 
-
-  // TODO: I don't understand this test. Josh, can you clarify?
-  test("top level thread calls result in a running thread that is blocked such that it doesn't execute " +
-       "prior to conduct being called.") {
-    val anotherConductor = new Conductor
-    val t = anotherConductor.thread { 1 should be (1) }
-    thread{ t.getState should be (WAITING) }
-  }
-
   test("nested thread calls result in a running thread that is allowed to execute immediately") (pending)
 
   /////////////////////////////////////////////////
