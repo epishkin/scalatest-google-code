@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
+import verb.BehaveWord
 
 /**
  * A sister trait to <code>org.scalatest.Spec</code>, which passes a fixture object into each test.
@@ -1023,50 +1024,6 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
     }
     if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-  }
-
-  /**
-   * Class that, via an instance referenced from the <code>behave</code> field of <code>FixtureSpec</code>s,
-   * supports shared test registration.
-   *
-   * <p>
-   * This class, via the <code>behave</code> field, supports syntax such as the following:
-   * </p>
-   *
-   * <pre>
-   * it should behave like nonFullStack(stackWithOneItem)
-   *           ^
-   * </pre>
-   *
-   * <p>
-   * For more information and examples of the use of <cod>behave</code>, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
-   * in the main documentation for trait <code>Spec</code>.
-   * </p>
-   */
-  protected class BehaveWord {
-
-    /**
-     * Supports the registration of shared tests.
-     *
-     * <p>
-     * This method supports syntax such as the following:
-     * </p>
-     *
-     * <pre>
-     * it should behave like nonFullStack(stackWithOneItem)
-     *                  ^
-     * </pre>
-     *
-     * <p>
-     * This method just provides syntax sugar intended to make the intent of the code clearer.
-     * Because the parameter passed to it is
-     * type <code>Unit</code>, the expression will be evaluated before being passed, which
-     * is sufficient to register the shared tests.
-     * For examples of shared tests, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
-     * in the main documentation for trait <code>Spec</code>.
-     * </p>
-     */
-    def like(unit: Unit) {}
   }
 
   /**
