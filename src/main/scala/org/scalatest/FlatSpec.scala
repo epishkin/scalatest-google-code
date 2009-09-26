@@ -1466,7 +1466,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </pre>
      *
      * <p>
-     * For examples of shared tests, see the <a href="Spec.html#SharedTests">Shared tests section</a>
+     * For examples of shared tests, see the <a href="FlatSpec.html#SharedTests">Shared tests section</a>
      * in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
