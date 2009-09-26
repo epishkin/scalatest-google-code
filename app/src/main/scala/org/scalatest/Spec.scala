@@ -1016,13 +1016,17 @@ trait Spec extends Suite { thisSuite =>
    * supports test (and shared test) registration in <code>Spec</code>s.
    *
    * <p>
-   * This class supports syntax such as the following:
+   * This class supports syntax such as the following test registration:
    * </p>
    *
    * <pre>
    * it("should be empty")
    * ^
    * </pre>
+   *
+   * <p>
+   * and the following shared test registration:
+   * </p>
    *
    * <pre>
    * it should behave like nonFullStack(stackWithOneItem)

@@ -2126,5 +2126,22 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  val behave = new BehaveWord
+  /**
+   * Supports shared test registration in <code>WordSpec</code>s.
+   *
+   * <p>
+   * This field enables syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="#SharedTests">Shared tests section</a>
+   * in the main documentation for this trait.
+   * </p>
+   */
+  protected val behave = new BehaveWord
 }
