@@ -1860,5 +1860,5 @@ trait FeatureSpec extends Suite { thisSuite =>
    * <a href="#SharedScenarios">Shared scenarios section</a> in the main documentation for this trait.
    * </p>
    */
-  def scenariosFor(unit: Unit) {}
+  protected def scenariosFor(unit: Unit) {}
 }
