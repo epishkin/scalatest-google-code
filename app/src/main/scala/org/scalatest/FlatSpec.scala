@@ -1221,7 +1221,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   }
 
   // later will initialize with an informer that registers things between tests for later passing to the informer
-  private val atomicInformer = new AtomicReference[Informer](zombieInformer)
+  private final val atomicInformer = new AtomicReference[Informer](zombieInformer)
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its

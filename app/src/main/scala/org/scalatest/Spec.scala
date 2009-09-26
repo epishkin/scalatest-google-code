@@ -980,7 +980,7 @@ trait Spec extends Suite { thisSuite =>
   }
 
   // later will initialize with an informer that registers things between tests for later passing to the informer
-  private val atomicInformer = new AtomicReference[Informer](zombieInformer)
+  private final val atomicInformer = new AtomicReference[Informer](zombieInformer)
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -1487,9 +1487,15 @@ trait Spec extends Suite { thisSuite =>
    */
   override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
 
+  @volatile private var wasRunBefore = false
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
+    if (wasRunBefore)
+      println(thisSuite.getClass.getName + ", a Spec, is being run again")
+    else
+      wasRunBefore = true
+    
     val stopRequested = stopper
 
     // Set the flag that indicates registration is closed (because run has now been invoked),
