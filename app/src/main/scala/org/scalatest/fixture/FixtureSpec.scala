@@ -452,6 +452,28 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       }
     }
 
+  /**
+   * Class that, via an instance referenced from the <code>it</code> field,
+   * supports test (and shared test) registration in <code>FixtureSpec</code>s.
+   *
+   * <p>
+   * This class supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples, see the <a href="../Spec.html">main documentation for <code>Spec</code></a>.
+   * </p>
+   */
   protected class ItWord {
 
     /**
@@ -514,10 +536,67 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       apply(specText, Array[Tag](): _*)(testFun)
     }
 
-    def should(behaveWord: FixtureBehaveWord) = behaveWord
-    def must(behaveWord: FixtureBehaveWord) = behaveWord
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it should behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>Spec</code>.
+     * </p>
+     */
+    def should(behaveWord: BehaveWord) = behaveWord
+
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>Spec</code>.
+     * </p>
+     */
+    def must(behaveWord: BehaveWord) = behaveWord
   }
 
+  /**
+   * Supports test (and shared test) registration in <code>FixtureSpec</code>s.
+   *
+   * <p>
+   * This field supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>it</code> field, see
+   * the <a href="../Spec.html">main documentation for <code>Spec</code></a>.
+   * </p>
+   */
   protected val it = new ItWord
 
   /**
@@ -946,20 +1025,68 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  protected class FixtureBehaveWord {
+  /**
+   * Class that, via an instance referenced from the <code>behave</code> field of <code>FixtureSpec</code>s,
+   * supports shared test registration.
+   *
+   * <p>
+   * This class, via the <code>behave</code> field, supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   *           ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
+   * in the main documentation for trait <code>Spec</code>.
+   * </p>
+   */
+  protected class BehaveWord {
 
     /**
-     * This method enables the following syntax:
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
      *
      * <pre>
-     * it should behave like nonEmptyStack(lastValuePushed)
+     * it should behave like nonFullStack(stackWithOneItem)
      *                  ^
      * </pre>
+     *
+     * <p>
+     * This method just provides syntax sugar intended to make the intent of the code clearer.
+     * Because the parameter passed to it is
+     * type <code>Unit</code>, the expression will be evaluated before being passed, which
+     * is sufficient to register the shared tests.
+     * For examples of shared tests, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>Spec</code>.
+     * </p>
      */
     def like(unit: Unit) {}
   }
 
-  protected val behave = new FixtureBehaveWord
+  /**
+   * Supports shared test registration in <code>FixtureSpec</code>s.
+   *
+   * <p>
+   * This field supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   *           ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="../Spec.html#SharedTests">Shared tests section</a>
+   * in the main documentation for trait <code>Spec</code>.
+   * </p>
+   */
+  protected val behave = new BehaveWord
 
   protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
     fixture => f

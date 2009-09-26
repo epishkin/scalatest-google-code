@@ -1117,7 +1117,8 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  val behave = new BehaveWord
+  protected val behave = new BehaveWord
+
  /*
   implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun) */
