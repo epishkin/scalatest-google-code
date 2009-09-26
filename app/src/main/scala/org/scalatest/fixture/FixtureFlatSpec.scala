@@ -561,12 +561,146 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
   }
 
+  /**
+   * Class that supports test (and shared test) registration via the instance referenced from <code>FixtureFlatSpec</code>'s <code>it</code> field.
+   *
+   * <p>
+   * This class enables syntax such as the following test registration:
+   * </p>
+   *
+   * <pre>
+   * it should "pop values in last-in-first-out order" in { ... }
+   * ^
+   * </pre>
+   *
+   * <p>
+   * It also enables syntax such as the following shared test registration:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonEmptyStack(lastItemPushed)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>it</code> field, see the main documentation 
+   * for trait <a href="../FlatSpec.html"><code>FlatSpec</code></a>.
+   * </p>
+   */
   protected class ItWord {
+
+    /**
+     * Supports the registration of tests with <code>should</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it should "pop values in last-in-first-out order" in { ... }
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of test registration, see the <a href="../FlatSpec.html">main documentation</a>
+     * for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def should(string: String) = new ItVerbString("should", string)
+
+    /**
+     * Supports the registration of tests with <code>must</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must "pop values in last-in-first-out order" in { ... }
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of test registration, see the <a href="../FlatSpec.html">main documentation</a>
+     * for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def must(string: String) = new ItVerbString("must", string)
+
+    /**
+     * Supports the registration of tests with <code>can</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it can "pop values in last-in-first-out order" in { ... }
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of test registration, see the <a href="../FlatSpec.html">main documentation</a>
+     * for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def can(string: String) = new ItVerbString("can", string)
+
+    /**
+     * Supports the registration of shared tests with <code>should</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it should behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="../FlatSpec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def should(behaveWord: BehaveWord) = behaveWord
+
+    /**
+     * Supports the registration of shared tests with <code>must</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="../FlatSpec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def must(behaveWord: BehaveWord) = behaveWord
+
+    /**
+     * Supports the registration of shared tests with <code>can</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it can behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="../FlatSpec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def can(behaveWord: BehaveWord) = behaveWord
   }
 
