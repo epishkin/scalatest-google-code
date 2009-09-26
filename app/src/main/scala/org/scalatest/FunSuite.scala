@@ -1082,7 +1082,10 @@ trait FunSuite extends Suite { thisSuite =>
         }
       }
 
-    atomicInformer.set(informerForThisSuite)
+    val oldInformer = atomicInformer.getAndSet(informerForThisSuite)
+    if (oldInformer != zombieInformer && oldInformer != null)
+      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
+
     var compareAndSwapSucceeded = false // Work around Scala compiler bug
     try {
       super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
