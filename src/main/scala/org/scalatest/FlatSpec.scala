@@ -508,7 +508,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * <strong>Shared tests</strong>
+ * <a name="SharedTests"><strong>Shared tests</strong></a>
  * </p>
  *
  * <p>
@@ -713,7 +713,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).execute()
+ * scala> (new SharedTestExampleSpec).execute()
  * A Stack (when empty) 
  * - should be empty
  * - should complain on peek
@@ -744,9 +744,11 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <p>
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
- * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>FlatSpec</code> is to make sure
- * each invocation of a behavior function is in the context of a different <code>behavior of</code> clause, which will prepend a string to each test name.
- * For example, the following code in a <code>FlatSpec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
+ * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>WordSpec</code> is to make sure
+ * each invocation of a behavior function is in the context of a different set of <code>when</code>, <em>verb</em> (<code>should</code>,
+ * <code>must</code>, or </code>can</code>), and <code>that</code> clauses,
+ * which will prepend a string to each test name.
+ * For example, the following code in a <code>WordSpec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
  * </p>
  *
  * <pre>
@@ -763,15 +765,20 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- *   "A Stack (when empty)" should "be empty" in {
- *     assert(emptyStack.empty)
+ *   "A Stack" when {
+ *     "empty" should {
+ *       "be empty" in {
+ *         assert(emptyStack.empty)
+ *       }
+ *     }
  *   }
  *   // ...
  * </pre>
  *
  * <p>
  * If the <code>"should be empty"</code> test was factored out into a behavior function, it could be called repeatedly so long
- * as each invocation of the behavior function is in the context of a different <code>behavior of</code> clause.
+ * as each invocation of the behavior function is in the context of a different combination
+ * of <code>when</code>, <em>verb</em>, and <code>that</code> clauses.
  * </p>
  *
  * <p>

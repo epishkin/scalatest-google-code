@@ -17,19 +17,18 @@ package org.scalatest
 
 /**
  * Trait to which custom information about a running suite of tests can be reported.
- * <code>Informer</code> contains two <code>apply</code> methods, one which takes
- * a string and the other a <code>Report</code>. An <code>Informer</code> is essentially
+ * 
+ * <p>
+ * An <code>Informer</code> is essentially
  * used to wrap a <code>Reporter</code> and provide easy ways to send custom information
  * to that <code>Reporter</code> via an <code>InfoProvided</code> event.
+ * <code>Informer</code> contains an <code>apply</code> method that takes an object.
+ * The <code>Informer</code> will invoke <code>toString<code> on the passed object and
+ * forward the resulting string to the <code>Reporter</code> as the <code>message</code>
+ * parameter of an <code>InfoProvided</code> event.
+ * </p>
  *
  * <p>
- * The simplest way to use an <code>Informer</code> is to pass a string to its
- * <code>apply</code> method. Given this string, the <code>Informer</code> will
- * construct a <code>Report</code> using the string returned by invoking
- * <code>nameForReport</code>, a method defined on <code>Informer</code>, as the name and
- * the string passed to <code>apply</code> as the <code>message</code>.
- * The <code>Informer</code> will then pass the newly created <code>Report</code>
- * to its wrapped <code>Reporter</code> via an <code>InfoProvided</code> event.
  * Here's an example of using an <code>Informer</code> in a <code>Suite</code>
  * subclass:
  * </p>
@@ -55,20 +54,78 @@ package org.scalatest
  * Test Succeeded - MySuite.testAddition(Reporter)
  * </pre>
  *
+ * <p>
+ * Traits <code>FunSuite</code>, <code>Spec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and 
+ * their sister traits in <code>org.scalatest.fixture</code> package declare an implicit <code>info</code> method that returns
+ * an <code>Informer</code>. This implicit <code>info</code> is used, for example, to enable the syntax offered by the
+ * <a href="GivenWhenThen.html"><code>GivenWhenThen</code> trait</a>, which contains methods that take an implicit <code>Informer</code>.
+ * Here's an example of a <code>FeatureSpec</code> that mixes in <code>GivenWhenThen</code>:
+ * </p>
+ * 
+ * <pre>
+ * import org.scalatest.FeatureSpec
+ * import org.scalatest.GivenWhenThen
+ * 
+ * class ArithmeticSpec extends FeatureSpec with GivenWhenThen {
+ * 
+ *   feature("Integer arithmetic") {
+ *
+ *     scenario("addition") {
+ * 
+ *       given("two integers")
+ *       val x = 2
+ *       val y = 3
+ * 
+ *       when("they are added")
+ *       val sum = x + y
+ * 
+ *       then("the result is the sum of the two numbers")
+ *       assert(sum === 5)
+ *     }
+ *
+ *     scenario("subtraction") {
+ * 
+ *       given("two integers")
+ *       val x = 7
+ *       val y = 2
+ * 
+ *       when("one is subtracted from the other")
+ *       val diff = x - y
+ * 
+ *       then("the result is the difference of the two numbers")
+ *       assert(diff === 5)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Were you to run this <code>FeatureSpec</code> in the interpreter, you would see the following messages
+ * included in the printed report:
+ * </p>
+ *
+ * <pre>
+ * scala> (new ArithmeticFeatureSpec).run()
+ * Feature: Integer arithmetic 
+ *   Scenario: addition
+ *     Given two integers 
+ *     When they are added 
+ *     Then the result is the sum of the two numbers 
+ *   Scenario: subtraction
+ *     Given two integers 
+ *     When one is subtracted from the other 
+ *     Then the result is the difference of the two numbers 
+ * </pre>
+ * 
  * @author Bill Venners
  */
 trait Informer {
 
   /**
-   * Provide information in the form of a string message to be reported to the
-   * wrapped <code>Reporter</code>'s <code>infoProvided</code> method. This method
-   * will create a <code>Report</code> via <code>Report</code>'s auxiliary constructor that takes a
-   * string name and message, using the string returned by invoking
-   * <code>nameForReport</code> as the name and the passed string as the message, and pass
-   * the newly created <code>Report</code> to the wrapped <code>Reporter</code>'s
-   * <code>infoProvided</code> method.
+   * Provide information to the <code>Reporter</code> as the .
    *
-   * @param report a <code>Report</code> that encapsulates the event to report.
+   * @param message an object whose <code>toString</code> result will be forwarded to the wrapped <code>Reporter</code>
+   *   via an <code>InfoProvided</code> event.
    *
    * @throws NullPointerException if <code>message</code> reference is <code>null</code>
    */

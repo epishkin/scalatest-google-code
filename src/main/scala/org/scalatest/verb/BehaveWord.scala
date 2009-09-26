@@ -18,7 +18,23 @@ package org.scalatest.verb
 import org.scalatest._
 
 /**
- * This class enables syntax such as the following, which works in a <code>WordSpec</code>:
+ * Class that supports shared test registration via instances referenced from the <code>behave</code> field of <code>Spec</code>s,
+ * <code>FlatSpec</code>s, and <code>WordSpec</code>s as well as instance of their sister traits, 
+ * <code>FixtureSpec</code>, <code>FixtureFlatSpec</code>, and <code>FixtureWordSpec</code>.
+ *
+ * <p>
+ * This class, via the <code>behave</code> field, enables syntax such as the following in <code>Spec</code>s, <code>FlatSpec</code>s,
+ * <code>FixtureSpec</code>s, and <code>FixtureFlatSpecs</code>:
+ * </p>
+ *
+ * <pre>
+ * it should behave like nonFullStack(stackWithOneItem)
+ *           ^
+ * </pre>
+ *
+ * <p>
+ * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>FixtureWordSpec</code>s:
+ * </p>
  *
  * <pre>
  * behave like nonEmptyStack(lastValuePushed)
@@ -26,23 +42,44 @@ import org.scalatest._
  * </pre>
  *
  * <p>
- * As well as the following syntax, which works in <code>Spec</code> and <code>FlatSpec</code>:
+ * For more information and examples of the use of <cod>behave</code>, see the Shared tests section
+ * in the main documentation for trait <a href="../Spec.html#SharedTests"><code>Spec</code></a>,
+ * <a href="../FlatSpec.html#SharedTests"><code>FlatSpec</code></a>, or <a href="../WordSpec.html#SharedTests"><code>WordSpec</code></a>.
  * </p>
- *
- * <pre>
- * it should behave like nonEmptyStack(lastValuePushed)
- *           ^
- * </pre>
  */
 class BehaveWord {
 
   /**
-   * This method enables syntax such as the following, which works in a <code>WordSpec</code>:
+   * Supports the registration of shared tests.
+   *
+   * <p>
+   * This method enables syntax such as the following in <code>Spec</code>s, <code>FlatSpec</code>s,
+   * <code>FixtureSpec</code>s, and <code>FixtureFlatSpecs</code>:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   *                  ^
+   * </pre>
+   *
+   * <p>
+   * It also enables syntax such as the following syntax in <code>WordSpec</code>s and <code>FixtureWordSpec</code>s:
+   * </p>
    *
    * <pre>
    * behave like nonEmptyStack(lastValuePushed)
-   *        ^
+   * ^
    * </pre>
+   *
+   * <p>
+   * This method just provides syntax sugar intended to make the intent of the code clearer.
+   * Because the parameter passed to it is
+   * type <code>Unit</code>, the expression will be evaluated before being passed, which
+   * is sufficient to register the shared tests.
+   * For more information and examples of the use of <cod>behave</code>, see the Shared tests section
+   * in the main documentation for trait <a href="../Spec.html#SharedTests"><code>Spec</code></a>,
+   * <a href="../FlatSpec.html#SharedTests"><code>FlatSpec</code></a>, or <a href="../WordSpec.html#SharedTests"><code>WordSpec</code></a>.
+   * </p>
    */
   def like(unit: Unit) = ()
 }
