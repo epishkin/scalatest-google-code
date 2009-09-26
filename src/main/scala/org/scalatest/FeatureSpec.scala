@@ -1299,17 +1299,10 @@ trait FeatureSpec extends Suite { thisSuite =>
       Bundle.initialize(new Trunk, Map(), List[TestLeaf](), false)
     )
 
-  private val shouldRarelyIfEverBeSeen = """
-    Two threads attempted to modify FeatureSpec's internal data, which should only be
-    modified by the thread that constructs the object. This likely means that a subclass
-    has allowed the this reference to escape during construction, and some other thread
-    attempted to invoke the "feature" or "scenario" method on the object before the first
-    thread completed its construction.
-  """
-
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
-    if (!atomic.compareAndSet(oldBundle, newBundle))
-      throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
+    val shouldBeOldBundle = atomic.getAndSet(newBundle)
+    if (!(shouldBeOldBundle eq oldBundle))
+      throw new ConcurrentModificationException(Resources("concurrentFeatureSpecBundleMod"))
   }
 
   private def registerTest(specText: String, f: => Unit) = {
@@ -1638,7 +1631,7 @@ trait FeatureSpec extends Suite { thisSuite =>
 
         val oldInformer = atomicInformer.getAndSet(informerForThisTest)
         var testWasPending = false
-        var compareAndSwapSucceeded = false
+        var swapAndCompareSucceeded = false
         try {
           val theConfigMap = configMap
           withFixture(
@@ -1668,9 +1661,10 @@ trait FeatureSpec extends Suite { thisSuite =>
             report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, Some(testWasPending), None, Some(IndentedText(formattedText, message, 2))))
           }
 
-          compareAndSwapSucceeded = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
+          val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
+          swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
         }
-        if (!compareAndSwapSucceeded)  // Do outside finally to workaround Scala compiler bug
+        if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
           throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
       }
     }
@@ -1835,14 +1829,15 @@ trait FeatureSpec extends Suite { thisSuite =>
       }
 
     atomicInformer.set(informerForThisSuite)
-    var compareAndSwapSucceeded = false
+    var swapAndCompareSucceeded = false
     try {
       super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
     }
     finally {
-      compareAndSwapSucceeded = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
+      val shouldBeInformerForThisSuite = atomicInformer.getAndSet(zombieInformer)
+      swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
     }
-    if (!compareAndSwapSucceeded)  // Do outside finally to workaround Scala compiler bug
+    if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
