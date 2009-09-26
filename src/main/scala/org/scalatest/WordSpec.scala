@@ -1851,7 +1851,10 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         }
       }
 
-    atomicInformer.set(informerForThisSuite)
+    val oldInformer = atomicInformer.getAndSet(informerForThisSuite)
+    if (oldInformer != zombieInformer && oldInformer != null)
+      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
+
     var compareAndSwapSucceeded = false
     try {
       super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
