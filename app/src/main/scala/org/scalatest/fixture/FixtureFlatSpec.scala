@@ -704,6 +704,32 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     def can(behaveWord: BehaveWord) = behaveWord
   }
 
+  /**
+   * Supports test (and shared test) registration in <code>FixtureFlatSpec</code>s.
+   *
+   * <p>
+   * This field enables syntax such as the following test registration:
+   * </p>
+   *
+   * <pre>
+   * it should "pop values in last-in-first-out order" in { ... }
+   * ^
+   * </pre>
+   *
+   * <p>
+   * It also enables syntax such as the following shared test registration:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonEmptyStack(lastItemPushed)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>it</code> field, see the main documentation 
+   * for trait <a href="../FlatSpec.html"><code>FlatSpec</code></a>.
+   * </p>
+   */
   protected val it = new ItWord
 
   protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
