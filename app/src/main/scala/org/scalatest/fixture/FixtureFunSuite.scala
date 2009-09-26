@@ -385,17 +385,10 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
   private val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
 
-  private val shouldRarelyIfEverBeSeen = """
-    Two threads attempted to modify FunSuite's internal data, which should only be
-    modified by the thread that constructs the object. This likely means that a subclass
-    has allowed the this reference to escape during construction, and some other thread
-    attempted to invoke the "testsFor" or "test" method on the object before the first
-    thread completed its construction.
-  """
-
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
-    if (!atomic.compareAndSet(oldBundle, newBundle))
-      throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
+    val shouldBeOldBundle = atomic.getAndSet(newBundle)
+    if (!(shouldBeOldBundle eq oldBundle))
+      throw new ConcurrentModificationException(Resources("concurrentFixtureFunSuiteBundleMod"))
   }
 
   private class RegistrationInformer extends Informer {
@@ -568,7 +561,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
         }
 
       val oldInformer = atomicInformer.getAndSet(informerForThisTest)
-      var compareAndSwapSucceeded = false
+      var swapAndCompareSucceeded = false
       try {
         theTest.fun match {
           case wrapper: NoArgTestWrapper[_] =>
@@ -577,9 +570,10 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
         }
       }
       finally {
-        compareAndSwapSucceeded = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
+        val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
+        swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
       }
-      if (!compareAndSwapSucceeded)  // Do outside finally to workaround Scala compiler bug
+      if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
         throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
 
       val duration = System.currentTimeMillis - testStartTime
@@ -690,14 +684,15 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
       }
 
     atomicInformer.set(informerForThisSuite)
-    var compareAndSwapSucceeded = false
+    var swapAndCompareSucceeded = false
     try {
       super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
     }
     finally {
-      compareAndSwapSucceeded = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
+      val shouldBeInformerForThisSuite = atomicInformer.getAndSet(zombieInformer)
+      swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
     }
-    if (!compareAndSwapSucceeded)  // Do outside finally to workaround Scala compiler bug
+    if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
