@@ -946,7 +946,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  class FixtureBehaveWord {
+  protected class FixtureBehaveWord {
 
     /**
      * This method enables the following syntax:
@@ -959,12 +959,12 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
     def like(unit: Unit) {}
   }
 
-  val behave = new FixtureBehaveWord
+  protected val behave = new FixtureBehaveWord
 
-  implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
+  protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
     fixture => f
   }
 
-  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun)
 }

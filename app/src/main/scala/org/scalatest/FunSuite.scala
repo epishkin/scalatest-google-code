@@ -1106,5 +1106,5 @@ trait FunSuite extends Suite { thisSuite =>
    * <a href="#SharedTests">Shared tests section</a> in the main documentation for this trait.
    * </p>
    */
-  def testsFor(unit: Unit) {}
+  protected def testsFor(unit: Unit) {}
 }

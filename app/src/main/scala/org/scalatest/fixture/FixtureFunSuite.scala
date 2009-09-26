@@ -716,12 +716,12 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * trait <code>FunSuite</code>.
    * </p>
    */
-  def testsFor(unit: Unit) {}
+  protected def testsFor(unit: Unit) {}
 
-  implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture => Any) = {
+  protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture => Any) = {
     fixture => f
   }
 
-  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun)
 }

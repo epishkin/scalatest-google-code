@@ -448,7 +448,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * <strong>Shared tests</strong>
+ * <a name="SharedTests"><strong>Shared tests</strong></a>
  * </p>
  *
  * <p>
@@ -1010,6 +1010,28 @@ trait Spec extends Suite { thisSuite =>
       }
     }
 
+  /**
+   * Class that, via an instance referenced from the <code>it</code> field,
+   * supports test (and shared test) registration in <code>Spec</code>s.
+   *
+   * <p>
+   * This class supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples, see the <a href="Spec.html">main documentation for <code>Spec</code></a>.
+   * </p>
+   */
   protected class ItWord {
 
     /**
@@ -1072,10 +1094,66 @@ trait Spec extends Suite { thisSuite =>
       apply(specText, Array[Tag](): _*)(testFun)
     }
 
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it should behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>Spec</code>.
+     * </p>
+     */
     def should(behaveWord: BehaveWord) = behaveWord
+
+    /**
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must behave like nonFullStack(stackWithOneItem)
+     *    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>Spec</code>.
+     * </p>
+     */
     def must(behaveWord: BehaveWord) = behaveWord
   }
 
+  /**
+   * Supports test (and shared test) registration in <code>Spec</code>s.
+   *
+   * <p>
+   * This field supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it("should be empty")
+   * ^
+   * </pre>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>it</code> field, see the main documentation for this trait.
+   * </p>
+   */
   protected val it = new ItWord
 
   /**
@@ -1526,18 +1604,62 @@ trait Spec extends Suite { thisSuite =>
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  class BehaveWord {
+  /**
+   * Class that, via an instance referenced from the <code>behave</code> field of <code>Spec</code>s,
+   * supports shared test registration.
+   *
+   * <p>
+   * This class, via the <code>behave</code> field, supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   *           ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="Spec.html#SharedTests">Shared tests section</a>
+   * in the main documentation for trait <code>Spec</code>.
+   * </p>
+   */
+  protected class BehaveWord {
 
     /**
-     * This method enables the following syntax:
+     * Supports the registration of shared tests.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
      *
      * <pre>
-     * scenariosFor(nonEmptyStack(lastValuePushed))
-     *             ^
+     * it should behave like nonFullStack(stackWithOneItem)
+     *                  ^
      * </pre>
+     *
+     * <p>
+     * For examples of shared tests, see the <a href="Spec.html#SharedTests">Shared tests section</a>
+     * in the main documentation for trait <code>Spec</code>.
+     * </p>
      */
     def like(unit: Unit) {}
   }
 
-  val behave = new BehaveWord
+  /**
+   * Supports shared test registration in <code>Spec</code>s.
+   *
+   * <p>
+   * This field supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * it should behave like nonFullStack(stackWithOneItem)
+   *           ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of <cod>behave</code>, see the <a href="#SharedTests">Shared tests section</a>
+   * in the main documentation for this trait.
+   * </p>
+   */
+  protected val behave = new BehaveWord
 }

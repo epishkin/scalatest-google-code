@@ -960,13 +960,13 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * trait <code>FeatureSpec</code>.
    * </p>
    */
-  def scenariosFor(unit: Unit) {}
+  protected def scenariosFor(unit: Unit) {}
 
-  implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
+  protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
     fixture => f
   }
 
-  implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun)
 }
 
