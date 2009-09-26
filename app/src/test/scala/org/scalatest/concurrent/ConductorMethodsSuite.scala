@@ -5,14 +5,12 @@ import matchers.ShouldMatchers
 import _root_.java.util.concurrent.{Callable, CountDownLatch}
 import Thread.State._
 
-/**
- * @author Josh Cough
- */
 class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMatchers {
 
   test("metronome order") {
 
-    @volatile var s = ""
+    val volatileString = new VolatileString
+    import volatileString._
 
     thread("t1") {
       waitForBeat(1)
