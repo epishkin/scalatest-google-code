@@ -1926,7 +1926,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           javaMap should ((have size (55)) or (have size (22)))
         }
         caught2.getMessage should (be === "{one=1, two=2} did not have size 55, and {one=1, two=2} did not have size 22" or
-          be === "{two=2, one=1} did not have size 55, and {two=2. one=1} did not have size 22")
+          be === "{two=2, one=1} did not have size 55, and {two=2, one=1} did not have size 22")
 
         val caught3 = intercept[TestFailedException] {
           javaMap should (have size (55) or have size (22))
