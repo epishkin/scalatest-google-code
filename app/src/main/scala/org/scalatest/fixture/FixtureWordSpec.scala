@@ -849,6 +849,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
         atomicInformer.set(informerForThisTest)
         var testWasPending = false
+        var compareAndSwapSucceeded = false
         try {
           test.f match {
             case wrapper: NoArgTestWrapper[_] =>
@@ -876,14 +877,10 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
             report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, Some(testWasPending), None, Some(IndentedText(formattedText, message, 2))))
           }
 
-          val success = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
-          val rarelyIfEverSeen = """
-            Two threads have apparently attempted to run tests at the same time. This has
-            resulted in both threads attempting to change the current informer.
-          """
-          if (!success)
-            throw new ConcurrentModificationException(rarelyIfEverSeen)
+          compareAndSwapSucceeded = atomicInformer.compareAndSet(informerForThisTest, oldInformer)
         }
+        if (!compareAndSwapSucceeded)  // Do outside finally to workaround Scala compiler bug
+          throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
       }
     }
   }
@@ -1046,18 +1043,15 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       }
 
     atomicInformer.set(informerForThisSuite)
+    var compareAndSwapSucceeded = false
     try {
       super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
     }
     finally {
-      val success = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
-      val rarelyIfEverSeen = """
-        Two threads have apparently attempted to run suite at the same time. This has
-        resulted in both threads attempting to concurrently change the current informer.
-      """
-      if (!success)
-        throw new ConcurrentModificationException(rarelyIfEverSeen + "Suite class name: " + thisSuite.getClass.getName)
+      compareAndSwapSucceeded = atomicInformer.compareAndSet(informerForThisSuite, zombieInformer)
     }
+    if (!compareAndSwapSucceeded)  // Do outside finally to workaround Scala compiler bug
+      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
   val behave = new BehaveWord
