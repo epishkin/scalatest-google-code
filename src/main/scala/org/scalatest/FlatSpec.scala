@@ -1882,5 +1882,5 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  val behave = new BehaveWord
+  protected val behave = new BehaveWord
 }

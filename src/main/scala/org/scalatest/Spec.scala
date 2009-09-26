@@ -1637,6 +1637,10 @@ trait Spec extends Suite { thisSuite =>
      * </pre>
      *
      * <p>
+     * This method just provides syntax sugar intended to make the intent of the code clearer.
+     * Because the parameter passed to it is
+     * type <code>Unit</code>, the expression will be evaluated before being passed, which
+     * is sufficient to register the shared tests.
      * For examples of shared tests, see the <a href="Spec.html#SharedTests">Shared tests section</a>
      * in the main documentation for trait <code>Spec</code>.
      * </p>
