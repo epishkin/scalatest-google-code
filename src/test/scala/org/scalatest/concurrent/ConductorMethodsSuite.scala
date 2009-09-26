@@ -72,19 +72,23 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
     }
 
     whenFinished {
-      c.getCount() should be (0) // TODO: This failed once. 1 was not equal to 0
+      c.getCount() should be (0)
     }
   }
 
   // TODO: t1.getState should (be(WAITING) or be(BLOCKED)) failed with:
   // RUNNABLE was not equal to WAITING, and RUNNABLE was not equal to BLOCKED
+  // A thread in a wait set is allowed to show up as RUNNABLE. It could be spin waiting
+  // or just wake up temporarily. So even though this fails very occasionally, it probably
+  // doesn't indicate a bug. (It failed on the Azul server after I cleaned up the bugs
+  // in Conductor.)
   test("wait for beat blocks thread") {
 
-    val t1 = thread {waitForBeat(2)}
+    val t1 = thread { waitForBeat(2) }
 
     thread {
       waitForBeat(1)
-      t1.getState should (be(WAITING) or be(BLOCKED))
+      t1.getState should (be (WAITING) or be (BLOCKED))
     }
   }
 

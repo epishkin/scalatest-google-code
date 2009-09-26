@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference
 */
 private[scalatest] abstract class ConcurrentInformer(nameInfo: NameInfo) extends Informer {
 
-  private val atomic = new AtomicReference[(Thread, Option[NameInfo])](Thread.currentThread, Some(nameInfo))
+  private final val atomic = new AtomicReference[(Thread, Option[NameInfo])](Thread.currentThread, Some(nameInfo))
 
   def nameInfoForCurrentThread: Option[NameInfo] = {
     val (constructingThread, nameInfo) = atomic.get

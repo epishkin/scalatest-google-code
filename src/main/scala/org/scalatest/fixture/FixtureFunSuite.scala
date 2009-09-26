@@ -398,43 +398,34 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(shouldRarelyIfEverBeSeen)
   }
 
-  // later will initialize with an informer that registers things between tests for later passing to the informer
-  private final val atomicInformer = new AtomicReference[Informer](zombieInformer)
+  private class RegistrationInformer extends Informer {
+    def apply(message: String) {
+      if (message == null)
+        throw new NullPointerException
+      val oldBundle = atomic.get
+      var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+      doList ::= InfoNode(message)
+      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
+    }
+  }
+
+  // The informer will be a registration informer until run is called for the first time. (This
+  // is the registration phase of a FixtureFunSuite's lifecycle.)
+  private final val atomicInformer = new AtomicReference[Informer](new RegistrationInformer)
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
-   * apply method to the current reporter. If invoked inside a test function, it will forward the information to
-   * the current reporter immediately. If invoked outside a test function, but in the primary constructor, it
-   * will register the info for forwarding later during test execution. If invoked at any other time, it will
+   * <code>apply</code> method to the current reporter. If invoked in a constructor, it
+   * will register the passed string for forwarding later during test execution. If invoked while this
+   * <code>FixtureFunSuite</code> is being executed, such as from inside a test function, it will forward the information to
+   * the current reporter immediately. If invoked at any other time, it will
    * throw an exception. This method can be called safely by any thread.
    */
-  implicit protected def info: Informer = {
-    if (atomicInformer == null || atomicInformer.get == null)
-      registrationInformer
-    else
-      atomicInformer.get
-  }
+  implicit protected def info: Informer = atomicInformer.get
 
-  // Hey, my first lazy val. Turns out classes must be initialized before
-  // the traits they mix in. Thus currentInformer was null when it was accessed via
-  // an info outside a test. This solves the problem.
-  private lazy val registrationInformer: Informer =
-    new Informer {
-      def apply(message: String) {
-        if (message == null)
-          throw new NullPointerException
-        val oldBundle = atomic.get
-        var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-        doList ::= InfoNode(message)
-        updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
-      }
-    }
-
-  // This must *not* be lazy, so that it will stay null while the class's constructors are being executed,
-  // because that's how I detect that construction is happenning (the registration phase) in the info method.
   private val zombieInformer =
     new Informer {
-      private val complaint = "Sorry, you can only use FunSuite's info when executing the suite."
+      private val complaint = Resources("cantCallInfoNow", "FixtureFunSuite")
       def apply(message: String) {
         if (message == null)
           throw new NullPointerException
@@ -698,10 +689,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
         }
       }
 
-    val oldInformer = atomicInformer.getAndSet(informerForThisSuite)
-    if (oldInformer != zombieInformer && oldInformer != null)
-      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-
+    atomicInformer.set(informerForThisSuite)
     var compareAndSwapSucceeded = false
     try {
       super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
