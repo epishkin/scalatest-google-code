@@ -1493,7 +1493,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   }
 
   /**
-   * Supports test (and shared test) registration.
+   * Supports test (and shared test) registration in <code>FlatSpec</code>s.
    *
    * <p>
    * This field enables syntax such as the following test registration:
