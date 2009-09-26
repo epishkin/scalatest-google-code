@@ -88,6 +88,44 @@ class StackSpec extends Spec with ShouldMatchers {
 
 Future enhancements:
 
+Potential performance enhancements.
+
+Right now all runner threads need to compete to write to a single actor's inbox. I noticed a pretty big
+wait time on that monitor. If that turns out to be the case, then seems better to let each thread write
+events to its own queue, and have one reader thread that's reading those queues in round robin fashion. That
+way each runner thread firing events only needs to compete with a single reader thread for access to the queue,
+and the more runner threads that get going, the less often they'll need to compete with the reader thread. Probably
+first try using a ConcurrentLinkedQueue for the queue.
+
+Most of the time people don't use info, and most of the time people don't do multi-threaded tests. It is even less
+often that people use info from inside threads created by multi-threaded tests. However, right now I have info
+grabbing an Informer from an atomic, and that atomic is updated by run and runTest, updated at the beginning and
+reset at the end. So each time I think there's a flush to main memory. This seems like it might be a big perfomance
+cost to pay given how rarely people use info. So my idea is to use a thread containment approach instead. The model
+is that one thread constructs each suite and either the same thread or another runs it, but only one thread should be running
+a suite at any one time. Tests may start thread that can call info, but those threads should actually go away before
+the test ends. That's the model. So what I can do instead of what I'm doing is leave the atomic bundle as it is, but when
+run is called, it grabs the atomic bundle, makes a copy of it in private variables that aren't synchronized (so may not
+be visible to other threads), then updates the bundle to indicate it is running the suite. It by the way checks first to
+make sure some other thread hasn't marked that it is currently running the suite, and if it is it throws ye olde
+ConcurrentModificationException. At the end of run in a finally, it resets that flag and flushes again, so the suite
+is ready for another thread to run it if one does. (Usually when using ScalaTest these suite objects will only be run
+once, but they can be run multiple times in the interpreter, etc., if someone wants to do that.) It also would record
+a reference the thread object that is running (and this would be flushed to main memory). This will definitely be cleared in run's finally, do it can get garbage collected.
+Then the rest of the time, run, runNestedSuites, runTests, and runTest will just use the instance variables
+without synchronization. That way when people use ScalaTest like it is intended, which I expect will be the case 99.99% of the time,
+running a suite of tests will only require one memory cache flush at the beginning of the run and one at the end. Given
+memory is the new disk, this might help improve performance. Multi-threaded tests can call info, and they may see any of the
+informers that were put there, but I think what I need to do is keep track of the thread that's running the thing, and compare
+threads. If it isn't the running thread, then it doesn't include test info. So that's the trick is that any informer that gets
+in there, which may get flushed one way or another, would know which thread is the running thread, and o
+
+Actually, the info method would do a get on the atomic that has the running thread in it. So if you use info, you
+do pay for that get. If the current thread is equal to the running thread, then it will use the informer stashed in
+the instance variable without synchronization. Otherwise, it will use a generic knows-just-about-the-suite informer, which
+won't include a test name. That way the only read from  main memory is if you actually *use* info, and the cost is
+once per usage of info. Right now, I'm paying the price of doing reads and writes for every single test.
+
 Log4j has appenders. java.util.logging has handlers. I think the model would be you'd ask runner
 to register a handler or an appender, and it could do that, then it would get a LogRecorder object
 or something from that, and pass it to run. There would be an Option[LogRecorder] param in there.

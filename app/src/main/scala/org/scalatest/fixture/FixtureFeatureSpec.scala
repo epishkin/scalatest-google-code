@@ -940,20 +940,27 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
   }
 
-  class ScenariosForPhrase {
-
-    /**
-     * This method enables the following syntax:
-     *
-     * <pre>
-     * scenariosFor(nonEmptyStack(lastValuePushed))
-     *             ^
-     * </pre>
-     */
-    def apply(unit: Unit) {}
-  }
-
-  val scenariosFor = new ScenariosForPhrase
+  /**
+   * Registers shared scenarios.
+   *
+   * <p>
+   * This method enables the following syntax for shared scenarios in a <code>FixtureFeatureSpec</code>:
+   * </p>
+   *
+   * <pre>
+   * scenariosFor(nonEmptyStack(lastValuePushed))
+   * </pre>
+   *
+   * <p>
+   * This method just provides syntax sugar intended to make the intent of the code clearer.
+   * Because the parameter passed to it is
+   * type <code>Unit</code>, the expression will be evaluated before being passed, which
+   * is sufficient to register the shared scenarios. For examples of shared scenarios, see the
+   * <a href="../FeatureSpec.html#SharedScenarios">Shared scenarios section</a> in the main documentation for
+   * trait <code>FeatureSpec</code>.
+   * </p>
+   */
+  def scenariosFor(unit: Unit) {}
 
   implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
     fixture => f
