@@ -6,11 +6,18 @@ import org.scalatest.matchers.ShouldMatchers
 import _root_.java.util.concurrent.{Callable, CountDownLatch}
 import java.lang.Thread.State._
 
+class VolatileString {
+  @volatile private var value = ""
+  def s = value
+  def s_=(newValue: String) { value = newValue }
+}
+
 class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with ShouldMatchers {
     
   test("metronome order") { conductor => import conductor._
 
-    @volatile var s = ""
+    val volatileString = new VolatileString
+    import volatileString._
 
     thread("t1") {
       waitForBeat(1)
