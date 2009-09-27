@@ -105,5 +105,5 @@ abstract class ResultOfStringPassedToVerb(val verb: String, val rest: String) {
    * for trait <code>FlatSpec</code>.
    * </p>
    */
-  def taggedAs(firstTestTag: Tag, otherTestTags: Tag*): SubjectVerbStringTaggedAs
+  def taggedAs(firstTestTag: Tag, otherTestTags: Tag*): ResultOfTaggedAsInvocation
 }

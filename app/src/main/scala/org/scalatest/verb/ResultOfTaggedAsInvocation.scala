@@ -17,7 +17,7 @@ package org.scalatest.verb
 
 import org.scalatest._
 
-abstract class SubjectVerbStringTaggedAs(val verb: String, val rest: String, val tags: List[Tag]) {
+abstract class ResultOfTaggedAsInvocation(val verb: String, val rest: String, val tags: List[Tag]) {
 
   // "A Stack" should "bla bla" taggedAs(SlowTest) in {
   //                                               ^
