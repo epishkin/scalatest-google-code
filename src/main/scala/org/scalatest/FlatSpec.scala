@@ -1311,8 +1311,9 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
       updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
     }
   }
+
   /**
-   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
+   * Describes a &#8220;subject&#8221; being specified and tested by the passed function value. The
    * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
@@ -1685,10 +1686,10 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
   // For after "subject" should "rest" taggedAs(...), which yields a SubjectVerbStringTaggedAs. This
   // provides in and ignore after that.
-  implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
+  protected implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
     new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
 
-  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
+  protected implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
     (subject, verb, rest) => {
       behavior.of(subject)
       new ResultOfStringPassedToVerb(verb, rest) {
@@ -1712,7 +1713,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     }
   }
   
-  implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
+  protected implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
     (left) => {
       behavior.of(left)
       new ResultOfBehaveWordPassedToVerb {
