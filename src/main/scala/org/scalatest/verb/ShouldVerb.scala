@@ -17,12 +17,6 @@ package org.scalatest.verb
 
 import org.scalatest._
 
-// These guys take implicits because they don't work on all classes. The first two are
-// just working in FlatSpec, which provides implicits of the appropriate type. The third & fourth
-// ones just work in a WordSpec, which provides the implicits. If you mix in ShouldMatchers,
-// then, you get this stuff, but in a non-FlatSpec you can't use these first two because
-// there's no implicit in scope. Likewise in a non-WordSpec you can't use the next two
-// because no implicit.
 /**
  * Provides an implicit conversion that adds <code>should</code> methods to <code>String</code>
  * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
