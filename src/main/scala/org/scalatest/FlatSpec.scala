@@ -2170,9 +2170,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     }
   }
 
-  // For after "subject" should "rest", which yields a ResultOfStringPassedToVerb. This
-  // provides in and ignore after that.
-
   /**
    * Implicitly converts an object of type <code>ResultOfStringPassedToVerb</code> to an
    * <code>InAndIgnoreMethods</code>, to enable <code>in</code> and <code>ignore</code>
@@ -2271,8 +2268,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     }
   }
 
-  // For after "subject" should "rest" taggedAs(...), which yields a SubjectVerbStringTaggedAs. This
-  // provides in and ignore after that.
   /**
    * Implicitly converts an object of type <code>SubjectVerbStringTaggedAs</code> to an
    * <code>InAndIgnoreMethodsAfterTaggedAs</code>, to enable <code>in</code> and <code>ignore</code>
