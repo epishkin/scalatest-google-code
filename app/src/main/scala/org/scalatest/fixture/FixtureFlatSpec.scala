@@ -1466,7 +1466,29 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   protected implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
     new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
 
-  protected implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
+  /**
+   * Supports the shorthand form of test registration.
+   *
+   * <p>
+   * For example, this method enables syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * "A Stack (when empty)" should "be empty" in { ... }
+   *                        ^
+   * </pre>
+   *
+   * <p>
+   * This function is passed as an implicit parameter to a <code>should</code> method
+   * provided in <code>ShouldVerb</code>, a <code>must</code> method
+   * provided in <code>MustVerb</code>, and a <code>can</code> method
+   * provided in <code>CanVerb</code>. When invoked, this function registers the
+   * subject description (the first parameter to the function) and returns a <code>ResultOfStringPassedToVerb</code>
+   * initialized with the verb and rest parameters (the second and third parameters to
+   * the function, respectively).
+   * </p>
+   */
+  protected implicit val shorthandTestRegistrationFunction: (String, String, String) => ResultOfStringPassedToVerb = {
     (subject, verb, rest) => {
       behavior.of(subject)
       new ResultOfStringPassedToVerb(verb, rest) {
@@ -1489,7 +1511,27 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   // TODO: Get rid of unusedfixture, and use NoArgTestFunction instead
 
-  protected implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
+  /**
+   * Supports the shorthand form of shared test registration.
+   *
+   * <p>
+   * For example, this method enables syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
+   *                           ^
+   * </pre>
+   *
+   * <p>
+   * This function is passed as an implicit parameter to a <code>should</code> method
+   * provided in <code>ShouldVerb</code>, a <code>must</code> method
+   * provided in <code>MustVerb</code>, and a <code>can</code> method
+   * provided in <code>CanVerb</code>. When invoked, this function registers the
+   * subject description (the  parameter to the function) and returns a <code>ResultOfBehaveWordPassedToVerb</code>.
+   * </p>
+   */
+  protected implicit val shorthandSharedTestRegistrationFunction: (String) => ResultOfBehaveWordPassedToVerb = {
     (left) => {
       behavior.of(left)
       new ResultOfBehaveWordPassedToVerb {

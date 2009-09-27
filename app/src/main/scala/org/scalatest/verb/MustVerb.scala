@@ -69,30 +69,30 @@ import org.scalatest._
  * directly in <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and
  * <code>FixtureWordSpec</code>, is because an implicit conversion provided directly would conflict
  * with the implicit conversion that provides <code>must</code> methods on <code>String</code>
- * in the <code>ShouldMatchers</code> trait. By contrast, there is no conflict with
- * the separate <code>ShouldVerb</code> trait approach, because:
+ * in the <code>MustMatchers</code> trait. By contrast, there is no conflict with
+ * the separate <code>MustVerb</code> trait approach, because:
  * </p>
  *
  * <ol>
  * <li><code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and <code>FixtureWordSpec</code>
- * mix in <code>ShouldVerb</code> directly, and</li>
- * <li><code>ShouldMatchers</code> extends <code>ShouldVerb</code>, overriding the
- * <code>convertToStringShouldWrapper</code> implicit conversion function.</li>
+ * mix in <code>MustVerb</code> directly, and</li>
+ * <li><code>MustMatchers</code> extends <code>MustVerb</code>, overriding the
+ * <code>convertToStringMustWrapper</code> implicit conversion function.</li>
  * </ol>
  *
  * <p>
  * So whether or not
  * a <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, or <code>FixtureWordSpec</code>
- * mixes in <code>ShouldMatchers</code>, there will only be one
+ * mixes in <code>MustMatchers</code>, there will only be one
  * implicit conversion in scope that adds <code>must</code> methods to <code>String</code>s.
  * </p>
  *
  * </p>
- * Also, because the class of the result of the overriding <code>convertToStringShouldWrapper</code>
- * implicit conversion method provided in <code>ShouldMatchers</code> extends this trait's
- * <code>StringShouldWrapperForVerb</code> class, the four uses of <code>must</code> provided here
+ * Also, because the class of the result of the overriding <code>convertToStringMustWrapper</code>
+ * implicit conversion method provided in <code>MustMatchers</code> extends this trait's
+ * <code>StringMustWrapperForVerb</code> class, the four uses of <code>must</code> provided here
  * are still available. These four <code>must</code> are in fact available to any class
- * that mixes in <code>ShouldMatchers</code>, but each takes an implicit parameter that is provided
+ * that mixes in <code>MustMatchers</code>, but each takes an implicit parameter that is provided
  * only in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>, or <code>WordSpec</code> and
  * <code>FixtureWordSpec</code>.  
  * </p>
@@ -216,7 +216,7 @@ trait MustVerb {
   }
 
   /**
-   * Implicitly converts an object of type <code>String</code> to a <code>StringShouldWrapper</code>,
+   * Implicitly converts an object of type <code>String</code> to a <code>StringMustWrapper</code>,
    * to enable <code>must</code> methods to be invokable on that object.
    */
   implicit def convertToStringMustWrapper(o: String): StringMustWrapperForVerb = new StringMustWrapperForVerb(o)
