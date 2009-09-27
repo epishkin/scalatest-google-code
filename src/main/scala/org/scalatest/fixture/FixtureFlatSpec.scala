@@ -766,12 +766,100 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
   }
 
+  /**
+   * Class that supports registration of ignored tests via the instance referenced from <code>FixtureFlatSpec</code>'s <code>ignore</code> field.
+   *
+   * <p>
+   * This class enables syntax such as the following registration of an ignored test:
+   * </p>
+   *
+   * <pre>
+   * ignore should "pop values in last-in-first-out order" in { ... }
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>ignore</code> field, see <a href="../FlatSpec.html#IgnoredTests">Ignored tests section</a>
+   * in the main documentation for this trait.
+   * </p>
+   */
   protected class IgnoreWord {
+
+    /**
+     * Supports the registration of ignored tests with <code>should</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * ignore should "pop values in last-in-first-out order" in { ... }
+     *        ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of the use of the <code>ignore</code> field, see <a href="../FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def should(string: String) = new IgnoreVerbString("should", string)
+
+    /**
+     * Supports the registration of ignored tests with <code>must</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * ignore must "pop values in last-in-first-out order" in { ... }
+     *        ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of the use of the <code>ignore</code> field, see <a href="../FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def must(string: String) = new IgnoreVerbString("must", string)
+
+    /**
+     * Supports the registration of ignored tests with <code>can</code> in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * ignore can "pop values in last-in-first-out order" in { ... }
+     *        ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of the use of the <code>ignore</code> field, see <a href="../FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def can(string: String) = new IgnoreVerbString("can", string)
   }
 
+  /**
+   * Supports registration of ignored tests in <code>FixtureFlatSpec</code>s.
+   *
+   * <p>
+   * This field enables syntax such as the following registration of an ignored test:
+   * </p>
+   *
+   * <pre>
+   * ignore should "pop values in last-in-first-out order" in { ... }
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>ignore</code> field, see the
+   * <a href="../FlatSpec.html#IgnoredTests">Ignored tests section</a> in the main documentation for trait <code>FlatSpec</code>.
+   * </p>
+   */
   protected val ignore = new IgnoreWord
 
   protected class InAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) {
