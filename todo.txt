@@ -1,5 +1,6 @@
 
 - why is the conversion to NoArgFunc commented out in FixtureFlatSpec?
+- testNames scaladoc is wrong in FixtureFlatSpec, probably others too
 - try the shared tests example I just added to WordSpec
 - ask George about the XmlReporter during reruns.
 - fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored.

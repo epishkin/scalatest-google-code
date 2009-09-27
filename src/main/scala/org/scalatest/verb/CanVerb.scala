@@ -67,34 +67,11 @@ import org.scalatest._
  * <p>
  * The reason this implicit conversion is provided in a separate trait, instead of being provided
  * directly in <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and
- * <code>FixtureWordSpec</code>, is because an implicit conversion provided directly would conflict
- * with the implicit conversion that provides <code>can</code> methods on <code>String</code>
- * in the <code>ShouldMatchers</code> trait. By contrast, there is no conflict with
- * the separate <code>ShouldVerb</code> trait approach, because:
- * </p>
- *
- * <ol>
- * <li><code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, and <code>FixtureWordSpec</code>
- * mix in <code>ShouldVerb</code> directly, and</li>
- * <li><code>ShouldMatchers</code> extends <code>ShouldVerb</code>, overriding the
- * <code>convertToStringShouldWrapper</code> implicit conversion function.</li>
- * </ol>
- *
- * <p>
- * So whether or not
- * a <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>, or <code>FixtureWordSpec</code>
- * mixes in <code>ShouldMatchers</code>, there will only be one
- * implicit conversion in scope that adds <code>can</code> methods to <code>String</code>s.
- * </p>
- *
- * </p>
- * Also, because the class of the result of the overriding <code>convertToStringShouldWrapper</code>
- * implicit conversion method provided in <code>ShouldMatchers</code> extends this trait's
- * <code>StringShouldWrapperForVerb</code> class, the four uses of <code>can</code> provided here
- * are still available. These four <code>can</code> are in fact available to any class
- * that mixes in <code>ShouldMatchers</code>, but each takes an implicit parameter that is provided
- * only in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>, or <code>WordSpec</code> and
- * <code>FixtureWordSpec</code>.  
+ * <code>FixtureWordSpec</code>, is primarily for design symmetry with <code>ShouldVerb</code>
+ * and <code>MustVerb</code>. Both <code>ShouldVerb</code> and <code>MustVerb</code> must exist
+ * as a separate trait because an implicit conversion provided directly would conflict
+ * with the implicit conversion that provides <code>should</code> or <code>must</code> methods on <code>String</code>
+ * in the <code>ShouldMatchers</code> and <code>MustMatchers</code> traits.
  * </p>
  *
  * @author Bill Venners
@@ -216,7 +193,7 @@ trait CanVerb {
   }
 
   /**
-   * Implicitly converts an object of type <code>String</code> to a <code>StringShouldWrapper</code>,
+   * Implicitly converts an object of type <code>String</code> to a <code>StringCanWrapper</code>,
    * to enable <code>can</code> methods to be invokable on that object.
    */
   implicit def convertToStringCanWrapper(o: String): StringCanWrapperForVerb = new StringCanWrapperForVerb(o)
