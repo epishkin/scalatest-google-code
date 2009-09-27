@@ -17,6 +17,21 @@ package org.scalatest.verb
 
 import org.scalatest._
 
+/**
+ * Provides an implicit conversion that adds <code>must</code> methods to <code>String</code>
+ * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
+ * and <code>FixtureWordSpec</code>.
+ *
+ * <p>
+ * For example, this trait enables syntax such as the following in <code>FlatSpec</code>
+ * and <code>FixtureFlatSpec</code>:
+ * </p>
+ *
+ * <pre>
+ * "A Stack (when empty)" must "be empty" in { ... }
+ *                        ^
+ * </pre>
+ */
 trait MustVerb {
 
   /**
@@ -33,12 +48,12 @@ trait MustVerb {
   class StringMustWrapperForVerb(left: String) {
 
     /**
-     * This method enables syntax such as the following in a <code>FlatSpec</code>:
+     * This method enables syntax such as the following in <code>FlatSpec</code>
+     * and <code>FixtureFlatSpec</code>:
      *
      * <pre>
-     * "A Stack (when empty)" must "be empty" in {
-     *   assert(emptyStack.empty)
-     * }
+     * "A Stack (when empty)" must "be empty" in { ... }
+     *                        ^
      * </pre>
      *
      * <p>
@@ -73,8 +88,8 @@ trait MustVerb {
   }
 
   /**
-   * Implicitly converts an object of type <code>java.lang.String</code> to a <code>StringShouldWrapper</code>,
-   * to enable <code>should</code> methods to be invokable on that object.
+   * Implicitly converts an object of type <code>String</code> to a <code>StringShouldWrapper</code>,
+   * to enable <code>must</code> methods to be invokable on that object.
    */
   implicit def convertToStringMustWrapper(o: String): StringMustWrapperForVerb = new StringMustWrapperForVerb(o)
 }

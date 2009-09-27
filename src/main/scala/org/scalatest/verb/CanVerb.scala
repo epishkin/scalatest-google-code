@@ -17,7 +17,23 @@ package org.scalatest.verb
 
 import org.scalatest._
 
+/**
+ * Provides an implicit conversion that adds <code>can</code> methods to <code>String</code>
+ * to support the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
+ * and <code>FixtureWordSpec</code>.
+ *
+ * <p>
+ * For example, this trait enables syntax such as the following in <code>FlatSpec</code>
+ * and <code>FixtureFlatSpec</code>:
+ * </p>
+ *
+ * <pre>
+ * "A Stack (when empty)" can "be empty" in { ... }
+ *                        ^
+ * </pre>
+ */
 trait CanVerb {
+
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
@@ -32,12 +48,12 @@ trait CanVerb {
   class StringCanWrapperForVerb(left: String) {
 
     /**
-     * This method enables syntax such as the following in a <code>FlatSpec</code>:
+     * This method enables syntax such as the following in <code>FlatSpec</code>
+     * and <code>FixtureFlatSpec</code>:
      *
      * <pre>
-     * "A Stack (when empty)" can "be empty" in {
-     *   assert(emptyStack.empty)
-     * }
+     * "A Stack (when empty)" can "be empty" in { ... }
+     *                        ^
      * </pre>
      *
      * <p>
@@ -73,7 +89,7 @@ trait CanVerb {
 
   /**
    * Implicitly converts an object of type <code>java.lang.String</code> to a <code>StringShouldWrapper</code>,
-   * to enable <code>should</code> methods to be invokable on that object.
+   * to enable <code>can</code> methods to be invokable on that object.
    */
   implicit def convertToStringCanWrapper(o: String): StringCanWrapperForVerb = new StringCanWrapperForVerb(o)
 }

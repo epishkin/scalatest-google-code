@@ -17,6 +17,8 @@ package org.scalatest.verb
 
 import org.scalatest._
 
+// Used in implicit val type so it is specific. For
+// FlatSpec should behave syntax with ShouldVerb stuff.
 trait ResultOfBehaveWordPassedToVerb {
 
   def like(unit: Unit)

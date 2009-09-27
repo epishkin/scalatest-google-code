@@ -2122,6 +2122,8 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   protected implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
     new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
 
+  // This is the implicit val that is needed by the should method in Should/Must/CanVerb that
+  // takes a string, which enables the short hand form.
   protected implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
     (subject, verb, rest) => {
       behavior.of(subject)
@@ -2145,7 +2147,8 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
       }
     }
   }
-  
+
+  // And this is the implicit val that enables the should method that takes a BehaveWord in Should/Must/CanVerb.
   protected implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
     (left) => {
       behavior.of(left)

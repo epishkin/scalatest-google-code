@@ -709,8 +709,8 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
 
-  implicit val doAfterVerbThing: (String, ResultOfAfterWordApplication, String) => Unit = {
-    (left, resultOfAfterWordApplication, verb) => {
+  implicit val doAfterVerbThing: (String, String, ResultOfAfterWordApplication) => Unit = {
+    (left, verb, resultOfAfterWordApplication) => {
       val afterWordFunction =
         () => {
           registerDescriptionBranch(resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
