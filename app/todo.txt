@@ -1,8 +1,10 @@
 
-- why is the conversion to NoArgFunc commented out in FixtureFlatSpec?
 - testNames scaladoc is wrong in FixtureFlatSpec, probably others too
-- rename verb.SubjectVerbStringTaggedAs to ResultOfTaggedAsInvocation. Right now it is inconsistent.
+- rename WordSpec's StringTaggedAs to ResultOfTaggedAsInvocation or something similar. ResultOfTaggedAsInvocationOnString. Right now it is inconsistent.
 - did i forget to put taggedAs on FlatSpec shorthand forms? "bla" should "bla" taggedAs(...) ... 
+- probably don't need the implicit for no-arg tests in FixtureWordSpec. Can just put the overloaded in methods in there.
+  actually, i'm wondering why i'd need it on FixtureFunSuite and FixtureFeatureSpec either. Now that I'm doing () => instead
+  of by-names, I can just overload and get rid of the implicit.
 - try the shared tests example I just added to WordSpec
 - ask George about the XmlReporter during reruns.
 - fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored.
