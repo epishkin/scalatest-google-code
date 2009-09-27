@@ -626,26 +626,86 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
   }
 
+  /**
+   * Class that supports the registration of tagged tests.
+   *
+   * <p>
+   * Instances of this class are returned by the <code>taggedAs</code> method of 
+   * class <code>WordSpecStringWrapper</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   protected class StringTaggedAs(specText: String, tags: List[Tag]) {
+
+    /**
+     * Supports tagged test registration.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" taggedAs(SlowTest) in { fixture => ... }
+     *                                       ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def in(testFun: Fixture => Any) {
       registerTestToRun(specText, tags, testFun)
     }
-    // "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
-    //                                             ^
+
+    /**
+     * Supports registration of tagged, pending tests.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" taggedAs(SlowTest) is (pending)
+     *                                       ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def is(testFun: => PendingNothing) {
       registerTestToRun(specText, tags, unusedFixture => testFun)
     }
-    // "hi" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
+
+    /**
+     * Supports registration of tagged, ignored tests.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" taggedAs(SlowTest) ignore { fixture => ... }
+     *                                       ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(specText, tags, testFun)
     }
   }
 
+ /* TODO: Delete this if it isn't needed
   protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
     def in(testFun: Fixture => Any) {
       registerTestToIgnore(specText, tags, testFun)
     }
   }
+*/
 
   /**
    * A class that via an implicit conversion (named <code>convertToWordSpecStringWrapper</code>) enables
@@ -663,33 +723,166 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @author Bill Venners
    */
   protected class WordSpecStringWrapper(string: String) {
+
+    /**
+     * Supports test registration.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" in { ... }
+     *                    ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def in(testFun: Fixture => Any) {
       registerTestToRun(string, List(), testFun)
     }
-    // "test that" is (pending)
-    //             ^
+
+    /**
+     * Supports pending test registration.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" is (pending)
+     *                    ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def is(testFun: => PendingNothing) {
       registerTestToRun(string, List(), unusedFixtre => testFun)
     }
+
+    /**
+     * Supports ignored test registration.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" ignore { fixture => ... }
+     *                    ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(string, List(), testFun)
     }
+
+    /**
+     * Supports tagged test registration.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" taggedAs(SlowTest) in { fixture => ... }
+     *                    ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new StringTaggedAs(string, tagList)
     }
-    /* def can(f: => Unit) {
-      registerVerbBranch(string, "can", f _)
-    } */
+
+    /**
+     * Registers a <code>when</code> clause.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "A Stack" when { ... }
+     *           ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def when(f: => Unit) {
       registerDescriptionBranch(string + " (when", f _)
     }
+
+    /**
+     * Registers a <code>when</code> clause that is followed by an <em>after word</em>.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * val theUser = afterWord("the user")
+     *
+     * "A Stack" when theUser { ... }
+     *           ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def when(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
       registerDescriptionBranch(string + " (when " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
     }
+
+    /**
+     * Registers a <code>that</code> clause.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "a rerun button" that {
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def that(f: => Unit) {
       registerDescriptionBranch(string + " that", f _)
     }
+
+    /**
+     * Registers a <code>that</code> clause.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "a rerun button" that {
+     *                  ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
       registerDescriptionBranch(string + " that " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
     }
@@ -809,24 +1002,12 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    */
   protected def afterWord(text: String) = new AfterWord(text)
 
+  /**
+   * Implicitly converts <code>String</code>s to <code>WordSpecStringWrapper</code>, which enables
+   * methods <code>when</code>, <code>that</code>, <code>in</code>, <code>is</code>, <code>taggedAs</code>
+   * and <code>ignore</code> to be invoked on <code>String</code>s.
+   */
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
-
-/* TODO: delete this if it indeed is not needed
-  protected class IgnoredTest(specText: String) {
-    def in(f: Fixture => Any) {
-      registerTestToIgnore(specText, List(), f)
-    }
-    def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
-      val tagList = firstTestTag :: otherTestTags.toList
-      new IgnoreTestStringTaggedAs(specText, tagList)
-    }
-  }
-  protected class IgnoreWord {
-    def test(specText: String) = new IgnoredTest(specText)
-  }
-
-  protected val ignore = new IgnoreWord
-*/
 
   /**
    * Supports the registration of subjects.
