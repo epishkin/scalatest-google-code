@@ -17,9 +17,42 @@ package org.scalatest.verb
 
 import org.scalatest._
 
-// Used in implicit val type so it is specific. For
-// FlatSpec should behave syntax with ShouldVerb stuff.
+/**
+ * Supports the shorthand form of shared test registration.
+ *
+ * <p>
+ * For example, this trait enables syntax such as the following in <code>FlatSpec</code>
+ * and <code>FixtureFlatSpec</code>:
+ * </p>
+ *
+ * <pre>
+ * "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
+ *                                         ^
+ * </pre>
+ *
+ * <p>
+ * This type is returned by the function passed as an implicit parameter to a <code>should</code> method
+ * provided in <code>ShouldVerb</code>, a <code>must</code> method
+ * provided in <code>MustVerb</code>, and a <code>can</code> method
+ * provided in <code>CanVerb</code>. The implicit function parameter is provided by <code>FlatSpec</code>
+ * and <code>FixtureFlatSpec</code>.
+ * </p>
+ */
 trait ResultOfBehaveWordPassedToVerb {
 
+  /**
+   * Supports the shorthand form of shared test registration.
+   *
+   * <p>
+   * For example, this method enables syntax such as the following in <code>FlatSpec</code>
+   * and <code>FixtureFlatSpec</code>:
+   * </p>
+   *
+   * <pre>
+   * "A Stack (with one item)" should behave like nonEmptyStack(stackWithOneItem, lastValuePushed)
+   *                                         ^
+   * </pre>
+   *
+   */
   def like(unit: Unit)
 }
