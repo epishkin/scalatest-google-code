@@ -565,21 +565,149 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   // TODO: Do a walk through. Are all these being used. I guess I'll find out when
   // I document them.
+  /**
+   * Class that supports the registration of tagged tests via the <code>ItWord</code> instance
+   * referenced from <code>FixtureFlatSpec</code>'s <code>it</code> field.
+   *
+   * <p>
+   * This class enables syntax such as the following tagged test registration:
+   * </p>
+   *
+   * <pre>
+   * it should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
+   *                                                                      ^
+   * </pre>
+   *
+   * <p>
+   * It also enables syntax such as the following registration of an ignored, tagged test:
+   * </p>
+   *
+   * <pre>
+   * it should "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { ... }
+   *                                                                      ^
+   * </pre>
+   *
+   * <p>
+   * In addition, it enables syntax such as the following registration of a pending, tagged test:
+   * </p>
+   *
+   * <pre>
+   * it should "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
+   *                                                                      ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>it</code> field to register tagged tests, see
+   * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
+   * </p>
+   */
   protected class ItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+
+    /**
+     * Supports the registration of tagged, no-arg tests in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must "pop values in last-in-first-out order" taggedAs(SlowTest) in { () => ... }
+     *                                                                    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of tagged test registration, see
+     * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def in(testFun: () => Any) {
       registerTestToRun(verb + " " + name, tags, new NoArgTestWrapper(testFun))
     }
+
+    /**
+     * Supports the registration of tagged, one-arg tests (tests that take a <code>Fixture</code> object as a parameter) in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must "pop values in last-in-first-out order" taggedAs(SlowTest) in { fixture => ... }
+     *                                                                    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of tagged test registration, see
+     * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def in(testFun: Fixture => Any) {
       registerTestToRun(verb + " " + name, tags, testFun)
     }
-    // it must "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
-    //                                                     ^
+
+    /**
+     * Supports the registration of pending, tagged tests in a <code>FlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
+     *                                                                    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of pending test registration, see the <a href="../FlatSpec.html#PendingTests">Pending tests section</a> in the main documentation
+     * for trait <code>FlatSpec</code>.  And for examples of tagged test registration, see
+     * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def is(testFun: => PendingNothing) {
       registerTestToRun(verb + " " + name, tags, unusedFixture => testFun)
     }
+
+    /**
+     * Supports the registration of ignored, tagged, no-arg tests in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { () => ... }
+     *                                                                    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of ignored test registration, see the <a href="../FlatSpec.html#IgnoredTests">Ignored tests section</a> in the main documentation
+     * for trait <code>FlatSpec</code>.  And for examples of tagged test registration, see
+     * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def ignore(testFun: () => Any) {
       registerTestToIgnore(verb + " " + name, tags, new NoArgTestWrapper(testFun))
     }
+
+    /**
+     * Supports the registration of ignored, tagged, one-arg tests (tests that take a <code>Fixture</code> object
+     * as a parameter) in a <code>FixtureFlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * it must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { fixture => ... }
+     *                                                                    ^
+     * </pre>
+     *
+     * <p>
+     * For examples of ignored test registration, see the <a href="../FlatSpec.html#IgnoredTests">Ignored tests section</a> in the main documentation
+     * for trait <code>FlatSpec</code>.  And for examples of tagged test registration, see
+     * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def ignore(testFun: Fixture => Any) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
