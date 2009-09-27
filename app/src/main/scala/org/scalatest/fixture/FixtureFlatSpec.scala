@@ -17,7 +17,7 @@ package org.scalatest.fixture
 
 import org.scalatest._
 import FixtureNodeFamily._
-import verb.{ResultOfTaggedAsInvocation, ResultOfStringPassedToVerb, ResultOfBehaveWordPassedToVerb, BehaveWord, ShouldVerb, MustVerb, CanVerb}
+import verb.{ResultOfTaggedAsInvocation, ResultOfStringPassedToVerb, BehaveWord, ShouldVerb, MustVerb, CanVerb}
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import java.util.concurrent.atomic.AtomicReference
@@ -1749,15 +1749,13 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * provided in <code>ShouldVerb</code>, a <code>must</code> method
    * provided in <code>MustVerb</code>, and a <code>can</code> method
    * provided in <code>CanVerb</code>. When invoked, this function registers the
-   * subject description (the  parameter to the function) and returns a <code>ResultOfBehaveWordPassedToVerb</code>.
+   * subject description (the  parameter to the function) and returns a <code>BehaveWord</code>.
    * </p>
    */
-  protected implicit val shorthandSharedTestRegistrationFunction: (String) => ResultOfBehaveWordPassedToVerb = {
+  protected implicit val shorthandSharedTestRegistrationFunction: (String) => BehaveWord = {
     (left) => {
       behavior.of(left)
-      new ResultOfBehaveWordPassedToVerb {
-        def like(unit: Unit) = ()
-      }
+      new BehaveWord
     }
   }
 

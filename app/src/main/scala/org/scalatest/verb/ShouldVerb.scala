@@ -153,11 +153,11 @@ trait ShouldVerb {
      *
      * <p>
      * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> passes in a function via the implicit parameter that takes
-     * a string and results in a <code>ResultOfBehaveWordPassedToVerb</code>. This method
+     * a string and results in a <code>BehaveWord</code>. This method
      * simply invokes this function, passing in left, and returns the result.
      * </p>
      */
-    def should(right: BehaveWord)(implicit fun: (String) => ResultOfBehaveWordPassedToVerb): ResultOfBehaveWordPassedToVerb = {
+    def should(right: BehaveWord)(implicit fun: (String) => BehaveWord): BehaveWord = {
       fun(left)
     }
 
