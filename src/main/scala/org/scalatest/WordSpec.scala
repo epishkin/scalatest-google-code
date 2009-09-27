@@ -1912,14 +1912,54 @@ delme.scala:6: error: no implicit argument matching parameter type (String, Stri
 one error found
   
    */
-  implicit val doVerbThing: StringVerbBlockRegistration =
+  /**
+   * Supports the registration of subjects.
+   *
+   * <p>
+   * For example, this method enables syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * "A Stack" should { ...
+   *           ^
+   * </pre>
+   *
+   * <p>
+   * This function is passed as an implicit parameter to a <code>should</code> method
+   * provided in <code>ShouldVerb</code>, a <code>must</code> method
+   * provided in <code>MustVerb</code>, and a <code>can</code> method
+   * provided in <code>CanVerb</code>. When invoked, this function registers the
+   * subject and executes the block.
+   * </p>
+   */
+  protected implicit val subjectRegistrationFunction: StringVerbBlockRegistration =
     new StringVerbBlockRegistration {
       def apply(left: String, verb: String, f: () => Unit) = registerVerbBranch(left, verb, f)
     }
 
-  // This one is used by the other should method in ShouldVerb that takes a ResultOfAfterWordApplication,
-  // so you can put should after an after word.
-  implicit val doAfterVerbThing: (String, String, ResultOfAfterWordApplication) => Unit = {
+  /**
+   * Supports the registration of subject descriptions with after words.
+   *
+   * <p>
+   * For example, this method enables syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * def provide = afterWord("provide")
+   *
+   * "The ScalaTest Matchers DSL" can provide { ... }
+   *                              ^
+   * </pre>
+   *
+   * <p>
+   * This function is passed as an implicit parameter to a <code>should</code> method
+   * provided in <code>ShouldVerb</code>, a <code>must</code> method
+   * provided in <code>MustVerb</code>, and a <code>can</code> method
+   * provided in <code>CanVerb</code>. When invoked, this function registers the
+   * subject and executes the block.
+   * </p>
+   */
+  protected implicit val subjectWithAfterWordRegistrationFunction: (String, String, ResultOfAfterWordApplication) => Unit = {
     (left, verb, resultOfAfterWordApplication) => {
       val afterWordFunction =
         () => {
