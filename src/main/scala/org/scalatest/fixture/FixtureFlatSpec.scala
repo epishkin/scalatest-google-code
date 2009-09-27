@@ -491,7 +491,44 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
   }
 
+  /**
+   * Class that supports the registration of a &#8220;subject&#8221; being specified and tested via the
+   * instance referenced from <code>FixtureFlatSpec</code>'s <code>behavior</code> field.
+   *
+   * <p>
+   * This field enables syntax such as the following subject registration:
+   * </p>
+   *
+   * <pre>
+   * behavior of "A Stack"
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>behavior</code> field, see the <a href="../FlatSpec.html">main documentation</a>
+   * for trait <code>FlatSpec</code>.
+   * </p>
+   */
   protected class BehaviorWord {
+
+    /**
+     * Supports the registration of a &#8220;subject&#8221; being specified and tested via the
+     * instance referenced from <code>FixtureFlatSpec</code>'s <code>behavior</code> field.
+     *
+     * <p>
+     * This method enables syntax such as the following subject registration:
+     * </p>
+     *
+     * <pre>
+     * behavior of "A Stack"
+     *          ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of the use of this method, see the <a href="../FlatSpec.html">main documentation</a>
+     * for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def of(description: String) {
       if (atomic.get.registrationClosed)
         throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "describe"))
@@ -506,11 +543,23 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
     }
   }
+
   /**
-   * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
-   * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
-   * (defined with <code>it</code>). This trait's implementation of this method will register the
-   * description string and immediately invoke the passed function.
+   * Supports the registration of a &#8220;subject&#8221; being specified and tested.
+   *
+   * <p>
+   * This field enables syntax such as the following subject registration:
+   * </p>
+   *
+   * <pre>
+   * behavior of "A Stack"
+   * ^
+   * </pre>
+   *
+   * <p>
+   * For more information and examples of the use of the <code>behavior</code> field, see the <a href="../FlatSpec.html">main documentation</a>
+   * for trait <code>FlatSpec</code>.
+   * </p>
    */
   protected val behavior = new BehaviorWord
 
