@@ -1784,13 +1784,35 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
 
+  // Used to enable should/can/must to take a block (except one that results in type string. May
+  // want to mention this as a gotcha.
+  /*
+import org.scalatest.WordSpec
+
+class MySpec extends WordSpec {
+
+  "bla bla bla" should {
+     "do something" in {
+        assert(1 + 1 === 2)
+      }
+      "now it is a string"
+   }
+}
+delme.scala:6: error: no implicit argument matching parameter type (String, String, String) => org.scalatest.verb.ResultOfStringPassedToVerb was found.
+  "bla bla bla" should {
+                ^
+one error found
+  
+   */
   implicit val doVerbThing: StringVerbBlockRegistration =
     new StringVerbBlockRegistration {
       def apply(left: String, verb: String, f: () => Unit) = registerVerbBranch(left, verb, f)
     }
 
-  implicit val doAfterVerbThing: (String, ResultOfAfterWordApplication, String) => Unit = {
-    (left, resultOfAfterWordApplication, verb) => {
+  // This one is used by the other should method in ShouldVerb that takes a ResultOfAfterWordApplication,
+  // so you can put should after an after word.
+  implicit val doAfterVerbThing: (String, String, ResultOfAfterWordApplication) => Unit = {
+    (left, verb, resultOfAfterWordApplication) => {
       val afterWordFunction =
         () => {
           registerDescriptionBranch(resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)

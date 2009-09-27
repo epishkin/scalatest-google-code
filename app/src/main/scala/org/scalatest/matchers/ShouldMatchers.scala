@@ -1143,7 +1143,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre>
-     * string should 
+     * string should fullyMatch regex ("""(-)?(\d+)(\.\d*)?""")
      *        ^
      * </pre>
      */
