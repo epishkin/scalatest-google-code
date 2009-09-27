@@ -917,10 +917,10 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   // For after "subject" should "rest" taggedAs(...), which yields a SubjectVerbStringTaggedAs. This
   // provides in and ignore after that.
-  implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
+  protected implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
     new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
 
-  implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
+  protected implicit val doShorthandForm: (String, String, String) => ResultOfStringPassedToVerb = {
     (subject, verb, rest) => {
       behavior.of(subject)
       new ResultOfStringPassedToVerb(verb, rest) {
@@ -941,9 +941,9 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
   }
 
-  // TODO: Get ride of unusedfixture, and use NoArgTestFunction instead
+  // TODO: Get rid of unusedfixture, and use NoArgTestFunction instead
 
-  implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
+  protected implicit val doShorthandBehaveForm: (String) => ResultOfBehaveWordPassedToVerb = {
     (left) => {
       behavior.of(left)
       new ResultOfBehaveWordPassedToVerb {
