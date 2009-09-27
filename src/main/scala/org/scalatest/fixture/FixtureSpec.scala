@@ -1045,10 +1045,25 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    */
   protected val behave = new BehaveWord
 
+  /**
+   * Implicitly converts a function that takes no parameters and results in <code>PendingNothing</code> to
+   * a function from <code>Fixture</code> to <code>Any</code>, to enable pending tests to registered as by-name parameters
+   * by methods that require a test function that takes a <code>Fixture</code>.
+   *
+   * <p>
+   * This method makes it possible to write pending tests as simply <code>(pending)</code>, without needing
+   * to write <code>(fixture => pending)</code>.
+   * </p>
+   */
   protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
     fixture => f
   }
 
+  /**
+   * Implicitly converts a function that takes no parameters and results in <code>Any</code> to
+   * a function from <code>Fixture</code> to <code>Any</code>, to enable no-arg tests to registered
+   * by methods that require a test function that takes a <code>Fixture</code>.
+   */
   protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun)
 }

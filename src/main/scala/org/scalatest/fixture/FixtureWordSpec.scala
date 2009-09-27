@@ -1406,6 +1406,11 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    */
   protected val behave = new BehaveWord
 
+  /**
+   * Implicitly converts a function that takes no parameters and results in <code>Any</code> to
+   * a function from <code>Fixture</code> to <code>Any</code>, to enable no-arg tests to registered
+   * by methods that require a test function that takes a <code>Fixture</code>.
+   */
   protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
     new NoArgTestWrapper(fun)
 }
