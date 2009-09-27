@@ -15,7 +15,7 @@
  */
 package org.scalatest
 
-import verb.{SubjectVerbStringTaggedAs, ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb, BehaveWord, ShouldVerb, MustVerb, CanVerb}
+import verb.{ResultOfTaggedAsInvocation, ResultOfBehaveWordPassedToVerb, ResultOfStringPassedToVerb, BehaveWord, ShouldVerb, MustVerb, CanVerb}
 import NodeFamily._
 import scala.collection.immutable.ListSet
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
@@ -2203,7 +2203,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * <p>
    * This class is used via an implicit conversion (named <code>convertToInAndIgnoreMethodsAfterTaggedAs</code>)
-   * from <code>SubjectVerbStringTaggedAs</code>. The <code>SubjectVerbStringTaggedAs</code> class
+   * from <code>ResultOfTaggedAsInvocation</code>. The <code>ResultOfTaggedAsInvocation</code> class
    * does not declare any methods named <code>in</code>, because the
    * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
    * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
@@ -2211,17 +2211,17 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
    * only one <code>in</code> method that takes a by-name parameter. As a result,
    * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
-   * from <code>SubjectVerbStringTaggedAs</code> to a type that provides the appropriate
+   * from <code>ResultOfTaggedAsInvocation</code> to a type that provides the appropriate
    * <code>in</code> methods.
    * </p>
    *
    * @author Bill Venners
    */
-  protected class InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) {
+  protected class InAndIgnoreMethodsAfterTaggedAs(resultOfTaggedAsInvocation: ResultOfTaggedAsInvocation) {
 
-    import subjectVerbStringTaggedAs.verb
-    import subjectVerbStringTaggedAs.rest
-    import subjectVerbStringTaggedAs.{tags => tagsList}
+    import resultOfTaggedAsInvocation.verb
+    import resultOfTaggedAsInvocation.rest
+    import resultOfTaggedAsInvocation.{tags => tagsList}
 
     /**
      * Supports the registration of tagged tests in shorthand form.
@@ -2269,12 +2269,12 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   }
 
   /**
-   * Implicitly converts an object of type <code>SubjectVerbStringTaggedAs</code> to an
+   * Implicitly converts an object of type <code>ResultOfTaggedAsInvocation</code> to an
    * <code>InAndIgnoreMethodsAfterTaggedAs</code>, to enable <code>in</code> and <code>ignore</code>
    * methods to be invokable on that object.
    */
-  protected implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
-    new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
+  protected implicit def convertToInAndIgnoreMethodsAfterTaggedAs(resultOfTaggedAsInvocation: ResultOfTaggedAsInvocation) =
+    new InAndIgnoreMethodsAfterTaggedAs(resultOfTaggedAsInvocation)
 
   /**
    * Supports the shorthand form of test registration.
@@ -2310,7 +2310,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
         // to say is (fixture => pending), rather just say is (pending)
         def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
           val tagList = firstTestTag :: otherTestTags.toList
-          new SubjectVerbStringTaggedAs(verb, rest, tagList) {
+          new ResultOfTaggedAsInvocation(verb, rest, tagList) {
             // "A Stack" should "bla bla" taggedAs(SlowTest) is (pending)
             //                                               ^
             def is(testFun: => PendingNothing) {
