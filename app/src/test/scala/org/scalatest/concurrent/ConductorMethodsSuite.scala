@@ -65,7 +65,7 @@ class ConductorMethodsSuite extends FunSuite with ConductorMethods with ShouldMa
 
     thread {
       waitForBeat(1)
-      c.getCount should be (1)
+      c.getCount should be (1) // TODO: Got an error: 2 was not equal to 1
       waitForBeat(2) // advances quickly
       c.getCount should be (1)
       c.countDown()

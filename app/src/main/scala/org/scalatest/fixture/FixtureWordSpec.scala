@@ -647,6 +647,21 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
   }
 
+  /**
+   * A class that via an implicit conversion (named <code>convertToWordSpecStringWrapper</code>) enables
+   * methods <code>when</code>, <code>that</code>, <code>in</code>, <code>is</code>, <code>taggedAs</code>
+   * and <code>ignore</code> to be invoked on <code>String</code>s.
+   *
+   * <p>
+   * This class provides much of the syntax for <code>FixtureWordSpec</code>, however, it does not add
+   * the verb methods (<code>should</code>, <code>must</code>, and <code>can</code>) to <code>String</code>.
+   * Instead, these are added via the <code>ShouldVerb</code>, <code>MustVerb</code>, and <code>CanVerb</code>
+   * traits, which <code>FixtureWordSpec</code> mixes in, to avoid a conflict with implicit conversions provided
+   * in <code>ShouldMatchers</code> and <code>MustMatchers</code>. 
+   * </p>
+   *
+   * @author Bill Venners
+   */
   protected class WordSpecStringWrapper(string: String) {
     def in(testFun: Fixture => Any) {
       registerTestToRun(string, List(), testFun)
@@ -796,6 +811,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)
 
+/* TODO: delete this if it indeed is not needed
   protected class IgnoredTest(specText: String) {
     def in(f: Fixture => Any) {
       registerTestToIgnore(specText, List(), f)
@@ -810,6 +826,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   }
 
   protected val ignore = new IgnoreWord
+*/
 
   /**
    * Supports the registration of subjects.
