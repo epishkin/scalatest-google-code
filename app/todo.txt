@@ -1,6 +1,7 @@
 
 - why is the conversion to NoArgFunc commented out in FixtureFlatSpec?
 - testNames scaladoc is wrong in FixtureFlatSpec, probably others too
+- rename verb.SubjectVerbStringTaggedAs to ResultOfTaggedAsInvokedOnResultOfStringPassedToVerb, or maybe just ResultOfTaggedAs or ResultOfTaggedAsInvocation, something like that Right now it is inconsistent.
 - try the shared tests example I just added to WordSpec
 - ask George about the XmlReporter during reruns.
 - fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored.
