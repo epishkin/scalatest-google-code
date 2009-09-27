@@ -680,10 +680,118 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
   }
 
+  /**
+   * Class whose instances are <em>after word</em>s, which can be used to reduce text duplication.
+   *
+   * <p>
+   * If you are repeating a word or phrase at the beginning of each string inside
+   * a block, you can "move the word or phrase" out of the block with an after word.
+   * You create an after word by passing the repeated word or phrase to the <code>afterWord</code> method.
+   * Once created, you can place the after word after <code>when</code>, a verb
+   * (<code>should</code>, <code>must</code>, or <code>can</code>), or
+   * <code>that</code>. (You can't place one after <code>in</code> or <code>is</code>, the
+   * words that introduce a test.) Here's an example that has after words used in all three
+   * places:
+   * </p>
+   *
+   * <pre>
+   * import org.scalatest.WordSpec
+   * 
+   * class ScalaTestGUISpec extends WordSpec {
+   * 
+   *   def theUser = afterWord("the user")
+   *   def display = afterWord("display")
+   *   def is = afterWord("is")
+   * 
+   *   "The ScalaTest GUI" when theUser {
+   *     "clicks on an event report in the list box" should display {
+   *       "a blue background in the clicked-on row in the list box" in {}
+   *       "the details for the event in the details area" in {}
+   *       "a rerun button" that is {
+   *         "enabled if the clicked-on event is rerunnable" in {}
+   *         "disabled if the clicked-on event is not rerunnable" in {}
+   *       }
+   *     }
+   *   }
+   * }
+   * </pre>
+   *
+   * <p>
+   * Running the previous <code>WordSpec</code> in the Scala interpreter would yield:
+   * </p>
+   *
+   * <pre>
+   * scala> (new ScalaTestGUISpec).run()
+   * The ScalaTest GUI (when the user clicks on an event report in the list box) 
+   * - should display a blue background in the clicked-on row in the list box
+   * - should display the details for the event in the details area
+   * - should display a rerun button that is enabled if the clicked-on event is rerunnable
+   * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
+   * </pre>
+   */
   protected class AfterWord(text: String) {
+
+    /**
+     * Supports the use of <em>after words</em>.
+     *
+     * <p>
+     * This method transforms a block of code into a <code>ResultOfAfterWordApplication</code>, which
+     * is accepted by <code>when</code>, <code>should</code>, <code>must</code>, <code>can</code>, and <code>that</code>
+     * methods.  For more information, see the <a href="../WordSpec.html#AfterWords">main documentation</code> for trait <code>WordSpec</code>.
+     * </p>
+     */
     def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
   }
 
+  /**
+   * Creates an <em>after word</em> that an be used to reduce text duplication.
+   *
+   * <p>
+   * If you are repeating a word or phrase at the beginning of each string inside
+   * a block, you can "move the word or phrase" out of the block with an after word.
+   * You create an after word by passing the repeated word or phrase to the <code>afterWord</code> method.
+   * Once created, you can place the after word after <code>when</code>, a verb
+   * (<code>should</code>, <code>must</code>, or <code>can</code>), or
+   * <code>that</code>. (You can't place one after <code>in</code> or <code>is</code>, the
+   * words that introduce a test.) Here's an example that has after words used in all three
+   * places:
+   * </p>
+   *
+   * <pre>
+   * import org.scalatest.WordSpec
+   * 
+   * class ScalaTestGUISpec extends WordSpec {
+   * 
+   *   def theUser = afterWord("the user")
+   *   def display = afterWord("display")
+   *   def is = afterWord("is")
+   * 
+   *   "The ScalaTest GUI" when theUser {
+   *     "clicks on an event report in the list box" should display {
+   *       "a blue background in the clicked-on row in the list box" in {}
+   *       "the details for the event in the details area" in {}
+   *       "a rerun button" that is {
+   *         "enabled if the clicked-on event is rerunnable" in {}
+   *         "disabled if the clicked-on event is not rerunnable" in {}
+   *       }
+   *     }
+   *   }
+   * }
+   * </pre>
+   *
+   * <p>
+   * Running the previous <code>WordSpec</code> in the Scala interpreter would yield:
+   * </p>
+   *
+   * <pre>
+   * scala> (new ScalaTestGUISpec).run()
+   * The ScalaTest GUI (when the user clicks on an event report in the list box) 
+   * - should display a blue background in the clicked-on row in the list box
+   * - should display the details for the event in the details area
+   * - should display a rerun button that is enabled if the clicked-on event is rerunnable
+   * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
+   * </pre>
+   */
   protected def afterWord(text: String) = new AfterWord(text)
 
   protected implicit def convertToWordSpecStringWrapper(s: String) = new WordSpecStringWrapper(s)

@@ -1542,7 +1542,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * <code>InAndIgnoreMethods</code>, to enable <code>in</code> and <code>ignore</code>
    * methods to be invokable on that object.
    */
-  implicit def convertToInAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) =
+  protected implicit def convertToInAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) =
     new InAndIgnoreMethods(resultOfStringPassedToVerb)
 
   /**
