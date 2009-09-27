@@ -2083,12 +2083,88 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    */
   protected val ignore = new IgnoreWord
 
+  /**
+   * Class that supports test registration in shorthand form.
+   *
+   * <p>
+   * For example, this class enables syntax such as the following test registration
+   * in shorthand form:
+   * </p>
+   *
+   * <pre>
+   * "A Stack (when empty)" should "be empty" in { ... }
+   *                                          ^
+   * </pre>
+   *
+   * <p>
+   * This class also enables syntax such as the following ignored test registration
+   * in shorthand form:
+   * </p>
+   *
+   * <pre>
+   * "A Stack (when empty)" should "be empty" ignore { ... }
+   *                                          ^
+   * </pre>
+   *
+   * <p>
+   * This class is used via an implicit conversion (named <code>convertToInAndIgnoreMethods</code>)
+   * from <code>ResultOfStringPassedToVerb</code>. The <code>ResultOfStringPassedToVerb</code> class
+   * does not declare any methods named <code>in</code>, because the
+   * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
+   * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
+   * test function and another that takes a one-arg test function (a test that takes a
+   * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
+   * only one <code>in</code> method that takes a by-name parameter. As a result,
+   * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
+   * from <code>ResultOfStringPassedToVerb</code> to a type that provides the appropriate
+   * <code>in</code> methods.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   protected class InAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) {
+
     import resultOfStringPassedToVerb.verb
     import resultOfStringPassedToVerb.rest
+
+    /**
+     * Supports the registration of tests in shorthand form.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "A Stack" must "pop values in last-in-first-out order" in { ... }
+     *                                                        ^
+     * </pre>
+     *
+     * <p>
+     * For examples of test registration, see the <a href="FlatSpec.html">main documentation</a>
+     * for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def in(testFun: => Unit) {
       registerTestToRun(verb + " " + rest, List(), testFun _)
     }
+    
+    /**
+     * Supports the registration of ignored tests in shorthand form.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "A Stack" must "pop values in last-in-first-out order" ignore { ... }
+     *                                                        ^
+     * </pre>
+     *
+     * <p>
+     * For examples of ignored test registration, see the <a href="FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def ignore(testFun: => Unit) {
       registerTestToIgnore(verb + " " + rest, List(), testFun _)
     }
@@ -2096,22 +2172,100 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
   // For after "subject" should "rest", which yields a ResultOfStringPassedToVerb. This
   // provides in and ignore after that.
+
+  /**
+   * Implicitly converts an object of type <code>ResultOfStringPassedToVerb</code> to an
+   * <code>InAndIgnoreMethods</code>, to enable <code>in</code> and <code>ignore</code>
+   * methods to be invokable on that object.
+   */
   implicit def convertToInAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) =
     new InAndIgnoreMethods(resultOfStringPassedToVerb)
   
+  /**
+   * Class that supports tagged test registration in shorthand form.
+   *
+   * <p>
+   * For example, this class enables syntax such as the following tagged test registration
+   * in shorthand form:
+   * </p>
+   *
+   * <pre>
+   * "A Stack (when empty)" should "be empty" taggedAs() in { ... }
+   *                                                     ^
+   * </pre>
+   *
+   * <p>
+   * This class also enables syntax such as the following tagged, ignored test registration
+   * in shorthand form:
+   * </p>
+   *
+   * <pre>
+   * "A Stack (when empty)" should "be empty" taggedAs(SlowTest) ignore { ... }
+   *                                                             ^
+   * </pre>
+   *
+   * <p>
+   * This class is used via an implicit conversion (named <code>convertToInAndIgnoreMethodsAfterTaggedAs</code>)
+   * from <code>SubjectVerbStringTaggedAs</code>. The <code>SubjectVerbStringTaggedAs</code> class
+   * does not declare any methods named <code>in</code>, because the
+   * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
+   * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
+   * test function and another that takes a one-arg test function (a test that takes a
+   * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
+   * only one <code>in</code> method that takes a by-name parameter. As a result,
+   * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
+   * from <code>SubjectVerbStringTaggedAs</code> to a type that provides the appropriate
+   * <code>in</code> methods.
+   * </p>
+   *
+   * @author Bill Venners
+   */
   protected class InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) {
 
     import subjectVerbStringTaggedAs.verb
     import subjectVerbStringTaggedAs.rest
     import subjectVerbStringTaggedAs.{tags => tagsList}
 
-    // "A Stack" should "bla bla" taggedAs(SlowTest) in {
-    //                                              ^
+    /**
+     * Supports the registration of tagged tests in shorthand form.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
+     *                                                                           ^
+     * </pre>
+     *
+     * <p>
+     * For examples of tagged test registration, see the <a href="FlatSpec.html#TaggingTests">Tagging tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def in(testFun: => Unit) {
       registerTestToRun(verb + " " + rest, tagsList, testFun _)
     }
-    // "A Stack" should "bla bla" taggedAs(SlowTest) ignore {
-    //                                               ^
+
+    /**
+     * Supports the registration of tagged, ignored tests in shorthand form.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) ignore { ... }
+     *                                                                           ^
+     * </pre>
+     *
+     * <p>
+     * For examples of ignored test registration, see the <a href="FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * For examples of tagged test registration, see the <a href="FlatSpec.html#TaggingTests">Tagging tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def ignore(testFun: => Unit) {
       registerTestToIgnore(verb + " " + rest, tagsList, testFun _)
     }
@@ -2119,6 +2273,11 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
   // For after "subject" should "rest" taggedAs(...), which yields a SubjectVerbStringTaggedAs. This
   // provides in and ignore after that.
+  /**
+   * Implicitly converts an object of type <code>SubjectVerbStringTaggedAs</code> to an
+   * <code>InAndIgnoreMethodsAfterTaggedAs</code>, to enable <code>in</code> and <code>ignore</code>
+   * methods to be invokable on that object.
+   */
   protected implicit def convertToInAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs: SubjectVerbStringTaggedAs) =
     new InAndIgnoreMethodsAfterTaggedAs(subjectVerbStringTaggedAs)
 
