@@ -18,68 +18,92 @@ package org.scalatest.verb
 import org.scalatest._
 
 /**
- * Trait used to enable  syntax such as the following in a <code>FlatSpec</code> that
- * mixes in <code>ShouldMatchers</code>:
+ * Abstract class that supports test registration in <code>FlatSpec</code>
+ * and <code>FixtureFlatSpec</code>.
+ *
+ * <p>
+ * For example, this class enables syntax such as the following pending test registration
+ * in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>:
+ * </p>
  *
  * <pre>
- * "A Stack (when empty)" should "be empty" in {
- *   // ...
- * }
+ * "A Stack (when empty)" should "be empty" is (pending)
+ *                                          ^
  * </pre>
  *
- * Or syntax such as the following in a <code>FlatSpec</code> that
- * mixes in <code>MustMatchers</code>:
+ *
+ * <p>
+ * For example, this class enables syntax such as the following tagged test registration
+ * in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>:
+ * </p>
  *
  * <pre>
- * "A Stack (when empty)" must "be empty" in {
- *   // ...
- * }
+ * "A Stack (when empty)" should "be empty" taggedAs(SlowTet) in { ... }
+ *                                          ^
  * </pre>
  *
  * <p>
- * This trait is the result type of the <code>should</code> method in trait
- * <code>ShouldMatcher</code>'s <code>ShouldStringWrapper</code> class and the result
- * type of the <code>must</code> method in <code>MustMatchers</code>'s <code>MustStringWrapper</code> class.
- * <code>FlatSpec</code> passes in an implicit function to that <code>should</code> (or <code>must</code>) method
- * that takes three strings and results in  a <code>ResultOfStringPassedToVerb</code>.
- * The <code>should</code> (or <code>must</code>) method simply invokes the passed function,
- * passing in left, right, and the verb string <code>"should"</code> (or <code>"must"</code>). The result of the
- * function application becomes the result of the <code>should</code> (or <code>"must"</code>) method, which
- * then means any of this trait's methods, such as <code>in</code>, can be invoked next.
+ * This class also indirectly enables syntax such as the following regular test registration
+ * in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>:
  * </p>
+ *
+ * <pre>
+ * "A Stack (when empty)" should "be empty" in { ... }
+ *                                          ^
+ * </pre>
+ *
+ * <p>
+ * However, this class does not declare any methods named <code>in</code>, because the
+ * type passed to <code>in</code> differs in a <code>FlatSpec</code> and a <code>FixtureFlatSpec</code>.
+ * A <code>FixtureFlatSpec</code> needs two <code>in</code> methods, one that takes a no-arg
+ * test function and another that takes a one-arg test function (a test that takes a
+ * <code>Fixture</code> as its parameter). By constrast, a <code>FlatSpec</code> needs
+ * only one <code>in</code> method that takes a by-name parameter. As a result,
+ * <code>FlatSpec</code> and <code>FixtureFlatSpec</code> each provide an implicit conversion
+ * from <code>ResultOfStringPassedToVerb</code> to a type that provides the appropriate
+ * <code>in</code> methods. 
+ * </p>
+ *
+ * @author Bill Venners
  */
 abstract class ResultOfStringPassedToVerb(val verb: String, val rest: String) {
 
   /**
-   * Register the test function passed as <code>testFun</code> in a <code>FlatSpec</code>.
+   * Supports the registration of pending tests in a
+   * <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
    *
    * <p>
-   * This method enables the following syntax in a <code>FlatSpec</code> that mixes in <code>ShouldMatchers</code>:
+   * This method supports syntax such as the following:
    * </p>
    *
    * <pre>
-   * "A Stack (when empty)" should "be empty" in { /* ... */ }
-   *                                          ^
+   * "A Stack" must "pop values in last-in-first-out order" is (pending)
+   *                                                        ^
    * </pre>
    *
    * <p>
-   * And this method enables the following syntax in a <code>FlatSpec</code> that mixes in <code>MustMatchers</code>:
+   * For examples of pending test registration, see the <a href="../FlatSpec.html#PendingTests">Pending tests section</a> in the main documentation
+   * for trait <code>FlatSpec</code>.
    * </p>
-   *
-   * <pre>
-   * "A Stack (when empty)" must "be empty" in { /* ... */ }
-   *                                          ^
-   * </pre>
    */
-  // def in(testFun: => Unit)
+  def is(fun: => PendingNothing)
 
-  // def in(testFun: Fixture => Any)
-
-  def is(testFun: => PendingNothing)
-
-  // def ignore(testFun: => Unit)
-
-  // def ignore(testFun: Fixture => Any)
-
+  /**
+   * Supports the registration of tagged tests in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.
+   *
+   * <p>
+   * This method supports syntax such as the following:
+   * </p>
+   *
+   * <pre>
+   * "A Stack" must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
+   *                                                        ^
+   * </pre>
+   *
+   * <p>
+   * For examples of tagged test registration, see the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation
+   * for trait <code>FlatSpec</code>.
+   * </p>
+   */
   def taggedAs(firstTestTag: Tag, otherTestTags: Tag*): SubjectVerbStringTaggedAs
 }
