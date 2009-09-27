@@ -17,5 +17,17 @@ package org.scalatest.verb
 
 import org.scalatest._
 
+/**
+ * Class that supports the use of <em>after words</em> in <code>WordSpec</code>
+ * and <code>FixtureWordSpec</code>.
+ *
+ * <p>
+ * A <code>ResultOfAfterWordApplication</code>, which encapsulates the text of the after word
+ * and a block,
+ * is accepted by <code>when</code>, <code>should</code>, <code>must</code>, <code>can</code>, and <code>that</code>
+ * methods.  For more information, see the
+ * <a href="../WordSpec.html#AfterWords">main documentation</code></a> for trait <code>WordSpec</code>.
+ * </p>
+ */
 class ResultOfAfterWordApplication(val text: String, val f: () => Unit)
 

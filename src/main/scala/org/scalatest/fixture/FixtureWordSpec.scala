@@ -737,7 +737,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * <p>
      * This method transforms a block of code into a <code>ResultOfAfterWordApplication</code>, which
      * is accepted by <code>when</code>, <code>should</code>, <code>must</code>, <code>can</code>, and <code>that</code>
-     * methods.  For more information, see the <a href="../WordSpec.html#AfterWords">main documentation</code> for trait <code>WordSpec</code>.
+     * methods.  For more information, see the <a href="../WordSpec.html#AfterWords">main documentation</code></a> for trait <code>WordSpec</code>.
      * </p>
      */
     def apply(f: => Unit) = new ResultOfAfterWordApplication(text, f _)
