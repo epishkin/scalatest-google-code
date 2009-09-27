@@ -1787,7 +1787,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * <pre>
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
-   *                                                       ^
+   *                                                                          ^
    * </pre>
    *
    * <p>
@@ -1796,7 +1796,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * <pre>
    * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
-   *                                                       ^
+   *                                                                          ^
    * </pre>
    *
    * <p>
@@ -1822,7 +1822,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      *
      * <pre>
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
-     *                                                     ^
+     *                                                                        ^
      * </pre>
      *
      * <p>
@@ -1844,7 +1844,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      *
      * <pre>
      * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) is (pending)
-     *                                                     ^
+     *                                                                        ^
      * </pre>
      *
      * <p>
@@ -1857,7 +1857,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * For examples of pending test registration, see the <a href="FlatSpec.html#PendingTests">Pending tests section</a> in the main documentation
      * for trait <code>FlatSpec</code>.  For examples of the registration of ignored tests,
      * see the <a href="FlatSpec.html#IgnoredTests">Ignored tests section</a>
-     * in the main documentation for trait <code>FlatSpec</code>.
      * in the main documentation for trait <code>FlatSpec</code>. For examples of tagged test registration, see
      * the <a href="FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
      * </p>
