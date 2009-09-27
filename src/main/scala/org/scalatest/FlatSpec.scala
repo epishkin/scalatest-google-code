@@ -1789,19 +1789,119 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     // Note: no def ignore here, so you can't put two ignores in the same line
   }
 
+  /**
+   * Class that supports registration of ignored tests via the <code>IgnoreWord</code> instance referenced
+   * from <code>FlatSpec</code>'s <code>ignore</code> field.
+   *
+   * <p>
+   * This class enables syntax such as the following registration of an ignored test:
+   * </p>
+   *
+   * <pre>
+   * ignore should "pop values in last-in-first-out order" in { ... }
+   *                                                       ^
+   * </pre>
+   *
+   * <p>
+   * In addition, it enables syntax such as the following registration of an ignored, pending test:
+   * </p>
+   *
+   * <pre>
+   * ignore should "pop values in last-in-first-out order" is (pending)
+   *                                                       ^
+   * </pre>
+   *
+   * Note: the <code>is</code> method is provided for completeness and design symmetry, given there's no way
+   * to prevent changing <code>is</code> to <code>ignore</code> and marking a pending test as ignored that way.
+   * Although it isn't clear why someone would want to mark a pending test as ignored, it can be done.
+   * </p>
+   *
+   * <p>
+   * And finally, it also enables syntax such as the following ignored, tagged test registration:
+   * </p>
+   *
+   * <pre>
+   * ignore should "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
+   *                                                       ^
+   * </pre>
+   *
+   * <p>
+   * <p>
+   * For more information and examples of the use of the <code>ignore</code> field, see the <a href="FlatSpec.html#IgnoredTests">Ignored tests section</a>
+   * in the main documentation for trait <code>FlatSpec</code>.
+   * </p>
+   */
   protected class IgnoreVerbString(verb: String, name: String) {
-    // I think this one is "ignore should "bla bla" in {
-    //                                              ^
+
+    /**
+     * Supports the registration of ignored tests in a <code>FlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * ignore must "pop values in last-in-first-out order" in { ... }
+     *                                                     ^
+     * </pre>
+     *
+     * <p>
+     * For examples of the registration of ignored tests, see the <a href="FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def in(testFun: => Unit) {
       registerTestToIgnore(verb + " " + name, List(), testFun _)
     }
-    // ignore should "test this" is (pending)
-    //                           ^
+
+    /**
+     * Supports the registration of ignored, pending tests in a <code>FlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * ignore must "pop values in last-in-first-out order" is (pending)
+     *                                                     ^
+     * </pre>
+     *
+     * <p>
+     * Note: this <code>is</code> method is provided for completeness and design symmetry, given there's no way
+     * to prevent changing <code>is</code> to <code>ignore</code> and marking a pending test as ignored that way.
+     * Although it isn't clear why someone would want to mark a pending test as ignored, it can be done.
+     * </p>
+     *
+     * <p>
+     * For examples of pending test registration, see the <a href="FlatSpec.html#PendingTests">Pending tests section</a> in the main documentation
+     * for trait <code>FlatSpec</code>.  For examples of the registration of ignored tests,
+     * see the <a href="FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def is(testFun: => PendingNothing) {
       registerTestToIgnore(verb + " " + name, List(), testFun _)
     }
-    // I think this one is "ignore should "bla bla" taggedAs(SlowTest) in {
-    //                                              ^
+
+    /**
+     * Supports the registration of ignored, tagged tests in a <code>FlatSpec</code>.
+     *
+     * <p>
+     * This method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * ignore must "pop values in last-in-first-out order" taggedAs(SlowTest) in { ... }
+     *                                                     ^
+     * </pre>
+     *
+     * <p>
+     * For examples of tagged test registration, see the <a href="FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation
+     * for trait <code>FlatSpec</code>.  For examples of the registration of ignored tests,
+     * see the <a href="FlatSpec.html#IgnoredTests">Ignored tests section</a>
+     * in the main documentation for trait <code>FlatSpec</code>.
+     * </p>
+     */
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
       new IgnoreVerbStringTaggedAs(verb, name, tagList)
@@ -1809,7 +1909,8 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   }
 
   /**
-   * Class that supports registration of ignored tests via the <code>ItWord</code> instance referenced from <code>FlatSpec</code>'s <code>ignore</code> field.
+   * Class that supports registration of ignored tests via the <code>ItWord</code> instance
+   * referenced from <code>FlatSpec</code>'s <code>ignore</code> field.
    *
    * <p>
    * This class enables syntax such as the following registration of an ignored test:
