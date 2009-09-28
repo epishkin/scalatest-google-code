@@ -18,7 +18,7 @@ package org.scalatest.fixture
 import org.scalatest._
 
 /**
- * A sister trait to <code>org.scalatest.FeatureSpec</code> that can pass multiple types of fixture objects into its tests.
+ * A sister trait to <code>org.scalatest.FunSuite</code> that can pass multiple types of fixture objects into its tests.
  *
  * <p>
  * This trait behaves similarly to trait <code>org.scalatest.FunSuite</code>, except that tests may take a fixture object, and unlike
@@ -67,7 +67,7 @@ import org.scalatest._
  *   }
  * 
  *   // A test that takes no fixture
- *   test("takes no fixture") {
+ *   test("takes no fixture") { () =>
  *     assert(1 === 1)
  *   }
  * }

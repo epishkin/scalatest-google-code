@@ -18,11 +18,11 @@ package org.scalatest.fixture
 import org.scalatest._
 
 /**
- * A sister trait to <code>org.scalatest.FeatureSpec</code> that can pass multiple types of fixture objects into its tests.
+ * A sister trait to <code>org.scalatest.Spec</code> that can pass multiple types of fixture objects into its tests.
  *
  * <p>
- * This trait behaves similarly to trait <code>org.scalatest.FixtureSpec</code>, except that tests may take a fixture object, and unlike
- * a <code>FixtureFixtureSpec</code>, different tests may take different types of fixtures. This trait extends <code>FixtureFixtureSpec</code>
+ * This trait behaves similarly to trait <code>org.scalatest.Spec</code>, except that tests may take a fixture object, and unlike
+ * a <code>FixtureSpec</code>, different tests may take different types of fixtures. This trait extends <code>FixtureSpec</code>
  * and mixes in <code>ConfigMapFixture</code>, which defines the <code>Fixture</code> type to be the <code>configMap</code>'s
  * type (<code>Map[String, Any]</code>) and defines the <code>withFixture</code> method to simply pass the <code>configMap</code>
  * to the test function. To write tests that take fixtures of types other than <code>Fixture</code> (<em>i.e.</em>,
@@ -67,7 +67,7 @@ import org.scalatest._
  *   }
  * 
  *   // A test that takes no fixture
- *   it("should take no fixture") {
+ *   it("should take no fixture") { () =>
  *     assert(1 === 1)
  *   }
  * }

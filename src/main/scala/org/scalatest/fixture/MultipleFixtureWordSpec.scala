@@ -69,7 +69,7 @@ import org.scalatest._
  *     }
  * 
  *     // A test that takes no fixture
- *     "take no fixture" in {
+ *     "take no fixture" in { () =>
  *       assert(1 === 1)
  *     }
  *   }

@@ -368,16 +368,16 @@ import verb.BehaveWord
  * </p>
  *
  * <pre>
- * import org.scalatest.fixture.Spec
+ * import org.scalatest.fixture.FixtureSpec
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
  * 
- * class MySuite extends Spec with SimpleWithFixture {
+ * class MySuite extends FixtureSpec {
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(test: Test) {
+ *   def withFixture(test: OneArgTest) {
  *
  *     val FileName = "TempFile.txt"
  *
