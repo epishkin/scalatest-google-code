@@ -580,7 +580,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   type Fixture = FileReader
  *
- *   def withFixture(test: Test) {
+ *   def withFixture(test: OneArgTest) {
  *
  *     val FileName = "TempFile.txt"
  *

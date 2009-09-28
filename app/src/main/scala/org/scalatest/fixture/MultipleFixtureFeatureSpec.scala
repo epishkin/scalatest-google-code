@@ -67,7 +67,7 @@ import org.scalatest._
  *   }
  * 
  *   // A test that takes no fixture
- *   scenario("takes no fixture") {
+ *   scenario("takes no fixture") { () =>
  *     assert(1 === 1)
  *   }
  * }
