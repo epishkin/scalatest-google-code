@@ -1532,11 +1532,13 @@ trait Spec extends Suite { thisSuite =>
    * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's
    * iterator will return those names in the order in which the tests were registered. Each test's name is composed
    * of the concatenation of the text of each surrounding describer, in order from outside in, and the text of the
-   * example itself, with all components separated by a space. For example, consider this Spec:
+   * example itself, with all components separated by a space. For example, consider this <code>Spec</code>:
    * </p>
    *
    * <pre>
-   * class StackSpec {
+   * import org.scalatest.Spec
+   *
+   * class StackSpec extends Spec{
    *   describe("A Stack") {
    *     describe("(when not empty)") {
    *       it("must allow me to pop") {}

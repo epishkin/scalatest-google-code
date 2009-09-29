@@ -1,5 +1,4 @@
 
-- testNames scaladoc is wrong in FixtureFlatSpec, probably others too
 - rename WordSpec's StringTaggedAs to ResultOfTaggedAsInvocation or something similar. ResultOfTaggedAsInvocationOnString. Right now it is inconsistent.
 - probably don't need the implicit for no-arg tests in FixtureWordSpec. Can just put the overloaded in methods in there.
   actually, i'm wondering why i'd need it on FixtureFunSuite and FixtureFeatureSpec either. Now that I'm doing () => instead
@@ -7,7 +6,6 @@
 - try the shared tests example I just added to WordSpec
 - ask George about the XmlReporter during reruns.
 - fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored.
-- pass multiple mock objects in EasyMock and JMock sugar traits
 - reproduce 2.8 bug and put in trac (do I remember what this was?)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits

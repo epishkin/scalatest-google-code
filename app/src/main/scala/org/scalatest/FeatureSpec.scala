@@ -1769,25 +1769,23 @@ trait FeatureSpec extends Suite { thisSuite =>
   }
 
   /**
-   * An immutable <code>Set</code> of test names. If this <code>Spec</code> contains no tests, this method returns an
+   * An immutable <code>Set</code> of test names. If this <code>FeatureSpec</code> contains no tests, this method returns an
    * empty <code>Set</code>.
    *
    * <p>
    * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's
    * iterator will return those names in the order in which the tests were registered. Each test's name is composed
    * of the concatenation of the text of each surrounding describer, in order from outside in, and the text of the
-   * example itself, with all components separated by a space. For example, consider this Spec:
+   * example itself, with all components separated by a space. For example, consider this <code>FeatureSpec</code>:
    * </p>
    *
    * <pre>
-   * class StackSpec {
-   *   describe("A Stack") {
-   *     describe("(when not empty)") {
-   *       it("must allow me to pop") {}
-   *     }
-   *     describe("(when not full)") {
-   *       it("must allow me to push") {}
-   *     }
+   * import org.scalatest.FeatureSpec
+   *
+   * class StackSpec extends FeatureSpec {
+   *   feature("A Stack") {
+   *     scenario("(when not empty) must allow me to pop") {}
+   *     scenario("(when not full) must allow me to push") {}
    *   }
    * }
    * </pre>
