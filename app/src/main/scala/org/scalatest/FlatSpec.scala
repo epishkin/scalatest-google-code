@@ -691,7 +691,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     
  *   "A Stack (with one item less than capacity)" should behave like nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
  *
- *   it should behave like nonFullStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+ *   it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
  * 
  *   "A Stack (full)" should "be full" in {
  *     assert(fullStack.full)

@@ -841,7 +841,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     
  *     "it contains one item less than capacity" should {
  *       behave like nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
- *       behave like nonFullStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+ *       behave like nonFullStack(stackWithOneItemLessThanCapacity)
  *     }
  * 
  *     "full" should {
