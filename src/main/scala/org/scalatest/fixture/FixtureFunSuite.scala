@@ -504,7 +504,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   }
 
   /**
-  * An immutable <code>Set</code> of test names. If this <code>FunSuite</code> contains no tests, this method returns an empty <code>Set</code>.
+  * An immutable <code>Set</code> of test names. If this <code>FixtureFunSuite</code> contains no tests, this method returns an empty <code>Set</code>.
   *
   * <p>
   * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's iterator will

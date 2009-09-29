@@ -2099,38 +2099,15 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   }
 
   /**
-   * An immutable <code>Set</code> of test names. If this <code>Spec</code> contains no tests, this method returns an
+   * An immutable <code>Set</code> of test names. If this <code>FixtureFlatSpec</code> contains no tests, this method returns an
    * empty <code>Set</code>.
    *
    * <p>
    * This trait's implementation of this method will return a set that contains the names of all registered tests. The set's
    * iterator will return those names in the order in which the tests were registered. Each test's name is composed
    * of the concatenation of the text of each surrounding describer, in order from outside in, and the text of the
-   * example itself, with all components separated by a space. For example, consider this Spec:
+   * example itself, with all components separated by a space.
    * </p>
-   *
-   * <pre>
-   * class StackSpec {
-   *   describe("A Stack") {
-   *     describe("(when not empty)") {
-   *       it("must allow me to pop") {}
-   *     }
-   *     describe("(when not full)") {
-   *       it("must allow me to push") {}
-   *     }
-   *   }
-   * }
-   * </pre>
-   *
-   * <p>
-   * Invoking <code>testNames</code> on this <code>Spec</code> will yield a set that contains the following
-   * two test name strings:
-   * </p>
-   *
-   * <pre>
-   * "A Stack (when not empty) must allow me to pop"
-   * "A Stack (when not full) must allow me to push"
-   * </pre>
    */
   override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
 
