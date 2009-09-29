@@ -229,7 +229,7 @@ trait EasyMockSugar {
    * </pre>
    *
    * <p>
-   * Using this trait, you can shorten that to:
+   * Using this method, you can shorten that to:
    * </p>
    *
    * <pre>

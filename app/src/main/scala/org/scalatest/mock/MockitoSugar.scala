@@ -19,15 +19,47 @@ import org.scalatest._
 import org.mockito.Mockito.{mock => mockitoMock}
 import reflect.Manifest
 
+/**
+ * Trait that provides some basic syntax sugar for <a href="http://mockito.org/" target="_blank">Mockito</a>.
+ *
+ * <p>
+ * Using the Mockito API directly, you create a mock with:
+ * </p>
+ *
+ * <pre>
+ * val mockCollaborator = mock(classOf[Collaborator])
+ * </pre>
+ *
+ * <p>
+ * Using this trait, you can shorten that to:
+ * </p>
+ *
+ * <pre>
+ * val mockCollaborator = mock[Collaborator]
+ * </pre>
+ *
+ * @author Bill Venners
+ */
 trait MockitoSugar {
+
   /**
+   * Invokes the <code>mock</code> method on the <code>Mockito</code> companion object (<em>i.e.</em>, the
+   * static <code>mock</code> method in Java class <code>org.mockito.Mockitok</code>).
+   *
+   * <p>
+   * Using the Mockito API directly, you create a mock with:
+   * </p>
    *
    * <pre>
-   * val reporter = mock(classOf[Reporter])
+   * val mockCollaborator = mock(classOf[Collaborator])
    * </pre>
    *
+   * <p>
+   * Using this method, you can shorten that to:
+   * </p>
+   *
    * <pre>
-   * val reporter = mock[Reporter]
+   * val mockCollaborator = mock[Collaborator]
    * </pre>
    */
   def mock[T <: AnyRef](implicit manifest: Manifest[T]): T = {
