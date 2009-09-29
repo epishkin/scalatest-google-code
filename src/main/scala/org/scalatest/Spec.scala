@@ -637,7 +637,7 @@ import verb.BehaveWord
  *     
  *     describe("(with one item less than capacity)") {
  *       it should behave like nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed)
- *       it should behave like nonFullStack(stackWithOneItemLessThanCapacity, lastValuePushed)
+ *       it should behave like nonFullStack(stackWithOneItemLessThanCapacity)
  *     }
  * 
  *     describe("(full)") {
