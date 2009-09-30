@@ -100,6 +100,7 @@ class PluginTest extends JUnit3Suite with ShouldMatchers with PluginMatchers wit
   }
 
   def testConcurrent {
+    configure(x => {x.concurrent = true; x.numThreads = "10"}) should contain("-c10")
     configure(_.concurrent = true) should contain("-c")
     configure(_.concurrent = false) should not contain ("-c")
   }

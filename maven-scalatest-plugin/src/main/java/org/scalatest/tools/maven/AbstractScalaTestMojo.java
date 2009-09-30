@@ -80,6 +80,12 @@ public abstract class AbstractScalaTestMojo extends AbstractMojo {
     boolean concurrent;
 
     /**
+     * Number of threads to use when running concurrently
+     * @parameter expression="${numThreads}"
+     */
+    String numThreads;
+
+    /**
      * Comma separated list of members to execute
      * @parameter expression="${member}"
      */
@@ -206,7 +212,9 @@ public abstract class AbstractScalaTestMojo extends AbstractMojo {
     }
 
     private List<String> concurrent() {
-        return concurrent ? singletonList("-c") : Collections.<String>emptyList();
+        return concurrent
+            ? singletonList("-c" + (numThreads == null ? "" : numThreads))
+            : Collections.<String>emptyList();
     }
 
     private List<String> suites() {
