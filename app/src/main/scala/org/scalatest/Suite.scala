@@ -1132,7 +1132,7 @@ import org.scalatest.tools.StandardOutReporter
  * @author Bill Venners
  */
 @serializable
-trait Suite extends Assertions with RunMethods { thisSuite =>
+trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
   import Suite.TestMethodPrefix, Suite.InformerInParens, Suite.IgnoreAnnotation
 
@@ -2034,6 +2034,8 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
    *     <code>expectedTestCount</code> on every nested <code>Suite</code> contained in
    *     <code>nestedSuites</code>
    * </ul>
+   *
+   * @param filter a <code>Filter</code> with which to filter tests to count based on their tags
    */
   def expectedTestCount(filter: Filter): Int = {
 
