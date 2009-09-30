@@ -23,7 +23,7 @@ package org.scalatest
  * Mix in this trait into any suite whose nested suites need to be run sequentially even with the rest of the
  * run is being executed concurrently.
  */
-trait SequentialNestedSuiteExecution extends RunMethods { this: Suite =>
+trait SequentialNestedSuiteExecution extends AbstractSuite { this: Suite =>
 
   /**
    * This trait's implementation of <code>runNestedSuites</code>s invokes <code>runNestedSuites</code> on <code>super</code>,

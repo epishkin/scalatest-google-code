@@ -30,7 +30,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait OneInstancePerTest extends RunMethods {
+trait OneInstancePerTest extends AbstractSuite {
   
   this: Suite =>
 

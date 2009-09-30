@@ -113,7 +113,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-trait BeforeAndAfterAll  extends RunMethods {
+trait BeforeAndAfterAll  extends AbstractSuite {
 
   this: Suite =>
 
