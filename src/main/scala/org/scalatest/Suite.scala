@@ -1897,7 +1897,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
           val formatter = formatterForSuiteCompleted(nestedSuite)
 
           val duration = System.currentTimeMillis - suiteStartTime
-          report(SuiteCompleted(tracker.nextOrdinal(), suiteName, Some(thisSuite.getClass.getName), Some(duration), formatter, rerunnable))
+          report(SuiteCompleted(tracker.nextOrdinal(), nestedSuite.suiteName, Some(thisSuite.getClass.getName), Some(duration), formatter, rerunnable))
         }
         catch {       
           case e: RuntimeException => {
@@ -1906,7 +1906,7 @@ trait Suite extends Assertions with RunMethods { thisSuite =>
             val formatter = formatterForSuiteAborted(nestedSuite, rawString)
 
             val duration = System.currentTimeMillis - suiteStartTime
-            report(SuiteAborted(tracker.nextOrdinal(), rawString, suiteName, Some(thisSuite.getClass.getName), Some(e), Some(duration), formatter, rerunnable))
+            report(SuiteAborted(tracker.nextOrdinal(), rawString, nestedSuite.suiteName, Some(thisSuite.getClass.getName), Some(e), Some(duration), formatter, rerunnable))
           }
         }
       }
