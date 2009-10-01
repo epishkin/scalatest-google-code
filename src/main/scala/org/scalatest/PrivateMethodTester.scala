@@ -216,8 +216,8 @@ trait PrivateMethodTester {
       else {
         val anyRefArgs = // Need to box these myself, because that's invoke is expecting an Array[Object], which maps to an Array[AnyRef]
           for (arg <- args) yield arg match {
-            case anyVal: AnyVal => anyVal.asInstanceOf[AnyRef]
             case anyRef: AnyRef => anyRef
+            case any: Any => any.asInstanceOf[AnyRef] // Can't use AnyVal in 2.8
           }
         val privateMethodToInvoke = methodArray(0)
         privateMethodToInvoke.setAccessible(true)
