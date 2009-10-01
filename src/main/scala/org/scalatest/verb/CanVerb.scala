@@ -187,8 +187,8 @@ trait CanVerb {
      * <code>"can"</code>, and the <code>ResultOfAfterWordApplication</code> passed to <code>can</code>.
      * </p>
      */
-    def can(resultOfAfterWordApplication: ResultOfAfterWordApplication)(implicit fun: (String, ResultOfAfterWordApplication, String) => Unit) {
-      fun(left, resultOfAfterWordApplication, "can")
+    def can(resultOfAfterWordApplication: ResultOfAfterWordApplication)(implicit fun: (String, String, ResultOfAfterWordApplication) => Unit) {
+      fun(left, "can", resultOfAfterWordApplication)
     }
   }
 
