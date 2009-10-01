@@ -210,8 +210,8 @@ trait MustVerb {
      * <code>"must"</code>, and the <code>ResultOfAfterWordApplication</code> passed to <code>must</code>.
      * </p>
      */
-    def must(resultOfAfterWordApplication: ResultOfAfterWordApplication)(implicit fun: (String, ResultOfAfterWordApplication, String) => Unit) {
-      fun(left, resultOfAfterWordApplication, "must")
+    def must(resultOfAfterWordApplication: ResultOfAfterWordApplication)(implicit fun: (String, String, ResultOfAfterWordApplication) => Unit) {
+      fun(left, "must", resultOfAfterWordApplication)
     }
   }
 
