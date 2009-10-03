@@ -76,6 +76,10 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
       case TestIgnored(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
         runNotifier.fireTestIgnored(Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName)))
 
+      // Closest thing we can do with pending is report an ignored test
+      case TestPending(ordinal, suiteName, suiteClassName, testName, formatter, payload, threadName, timeStamp) => 
+        runNotifier.fireTestIgnored(Description.createSuiteDescription(testDescriptionName(suiteName, suiteClassName, testName)))
+
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
         val throwableOrNull =
           throwable match {
@@ -96,7 +100,6 @@ private[junit] class RunNotifierReporter(runNotifier: RunNotifier) extends Repor
         val description = Description.createSuiteDescription(Resources("runAborted") + " " + possiblyEmptyMessage)
         runNotifier.fireTestFailure(new Failure(description, throwableOrNull)) // Best we can do in JUnit, as far as I know
         runNotifier.fireTestFinished(description)
-
 
       case _ =>
     }
