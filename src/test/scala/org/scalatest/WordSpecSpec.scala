@@ -915,5 +915,35 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(event.message == "A WordSpec" || event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
+    it("should put parentheses around should clauses that follow when") {
+      val a = new WordSpec {
+        "A Stack" when {
+          "empty" should {
+            "chill out" in {
+              assert(1 + 1 === 2)
+            }
+          }
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val ts = rep.testSucceededEventsReceived
+      assert(ts.size === 1)
+      assert(ts.head.testName === "A Stack (when empty) should chill out")
+    }
+    it("should not put parentheses around should clauses that don't follow when") {
+      val a = new WordSpec {
+        "A Stack" should {
+          "chill out" in {
+            assert(1 + 1 === 2)
+          }
+        }
+      }
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      val ts = rep.testSucceededEventsReceived
+      assert(ts.size === 1)
+      assert(ts.head.testName === "A Stack should chill out")
+    }
   }
 }

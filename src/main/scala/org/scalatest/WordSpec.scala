@@ -1498,7 +1498,18 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * description string and immediately invoke the passed function.
    */
   private def registerVerbBranch(description: String, verb: String, f: () => Unit) {
-    registerBranch(f, VerbBranch(_, description, verb))
+    registerBranch(
+      f,
+      currentBranch => {
+        val desc =
+          currentBranch match { // TODO, probably make a WhenDescriptionBranch so this is more type safe than looking for (when at the end
+            case DescriptionBranch(parent, descriptionName) if descriptionName.endsWith(" (when") =>
+              description + ")"
+            case _ => description
+          }
+        VerbBranch(currentBranch, desc, verb)
+      }
+    )
   }
 
   private def registerDescriptionBranch(description: String, f: () => Unit) {
