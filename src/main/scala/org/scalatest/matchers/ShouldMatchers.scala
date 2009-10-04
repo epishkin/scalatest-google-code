@@ -1806,8 +1806,8 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      *       ^
      * </pre>
      */
-    def should(notWord: NotWord): ResultOfNotWordForSeq[T, Array[T]] =
-      new ResultOfNotWordForSeq(left, false)
+    def should(notWord: NotWord): ResultOfNotWordForArray[T] =
+      new ResultOfNotWordForArray(left, false)
   }
   // Note, no should(beWord) is needed here because a different implicit conversion will be used
   // on "array shoudl be ..." because this one doesn't solve the type error.
