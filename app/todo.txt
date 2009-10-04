@@ -1,4 +1,14 @@
 
+- zap the thread name debug statement that accidentally got out the door
+- bug: private method tester doesn't find the method if any of its args are primitive types
+- missing close paren in WordSpec
+leos-hp-laptop:getHigherDemos bv$ sh< stStackWordSpec.sh 
+Run starting. Expected test count is: 4
+StackWordSpec:
+A Stack (when empty 
+ [main]
+- should be empty *** FAILED *** (StackWordSpec.scala:16)
+
 - rename WordSpec's StringTaggedAs to ResultOfTaggedAsInvocation or something similar. ResultOfTaggedAsInvocationOnString. Right now it is inconsistent.
 - probably don't need the implicit for no-arg tests in FixtureWordSpec. Can just put the overloaded in methods in there.
   actually, i'm wondering why i'd need it on FixtureFunSuite and FixtureFeatureSpec either. Now that I'm doing () => instead
@@ -8,6 +18,7 @@
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
 - check to make sure that immutable objects are final so can't be subclassed, such as in or.scalatest.events
+- are pending tests reported as errors in JUnit? Because maybe it should be reported as ignored. Make sure they are reported.
 
 Maven howto: http://jpz-log.info/archives/2009/09/29/scalatest-in-maven/
 

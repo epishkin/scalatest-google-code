@@ -3149,6 +3149,80 @@ trait Matchers extends Assertions { matchers =>
   }
 
   /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html">
+<code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
+  class ResultOfNotWordForArray[E](left: Array[E], shouldBeTrue: Boolean)
+      extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Array("two", "three") should not contain ("one")
+     *                                  ^
+     * </pre>
+     */
+    def contain(expectedElement: E) {
+      val right = expectedElement
+      if ((left.exists(_ == right)) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotContainExpectedElement" else "containedExpectedElement",
+              left,
+              right
+            )
+          )
+      }
+    }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Array(1, 2) should not have size (3)
+     *                        ^
+     * </pre>
+     */
+    def have(resultOfSizeWordApplication: ResultOfSizeWordApplication) {
+      val right = resultOfSizeWordApplication.expectedSize
+      if ((left.size == right) != shouldBeTrue) {
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+              left,
+              right
+            )
+          )
+      }
+    }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * Array(1, 2) should not have length (12)
+     *                        ^
+     * </pre>
+     */
+    def have(resultOfLengthWordApplication: ResultOfLengthWordApplication) {
+      val right = resultOfLengthWordApplication.expectedLength
+      if ((left.length == right) != shouldBeTrue) {
+          throw newTestFailedException(
+            FailureMessages(
+             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+              left,
+              right
+            )
+          )
+      }
+    }
+  }
+
+  /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
    *
