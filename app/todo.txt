@@ -14,6 +14,7 @@
 - add scaladoc to StackDepth stuff.
 - bring in George's branch for ant task in Scala
 - polish scaladoc for ant task
+- add that \ " thing in -p in Runner's doc
 
 Maven howto: http://jpz-log.info/archives/2009/09/29/scalatest-in-maven/
 

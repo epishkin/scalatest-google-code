@@ -15,17 +15,18 @@ import org.apache.tools.ant.taskdefs.Java
  * </p>
  *
  * <p>
- * Define task in your ant file using taskdef, e.g.:
+ * To use the ScalaTest ant task, you must first define it in your ant file using <code>taskdef</code>.
+ * Here's an example:
  * </p>
  *
  * <pre>
  *  &lt;path id="scalatest.classpath"&gt;
  *    &lt;pathelement location="${lib}/scalatest.jar"/&gt;
- *    &lt;pathelement location="${lib}/scala-library-2.6.1-final.jar"/&gt;
+ *    &lt;pathelement location="${lib}/scala-library.jar"/&gt;
  *  &lt;/path&gt;
  *
  *  &lt;target name="main" depends="dist"&gt;
- *    &lt;taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask"&gt;
+ *    &lt;taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestAntTask"&gt;
  *      &lt;classpath refid="scalatest.classpath"/&gt;
  *    &lt;/taskdef&gt;
  *
@@ -34,19 +35,29 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Specify user-defined properties using nested &lt;property&gt; elements,
- * e.g.:
+ * Once defined, you use the task by specifying information in a <code>scalatest</code> element:
+ * </p>
+ *
+ * <pre>
+ *   &lt;scalatest ...&gt;
+ *     ...
+ *   &lt;/scalatest&gt;
+ * </pre>
+ *
+ * <p>
+ * You can place key value pairs into the <code>configMap</code> using nested &lt;config&gt; elements,
+ * like this:
  * </p>
  *
  * <pre>
  *   &lt;scalatest&gt;
- *     &lt;property name="dbname" value="testdb"/&gt;
- *     &lt;property name="server" value="192.168.1.188"/&gt;
+ *     &lt;config name="dbname" value="testdb"/&gt;
+ *     &lt;config name="server" value="192.168.1.188"/&gt;
  * </pre>
  *
  * <p>
- * Specify a runpath using either a <code>runpath</code> attribute and/or nested
- * &lt;runpath&gt; elements, using standard ant path notation, e.g.:
+ * You can specify a runpath using either a <code>runpath</code> attribute and/or nested
+ * <code>&lt;runpath&gt;</code> elements, using standard ant path notation:
  * </p>
  *
  * <pre>
@@ -64,8 +75,8 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * To add a url to your runpath, use a &lt;runpathurl&gt; element
- * (since ant paths don't support url's), e.g.:
+ * To add a URL to your runpath, use a <code>&lt;runpathurl&gt;</code> element
+ * (since ant paths don't support URLs):
  * </p>
  *
  * <pre>
@@ -74,23 +85,23 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Specify reporters using nested &lt;reporter&gt; elements, where the <code>type</code>
+ * You can specify reporters using nested <code>&lt;reporter&gt;</code> elements, where the <code>type</code>
  * attribute must be one of the following:
  * </p>
  *
  * <ul>
- *   <li>  graphic          </li>
- *   <li>  file             </li>
- *   <li>  xml              </li>
- *   <li>  stdout           </li>
- *   <li>  stderr           </li>
- *   <li>  reporterclass    </li>
+ *   <li>  <code>graphic</code>          </li>
+ *   <li>  <code>file</code>             </li>
+ *   <li>  <code>xml</code>              </li>
+ *   <li>  <code>stdout</code>           </li>
+ *   <li>  <code>stderr</code>           </li>
+ *   <li>  <code>reporterclass</code>    </li>
  * </ul>
  *
  * <p>
- * Each may include a config attribute to specify the reporter configuration.
+ * Each may include a <code>config</code> attribute to specify the reporter configuration.
  * Types <code>file</code>, <code>xml</code> and <code>reporterclass</code> require additional attributes
- * <code>filename</code>, <code>directory</code>, and <code>classname</code>, respectively.  E.g.:
+ * <code>filename</code>, <code>directory</code>, and <code>classname</code>, respectively:
  * </p>
  *
  * <pre>
@@ -102,8 +113,8 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Specify tag includes and excludes using &lt;tagsToInclude&gt; and
- * &lt;tagsToExclude&gt; elements.  E.g.:
+ * Specify tags to include and/or exclude using <code>&lt;tagsToInclude&gt;</code> and
+ * <code>&lt;tagsToExclude&gt;</code> elements, like this:
  * </p>
  *
  * <pre>
@@ -120,8 +131,8 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Specify suites using either a <code>suite</code> attribute or nested
- * &lt;suite&gt; elements.  E.g.:
+ * To specify suites to run, use either a <code>suite</code> attribute or nested
+ * <code>&lt;suite&gt;</code> elements:
  * </p>
  *
  * <pre>
@@ -139,8 +150,8 @@ import org.apache.tools.ant.taskdefs.Java
  *
  * <p>
  * To specify suites using members-only or wildcard package names, use
- * either the membersonly or wildcard attributes, or nested
- * &lt;membersonly&gt; or &lt;wildcard&gt; elements.  E.g.:
+ * either the <code>membersonly</code> or <code>wildcard</code> attributes, or nested
+ * <code>&lt;membersonly&gt;</code> or <code>&lt;wildcard&gt;</code> elements:
  * </p>
  *
  * <pre>
@@ -166,44 +177,43 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Use attribute parallel="true" to specify parallel execution of Suites.
- * When parallel is true, use optional numthreads attribute to specify number
- * of threads to be included in thread pool (e.g. numthreads="10").
+ * Use attribute <code>parallel="true"</code> to specify parallel execution of suites.
+ * (If the <code>parallel</code> attribute is left out or set to false, suites will be executed sequentially by one thread.)
+ * When <code>parallel</code> is true, you can include an optional <code>numthreads</code> attribute to specify the number
+ * of threads to be created in thread pool (<em>e.g.</em>, <code>numthreads="10"</code>).
  * </p>
  *
  * <p>
- * Use attribute haltonfailure="true" to cause ant to fail the
+ * Use attribute <code>haltonfailure="true"</code> to cause ant to fail the
  * build if there's a test failure.
  * </p>
  *
  * <p>
- * Use attribute fork="true" to cause ant to run the tests in
+ * Use attribute <code>fork="true"</code> to cause ant to run the tests in
  * a separate process.
  * </p>
  *
  * <p>
- * When fork is true, attribute maxmemory may be used to specify
- * the max memory size that will be passed to the forked jvm.&nbsp;
- * E.g.:
+ * When <code>fork</code> is <code>true</code>, attribute <code>maxmemory</code> may be used to specify
+ * the maximum memory size that will be passed to the forked jvm.&nbsp; For example, the following setting
+ * will cause <code>"-Xmx1280M"</code> to be passed to the java command used to
+ * run the tests.
+ * </p>
  *
  * <pre>
  *   &lt;scalatest maxmemory="1280M"&gt;
  * </pre>
  *
- * will cause "-Xmx1280M" to be passed to the java command used to
- * run the tests.
- * </p>
- *
  * <p>
- * When fork is true, nested &lt;jvmarg&gt; elements may be used
+ * When <code>fork</code> is true, nested <code>&lt;jvmarg&gt;</code> elements may be used
  * to pass additional arguments to the forked jvm.
- * E.g., if you are running into 'PermGen space' memory errors,
- * you could add this arg to bump up the jvm's MaxPermSize value:
+ * For example, if you are running into 'PermGen space' memory errors,
+ * you could add the following <code>jvmarg</code> to bump up the JVM's <code>MaxPermSize</code> value:
+ * </p>
  *
  * <pre>
  *   &lt;jvmarg value="-XX:MaxPermSize=128m"/&gt;
  * </pre>
- * </p>
  *
  * @author George Berger
  */
