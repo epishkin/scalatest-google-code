@@ -117,7 +117,7 @@
     </target>
 
     <target name="taskdefscalatest">
-        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestTask">
+        <taskdef name="scalatest" classname="org.scalatest.tools.ScalaTestAntTask">
             <classpath>
                 <pathelement location="${classes}" />
                 <pathelement location="${lib}/scala-library.jar" />

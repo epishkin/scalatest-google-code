@@ -36,15 +36,15 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <code>Suite</code> that can pass a fixture object into its tests.
  *
  * <p>
- * This trait behaves similarly to trait <code>org.scalatest.Suite</code>, except that tests may take a fixture object. The type of the
- * fixture object passed is defined by the abstract <code>Fixture</code> type, which is declared as a member of this trait.
- * This trait also declares the abstract method <code>withFixture</code>. The <code>withFixture</code> method
+ * This trait behaves similarly to trait <code>org.scalatest.Suite</code>, except that tests may have a fixture parameter. The type of the
+ * fixture parameter is defined by the abstract <code>FixtureParam</code> type, which is declared as a member of this trait.
+ * This trait also declares an abstract <code>withFixture</code> method. This <code>withFixture</code> method
  * takes a <code>OneArgTest</code>, which is a nested trait defined as a member of this trait.
- * <code>OneArgTest</code> has an <code>apply</code> method that takes a <code>Fixture</code>.
+ * <code>OneArgTest</code> has an <code>apply</code> method that takes a <code>FixtureParam</code>.
  * This <code>apply</code> method is responsible for running a test.
  * This trait's <code>runTest</code> method delegates the actual running of each test to <code>withFixture</code>, passing
  * in the test code to run via the <code>OneArgTest</code> argument. The <code>withFixture</code> method (abstract in this trait) is responsible
- * for creating the fixture and passing it to the test function.
+ * for creating the fixture argument and passing it to the test function.
  * </p>
  * 
  * <p>
@@ -52,9 +52,9 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  * 
  * <ol>
- * <li>define the type of the fixture object by specifying type <code>Fixture</code></li>
- * <li>define the <code>withFixture</code> method</li>
- * <li>write test methods that take a <code>Fixture</code> (You can also define test methods that don't take a <code>Fixture</code>.)</li>
+ * <li>define the type of the fixture parameter by specifying type <code>FixtureParam</code></li>
+ * <li>define the <code>withFixture(OneArgTest)</code> method</li>
+ * <li>write test methods that take a fixture parameter (You can also define test methods that don't take a fixture parameter.)</li>
  * </ol>
  *
  * <p>
