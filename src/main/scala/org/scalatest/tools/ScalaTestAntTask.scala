@@ -689,20 +689,12 @@ class ScalaTestAntTask extends Task {
 
   //
   // Translates a list of strings making up a path into a
-  // single space-delimited string.
+  // single space-delimited string.  Uses backslashes to escape
+  // spaces within individual path elements, since that's what
+  // Runner's -p option expects.
   //
   private def getSpacedOutPathStr(path: List[String]): String = {
-    val buf = new StringBuffer
-
-    var prefix = ""
-    for (elem <- path) {
-      buf.append(prefix)
-      buf.append(elem)
-      prefix = " "
-    }
-        System.out.println("gcbx buf [" + buf + "]");
-        System.out.println("gcbx bbb [" + path.mkString("", " ", "") + "]");
-    buf.toString
+    path.map(_.replaceAll(" ", """\\ """)).mkString("", " ", "")
   }
 
   //
