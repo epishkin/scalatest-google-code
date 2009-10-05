@@ -9,8 +9,8 @@ import org.apache.tools.ant.taskdefs.Java
 
 /**
  * <p>
- * An ant task to run scalatest.  Instructions on how to specify various
- * options are below.  See the scaladocs for the Runner class for a description
+ * An ant task to run ScalaTest.  Instructions on how to specify various
+ * options are below.  See the scaladocs for the <code>Runner</code> class for a description
  * of what each of the options does.
  * </p>
  *
@@ -45,7 +45,7 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * You can place key value pairs into the <code>configMap</code> using nested &lt;config&gt; elements,
+ * You can place key value pairs into the <code>configMap</code> using nested <code>&lt;config&gt;</code> elements,
  * like this:
  * </p>
  *

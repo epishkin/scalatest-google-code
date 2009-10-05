@@ -18,25 +18,6 @@ package org.scalatest.fixture
 import org.scalatest._
 import events.TestFailed
 
-If I had a test registration method, then couldn't I? Well, no, I'd need an
-ignore reg.. no that would be a boolean. tags, etc. Could be done possibly.
-Could say, FixtureFunSuite with OneFixtureParam
-class MySpec extends Spec with OneFixtureParams {
-
-  type FixtureParam1 = String
-  type FixtureParam2 = List[String]
-
-  def withFixture(test: TwoArgTest) {
-    test("hi", List(1, 2, 3))
-  }
-
-  it("should do that") { a, b =>
-  }
-
-  it("should do this") { a, b =>
-  }
-}
-
 class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
 
   describe("A FixtureSpec") {
