@@ -11,7 +11,9 @@
 - make 2nd pass at writing main docs of core traits
 - check to make sure that immutable objects are final so can't be subclassed, such as in or.scalatest.events
 - seemed like wordspec was acting wierd when running with JUnit in IntelliJ, even though FunSuite looked fine. Investigate.
-- maybe go with Suite1, Suite2, Suite3 after all. Because pulling two objects out seems like a pain. Call it FixtureParam1, FixtureParam2, etc.
+- add scaladoc to StackDepth stuff.
+- bring in George's branch for ant task in Scala
+- polish scaladoc for ant task
 
 Maven howto: http://jpz-log.info/archives/2009/09/29/scalatest-in-maven/
 
