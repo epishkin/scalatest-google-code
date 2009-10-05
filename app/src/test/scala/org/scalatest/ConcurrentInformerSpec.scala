@@ -24,7 +24,7 @@ class ConcurrentInformerSpec extends FixtureSpec {
 
   val nameInfo = NameInfo("suite name", Some("suite.class.Name"), Some("test name"))
 
-  type Fixture = ConcurrentInformer
+  type FixtureParam = ConcurrentInformer
 
   // The ConcurrentInformer must be passed in rather than constructed in the constructor
   // and shared that way, to make sure it is created by the same thread that runs the tests

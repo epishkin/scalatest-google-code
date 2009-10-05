@@ -21,7 +21,7 @@ import org.scalatest.GivenWhenThen
 class TVFixtureFeatureSpec extends org.scalatest.fixture.FixtureFeatureSpec
         with GivenWhenThen {
 
-  type Fixture = String
+  type FixtureParam = String
   
   def withFixture(test: OneArgTest) {
     test("hi")

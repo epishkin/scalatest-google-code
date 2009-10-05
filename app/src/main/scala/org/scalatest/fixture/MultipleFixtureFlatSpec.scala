@@ -27,7 +27,7 @@ import org.scalatest._
  * type (<code>Map[String, Any]</code>) and defines the <code>withFixture</code> method to simply pass the <code>configMap</code>
  * to the test function. To write tests that take fixtures of types other than <code>Fixture</code> (<em>i.e.</em>,
  * <code>Map[String, Any]</code>), you can define implicit conversions from a function of type <code>(</code>&lt;the fixture type&gt;<code>) =&gt; Unit</code>
- * to a function of type <code>(Fixture) =&gt; Unit</code>. Each implicit conversion method serves as the with-fixture method for that type.
+ * to a function of type <code>(FixtureParam) =&gt; Unit</code>. Each implicit conversion method serves as the with-fixture method for that type.
  * </p>
  * 
  * <p>
@@ -49,11 +49,11 @@ import org.scalatest._
  * class MyFlatSpec extends MultipleFixtureFlatSpec {
  * 
  *   // The "with-fixture" method for tests that take a String fixture
- *   implicit def withStringFixture(testFunction: String => Unit): Fixture => Unit =
+ *   implicit def withStringFixture(testFunction: String => Unit): FixtureParam => Unit =
  *     testFunction("howdy")
  * 
  *   // The "with-fixture" method for tests that take a List[Int] fixture
- *   implicit def withListFixture(testFunction: List[Int] => Unit): Fixture => Unit =
+ *   implicit def withListFixture(testFunction: List[Int] => Unit): FixtureParam => Unit =
  *     configMap => testFunction(List(configMap.size))
  * 
  *   // A test that takes a String fixture
@@ -79,15 +79,15 @@ import org.scalatest._
  * </p>
  *
  * <pre>
- * implicit def withStringFixture(testFunction: String => Unit): Fixture => Unit =
+ * implicit def withStringFixture(testFunction: String => Unit): FixtureParam => Unit =
  *   testFunction("howdy")
  * </pre>
  * 
  * <p>
- * Although the result type of this implicit conversion method is <code>Fixture => Unit</code>, if a fixture doesn't need anything
+ * Although the result type of this implicit conversion method is <code>FixtureParam => Unit</code>, if a fixture doesn't need anything
  * from the <code>configMap</code>, you can leave off the <code>configMap =></code> at the beginning of the result function. The
  * reason this works is that <code>MultipleFixtureFlatSpec</code> inherits an implicit conversion from a by-name parameter to
- * <code>Fixture => Unit</code> from supertrait <code>FixtureFlatSpec</code>. This implicit conversion is used to enable 
+ * <code>FixtureParam => Unit</code> from supertrait <code>FixtureFlatSpec</code>. This implicit conversion is used to enable 
  * tests that take no fixture (such as the one named <code>takes no fixture</code> in this example) to be included in the
  * same class as tests that take type <code>Fixture</code>. That same implicit conversion is used here to allow you to leave off
  * the <code>configMap =></code> except when you actually need something from the <code>configMap</code>. By leaving it off, you
@@ -114,7 +114,7 @@ import org.scalatest._
  *
  * <p>
  * What happens at compile time is that because the <code>Fixture</code> type is <code>Map[String, Any]</code>, the <code>test</code> method
- * should be passed a function from type <code>(Map[String, Any]) => Unit</code>, or using the type alias, <code>(Fixture) => Unit</code>. Passing
+ * should be passed a function from type <code>(Map[String, Any]) => Unit</code>, or using the type alias, <code>(FixtureParam) => Unit</code>. Passing
  * a function of type <code>String => Unit</code> as is attempted here is a type error. Thus the compiler will look around for an implicit
  * conversion that will fix the type error, and will find the <code>withStringFixture</code> method. Because this is the only implicit
  * conversion that fixes the type error, it will apply it, effectively generating this code:
@@ -131,7 +131,7 @@ import org.scalatest._
  *
  * <p>
  * After passing the <code>(String) => Unit</code> function to <code>withStringFixture</code>, the result will be of
- * type <code>(Fixture) => Unit</code>, which the <code>test</code> method expects.
+ * type <code>(FixtureParam) => Unit</code>, which the <code>test</code> method expects.
  * </p>
  *
  * <p>
@@ -173,7 +173,7 @@ import org.scalatest._
  * </p>
  *
  * <pre>
- * // won't compile, because list is inferred to be of type Fixture
+ * // won't compile, because list is inferred to be of type FixtureParam
  * it should "take a list fixture" in { list =>
  *   assert(list.size === 1)
  * }

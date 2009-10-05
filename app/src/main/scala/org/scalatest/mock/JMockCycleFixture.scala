@@ -35,7 +35,7 @@ trait JMockCycleFixture { this: FixtureSuite =>
   /**
    * Defines the <code>Fixture</code> type to be <code>JMockCycle</code>.
    */
-  type Fixture = JMockCycle
+  type FixtureParam = JMockCycle
 
   /**
    * Instantiates a new <code>JMockCycle</code> and passes it to the test function.

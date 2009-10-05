@@ -435,7 +435,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MySuite extends FixtureFlatSpec {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *

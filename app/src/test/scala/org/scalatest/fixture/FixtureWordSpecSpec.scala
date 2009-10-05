@@ -24,7 +24,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
     it("should return the test names in order of registration from testNames") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "Something" should {
           "do that" in { fixture =>
@@ -39,7 +39,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val b = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
       }
 
@@ -48,7 +48,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val c = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "Something" should {
           "do this" in { fixture =>
@@ -67,7 +67,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       intercept[DuplicateTestNameException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "should test this" in { fixture => }
           "should test this" in { fixture => }
@@ -75,7 +75,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       intercept[DuplicateTestNameException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "should test this" in { fixture => }
           "should test this" ignore { fixture => }
@@ -83,7 +83,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       intercept[DuplicateTestNameException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "should test this" ignore { fixture => }
           "should test this" ignore { fixture => }
@@ -91,7 +91,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
       intercept[DuplicateTestNameException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "should test this" ignore { fixture => }
           "should test this" in { fixture => }
@@ -101,7 +101,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
     it("should pass in the fixture to every test method") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -123,14 +123,14 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       // it
       intercept[NullPointerException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "hi" taggedAs(null) in { fixture => }
         }
       }
       val caught = intercept[NullPointerException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "hi" taggedAs(mytags.SlowAsMolasses, null) in { fixture => }
         }
@@ -138,7 +138,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(caught.getMessage === "a test tag was null")
       intercept[NullPointerException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) in { fixture => }
         }
@@ -146,14 +146,14 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       // ignore
       intercept[NullPointerException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "hi" taggedAs(null) ignore { fixture => }
         }
       }
       val caught2 = intercept[NullPointerException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "hi" taggedAs(mytags.SlowAsMolasses, null) ignore { fixture => }
         }
@@ -161,7 +161,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(caught2.getMessage === "a test tag was null")
       intercept[NullPointerException] {
         new FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           "hi" taggedAs(mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) ignore { fixture => }
         }
@@ -170,7 +170,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should return a correct tags map from the tags method") {
 
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" ignore { fixture => }
         "test that" in { fixture => }
@@ -180,7 +180,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val b = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" in { fixture => }
         "test that" ignore { fixture => }
@@ -190,7 +190,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val c = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" ignore { fixture => }
         "test that" ignore { fixture => }
@@ -200,7 +200,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val d = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" taggedAs(mytags.SlowAsMolasses) in { fixture => }
         "test that" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
@@ -210,7 +210,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val e = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" in { fixture => }
         "test that" in { fixture => }
@@ -220,7 +220,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val f = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
         "test that" taggedAs(mytags.SlowAsMolasses) in  { fixture => }
@@ -230,7 +230,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val g = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) in { fixture => }
         "test that" taggedAs(mytags.SlowAsMolasses) in  { fixture => }
@@ -242,7 +242,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should return a correct tags map from the tags method using is (pending)") {
 
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" ignore { fixture => }
         "test that" is (pending)
@@ -252,7 +252,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val b = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" is (pending)
         "test that" ignore { fixture => }
@@ -262,7 +262,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val c = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" ignore { fixture => }
         "test that" ignore { fixture => }
@@ -272,7 +272,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val d = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" taggedAs(mytags.SlowAsMolasses) is (pending)
         "test that" taggedAs(mytags.SlowAsMolasses) ignore { fixture => }
@@ -282,7 +282,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val e = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" is (pending)
         "test that" is (pending)
@@ -292,7 +292,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val f = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
         "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -302,7 +302,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       val g = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         "test this" taggedAs(mytags.SlowAsMolasses, mytags.WeakAsAKitten) is (pending)
         "test that" taggedAs(mytags.SlowAsMolasses) is (pending)
@@ -312,7 +312,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
     }
     class TestWasCalledSuite extends FixtureWordSpec {
-      type Fixture = String
+      type FixtureParam = String
       def withFixture(test: OneArgTest) { test("hi") }
       var theTestThisCalled = false
       var theTestThatCalled = false
@@ -339,7 +339,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should report as ignored, and not run, tests marked ignored") {
 
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -354,7 +354,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(a.theTestThatCalled)
 
       val b = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -371,7 +371,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(b.theTestThatCalled)
 
       val c = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -390,7 +390,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       // The order I want is order of appearance in the file.
       // Will try and implement that tomorrow. Subtypes will be able to change the order.
       val d = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -411,7 +411,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       // If I provide a specific testName to run, then it should ignore an Ignore on that test
       // method and actually invoke it.
       val e = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -430,7 +430,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // Nothing is excluded
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -445,7 +445,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // SlowAsMolasses is included, one test should be excluded
       val b = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -460,7 +460,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // SlowAsMolasses is included, and both tests should be included
       val c = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -475,7 +475,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // SlowAsMolasses is included. both tests should be included but one ignored
       val d = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -490,7 +490,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // SlowAsMolasses included, FastAsLight excluded
       val e = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -509,7 +509,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // An Ignored test that was both included and excluded should not generate a TestIgnored event
       val f = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -528,7 +528,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // An Ignored test that was not included should not generate a TestIgnored event
       val g = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -547,7 +547,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // No tagsToInclude set, FastAsLight excluded
       val h = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -565,7 +565,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // No tagsToInclude set, SlowAsMolasses excluded
       val i = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -583,7 +583,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
       val j = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -601,7 +601,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
       // Same as previous, except Ignore specifically mentioned in excludes set
       val k = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -621,7 +621,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should return the correct test count from its expectedTestCount method") {
 
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         "test this" in { fixture => }
         "test that" in { fixture => }
@@ -629,7 +629,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(a.expectedTestCount(Filter()) === 2)
 
       val b = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         "test this" ignore { fixture => }
         "test that" in { fixture => }
@@ -637,7 +637,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(b.expectedTestCount(Filter()) === 1)
 
       val c = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         "test this" taggedAs(mytags.FastAsLight) in { fixture => }
         "test that" in { fixture => }
@@ -646,7 +646,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
 
       val d = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in { fixture => }
         "test that" taggedAs(mytags.SlowAsMolasses) in { fixture => }
@@ -658,7 +658,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       assert(d.expectedTestCount(Filter()) === 3)
 
       val e = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         "test this" taggedAs(mytags.FastAsLight, mytags.SlowAsMolasses) in { fixture => }
         "test that" taggedAs(mytags.SlowAsMolasses) in { fixture => }
@@ -675,7 +675,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
 
     it("should generate a TestPending message when the test body is (pending)") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -699,7 +699,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
             "known in JDK 1.5, excluding AssertionError") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -718,7 +718,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should propagate out Errors that are direct subtypes of Error in JDK 1.5, other than " +
             "AssertionError, causing Suites and Runs to abort.") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -734,7 +734,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should send InfoProvided events with aboutAPendingTest set to true for info " +
             "calls made from a test that is pending") {
       val a = new FixtureWordSpec with GivenWhenThen {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -759,7 +759,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should send InfoProvided events with aboutAPendingTest set to false for info " +
             "calls made from a test that is not pending") {
       val a = new FixtureWordSpec with GivenWhenThen {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -784,7 +784,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should allow both tests that take fixtures and tests that don't") {
       val a = new FixtureWordSpec {
 
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {
           test("Hello, world!")
         }
@@ -806,7 +806,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     it("should work with test functions whose inferred result type is not Unit") {
       val a = new FixtureWordSpec {
 
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {
           test("Hello, world!")
         }
@@ -828,7 +828,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     }
     it("should work with ignored tests whose inferred result type is not Unit") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var takeNoArgsInvoked = false
         var takeAFixtureInvoked = false
@@ -848,7 +848,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     }
     it("should pass a NoArgTest to withFixture for tests that take no fixture") {
       class MySpec extends FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         var aOneArgTestWasPassed = false
         override def withFixture(test: NoArgTest) {
@@ -869,7 +869,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     }
     it("should not pass a NoArgTest to withFixture for tests that take a Fixture") {
       class MySpec extends FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         var aOneArgTestWasPassed = false
         override def withFixture(test: NoArgTest) {
@@ -892,7 +892,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
             "NoArgTest's no-arg apply method is invoked") {
 
       class MySpec extends FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         var theNoArgTestWasInvoked = false
         def withFixture(test: OneArgTest) {
           // Shouldn't be called, but just in case don't invoke a OneArgTest
@@ -908,7 +908,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     }
     it("should pass the correct test name in the OneArgTest passed to withFixture") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         var correctTestNameWasPassed = false
         def withFixture(test: OneArgTest) {
           correctTestNameWasPassed = test.name == "do something"
@@ -921,7 +921,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
     }
     it("should pass the correct config map in the OneArgTest passed to withFixture") {
       val a = new FixtureWordSpec {
-        type Fixture = String
+        type FixtureParam = String
         var correctConfigMapWasPassed = false
         def withFixture(test: OneArgTest) {
           correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
@@ -937,7 +937,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       it("should, if they call a describe from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           "should blow up" in { fixture =>
             "in the wrong place, at the wrong time" should {
@@ -951,7 +951,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       it("should, if they call a describe with a nested it from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           "should blow up" in { fixture =>
             "in the wrong place, at the wrong time" should {
@@ -968,7 +968,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           "should blow up" in { fixture =>
             "should never run" in { fixture =>
@@ -983,7 +983,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           "should blow up" in { fixture =>
             "should never run" taggedAs(mytags.SlowAsMolasses) in { fixture =>
@@ -998,7 +998,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       it("should, if they call a describe with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           "should blow up" in { fixture =>
             "in the wrong place, at the wrong time" should {
@@ -1015,7 +1015,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           "should blow up" in { fixture =>
             "should never run" ignore { fixture =>
@@ -1030,7 +1030,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureWordSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           "should blow up" in { fixture =>
             "should never run" taggedAs(mytags.SlowAsMolasses) ignore { fixture =>

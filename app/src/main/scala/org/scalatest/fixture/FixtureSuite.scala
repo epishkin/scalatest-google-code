@@ -69,8 +69,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MySuite extends FixtureSuite {
  *
- *   // 1. define type Fixture
- *   type Fixture = FileReader
+ *   // 1. define type FixtureParam
+ *   type FixtureParam = FileReader
  *
  *   // 2. define the withFixture method
  *   def withFixture(test: OneArgTest) {
@@ -101,7 +101,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   // 3. write test methods that take a Fixture
+ *   // 3. write test methods that take a fixture parameter
  *   def testReadingFromTheTempFile(reader: FileReader) {
  *     var builder = new StringBuilder
  *     var c = reader.read()
@@ -116,7 +116,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     assert(reader.read() === 'H')
  *   }
  * 
- *   // (You can also write tests methods that don't take a Fixture.)
+ *   // (You can also write tests methods that don't take a fixture parameter.)
  *   def testWithoutAFixture() { 
  *     without fixture {
  *       assert(1 + 1 === 2)
@@ -137,7 +137,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * class MySuite extends FixtureSuite {
  *
- *   type Fixture = (StringBuilder, ListBuffer[String])
+ *   type FixtureParam = (StringBuilder, ListBuffer[String])
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -189,7 +189,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
  *
- *   type Fixture = FixtureHolder
+ *   type FixtureParam = FixtureHolder
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -272,7 +272,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MySuite extends FixtureSuite {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -360,9 +360,9 @@ import Suite.anErrorThatShouldCauseAnAbort
 trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   /**
-   * The type of the fixture needed by the current suite.
+   * The type of the fixture parameter that can be passed into tests in this suite.
    */
-  protected type Fixture
+  protected type FixtureParam
 
   /**
    * Trait whose instances encapsulate a test function that takes a fixture and config map.
@@ -386,7 +386,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait OneArgTest extends (Fixture => Unit) {
+  protected trait OneArgTest extends (FixtureParam => Unit) {
 
     /**
      * The name of this test.
@@ -394,9 +394,9 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     def name: String
 
     /**
-     * Run the test, using the passed <code>Fixture</code>.
+     * Run the test, using the passed <code>FixtureParam</code>.
      */
-    def apply(fixture: Fixture)
+    def apply(fixture: FixtureParam)
 
     /**
      * Return a <code>Map[String, Any]</code> containing objects that can be used
@@ -453,10 +453,10 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    */
   protected def withFixture(test: OneArgTest)
 
-  private[fixture] class TestFunAndConfigMap(val name: String, test: Fixture => Any, val configMap: Map[String, Any])
+  private[fixture] class TestFunAndConfigMap(val name: String, test: FixtureParam => Any, val configMap: Map[String, Any])
     extends OneArgTest {
     
-    def apply(fixture: Fixture) {
+    def apply(fixture: FixtureParam) {
       test(fixture)
     }
   }
@@ -564,8 +564,8 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
     try {
       if (testMethodTakesAFixtureAndInformer(testName) || testMethodTakesAFixture(testName)) {
-        val testFun: Fixture => Unit = {
-          (fixture: Fixture) => {
+        val testFun: FixtureParam => Unit = {
+          (fixture: FixtureParam) => {
             val anyRefFixture: AnyRef = fixture.asInstanceOf[AnyRef] // TODO zap this cast
             val args: Array[Object] =
               if (testMethodTakesAFixtureAndInformer(testName)) {
@@ -691,7 +691,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait NoArgTestFunction extends (Fixture => Any) {
+  protected trait NoArgTestFunction extends (FixtureParam => Any) {
 
     /**
      * Run the test, ignoring the passed <code>Fixture</code>.
@@ -724,8 +724,8 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
 private object FixtureSuite {
 
-  val FixtureAndInformerInParens = "(Fixture, Informer)"
-  val FixtureInParens = "(Fixture)"
+  val FixtureAndInformerInParens = "(FixtureParam, Informer)"
+  val FixtureInParens = "(FixtureParam)"
 
   private def testMethodTakesAFixtureAndInformer(testName: String) = testName.endsWith(FixtureAndInformerInParens)
   private def testMethodTakesAnInformer(testName: String) = testName.endsWith(InformerInParens)

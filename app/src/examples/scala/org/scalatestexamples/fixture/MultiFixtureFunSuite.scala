@@ -20,10 +20,10 @@ import org.scalatest.fixture.MultipleFixtureFunSuite
 
 class MultiFixtureFunSuite extends MultipleFixtureFunSuite {
 
-  implicit def withStringFixture(test: String => Any): Fixture => Any =
+  implicit def withStringFixture(test: String => Any): FixtureParam => Any =
     () => test("howdy")
 
-  implicit def withListFixture(test: List[Int] => Any): Fixture => Any =
+  implicit def withListFixture(test: List[Int] => Any): FixtureParam => Any =
     configMap => test(List(configMap.size))
 
   test("a by name version") { () =>

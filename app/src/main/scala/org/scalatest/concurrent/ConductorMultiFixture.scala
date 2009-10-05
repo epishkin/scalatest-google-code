@@ -104,7 +104,7 @@ trait ConductorMultiFixture { this: FixtureSuite with ConfigMapFixture =>
    * </p>
    *
    */
-  implicit def withConductorFixture(fun: Conductor => Unit): this.Fixture => Unit = { configMap =>
+  implicit def withConductorFixture(fun: Conductor => Unit): this.FixtureParam => Unit = { configMap =>
     val conductor = new Conductor
     fun(conductor)
     if (!conductor.conductingHasBegun)

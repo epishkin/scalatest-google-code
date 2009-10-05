@@ -61,8 +61,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyFunSuite extends FixtureFunSuite {
  *
- *   // 1. define type Fixture
- *   type Fixture = FileReader
+ *   // 1. define type FixtureParam
+ *   type FixtureParam = FileReader
  *
  *   // 2. define the withFixture method
  *   def withFixture(test: OneArgTest) {
@@ -93,7 +93,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   // 3. write tests that take a Fixture
+ *   // 3. write tests that take a fixture parameter
  *   test("reading from the temp file") { reader =>
  *     var builder = new StringBuilder
  *     var c = reader.read()
@@ -108,7 +108,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     assert(reader.read() === 'H')
  *   }
  * 
- *   // (You can also write tests that don't take a Fixture.)
+ *   // (You can also write tests that don't take a fixture parameter.)
  *   test("without a fixture") { () =>
  *     assert(1 + 1 === 2)
  *   }
@@ -127,7 +127,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * class MyFunSuite extends FixtureFunSuite {
  *
- *   type Fixture = (StringBuilder, ListBuffer[String])
+ *   type FixtureParam = (StringBuilder, ListBuffer[String])
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -179,7 +179,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
  *
- *   type Fixture = FixtureHolder
+ *   type FixtureParam = FixtureHolder
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -262,7 +262,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyFunSuite extends FixtureFunSuite {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -350,7 +350,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   private val IgnoreTagName = "org.scalatest.Ignore"
 
   private abstract class FunNode
-  private case class TestNode(testName: String, fun: Fixture => Any) extends FunNode
+  private case class TestNode(testName: String, fun: FixtureParam => Any) extends FunNode
   private case class InfoNode(message: String) extends FunNode
 
   // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
@@ -440,7 +440,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
-  protected def test(testName: String, testTags: Tag*)(f: Fixture => Any) {
+  protected def test(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -482,7 +482,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
-  protected def ignore(testName: String, testTags: Tag*)(f: Fixture => Any) {
+  protected def ignore(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
 
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -728,7 +728,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * to write <code>(fixture => pending)</code>.
    * </p>
    */
-  protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture => Any) = {
+  protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (FixtureParam => Any) = {
     fixture => f
   }
 
@@ -737,6 +737,6 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * a function from <code>Fixture</code> to <code>Any</code>, to enable no-arg tests to registered
    * by methods that require a test function that takes a <code>Fixture</code>.
    */
-  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (FixtureParam => Any) =
     new NoArgTestWrapper(fun)
 }

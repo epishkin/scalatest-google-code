@@ -23,7 +23,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
   describe("A FixtureFeatureSpec") {
     it("should return the test names in order of registration from testNames") {
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         scenario("should do that") { fixture =>
         }
@@ -36,7 +36,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val b = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
       }
 
@@ -45,7 +45,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val c = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         scenario("should do this") { fixture =>
         }
@@ -62,7 +62,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       intercept[DuplicateTestNameException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           scenario("test this") { fixture =>
           }
@@ -72,7 +72,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
       intercept[DuplicateTestNameException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           scenario("test this") { fixture =>
           }
@@ -82,7 +82,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
       intercept[DuplicateTestNameException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           ignore("test this") { fixture =>
           }
@@ -92,7 +92,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
       intercept[DuplicateTestNameException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           ignore("test this") { fixture =>
           }
@@ -104,7 +104,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
     it("should pass in the fixture to every test method") {
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -124,14 +124,14 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       // scenario
       intercept[NullPointerException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           scenario("hi", null) { fixture => }
         }
       }
       val caught = intercept[NullPointerException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           scenario("hi", mytags.SlowAsMolasses, null) { fixture => }
         }
@@ -139,7 +139,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(caught.getMessage === "a test tag was null")
       intercept[NullPointerException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           scenario("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) { fixture => }
         }
@@ -147,14 +147,14 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       // ignore
       intercept[NullPointerException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           ignore("hi", null) { fixture => }
         }
       }
       val caught2 = intercept[NullPointerException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           ignore("hi", mytags.SlowAsMolasses, null) { fixture => }
         }
@@ -162,7 +162,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(caught2.getMessage === "a test tag was null")
       intercept[NullPointerException] {
         new FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) {}
           ignore("hi", mytags.SlowAsMolasses, null, mytags.WeakAsAKitten) { fixture => }
         }
@@ -171,7 +171,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should return a correct tags map from the tags method") {
 
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         ignore("test this") { fixture => }
         scenario("test that") { fixture => }
@@ -181,7 +181,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val b = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         scenario("test this") { fixture => }
         ignore("test that") { fixture => }
@@ -191,7 +191,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val c = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         ignore("test this") { fixture => }
         ignore("test that") { fixture => }
@@ -201,7 +201,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val d = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         scenario("test this", mytags.SlowAsMolasses) { fixture => }
         ignore("test that", mytags.SlowAsMolasses) { fixture => }
@@ -211,7 +211,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val e = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
       }
       expect(Map()) {
@@ -219,7 +219,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val f = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         scenario("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) { fixture => }
         scenario("test that", mytags.SlowAsMolasses) { fixture => }
@@ -230,7 +230,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     }
 
     class TestWasCalledSuite extends FixtureFeatureSpec {
-      type Fixture = String
+      type FixtureParam = String
       def withFixture(test: OneArgTest) { test("hi") }
       var theTestThisCalled = false
       var theTestThatCalled = false
@@ -257,7 +257,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should report as ignored, and not run, tests marked ignored") {
 
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -272,7 +272,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(a.theTestThatCalled)
 
       val b = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -289,7 +289,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(b.theTestThatCalled)
 
       val c = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -308,7 +308,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       // The order I want is order of appearance in the file.
       // Will try and implement that tomorrow. Subtypes will be able to change the order.
       val d = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -329,7 +329,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       // If I provide a specific testName to run, then it should ignore an Ignore on that test
       // method and actually invoke it.
       val e = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -348,7 +348,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // Nothing is excluded
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -363,7 +363,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // SlowAsMolasses is included, one test should be excluded
       val b = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -378,7 +378,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // SlowAsMolasses is included, and both tests should be included
       val c = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -393,7 +393,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // SlowAsMolasses is included. both tests should be included but one ignored
       val d = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -408,7 +408,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // SlowAsMolasses included, FastAsLight excluded
       val e = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -427,7 +427,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // An Ignored test that was both included and excluded should not generate a TestIgnored event
       val f = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -446,7 +446,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // An Ignored test that was not included should not generate a TestIgnored event
       val g = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -465,7 +465,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // No tagsToInclude set, FastAsLight excluded
       val h = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -483,7 +483,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // No tagsToInclude set, SlowAsMolasses excluded
       val i = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -501,7 +501,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
       val j = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -519,7 +519,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
       // Same as previous, except Ignore specifically mentioned in excludes set
       val k = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -539,7 +539,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should return the correct test count from its expectedTestCount method") {
 
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         scenario("test this") { fixture => }
         scenario("test that") { fixture => }
@@ -547,7 +547,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(a.expectedTestCount(Filter()) === 2)
 
       val b = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         ignore("test this") { fixture => }
         scenario("test that") { fixture => }
@@ -555,7 +555,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(b.expectedTestCount(Filter()) === 1)
 
       val c = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         scenario("test this", mytags.FastAsLight) { fixture => }
         scenario("test that") { fixture => }
@@ -564,7 +564,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
 
       val d = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         scenario("test this", mytags.FastAsLight, mytags.SlowAsMolasses) { fixture => }
         scenario("test that", mytags.SlowAsMolasses) { fixture => }
@@ -576,7 +576,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       assert(d.expectedTestCount(Filter()) === 3)
 
       val e = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         scenario("test this", mytags.FastAsLight, mytags.SlowAsMolasses) { fixture => }
         scenario("test that", mytags.SlowAsMolasses) { fixture => }
@@ -593,7 +593,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
 
     it("should generate a TestPending message when the test body is (pending)") {
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -617,7 +617,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
             "known in JDK 1.5, excluding AssertionError") {
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -634,7 +634,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should propagate out Errors that are direct subtypes of Error in JDK 1.5, other than " +
             "AssertionError, causing Suites and Runs to abort.") {
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -648,7 +648,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should send InfoProvided events with aboutAPendingTest set to true for info " +
             "calls made from a test that is pending") {
       val a = new FixtureFeatureSpec with GivenWhenThen {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -671,7 +671,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should send InfoProvided events with aboutAPendingTest set to false for info " +
             "calls made from a test that is not pending") {
       val a = new FixtureFeatureSpec with GivenWhenThen {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -694,7 +694,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should allow both tests that take fixtures and tests that don't") {
       val a = new FixtureFeatureSpec {
 
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {
           test("Hello, world!")
         }
@@ -716,7 +716,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should work with test functions whose inferred result type is not Unit") {
       val a = new FixtureFeatureSpec {
 
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {
           test("Hello, world!")
         }
@@ -739,7 +739,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     }
     it("should work with ignored tests whose inferred result type is not Unit") {
       val a = new FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -759,7 +759,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     }
     it("should pass a NoArgTest to withFixture for tests that take no fixture") {
       class MySpec extends FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         var aOneArgTestWasPassed = false
         override def withFixture(test: NoArgTest) {
@@ -780,7 +780,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     }
     it("should not pass a NoArgTest to withFixture for tests that take a Fixture") {
       class MySpec extends FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         var aOneArgTestWasPassed = false
         override def withFixture(test: NoArgTest) {
@@ -803,7 +803,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
             "NoArgTest's no-arg apply method is invoked") {
 
       class MySuite extends FixtureFeatureSpec {
-        type Fixture = String
+        type FixtureParam = String
         var theNoArgTestWasInvoked = false
         def withFixture(test: OneArgTest) {
           // Shouldn't be called, but just in case don't invoke a OneArgTest
@@ -822,7 +822,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a feature from within an scenario clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           scenario("should blow up") { fixture =>
             feature("in the wrong place, at the wrong time") {
@@ -836,7 +836,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a feature with a nested it from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           scenario("should blow up") { fixture =>
             feature("in the wrong place, at the wrong time") {
@@ -853,7 +853,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           scenario("should blow up") { fixture =>
             scenario("should never run") { fixture =>
@@ -868,7 +868,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           scenario("should blow up") { fixture =>
             scenario("should never run", mytags.SlowAsMolasses) { fixture =>
@@ -883,7 +883,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a feature with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           scenario("should blow up") { fixture =>
             feature("in the wrong place, at the wrong time") {
@@ -900,7 +900,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           scenario("should blow up") { fixture =>
             ignore("should never run") { fixture =>
@@ -915,7 +915,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           scenario("should blow up") { fixture =>
             ignore("should never run", mytags.SlowAsMolasses) { fixture =>
@@ -930,7 +930,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       it("should, if they call a nested feature from within a feature clause, result in a SuiteAborted event when constructing the FeatureSpec") {
 
         class MySpec extends FixtureFeatureSpec {
-          type Fixture = String
+          type FixtureParam = String
           def withFixture(test: OneArgTest) { test("hi") }
           feature("should blow up") {
             feature("should never run") {
@@ -948,7 +948,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
   }
   it("should pass the correct test name in the OneArgTest passed to withFixture") {
     val a = new FixtureFeatureSpec {
-      type Fixture = String
+      type FixtureParam = String
       var correctTestNameWasPassed = false
       def withFixture(test: OneArgTest) {
         correctTestNameWasPassed = test.name == "should do something"
@@ -961,7 +961,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
   }
   it("should pass the correct config map in the OneArgTest passed to withFixture") {
     val a = new FixtureFeatureSpec {
-      type Fixture = String
+      type FixtureParam = String
       var correctConfigMapWasPassed = false
       def withFixture(test: OneArgTest) {
         correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))

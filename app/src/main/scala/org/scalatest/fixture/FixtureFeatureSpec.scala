@@ -62,8 +62,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyFeatureSpec extends FixtureFeatureSpec {
  *
- *   // 1. define type Fixture
- *   type Fixture = FileReader
+ *   // 1. define type FixtureParam
+ *   type FixtureParam = FileReader
  *
  *   // 2. define the withFixture method
  *   def withFixture(test: OneArgTest) {
@@ -94,7 +94,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   // 3. write scenarios that take a Fixture
+ *   // 3. write scenarios that take a fixture parameter
  *   feature("Reading and writing files") {
  *     scenario("reading from the temp file") { reader =>
  *       var builder = new StringBuilder
@@ -110,7 +110,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *       assert(reader.read() === 'H')
  *     }
  * 
- *     // (You can also write scenarios that don't take a Fixture.)
+ *     // (You can also write scenarios that don't take a fixture parameter.)
  *     scenario("no fixture is passed") { () =>
  *       assert(1 + 1 === 2)
  *     }
@@ -130,7 +130,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * class MyFeatureSpec extends FixtureFeatureSpec {
  *
- *   type Fixture = (StringBuilder, ListBuffer[String])
+ *   type FixtureParam = (StringBuilder, ListBuffer[String])
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -182,7 +182,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
  *
- *   type Fixture = FixtureHolder
+ *   type FixtureParam = FixtureHolder
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -265,7 +265,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyFeatureSpec extends FixtureFeatureSpec {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -358,7 +358,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     val tagsMap: Map[String, Set[String]],
 
     // All tests, in reverse order of registration
-    val testsList: List[FixtureTestLeaf[Fixture]],
+    val testsList: List[FixtureTestLeaf[FixtureParam]],
 
     // Used to detect at runtime that they've stuck a describe or an it inside an it,
     // which should result in a TestRegistrationClosedException
@@ -372,7 +372,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       trunk: Trunk,
       currentBranch: Branch,
       tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[Fixture]],
+      testsList: List[FixtureTestLeaf[FixtureParam]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
@@ -380,7 +380,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     def initialize(
       trunk: Trunk,
       tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[Fixture]],
+      testsList: List[FixtureTestLeaf[FixtureParam]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
@@ -388,7 +388,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
   private val atomic =
     new AtomicReference[Bundle](
-      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[Fixture]](), false)
+      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[FixtureParam]](), false)
     )
 
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
@@ -397,7 +397,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       throw new ConcurrentModificationException(Resources("concurrentFixtureFeatureSpecBundleMod"))
   }
 
-  private def registerTest(specText: String, f: Fixture => Any) = {
+  private def registerTest(specText: String, f: FixtureParam => Any) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -472,7 +472,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def scenario(specText: String, testTags: Tag*)(testFun: Fixture => Any) {
+  protected def scenario(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("scenarioCannotAppearInsideAnotherScenario"), getStackDepth("FixtureFeatureSpec.scala", "scenario"))
@@ -508,7 +508,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def scenario(specText: String)(testFun: Fixture => Any) {
+  protected def scenario(specText: String)(testFun: FixtureParam => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("scenarioCannotAppearInsideAnotherScenario"), getStackDepth("FixtureFeatureSpec.scala", "scenario"))
     scenario(specText, Array[Tag](): _*)(testFun)
@@ -532,7 +532,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String, testTags: Tag*)(testFun: Fixture => Any) {
+  protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "ignore"))
     if (specText == null)
@@ -564,7 +564,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  protected def ignore(specText: String)(testFun: Fixture => Any) {
+  protected def ignore(specText: String)(testFun: FixtureParam => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
@@ -949,7 +949,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * to write <code>(fixture => pending)</code>.
    * </p>
    */
-  protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): (Fixture) => Any = {
+  protected implicit def convertPendingToFixtureFunction(f: => PendingNothing): FixtureParam => Any = {
     fixture => f
   }
 
@@ -958,7 +958,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * a function from <code>Fixture</code> to <code>Any</code>, to enable no-arg tests to registered
    * by methods that require a test function that takes a <code>Fixture</code>.
    */
-  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (FixtureParam => Any) =
     new NoArgTestWrapper(fun)
 }
 

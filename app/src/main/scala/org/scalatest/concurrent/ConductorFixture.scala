@@ -89,7 +89,7 @@ trait ConductorFixture { this: FixtureSuite =>
   /**
    * Defines type <code>Fixture</code> to be <code>Conductor</code>.
    */
-  type Fixture = Conductor
+  type FixtureParam = Conductor
   
   /**
    * Creates a new <code>Conductor</code>, passes the <code>Conductor</code> to the
