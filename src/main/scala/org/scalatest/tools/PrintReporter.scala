@@ -347,7 +347,6 @@ if a StackDepth and no F specified, then show the truncated form.
       case SuiteAborted(ordinal, message, suiteName, suiteClassName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
         val lines = stringsToPrintOnError("abortedNote", "suiteAborted", message, throwable, formatter, Some(suiteName), None, duration)
-   printPossiblyInColor(" [" + threadName + "]", ansiRed)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case TestStarting(ordinal, suiteName, suiteClassName, testName, formatter, rerunnable, payload, threadName, timeStamp) =>
@@ -364,7 +363,7 @@ if a StackDepth and no F specified, then show the truncated form.
         val stringToPrint = stringToPrintWhenNoError("testSucceeded", formatter, suiteName, Some(testName), duration)
 
         stringToPrint match {
-          case Some(string) => printPossiblyInColor(string + " [" + threadName + "]", ansiGreen)
+          case Some(string) => printPossiblyInColor(string, ansiGreen)
           case None =>
         }
     
@@ -385,7 +384,6 @@ if a StackDepth and no F specified, then show the truncated form.
       case TestFailed(ordinal, message, suiteName, suiteClassName, testName, throwable, duration, formatter, rerunnable, payload, threadName, timeStamp) => 
 
         val lines = stringsToPrintOnError("failedNote", "testFailed", message, throwable, formatter, Some(suiteName), Some(testName), duration)
- printPossiblyInColor(" [" + threadName + "]", ansiRed)
         for (line <- lines) printPossiblyInColor(line, ansiRed)
 
       case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
