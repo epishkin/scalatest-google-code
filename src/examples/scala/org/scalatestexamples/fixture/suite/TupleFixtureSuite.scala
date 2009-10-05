@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
       
 class TupleFixtureSuite extends FixtureSuite {
 
-  type Fixture = (StringBuilder, ListBuffer[String])
+  type FixtureParam = (StringBuilder, ListBuffer[String])
 
   def withFixture(test: OneArgTest) {
 
@@ -17,7 +17,7 @@ class TupleFixtureSuite extends FixtureSuite {
     test(sb, lb)
   }
 
-  def testEasy(fixture: Fixture) {
+  def testEasy(fixture: FixtureParam) {
     val (builder, lbuf) = fixture
     builder.append("easy!")
     assert(builder.toString === "ScalaTest is easy!")
@@ -25,7 +25,7 @@ class TupleFixtureSuite extends FixtureSuite {
     lbuf += "sweet"
   }
 
-  def testFun(fixture: Fixture) {
+  def testFun(fixture: FixtureParam) {
     val (builder, lbuf) = fixture
     builder.append("fun!")
     assert(builder.toString === "ScalaTest is fun!")

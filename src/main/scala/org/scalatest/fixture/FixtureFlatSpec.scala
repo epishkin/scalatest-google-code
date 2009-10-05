@@ -63,8 +63,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyFlatSpec extends FixtureFlatSpec {
  *
- *   // 1. define type Fixture
- *   type Fixture = FileReader
+ *   // 1. define type FixtureParam
+ *   type FixtureParam = FileReader
  *
  *   // 2. define the withFixture method
  *   def withFixture(test: OneArgTest) {
@@ -95,7 +95,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   // 3. write tests that take a Fixture
+ *   // 3. write tests that take a fixture parameter
  *   it should "read from the temp file" in { reader =>
  *     var builder = new StringBuilder
  *     var c = reader.read()
@@ -110,7 +110,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     assert(reader.read() === 'H')
  *   }
  * 
- *   // (You can also write tests that don't take a Fixture.)
+ *   // (You can also write tests that don't take a fixture parameter.)
  *   it should "work without a fixture" in { () =>
  *     assert(1 + 1 === 2)
  *   }
@@ -129,7 +129,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * class MyFlatSpec extends FixtureFlatSpec {
  *
- *   type Fixture = (StringBuilder, ListBuffer[String])
+ *   type FixtureParam = (StringBuilder, ListBuffer[String])
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -181,7 +181,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
  *
- *   type Fixture = FixtureHolder
+ *   type FixtureParam = FixtureHolder
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -264,7 +264,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyFlatSpec extends FixtureFlatSpec {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -357,7 +357,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     val tagsMap: Map[String, Set[String]],
 
     // All tests, in reverse order of registration
-    val testsList: List[FixtureTestLeaf[Fixture]],
+    val testsList: List[FixtureTestLeaf[FixtureParam]],
 
     // Used to detect at runtime that they've stuck a describe or an it inside an it,
     // which should result in a TestRegistrationClosedException
@@ -371,7 +371,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       trunk: Trunk,
       currentBranch: Branch,
       tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[Fixture]],
+      testsList: List[FixtureTestLeaf[FixtureParam]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
@@ -379,7 +379,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     def initialize(
       trunk: Trunk,
       tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[Fixture]],
+      testsList: List[FixtureTestLeaf[FixtureParam]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
@@ -387,7 +387,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   private val atomic =
     new AtomicReference[Bundle](
-      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[Fixture]](), false)
+      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[FixtureParam]](), false)
     )
 
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
@@ -396,7 +396,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       throw new ConcurrentModificationException(Resources("concurrentFixtureFlatSpecBundleMod"))
   }
 
-  private def registerTest(specText: String, f: Fixture => Any) = {
+  private def registerTest(specText: String, f: FixtureParam => Any) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -471,7 +471,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
@@ -641,7 +641,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToRun(verb + " " + name, tags, testFun)
     }
 
@@ -664,7 +664,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      */
     def is(testFun: => PendingNothing) {
-      registerTestToRun(verb + " " + name, tags, unusedFixture => testFun)
+      registerTestToRun(verb + " " + name, tags, unusedFixtureParam => testFun)
     }
 
     /**
@@ -708,7 +708,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
-    def ignore(testFun: Fixture => Any) {
+    def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
   }
@@ -797,7 +797,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * for trait <code>FixtureFlatSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToRun(verb + " " + name, List(), testFun)
     }
 
@@ -819,7 +819,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      */
     def is(testFun: => PendingNothing) {
-      registerTestToRun(verb + " " + name, List(), unusedFixture => testFun)
+      registerTestToRun(verb + " " + name, List(), unusedFixtureParam => testFun)
     }
 
     /**
@@ -860,7 +860,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * for trait <code>FlatSpec</code>.
      * </p>
      */
-    def ignore(testFun: Fixture => Any) {
+    def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
 
@@ -1136,7 +1136,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * the <a href="../FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToIgnore(verb + " " + name, tags, testFun)
     }
 
@@ -1167,7 +1167,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      */
     def is(testFun: => PendingNothing) {
-      registerTestToIgnore(verb + " " + name, tags, unusedFixture => testFun)
+      registerTestToIgnore(verb + " " + name, tags, unusedFixtureParam => testFun)
     }
   }
 
@@ -1254,7 +1254,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToIgnore(verb + " " + name, List(), testFun)
     }
 
@@ -1284,7 +1284,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      */
     def is(testFun: => PendingNothing) {
-      registerTestToIgnore(verb + " " + name, List(), unusedFixture => testFun)
+      registerTestToIgnore(verb + " " + name, List(), unusedFixtureParam => testFun)
     }
 
     /**
@@ -1511,7 +1511,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * for trait <code>FixtureFlatSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToRun(verb + " " + rest, List(), testFun)
     }
 
@@ -1532,7 +1532,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
-    def ignore(testFun: Fixture => Any) {
+    def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(verb + " " + rest, List(), testFun)
     }
   }
@@ -1651,7 +1651,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToRun(verb + " " + rest, tagsList, testFun)
     }
 
@@ -1674,7 +1674,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * in the main documentation for trait <code>FlatSpec</code>.
      * </p>
      */
-    def ignore(testFun: Fixture => Any) {
+    def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(verb + " " + rest, tagsList, testFun)
     }
   }
@@ -1714,7 +1714,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       behavior.of(subject)
       new ResultOfStringPassedToVerb(verb, rest) {
         def is(testFun: => PendingNothing) {
-          registerTestToRun(verb + " " + rest, List(), unusedFixture => testFun)
+          registerTestToRun(verb + " " + rest, List(), unusedFixtureParam => testFun)
         }
         def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
           val tagList = firstTestTag :: otherTestTags.toList
@@ -1799,7 +1799,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)

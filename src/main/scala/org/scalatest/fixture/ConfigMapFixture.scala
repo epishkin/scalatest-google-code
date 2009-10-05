@@ -27,7 +27,7 @@ trait ConfigMapFixture { this: FixtureSuite =>
   /**
    * The type of the <code>configMap</code>, which is <code>Map[String, Any]</code>.
    */
-  type Fixture = Map[String, Any]
+  type FixtureParam = Map[String, Any]
 
   /**
    * Invoke the test function, passing to the the test function the <code>configMap</code>

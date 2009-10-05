@@ -7,7 +7,7 @@ class CaseClassFixtureSuite extends FixtureSuite {
 
   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
 
-  type Fixture = FixtureHolder
+  type FixtureParam = FixtureHolder
 
   def withFixture(test: OneArgTest) {
 
@@ -19,7 +19,7 @@ class CaseClassFixtureSuite extends FixtureSuite {
     test(FixtureHolder(stringBuilder, listBuffer))
   }
 
-  def testEasy(fixture: Fixture) {
+  def testEasy(fixture: FixtureParam) {
     import fixture._
     builder.append("easy!")
     assert(builder.toString === "ScalaTest is easy!")
@@ -27,7 +27,7 @@ class CaseClassFixtureSuite extends FixtureSuite {
     buffer += "sweet"
   }
 
-  def testFun(fixture: Fixture) {
+  def testFun(fixture: FixtureParam) {
     fixture.builder.append("fun!")
     assert(fixture.builder.toString === "ScalaTest is fun!")
     assert(fixture.buffer.isEmpty)

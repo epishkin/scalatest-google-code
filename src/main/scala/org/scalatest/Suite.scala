@@ -708,7 +708,7 @@ import org.scalatest.tools.StandardOutReporter
  *
  *   // No vars needed in this one
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *

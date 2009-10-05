@@ -32,7 +32,7 @@ class EasyMockExampleFixtureFlatSpec extends FixtureFlatSpec with EasyMockSugar 
 
   case class FixtureHolder(classUnderTest: ClassTested, mockCollaborator: Collaborator)
 
-  type Fixture = FixtureHolder
+  type FixtureParam = FixtureHolder
 
   def withFixture(test: OneArgTest) {
     val mockCollaborator = mock[Collaborator]

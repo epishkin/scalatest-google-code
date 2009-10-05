@@ -577,7 +577,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MySuite extends FixtureWordSpec {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *

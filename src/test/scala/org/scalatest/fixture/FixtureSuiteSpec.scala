@@ -25,14 +25,14 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
   describe("The private testMethodTakesInformer method") {
     val testMethodTakesAFixtureAndInformer = PrivateMethod[Boolean]('testMethodTakesAFixtureAndInformer)
     val suiteObject = FixtureSuite
-    it("should return true if passed a string that ends in (Fixture, Informer)") {
-      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("thisDoes(Fixture, Informer)"))
-      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("(Fixture, Informer)"))
-      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("test(Fixture, Informer)"))
+    it("should return true if passed a string that ends in (FixtureParam, Informer)") {
+      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("thisDoes(FixtureParam, Informer)"))
+      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("(FixtureParam, Informer)"))
+      assert(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("test(FixtureParam, Informer)"))
     }
-    it("should return false if passed a string that doesn't end in (Fixture, Informer)") {
-      assert(!(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("thisDoesNot(Fixture)")))
-      assert(!(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("test(Fixture)")))
+    it("should return false if passed a string that doesn't end in (FixtureParam, Informer)") {
+      assert(!(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("thisDoesNot(FixtureParam)")))
+      assert(!(suiteObject invokePrivate testMethodTakesAFixtureAndInformer("test(FixtureParam)")))
     }
   }
 
@@ -42,18 +42,18 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
     it("should return the test names in alphabetical order from testNames") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
         def testThis(fixture: String) {}
         def testThat(fixture: String) {}
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+      expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
         a.testNames.elements.toList
       }
 
       val b = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
       }
 
@@ -62,30 +62,30 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       val c = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
         def testThat(fixture: String) {}
         def testThis(fixture: String) {}
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+      expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
         c.testNames.elements.toList
       }
     }
 
     it("should discover tests with and without Informer parameters") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(fun: String => Unit, config: Map[String, Any]) {}
         def testThis(fixture: String) = ()
         def testThat(fixture: String, info: Informer) = ()
       }
-      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
+      assert(a.testNames === TreeSet("testThat(FixtureParam, Informer)", "testThis(FixtureParam)"))
     }
 
     it("should pass in the fixture to every test method") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(fun: String => Unit, config: Map[String, Any]) {
           test(hello)
@@ -104,14 +104,14 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       val key = "greeting"
       val hello = "Hello, world!"
       val a = new FixtureSuite {
-        type Fixture = Map[String, Any]
-        def withFixture(fun: Fixture => Unit, config: Map[String, Any]) {
+        type FixtureParam = Map[String, Any]
+        def withFixture(fun: FixtureParam => Unit, config: Map[String, Any]) {
           test(config)
         }
-        def testThis(fixture: Fixture) {
+        def testThis(fixture: FixtureParam) {
           assert(fixture(key) === hello)
         }
-        def testThat(fixture: Fixture, info: Informer) {
+        def testThat(fixture: FixtureParam, info: Informer) {
           assert(fixture(key) === hello)
         }
       }
@@ -125,18 +125,18 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
   describe("A FixtureSuite") {
     it("should return the test names in alphabetical order from testNames") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         def testThis(fixture: String) {}
         def testThat(fixture: String) {}
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+      expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
         a.testNames.elements.toList
       }
 
       val b = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
       }
 
@@ -145,30 +145,30 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       val c = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         def testThat(fixture: String) {}
         def testThis(fixture: String) {}
       }
 
-      expect(List("testThat(Fixture)", "testThis(Fixture)")) {
+      expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
         c.testNames.elements.toList
       }
     }
 
     it("should discover tests with and without Informer parameters") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         def testThis(fixture: String) = ()
         def testThat(fixture: String, info: Informer) = ()
       }
-      assert(a.testNames === TreeSet("testThat(Fixture, Informer)", "testThis(Fixture)"))
+      assert(a.testNames === TreeSet("testThat(FixtureParam, Informer)", "testThis(FixtureParam)"))
     }
 
     it("should pass in the fixture to every test method") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -188,57 +188,57 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should return a correct tags map from the tags method") {
 
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         @Ignore
-        def testThis(fixture: Fixture) = ()
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThis(fixture: FixtureParam) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(a.tags === Map("testThis(Fixture)" -> Set("org.scalatest.Ignore")))
+      assert(a.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore")))
 
       val b = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
-        def testThis(fixture: Fixture) = ()
+        def testThis(fixture: FixtureParam) = ()
         @Ignore
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(b.tags === Map("testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore")))
+      assert(b.tags === Map("testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
 
       val c = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         @Ignore
-        def testThis(fixture: Fixture) = ()
+        def testThis(fixture: FixtureParam) = ()
         @Ignore
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(c.tags === Map("testThis(Fixture)" -> Set("org.scalatest.Ignore"), "testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore")))
+      assert(c.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.Ignore"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore")))
 
       val d = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
         @SlowAsMolasses
-        def testThis(fixture: Fixture) = ()
+        def testThis(fixture: FixtureParam) = ()
         @SlowAsMolasses
         @Ignore
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
       }
 
-      assert(d.tags === Map("testThis(Fixture)" -> Set("org.scalatest.SlowAsMolasses"), "testThat(Fixture, Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
+      assert(d.tags === Map("testThis(FixtureParam)" -> Set("org.scalatest.SlowAsMolasses"), "testThat(FixtureParam, Informer)" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses")))
 
       val e = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {}
       }
       assert(e.tags === Map())
     }
 
     class TestWasCalledSuite extends FixtureSuite {
-      type Fixture = String
+      type FixtureParam = String
       def withFixture(test: OneArgTest) { test("hi") }
       var theTestThisCalled = false
       var theTestThatCalled = false
@@ -257,7 +257,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should execute one test when run is called with a defined testName") {
 
       val a = new TestWasCalledSuite
-      a.run(Some("testThis(Fixture)"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      a.run(Some("testThis(FixtureParam)"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
@@ -265,12 +265,12 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should report as ignored, ant not run, tests marked ignored") {
 
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
 
       val repA = new TestIgnoredTrackingReporter
@@ -280,57 +280,57 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.theTestThatCalled)
 
       val b = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         @Ignore
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
 
       val repB = new TestIgnoredTrackingReporter
       b.run(None, repB, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(repB.testIgnoredReceived)
       assert(repB.lastEvent.isDefined)
-      assert(repB.lastEvent.get.testName endsWith "testThis(Fixture)")
+      assert(repB.lastEvent.get.testName endsWith "testThis(FixtureParam)")
       assert(!b.theTestThisCalled)
       assert(b.theTestThatCalled)
 
       val c = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @Ignore
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
 
       val repC = new TestIgnoredTrackingReporter
       c.run(None, repC, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(repC.testIgnoredReceived)
       assert(repC.lastEvent.isDefined)
-      assert(repC.lastEvent.get.testName endsWith "testThat(Fixture, Informer)", repC.lastEvent.get.testName)
+      assert(repC.lastEvent.get.testName endsWith "testThat(FixtureParam, Informer)", repC.lastEvent.get.testName)
       assert(c.theTestThisCalled)
       assert(!c.theTestThatCalled)
 
       val d = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         @Ignore
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @Ignore
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
 
       val repD = new TestIgnoredTrackingReporter
       d.run(None, repD, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(repD.testIgnoredReceived)
       assert(repD.lastEvent.isDefined)
-      assert(repD.lastEvent.get.testName endsWith "testThis(Fixture)") // last because run alphabetically
+      assert(repD.lastEvent.get.testName endsWith "testThis(FixtureParam)") // last because run alphabetically
       assert(!d.theTestThisCalled)
       assert(!d.theTestThatCalled)
     }
@@ -338,17 +338,17 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should run a test marked as ignored if run is invoked with that testName") {
 
       val e = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         @Ignore
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
 
       val repE = new TestIgnoredTrackingReporter
-      e.run(Some("testThis(Fixture)"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
+      e.run(Some("testThis(FixtureParam)"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(!repE.testIgnoredReceived)
       assert(e.theTestThisCalled)
       assert(!e.theTestThatCalled)
@@ -357,22 +357,22 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should throw IllegalArgumentException if run is passed a testName that does not exist") {
 
       val suite = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
 
       intercept[IllegalArgumentException] {
-        // Here, they forgot that the name is actually testThis(Fixture)
+        // Here, they forgot that the name is actually testThis(FixtureParam)
         suite.run(Some("testThis"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       }
 
       intercept[IllegalArgumentException] {
         // Here, they gave a non-existent test name
-        suite.run(Some("doesNotExist(Fixture)"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+        suite.run(Some("doesNotExist(FixtureParam)"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       }
     }
 
@@ -380,13 +380,13 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // Nothing is excluded
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
       val repA = new TestIgnoredTrackingReporter
       a.run(None, repA, new Stopper {}, Filter(), Map(), None, new Tracker)
@@ -396,13 +396,13 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // SlowAsMolasses is included, one test should be excluded
       val b = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
       val repB = new TestIgnoredTrackingReporter
       b.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
@@ -412,14 +412,14 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // SlowAsMolasses is included, and both tests should be included
       val c = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
       val repC = new TestIgnoredTrackingReporter
       c.run(None, repB, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set()), Map(), None, new Tracker)
@@ -429,15 +429,15 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // SlowAsMolasses is included. both tests should be included but one ignored
       val d = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         @Ignore
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
       }
       val repD = new TestIgnoredTrackingReporter
       d.run(None, repD, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.Ignore")), Map(), None, new Tracker)
@@ -447,17 +447,17 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // SlowAsMolasses included, FastAsLight excluded
       val e = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         var theTestTheOtherCalled = false
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
-        def testTheOther(fixture: Fixture, info: Informer) { theTestTheOtherCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
+        def testTheOther(fixture: FixtureParam, info: Informer) { theTestTheOtherCalled = true }
       }
       val repE = new TestIgnoredTrackingReporter
       e.run(None, repE, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
@@ -469,7 +469,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // An Ignored test that was both included and excluded should not generate a TestIgnored event
       val f = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -477,10 +477,10 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         @Ignore
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
-        def testTheOther(fixture: Fixture, info: Informer) { theTestTheOtherCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
+        def testTheOther(fixture: FixtureParam, info: Informer) { theTestTheOtherCalled = true }
       }
       val repF = new TestIgnoredTrackingReporter
       f.run(None, repF, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
@@ -492,18 +492,18 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // An Ignored test that was not included should not generate a TestIgnored event
       val g = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         var theTestTheOtherCalled = false
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
         @Ignore
-        def testTheOther(fixture: Fixture, info: Informer) { theTestTheOtherCalled = true }
+        def testTheOther(fixture: FixtureParam, info: Informer) { theTestTheOtherCalled = true }
       }
       val repG = new TestIgnoredTrackingReporter
       g.run(None, repG, new Stopper {}, Filter(Some(Set("org.scalatest.SlowAsMolasses")), Set("org.scalatest.FastAsLight")),
@@ -515,17 +515,17 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // No tagsToInclude set, FastAsLight excluded
       val h = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         var theTestTheOtherCalled = false
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
-        def testTheOther(fixture: Fixture, info: Informer) { theTestTheOtherCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
+        def testTheOther(fixture: FixtureParam, info: Informer) { theTestTheOtherCalled = true }
       }
       val repH = new TestIgnoredTrackingReporter
       h.run(None, repH, new Stopper {}, Filter(None, Set("org.scalatest.FastAsLight")), Map(), None, new Tracker)
@@ -536,17 +536,17 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // No tagsToInclude set, SlowAsMolasses excluded
       val i = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
         var theTestTheOtherCalled = false
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
-        def testTheOther(fixture: Fixture, info: Informer) { theTestTheOtherCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
+        def testTheOther(fixture: FixtureParam, info: Informer) { theTestTheOtherCalled = true }
       }
       val repI = new TestIgnoredTrackingReporter
       i.run(None, repI, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
@@ -557,7 +557,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // No tagsToInclude set, SlowAsMolasses excluded, TestIgnored should not be received on excluded ones
       val j = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -565,11 +565,11 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         @Ignore
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @Ignore
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
-        def testTheOther(fixture: Fixture, info: Informer) { theTestTheOtherCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
+        def testTheOther(fixture: FixtureParam, info: Informer) { theTestTheOtherCalled = true }
       }
       val repJ = new TestIgnoredTrackingReporter
       j.run(None, repJ, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses")), Map(), None, new Tracker)
@@ -580,7 +580,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
       // Same as previous, except Ignore specifically mentioned in excludes set
       val k = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         var theTestThisCalled = false
         var theTestThatCalled = false
@@ -588,12 +588,12 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         @Ignore
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) { theTestThisCalled = true }
+        def testThis(fixture: FixtureParam) { theTestThisCalled = true }
         @Ignore
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) { theTestThatCalled = true }
+        def testThat(fixture: FixtureParam, info: Informer) { theTestThatCalled = true }
         @Ignore
-        def testTheOther(fixture: Fixture, info: Informer) { theTestTheOtherCalled = true }
+        def testTheOther(fixture: FixtureParam, info: Informer) { theTestTheOtherCalled = true }
       }
       val repK = new TestIgnoredTrackingReporter
       k.run(None, repK, new Stopper {}, Filter(None, Set("org.scalatest.SlowAsMolasses", "org.scalatest.Ignore")), Map(), None, new Tracker)
@@ -606,40 +606,40 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should return the correct test count from its expectedTestCount method") {
 
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
-        def testThis(fixture: Fixture) = ()
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThis(fixture: FixtureParam) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
       }
       assert(a.expectedTestCount(Filter()) === 2)
 
       val b = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         @Ignore
-        def testThis(fixture: Fixture) = ()
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThis(fixture: FixtureParam) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
       }
       assert(b.expectedTestCount(Filter()) === 1)
 
       val c = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         @FastAsLight
-        def testThis(fixture: Fixture) = ()
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThis(fixture: FixtureParam) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
       }
       assert(c.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
       assert(c.expectedTestCount(Filter(None, Set("org.scalatest.FastAsLight"))) === 1)
 
       val d = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) = ()
+        def testThis(fixture: FixtureParam) = ()
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
         def testTheOtherThing(info: Informer) = ()
       }
       assert(d.expectedTestCount(Filter(Some(Set("org.scalatest.FastAsLight")), Set())) === 1)
@@ -648,13 +648,13 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(d.expectedTestCount(Filter()) === 3)
 
       val e = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) { test("hi") }
         @FastAsLight
         @SlowAsMolasses
-        def testThis(fixture: Fixture) = ()
+        def testThis(fixture: FixtureParam) = ()
         @SlowAsMolasses
-        def testThat(fixture: Fixture, info: Informer) = ()
+        def testThat(fixture: FixtureParam, info: Informer) = ()
         @Ignore
         def testTheOtherThing(info: Informer) = ()
       }
@@ -669,19 +669,19 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
 
     it("should generate a TestPending message when the test body is (pending)") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
         }
 
-        def testDoThis(fixture: Fixture) { pending }
+        def testDoThis(fixture: FixtureParam) { pending }
 
-        def testDoThat(fixture: Fixture) {
+        def testDoThat(fixture: FixtureParam) {
           assert(fixture === hello)
         }
 
-        def testDoSomethingElse(fixture: Fixture) {
+        def testDoSomethingElse(fixture: FixtureParam) {
           assert(fixture === hello)
           pending
         }
@@ -694,7 +694,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should generate a test failure if a Throwable, or an Error other than direct Error subtypes " +
             "known in JDK 1.5, excluding AssertionError") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -711,7 +711,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should propagate out Errors that are direct subtypes of Error in JDK 1.5, other than " +
             "AssertionError, causing Suites and Runs to abort.") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         val hello = "Hello, world!"
         def withFixture(test: OneArgTest) {
           test(hello)
@@ -725,7 +725,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should allow both tests that take fixtures and tests that don't") {
       val a = new FixtureSuite {
 
-        type Fixture = String
+        type FixtureParam = String
         def withFixture(test: OneArgTest) {
           test("Hello, world!")
         }
@@ -753,7 +753,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     it("should allow primitive type fixtures") {
       val a = new FixtureSuite {
 
-        type Fixture = Int
+        type FixtureParam = Int
         def withFixture(test: OneArgTest) {
           test(99)
         }
@@ -780,7 +780,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
     it("should pass a NoArgTest to withFixture for test methods that take no arguments") {
       class MySuite extends FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         var aOneArgTestWasPassed = false
         override def withFixture(test: NoArgTest) {
@@ -801,7 +801,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
     it("should pass a NoArgTest to withFixture for test methods that take only an Informer") {
       class MySuite extends FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         var aOneArgTestWasPassed = false
         override def withFixture(test: NoArgTest) {
@@ -822,7 +822,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
     it("should not pass a NoArgTest to withFixture for test methods that take a Fixture and an Informer") {
       class MySuite extends FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         var aOneArgTestWasPassed = false
         override def withFixture(test: NoArgTest) {
@@ -831,7 +831,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         def withFixture(test: OneArgTest) {
           aOneArgTestWasPassed = true
         }
-        def testSomething(fixture: Fixture, info: Informer) {
+        def testSomething(fixture: FixtureParam, info: Informer) {
           assert(1 + 1 === 2)
         }
       }
@@ -843,7 +843,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
     it("should not pass a NoArgTest to withFixture for test methods that take a Fixture") {
       class MySuite extends FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var aNoArgTestWasPassed = false
         def withFixture(test: OneArgTest) {
           // Shouldn't be called
@@ -851,7 +851,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
         override def withFixture(test: NoArgTest) {
           aNoArgTestWasPassed = true
         }
-        def testSomething(fixture: Fixture) {
+        def testSomething(fixture: FixtureParam) {
           assert(1 + 1 === 2)
         }
       }
@@ -864,7 +864,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
             "NoArgTest's no-arg apply method is invoked") {
 
       class MySuite extends FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var theNoArgTestWasInvoked = false
         def withFixture(test: OneArgTest) {
           // Shouldn't be called, but just in case don't invoke a OneArgTest
@@ -882,7 +882,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
             "NoArgTest's no-arg apply method is invoked") {
 
       class MySuite extends FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var theNoArgTestWasInvoked = false
         def withFixture(test: OneArgTest) {
           // Shouldn't be called, but just in case don't invoke a OneArgTest
@@ -898,26 +898,26 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
     }
     it("should pass the correct test name in the OneArgTest passed to withFixture") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var correctTestNameWasPassed = false
         def withFixture(test: OneArgTest) {
-          correctTestNameWasPassed = test.name == "testSomething(Fixture, Informer)"
+          correctTestNameWasPassed = test.name == "testSomething(FixtureParam, Informer)"
           test("hi")
         }
-        def testSomething(fixture: Fixture, info: Informer) {}
+        def testSomething(fixture: FixtureParam, info: Informer) {}
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker())
       assert(a.correctTestNameWasPassed)
     }
     it("should pass the correct config map in the OneArgTest passed to withFixture") {
       val a = new FixtureSuite {
-        type Fixture = String
+        type FixtureParam = String
         var correctConfigMapWasPassed = false
         def withFixture(test: OneArgTest) {
           correctConfigMapWasPassed = (test.configMap == Map("hi" -> 7))
           test("hi")
         }
-        def testSomething(fixture: Fixture, info: Informer) {}
+        def testSomething(fixture: FixtureParam, info: Informer) {}
       }
       a.run(None, SilentReporter, new Stopper {}, Filter(), Map("hi" -> 7), None, new Tracker())
       assert(a.correctConfigMapWasPassed)

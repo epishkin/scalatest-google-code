@@ -27,11 +27,11 @@ private[fixture] object FixtureNodeFamily  {
 
   case class Trunk extends Branch(None)
 
-  case class FixtureTestLeaf[Fixture](
+  case class FixtureTestLeaf[FixtureParam](
     parent: Branch,
     testName: String,
     specText: String,
-    f: Fixture => Any
+    f: FixtureParam => Any
   ) extends Node(Some(parent))
 
   case class InfoLeaf(parent: Branch, message: String) extends Node(Some(parent))

@@ -22,7 +22,7 @@ import java.io.File
 
 class WithTempFileFromConfigMapExampleSuite extends FixtureFunSuite {
 
-  type Fixture = FileReader
+  type FixtureParam = FileReader
 
   def withFixture(test: OneArgTest) {
 

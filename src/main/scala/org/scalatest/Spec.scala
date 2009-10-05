@@ -375,7 +375,7 @@ import verb.BehaveWord
  * 
  * class MySuite extends FixtureSpec {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *

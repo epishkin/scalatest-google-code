@@ -23,7 +23,7 @@ class ConfigMapFixtureSpec extends Spec with SharedHelpers {
       val myConfigMap = Map[String, Any]("hello" -> "world", "salt" -> "pepper")
       class MySuite extends FixtureSuite with ConfigMapFixture {
         var configMapPassed = false
-        def testSomething(configMap: Fixture) {
+        def testSomething(configMap: FixtureParam) {
           if (configMap == myConfigMap)
             configMapPassed = true
         }

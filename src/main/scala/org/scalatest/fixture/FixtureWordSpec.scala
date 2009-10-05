@@ -64,8 +64,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyWordSpec extends FixtureWordSpec {
  *
- *   // 1. define type Fixture
- *   type Fixture = FileReader
+ *   // 1. define type FixtureParam
+ *   type FixtureParam = FileReader
  *
  *   // 2. define the withFixture method
  *   def withFixture(test: OneArgTest) {
@@ -96,7 +96,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     }
  *   }
  * 
- *   // 3. write tests that take a Fixture
+ *   // 3. write tests that take a fixture parameter
  *   "A contrived example" should {
  *     "read from the temp file" in { reader =>
  *       var builder = new StringBuilder
@@ -112,7 +112,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *       assert(reader.read() === 'H')
  *     }
  * 
- *     // (You can also write tests that don't take a Fixture.)
+ *     // (You can also write tests that don't take a fixture parameter.)
  *     "not be required" in {
  *       without fixture {
  *         assert(1 + 1 === 2)
@@ -134,7 +134,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * class MyWordSpec extends FixtureWordSpec {
  *
- *   type Fixture = (StringBuilder, ListBuffer[String])
+ *   type FixtureParam = (StringBuilder, ListBuffer[String])
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -188,7 +188,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  *   case class FixtureHolder(builder: StringBuilder, buffer: ListBuffer[String])
  *
- *   type Fixture = FixtureHolder
+ *   type FixtureParam = FixtureHolder
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -273,7 +273,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * class MyWordSpec extends FixtureWordSpec {
  *
- *   type Fixture = FileReader
+ *   type FixtureParam = FileReader
  *
  *   def withFixture(test: OneArgTest) {
  *
@@ -370,7 +370,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     val tagsMap: Map[String, Set[String]],
 
     // All tests, in reverse order of registration
-    val testsList: List[FixtureTestLeaf[Fixture]],
+    val testsList: List[FixtureTestLeaf[FixtureParam]],
 
     // Used to detect at runtime that they've stuck a describe or an it inside an it,
     // which should result in a TestRegistrationClosedException
@@ -384,7 +384,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       trunk: Trunk,
       currentBranch: Branch,
       tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[Fixture]],
+      testsList: List[FixtureTestLeaf[FixtureParam]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
@@ -392,7 +392,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     def initialize(
       trunk: Trunk,
       tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[Fixture]],
+      testsList: List[FixtureTestLeaf[FixtureParam]],
       registrationClosed: Boolean
     ): Bundle =
       new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
@@ -400,7 +400,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
   private val atomic =
     new AtomicReference[Bundle](
-      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[Fixture]](), false)
+      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[FixtureParam]](), false)
     )
 
   private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
@@ -409,7 +409,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       throw new ConcurrentModificationException(Resources("concurrentFixtureWordSpecBundleMod"))
   }
 
-  private def registerTest(specText: String, f: Fixture => Any) = {
+  private def registerTest(specText: String, f: FixtureParam => Any) = {
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -484,7 +484,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
+  private def registerTestToRun(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
 
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
@@ -544,7 +544,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
-  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: Fixture => Any) {
+  private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
@@ -654,7 +654,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToRun(specText, tags, testFun)
     }
 
@@ -675,7 +675,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      */
     def is(testFun: => PendingNothing) {
-      registerTestToRun(specText, tags, unusedFixture => testFun)
+      registerTestToRun(specText, tags, unusedFixtureParam => testFun)
     }
 
     /**
@@ -694,14 +694,14 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
      * </p>
      */
-    def ignore(testFun: Fixture => Any) {
+    def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(specText, tags, testFun)
     }
   }
 
  /* TODO: Delete this if it isn't needed
   protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToIgnore(specText, tags, testFun)
     }
   }
@@ -740,7 +740,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
      * </p>
      */
-    def in(testFun: Fixture => Any) {
+    def in(testFun: FixtureParam => Any) {
       registerTestToRun(string, List(), testFun)
     }
 
@@ -780,7 +780,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
      * </p>
      */
-    def ignore(testFun: Fixture => Any) {
+    def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(string, List(), testFun)
     }
 
@@ -1388,6 +1388,6 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * a function from <code>Fixture</code> to <code>Any</code>, to enable no-arg tests to registered
    * by methods that require a test function that takes a <code>Fixture</code>.
    */
-  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (Fixture => Any) =
+  protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (FixtureParam => Any) =
     new NoArgTestWrapper(fun)
 }
