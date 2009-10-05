@@ -1,11 +1,9 @@
 package org.scalatest.tools
 
 import scala.collection.mutable.ListBuffer
-
 import org.apache.tools.ant.BuildException
 import org.apache.tools.ant.Task
 import org.apache.tools.ant.types.Path
-
 import org.apache.tools.ant.AntClassLoader
 import org.apache.tools.ant.taskdefs.Java
 
@@ -47,7 +45,7 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Specify a runpath using either a 'runpath' attribute and/or nested
+ * Specify a runpath using either a <code>runpath</code> attribute and/or nested
  * &lt;runpath&gt; elements, using standard ant path notation, e.g.:
  * </p>
  *
@@ -76,7 +74,7 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Specify reporters using nested &lt;reporter&gt; elements, where the 'type'
+ * Specify reporters using nested &lt;reporter&gt; elements, where the <code>type</code>
  * attribute must be one of the following:
  * </p>
  *
@@ -91,8 +89,8 @@ import org.apache.tools.ant.taskdefs.Java
  *
  * <p>
  * Each may include a config attribute to specify the reporter configuration.
- * Types 'file', 'xml' and 'reporterclass' require additional attributes
- * 'filename', 'directory', and 'classname', respectively.  E.g.:
+ * Types <code>file</code>, <code>xml</code> and <code>reporterclass</code> require additional attributes
+ * <code>filename</code>, <code>directory</code>, and <code>classname</code>, respectively.  E.g.:
  * </p>
  *
  * <pre>
@@ -122,7 +120,7 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
- * Specify suites using either a 'suite' attribute or nested
+ * Specify suites using either a <code>suite</code> attribute or nested
  * &lt;suite&gt; elements.  E.g.:
  * </p>
  *
@@ -230,9 +228,9 @@ class ScalaTestAntTask extends Task {
   private val reporters  = new ListBuffer[ReporterElement]
   private val properties = new ListBuffer[NameValuePair]
 
-  //
-  // Executes the task.
-  //
+  /**
+   * Executes the task.
+   */
   override def execute {
     val args = new ListBuffer[String]
 
@@ -476,98 +474,106 @@ class ScalaTestAntTask extends Task {
     args += reporter.getClassName
   }
 
-  //
-  // Sets value of 'runpath' attribute.
-  //
+  /**
+   * Sets value of the <code>runpath</code> attribute.
+   */
   def setRunpath(runpath: Path) {
     for (element <- runpath.list) {
       this.runpath += element
     }
   }
   
-  //
-  // Sets value of 'haltonfailure' attribute.
-  //
+  /**
+   * Sets value of the <code>haltonfailure</code> attribute.
+   */
   def setHaltonfailure(haltonfailure: Boolean) {
     this.haltonfailure = haltonfailure
   }
   
-  //
-  // Sets value of 'fork' attribute.
-  //
+  /**
+   * Sets value of the <code>fork</code> attribute.
+   */
   def setFork(fork: Boolean) {
     this.fork = fork
   }
   
-  //
-  // Sets value of 'maxmemory' attribute.
-  //
+  /**
+   * Sets value of the <code>maxmemory</code> attribute.
+   */
   def setMaxmemory(max: String) {
     this.maxMemory = max
   }
   
+  /**
+   * Sets value of the <code>testngsuites</code> attribute.
+   */
   def setTestNGSuites(testNGSuitePath: Path) {
     for (element <- testNGSuitePath.list)
       this.testNGSuites += element
   }
 
-  //
-  // Sets value of 'concurrent' attribute.
-  //
-  // DEPRECATED in 1.0
-  //
+  /**
+   * Sets value of the <code>concurrent</code> attribute.
+   * <b>Note: The <code>concurrent</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
+   * Please use the <code>parallel</code> attribute instead.</b>
+   */
+  @deprecated
   def setConcurrent(concurrent: Boolean) {
     Console.err.println("WARNING: 'concurrent' attribute is deprecated " +
                         "- please use 'parallel' instead")
     this.parallel = concurrent
   }
 
-  //
-  // Sets value of 'numthreads' attribute.
-  //
+  /**
+   * Sets value of the <code>numthreads</code> attribute.
+   */
   def setNumthreads(numthreads: Int) {
       this.numthreads = numthreads
   }
 
-  //
-  // Sets value of 'parallel' attribute.
-  //
+  /**
+   * Sets value of the <code>parallel</code> attribute.
+   */
   def setParallel(parallel: Boolean) {
       this.parallel = parallel
   }
 
-  //
-  // Sets value from nested element 'runpath'.
-  //
+  /**
+   * Sets value from nested element <code>runpath</code>.
+   */
   def addConfiguredRunpath(runpath: Path) {
     for (element <- runpath.list)
       this.runpath += element
   }
  
+  /**
+   * Sets value from nested element <code>testngsuites</code>.
+   */
   def addConfiguredTestNGSuites(testNGSuitePath: Path) {
     for (element <- testNGSuitePath.list)
       this.testNGSuites += element
   }
 
-  //
-  // Sets value from nested element 'runpathurl'.
-  //
+  /**
+   * Sets value from nested element <code>runpathurl</code>.
+   */
   def addConfiguredRunpathUrl(runpathurl: RunpathUrl) {
     runpath += runpathurl.getUrl
   }
 
-  //
-  // Sets value from nested element 'jvmarg'.
-  //
+  /**
+   * Sets value from nested element <code>jvmarg</code>.
+   */
   def addConfiguredJvmArg(arg: JvmArg) {
     jvmArgs += arg.getValue
   }
 
-  //
-  // Sets values from nested element 'property'.
-  //
-  // DEPRECATED in 0.9.6
-  //
+  /**
+   * Sets values from nested element <code>property</code>.
+   * <b>The <code>property</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
+   * Please use the <code>config</code> attribute instead.</b>
+   */
+  @deprecated
   def addConfiguredProperty(property: NameValuePair) {
     Console.err.println("WARNING: <property> is deprecated - " +
                         "please use <config> instead [name: " +
@@ -575,74 +581,75 @@ class ScalaTestAntTask extends Task {
     properties += property
   }
 
-  //
-  // Sets values from nested element 'config'.
-  //
+  /**
+   * Sets values from nested element <code>config</code>.
+   */
   def addConfiguredConfig(config: NameValuePair) {
     properties += config
   }
 
-  //
-  // Sets value of 'suite' attribute.
-  //
+  /**
+   * Sets value of <code>suite</code> attribute.
+   */
   def setSuite(suite: String) {
     suites += suite
   }
 
-  //
-  // Sets value of 'membersonly' attribute.
-  //
+  /**
+   * Sets value of <code>membersonly</code> attribute.
+   */
   def setMembersonly(packageName: String) {
     membersonlys += packageName
   }
 
-  //
-  // Sets value of 'wildcard' attribute.
-  //
+  /**
+   * Sets value of <code>wildcard</code> attribute.
+   */
   def setWildcard(packageName: String) {
     wildcards += packageName
   }
 
-  //
-  // Sets value from nested element 'suite'.
-  //
+  /**
+   * Sets value from nested element <code>suite</code>.
+   */
   def addConfiguredSuite(suite: SuiteElement) {
     suites += suite.getClassName
   }
 
-  //
-  // Sets value from nested element 'membersonly'.
-  //
+  /**
+   * Sets value from nested element <code>membersonly</code>.
+   */
   def addConfiguredMembersOnly(membersonly: PackageElement) {
     membersonlys += membersonly.getPackage
   }
 
-  //
-  // Sets value from nested element 'wildcard'.
-  //
+  /**
+   * Sets value from nested element <code>wildcard</code>.
+   */
   def addConfiguredWildcard(wildcard: PackageElement) {
     wildcards += wildcard.getPackage
   }
 
-  //
-  // Sets value from nested element 'reporter'.
-  //
+  /**
+   * Sets value from nested element <code>reporter</code>.
+   */
   def addConfiguredReporter(reporter: ReporterElement) {
     reporters += reporter
   }
 
-  //
-  // Sets value from nested element 'tagsToInclude'.
-  //
+  /**
+   * Sets value from nested element <code>tagsToInclude</code>.
+   */
   def addConfiguredTagsToInclude(tagsToInclude: TextElement) {
     this.includes = tagsToInclude.getText
   }
 
-  //
-  // Sets value from nested element 'includes'.
-  //
-  // DEPRECATED in 0.9.6
-  //
+  /**
+   * Sets value from nested element <code>includes</code>.
+   * <b>The <code>includes</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
+   * Please use the <code>tagsToInclude</code> attribute instead.</b>
+   */
+  @deprecated
   def addConfiguredIncludes(includes: TextElement) {
     Console.err.println("WARNING: 'includes' is deprecated - " +
                         "use 'tagsToInclude' instead [includes: " +
@@ -650,18 +657,19 @@ class ScalaTestAntTask extends Task {
     this.includes = includes.getText
   }
 
-  //
-  // Sets value from nested element 'excludes'.
-  //
+  /**
+   * Sets value from nested element <code>excludes</code>.
+   */
   def addConfiguredTagsToExclude(tagsToExclude: TextElement) {
     this.excludes = tagsToExclude.getText
   }
 
-  //
-  // Sets value from nested element 'excludes'.
-  //
-  // DEPRECATED in 0.9.6
-  //
+  /**
+   * Sets value from nested element <code>excludes</code>.
+   * <b>The <code>excludes</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
+   * Please use the <code>tagsToExclude</code> attribute instead.</b>
+   */
+  @deprecated
   def addConfiguredExcludes(excludes: TextElement) {
     Console.err.println("WARNING: 'excludes' is deprecated - " +
                         "use 'tagsToExclude' instead [excludes: " +
