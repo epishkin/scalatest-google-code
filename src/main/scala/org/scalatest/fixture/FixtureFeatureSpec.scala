@@ -953,6 +953,9 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     fixture => f
   }
 
+  // I need this implicit because the funciton is passed to scenario as the 2nd parameter list, and
+  // I can't overload on that. I could if I took the ScenarioWord approach, but that has possibly a worse
+  // downside of people could just say scenario("...") and nothing else.
   /**
    * Implicitly converts a function that takes no parameters and results in <code>Any</code> to
    * a function from <code>Fixture</code> to <code>Any</code>, to enable no-arg tests to registered

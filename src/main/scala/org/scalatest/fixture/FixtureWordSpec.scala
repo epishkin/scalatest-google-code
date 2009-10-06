@@ -659,6 +659,26 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
 
     /**
+     * Supports tagged test registration, for tests that don't take a fixture.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" taggedAs(SlowTest) in { () => ... }
+     *                                       ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
+    def in(testFun: () => Any) {
+      registerTestToRun(specText, tags, new NoArgTestWrapper(testFun))
+    }
+
+    /**
      * Supports registration of tagged, pending tests.
      *
      * <p>
@@ -697,6 +717,26 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(specText, tags, testFun)
     }
+
+    /**
+     * Supports registration of tagged, ignored tests that take no fixture parameter.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" taggedAs(SlowTest) ignore { () => ... }
+     *                                       ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
+    def ignore(testFun: () => Any) {
+      registerTestToIgnore(specText, tags, new NoArgTestWrapper(testFun))
+    }
   }
 
   /**
@@ -724,7 +764,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      *
      * <pre>
-     * "complain on peek" in { ... }
+     * "complain on peek" in { fixture => ... }
      *                    ^
      * </pre>
      *
@@ -734,6 +774,26 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      */
     def in(testFun: FixtureParam => Any) {
       registerTestToRun(string, List(), testFun)
+    }
+
+    /**
+     * Supports registration of tests that take no fixture.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" in { () => ... }
+     *                    ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
+    def in(testFun: () => Any) {
+      registerTestToRun(string, List(), new NoArgTestWrapper(testFun))
     }
 
     /**
@@ -774,6 +834,27 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      */
     def ignore(testFun: FixtureParam => Any) {
       registerTestToIgnore(string, List(), testFun)
+    }
+
+    /**
+     * Supports registration of ignored tests that take no fixture.
+     *
+     * <p>
+     * For example, this method supports syntax such as the following:
+     * </p>
+     *
+     * <pre>
+     * "complain on peek" ignore { () => ... }
+     *                    ^
+     * </pre>
+     *
+     * <p>
+     * For more information and examples of this method's use, see the <a href="WordSpec.html">main documentation</a> for trait <code>WordSpec</code>.
+     * </p>
+     */
+    def ignore(testFun: () => Any) {
+      registerTestToIgnore(string, List(), new NoArgTestWrapper(testFun))
+    
     }
 
     /**
@@ -1375,11 +1456,11 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    */
   protected val behave = new BehaveWord
 
-  /**
+  /*
    * Implicitly converts a function that takes no parameters and results in <code>Any</code> to
    * a function from <code>Fixture</code> to <code>Any</code>, to enable no-arg tests to registered
    * by methods that require a test function that takes a <code>Fixture</code>.
-   */
   protected implicit def convertNoArgToFixtureFunction(fun: () => Any): (FixtureParam => Any) =
     new NoArgTestWrapper(fun)
+   */
 }
