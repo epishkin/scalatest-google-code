@@ -1684,7 +1684,7 @@ trait FeatureSpec extends Suite { thisSuite =>
   }
 
   /**
-   * Run zero to many of this <code>Spec</code>'s tests.
+   * Run zero to many of this <code>FeatureSpec</code>'s tests.
    *
    * <p>
    * This method takes a <code>testName</code> parameter that optionally specifies a test to invoke.

@@ -1438,9 +1438,7 @@ trait Spec extends Suite { thisSuite =>
   }
 
   /**
-   * <p>
    * Run zero to many of this <code>Spec</code>'s tests.
-   * </p>
    *
    * <p>
    * This method takes a <code>testName</code> parameter that optionally specifies a test to invoke.
