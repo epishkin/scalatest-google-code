@@ -238,7 +238,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
  * @author Josh Cough
  * @author Bill Venners
  */
-class Conductor {
+final class Conductor {
 
   /**
    * The metronome used to coordinate between threads.
