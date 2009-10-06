@@ -183,7 +183,7 @@ import org.scalatest._
  *
  * @author Bill Venners
  */
-case class MatchResult(
+final case class MatchResult(
   matches: Boolean,
   failureMessage: String,
   negatedFailureMessage: String,

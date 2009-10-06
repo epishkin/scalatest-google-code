@@ -37,7 +37,7 @@ import org.scalatest._
  *
  * @author Bill Venners
  */
-case class HavePropertyMatchResult[P](
+final case class HavePropertyMatchResult[P](
   val matches: Boolean,
   val propertyName: String,
   val expectedValue: P,

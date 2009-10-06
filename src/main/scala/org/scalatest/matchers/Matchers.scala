@@ -201,7 +201,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class MatcherWrapper[T](leftMatcher: Matcher[T]) { matchersWrapper =>
+  final class MatcherWrapper[T](leftMatcher: Matcher[T]) { matchersWrapper =>
 
 // TODO: mention not short circuited, and the precendence is even between and and or
 
@@ -259,7 +259,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndHaveWord {
+    final class AndHaveWord {
 
       /**
        * This method enables the following syntax:
@@ -298,7 +298,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndContainWord {
+    final class AndContainWord {
 
       /**
        * This method enables the following syntax:
@@ -348,7 +348,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndBeWord {
+    final class AndBeWord {
 
       /**
        * This method enables the following syntax:
@@ -417,7 +417,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndFullyMatchWord {
+    final class AndFullyMatchWord {
 
       /**
        * This method enables the following syntax:
@@ -456,7 +456,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndIncludeWord {
+    final class AndIncludeWord {
 
       /**
        * This method enables the following syntax:
@@ -495,7 +495,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndStartWithWord {
+    final class AndStartWithWord {
 
       /**
        * This method enables the following syntax:
@@ -534,7 +534,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndEndWithWord {
+    final class AndEndWithWord {
 
       /**
        * This method enables the following syntax:
@@ -573,7 +573,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class AndNotWord {
+    final class AndNotWord {
 
       /**
        * This method enables the following syntax:
@@ -1010,7 +1010,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrHaveWord {
+    final class OrHaveWord {
 
       /**
        * This method enables the following syntax:
@@ -1049,7 +1049,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrContainWord {
+    final class OrContainWord {
 
       /**
        * This method enables the following syntax:
@@ -1099,7 +1099,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrBeWord {
+    final class OrBeWord {
 
       /**
        * This method enables the following syntax:
@@ -1168,7 +1168,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrFullyMatchWord {
+    final class OrFullyMatchWord {
 
       /**
        * This method enables the following syntax:
@@ -1207,7 +1207,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrIncludeWord {
+    final class OrIncludeWord {
 
       /**
        * This method enables the following syntax:
@@ -1246,7 +1246,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrStartWithWord {
+    final class OrStartWithWord {
 
       /**
        * This method enables the following syntax:
@@ -1285,7 +1285,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrEndWithWord {
+    final class OrEndWithWord {
 
       /**
        * This method enables the following syntax:
@@ -1324,7 +1324,7 @@ trait Matchers extends Assertions { matchers =>
      *
      * @author Bill Venners
      */
-    class OrNotWord {
+    final class OrNotWord {
 
       /**
        * This method enables the following syntax:
@@ -1734,7 +1734,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) {
+  final class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) {
   // class ResultOfContainWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean) extends ResultOfContainWordForIterable[Tuple2[K, V]](left, shouldBeTrue) {
 
     /**
@@ -1780,7 +1780,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfContainWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean) {
+  final class ResultOfContainWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
@@ -1921,7 +1921,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ContainWord {
+  final class ContainWord {
 
     /**
      * This method enables the following syntax:
@@ -2023,7 +2023,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class IncludeWord {
+  final class IncludeWord {
 
     /**
      * This method enables the following syntax:
@@ -2080,7 +2080,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class StartWithWord {
+  final class StartWithWord {
 
     /**
      * This method enables the following syntax:
@@ -2137,7 +2137,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class EndWithWord {
+  final class EndWithWord {
 
     /**
      * This method enables the following syntax:
@@ -2196,7 +2196,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class FullyMatchWord {
+  final class FullyMatchWord {
 
     /**
      * This method enables the following syntax:
@@ -2484,7 +2484,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class HavePropertyMatcherGenerator(symbol: Symbol) {
+  final class HavePropertyMatcherGenerator(symbol: Symbol) {
 
     /**
      * This method enables the following syntax:
@@ -2581,7 +2581,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class HaveWord {
+  final class HaveWord {
 
     // TODO: How about returning a Matcher[Gazornimplatz] and then providing implicit conversion
     // methods from Matcher[Gazornimplatz] to Matcher[Seq], Matcher[String], Matcher[java.util.List], and
@@ -4179,7 +4179,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class RegexWord {
+  final class RegexWord {
 
     /**
      * This method enables the following syntax: 
@@ -4472,7 +4472,7 @@ trait Matchers extends Assertions { matchers =>
    * @author Bill Venners
    */
 /*
-  class TreatedAsOrderedWrapper {
+  final class TreatedAsOrderedWrapper {
     def <[T <% Ordered[T]](right: T): Matcher[T] =
       new Matcher[T] {
         def apply(left: T) =
@@ -4543,7 +4543,7 @@ trait Matchers extends Assertions { matchers =>
    * 
    * @author Bill Venners
    */
-  class BeWord {
+  final class BeWord {
 
 
     /**
@@ -5081,7 +5081,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class NotWord {
+  final class NotWord {
 
     /**
      * This method enables the following syntax, where <code>tempFile</code>, for example, refers to a <code>java.io.File</code>
@@ -5995,7 +5995,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class LengthWord {
+  final class LengthWord {
 
     /**
      * This method enables the following syntax: 
@@ -6077,7 +6077,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class SizeWord {
+  final class SizeWord {
 
     /**
      * This method enables the following syntax: 
@@ -6122,7 +6122,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class KeyWord {
+  final class KeyWord {
 
     /**
      * This method enables the following syntax: 
@@ -6159,7 +6159,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ValueWord {
+  final class ValueWord {
 
     /**
      * This method enables the following syntax: 
@@ -6204,7 +6204,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class AWord {
+  final class AWord {
 
     /**
      * This method enables the following syntax: 
@@ -6260,7 +6260,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class AnWord {
+  final class AnWord {
 
     /**
      * This method enables the following syntax:
@@ -6308,7 +6308,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class TheSameInstanceAsPhrase {
+  final class TheSameInstanceAsPhrase {
 
     /**
      * This method enables the following syntax:
@@ -6357,7 +6357,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  case class DoubleTolerance(right: Double, tolerance: Double)
+  final case class DoubleTolerance(right: Double, tolerance: Double)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6365,7 +6365,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class DoublePlusOrMinusWrapper(right: Double) {
+  final class DoublePlusOrMinusWrapper(right: Double) {
 
     /**
      * This method enables the following syntax:
@@ -6394,7 +6394,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  case class FloatTolerance(right: Float, tolerance: Float)
+  final case class FloatTolerance(right: Float, tolerance: Float)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6402,7 +6402,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class FloatPlusOrMinusWrapper(right: Float) {
+  final class FloatPlusOrMinusWrapper(right: Float) {
 
     /**
      * This method enables the following syntax:
@@ -6431,7 +6431,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  case class LongTolerance(right: Long, tolerance: Long)
+  final case class LongTolerance(right: Long, tolerance: Long)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6439,7 +6439,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class LongPlusOrMinusWrapper(right: Long) {
+  final class LongPlusOrMinusWrapper(right: Long) {
 
     /**
      * This method enables the following syntax:
@@ -6468,7 +6468,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  case class IntTolerance(right: Int, tolerance: Int)
+  final case class IntTolerance(right: Int, tolerance: Int)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6476,7 +6476,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class IntPlusOrMinusWrapper(right: Int) {
+  final class IntPlusOrMinusWrapper(right: Int) {
 
     /**
      * This method enables the following syntax:
@@ -6505,7 +6505,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  case class ShortTolerance(right: Short, tolerance: Short)
+  final case class ShortTolerance(right: Short, tolerance: Short)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6513,7 +6513,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ShortPlusOrMinusWrapper(right: Short) {
+  final class ShortPlusOrMinusWrapper(right: Short) {
 
     /**
      * This method enables the following syntax:
@@ -6542,7 +6542,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  case class ByteTolerance(right: Byte, tolerance: Byte)
+  final case class ByteTolerance(right: Byte, tolerance: Byte)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6550,7 +6550,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class BytePlusOrMinusWrapper(right: Byte) {
+  final class BytePlusOrMinusWrapper(right: Byte) {
 
     /**
      * This method enables the following syntax:
