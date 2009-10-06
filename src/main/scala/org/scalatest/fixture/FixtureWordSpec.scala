@@ -636,7 +636,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    *
    * @author Bill Venners
    */
-  protected final class StringTaggedAs(specText: String, tags: List[Tag]) {
+  protected final class ResultOfTaggedAsInvocationOnString(specText: String, tags: List[Tag]) {
 
     /**
      * Supports tagged test registration.
@@ -794,7 +794,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      */
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      new StringTaggedAs(string, tagList)
+      new ResultOfTaggedAsInvocationOnString(string, tagList)
     }
 
     /**
