@@ -26,7 +26,7 @@ import org.hamcrest.Matcher
  * <code>JMockCycle</code>'s <code>expecting</code> method of passes an instance of this class
  * to the function passed into <code>expectations</code>. Because <code>JMockExpectations</code>
  * extends <code>org.jmock.Expectations</code>, all of the <code>Expectations</code> methods are
- * available to be invoked on instances of this class,. in addition to
+ * available to be invoked on instances of this class, in addition to
  * several overloaded <code>withArg</code> methods defined in this class. These <code>withArg</code> methods simply
  * invoke corresponding <code>with</code> methods on <code>this</code>. Because <code>with</code> is
  * a keyword in Scala, to invoke these directly you must surround them in back ticks, like this:
@@ -48,7 +48,7 @@ import org.hamcrest.Matcher
  *
  * @author Bill Venners
  */
-class JMockExpectations extends Expectations {
+final class JMockExpectations extends Expectations {
 
   /**
    * Invokes <code>with</code> on this instance, passing in the passed value.

@@ -185,7 +185,7 @@ import scala.reflect.Manifest
  *
  * @author Bill Venners
  */
-class JMockCycle {
+final class JMockCycle {
 
   private val context = new Mockery
   context.setImposteriser(ClassImposteriser.INSTANCE)
