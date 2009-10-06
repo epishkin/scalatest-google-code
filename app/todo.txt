@@ -1,7 +1,6 @@
 
 - add the other features in the Runner doc that were added
 - email George and ask whether there's a way to specify -j things via the Ant task
-- probably don't need the implicit for no-arg tests in FixtureWordSpec. Can just put the overloaded in methods in there. (2 hrs)
 - reproduce 2.8 bug and put in trac (do I remember what this was?)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
