@@ -636,7 +636,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    *
    * @author Bill Venners
    */
-  protected class StringTaggedAs(specText: String, tags: List[Tag]) {
+  protected final class StringTaggedAs(specText: String, tags: List[Tag]) {
 
     /**
      * Supports tagged test registration.
@@ -699,14 +699,6 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     }
   }
 
- /* TODO: Delete this if it isn't needed
-  protected class IgnoreTestStringTaggedAs(specText: String, tags: List[Tag]) {
-    def in(testFun: FixtureParam => Any) {
-      registerTestToIgnore(specText, tags, testFun)
-    }
-  }
-*/
-
   /**
    * A class that via an implicit conversion (named <code>convertToWordSpecStringWrapper</code>) enables
    * methods <code>when</code>, <code>that</code>, <code>in</code>, <code>is</code>, <code>taggedAs</code>
@@ -722,7 +714,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    *
    * @author Bill Venners
    */
-  protected class WordSpecStringWrapper(string: String) {
+  protected final class WordSpecStringWrapper(string: String) {
 
     /**
      * Supports test registration.
@@ -937,7 +929,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
    * </pre>
    */
-  protected class AfterWord(text: String) {
+  protected final class AfterWord(text: String) {
 
     /**
      * Supports the use of <em>after words</em>.

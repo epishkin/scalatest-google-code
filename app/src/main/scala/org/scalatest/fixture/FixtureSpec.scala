@@ -475,7 +475,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * For more information and examples, see the <a href="../Spec.html">main documentation for <code>Spec</code></a>.
    * </p>
    */
-  protected class ItWord {
+  protected final class ItWord {
 
     /**
      * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
