@@ -74,7 +74,7 @@ trait PrivateMethodTester {
    * @param methodName a <code>Symbol</code> representing the name of the private method to invoke
    * @throws NullPointerException if <code>methodName</code> is <code>null</code>
    */
-  class PrivateMethod[T] private (methodName: Symbol) {
+  final class PrivateMethod[T] private (methodName: Symbol) {
 
     if (methodName == null)
       throw new NullPointerException("methodName was null")
@@ -116,7 +116,7 @@ trait PrivateMethodTester {
    * @param args zero to many arguments to pass to the private method when invoked
    * @throws NullPointerException if <code>methodName</code> is <code>null</code>
    */
-  class Invocation[T](val methodName: Symbol, val args: Any*) {
+  final class Invocation[T](val methodName: Symbol, val args: Any*) {
     if (methodName == null)
       throw new NullPointerException
   }
@@ -124,7 +124,7 @@ trait PrivateMethodTester {
   /**
    * Class used via an implicit conversion to enable private methods to be tested.
    */
-  class Invoker(target: AnyRef) {
+  final class Invoker(target: AnyRef) {
 
     if (target == null)
       throw new NullPointerException
