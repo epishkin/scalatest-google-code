@@ -101,6 +101,8 @@ import org.scalatest._
  */
 trait ShouldVerb {
 
+  // This can't be final or abstract, because it is instantiated directly by the implicit conversion, and
+  // extended by something in ShouldMatchers.
   /**
    * This class supports the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
    * and <code>FixtureWordSpec</code>.

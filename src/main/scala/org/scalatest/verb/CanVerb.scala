@@ -78,6 +78,7 @@ import org.scalatest._
  */
 trait CanVerb {
 
+  // This one can be final, because it isn't extended by anything in the matchers DSL.
   /**
    * This class supports the syntax of <code>FlatSpec</code>, <code>WordSpec</code>, <code>FixtureFlatSpec</code>,
    * and <code>FixtureWordSpec</code>.
@@ -89,7 +90,7 @@ trait CanVerb {
    *
    * @author Bill Venners
    */
-  class StringCanWrapperForVerb(left: String) {
+  final class StringCanWrapperForVerb(left: String) {
 
     /**
      * Supports test registration in <code>FlatSpec</code> and <code>FixtureFlatSpec</code>.

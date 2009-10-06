@@ -220,7 +220,7 @@ trait Assertions {
    *
    * @author Bill Venners
    */
-  class Equalizer(left: Any) {
+  final class Equalizer(left: Any) {
 
     /**
      * The <code>===</code> operation compares this <code>Equalizer</code>'s <code>left</code> value (passed

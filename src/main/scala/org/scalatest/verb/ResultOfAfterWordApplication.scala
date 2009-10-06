@@ -29,5 +29,5 @@ import org.scalatest._
  * <a href="../WordSpec.html#AfterWords">main documentation</code></a> for trait <code>WordSpec</code>.
  * </p>
  */
-class ResultOfAfterWordApplication(val text: String, val f: () => Unit)
+final class ResultOfAfterWordApplication(val text: String, val f: () => Unit)
 
