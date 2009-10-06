@@ -15,7 +15,6 @@
  */
 package org.scalatest
 
-
 import java.lang.reflect.{InvocationTargetException, Method, Modifier}
 
 /**
@@ -163,10 +162,27 @@ trait PrivateMethodTester {
           if (args.length == paramTypes.length) {
             val zipped = args.toList zip paramTypes.toList
   
+            // If arg.asInstanceOf[AnyRef] has class java.lang.Integer, this needs to match the paramType Class instance for int
+
+            def argMatchesParamType(arg: Any, paramType: Class[_]) = {
+              val anyRefArg = arg.asInstanceOf[AnyRef]
+              paramType match {
+                case java.lang.Long.TYPE => anyRefArg.getClass == classOf[java.lang.Long]
+                case java.lang.Integer.TYPE => anyRefArg.getClass == classOf[java.lang.Integer]
+                case java.lang.Short.TYPE => anyRefArg.getClass == classOf[java.lang.Short]
+                case java.lang.Byte.TYPE => anyRefArg.getClass == classOf[java.lang.Byte]
+                case java.lang.Character.TYPE => anyRefArg.getClass == classOf[java.lang.Character]
+                case java.lang.Double.TYPE => anyRefArg.getClass == classOf[java.lang.Double]
+                case java.lang.Float.TYPE => anyRefArg.getClass == classOf[java.lang.Float]
+                case java.lang.Boolean.TYPE => anyRefArg.getClass == classOf[java.lang.Boolean]
+                case _ => paramType.isAssignableFrom(anyRefArg.getClass)
+              }
+            }
+
             // The args classes need only be assignable to the parameter type. So therefore the parameter type
             // must be assignable *from* the corresponding arg class type.
             val invalidArgs =
-              for ((arg, paramType) <- zipped if !paramType.isAssignableFrom(arg.asInstanceOf[AnyRef].getClass)) yield arg
+              for ((arg, paramType) <- zipped if !argMatchesParamType(arg, paramType)) yield arg
             invalidArgs.length == 0
           }
           else false

@@ -34,7 +34,7 @@ import org.scalatest._
  *
  * @author Bill Venners
  */
-case class BePropertyMatchResult(
+final case class BePropertyMatchResult(
   val matches: Boolean, // true if the Boolean property was true
   val propertyName: String
 )
