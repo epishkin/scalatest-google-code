@@ -48,7 +48,7 @@ import org.testng.TestListenerAdapter
  *
  * @author Josh Cough
  */
-class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
+final class TestNGWrapperSuite(xmlSuiteFilenames: List[String]) extends TestNGSuite {
 
 // Probably mention FileNotFoundException here
 // If any files contained in the property cannot be found, a FileNotFoundException will be thrown.
