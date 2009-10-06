@@ -1314,7 +1314,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * for trait <code>FlatSpec</code>.
    * </p>
    */
-  protected class BehaviorWord {
+  protected final class BehaviorWord {
 
     /**
      * Supports the registration of a &#8220;subject&#8221; being specified and tested via the
@@ -1406,7 +1406,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * the <a href="FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
    * </p>
    */
-  protected class ItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+  protected final class ItVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
 
     /**
      * Supports the registration of tagged tests in a <code>FlatSpec</code>.
@@ -1518,7 +1518,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * for trait <code>FlatSpec</code>.
    * </p>
    */
-  protected class ItVerbString(verb: String, name: String) {
+  protected final class ItVerbString(verb: String, name: String) {
 
     /**
      * Supports the registration of tests in a <code>FlatSpec</code>.
@@ -1632,7 +1632,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * for this trait.
    * </p>
    */
-  protected class ItWord {
+  protected final class ItWord {
 
     /**
      * Supports the registration of tests with <code>should</code> in a <code>FlatSpec</code>.
@@ -1811,7 +1811,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * the <a href="FlatSpec.html#TaggingTests">Tagging tests section</a> in the main documentation for trait <code>FlatSpec</code>.
    * </p>
    */
-  protected class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
+  protected final class IgnoreVerbStringTaggedAs(verb: String, name: String, tags: List[Tag]) {
 
     /**
      * Supports the registration of ignored, tagged tests in a <code>FlatSpec</code>.
@@ -1909,7 +1909,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * in the main documentation for trait <code>FlatSpec</code>.
    * </p>
    */
-  protected class IgnoreVerbString(verb: String, name: String) {
+  protected final class IgnoreVerbString(verb: String, name: String) {
 
     /**
      * Supports the registration of ignored tests in a <code>FlatSpec</code>.
@@ -2004,7 +2004,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * in the main documentation for this trait.
    * </p>
    */
-  protected class IgnoreWord {
+  protected final class IgnoreWord {
 
     /**
      * Supports the registration of ignored tests with <code>should</code> in a <code>FlatSpec</code>.
@@ -2122,7 +2122,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * @author Bill Venners
    */
-  protected class InAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) {
+  protected final class InAndIgnoreMethods(resultOfStringPassedToVerb: ResultOfStringPassedToVerb) {
 
     import resultOfStringPassedToVerb.verb
     import resultOfStringPassedToVerb.rest
@@ -2217,7 +2217,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * @author Bill Venners
    */
-  protected class InAndIgnoreMethodsAfterTaggedAs(resultOfTaggedAsInvocation: ResultOfTaggedAsInvocation) {
+  protected final class InAndIgnoreMethodsAfterTaggedAs(resultOfTaggedAsInvocation: ResultOfTaggedAsInvocation) {
 
     import resultOfTaggedAsInvocation.verb
     import resultOfTaggedAsInvocation.rest
