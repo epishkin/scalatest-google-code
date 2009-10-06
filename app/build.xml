@@ -421,7 +421,7 @@
     </target>
 
     <target name="bvtest" depends="compile-main,compile-tests,copyprops,taskdefscalatest">
-        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+        <scalatest runpath="${build.tests}:${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
 
@@ -470,7 +470,7 @@
 -->
         </scalatest>
 <!--
-        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+        <scalatest runpath="${build.tests}:${classes}" haltonfailure="true">
             <reporter type="stdout" />
             <suite classname="org.scalatest.CatchReporterSuite" />
         </scalatest>
@@ -483,7 +483,7 @@
         <fail message="class not defined (use -Dclass=classname)"
               unless="class" />
 
-        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+        <scalatest runpath="${build.tests}:${classes}" haltonfailure="true">
             <!--<reporter type="graphic"/>-->
             <reporter type="stdout" config="ND"/>
             <suite classname="${class}"/>
@@ -496,7 +496,7 @@
         <fail message="class not defined (use -Dclass=classname)"
               unless="class" />
 
-        <scalatest runpath="${build.examples} ${classes}" haltonfailure="true">
+        <scalatest runpath="${build.examples}:${classes}" haltonfailure="true">
 <!--
             <property name="tempFileName" value="TempFile.txt"/>
 -->
@@ -571,7 +571,7 @@
 
 
     <target name="ant-task-test" depends="compile,taskdefscalatest">
-        <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
+        <scalatest runpath="${build.tests}:${classes}" haltonfailure="true">
             <runpath>
                 <pathelement location="dist" />
             </runpath>
