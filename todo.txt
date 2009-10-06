@@ -1,5 +1,4 @@
 
-- add scaladoc to StackDepth stuff. (15 min)
 - fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored. (15 min)
 - check to make sure that immutable objects are final so can't be subclassed, such as in or.scalatest.events (10 min)
 - add the other features in the Runner doc that were added
