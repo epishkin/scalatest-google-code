@@ -1,20 +1,18 @@
 
-
-- bug: private method tester doesn't find the method if any of its args are primitive types
-- rename WordSpec's StringTaggedAs to ResultOfTaggedAsInvocation or something similar. ResultOfTaggedAsInvocationOnString. Right now it is inconsistent.
-- probably don't need the implicit for no-arg tests in FixtureWordSpec. Can just put the overloaded in methods in there.
+- add scaladoc to StackDepth stuff. (15 min)
+- fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored. (15 min)
+- check to make sure that immutable objects are final so can't be subclassed, such as in or.scalatest.events (10 min)
+- add the other features in the Runner doc that were added
+- email George and ask whether there's a way to specify -j things via the Ant task
+- rename WordSpec's StringTaggedAs to ResultOfTaggedAsInvocation or something similar. ResultOfTaggedAsInvocationOnString. Right now it is inconsistent. (15 min)
+- bug: private method tester doesn't find the method if any of its args are primitive types (1 hr)
+- probably don't need the implicit for no-arg tests in FixtureWordSpec. Can just put the overloaded in methods in there. (2 hrs)
   actually, i'm wondering why i'd need it on FixtureFunSuite and FixtureFeatureSpec either. Now that I'm doing () => instead
   of by-names, I can just overload and get rid of the implicit.
-- fix docs. runTest is responsible for TestSucceeded/Failed/Pending. runTests is responsible for TestIgnored.
 - reproduce 2.8 bug and put in trac (do I remember what this was?)
 - finish writing tests for new core traits
 - make 2nd pass at writing main docs of core traits
-- check to make sure that immutable objects are final so can't be subclassed, such as in or.scalatest.events
 - seemed like wordspec was acting wierd when running with JUnit in IntelliJ, even though FunSuite looked fine. Investigate.
-- add scaladoc to StackDepth stuff.
-- bring in George's branch for ant task in Scala
-- polish scaladoc for ant task
-- add that \ " thing in -p in Runner's doc
 
 Maven howto: http://jpz-log.info/archives/2009/09/29/scalatest-in-maven/
 
