@@ -2795,7 +2795,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
+  sealed class ResultOfHaveWordForCollection[T](left: Collection[T], shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -2822,7 +2822,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
+  sealed class ResultOfHaveWordForJavaCollection[T](left: java.util.Collection[T], shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -2849,7 +2849,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForJavaMap(left: java.util.Map[_, _], shouldBeTrue: Boolean) {
+  final class ResultOfHaveWordForJavaMap(left: java.util.Map[_, _], shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -2876,7 +2876,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
+  final class ResultOfHaveWordForSeq[T](left: Seq[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForCollection[T](left, shouldBeTrue) {
 
     /**
      * This method enables the following syntax:
@@ -2903,7 +2903,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForIterable[E, T <: Iterable[E]](left: T, shouldBeTrue: Boolean)
+  sealed class ResultOfNotWordForIterable[E, T <: Iterable[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
 
@@ -2935,7 +2935,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForCollection[E, T <: Collection[E]](left: T, shouldBeTrue: Boolean)
+  sealed class ResultOfNotWordForCollection[E, T <: Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForIterable[E, T](left, shouldBeTrue) {
 
     /**
@@ -2966,7 +2966,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForJavaCollection[E, T <: java.util.Collection[E]](left: T, shouldBeTrue: Boolean)
+  sealed class ResultOfNotWordForJavaCollection[E, T <: java.util.Collection[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     /**
@@ -3018,7 +3018,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
+  final class ResultOfNotWordForMap[K, V](left: scala.collection.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[(K, V), scala.collection.Map[K, V]](left, shouldBeTrue) {
 
 
@@ -3071,7 +3071,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean)
+  final class ResultOfNotWordForJavaMap[K, V](left: java.util.Map[K, V], shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     /**
@@ -3123,7 +3123,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForSeq[E, T <: Seq[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForCollection[E, T](left, shouldBeTrue) {
 
     /**
@@ -3155,7 +3155,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForArray[E](left: Array[E], shouldBeTrue: Boolean)
+  final class ResultOfNotWordForArray[E](left: Array[E], shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
     /**
@@ -3228,7 +3228,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
+  final class ResultOfHaveWordForJavaList[T](left: java.util.List[T], shouldBeTrue: Boolean) extends ResultOfHaveWordForJavaCollection[T](left, shouldBeTrue) {
 
     /**
      * This method enables the following syntax:
@@ -3260,7 +3260,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForJavaList[E, T <: java.util.List[E]](left: T, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForJavaList[E, T <: java.util.List[E]](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWordForJavaCollection[E, T](left, shouldBeTrue) {
 
     /**
@@ -3296,7 +3296,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfBeWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean) {
+  final class ResultOfBeWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -3402,7 +3402,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
+  sealed class ResultOfNotWord[T](left: T, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -3570,7 +3570,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
+  sealed class ResultOfNotWordForAnyRef[T <: AnyRef](left: T, shouldBeTrue: Boolean)
       extends ResultOfNotWord[T](left, shouldBeTrue) {
 
     /**
@@ -3803,7 +3803,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForString(left: String, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef[String](left, shouldBeTrue) {
 
     /**
@@ -3987,7 +3987,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForDouble(left: Double, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForDouble(left: Double, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Double](left, shouldBeTrue) {
 
     /**
@@ -4019,7 +4019,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForFloat(left: Float, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForFloat(left: Float, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Float](left, shouldBeTrue) {
 
     /**
@@ -4051,7 +4051,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForLong(left: Long, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Long](left, shouldBeTrue) {
 
     /**
@@ -4083,7 +4083,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForInt(left: Int, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForInt(left: Int, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Int](left, shouldBeTrue) {
 
     /**
@@ -4115,7 +4115,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForShort(left: Short, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForShort(left: Short, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Short](left, shouldBeTrue) {
 
     /**
@@ -4147,7 +4147,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForByte(left: Byte, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForByte(left: Byte, shouldBeTrue: Boolean)
       extends ResultOfNotWord[Byte](left, shouldBeTrue) {
 
     /**
@@ -4217,7 +4217,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfRegexWordApplication(val regex: Regex) {
+  final class ResultOfRegexWordApplication(val regex: Regex) {
 
     /**
      * This auxiliary constructor enables the following syntax (with a passed <code>java.lang.String</code>): 
@@ -4236,7 +4236,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
+  final class ResultOfHaveWordForString(left: String, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax: 
@@ -4264,7 +4264,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
+  final class ResultOfIncludeWordForString(left: String, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax: 
@@ -4302,7 +4302,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
+  final class ResultOfStartWithWordForString(left: String, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax: 
@@ -4340,7 +4340,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
+  final class ResultOfEndWithWordForString(left: String, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax: 
@@ -4379,7 +4379,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
+  final class ResultOfFullyMatchWordForString(left: String, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax: 
@@ -5943,7 +5943,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[AnyRef, Long] {
+  final class ResultOfLengthWordApplication(val expectedLength: Long) extends HavePropertyMatcher[AnyRef, Long] {
 
     /**
      * This method enables the following syntax: 
@@ -6024,7 +6024,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfSizeWordApplication(val expectedSize: Long) extends HavePropertyMatcher[AnyRef, Long] {
+  final class ResultOfSizeWordApplication(val expectedSize: Long) extends HavePropertyMatcher[AnyRef, Long] {
 
     /**
      * This method enables the following syntax: 
@@ -6106,7 +6106,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfElementWordApplication[T](val expectedElement: T)
+  final class ResultOfElementWordApplication[T](val expectedElement: T)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6114,7 +6114,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfKeyWordApplication[T](val expectedKey: T)
+  final class ResultOfKeyWordApplication[T](val expectedKey: T)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6151,7 +6151,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfValueWordApplication[T](val expectedValue: T)
+  final class ResultOfValueWordApplication[T](val expectedValue: T)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6188,7 +6188,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfAWordToSymbolApplication(val symbol: Symbol)
+  final class ResultOfAWordToSymbolApplication(val symbol: Symbol)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6196,7 +6196,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfAWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
+  final class ResultOfAWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6244,7 +6244,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfAnWordToSymbolApplication(val symbol: Symbol)
+  final class ResultOfAnWordToSymbolApplication(val symbol: Symbol)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6252,7 +6252,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfAnWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
+  final class ResultOfAnWordToBePropertyMatcherApplication[T](val bePropertyMatcher: BePropertyMatcher[T])
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6300,7 +6300,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfTheSameInstanceAsApplication(val right: AnyRef)
+  final class ResultOfTheSameInstanceAsApplication(val right: AnyRef)
 
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
@@ -6579,7 +6579,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForSizeWrapper[A <: AnyRef <% SizeWrapper](left: A, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForSizeWrapper[A <: AnyRef <% SizeWrapper](left: A, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
 /*  I just added this whole thing in here for completeness when doing SizeShouldWrapper. Write some tests to prove it is needed.
@@ -6605,7 +6605,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfNotWordForLengthWrapper[A <: AnyRef <% LengthWrapper](left: A, shouldBeTrue: Boolean)
+  final class ResultOfNotWordForLengthWrapper[A <: AnyRef <% LengthWrapper](left: A, shouldBeTrue: Boolean)
       extends ResultOfNotWordForAnyRef(left, shouldBeTrue) {
 
 /* TODO What's going on? Why can I drop this and still get a compile
@@ -6631,7 +6631,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
+  final class ResultOfHaveWordForLengthWrapper[A <% LengthWrapper](left: A, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -6690,7 +6690,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
+  final class ResultOfHaveWordForSizeWrapper[A <% SizeWrapper](left: A, shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -6749,7 +6749,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfLessThanComparison[T <% Ordered[T]](val right: T) {
+  final class ResultOfLessThanComparison[T <% Ordered[T]](val right: T) {
 
     /**
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
@@ -6778,7 +6778,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfGreaterThanComparison[T <% Ordered[T]](val right: T) {
+  final class ResultOfGreaterThanComparison[T <% Ordered[T]](val right: T) {
 
     /**
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
@@ -6807,7 +6807,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfLessThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+  final class ResultOfLessThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
 
     /**
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
@@ -6836,7 +6836,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfGreaterThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
+  final class ResultOfGreaterThanOrEqualToComparison[T <% Ordered[T]](val right: T) {
 
     /**
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
@@ -6865,7 +6865,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfTripleEqualsApplication(val right: Any) {
+  final class ResultOfTripleEqualsApplication(val right: Any) {
 
     /**
      * This method is invoked by <code>be</code> methods to which instances of this class are passed, which
@@ -6949,7 +6949,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfEvaluatingApplication(val fun: () => Any)
+  final class ResultOfEvaluatingApplication(val fun: () => Any)
 
   /**
    * This method enables syntax such as the following:
@@ -6968,7 +6968,7 @@ trait Matchers extends Assertions { matchers =>
    *
    * @author Bill Venners
    */
-  class ResultOfProduceInvocation[T](val clazz: Class[T])
+  final class ResultOfProduceInvocation[T](val clazz: Class[T])
 
   /**
    * This method enables the following syntax:
