@@ -2167,9 +2167,7 @@ one error found
   }
 
   /**
-   * <p>
-   * Run zero to many of this <code>Spec</code>'s tests.
-   * </p>
+   * Run zero to many of this <code>WordSpec</code>'s tests.
    *
    * <p>
    * This method takes a <code>testName</code> parameter that optionally specifies a test to invoke.

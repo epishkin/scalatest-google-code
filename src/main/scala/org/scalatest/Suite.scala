@@ -1516,6 +1516,15 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * This trait's implementation uses Java reflection to invoke on this object the test method identified by the passed <code>testName</code>.
    * </p>
    *
+   * <p>
+   * Implementations of this method are responsible for ensuring a <code>TestStarting</code> event
+   * is fired to the <code>Reporter</code> before executing any test, and either <code>TestSucceeded</code>,
+   * <code>TestFailed</code>, or <code>TestPending</code> after executing any nested
+   * <code>Suite</code>. (If a test is marked with the <code>org.scalatest.Ignore</code> tag, the
+   * <code>runTests</code> method is responsible for ensuring a <code>TestIgnored</code> event is fired and that
+   * this <code>runTest</code> method is not invoked for that ignored test.)
+   * </p>
+   *
    * @param testName the name of one test to run.
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
@@ -1654,11 +1663,9 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * </ul>
    *
    * <p>
-   * Implementations of this method are responsible for ensuring a <code>TestStarting</code> event
-   * is fired to the <code>Reporter</code> before executing any test, and either <code>TestSucceeded</code>,
-   * <code>TestFailed</code>, or <code>TestPending</code> after executing any nested
-   * <code>Suite</code>. If a test is marked with the <code>org.scalatest.Ignore</code> tag, implementations
-   * of this method are responsible for ensuring a <code>TestIgnored</code> event is fired.
+   * If a test is marked with the <code>org.scalatest.Ignore</code> tag, implementations
+   * of this method are responsible for ensuring a <code>TestIgnored</code> event is fired for that test
+   * and that <code>runTest</code> is not called for that test.
    * </p>
    *
    * @param testName an optional name of one test to run. If <code>None</code>, all relevant tests should be run.
