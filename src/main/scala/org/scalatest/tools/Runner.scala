@@ -94,11 +94,12 @@ import org.scalatest.junit.JUnitWrapperSuite
  * a double quote (<code>"</code>), a white-space-separated list of
  * paths and URLs, and a double quote. If specifying only one element in the runpath, you can leave off
  * the double quotes, which only serve to combine a white-space separated list of strings into one
- * command line argument. Here's an example:
+ * command line argument. If you have path elements that themselves have a space in them, you must
+ * place a backslash (\) in front of the space. Here's an example:
  * </p>
  *
  * <p>
- * <code>-p "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar"</code>
+ * <code>-p "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar target/class\ files"</code>
  * </p>
  *
  * <p>
