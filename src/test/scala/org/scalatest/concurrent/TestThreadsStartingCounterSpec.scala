@@ -15,8 +15,8 @@
  */
 package org.scalatest.concurrent
 
-import fixture.FixtureWordSpec
 import org.scalatest._
+import fixture.FixtureWordSpec
 import matchers.ShouldMatchers
 
 class TestThreadsStartingCounterSpec extends FixtureWordSpec with ShouldMatchers with ConductorFixture {
