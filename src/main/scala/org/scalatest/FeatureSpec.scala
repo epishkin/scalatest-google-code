@@ -125,7 +125,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new StackFeatureSpec).run()
+ * scala> (new StackFeatureSpec).execute()
  * </pre>
  *
  * <p>
@@ -782,7 +782,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new StackFeatureSpec).run()
+ * scala> (new StackFeatureSpec).execute()
  * Feature: A Stack is pushed and popped 
  *   Scenario: empty is invoked on an empty stack
  *     Given an empty stack 
@@ -1020,7 +1020,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticFeatureSpec).run()
+ * scala> (new ArithmeticFeatureSpec).execute()
  * </pre>
  *
  * <p>
@@ -1130,7 +1130,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticFeatureSpec).run()
+ * scala> (new ArithmeticFeatureSpec).execute()
  * Feature: Integer arithmetic 
  *   Scenario: addition
  *     Given two integers 
@@ -1194,7 +1194,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticFeatureSpec).run()
+ * scala> (new ArithmeticFeatureSpec).execute()
  * </pre>
  *
  * <p>

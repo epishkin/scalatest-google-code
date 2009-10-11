@@ -882,7 +882,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
@@ -930,7 +930,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
@@ -985,7 +985,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticSpec).run()
+ * scala> (new ArithmeticSpec).execute()
  * The Scala language 
  * - must add correctly
  *   + addition seems to work 
@@ -1033,7 +1033,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <pre>
- * scala> (new ArithmeticSpec).run()
+ * scala> (new ArithmeticSpec).execute()
  * The Scala language 
  * - must add correctly
  *   + Given two integers 
@@ -1092,7 +1092,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticSpec).run()
+ * scala> (new ArithmeticSpec).execute()
  * </pre>
  *
  * <p>
