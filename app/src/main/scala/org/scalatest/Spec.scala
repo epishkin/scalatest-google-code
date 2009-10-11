@@ -97,7 +97,7 @@ import verb.BehaveWord
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
@@ -820,7 +820,7 @@ import verb.BehaveWord
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
@@ -890,7 +890,7 @@ import verb.BehaveWord
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
