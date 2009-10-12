@@ -1,4 +1,6 @@
 
+- sheesh looks like testng has some problem. Expected test count is wrong for one. Also, was firing a lame info provided report on configuration success.
+  and it is printing out to the standard output. Is there a way to block that?
 - add the other features in the Runner doc that were added
 - email George and ask whether there's a way to specify -j things via the Ant task
 - reproduce 2.8 bug and put in trac (do I remember what this was?)
