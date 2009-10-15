@@ -92,7 +92,7 @@ import org.apache.tools.ant.taskdefs.Java
  * <ul>
  *   <li>  <code>graphic</code>          </li>
  *   <li>  <code>file</code>             </li>
- *   <li>  <code>xml</code>              </li>
+ *   <li>  <code>junitxml</code>         </li>
  *   <li>  <code>stdout</code>           </li>
  *   <li>  <code>stderr</code>           </li>
  *   <li>  <code>reporterclass</code>    </li>
@@ -100,7 +100,7 @@ import org.apache.tools.ant.taskdefs.Java
  *
  * <p>
  * Each may include a <code>config</code> attribute to specify the reporter configuration.
- * Types <code>file</code>, <code>xml</code> and <code>reporterclass</code> require additional attributes
+ * Types <code>file</code>, <code>junitxml</code> and <code>reporterclass</code> require additional attributes
  * <code>filename</code>, <code>directory</code>, and <code>classname</code>, respectively:
  * </p>
  *
@@ -108,7 +108,7 @@ import org.apache.tools.ant.taskdefs.Java
  *   &lt;scalatest&gt;
  *     &lt;reporter type="stdout"        config="FAB"/&gt;
  *     &lt;reporter type="file"          filename="test.out"/&gt;
- *     &lt;reporter type="xml"           directory="target"/&gt;
+ *     &lt;reporter type="junitxml"      directory="target"/&gt;
  *     &lt;reporter type="reporterclass" classname="my.ReporterClass"/&gt;
  * </pre>
  *
@@ -393,6 +393,7 @@ class ScalaTestAntTask extends Task {
         case "graphic"       => addReporterOption(args, reporter, "-g")
         case "file"          => addFileReporter(args, reporter)
         case "xml"           => addXmlReporter(args, reporter)
+        case "junitxml"      => addXmlReporter(args, reporter)
         case "html"          => addHtmlReporter(args, reporter)
         case "reporterclass" => addReporterClass(args, reporter)
 
@@ -447,6 +448,10 @@ class ScalaTestAntTask extends Task {
         "reporter type 'xml' requires 'directory' attribute")
 
     args += reporter.getDirectory
+
+    if (reporter.getType == "xml")
+      Console.err.println("WARNING: reporter type 'xml' is deprecated " +
+                        "- please use 'junitxml' instead")
   }
 
   //
