@@ -54,7 +54,7 @@ import org.junit.runner.Description
  * @author Jon-Anders Teigen
  * @author Colin Howe
  */
-class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.Runner {
+final class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.runner.Runner {
 
   private val canInstantiate = Suite.checkForPublicNoArgConstructor(suiteClass)
   require(canInstantiate, "Must pass an org.scalatest.Suite with a public no-arg constructor")

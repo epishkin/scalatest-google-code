@@ -28,7 +28,7 @@
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
     <property name="project.name" value="ScalaTest" />
-    <property name="release" value="1.0-SNAPSHOT" />
+    <property name="release" value="1.0.1-SNAPSHOT" />
     <property name="demo" value="${build}/demo" />
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
@@ -280,7 +280,7 @@
         <scalatest fork="true" runpath="${build.tests.jar}" parallel="true" haltonfailure="true">
             <jvmarg value="-XX:MaxPermSize=128m"/>
             <reporter type="graphic" />
-            <reporter type="xml" directory="target"/>
+            <reporter type="junitxml" directory="target"/>
             <reporter type="stdout" config="D"/>
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
@@ -421,7 +421,7 @@
     </target>
 
     <target name="bvtest" depends="compile-main,compile-tests,copyprops,taskdefscalatest">
-        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+        <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
             <reporter type="graphic"/>
             <reporter type="stdout" config="NF"/>
 
@@ -470,7 +470,7 @@
 -->
         </scalatest>
 <!--
-        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
+        <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
             <reporter type="stdout" />
             <suite classname="org.scalatest.CatchReporterSuite" />
         </scalatest>
@@ -483,8 +483,8 @@
         <fail message="class not defined (use -Dclass=classname)"
               unless="class" />
 
-        <scalatest runpath="${build.tests} ${classes}" haltonfailure="true">
-            <reporter type="graphic"/>
+        <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
+            <!--<reporter type="graphic"/>-->
             <reporter type="stdout" config="ND"/>
             <suite classname="${class}"/>
         </scalatest>
@@ -496,7 +496,7 @@
         <fail message="class not defined (use -Dclass=classname)"
               unless="class" />
 
-        <scalatest runpath="${build.examples} ${classes}" haltonfailure="true">
+        <scalatest runpath="${build.examples};${classes}" haltonfailure="true">
 <!--
             <property name="tempFileName" value="TempFile.txt"/>
 -->
@@ -597,7 +597,7 @@
     </target>
 
     <!--
-      - Deploy snapshot to remote repository.
+      - Deploy to remote repository.
       -
       - Requires username and password for repository to be defined in your
       - ~/.m2/settings.xml file, e.g.:
@@ -611,7 +611,7 @@
       -   </servers>
       - 
       -->
-    <target name="deploy-snapshot" depends="gencode,jar,jarsrc,doc">
+    <target name="deploy" depends="gencode,jar,jarsrc,doc">
         <path id="maven-ant-tasks.classpath"
               path="lib/maven-ant-tasks-2.0.10.jar" />
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml"

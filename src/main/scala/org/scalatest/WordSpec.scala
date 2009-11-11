@@ -145,7 +145,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  * 
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new StackSpec).execute()
  * A Stack (when empty) 
  * - should be empty 
  * - should complain on peek
@@ -279,7 +279,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ScalaTestGUISpec).run()
+ * scala> (new ScalaTestGUISpec).execute()
  * The ScalaTest GUI (when the user clicks on an event report in the list box) 
  * - should display a blue background in the clicked-on row in the list box
  * - should display the details for the event in the details area
@@ -1034,7 +1034,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new StackSpec).run()
+ * scala> (new StackSpec).execute()
  * </pre>
  *
  * <p>
@@ -1091,7 +1091,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticSpec).run()
+ * scala> (new ArithmeticSpec).execute()
  * The Scala language 
  * - should add correctly
  *   + addition seems to work 
@@ -1147,7 +1147,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticSpec).run()
+ * scala> (new ArithmeticSpec).execute()
  * The Scala language 
  * - should add correctly
  *   + Given two integers 
@@ -1208,7 +1208,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new ArithmeticSpec).run()
+ * scala> (new ArithmeticSpec).execute()
  * </pre>
  *
  * <p>
@@ -1556,7 +1556,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * @author Bill Venners
    */
-  protected class StringTaggedAs(specText: String, tags: List[Tag]) {
+  protected final class ResultOfTaggedAsInvocationOnString(specText: String, tags: List[Tag]) {
 
     /**
      * Supports tagged test registration.
@@ -1634,7 +1634,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    *
    * @author Bill Venners
    */
-  protected class WordSpecStringWrapper(string: String) {
+  protected final class WordSpecStringWrapper(string: String) {
 
     /**
      * Supports test registration.
@@ -1714,7 +1714,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      */
     def taggedAs(firstTestTag: Tag, otherTestTags: Tag*) = {
       val tagList = firstTestTag :: otherTestTags.toList
-      new StringTaggedAs(string, tagList)
+      new ResultOfTaggedAsInvocationOnString(string, tagList)
     }
 
     /**
@@ -1843,7 +1843,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * </p>
    *
    * <pre>
-   * scala> (new ScalaTestGUISpec).run()
+   * scala> (new ScalaTestGUISpec).execute()
    * The ScalaTest GUI (when the user clicks on an event report in the list box) 
    * - should display a blue background in the clicked-on row in the list box
    * - should display the details for the event in the details area
@@ -1851,7 +1851,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
    * </pre>
    */
-  protected class AfterWord(text: String) {
+  protected final class AfterWord(text: String) {
 
     /**
      * Supports the use of <em>after words</em>.
@@ -1906,7 +1906,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * </p>
    *
    * <pre>
-   * scala> (new ScalaTestGUISpec).run()
+   * scala> (new ScalaTestGUISpec).execute()
    * The ScalaTest GUI (when the user clicks on an event report in the list box) 
    * - should display a blue background in the clicked-on row in the list box
    * - should display the details for the event in the details area

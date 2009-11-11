@@ -47,7 +47,7 @@ import org.scalatest._
  * <a href="../FlatSpec.html#SharedTests"><code>FlatSpec</code></a>, or <a href="../WordSpec.html#SharedTests"><code>WordSpec</code></a>.
  * </p>
  */
-class BehaveWord {
+final class BehaveWord {
 
   /**
    * Supports the registration of shared tests.

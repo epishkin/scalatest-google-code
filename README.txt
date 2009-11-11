@@ -1,4 +1,4 @@
-ScalaTest 1.0-SNAPSHOT
+ScalaTest 1.0
 
 ScalaTest is a free, open-source testing toolkit for Scala and
 Java programmers.  Because different developers take different approaches to creating
@@ -13,7 +13,7 @@ GETTING STARTED
 
 To learn how to use ScalaTest, please
 open in your browser the scaladoc documentation in the
-/scalatest-1.0-SNAPSHOT/doc directory. Look first at the documentation for trait
+/scalatest-1.0/doc directory. Look first at the documentation for trait
 org.scalatest.Suite, which gives a decent intro. All the other types are
 documented as well, so you can hop around to learn more.
 org.scalatest.tools.Runner explains how to use the application. The
@@ -22,13 +22,13 @@ Ignore class is written in Java, and isn't currently shown in the Scaladoc.
 To try it out, you can use ScalaTest to run its own tests, i.e., the tests
 used to test ScalaTest itself. This command will run the GUI:
 
-scala -classpath scalatest-1.0-SNAPSHOT.jar org.scalatest.tools.Runner -p "scalatest-1.0-SNAPSHOT-tests.jar" -g -s org.scalatest.SuiteSuite
+scala -classpath scalatest-1.0.jar org.scalatest.tools.Runner -p "scalatest-1.0-tests.jar" -g -s org.scalatest.SuiteSuite
 
 This command will run and just print results to the standard output:
 
-scala -classpath scalatest-1.0-SNAPSHOT.jar org.scalatest.tools.Runner -p "scalatest-1.0-SNAPSHOT-tests.jar" -o -s org.scalatest.SuiteSuite
+scala -classpath scalatest-1.0.jar org.scalatest.tools.Runner -p "scalatest-1.0-tests.jar" -o -s org.scalatest.SuiteSuite
 
-ScalaTest 1.0-SNAPSHOT was tested with Scala version 2.7.3.final, so it is not
+ScalaTest 1.0 was tested with Scala version 2.7.5.final, so it is not
 guaranteed to work with earlier Scala versions.
 
 ABOUT SCALATEST
@@ -38,21 +38,21 @@ other contributors starting in late 2007.  ScalaTest, which is almost
 exclusively written in Scala, follows and improves upon the Java code
 and design of Artima SuiteRunner, a testing tool also written
 primarily by Bill Venners, starting in 2001. Over the years a few
-other people have contributed to SuiteRunner as
-well, including:
+other people contributed to SuiteRunner as well, including:
 
-Chris Daily
-Chua Chee Seng
-Frank Sommers
-John Mitchel
 Mark Brouwer
+Chua Chee Seng
+Chris Daily
 Matt Gerrans
+John Mitchel
+Frank Sommers
 
 Several people have helped with ScalaTest, including:
 
 Corey Haines
+Colin Howe
 Dianne Marsh
 Joel Neely
-Daniel Watson
 Jon-Anders Teigen
+Daniel Watson
 

@@ -415,45 +415,271 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <p>
- * In a <code>FunSuite</code>
- * there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause. If the duplicate test name problem shows up in a
- * <code>FunSuite</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
- * the same way you pass any other data needed by the shared tests, or just call <code>toString</code> on the shared fixture object.
- * Here's an example of how <code>StackBehaviors</code> might look for a <code>FunSuite</code>:
+ * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
+ * by different fixture objects.
+ * To accomplish this in a <code>FunSuite</code>, you first place shared tests in
+ * <em>behavior functions</em>. These behavior functions will be
+ * invoked during the construction phase of any <code>FunSuite</code> that uses them, so that the tests they contain will
+ * be registered as tests in that <code>FunSuite</code>.
+ * For example, given this stack class:
  * </p>
  *
  * <pre>
- * trait StackBehaviors { this: FunSuite =>
+ * import scala.collection.mutable.ListBuffer
  * 
- *   def nonEmptyStack(lastItemAdded: Int)(stack: Stack[Int]) {
+ * class Stack[T] {
+ *
+ *   val MAX = 10
+ *   private var buf = new ListBuffer[T]
+ *
+ *   def push(o: T) {
+ *     if (!full)
+ *       o +: buf
+ *     else
+ *       throw new IllegalStateException("can't push onto a full stack")
+ *   }
+ *
+ *   def pop(): T = {
+ *     if (!empty)
+ *       buf.remove(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *
+ *   def peek: T = {
+ *     if (!empty)
+ *       buf(0)
+ *     else
+ *       throw new IllegalStateException("can't pop an empty stack")
+ *   }
+ *
+ *   def full: Boolean = buf.size == MAX
+ *   def empty: Boolean = buf.size == 0
+ *   def size = buf.size
+ *
+ *   override def toString = buf.mkString("Stack(", ", ", ")")
+ * }
+ * </pre>
+ *
+ * <p>
+ * You may want to test the <code>Stack</code> class in different states: empty, full, with one item, with one item less than capacity,
+ * <em>etc</em>. You may find you have several tests that make sense any time the stack is non-empty. Thus you'd ideally want to run
+ * those same tests for three stack fixture objects: a full stack, a stack with a one item, and a stack with one item less than
+ * capacity. With shared tests, you can factor these tests out into a behavior function, into which you pass the
+ * stack fixture to use when running the tests. So in your <code>FunSuite</code> for stack, you'd invoke the
+ * behavior function three times, passing in each of the three stack fixtures so that the shared tests are run for all three fixtures.
+ * </p>
+ *
+ * <p>
+ * You can define a behavior function that encapsulates these shared tests inside the <code>FunSuite</code> that uses them. If they are shared
+ * between different <code>FunSuite</code>s, however, you could also define them in a separate trait that is mixed into
+ * each <code>FunSuite</code> that uses them.
+ * <a name="StackBehaviors">For</a> example, here the <code>nonEmptyStack</code> behavior function (in this case, a
+ * behavior <em>method</em>) is defined in a trait along with another
+ * method containing shared tests for non-full stacks:
+ * </p>
  * 
- *     test(stack.toString + " should be non-empty") {
+ * <pre>
+ * import org.scalatest.FunSuite
+ * 
+ * trait FunSuiteStackBehaviors { this: FunSuite =>
+ * 
+ *   def nonEmptyStack(createNonEmptyStack: => Stack[Int], lastItemAdded: Int) {
+ * 
+ *     test("empty is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
+ *       val stack = createNonEmptyStack
  *       assert(!stack.empty)
- *     }  
- * 
- *     test(stack.toString + " should return the top item on peek") {
- *       assert(stack.peek === lastItemAdded)
  *     }
- *   
- *     test(stack.toString + " should not remove the top item on peek") {
+ * 
+ *     test("peek is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
+ *       val stack = createNonEmptyStack
  *       val size = stack.size
  *       assert(stack.peek === lastItemAdded)
  *       assert(stack.size === size)
  *     }
- *   
- *     test(stack.toString + " should remove the top item on pop") {
+ * 
+ *     test("pop is invoked on this non-empty stack: " + createNonEmptyStack.toString) {
+ *       val stack = createNonEmptyStack
  *       val size = stack.size
  *       assert(stack.pop === lastItemAdded)
  *       assert(stack.size === size - 1)
  *     }
  *   }
  *   
- *   // ...
+ *   def nonFullStack(createNonFullStack: => Stack[Int]) {
+ *       
+ *     test("full is invoked on this non-full stack: " + createNonFullStack.toString) {
+ *       val stack = createNonFullStack
+ *       assert(!stack.full)
+ *     }
+ *       
+ *     test("push is invoked on this non-full stack: " + createNonFullStack.toString) {
+ *       val stack = createNonFullStack
+ *       val size = stack.size
+ *       stack.push(7)
+ *       assert(stack.size === size + 1)
+ *       assert(stack.peek === 7)
+ *     }
+ *   }
  * }
  * </pre>
  *
  * <p>
- * Given this <code>StackBahaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
+ * Given these behavior functions, you could invoke them directly, but <code>FunSuite</code> offers a DSL for the purpose,
+ * which looks like this:
+ * </p>
+ *
+ * <pre>
+ * testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
+ * testsFor(nonFullStack(stackWithOneItem))
+ * </pre>
+ *
+ * <p>
+ * If you prefer to use an imperative style to change fixtures, for example by mixing in <code>BeforeAndAfterEach</code> and
+ * reassigning a <code>stack</code> <code>var</code> in <code>beforeEach</code>, you could write your behavior functions
+ * in the context of that <code>var</code>, which means you wouldn't need to pass in the stack fixture because it would be
+ * in scope already inside the behavior function. In that case, your code would look like this:
+ * </p>
+ *
+ * <pre>
+ * testsFor(nonEmptyStack) // assuming lastValuePushed is also in scope inside nonEmptyStack
+ * testsFor(nonFullStack)
+ * </pre>
+ *
+ * <p>
+ * The recommended style, however, is the functional, pass-all-the-needed-values-in style. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.FunSuite
+ * 
+ * class StackFunSuite extends FunSuite with FunSuiteStackBehaviors {
+ * 
+ *   // Stack fixture creation methods
+ *   def emptyStack = new Stack[Int]
+ *  
+ *   def fullStack = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 0 until stack.MAX)
+ *       stack.push(i)
+ *     stack
+ *   }
+ *  
+ *   def stackWithOneItem = {
+ *     val stack = new Stack[Int]
+ *     stack.push(9)
+ *     stack
+ *   }
+ *  
+ *   def stackWithOneItemLessThanCapacity = {
+ *     val stack = new Stack[Int]
+ *     for (i <- 1 to 9)
+ *       stack.push(i)
+ *     stack
+ *   }
+ *  
+ *   val lastValuePushed = 9
+ *  
+ *   test("empty is invoked on an empty stack") {
+ *     val stack = emptyStack
+ *     assert(stack.empty)
+ *   }
+ *
+ *   test("peek is invoked on an empty stack") {
+ *     val stack = emptyStack
+ *     intercept[IllegalStateException] {
+ *       stack.peek
+ *     }
+ *   }
+ *
+ *   test("pop is invoked on an empty stack") {
+ *     val stack = emptyStack
+ *     intercept[IllegalStateException] {
+ *       emptyStack.pop
+ *     }
+ *   }
+ *
+ *   testsFor(nonEmptyStack(stackWithOneItem, lastValuePushed))
+ *   testsFor(nonFullStack(stackWithOneItem))
+ *
+ *   testsFor(nonEmptyStack(stackWithOneItemLessThanCapacity, lastValuePushed))
+ *   testsFor(nonFullStack(stackWithOneItemLessThanCapacity))
+ *
+ *   test("full is invoked on a full stack") {
+ *     val stack = fullStack
+ *     assert(stack.full)
+ *   }
+ *
+ *   testsFor(nonEmptyStack(fullStack, lastValuePushed))
+ *
+ *   test("push is invoked on a full stack") {
+ *     val stack = fullStack
+ *     intercept[IllegalStateException] {
+ *       stack.push(10)
+ *     }
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * If you load these classes into the Scala interpreter (with scalatest's JAR file on the class path), and execute it,
+ * you'll see:
+ * </p>
+ *
+ * <pre>
+ * scala> (new StackFunSuite).execute()
+ * Test Starting - StackFunSuite: empty is invoked on an empty stack
+ * Test Succeeded - StackFunSuite: empty is invoked on an empty stack
+ * Test Starting - StackFunSuite: peek is invoked on an empty stack
+ * Test Succeeded - StackFunSuite: peek is invoked on an empty stack
+ * Test Starting - StackFunSuite: pop is invoked on an empty stack
+ * Test Succeeded - StackFunSuite: pop is invoked on an empty stack
+ * Test Starting - StackFunSuite: empty is invoked on this non-empty stack: Stack(9)
+ * Test Succeeded - StackFunSuite: empty is invoked on this non-empty stack: Stack(9)
+ * Test Starting - StackFunSuite: peek is invoked on this non-empty stack: Stack(9)
+ * Test Succeeded - StackFunSuite: peek is invoked on this non-empty stack: Stack(9)
+ * Test Starting - StackFunSuite: pop is invoked on this non-empty stack: Stack(9)
+ * Test Succeeded - StackFunSuite: pop is invoked on this non-empty stack: Stack(9)
+ * Test Starting - StackFunSuite: full is invoked on this non-full stack: Stack(9)
+ * Test Succeeded - StackFunSuite: full is invoked on this non-full stack: Stack(9)
+ * Test Starting - StackFunSuite: push is invoked on this non-full stack: Stack(9)
+ * Test Succeeded - StackFunSuite: push is invoked on this non-full stack: Stack(9)
+ * Test Starting - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Succeeded - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Starting - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Succeeded - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Starting - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Succeeded - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Starting - StackFunSuite: full is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Succeeded - StackFunSuite: full is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Starting - StackFunSuite: push is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Succeeded - StackFunSuite: push is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * Test Starting - StackFunSuite: full is invoked on a full stack
+ * Test Succeeded - StackFunSuite: full is invoked on a full stack
+ * Test Starting - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * Test Succeeded - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * Test Starting - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * Test Succeeded - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * Test Starting - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * Test Succeeded - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * Test Starting - StackFunSuite: push is invoked on a full stack
+ * Test Succeeded - StackFunSuite: push is invoked on a full stack
+ * </pre>
+ * 
+ * <p>
+ * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
+ * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
+ * complaining that multiple tests are being registered with the same test name.
+ * In a <code>FunSuite</code> there is no nesting construct analogous to <code>Spec</code>'s <code>describe</code> clause.
+ * Therefore, you need to do a bit of
+ * extra work to ensure that the test names are unique. If a duplicate test name problem shows up in a
+ * <code>FunSuite</code>, you'll need to pass in a prefix or suffix string to add to each test name. You can pass this string
+ * the same way you pass any other data needed by the shared tests, or just call <code>toString</code> on the shared fixture object.
+ * This is the approach taken by the previous <code>FunSuiteStackBehaviors</code> example.
+ * </p>
+ *
+ * <p>
+ * Given this <code>FunSuiteStackBehaviors</code> trait, calling it with the <code>stackWithOneItem</code> fixture, like this:
  * </p>
  *
  * <pre>
@@ -461,14 +687,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * would yield test names:
+ * yields test names:
  * </p>
  *
  * <ul>
- * <li><code>Stack(9) should be non-empty</code></li>
- * <li><code>Stack(9) should return the top item on peek</code></li>
- * <li><code>Stack(9) should not remove the top item on peek</code></li>
- * <li><code>Stack(9) should remove the top item on pop</code></li>
+ * <li><code>empty is invoked on this non-empty stack: Stack(9)</code></li>
+ * <li><code>peek is invoked on this non-empty stack: Stack(9)</code></li>
+ * <li><code>pop is invoked on this non-empty stack: Stack(9)</code></li>
  * </ul>
  *
  * <p>
@@ -480,14 +705,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </pre>
  *
  * <p>
- * would yield different test names:
+ * yields different test names:
  * </p>
  *
  * <ul>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should be non-empty</code></li>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should return the top item on peek</code></li>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should not remove the top item on peek</code></li>
- * <li><code>Stack(9, 8, 7, 6, 5, 4, 3, 2, 1) should remove the top item on pop</code></li>
+ * <li><code>empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
+ * <li><code>peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
+ * <li><code>pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
  * </ul>
  *
  * <p>
@@ -588,7 +812,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new MySuite).run()
+ * scala> (new MySuite).execute()
  * </pre>
  *
  * <p>
@@ -652,7 +876,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
- * scala> (new MySuite).run()
+ * scala> (new MySuite).execute()
  * </pre>
  *
  * <p>

@@ -287,7 +287,7 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
         replace("<system-err></system-err>",
                 "<system-err><![CDATA[]]></system-err>")
 
-    "<?xml version=\"1.0\" encoding=]\"UTF-8\" ?>\n" + withCDATA
+    "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + withCDATA
   }
 
   //

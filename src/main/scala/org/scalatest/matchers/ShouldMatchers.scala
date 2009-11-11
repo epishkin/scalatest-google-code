@@ -885,7 +885,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class AnyShouldWrapper[T](left: T) {
+  final class AnyShouldWrapper[T](left: T) {
 
     /**
      * This method enables syntax such as the following:
@@ -925,7 +925,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) {
+  final class LengthShouldWrapper[A <: AnyRef <% LengthWrapper](left: A) {
 
     /**
      * This method enables syntax such as the following:
@@ -984,7 +984,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) {
+  final class SizeShouldWrapper[A <: AnyRef <% SizeWrapper](left: A) {
 
     /**
      * This method enables syntax such as the following:
@@ -1043,7 +1043,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class StringShouldWrapper(left: String) extends StringShouldWrapperForVerb(left) {
+  final class StringShouldWrapper(left: String) extends StringShouldWrapperForVerb(left) {
 
     /* *
      * This method enables syntax such as the following in a <code>FlatSpec</code>:
@@ -1175,7 +1175,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class DoubleShouldWrapper(left: Double) {
+  final class DoubleShouldWrapper(left: Double) {
 
     /**
      * This method enables syntax such as the following:
@@ -1213,7 +1213,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class FloatShouldWrapper(left: Float) {
+  final class FloatShouldWrapper(left: Float) {
 
     /**
      * This method enables syntax such as the following:
@@ -1251,7 +1251,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class LongShouldWrapper(left: Long) {
+  final class LongShouldWrapper(left: Long) {
 
     /**
      * This method enables syntax such as the following:
@@ -1289,7 +1289,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class IntShouldWrapper(left: Int) {
+  final class IntShouldWrapper(left: Int) {
 
     /**
      * This method enables syntax such as the following:
@@ -1327,7 +1327,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class ShortShouldWrapper(left: Short) {
+  final class ShortShouldWrapper(left: Short) {
 
     /**
      * This method enables syntax such as the following:
@@ -1365,7 +1365,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class ByteShouldWrapper(left: Byte) {
+  final class ByteShouldWrapper(left: Byte) {
 
     /**
      * This method enables syntax such as the following:
@@ -1403,7 +1403,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) {
+  final class MapShouldWrapper[K, V](left: scala.collection.Map[K, V]) {
 
     /**
      * This method enables syntax such as the following:
@@ -1475,7 +1475,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class AnyRefShouldWrapper[T <: AnyRef](left: T) {
+  final class AnyRefShouldWrapper[T <: AnyRef](left: T) {
 
     /**
      * This method enables syntax such as the following:
@@ -1522,7 +1522,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class CollectionShouldWrapper[T](left: Collection[T]) {
+  final class CollectionShouldWrapper[T](left: Collection[T]) {
 
     /**
      * This method enables syntax such as the following:
@@ -1580,7 +1580,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) {
+  final class JavaCollectionShouldWrapper[T](left: java.util.Collection[T]) {
 
     /**
      * This method enables syntax such as the following:
@@ -1638,7 +1638,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) {
+  final class JavaMapShouldWrapper[K, V](left: java.util.Map[K, V]) {
 
     /**
      * This method enables syntax such as the following:
@@ -1710,7 +1710,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class SeqShouldWrapper[T](left: Seq[T]) {
+  final class SeqShouldWrapper[T](left: Seq[T]) {
  
     /**
      * This method enables syntax such as the following:
@@ -1772,7 +1772,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class ArrayShouldWrapper[T](left: Array[T]) {
+  final class ArrayShouldWrapper[T](left: Array[T]) {
 
     /**
      * This method enables syntax such as the following:
@@ -1823,7 +1823,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class ListShouldWrapper[T](left: List[T]) {
+  final class ListShouldWrapper[T](left: List[T]) {
 
     /**
      * This method enables syntax such as the following:
@@ -1881,7 +1881,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * @author Bill Venners
    */
-  class JavaListShouldWrapper[T](left: java.util.List[T]) {
+  final class JavaListShouldWrapper[T](left: java.util.List[T]) {
 
     /**
      * This method enables syntax such as the following:
@@ -1920,7 +1920,18 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
     }
   }
 
-  class EvaluatingApplicationShouldWrapper(left: ResultOfEvaluatingApplication) {
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * <p>
+   * This class is used in conjunction with an implicit conversion to enable a <code>should</code> method to
+   * be invoked on objects that result of <code>evaulating { ... }</code>.
+   * </p>
+   *
+   * @author Bill Venners
+   */
+  final class EvaluatingApplicationShouldWrapper(left: ResultOfEvaluatingApplication) {
 
     /**
      * This method enables syntax such as the following:
