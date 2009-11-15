@@ -20,6 +20,7 @@ import org.scalatest.prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
+import Integer.MIN_VALUE
 
 class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
@@ -594,7 +595,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
   
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -723,7 +724,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -852,7 +853,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -981,7 +982,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -1110,7 +1111,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -1239,7 +1240,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -1374,7 +1375,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -1509,7 +1510,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -1640,7 +1641,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -1775,7 +1776,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -1910,7 +1911,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {
@@ -2045,7 +2046,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           obj should have length (-2)
         }
         assert(caught1.getMessage === "lengthy did not have length -2")
-        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Lengthy(len) should have length (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object length doesn't match and used in a logical-and expression") {

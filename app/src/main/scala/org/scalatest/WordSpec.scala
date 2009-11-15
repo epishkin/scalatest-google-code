@@ -2133,7 +2133,7 @@ one error found
             testWasPending = true
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
-            handleFailedTest(e, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
+            handleFailedTest(e, false, test.testName, test, formattedSpecText, rerunnable, report, tracker, duration)
           case e => throw e
         }
         finally {
@@ -2154,7 +2154,7 @@ one error found
   }
 
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
+      test: TestLeaf, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
     val message =
       if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
@@ -2162,7 +2162,7 @@ one error found
       else
         throwable.toString
 
-    val formatter = IndentedText(formattedSpecText, specText, 1)
+    val formatter = IndentedText(formattedSpecText, getFormattedSpecTextPrefix(test.parent) + " " + test.specText, 1)
     report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
   }
 

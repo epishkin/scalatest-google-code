@@ -33,7 +33,7 @@
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
     <property name="lib" value="lib" />
-    <property name="jvmargs" value="-Xmx1500M"/>
+    <property name="jvmargs" value="-Xmx2000M"/>
 
     <!--
   <property name="build.compiler" value="jikes"/>
@@ -122,7 +122,7 @@
                 <pathelement location="${classes}" />
                 <pathelement location="${lib}/scala-library.jar" />
                 <pathelement location="${lib}/junit-4.4.jar" />
-                <pathelement location="${lib}/ScalaCheck-1.5.jar" />
+                <pathelement location="${lib}/scalacheck-1.6.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
                 <pathelement location="${lib}/jmock-2.5.1.jar" />
@@ -657,7 +657,7 @@
                 <pathelement location="${build.examples}" />
                 <pathelement location="${lib}/scala-library.jar" />
                 <pathelement location="${lib}/junit-4.4.jar" />
-                <pathelement location="${lib}/ScalaCheck-1.5.jar" />
+                <pathelement location="${lib}/scalacheck-1.6.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
                 <pathelement location="${lib}/jmock-2.5.1.jar" />
