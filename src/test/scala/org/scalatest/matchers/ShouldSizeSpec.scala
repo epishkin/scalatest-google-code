@@ -20,6 +20,7 @@ import org.scalatest.prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
+import Integer.MIN_VALUE
 
 class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
@@ -2035,7 +2036,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
   
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -2166,7 +2167,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -2297,7 +2298,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -2428,7 +2429,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -2559,7 +2560,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -2690,7 +2691,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -2827,7 +2828,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -2962,7 +2963,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -3095,7 +3096,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -3230,7 +3231,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -3365,7 +3366,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {
@@ -3500,7 +3501,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           obj should have size (-2)
         }
         assert(caught1.getMessage === "sizey did not have size -2")
-        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if (len == 0) -1 else -len)))
+        check((len: Int) => throwsTestFailedException(new Sizey(len) should have size (if ((len == 0) || (len == MIN_VALUE)) -1 else -len)))
       }
 
       it("should throw an assertion error when object size doesn't match and used in a logical-and expression") {

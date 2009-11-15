@@ -25,23 +25,23 @@ class CheckersSuite extends Suite with Checkers {
   def testCheckProp() {
 
     // Ensure a success does not fail in an exception
-    val propConcatLists = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+    val propConcatLists = forAll((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
     check(propConcatLists)
 
     // Ensure a failed property does throw an assertion error
-    val propConcatListsBadly = property((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size + 1)
+    val propConcatListsBadly = forAll((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size + 1)
     intercept[TestFailedException] {
       check(propConcatListsBadly)
     }
 
     // Ensure a property that throws an exception causes an assertion error
-    val propConcatListsExceptionally = property((a: List[Int], b: List[Int]) => throw new StringIndexOutOfBoundsException)
+    val propConcatListsExceptionally = forAll((a: List[Int], b: List[Int]) => throw new StringIndexOutOfBoundsException)
     intercept[TestFailedException] {
       check(propConcatListsExceptionally)
     }
 
     // Ensure a property that doesn't generate enough test cases throws an assertion error
-    val propTrivial = property( (n: Int) => (n == 0) ==> (n == 0) )
+    val propTrivial = forAll( (n: Int) => (n == 0) ==> (n == 0) )
     intercept[TestFailedException] {
       check(propTrivial)
     }

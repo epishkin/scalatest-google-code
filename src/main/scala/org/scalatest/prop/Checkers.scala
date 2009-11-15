@@ -19,6 +19,7 @@ import org.scalatest._
 import org.scalatest.Suite
 import org.scalacheck.Arbitrary
 import org.scalacheck.Shrink
+import org.scalacheck.Pretty
 import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
@@ -94,9 +95,9 @@ trait Checkers {
   def check[A1,P](f: A1 => P)
     (implicit
       p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1]
+      a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty
     ) {
-    check(Prop.property(f)(p, a1, s1))
+    check(Prop.forAll(f)(p, a1, s1, pp1))
   }
 
   /**
@@ -108,10 +109,10 @@ trait Checkers {
   def check[A1,A2,P](f: (A1,A2) => P)
     (implicit
       p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2]
+      a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
+      a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty
     ) {
-    check(Prop.property(f)(p, a1, s1, a2, s2))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2))
   }
 
   /**
@@ -123,11 +124,11 @@ trait Checkers {
   def check[A1,A2,A3,P](f: (A1,A2,A3) => P)
     (implicit
       p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3]
+      a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
+      a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
+      a3: Arbitrary[A3], s3: Shrink[A3], pp3: A3 => Pretty
     ) {
-    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3))
   }
 
   /**
@@ -139,12 +140,12 @@ trait Checkers {
   def check[A1,A2,A3,A4,P](f: (A1,A2,A3,A4) => P)
     (implicit
       p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4]
+      a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
+      a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
+      a3: Arbitrary[A3], s3: Shrink[A3], pp3: A3 => Pretty,
+      a4: Arbitrary[A4], s4: Shrink[A4], pp4: A4 => Pretty
     ) {
-    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4))
   }
 
   /**
@@ -156,13 +157,13 @@ trait Checkers {
   def check[A1,A2,A3,A4,A5,P](f: (A1,A2,A3,A4,A5) => P)
     (implicit
       p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4],
-      a5: Arbitrary[A5], s5: Shrink[A5]
+      a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
+      a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
+      a3: Arbitrary[A3], s3: Shrink[A3], pp3: A3 => Pretty,
+      a4: Arbitrary[A4], s4: Shrink[A4], pp4: A4 => Pretty,
+      a5: Arbitrary[A5], s5: Shrink[A5], pp5: A5 => Pretty
     ) {
-    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4, a5, s5, pp5))
   }
 
   /**
@@ -174,14 +175,14 @@ trait Checkers {
   def check[A1,A2,A3,A4,A5,A6,P](f: (A1,A2,A3,A4,A5,A6) => P)
     (implicit
       p: P => Prop,
-      a1: Arbitrary[A1], s1: Shrink[A1],
-      a2: Arbitrary[A2], s2: Shrink[A2],
-      a3: Arbitrary[A3], s3: Shrink[A3],
-      a4: Arbitrary[A4], s4: Shrink[A4],
-      a5: Arbitrary[A5], s5: Shrink[A5],
-      a6: Arbitrary[A6], s6: Shrink[A6]
+      a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
+      a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
+      a3: Arbitrary[A3], s3: Shrink[A3], pp3: A3 => Pretty,
+      a4: Arbitrary[A4], s4: Shrink[A4], pp4: A4 => Pretty,
+      a5: Arbitrary[A5], s5: Shrink[A5], pp5: A5 => Pretty,
+      a6: Arbitrary[A6], s6: Shrink[A6], pp6: A6 => Pretty
     ) {
-    check(Prop.property(f)(p, a1, s1, a2, s2, a3, s3, a4, s4, a5, s5, a6, s6))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4, a5, s5, pp5, a6, s6, pp6))
   }
 
   /**
@@ -332,7 +333,7 @@ trait Checkers {
     else "Labels of failing property: " + labels.mkString("\n") + "\n"
   }
 
-  private def prettyArgs(args: List[Arg]) = {
+  private def prettyArgs(args: List[Arg[_]]) = {
     val strs = for((a,i) <- args.zipWithIndex) yield (
       "> " +
       (if (a.label == "") "ARG_" + i else a.label) +

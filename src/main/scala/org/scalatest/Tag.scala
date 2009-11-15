@@ -16,7 +16,7 @@
 package org.scalatest
 
 /**
- * Abstract class whose subclasses can be used to tag tests in types <code>FunSuite</code>,
+ * Class whose subclasses can be used to tag tests in types <code>FunSuite</code>,
  * <code>Spec</code>, <code>FlatSpec</code>, <code>WordSpec</code>, <code>FeatureSpec</code>, and their
  * sister traits in the <code>org.scalatest.fixture</code> package. For example, if you define:
  *
@@ -96,6 +96,23 @@ package org.scalatest
  * }
  * </pre>
  *
+ * <p>
+ * Alternatively you can create Tag objects using <code>new</code> or by using the factory method in the Tag object. E.g.,
+ * using the example scenario from above:
+ * </p>
+ *
+ * <pre>
+ *   scenario("should sleep for a second", new Tag("SlowTest"))
+ * </pre>
+ *
+ * <p>
+ * or just:
+ * </p>
+ *
+ * <pre>
+ *   scenario("should sleep for a second", Tag("SlowTest"))
+ * </pre>
+ *
  * If you have created Java annotation interfaces for use as tag names in direct subclasses of <code>org.scalatest.Suite</code>,
  * then you may want to use group names on your <code>FunSuite</code>s and <code>Spec</code>s that match. To do so, simply 
  * pass the fully qualified names of the Java interface to the <code>Tag</code> constructor. For example, if you've
@@ -107,8 +124,25 @@ package org.scalatest
  * </pre>
  *
  * @author Bill Venners
+ * @author George Berger
  */
-abstract class Tag(val name: String)
+class Tag(val name: String)
+
+/**
+ * Companion object for <code>Tag</code>, which offers a factory method.
+ *
+ * @author George Berger
+ * @author Bill Venners
+ */
+object Tag {
+
+  /**
+   * Factory method for creating new <code>Tag</code> objects.
+   */
+  def apply(name: String): Tag = {
+    new Tag(name)
+  }
+}
 
 /**
  * <strong>Group has been deprecated. It will be removed in a future release of ScalaTest. Please change any

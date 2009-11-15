@@ -243,7 +243,7 @@ class FunSuiteSuite extends Suite with SharedHelpers {
 
     class MySuite extends FunSuite {
       test("this test should blow up") {
-        test("is in the wrong place also", mytags.SlowAsMolasses) {
+        test("is in the wrong place also", new Tag("SlowAsMolasses")) {
           assert(1 === 1)
         }
       }

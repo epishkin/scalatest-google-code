@@ -82,6 +82,14 @@ class FixtureFlatSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
         new FixtureFlatSpec {
           type FixtureParam = String
           def withFixture(test: OneArgTest) {}
+          it should "test this" in { fixture => }
+          it should "test this" taggedAs(Tag("SlowTest")) ignore { fixture => }
+        }
+      }
+      intercept[DuplicateTestNameException] {
+        new FixtureFlatSpec {
+          type FixtureParam = String
+          def withFixture(test: OneArgTest) {}
           ignore should "test this" in { fixture => }
           it should "test this" ignore { fixture => }
         }

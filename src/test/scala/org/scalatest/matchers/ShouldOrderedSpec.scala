@@ -20,6 +20,7 @@ import org.scalatest.prop.Checkers
 import org.scalacheck._
 import Arbitrary._
 import Prop._
+import Integer.{MAX_VALUE, MIN_VALUE}
 
 class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with ReturnsNormallyThrowsAssertion {
 
@@ -50,40 +51,40 @@ class ShouldOrderedSpec extends Spec with ShouldMatchers with Checkers with Retu
 
       it("should do nothing when comparison succeeds and used in a logical-and expression") {
 
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((be < (right)) and (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right) and be < (right + 1))))
+        check((left: Int, right: Int) => ((left < right) && (right < MAX_VALUE)) ==> returnsNormally(left should ((be < (right)) and (be < (right + 1)))))
+        check((left: Int, right: Int) => ((left < right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be < (right) and (be < (right + 1)))))
+        check((left: Int, right: Int) => ((left < right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be < (right) and be < (right + 1))))
 
-        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should ((be <= (right)) and (be <= (right + 1)))))
-        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right) and (be <= (right + 1)))))
-        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right) and be <= (right + 1))))
+        check((left: Int, right: Int) => ((left <= right) && (right < MAX_VALUE)) ==> returnsNormally(left should ((be <= (right)) and (be <= (right + 1)))))
+        check((left: Int, right: Int) => ((left <= right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be <= (right) and (be <= (right + 1)))))
+        check((left: Int, right: Int) => ((left <= right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be <= (right) and be <= (right + 1))))
 
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((be > (right)) and (be > (right - 1)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right) and (be > (right - 1)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right) and be > (right - 1))))
+        check((left: Int, right: Int) => ((left > right) && (right > MIN_VALUE)) ==> returnsNormally(left should ((be > (right)) and (be > (right - 1)))))
+        check((left: Int, right: Int) => ((left > right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be > (right) and (be > (right - 1)))))
+        check((left: Int, right: Int) => ((left > right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be > (right) and be > (right - 1))))
 
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should ((be >= (right)) and (be >= (right - 1)))))
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right) and (be >= (right - 1)))))
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right) and be >= (right - 1))))
+        check((left: Int, right: Int) => ((left >= right) && (right > MIN_VALUE)) ==> returnsNormally(left should ((be >= (right)) and (be >= (right - 1)))))
+        check((left: Int, right: Int) => ((left >= right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be >= (right) and (be >= (right - 1)))))
+        check((left: Int, right: Int) => ((left >= right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be >= (right) and be >= (right - 1))))
       }
 
       it("should do nothing when array size matches and used in a logical-or expression") {
 
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should ((be < (right - 1)) or (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right - 1) or (be < (right + 1)))))
-        check((left: Int, right: Int) => left < right ==> returnsNormally(left should (be < (right - 1) or be < (right + 1))))
+        check((left: Int, right: Int) => ((left < right) && (right < MAX_VALUE)) ==> returnsNormally(left should ((be < (right - 1)) or (be < (right + 1)))))
+        check((left: Int, right: Int) => ((left < right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be < (right - 1) or (be < (right + 1)))))
+        check((left: Int, right: Int) => ((left < right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be < (right - 1) or be < (right + 1))))
 
-        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should ((be <= (right - 1)) or (be <= (right + 1)))))
-        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right - 1) or (be <= (right + 1)))))
-        check((left: Int, right: Int) => left <= right ==> returnsNormally(left should (be <= (right - 1) or be <= (right + 1))))
+        check((left: Int, right: Int) => ((left <= right) && (right < MAX_VALUE)) ==> returnsNormally(left should ((be <= (right - 1)) or (be <= (right + 1)))))
+        check((left: Int, right: Int) => ((left <= right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be <= (right - 1) or (be <= (right + 1)))))
+        check((left: Int, right: Int) => ((left <= right) && (right < MAX_VALUE)) ==> returnsNormally(left should (be <= (right - 1) or be <= (right + 1))))
 
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should ((be > (right + 1)) or (be > (right - 1)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right + 1) or (be > (right - 1)))))
-        check((left: Int, right: Int) => left > right ==> returnsNormally(left should (be > (right + 1) or be > (right - 1))))
+        check((left: Int, right: Int) => ((left > right) && (right > MIN_VALUE)) ==> returnsNormally(left should ((be > (right + 1)) or (be > (right - 1)))))
+        check((left: Int, right: Int) => ((left > right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be > (right + 1) or (be > (right - 1)))))
+        check((left: Int, right: Int) => ((left > right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be > (right + 1) or be > (right - 1))))
 
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should ((be >= (right + 1)) or (be >= (right - 1)))))
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right + 1) or (be >= (right - 1)))))
-        check((left: Int, right: Int) => left >= right ==> returnsNormally(left should (be >= (right + 1) or be >= (right - 1))))
+        check((left: Int, right: Int) => ((left >= right) && (right > MIN_VALUE)) ==> returnsNormally(left should ((be >= (right + 1)) or (be >= (right - 1)))))
+        check((left: Int, right: Int) => ((left >= right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be >= (right + 1) or (be >= (right - 1)))))
+        check((left: Int, right: Int) => ((left >= right) && (right > MIN_VALUE)) ==> returnsNormally(left should (be >= (right + 1) or be >= (right - 1))))
 
         check((left: Int, right: Int) => returnsNormally(left should (be >= (right) or be < (right))))
         check((left: Int, right: Int) => returnsNormally(left should (be > (right) or be <= (right))))
