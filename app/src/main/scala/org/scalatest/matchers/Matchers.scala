@@ -1845,6 +1845,26 @@ trait Matchers extends Assertions { matchers =>
       }
     }
 
+/* Add for Scala 2.8
+  implicit def convertIterableMatcherToArraytMatcher[T](iterableMatcher: Matcher[Iterable[T]]) =
+    new Matcher[Array[T]] {
+      def apply(left: Array[T]) = {
+        val iterable = new Iterable[T] {
+          private var index = 0
+          override def iterator = new Iterator[T] { // For 2.8
+            def hasNext: Boolean = index < left.length
+            def next: T = {
+              index += 1
+              left(index - 1)
+            }
+          }
+          override def toString = left.toString
+        }
+        iterableMatcher.apply(iterable)
+      }
+    }
+*/
+
   /**
    * This implicit conversion method enables the following syntax (<code>javaMap</code> is a <code>java.util.Map</code>):
    *
@@ -2897,6 +2917,53 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+/* Add for Scala 2.8
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><cod
+e>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
+class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * array should have size (10)
+     *                   ^
+     * </pre>
+     */
+    def size(expectedSize: Int) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * array should have length (20)
+     *                   ^
+     * </pre>
+     */
+    def length(expectedLength: Int) {
+      if ((left.length == expectedLength) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)        )
+    }
+  }
+*/
+
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
