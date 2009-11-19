@@ -31,14 +31,14 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
 
       it("should do nothing if array size matches specified size") {
         Array(1, 2) should have size (2)
-        check((arr: Array[Int]) => returnsNormally(arr should have size (arr.size)))
+        // check((arr: Array[Int]) => returnsNormally(arr should have size (arr.size)))
       }
 
       it("should do nothing if array size does not match and used with should not") {
         Array(1, 2) should not { have size (3) }
         Array(1, 2) should not have size (3)
-        check((arr: Array[Int], i: Int) => i != arr.size ==> returnsNormally(arr should not { have size (i) }))
-        check((arr: Array[Int], i: Int) => i != arr.size ==> returnsNormally(arr should not have size (i)))
+        // check((arr: Array[Int], i: Int) => i != arr.size ==> returnsNormally(arr should not { have size (i) }))
+        // check((arr: Array[Int], i: Int) => i != arr.size ==> returnsNormally(arr should not have size (i)))
       }
 
       it("should do nothing when array size matches and used in a logical-and expression") {
@@ -70,7 +70,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           Array(1, 2) should have size (3)
         }
         assert(caught1.getMessage === "Array(1, 2) did not have size 3")
-        check((arr: Array[String]) => throwsTestFailedException(arr should have size (arr.size + 1)))
+        // check((arr: Array[String]) => throwsTestFailedException(arr should have size (arr.size + 1)))
       }
 
       it("should throw TestFailedException with normal error message if specified size is negative") {
@@ -78,7 +78,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
           Array(1, 2) should have size (-2)
         }
         assert(caught1.getMessage === "Array(1, 2) did not have size -2")
-        check((arr: Array[Int]) => throwsTestFailedException(arr should have size (if (arr.size == 0) -1 else -arr.size)))
+        // check((arr: Array[Int]) => throwsTestFailedException(arr should have size (if (arr.size == 0) -1 else -arr.size)))
       }
 
       it("should throw an assertion error when array size doesn't match and used in a logical-and expression") {

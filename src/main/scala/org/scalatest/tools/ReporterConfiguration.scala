@@ -59,7 +59,7 @@ private[tools] case class ReporterConfigurations(
 
   override def length = reporterConfigurationList.length
   override def elements = reporterConfigurationList.elements
-  // override def iterator = reporterConfigurationList.iterator // For 2.8
+  override def iterator = reporterConfigurationList.iterator // For 2.8
   override def apply(i: Int) = reporterConfigurationList(i)
 }
 

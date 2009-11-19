@@ -169,14 +169,14 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
 
       it("should do nothing if array length matches specified length") {
         Array(1, 2) should have length (2)
-        check((arr: Array[Int]) => returnsNormally(arr should have length (arr.length)))
+        // check((arr: Array[Int]) => returnsNormally(arr should have length (arr.length)))
       }
 
       it("should do nothing if array length does not match and used with should not") {
         Array(1, 2) should not { have length (3) }
         Array(1, 2) should not have length (3)
-        check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not { have length (i) }))
-        check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not have length (i)))
+        // check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not { have length (i) }))
+        // check((arr: Array[Int], i: Int) => i != arr.length ==> returnsNormally(arr should not have length (i)))
       }
 
       it("should do nothing when array length matches and used in a logical-and expression") {
@@ -206,7 +206,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           Array(1, 2) should have length (3)
         }
         assert(caught1.getMessage === "Array(1, 2) did not have length 3")
-        check((arr: Array[String]) => throwsTestFailedException(arr should have length (arr.length + 1)))
+        // check((arr: Array[String]) => throwsTestFailedException(arr should have length (arr.length + 1)))
       }
 
       it("should throw TestFailedException with normal error message if specified length is negative") {
@@ -214,7 +214,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
           Array(1, 2) should have length (-2)
         }
         assert(caught1.getMessage === "Array(1, 2) did not have length -2")
-        check((arr: Array[Int]) => throwsTestFailedException(arr should have length (if (arr.length == 0) -1 else -arr.length)))
+        // check((arr: Array[Int]) => throwsTestFailedException(arr should have length (if (arr.length == 0) -1 else -arr.length)))
       }
 
       it("should throw an assertion error when array length doesn't match and used in a logical-and expression") {

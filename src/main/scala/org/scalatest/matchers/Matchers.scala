@@ -1833,11 +1833,30 @@ trait Matchers extends Assertions { matchers =>
     new Matcher[java.util.Collection[T]] {
       def apply(left: java.util.Collection[T]) = {
         val iterable = new Iterable[T] {
-          // override def iterator = new Iterator[T] { // For 2.8
-          def elements = new Iterator[T] { // For 2.7
+          override def iterator = new Iterator[T] { // For 2.8
+          // def elements = new Iterator[T] { // For 2.7
             private val javaIterator = left.iterator
             def next: T = javaIterator.next
             def hasNext: Boolean = javaIterator.hasNext
+          }
+          override def toString = left.toString
+        }
+        iterableMatcher.apply(iterable)
+      }
+    }
+
+  // XXX
+  implicit def convertIterableMatcherToArraytMatcher[T](iterableMatcher: Matcher[Iterable[T]]) =
+    new Matcher[Array[T]] {
+      def apply(left: Array[T]) = {
+        val iterable = new Iterable[T] {
+          override def iterator = new Iterator[T] { // For 2.8
+            private var index = 0
+            def hasNext: Boolean = index < left.length
+            def next: T = {
+              index += 1
+              left(index - 1)
+            }
           }
           override def toString = left.toString
         }
@@ -1860,7 +1879,6 @@ trait Matchers extends Assertions { matchers =>
       def apply(left: java.util.Map[K, V]) = {
         // Even though the java map is mutable I just wrap it it to a plain old Scala map, because
         // I have no intention of mutating it.
-/* For 2.8
         class MapWrapper[Z](javaMap: java.util.Map[K, Z]) extends scala.collection.Map[K, Z] {
           override def size: Int = javaMap.size
           def get(key: K): Option[Z] =
@@ -1888,24 +1906,6 @@ trait Matchers extends Assertions { matchers =>
         }
         val scalaMap = new MapWrapper[V](left)
         mapMatcher.apply(scalaMap)
-*/
-// Start For 2.7
-        val scalaMap = new scala.collection.Map[K, V] {
-          def size: Int = left.size
-          def get(key: K): Option[V] =
-            if (left.containsKey(key)) Some(left.get(key)) else None
-          def elements = new Iterator[(K, V)] {
-            private val javaIterator = left.keySet.iterator
-            def next: (K, V) = {
-              val nextKey = javaIterator.next
-              (nextKey, left.get(nextKey))
-            }
-            def hasNext: Boolean = javaIterator.hasNext
-          }
-          override def toString = left.toString
-        }
-        mapMatcher.apply(scalaMap)
-// End For 2.7
       }
     }
 
@@ -2609,6 +2609,12 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
           left match {
+            case leftArray: Array[_] =>
+              MatchResult(
+                leftArray.length == expectedLength, 
+                FailureMessages("didNotHaveExpectedLength", left, expectedLength),
+                FailureMessages("hadExpectedLength", left, expectedLength)
+              )
             case leftSeq: Seq[_] =>
               MatchResult(
                 leftSeq.length == expectedLength, 
@@ -2665,6 +2671,12 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[AnyRef] {
         def apply(left: AnyRef) =
           left match {
+            case leftArray: Array[_] =>
+              MatchResult(
+                leftArray.length == expectedSize, 
+                FailureMessages("didNotHaveExpectedSize", left, expectedSize),
+                FailureMessages("hadExpectedSize", left, expectedSize)
+              )
             case leftSeq: Collection[_] =>
               MatchResult(
                 leftSeq.size == expectedSize, 
@@ -2897,6 +2909,51 @@ trait Matchers extends Assertions { matchers =>
     }
   }
   
+  /**
+   * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><cod
+e>MustMatchers</code></a> for an overview of
+   * the matchers DSL.
+   *
+   * @author Bill Venners
+   */
+class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * array should have size (10)
+     *                   ^
+     * </pre>
+     */
+    def size(expectedSize: Int) {
+      if ((left.size == expectedSize) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
+            left,
+            expectedSize)
+        )
+    }
+
+    /**
+     * This method enables the following syntax:
+     *
+     * <pre>
+     * array should have length (20)
+     *                   ^
+     * </pre>
+     */
+    def length(expectedLength: Int) {
+      if ((left.length == expectedLength) != shouldBeTrue)
+        throw newTestFailedException(
+          FailureMessages(
+            if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
+            left,
+            expectedLength)        )
+    }
+  }
+
   /**
    * This class is part of the ScalaTest matchers DSL. Please see the documentation for <a href="ShouldMatchers.html"><code>ShouldMatchers</code></a> or <a href="MustMatchers.html"><code>MustMatchers</code></a> for an overview of
    * the matchers DSL.
