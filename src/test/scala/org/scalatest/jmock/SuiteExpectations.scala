@@ -26,19 +26,19 @@ trait SuiteExpectations {
   def expectSingleTestToPass(expectations: Expectations, reporter: Reporter) = expectNTestsToPass(expectations, 1, reporter)
   def expectSingleTestToFail(expectations: Expectations, reporter: Reporter) = expectNTestsToFail(expectations, 1, reporter)
   
-  def expectNTestsToPass(expectations: Expectations, n: int, reporter: Reporter) = {
+  def expectNTestsToPass(expectations: Expectations, n: Int, reporter: Reporter) = {
     expectNTestsToRun(expectations, n, reporter) { 
       expectations.one(reporter).apply(expectations.`with`(new IsAnything[TestSucceeded]))
     }
   }
   
-  def expectNTestsToFail(expectations: Expectations, n: int, reporter: Reporter) = {
+  def expectNTestsToFail(expectations: Expectations, n: Int, reporter: Reporter) = {
     expectNTestsToRun(expectations, n, reporter) { 
       expectations.one(reporter).apply(expectations.`with`(new IsAnything[TestFailed]))
     }
   }
 
-  def expectNTestsToRun(expectations: Expectations, n: int, reporter: Reporter)(f: => Unit) = {
+  def expectNTestsToRun(expectations: Expectations, n: Int, reporter: Reporter)(f: => Unit) = {
     expectations.one(reporter).apply(expectations.`with`(new IsAnything[SuiteStarting]))
     for( i <- 1 to n ){
       expectations.one(reporter).apply(expectations.`with`(new IsAnything[TestStarting]))
