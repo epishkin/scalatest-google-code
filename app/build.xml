@@ -28,7 +28,7 @@
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
     <property name="project.name" value="ScalaTest" />
-    <property name="release" value="1.0.1-SNAPSHOT" />
+    <property name="release" value="1.1-SNAPSHOT" />
     <property name="demo" value="${build}/demo" />
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
@@ -201,9 +201,9 @@
     </target>
 
     <target name="doc" depends="compile-main">
-        <javadoc sourcepath="${javasrc}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
+        <javadoc sourcepath="${javasrc}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2010 Artima, Inc. All rights reserved." />
 
-        <scaladoc addparams="-Xno-varargs-conversion" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved.">
+        <scaladoc addparams="-Xno-varargs-conversion" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2010 Artima, Inc. All rights reserved.">
             <include name="**/*.scala" />
         </scaladoc>
         <!--
@@ -213,7 +213,7 @@
         classpath="${classes}:${lib}/junit-4.1.jar"
         windowtitle="ScalaTest Examples ${release}"
         doctitle="ScalaTest Examples ${release}"
-        bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved."/>
+        bottom="Copyright (C) 2001-2010 Artima, Inc. All rights reserved."/>
 -->
     </target>
 
