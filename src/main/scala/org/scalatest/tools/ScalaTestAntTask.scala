@@ -7,6 +7,8 @@ import org.apache.tools.ant.types.Path
 import org.apache.tools.ant.AntClassLoader
 import org.apache.tools.ant.taskdefs.Java
 
+import java.io.File
+
 /**
  * <p>
  * An ant task to run ScalaTest.  Instructions on how to specify various
@@ -205,6 +207,11 @@ import org.apache.tools.ant.taskdefs.Java
  * </pre>
  *
  * <p>
+ * When <code>fork</code> is <code>true</code>, attribute <code>dir</code> may be used to specify
+ * the directory to be used by the forked jvm.&nbsp;
+ * </p>
+ *
+ * <p>
  * When <code>fork</code> is true, nested <code>&lt;jvmarg&gt;</code> elements may be used
  * to pass additional arguments to the forked jvm.
  * For example, if you are running into 'PermGen space' memory errors,
@@ -221,6 +228,7 @@ class ScalaTestAntTask extends Task {
   private var includes:  String = null
   private var excludes:  String = null
   private var maxMemory: String = null
+  private var dir:       File   = null
 
   private var parallel      = false
   private var haltonfailure = false
@@ -274,6 +282,8 @@ class ScalaTestAntTask extends Task {
     java.setClasspath(new Path(getProject, classLoader.getClasspath))
 
     if (maxMemory != null) java.createJvmarg.setValue("-Xmx" + maxMemory)
+
+    if (dir != null) java.setDir(dir)
 
     for (jvmArg <- jvmArgs)
       java.createJvmarg.setValue(jvmArg)
@@ -517,6 +527,13 @@ class ScalaTestAntTask extends Task {
    */
   def setMaxmemory(max: String) {
     this.maxMemory = max
+  }
+  
+  /**
+   * Sets value of the <code>dir</code> attribute.
+   */
+  def setDir(dir: File) {
+    this.dir = dir
   }
   
   /**
