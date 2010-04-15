@@ -1764,7 +1764,8 @@ trait Matchers extends Assertions { matchers =>
      * </pre>
      */
     def value(expectedValue: V) {
-      if (left.values.contains(expectedValue) != shouldBeTrue)
+      // if (left.values.contains(expectedValue) != shouldBeTrue) CHANGING FOR 2.8.0 RC1
+      if (left.values.exists(expectedValue == _) != shouldBeTrue)
         throw newTestFailedException(
           FailureMessages(
             if (shouldBeTrue) "didNotContainValue" else "containedValue",
@@ -2010,7 +2011,8 @@ trait Matchers extends Assertions { matchers =>
       new Matcher[scala.collection.Map[K, V] forSome { type K }] {
         def apply(left: scala.collection.Map[K, V] forSome { type K }) =
           MatchResult(
-            left.values.contains(expectedValue),
+            // left.values.contains(expectedValue), CHANGING FOR 2.8.0 RC1
+            left.values.exists(expectedValue == _),
             FailureMessages("didNotContainValue", left, expectedValue),
             FailureMessages("containedValue", left, expectedValue)
           )
