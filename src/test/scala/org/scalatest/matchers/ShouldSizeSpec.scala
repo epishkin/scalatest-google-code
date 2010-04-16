@@ -1482,7 +1482,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should have size (3)
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not have size 3")
+        assert(caught1.getMessage startsWith "Map(")
+        assert(caught1.getMessage endsWith ") did not have size 3")
         // check((set: Map[String]) => throwsTestFailedException(set should have size (set.size + 1)))
       }
 
@@ -1490,7 +1491,8 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should have size (-2)
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not have size -2")
+        assert(caught1.getMessage startsWith "Map(")
+        assert(caught1.getMessage endsWith ") did not have size -2")
         // check((set: Map[Int]) => throwsTestFailedException(set should have size (if (set.size == 0) -1 else -set.size)))
       }
 
@@ -1499,17 +1501,20 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { have size (5) and (have size (2 - 1)) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+        assert(caught1.getMessage startsWith "Map(")
+        assert(caught1.getMessage endsWith ") did not have size 5")
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((have size (5)) and (have size (2 - 1)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+        assert(caught2.getMessage startsWith "Map(")
+        assert(caught2.getMessage endsWith ") did not have size 5")
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (have size (5) and have size (2 - 1))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not have size 5")
+        assert(caught3.getMessage startsWith "Map(")
+        assert(caught3.getMessage endsWith ") did not have size 5")
       }
 
       it("should throw an assertion error when set size doesn't match and used in a logical-or expression") {
@@ -1517,17 +1522,23 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { have size (55) or (have size (22)) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+        assert(caught1.getMessage startsWith "Map(")
+        assert(caught1.getMessage contains ") did not have size 55, and Map(")
+        assert(caught1.getMessage endsWith ") did not have size 22")
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((have size (55)) or (have size (22)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+        assert(caught2.getMessage startsWith "Map(")
+        assert(caught2.getMessage contains ") did not have size 55, and Map(")
+        assert(caught2.getMessage endsWith ") did not have size 22")
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (have size (55) or have size (22))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not have size 55, and Map(one -> 1, two -> 2) did not have size 22")
+        assert(caught3.getMessage startsWith "Map(")
+        assert(caught3.getMessage contains ") did not have size 55, and Map(")
+        assert(caught3.getMessage endsWith ") did not have size 22")
       }
 
       it("should throw an assertion error when set size matches and used in a logical-and expression with not") {
@@ -1535,17 +1546,23 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { not { have size (3) } and not { have size (2) }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+        assert(caught1.getMessage startsWith "Map(")
+        assert(caught1.getMessage contains ") did not have size 3, but Map(")
+        assert(caught1.getMessage endsWith ") had size 2")
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((not have size (3)) and (not have size (2)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+        assert(caught2.getMessage startsWith "Map(")
+        assert(caught2.getMessage contains ") did not have size 3, but Map(")
+        assert(caught2.getMessage endsWith ") had size 2")
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (not have size (3) and not have size (2))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not have size 3, but Map(one -> 1, two -> 2) had size 2")
+        assert(caught3.getMessage startsWith "Map(")
+        assert(caught3.getMessage contains ") did not have size 3, but Map(")
+        assert(caught3.getMessage endsWith ") had size 2")
       }
 
       it("should throw an assertion error when set size matches and used in a logical-or expression with not") {
@@ -1553,17 +1570,23 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { not { have size (2) } or not { have size (2) }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+        assert(caught1.getMessage startsWith "Map(")
+        assert(caught1.getMessage contains ") had size 2, and Map(")
+        assert(caught1.getMessage endsWith ") had size 2")
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((not have size (2)) or (not have size (2)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+        assert(caught2.getMessage startsWith "Map(")
+        assert(caught2.getMessage contains ") had size 2, and Map(")
+        assert(caught2.getMessage endsWith ") had size 2")
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (not have size (2) or not have size (2))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) had size 2, and Map(one -> 1, two -> 2) had size 2")
+        assert(caught3.getMessage startsWith "Map(")
+        assert(caught3.getMessage contains ") had size 2, and Map(")
+        assert(caught3.getMessage endsWith ") had size 2")
       }
     }
 
