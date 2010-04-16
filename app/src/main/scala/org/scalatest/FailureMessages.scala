@@ -33,7 +33,7 @@ private[scalatest] object FailureMessages {
       case aUnit: Unit => "<(), the Unit value>"
       case aString: String => "\"" + aString + "\""
       case aChar: Char =>  "\'" + aChar + "\'"
-      case anArray: Array[_] =>  prettifyArrays(anArray)
+      // case anArray: Array[_] =>  prettifyArrays(anArray) UNCOMMENT FOR 2.8
       case anythingElse => anythingElse.toString
     }
 
