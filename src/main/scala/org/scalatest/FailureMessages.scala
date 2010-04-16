@@ -33,12 +33,20 @@ private[scalatest] object FailureMessages {
       case aUnit: Unit => "<(), the Unit value>"
       case aString: String => "\"" + aString + "\""
       case aChar: Char =>  "\'" + aChar + "\'"
+      case anArray: Array[_] =>  prettifyArrays(anArray)
       case anythingElse => anythingElse.toString
     }
 
   def apply(resourceName: String): String = Resources(resourceName)
   def apply(resourceName: String, args: Any*): String =
     Resources(resourceName, args.map((arg: Any) => decorateToStringValue(arg)): _*)
+
+  def prettifyArrays(o: Any): String = {
+    o match {
+      case arr: Array[_] => "Array(" + (arr map (a => prettifyArrays(a))).mkString(", ") + ")"
+      case _ => o.toString
+    }
+  }
 }
 
 // This is used to pass a string to the FailureMessages apply method
