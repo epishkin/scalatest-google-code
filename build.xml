@@ -155,7 +155,7 @@
     <target name="compile-main" depends="init">
 
         <!-- Compile the Scala code from ${scalasrc} into ${classes}. Scalac will parse the referenced .java files. -->
-        <scalac srcdir="${scalasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" fork="true" jvmargs="${jvmargs}" />
+        <scalac srcdir="${scalasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
@@ -170,10 +170,10 @@
     <target name="compile-tests" depends="compile-main">
 
         <!-- Compile the Scala code from ${scalasrc.test} into ${build.tests} -->
-        <scalac srcdir="${scalasrc.test}:${javasrc.test}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
+        <scalac srcdir="${scalasrc.test}:${javasrc.test}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
 
         <!-- Compile the Scala code from ${build.generated.tests} into ${classes}. Scalac will parse any referenced .java files. -->
-        <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs}" />
+        <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Java code from ${javasrc.test} into ${build.tests} -->
         <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${lib}/scala-library.jar:${lib}/junit-4.4.jar" debug="yes" />
@@ -182,7 +182,7 @@
     <target name="compile-examples" depends="compile-main">
 
         <!-- Compile the Scala code from ${scalasrc.examples} into ${build.examples} -->
-        <scalac srcdir="${scalasrc.examples}:${javasrc.examples}" destdir="${build.examples}" target="jvm-1.5" classpathref="build.test.class.path" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
+        <scalac srcdir="${scalasrc.examples}:${javasrc.examples}" destdir="${build.examples}" target="jvm-1.5" classpathref="build.test.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
 
         <!-- Compile the Java code from ${examples} into ${build.examples} -->
         <javac srcdir="${javasrc.examples}" destdir="${build.examples}" classpath="${classes}:${lib}/easymock-2.5.1.jar:${lib}/scala-library.jar" debug="yes" />
@@ -202,7 +202,7 @@
     <target name="doc" depends="compile-main">
         <javadoc sourcepath="${javasrc}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved." />
 
-        <scaladoc addparams="-Xno-varargs-conversion" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" doctitle="ScalaTest ${release}">
+        <scaladoc addparams="-no-specialization" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" doctitle="ScalaTest ${release}">
             <include name="**/*.scala" />
         </scaladoc>
         <!--
