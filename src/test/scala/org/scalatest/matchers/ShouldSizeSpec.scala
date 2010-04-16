@@ -69,7 +69,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           Array(1, 2) should have size (3)
         }
-        assert(caught1.getMessage === "Array(1, 2) did not have size 3")
+        assert(caught1.getMessage endsWith "Array(1, 2) did not have size 3")
         // check((arr: Array[String]) => throwsTestFailedException(arr should have size (arr.size + 1)))
       }
 
@@ -77,7 +77,7 @@ class ShouldSizeSpec extends Spec with ShouldMatchers with Checkers with Returns
         val caught1 = intercept[TestFailedException] {
           Array(1, 2) should have size (-2)
         }
-        assert(caught1.getMessage === "Array(1, 2) did not have size -2")
+        assert(caught1.getMessage endsWith "Array(1, 2) did not have size -2")
         // check((arr: Array[Int]) => throwsTestFailedException(arr should have size (if (arr.size == 0) -1 else -arr.size)))
       }
 
