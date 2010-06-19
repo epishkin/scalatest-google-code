@@ -196,6 +196,13 @@ class ShouldHavePropertiesSpec extends Spec with ShouldMatchers with Checkers wi
         book should (not have ('title ("A Tale of Two Cities"), pubYear (1859)) or not have ('pubYear (1859), 'author ("Melville")))
       }
 
+      it("should throw TestFailedException if trying to check for a non existent property") {
+        val thrown = evaluating {
+          new Object should have ('nonExistentProperty ("something"))
+        } should produce [TestFailedException]
+        thrown.getMessage should equal("have nonExistentProperty (something) used with an object that had no public field or method named nonExistentProperty or getNonExistentProperty")
+      }
+
       it("should throw TestFailedException if there's just one property and it doesn't match") {
 
         val caught1 = intercept[TestFailedException] {
