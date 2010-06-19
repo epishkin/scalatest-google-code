@@ -28,7 +28,7 @@ object Helper {
     junitDir.mkdirs()
     val writer = new BufferedWriter(new FileWriter("target/generated/src/main/scala/org/scalatest/" + targetFileName))
     try {
-      val shouldLines = Source.fromPath("src/main/scala/org/scalatest/" + srcFileName).getLines().toList // for 2.8
+      val shouldLines = Source.fromFile("src/main/scala/org/scalatest/" + srcFileName).getLines().toList // for 2.8
       for (shouldLine <- shouldLines) {
         val mustLine = translateShouldToMust(shouldLine)
         writer.write(mustLine)
@@ -89,7 +89,7 @@ object GenMustMatchersTests extends Application {
     val mustFileName = shouldFileName.replace("Should", "Must")
     val writer = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/matchers/" + mustFileName))
     try {
-      val shouldLines = Source.fromPath("src/test/scala/org/scalatest/matchers/" + shouldFileName).getLines().toList // for 2.8
+      val shouldLines = Source.fromFile("src/test/scala/org/scalatest/matchers/" + shouldFileName).getLines().toList // for 2.8
       for (shouldLine <- shouldLines) {
         val mustLine = translateShouldToMust(shouldLine)
         writer.write(mustLine.toString)
@@ -105,7 +105,7 @@ object GenMustMatchersTests extends Application {
   junitDir.mkdirs()
   val writer = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/junit/" + "MustMatchersForJUnitWordSpec.scala"))
   try {
-    val shouldLines = Source.fromPath("src/test/scala/org/scalatest/junit/" + "ShouldMatchersForJUnitWordSpec.scala").getLines().toList // for 2.8
+    val shouldLines = Source.fromFile("src/test/scala/org/scalatest/junit/" + "ShouldMatchersForJUnitWordSpec.scala").getLines().toList // for 2.8
     for (shouldLine <- shouldLines) {
       val mustLine = translateShouldToMust(shouldLine)
       writer.write(mustLine.toString)
