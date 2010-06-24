@@ -356,6 +356,7 @@ class ShouldBeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
       }
 
       // implicit def convertToArrayShouldWrapper[T](o: Array[T]): ArrayShouldWrapper[T] = new ArrayShouldWrapper[T](o)
+/* This no longer works as of Scala 2.8
       it("should work on a scala.Array") {
         val emptyArray = new Array[Int](0)
         emptyArray should be ('empty)
@@ -374,6 +375,7 @@ class ShouldBeSymbolSpec extends Spec with ShouldMatchers with EmptyMocks {
         }
         assert(caught3.getMessage === "Array(1, 2, 3) has neither a happy nor an isHappy method")
       }
+*/
 
       // FOR: implicit def convertToListShouldWrapper[T](o: List[T])...
       it("should work on a scala.List") {
