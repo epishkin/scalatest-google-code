@@ -205,7 +205,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         val caught1 = intercept[TestFailedException] {
           Array(1, 2) should have length (3)
         }
-        assert(caught1.getMessage === "Array(1, 2) did not have length 3")
+        assert(caught1.getMessage.endsWith("Array(1, 2) did not have length 3"))
         // check((arr: Array[String]) => throwsTestFailedException(arr should have length (arr.length + 1)))
       }
 
@@ -213,7 +213,7 @@ class ShouldLengthSpec extends Spec with ShouldMatchers with Checkers with Retur
         val caught1 = intercept[TestFailedException] {
           Array(1, 2) should have length (-2)
         }
-        assert(caught1.getMessage === "Array(1, 2) did not have length -2")
+        assert(caught1.getMessage.endsWith("Array(1, 2) did not have length -2"))
         // check((arr: Array[Int]) => throwsTestFailedException(arr should have length (if (arr.length == 0) -1 else -arr.length)))
       }
 
