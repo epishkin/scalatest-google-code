@@ -1501,7 +1501,8 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should contain ("three" -> 3)
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.endsWith(") did not contain element (three,3)"))
       }
 
       it("should throw TestFailedException if contains the specified element when used with not") {
@@ -1509,17 +1510,22 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (not contain ("two" -> 2))
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.endsWith(") contained element (two,2)"))
+
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should not (contain ("two" -> 2))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.endsWith(" contained element (two,2)"))
+
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should not contain ("two" -> 2)
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.endsWith(" contained element (two,2)"))
       }
 
       it("should throw an TestFailedException when map doesn't contain specified element and used in a logical-and expression") {
@@ -1527,17 +1533,20 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { contain ("five" -> 5) and (contain ("two" -> 2)) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element (five,5)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.endsWith(" did not contain element (five,5)"))
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((contain ("five" -> 5)) and (contain ("two" -> 2)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element (five,5)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.endsWith(" did not contain element (five,5)"))
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (contain ("five" -> 5) and contain ("two" -> 2))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element (five,5)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.endsWith(" did not contain element (five,5)"))
       }
 
       it("should throw an TestFailedException when map doesn't contain specified element and used in a logical-or expression") {
@@ -1545,17 +1554,25 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { contain ("fifty five" -> 55) or (contain ("twenty two" -> 22)) }
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element (fifty five,55), and Map(one -> 1, two -> 2) did not contain element (twenty two,22)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(") did not contain element (fifty five,55), and Map("))
+        assert(caught1.getMessage.endsWith(") did not contain element (twenty two,22)"))
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((contain ("fifty five" -> 55)) or (contain ("twenty two" -> 22)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element (fifty five,55), and Map(one -> 1, two -> 2) did not contain element (twenty two,22)")
+        //assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element (fifty five,55), and Map(one -> 1, two -> 2) did not contain element (twenty two,22)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(") did not contain element (fifty five,55), and Map("))
+        assert(caught1.getMessage.endsWith(") did not contain element (twenty two,22)"))
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (contain ("fifty five" -> 55) or contain ("twenty two" -> 22))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element (fifty five,55), and Map(one -> 1, two -> 2) did not contain element (twenty two,22)")
+        //assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element (fifty five,55), and Map(one -> 1, two -> 2) did not contain element (twenty two,22)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(") did not contain element (fifty five,55), and Map("))
+        assert(caught1.getMessage.endsWith(") did not contain element (twenty two,22)"))
       }
 
       it("should throw an TestFailedException when map contains specified element and used in a logical-and expression with not") {
@@ -1563,17 +1580,26 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { not { contain ("three" -> 3) } and not { contain ("two" -> 2) }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3), but Map(one -> 1, two -> 2) contained element (two,2)")
+        //assert(caught1.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3), but Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(") did not contain element (three,3), but Map("))
+        assert(caught1.getMessage.endsWith(") contained element (two,2)"))
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((not contain ("three" -> 3)) and (not contain ("two" -> 2)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3), but Map(one -> 1, two -> 2) contained element (two,2)")
+        //assert(caught2.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3), but Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(") did not contain element (three,3), but Map("))
+        assert(caught1.getMessage.endsWith(") contained element (two,2)"))
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (not contain ("three" -> 3) and not contain ("two" -> 2))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3), but Map(one -> 1, two -> 2) contained element (two,2)")
+        //assert(caught3.getMessage === "Map(one -> 1, two -> 2) did not contain element (three,3), but Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(") did not contain element (three,3), but Map("))
+        assert(caught1.getMessage.endsWith(") contained element (two,2)"))
       }
 
       it("should throw an TestFailedException when map contains specified element and used in a logical-or expression with not") {
@@ -1581,17 +1607,26 @@ class ShouldContainElementSpec extends Spec with ShouldMatchers with Checkers wi
         val caught1 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should { not { contain ("two" -> 2) } or not { contain ("two" -> 2) }}
         }
-        assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained element (two,2), and Map(one -> 1, two -> 2) contained element (two,2)")
+        //assert(caught1.getMessage === "Map(one -> 1, two -> 2) contained element (two,2), and Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(" contained element (two,2), and Map("))
+        assert(caught1.getMessage.endsWith(") contained element (two,2)"))
 
         val caught2 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should ((not contain ("two" -> 2)) or (not contain ("two" -> 2)))
         }
-        assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained element (two,2), and Map(one -> 1, two -> 2) contained element (two,2)")
+        //assert(caught2.getMessage === "Map(one -> 1, two -> 2) contained element (two,2), and Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(" contained element (two,2), and Map("))
+        assert(caught1.getMessage.endsWith(") contained element (two,2)"))
 
         val caught3 = intercept[TestFailedException] {
           HashMap("one" -> 1, "two" -> 2) should (not contain ("two" -> 2) or not contain ("two" -> 2))
         }
-        assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained element (two,2), and Map(one -> 1, two -> 2) contained element (two,2)")
+        //assert(caught3.getMessage === "Map(one -> 1, two -> 2) contained element (two,2), and Map(one -> 1, two -> 2) contained element (two,2)")
+        assert(caught1.getMessage.startsWith("Map("))
+        assert(caught1.getMessage.contains(" contained element (two,2), and Map("))
+        assert(caught1.getMessage.endsWith(") contained element (two,2)"))
       }
     }
 
