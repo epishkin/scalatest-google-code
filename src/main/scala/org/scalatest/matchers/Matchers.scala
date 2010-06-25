@@ -1859,7 +1859,9 @@ trait Matchers extends Assertions { matchers =>
               left(index - 1)
             }
           }
-          override def toString = left.toString
+          // Need to prettify the array's toString, because by the time it gets to decorateToStringValue, the array
+          // has been wrapped in this Iterable and so it won't get prettified anymore by FailureMessages.decorateToStringValue.
+          override def toString = FailureMessages.prettifyArrays(left).toString
         }
         iterableMatcher.apply(iterable)
       }
