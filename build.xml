@@ -155,6 +155,9 @@
 
     <target name="compile-main" depends="init">
 
+        <!-- If ever want to see the typer output, add -Xprint:typer to the addparams like this: -->
+        <!--<scalac srcdir="${scalasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-no-specialization -Xprint:typer" fork="true" jvmargs="${jvmargs}" />-->
+
         <!-- Compile the Scala code from ${scalasrc} into ${classes}. Scalac will parse the referenced .java files. -->
         <scalac srcdir="${scalasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
