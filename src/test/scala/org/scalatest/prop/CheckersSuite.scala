@@ -90,7 +90,7 @@ class CheckersSuite extends Suite with Checkers {
       (list: List[Int]) => {
         val stack = new Stack[Int]
         for (element <- list) stack.push(element)
-        stack.elements.toList == list
+        stack.elements.toList == list.reverse
       }
     }
   }
