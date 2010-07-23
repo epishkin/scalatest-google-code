@@ -28,14 +28,14 @@
     <property name="jdoc" value="${build}/jdoc" />
     <property name="zipper" value="zipper" />
     <property name="project.name" value="ScalaTest" />
-    <property name="release" value="1.0.1" />
+    <property name="release" value="1.1" />
     <property name="demo" value="${build}/demo" />
     <property name="demodoc" value="${demo}/example/javadoc" />
     <property name="example" value="${demo}/example" />
     <property name="lib" value="lib" />
     <property name="jvmargs" value="-Xmx2000M -Xss10M"/>
 
-    <!--
+  <!--
   <property name="build.compiler" value="jikes"/>
   -->
 
@@ -612,7 +612,7 @@
       -   </servers>
       - 
       -->
-    <target name="deploy" depends="gencode,jar,jarsrc,doc">
+    <target name="deploy" depends="jar,jarsrc,doc">
         <path id="maven-ant-tasks.classpath"
               path="lib/maven-ant-tasks-2.0.10.jar" />
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
