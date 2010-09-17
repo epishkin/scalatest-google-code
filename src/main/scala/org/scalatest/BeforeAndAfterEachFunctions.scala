@@ -93,7 +93,7 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
    */
   protected def beforeEach(fun: => Any) {
     if (runHasBeenInvoked)
-      throw new NotAllowedException("You cannot call beforeEach from within a test. It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
+      throw new NotAllowedException("You cannot call beforeEach after run has been invoked (such as, from within a test). It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
     val success = beforeFunctionAtomic.compareAndSet(None, Some(() => fun))
     if (!success)
       throw new NotAllowedException("You are only allowed to call beforeEach once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
@@ -114,7 +114,7 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
    */
   protected def afterEach(fun: => Any) {
     if (runHasBeenInvoked)
-      throw new NotAllowedException("You cannot call afterEach from within a test. It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
+      throw new NotAllowedException("You cannot call afterEach after run has been invoked (such as, from within a test. It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
     val success = afterFunctionAtomic.compareAndSet(None, Some(() => fun))
     if (!success)
       throw new NotAllowedException("You are only allowed to call beforeEach once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
