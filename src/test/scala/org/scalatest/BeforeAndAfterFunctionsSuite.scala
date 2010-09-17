@@ -255,6 +255,73 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
     assert(beforeEachRegisteredFirstTime)
     assert(!beforeEachRegisteredSecondTime)
   }
+
+  test("If beforeEach is called after run is invoked, the test should fail with NotAllowedException") {
+    var beforeEachRegisteredFirstTime = false
+    var beforeEachRegisteredSecondTime = false
+    class MySuite extends FunSuite with BeforeAndAfterEachFunctions {
+      var s = "zero"
+      var notAllowedExceptionThrown = false
+      test("this one should fail") {
+        try {
+          beforeEach {
+            s = "one"
+          }
+        }
+        catch {
+          case _: NotAllowedException => notAllowedExceptionThrown = true
+          case e => throw e
+        }
+      }
+    }
+    val a = new MySuite
+    a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+    assert(a.notAllowedExceptionThrown)
+  }
+
+  test("If afterEach is called twice, the second invocation should produce NotAllowedException") {
+    var afterEachRegisteredFirstTime = false
+    var afterEachRegisteredSecondTime = false
+    class MySuite extends Suite with BeforeAndAfterEachFunctions {
+      var s = "zero"
+      afterEach {
+        s = "one"
+      }
+      afterEachRegisteredFirstTime = true
+      afterEach {
+        s = "two"
+      }
+      afterEachRegisteredSecondTime = true
+    }
+    intercept[NotAllowedException] {
+      new MySuite
+    }
+    assert(afterEachRegisteredFirstTime)
+    assert(!afterEachRegisteredSecondTime)
+  }
+
+  test("If afterEach is called after run is invoked, the test should fail with NotAllowedException") {
+    var afterEachRegisteredFirstTime = false
+    var afterEachRegisteredSecondTime = false
+    class MySuite extends FunSuite with BeforeAndAfterEachFunctions {
+      var s = "zero"
+      var notAllowedExceptionThrown = false
+      test("this one should fail") {
+        try {
+          afterEach {
+            s = "one"
+          }
+        }
+        catch {
+          case _: NotAllowedException => notAllowedExceptionThrown = true
+          case e => throw e
+        }
+      }
+    }
+    val a = new MySuite
+    a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+    assert(a.notAllowedExceptionThrown)
+  }
 }
 
 class BeforeAndAfterFunctionsExtendingSuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {

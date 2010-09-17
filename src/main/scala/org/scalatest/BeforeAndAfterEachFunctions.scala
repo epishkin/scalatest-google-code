@@ -76,6 +76,7 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
 
   private val beforeFunctionAtomic = new AtomicReference[Option[() => Any]](None)
   private val afterFunctionAtomic = new AtomicReference[Option[() => Any]](None)
+  @volatile private var runHasBeenInvoked = false
 
   /**
    * Registers code to be executed before each of this suite's tests.
@@ -91,6 +92,8 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
    * </p>
    */
   protected def beforeEach(fun: => Any) {
+    if (runHasBeenInvoked)
+      throw new NotAllowedException("You cannot call beforeEach from within a test. It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
     val success = beforeFunctionAtomic.compareAndSet(None, Some(() => fun))
     if (!success)
       throw new NotAllowedException("You are only allowed to call beforeEach once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
@@ -110,6 +113,8 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
    * </p>
    */
   protected def afterEach(fun: => Any) {
+    if (runHasBeenInvoked)
+      throw new NotAllowedException("You cannot call afterEach from within a test. It is probably best to move it to the top level of the Suite class so it is executed during object construction.", 0)
     val success = afterFunctionAtomic.compareAndSet(None, Some(() => fun))
     if (!success)
       throw new NotAllowedException("You are only allowed to call beforeEach once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
@@ -174,5 +179,12 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
           }
       }
     }
+  }
+
+  abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+    configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+
+    runHasBeenInvoked = true
+    super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
   }
 }

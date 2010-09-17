@@ -1271,10 +1271,7 @@ trait FunSuite extends Suite { thisSuite =>
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    if (wasRunBefore)
-      println(thisSuite.getClass.getName + ", a FunSuite, is being run again")
-    else
-      wasRunBefore = true
+    wasRunBefore = true
 
     val stopRequested = stopper
 
