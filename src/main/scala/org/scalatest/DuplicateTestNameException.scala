@@ -35,5 +35,18 @@ class DuplicateTestNameException(testName: String, failedCodeStackDepth: Int)
   
   if (testName == null)
     throw new NullPointerException("testName was null")
+
+  /**
+   * Returns an exception of class <code>DuplicateTestNameException</code> with <code>failedExceptionStackDepth</code> set to 0 and 
+   * all frames above this stack depth severed off. This can be useful when working with tools (such as IDEs) that do not
+   * directly support ScalaTest. (Tools that directly support ScalaTest can use the stack depth information delivered
+   * in the StackDepth exceptions.)
+   */
+  def severedAtStackDepth: DuplicateTestNameException = {
+    val truncated = getStackTrace.drop(failedCodeStackDepth)
+    val e = new DuplicateTestNameException(testName, 0)
+    e.setStackTrace(truncated)
+    e
+  }
 }
 

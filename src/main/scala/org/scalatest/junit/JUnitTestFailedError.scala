@@ -162,4 +162,17 @@ class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwa
       },
       failedCodeStackDepth
     )
+
+  /**
+   * Returns an exception of class <code>JUnitTestFailedError</code> with <code>failedExceptionStackDepth</code> set to 0 and 
+   * all frames above this stack depth severed off. This can be useful when working with tools (such as IDEs) that do not
+   * directly support ScalaTest. (Tools that directly support ScalaTest can use the stack depth information delivered
+   * in the StackDepth exceptions.)
+   */
+  def severedAtStackDepth: JUnitTestFailedError = {
+    val truncated = getStackTrace.drop(failedCodeStackDepth)
+    val e = new JUnitTestFailedError(message, cause, 0)
+    e.setStackTrace(truncated)
+    e
+  }
 }

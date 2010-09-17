@@ -7,10 +7,8 @@ trait SeveredStackTraces extends AbstractSuite { this: Suite =>
       super.withFixture(test)
     }
     catch {
-      case e: StackDepthException =>
-        val truncated = e.getStackTrace.drop(e.failedCodeStackDepth)
-        e.setStackTrace(truncated)
-        throw e
+      case e: StackDepth =>
+        throw e.severedAtStackDepth
     }
   }
 }

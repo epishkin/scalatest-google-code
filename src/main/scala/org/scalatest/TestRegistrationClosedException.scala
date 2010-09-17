@@ -51,7 +51,21 @@ package org.scalatest
  * @author Bill Venners
  */
 class TestRegistrationClosedException(message: String, failedCodeStackDepth: Int)
-    extends StackDepthException(Some(message), None, failedCodeStackDepth)
+    extends StackDepthException(Some(message), None, failedCodeStackDepth) {
+
+  /**
+   * Returns an exception of class <code>TestRegistrationClosedException</code> with <code>failedExceptionStackDepth</code> set to 0 and 
+   * all frames above this stack depth severed off. This can be useful when working with tools (such as IDEs) that do not
+   * directly support ScalaTest. (Tools that directly support ScalaTest can use the stack depth information delivered
+   * in the StackDepth exceptions.)
+   */
+  def severedAtStackDepth: TestRegistrationClosedException = {
+    val truncated = getStackTrace.drop(failedCodeStackDepth)
+    val e = new TestRegistrationClosedException(message, 0)
+    e.setStackTrace(truncated)
+    e
+  }
+}
 
 // I pass in a message here so different situations can be described better in the
 // error message, such as an it inside an it, an ignore inside an it, a describe inside an it, etc.

@@ -132,5 +132,18 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
       },
       failedCodeStackDepth
     )
+
+  /**
+   * Returns an exception of class <code>TestFailedException</code> with <code>failedExceptionStackDepth</code> set to 0 and 
+   * all frames above this stack depth severed off. This can be useful when working with tools (such as IDEs) that do not
+   * directly support ScalaTest. (Tools that directly support ScalaTest can use the stack depth information delivered
+   * in the StackDepth exceptions.)
+   */
+  def severedAtStackDepth: TestFailedException = {
+    val truncated = getStackTrace.drop(failedCodeStackDepth)
+    val e = new TestFailedException(message, cause, 0)
+    e.setStackTrace(truncated)
+    e
+  }
 }
 

@@ -34,4 +34,17 @@ class NotAllowedException(message: String, failedCodeStackDepth: Int)
 
   if (message == null)
     throw new NullPointerException("message was null")
+
+  /**
+   * Returns an exception of class <code>NotAllowedException</code> with <code>failedExceptionStackDepth</code> set to 0 and 
+   * all frames above this stack depth severed off. This can be useful when working with tools (such as IDEs) that do not
+   * directly support ScalaTest. (Tools that directly support ScalaTest can use the stack depth information delivered
+   * in the StackDepth exceptions.)
+   */
+  def severedAtStackDepth: NotAllowedException = {
+    val truncated = getStackTrace.drop(failedCodeStackDepth)
+    val e = new NotAllowedException(message, 0)
+    e.setStackTrace(truncated)
+    e
+  }
 }

@@ -48,9 +48,14 @@ trait StackDepth { this: Throwable =>
    * for presenting to a user, which is taken from this exception's <code>StackTraceElement</code> at the depth specified
    * by <code>failedCodeStackDepth</code>.
    *
+   * <p>
+   * This is a <code>def</code> instead of a </code>val<code> because exceptions are mutable: their stack trace can
+   * be changed after the exception is created. This is done, for example, by the <code>SeveredStackTraces</code> trait.
+   * </p>
+   *
    * @return a user-presentable string containing the filename and line number that caused the failed test
    */
-  val failedCodeFileNameAndLineNumberString: Option[String] = {
+  def failedCodeFileNameAndLineNumberString: Option[String] = {
     val stackTraceElement = getStackTrace()(failedCodeStackDepth)
     val fileName = stackTraceElement.getFileName
     if (fileName != null) {
@@ -59,8 +64,11 @@ trait StackDepth { this: Throwable =>
     else None
   }
 
-  /*
-   * Returns an exception of the same class with <code>failedExceptionStackDepth</code> 
+  /**
+   * Returns an exception of the same class with <code>failedExceptionStackDepth</code> set to 0 and 
+   * all frames above this stack depth severed off. This can be useful when working with tools (such as IDEs) that do not
+   * directly support ScalaTest. (Tools that directly support ScalaTest can use the stack depth information delivered
+   * in the StackDepth exceptions.)
    */
-  // def severedAtStackDepth: StackDepth
+  def severedAtStackDepth: Throwable with StackDepth
 }
