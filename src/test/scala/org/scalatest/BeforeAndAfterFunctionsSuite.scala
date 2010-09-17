@@ -234,6 +234,27 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
       a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     }
   }
+
+  test("If beforeEach is called twice, the second invocation should produce NotAllowedException") {
+    var beforeEachRegisteredFirstTime = false
+    var beforeEachRegisteredSecondTime = false
+    class MySuite extends Suite with BeforeAndAfterEachFunctions {
+      var s = "zero"
+      beforeEach {
+        s = "one"
+      }
+      beforeEachRegisteredFirstTime = true
+      beforeEach {
+        s = "two"
+      }
+      beforeEachRegisteredSecondTime = true
+    }
+    intercept[NotAllowedException] {
+      new MySuite
+    }
+    assert(beforeEachRegisteredFirstTime)
+    assert(!beforeEachRegisteredSecondTime)
+  }
 }
 
 class BeforeAndAfterFunctionsExtendingSuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {

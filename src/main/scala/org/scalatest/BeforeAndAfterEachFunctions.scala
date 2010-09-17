@@ -15,6 +15,8 @@
  */
 package org.scalatest
 
+import java.util.concurrent.atomic.AtomicReference
+
 /**
  * Trait that can be mixed into suites that need code executed before and after
  * running each test. This trait facilitates a style of testing in which mutable
@@ -72,8 +74,8 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
 
   this: Suite =>
 
-  private var beforeFunction: Option[() => Any] = None
-  private var afterFunction: Option[() => Any] = None
+  private val beforeFunctionAtomic = new AtomicReference[Option[() => Any]](None)
+  private val afterFunctionAtomic = new AtomicReference[Option[() => Any]](None)
 
   /**
    * Registers code to be executed before each of this suite's tests.
@@ -89,12 +91,14 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
    * </p>
    */
   protected def beforeEach(fun: => Any) {
-    beforeFunction = Some(() => fun)
+    val success = beforeFunctionAtomic.compareAndSet(None, Some(() => fun))
+    if (!success)
+      throw new NotAllowedException("You are only allowed to call beforeEach once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
   }
 
   /**
    * Registers code to be executed after each of this suite's tests.
-   *
+   * TODO Add about can only call once. Probably can't be called after run is invoked.
    * <p>
    * This trait's implementation
    * of <code>runTest</code> invokes the overloaded form of this method that
@@ -106,7 +110,9 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
    * </p>
    */
   protected def afterEach(fun: => Any) {
-    afterFunction = Some(() => fun)
+    val success = afterFunctionAtomic.compareAndSet(None, Some(() => fun))
+    if (!success)
+      throw new NotAllowedException("You are only allowed to call beforeEach once in each Suite that mixes in BeforeAndAfterEachFunctions.", 0)
   }
 
   /**
@@ -136,7 +142,7 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
 
     var thrownException: Option[Throwable] = None
 
-    beforeFunction match {
+    beforeFunctionAtomic.get match {
       case Some(fun) => fun()
       case None =>
     }
@@ -150,7 +156,7 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
     finally {
       try {
         // Make sure that afterEach is called even if runTest completes abruptly.
-        afterFunction match {
+        afterFunctionAtomic.get match {
           case Some(fun) => fun()
           case None =>
         }
