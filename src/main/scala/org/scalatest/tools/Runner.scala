@@ -44,26 +44,27 @@ import java.util.concurrent.ExecutorService
  * All of these arguments are described in more detail below. Here's a summary:
  * </p>
  *
- * <p>
- * <code>scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.tools.Runner [-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] [-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; [...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; [...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file path&gt; [...]]</code>
- * </p>
+ * <pre>
+ * scala [-classpath scalatest-&lt;version&gt;.jar:...] org.scalatest.tools.Runner 
+[-D&lt;key&gt;=&lt;value&gt; [...]] [-p &lt;runpath&gt;] [reporter [...]] 
+[-n &lt;includes&gt;] [-l &lt;excludes&gt;] [-c] [-s &lt;suite class name&gt; 
+[...]] [-j &lt;junit class name&gt; [...]] [-m &lt;members-only suite path&gt; 
+[...]] [-w &lt;wildcard suite path&gt; [...]] [-t &lt;TestNG config file 
+path&gt; [...]]
+ * </pre>
  *
  * <p>
  * The simplest way to start <code>Runner</code> is to specify the directory containing your compiled tests as the sole element of the runpath, for example:
  * </p>
  *
- * <p>
- * <code>scala -classpath scalatest-&lt;version&gt;.jar org.scalatest.tools.Runner -p compiled_tests</code>
- * </p>
+ * <pre>scala -classpath scalatest-&lt;version&gt;.jar org.scalatest.tools.Runner -p compiled_tests</pre>
  *
  * <p>
  * Given the previous command, <code>Runner</code> will discover and execute all <code>Suite</code>s in the <code>compiled_tests</code> directory and its subdirectories,
  * and show results in graphical user interface (GUI).
  * </p>
  *
- * <p>
- * <a name="configMapSection"><strong>Specifying the config map</strong></a>
- * </p>
+ * <a name="configMapSection"><h2>Specifying the config map</h2></a>
  *
  * <p>
  * A <em>config map</em> contains pairs consisting of a string key and a value that may be of any type. (Keys that start with
@@ -73,13 +74,9 @@ import java.util.concurrent.ExecutorService
  * For example:
  * </p>
  *
- * <p>
- * <code>-Ddbname=testdb -Dserver=192.168.1.188</code>
- * </p>
+ * <pre>-Ddbname=testdb -Dserver=192.168.1.188</pre>
  *
- * <p>
- * <strong>Specifying a runpath</strong>
- * </p>
+ * <h2>Specifying a runpath</h2>
  *
  * <p>
  * A runpath is the list of filenames, directory paths, and/or URLs that <code>Runner</code>
@@ -100,13 +97,9 @@ import java.util.concurrent.ExecutorService
  * place a backslash (\) in front of the space. Here's an example:
  * </p>
  *
- * <p>
- * <code>-p "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar target/class\ files"</code>
- * </p>
+ * <pre>-p "serviceuitest-1.1beta4.jar myjini http://myhost:9998/myfile.jar target/class\ files"</pre>
  *
- * <p>
- * <strong>Specifying reporters</strong>
- * </p>
+ * <h2>Specifying reporters</h2>
  *
  * <p>
  * Reporters can be specified  on the command line in any of the following
@@ -115,17 +108,17 @@ import java.util.concurrent.ExecutorService
  *
  * <ul>
  * <li> <code><b>-g[configs...]</b></code> - causes display of a graphical user interface that allows
- *    tests to be run and results to be investigated
+ *    tests to be run and results to be investigated</li>
  * <li> <code><b>-f[configs...] &lt;filename&gt;</b></code> - causes test results to be written to
- *     the named file
+ *     the named file</li>
  * <li> <code><b>-u &lt;directory&gt;</b></code> - causes test results to be written to
- *      xml files in the named directory
+ *      xml files in the named directory</li>
  * <li> <code><b>-o[configs...]</b></code> - causes test results to be written to
- *     the standard output
+ *     the standard output</li>
  * <li> <code><b>-e[configs...]</b></code> - causes test results to be written to
- *     the standard error
+ *     the standard error</li>
  * <li> <code><b>-r[configs...] &lt;reporterclass&gt;</b></code> - causes test results to be reported to
- *     an instance of the specified fully qualified <code>Reporter</code> class name
+ *     an instance of the specified fully qualified <code>Reporter</code> class name</li>
  * </ul>
  *
  * <p>
@@ -151,9 +144,7 @@ import java.util.concurrent.ExecutorService
  * writing to a file named <code>"test.out"</code>, you would type:
  * </p>
  *
- * <p>
- * <code>java -jar scalatest.jar -p mydir <b>-g -f test.out</b> -s MySuite</code>
- * </p>
+ * <pre>java -jar scalatest.jar -p mydir <b>-g -f test.out</b> -s MySuite</pre>
  *
  * <p>
  * The <code><b>-g</b></code>, <code><b>-o</b></code>, or <code><b>-e</b></code> options can
@@ -175,9 +166,7 @@ import java.util.concurrent.ExecutorService
  * executed suites.
  * </p>
  *
- * <p>
- * <strong>Configuring Reporters</strong>
- * </p>
+ * <h2>Configuring Reporters</h2>
  *
  * <p>
  * Each reporter option on the command line can include configuration characters. Configuration characters
@@ -187,13 +176,13 @@ import java.util.concurrent.ExecutorService
  * </p>
  *
  * <ul>
- * <li> <code><b>N</b></code> - drop <code>TestStarting</code> events
- * <li> <code><b>C</b></code> - drop <code>TestSucceeded</code> events
- * <li> <code><b>X</b></code> - drop <code>TestIgnored</code> events
- * <li> <code><b>E</b></code> - drop <code>TestPending</code> events
- * <li> <code><b>H</b></code> - drop <code>SuiteStarting</code> events
- * <li> <code><b>L</b></code> - drop <code>SuiteCompleted</code> events
- * <li> <code><b>O</b></code> - drop <code>InfoProvided</code> events
+ * <li> <code><b>N</b></code> - drop <code>TestStarting</code> events</li>
+ * <li> <code><b>C</b></code> - drop <code>TestSucceeded</code> events</li>
+ * <li> <code><b>X</b></code> - drop <code>TestIgnored</code> events</li>
+ * <li> <code><b>E</b></code> - drop <code>TestPending</code> events</li>
+ * <li> <code><b>H</b></code> - drop <code>SuiteStarting</code> events</li>
+ * <li> <code><b>L</b></code> - drop <code>SuiteCompleted</code> events</li>
+ * <li> <code><b>O</b></code> - drop <code>InfoProvided</code> events</li>
  * </ul>
  *
  * <p>
@@ -223,9 +212,9 @@ import java.util.concurrent.ExecutorService
  * </p>
  *
  * <ul>
- * <li> <code><b>W</b></code> - without color
- * <li> <code><b>D</b></code> - show all durations
- * <li> <code><b>F</b></code> - show <code>TestFailedException</code> stack traces
+ * <li> <code><b>W</b></code> - without color</li>
+ * <li> <code><b>D</b></code> - show all durations</li>
+ * <li> <code><b>F</b></code> - show <code>TestFailedException</code> stack traces</li>
  * </ul>
  *
  * <p>
@@ -275,9 +264,7 @@ import java.util.concurrent.ExecutorService
  * <code>"-eNDXEHLO"</code> will work.
  * </p>
  *
- * <p>
- * <strong>Specifying tags to include and exclude</strong>
- * </p>
+ * <h2>Specifying tags to include and exclude</h2>
  *
  * <p>
  * You can specify tag names of tests to include or exclude from a run. To specify tags to include,
@@ -301,9 +288,7 @@ import java.util.concurrent.ExecutorService
  * </ul>
  * </p>
  *
- * <p>
- * <strong>Executing <code>Suite</code>s concurrently</strong>
- * </p>
+ * <h2>Executing <code>Suite</code>s concurrently</h2>
  *
  * <p>
  * With the proliferation of multi-core architectures, and the often parallelizable nature of tests, it is useful to be able to run
@@ -322,18 +307,14 @@ import java.util.concurrent.ExecutorService
  * processors available.
  * </p>
  *
- * <p>
- * <strong>Specifying <code>Suite</code>s</strong>
- * </p>
+ * <h2>Specifying <code>Suite</code>s</h2>
  *
  * <p>
  * Suites are specified on the command line with a <b>-s</b> followed by the fully qualified
  * name of a <code>Suite</code> subclass, as in:
  * </p>
  *
- * <p>
- * <code>-s com.artima.serviceuitest.ServiceUITestkit</code>
- * </p>
+ * <pre>-s com.artima.serviceuitest.ServiceUITestkit</pre>
  *
  * <p>
  * Each specified suite class must be public, a subclass of
@@ -358,9 +339,7 @@ import java.util.concurrent.ExecutorService
  * so client software can count on them being available.
  * </p>
  *
- * <p>
- * <strong>Specifying "members-only" and "wildcard" <code>Suite</code> paths</strong>
- * </p>
+ * <h2>Specifying "members-only" and "wildcard" <code>Suite</code> paths</h2>
  *
  * <p>
  * If you specify <code>Suite</code> path names with <code>-m</code> or <code>-w</code>, <code>Runner</code> will automatically
@@ -393,9 +372,7 @@ import java.util.concurrent.ExecutorService
  * in the runpath.
  * </p>
  *
- * <p>
- * <strong>Specifying TestNG XML config file paths</strong>
- * </p>
+ * <h2>Specifying TestNG XML config file paths</h2>
  *
  * <p>
  * If you specify one or more file paths with <code>-t</code>, <code>Runner</code> will create a <code>org.scalatest.testng.TestNGWrapperSuite</code>,
@@ -406,9 +383,7 @@ import java.util.concurrent.ExecutorService
  * <code>-s</code>, <code>-m</code>, or </code>-w</code> parameters.
  * </p>
  *
- * <p>
- * <strong>Specifying JUnit tests</strong>
- * </p>
+ * <h2>Specifying JUnit tests</h2>
  *
  * <p>
  * JUnit tests, including ones written in Java, may be run by specifying

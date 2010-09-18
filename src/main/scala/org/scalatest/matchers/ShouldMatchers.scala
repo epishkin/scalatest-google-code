@@ -137,7 +137,7 @@ import org.scalatest.verb.ShouldVerb
  * one should be >= (0)
  * </pre>
  * 
- * <h2>Checking equality with <code>be ===</code></h2>
+ * <h2>Checking equality with <code>be</code> <code>=</code><code>=<code>=</code></h2>
  *
  * <p>
  * An alternate way to check for equality of two objects is to use <code>be</code> with
