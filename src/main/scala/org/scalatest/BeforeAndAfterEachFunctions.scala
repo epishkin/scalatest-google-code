@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference
  * import org.scalatest._
  * import scala.collection.mutable.ListBuffer
  *
- * class MySuite extends BeforeAndAfterEach {
+ * class MySuite extends BeforeAndAfterEachFunctions {
  *
  *   // Fixtures as reassignable variables and mutable objects
  *   var sb: StringBuilder = _
@@ -68,6 +68,22 @@ import java.util.concurrent.atomic.AtomicReference
  * class MySuite extends FunSuite with BeforeAndAfterEachFunctions
  * </pre>
  *
+ * <p>
+ * The <code>beforeEach</code> and <code>afterEach</code> methods can each only be called once per <code>Suite</code>,
+ * and cannot be invoked after <code>run</code> has been invoked.
+ * </p>
+ *
+ * <p>
+ * Note: The advantage this trait has over <code>BeforeAndAfterEach</code> is that its syntax is more concise. 
+ * The main disadvantage is that it is not stackable, whereas <code>BeforeAndAfterEach</code> is. <em>I.e.</em>, 
+ * you can write several traits that extend <code>BeforeAndAfterEach</code> and provide <code>beforeEach</code> methods
+ * that include a call to <code>super.beforeEach</code>, and mix them together in various combinations. By contrast,
+ * only one call to the <code>beforeEach</code> registration function is allowed in a suite or spec that mixes
+ * in <code>BeforeAndAfterEachFunctions</code>. In addition, <code>BeforeAndAfterEach</code> allows you to access
+ * the config map in its <code>beforeEach</code> and <code>afterEach</code> methods, but <code>BeforeAndAfterEachFunctions</code>
+ * does not.
+ * </p>
+ *
  * @author Bill Venners
  */
 trait BeforeAndAfterEachFunctions extends AbstractSuite {
@@ -83,13 +99,13 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
    *
    * <p>
    * This trait's implementation
-   * of <code>runTest</code> invokes the overloaded form of this method that
-   * takes a <code>configMap</code> before running
-   * each test. This trait's implementation of that <code>beforeEach(Map[String, Any])</code> method simply invokes this
-   * <code>beforeEach()</code> method. Thus this method can be used to set up a test fixture
-   * needed by each test, when you don't need anything from the <code>configMap</code>.
-   * This trait's implementation of this method does nothing.
+   * of <code>runTest</code> executes the code passed to this method before running
+   * each test. Thus the code passed to this method can be used to set up a test fixture
+   * needed by each test.
    * </p>
+   *
+   * @throws NotAllowedException if invoked more than once on the same <code>Suite</code> or if
+   *                             invoked after <code>run</code> has been invoked on the <code>Suite</code>
    */
   protected def beforeEach(fun: => Any) {
     if (runHasBeenInvoked)
@@ -101,16 +117,15 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
 
   /**
    * Registers code to be executed after each of this suite's tests.
-   * TODO Add about can only call once. Probably can't be called after run is invoked.
+   *
    * <p>
-   * This trait's implementation
-   * of <code>runTest</code> invokes the overloaded form of this method that
-   * takes a <code>configMap</code> map after running
-   * each test. This trait's implementation of that <code>afterEach(Map[String, Any])</code> method simply invokes this
-   * <code>afterEach()</code> method. Thus this method can be used to tear down a test fixture
-   * needed by each test, when you don't need anything from the <code>configMap</code>.
-   * This trait's implementation of this method does nothing.
+   * This trait's implementation of <code>runTest</code> executes the code passed to this method after running
+   * each test. Thus the code passed to this method can be used to tear down a test fixture
+   * needed by each test.
    * </p>
+   *
+   * @throws NotAllowedException if invoked more than once on the same <code>Suite</code> or if
+   *                             invoked after <code>run</code> has been invoked on the <code>Suite</code>
    */
   protected def afterEach(fun: => Any) {
     if (runHasBeenInvoked)
@@ -121,7 +136,7 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
   }
 
   /**
-   * Run a test surrounded by calls to <code>beforeEach</code> and <code>afterEach</code>.
+   * Run a test surrounded by calls to the code passed to <code>beforeEach</code> and <code>afterEach</code>, if any.
    *
    * <p>
    * This trait's implementation of this method ("this method") invokes
@@ -181,6 +196,11 @@ trait BeforeAndAfterEachFunctions extends AbstractSuite {
     }
   }
 
+  /**
+   * This trait's implementation of run sets a flag indicating run has been invoked, after which
+   * any invocation to <code>beforeEach</code> or <code>afterEach</code> will complete abruptly
+   * with a <code>NotAllowedException</code>.
+   */
   abstract override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
     configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 

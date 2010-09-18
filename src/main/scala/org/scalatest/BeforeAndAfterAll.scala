@@ -26,8 +26,8 @@ package org.scalatest
  * this trait's <code>run</code> method will invoke <code>afterAll</code>.
  *
  * <p>
- * Trait <code>BeforeAndAfterEach</code> defines two overloaded variants  each of <code>beforeAll</code>
- * and <code>afterAll</code>, one which takes a <code>configMap</code> and another that takes no
+ * Trait <code>BeforeAndAfterAll</code> defines two overloaded variants  each of <code>beforeAll</code>
+ * and <code>afterAll</code>, one that takes a <code>configMap</code> and another that takes no
  * arguments. This traits implemention of the variant that takes the <code>configMap</code>
  * simply invokes the variant that takes no parameters, which does nothing. Thus you can override
  * whichever variant you want. If you need something from the <code>configMap</code> before
@@ -47,7 +47,7 @@ package org.scalatest
  * 
  * <pre>
  * import org.scalatest.SuperSuite
- * import org.scalatest.BeforeAndAfterEach
+ * import org.scalatest.BeforeAndAfterAll
  * import java.io.FileReader
  * import java.io.FileWriter
  * import java.io.File
@@ -65,7 +65,7 @@ package org.scalatest
  *       "must place a temp file name in the configMap under the key: " + FileNameKeyInGoodies
  *     )
  *
- *     val fileName = configMap(tempFileName))
+ *     val fileName = configMap(tempFileName)
  *
  *     val writer = new FileWriter(fileName)
  *     try {

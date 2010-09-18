@@ -36,14 +36,14 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
     }
   }
   
-  class MySuite extends TheSuper with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+  class MySuite extends TheSuper with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
 
     var beforeEachCalledBeforeRunTest = false
     var afterEachCalledAfterRunTest = false
     var beforeAllCalledBeforeExecute = false
     var afterAllCalledAfterExecute = false
 
-    override def beforeAll() {
+    beforeAll {
       if (!runWasCalled)
         beforeAllCalledBeforeExecute = true
     }
@@ -56,7 +56,7 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
       if (runTestWasCalled)
         afterEachCalledAfterRunTest = true
     }
-    override def afterAll() {
+    afterAll {
       if (runWasCalled)
         afterAllCalledAfterExecute = true
     }
@@ -102,7 +102,7 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
   test("If any invocation of beforeEach completes abruptly with an exception, runTest " +
     "will complete abruptly with the same exception.") {
     
-    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
       beforeEach { throw new NumberFormatException } 
     }
     intercept[NumberFormatException] {
@@ -118,7 +118,7 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
       var afterEachCalled = false
       afterEach {
         afterEachCalled = true
@@ -138,7 +138,7 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
       var afterEachCalled = false
       afterEach {
         afterEachCalled = true
@@ -155,7 +155,7 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
   test("If super.runTest returns normally, but afterEach completes abruptly with an " +
     "exception, runTest will complete abruptly with the same exception.") {
 
-    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
       afterEach { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -169,7 +169,7 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
   test("If any invocation of beforeAll completes abruptly with an exception, run " +
     "will complete abruptly with the same exception.") {
     
-    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
       beforeAll { throw new NumberFormatException }
       def testJuly() = ()
     }
@@ -187,9 +187,9 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
       var afterAllCalled = false
-      override def afterAll() {
+      afterAll {
         afterAllCalled = true
       }
     }
@@ -208,9 +208,9 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
         throw new NumberFormatException
       }
     }
-    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+    class MySuite extends FunkySuite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
       var afterAllCalled = false
-      override def afterAll() {
+      afterAll {
         afterAllCalled = true
         throw new IllegalArgumentException
       }
@@ -225,8 +225,8 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
   test("If super.run returns normally, but afterAll completes abruptly with an " +
     "exception, run will complete abruptly with the same exception.") {
        
-    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
-      override def afterAll() { throw new NumberFormatException }
+    class MySuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
+      afterAll { throw new NumberFormatException }
       def testJuly() = ()
     }
     intercept[NumberFormatException] {
@@ -322,9 +322,94 @@ class BeforeAndAfterFunctionsSuite extends FunSuite {
     a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
     assert(a.notAllowedExceptionThrown)
   }
+
+// All stuff
+  test("If beforeAll is called twice, the second invocation should produce NotAllowedException") {
+    var beforeAllRegisteredFirstTime = false
+    var beforeAllRegisteredSecondTime = false
+    class MySuite extends Suite with BeforeAndAfterAllFunctions {
+      var s = "zero"
+      beforeAll {
+        s = "one"
+      }
+      beforeAllRegisteredFirstTime = true
+      beforeAll {
+        s = "two"
+      }
+      beforeAllRegisteredSecondTime = true
+    }
+    intercept[NotAllowedException] {
+      new MySuite
+    }
+    assert(beforeAllRegisteredFirstTime)
+    assert(!beforeAllRegisteredSecondTime)
+  }
+
+  test("If beforeAll is called after run is invoked, the test should fail with NotAllowedException") {
+    class MySuite extends FunSuite with BeforeAndAfterAllFunctions {
+      var s = "zero"
+      var notAllowedExceptionThrown = false
+      test("this one should fail") {
+        try {
+          beforeAll {
+            s = "one"
+          }
+        }
+        catch {
+          case _: NotAllowedException => notAllowedExceptionThrown = true
+          case e => throw e
+        }
+      }
+    }
+    val a = new MySuite
+    a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+    assert(a.notAllowedExceptionThrown)
+  }
+
+  test("If afterAll is called twice, the second invocation should produce NotAllowedException") {
+    var afterAllRegisteredFirstTime = false
+    var afterAllRegisteredSecondTime = false
+    class MySuite extends Suite with BeforeAndAfterAllFunctions {
+      var s = "zero"
+      afterAll {
+        s = "one"
+      }
+      afterAllRegisteredFirstTime = true
+      afterAll {
+        s = "two"
+      }
+      afterAllRegisteredSecondTime = true
+    }
+    intercept[NotAllowedException] {
+      new MySuite
+    }
+    assert(afterAllRegisteredFirstTime)
+    assert(!afterAllRegisteredSecondTime)
+  }
+
+  test("If afterAll is called after run is invoked, the test should fail with NotAllowedException") {
+    class MySuite extends FunSuite with BeforeAndAfterAllFunctions {
+      var s = "zero"
+      var notAllowedExceptionThrown = false
+      test("this one should fail") {
+        try {
+          afterAll {
+            s = "one"
+          }
+        }
+        catch {
+          case _: NotAllowedException => notAllowedExceptionThrown = true
+          case e => throw e
+        }
+      }
+    }
+    val a = new MySuite
+    a.run(None, StubReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+    assert(a.notAllowedExceptionThrown)
+  }
 }
 
-class BeforeAndAfterFunctionsExtendingSuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+class BeforeAndAfterFunctionsExtendingSuite extends Suite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
@@ -348,7 +433,7 @@ class BeforeAndAfterFunctionsExtendingSuite extends Suite with BeforeAndAfterEac
   }
 }
 
-class BeforeAndAfterFunctionsExtendingFunSuite extends FunSuite with BeforeAndAfterEachFunctions with BeforeAndAfterAll {
+class BeforeAndAfterFunctionsExtendingFunSuite extends FunSuite with BeforeAndAfterEachFunctions with BeforeAndAfterAllFunctions {
 
   var sb: StringBuilder = _
   val lb = new ListBuffer[String]
