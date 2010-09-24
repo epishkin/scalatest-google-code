@@ -85,6 +85,7 @@
         <path id="build.generators.class.path">
             <pathelement location="${lib}/stringtemplate.jar" />
             <pathelement location="${lib}/scala-library.jar" />
+            <pathelement location="${lib}/antlr-2.7.7.jar" />
         </path>
 
         <path id="run.generators.class.path">
