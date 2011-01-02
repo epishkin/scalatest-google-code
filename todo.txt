@@ -1,3 +1,4 @@
+Testing ability to check in...
 
 - sheesh looks like testng has some problem. Expected test count is wrong for one. Also, was firing a lame info provided report on configuration success.
   and it is printing out to the standard output. Is there a way to block that?
