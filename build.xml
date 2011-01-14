@@ -123,7 +123,7 @@
                 <pathelement location="${classes}" />
                 <pathelement location="${lib}/scala-library.jar" />
                 <pathelement location="${lib}/junit-4.4.jar" />
-                <pathelement location="${lib}/scalacheck_2.8.0-1.7.jar" />
+                <pathelement location="${lib}/scalacheck_2.8.1-1.8.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
                 <pathelement location="${lib}/jmock-2.5.1.jar" />
@@ -673,7 +673,7 @@
                 <pathelement location="${build.examples}" />
                 <pathelement location="${lib}/scala-library.jar" />
                 <pathelement location="${lib}/junit-4.4.jar" />
-                <pathelement location="${lib}/scalacheck_2.8.0-1.7.jar" />
+                <pathelement location="${lib}/scalacheck_2.8.1-1.8.jar" />
                 <pathelement location="${lib}/mockito-all-1.6.jar" />
                 <pathelement location="${lib}/testng-5.7-jdk15.jar" />
                 <pathelement location="${lib}/jmock-2.5.1.jar" />
