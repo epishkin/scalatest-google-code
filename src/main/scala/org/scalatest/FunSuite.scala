@@ -859,13 +859,13 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * class MySuite extends FunSuite {
  *
- *   def test("addition") {
+ *   test("addition") {
  *     val sum = 1 + 1
  *     assert(sum === 2)
  *     assert(sum + 2 === 4)
  *   }
  *
- *   def test("subtraction") (pending)
+ *   test("subtraction") (pending)
  * }
  * </pre>
  *
