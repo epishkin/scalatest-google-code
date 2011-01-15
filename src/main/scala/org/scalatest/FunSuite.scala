@@ -52,8 +52,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  * The test code is a function passed as a by-name parameter to <code>test</code>, which registers
  * it for later execution. One benefit of <code>FunSuite</code> compared to <code>Suite</code> is you need not name all your
  * tests starting with &#8220;<code>test</code>.&#8221; In addition, you can more easily give long names to
- * your tests, because you need not encode them in camel case, as you must do
- * with test methods.
+ * your tests, because you need not encode them in camel case, as most people would tend to do
+ * for test method names.
  * </p>
  *
  * <p>
