@@ -79,7 +79,7 @@ private[concurrent] class PimpedThreadGroup(threadGroup: ThreadGroup) {
   def filter(state: State): List[Thread] = getThreads.filter(_.getState == state)
 
   /**
-   * Returns true if this ThreadGroup contains any Thread whos state matches the given State,
+   * Returns true if this ThreadGroup contains any Thread whose state matches the given State,
    * false otherwise.
    */
   def exists(state: State): Boolean = getThreads.exists(_.getState == state)
