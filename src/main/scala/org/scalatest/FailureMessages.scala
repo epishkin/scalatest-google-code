@@ -44,7 +44,7 @@ private[scalatest] object FailureMessages {
   def prettifyArrays(o: Any): String = {
     o match {
       case arr: Array[_] => "Array(" + (arr map (a => prettifyArrays(a))).mkString(", ") + ")"
-      case _ => o.toString
+      case _ => if (o != null) o.toString else "null"
     }
   }
 }
