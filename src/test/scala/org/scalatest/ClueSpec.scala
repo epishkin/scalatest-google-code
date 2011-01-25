@@ -53,6 +53,8 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     jutfe.modifyMessage(fun).message.get should be ("clue message")
   }
 
+  // ******* withClue tests *******
+
   "The withClue construct" should "allow any non-ModifiableMessage exception to pass through" in {
     val iae = new IllegalArgumentException
     val caught = intercept[IllegalArgumentException] {
@@ -86,29 +88,124 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     caught.message.get should equal (white + "message")
   }
 
-  ignore should "given a non-empty clue string, throw a new instance of the caught TFE exception that has all fields the same except an appended clue string" in {
-    val tfe = new TestFailedException("before", 3)
+  it should "given a non-empty clue string with no trailing white space, throw a new instance of the caught TFE exception that has all fields the same except a prepended clue string followed by an extra space" in {
+    val tfe = new TestFailedException("message", 3)
     val caught = intercept[TestFailedException] {
-      withClue("after") {
+      withClue("clue") {
         throw tfe 
       }
     }
     caught should not be theSameInstanceAs (tfe)
     caught.message should be ('defined)
-    caught.message.get should equal ("before\nafter")
+    caught.message.get should equal ("clue message")
   }
 
-/*
-  ignore should "given a non-empty clue string, throw a new instance of the caught JUTFE exception that has all fields the same except an appended clue string" in {
+  it should "given a non-empty clue string with a trailing space, throw a new instance of the caught TFE exception that has all fields the same except a prepended clue string (followed by no extra space)" in {
+    val tfe = new TestFailedException("message", 3)
+    val caught = intercept[TestFailedException] {
+      withClue("clue ") { // has a trailing space
+        throw tfe 
+      }
+    }
+    caught should not be theSameInstanceAs (tfe)
+    caught.message should be ('defined)
+    caught.message.get should equal ("clue message")
+  }
+
+  it should "given a non-empty clue string with a end of line, throw a new instance of the caught TFE exception that has all fields the same except a prepended clue string (followed by no extra space)" in {
+    val tfe = new TestFailedException("message", 3)
+    val caught = intercept[TestFailedException] {
+      withClue("clue\n") { // has a end of line character
+        throw tfe 
+      }
+    }
+    caught should not be theSameInstanceAs (tfe)
+    caught.message should be ('defined)
+    caught.message.get should equal ("clue\nmessage")
+  }
+
+  it should "given an empty clue string, rethrow the same JUTFE exception" in {
     val jutfe = new JUnitTestFailedError("before", 3)
     val caught = intercept[JUnitTestFailedError] {
-      withClue("after") {
+      withClue("") {
+        throw jutfe 
+      }
+    }
+    caught should be theSameInstanceAs (jutfe)
+  }
+
+  it should "given an all-whitespace clue string, should throw a new JUTFE with the white space prepended to the old message" in {
+    val jutfe = new JUnitTestFailedError("message", 3)
+    val white = "    "
+    val caught = intercept[JUnitTestFailedError] {
+      withClue(white) {
         throw jutfe 
       }
     }
     caught should not be theSameInstanceAs (jutfe)
     caught.message should be ('defined)
-    caught.message.get should equal ("before\nafter")
+    caught.message.get should equal (white + "message")
   }
-*/
+
+  it should "given a non-empty clue string with no trailing white space, throw a new instance of the caught JUTFE exception that has all fields the same except a prepended clue string followed by an extra space" in {
+    val jutfe = new JUnitTestFailedError("message", 3)
+    val caught = intercept[JUnitTestFailedError] {
+      withClue("clue") {
+        throw jutfe 
+      }
+    }
+    caught should not be theSameInstanceAs (jutfe)
+    caught.message should be ('defined)
+    caught.message.get should equal ("clue message")
+  }
+
+  it should "given a non-empty clue string with a trailing space, throw a new instance of the caught JUTFE exception that has all fields the same except a prepended clue string (followed by no extra space)" in {
+    val jutfe = new JUnitTestFailedError("message", 3)
+    val caught = intercept[JUnitTestFailedError] {
+      withClue("clue ") { // has a trailing space
+        throw jutfe 
+      }
+    }
+    caught should not be theSameInstanceAs (jutfe)
+    caught.message should be ('defined)
+    caught.message.get should equal ("clue message")
+  }
+
+  it should "given a non-empty clue string with a end of line, throw a new instance of the caught JUTFE exception that has all fields the same except a prepended clue string (followed by no extra space)" in {
+    val jutfe = new JUnitTestFailedError("message", 3)
+    val caught = intercept[JUnitTestFailedError] {
+      withClue("clue\n") { // has a end of line character
+        throw jutfe 
+      }
+    }
+    caught should not be theSameInstanceAs (jutfe)
+    caught.message should be ('defined)
+    caught.message.get should equal ("clue\nmessage")
+  }
+
+  // ***** tests with objects other than String *****
+
+  it should "given an object with a non-empty clue string with no trailing white space, throw a new instance of the caught TFE exception that has all fields the same except a prepended clue string followed by an extra space" in {
+    val tfe = new TestFailedException("message", 3)
+    val list = List(1, 2, 3)
+    val caught = intercept[TestFailedException] {
+      withClue(list) {
+        throw tfe 
+      }
+    }
+    caught should not be theSameInstanceAs (tfe)
+    caught.message should be ('defined)
+    caught.message.get should equal ("List(1, 2, 3) message")
+  }
+
+  // ***** withClueFunction *****
+  "the withClueFunction method" should "allow any non-ModifiableMessage exception to pass through" in {
+    val iae = new IllegalArgumentException
+    val caught = intercept[IllegalArgumentException] {
+      withClueFunction(opt => Some("howdy")) {
+        throw iae 
+      }
+    }
+    caught should be theSameInstanceAs (iae)
+  }
 }

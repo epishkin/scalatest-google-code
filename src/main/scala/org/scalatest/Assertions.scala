@@ -681,11 +681,20 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     throw newAssertionFailedException(None, Some(cause), 4)
   }
 
-  def withClue(clue: String)(fun: => Unit) {
+  /**
+   * If clue does not end in a white space character, one space will be added
+   * between it and the existing detail message (unless the detail message is
+   * not defined).
+  */
+  def withClue(clue: Any)(fun: => Unit) {
     def prepend(currentMessage: Option[String]) =
       currentMessage match {
-        case Some(msg) => Some(clue + msg)
-        case None => Some(clue)
+        case Some(msg) =>
+          if (clue.toString.last.isWhitespace)
+            Some(clue.toString + msg)
+          else 
+            Some(clue.toString + " " + msg)
+        case None => Some(clue.toString)
       }
     try {
       fun
@@ -697,6 +706,10 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
         else
           throw e
     }
+  }
+
+  def withClueFunction(sfun: Option[String] => Option[String])(fun: => Unit) {
+    fun
   }
 }
 
