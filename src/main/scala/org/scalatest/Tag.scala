@@ -148,6 +148,6 @@ object Tag {
  * <strong>Group has been deprecated. It will be removed in a future release of ScalaTest. Please change any
  * <code>Group</code> subclasses you have created so that they extend class <code>Tag</code> directly instead.</strong>
  */
-@deprecated
+@deprecated // deprecated in 1.0, so remove in 1.4
 abstract class Group(name: String) extends Tag(name)
 
