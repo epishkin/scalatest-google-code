@@ -198,6 +198,7 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     caught.message.get should equal ("List(1, 2, 3) message")
   }
 
+/*
   // ***** withClueFunction *****
   "the withClueFunction method" should "allow any non-ModifiableMessage exception to pass through" in {
     val iae = new IllegalArgumentException
@@ -208,4 +209,6 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     }
     caught should be theSameInstanceAs (iae)
   }
+*/
 }
+

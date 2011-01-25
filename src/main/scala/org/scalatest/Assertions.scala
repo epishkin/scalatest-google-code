@@ -708,9 +708,11 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     }
   }
 
+/* Hold off on this for now. See how people do with the simple one that takes an Any.
   def withClueFunction(sfun: Option[String] => Option[String])(fun: => Unit) {
     fun
   }
+*/
 }
 
 /**
