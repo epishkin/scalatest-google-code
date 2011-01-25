@@ -16,8 +16,7 @@
 package org.scalatest
 
 /**
- * Trait implemented by exception types that can append a new clue to the end
- * of the exception's detail message.
+ * Trait implemented by exception types that can modify their detail message.
  *
  * <p>
  * This trait facilitates the <code>withClue</code> construct provided by trait
@@ -68,33 +67,28 @@ package org.scalatest
  * </pre>
  *
  * <p>
- * Exception types that mix in this trait have an <code>appendClue</code> method, which
- * returns an exception identical to itself, except with the result of invoking
- * <code>toString</code> on the passed <code>clue</code> appended to the exception's
- * detail message, separated by a newline character (or replacing the detail message
- * if it was previously <code>null</code>).   
+ * Exception types that mix in this trait have a <code>modifyMessage</code> method, which
+ * returns an exception identical to itself, except with the detail message option replaced with
+ * the result of invoking the passed function, supplying the current detail message option
+ * as the lone <code>String</code> parameter. 
  * </p>
  */
-private[scalatest] trait AppendClueMethod[T <: Throwable] { this: Throwable =>
+trait ModifiableMessage[T <: Throwable] { this: Throwable =>
 
   /**
    * Returns an instance of this exception's class, identical to this exception,
-   * except with the string resulting from invoking <code>toString</code> on
-   * the passed <code>clue</code> appended to its detail message, separated by
-   * a newline character. Or, if this exception's detail message is <code>null</code>,
-   * returns an instance of this exception's class that is identical to this exception,
-   * except with the detail message equal to the result of invoking <code>toString</code>
-   * on the passed <code>clue</code>.
+   * except with the detail message option replaced with
+   * the result of invoking the passed function, <code>fun</code>, supplying the current detail message option
+   * as the lone <code>Option[String]</code> parameter. 
    *
    * <p>
    * Implementations of this method may either mutate this exception or return
-   * a new instance with the revised detail message. If the result of invoking
-   * <code>toString</code> on the passed <code>clue</code> is null or, after being
-   * trimmed, an empty string, this method returns this exception unchanged.
+   * a new instance with the revised detail message.
    * </p>
    *
-   * @param clue An object whose <code>toString</code> method returns a message to append
+   * @param fun An object whose <code>toString</code> method returns a message to append
    *   to this exception's detail message.
    */
-  def appendClue(clue: Any): T
+  def modifyMessage(fun: Option[String] => Option[String]): T
 }
+

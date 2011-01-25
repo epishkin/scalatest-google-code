@@ -16,6 +16,7 @@
 package org.scalatest.junit
 
 import org.scalatest.StackDepth
+import org.scalatest.ModifiableMessage
 import _root_.junit.framework.AssertionFailedError
 
 /**
@@ -66,7 +67,7 @@ import _root_.junit.framework.AssertionFailedError
  * @author Bill Venners
  */
 class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwable], val failedCodeStackDepth: Int)
-    extends AssertionFailedError(if (message.isDefined) message.get else "") with StackDepth {
+    extends AssertionFailedError(if (message.isDefined) message.get else "") with StackDepth with ModifiableMessage[JUnitTestFailedError] {
 
   if (message == null) throw new NullPointerException("message was null")
   message match {
@@ -88,7 +89,7 @@ class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwa
   * always initialized with a cause passed to the constructor of superclass <code>
   */
   override final def initCause(throwable: Throwable): Throwable = { throw new IllegalStateException }
-  
+
   /**
    * Create a <code>JUnitTestFailedError</code> with specified stack depth and no detail message or cause.
    *
@@ -174,5 +175,17 @@ class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwa
     val e = new JUnitTestFailedError(message, cause, 0)
     e.setStackTrace(truncated)
     e
+  }
+
+  /**
+   * Returns an instance of this exception's class, identical to this exception,
+   * except with the detail message option string replaced with the result of passing
+   * the current detail message to the passed function, <code>fun</code>.
+   *
+   * @param fun A function that, given the current optional detail message, will produce
+   * the modified optional detail message for the result instance of <code>TestFailedException</code>.
+   */
+  def modifyMessage(fun: Option[String] => Option[String]): JUnitTestFailedError = {
+    this
   }
 }

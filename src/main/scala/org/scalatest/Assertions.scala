@@ -680,6 +680,15 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
         
     throw newAssertionFailedException(None, Some(cause), 4)
   }
+
+  def withClue(clue: String)(fun: => Unit) {
+    try {
+      fun
+    }
+    catch {
+      case e: AppendClueMethod[_] => throw e.appendClue("\n" + clue)
+    }
+  }
 }
 
 /**

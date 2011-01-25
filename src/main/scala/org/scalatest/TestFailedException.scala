@@ -31,7 +31,7 @@ package org.scalatest
  * @author Bill Venners
  */
 class TestFailedException(message: Option[String], cause: Option[Throwable], failedCodeStackDepth: Int)
-    extends StackDepthException(message, cause, failedCodeStackDepth) {
+    extends StackDepthException(message, cause, failedCodeStackDepth) with ModifiableMessage[TestFailedException] {
   
   if (message == null) throw new NullPointerException("message was null")
   message match {
@@ -49,14 +49,14 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
    * <strong><code>failedTestCodeStackDepth</code> has been deprecated and will be removed in a future version of
    * ScalaTest. Please call <code>failedCodeStackDepth</code> instead.</strong>
    */
-  @deprecated // deprecated in 1.0, remove in 1.2
+  @deprecated // deprecated in 1.0, remove in 1.4
   val failedTestCodeStackDepth: Int = failedCodeStackDepth
 
   /**
    * <strong><code>failedTestCodeFileNameAndLineNumberString</code> has been deprecated and will be removed in a future version of
    * ScalaTest. Please call <code>failedCodeFileNameAndLineNumberString</code> instead.</strong>
    */
-   @deprecated // deprecated in 1.0, remove in 1.2
+   @deprecated // deprecated in 1.0, remove in 1.4
    val failedTestCodeFileNameAndLineNumberString: Option[String] = failedCodeFileNameAndLineNumberString
 
   /**
@@ -144,6 +144,18 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
     val e = new TestFailedException(message, cause, 0)
     e.setStackTrace(truncated)
     e
+  }
+
+  /**
+   * Returns an instance of this exception's class, identical to this exception,
+   * except with the detail message option string replaced with the result of passing
+   * the current detail message to the passed function, <code>fun</code>.
+   *
+   * @param fun A function that, given the current optional detail message, will produce
+   * the modified optional detail message for the result instance of <code>TestFailedException</code>.
+   */
+  def modifyMessage(fun: Option[String] => Option[String]): TestFailedException = {
+    this
   }
 }
 
