@@ -48,13 +48,16 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
 
   //
   // Records events in 'events' set.  Generates xml from events upon receipt
-  // of SuiteCompleted events.
+  // of SuiteCompleted or SuiteAborted events.
   //
   def apply(event: Event) {
     events += event
 
     event match {
       case e: SuiteCompleted =>
+        writeSuiteFile(e)
+
+      case e: SuiteAborted =>
         writeSuiteFile(e)
 
       case _ =>
@@ -65,19 +68,22 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
   // Writes the xml file for a single test suite.  Removes processed
   // events from the events Set as they are used.
   //
-  private def writeSuiteFile(endEvent: SuiteCompleted) {
+  private def writeSuiteFile(endEvent: Event) {
+    require(endEvent.isInstanceOf[SuiteCompleted] ||
+            endEvent.isInstanceOf[SuiteAborted])
+
     val testsuite = getTestsuite(endEvent)
     val xmlStr    = xmlify(testsuite)
     val filespec  = directory + "/TEST-" + testsuite.name + ".xml"
 
-    val out = new PrintWriter(filespec)
+    val out = new PrintWriter(filespec, "UTF-8")
     out.print(xmlStr)
     out.close()
   }
 
   //
   // Constructs a Testsuite object corresponding to a specified
-  // SuiteCompleted event.
+  // SuiteCompleted or SuiteAborted event.
   //
   // Scans events reported so far and builds the Testsuite from events
   // associated with the specified suite.  Removes events from
@@ -88,10 +94,13 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
   // ordinal list with last element removed).  Events with the same
   // prefix get processed sequentially, so filtering this way eliminates
   // events from any nested suites being processed concurrently
-  // that have not yet completed when the parent's SuiteCompleted event
-  // is processed.
+  // that have not yet completed when the parent's SuiteCompleted or
+  // SuiteAborted event is processed.
   //
-  private def getTestsuite(endEvent: SuiteCompleted): Testsuite = {
+  private def getTestsuite(endEvent: Event): Testsuite = {
+    require(endEvent.isInstanceOf[SuiteCompleted] ||
+            endEvent.isInstanceOf[SuiteAborted])
+
     val ordinalPrefix = endEvent.ordinal.toList.dropRight(1)
 
     val samePrefixEvents = 
@@ -128,7 +137,9 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
           idx = testEndIndex + 1
 
         case e: SuiteAborted =>
+          assert(endIndex == idx)
           testsuite.errors += 1
+          testsuite.time = e.timeStamp - testsuite.timeStamp
           idx += 1
 
         case e: SuiteCompleted =>
@@ -152,9 +163,9 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
   }
 
   //
-  // Finds the indexes for the SuiteStarted and SuiteCompleted endpoints of
-  // a test suite within an ordered array of events, given the terminating
-  // SuiteCompleted event.
+  // Finds the indexes for the SuiteStarted and SuiteCompleted or
+  // SuiteAborted endpoints of a test suite within an ordered array of
+  // events, given the terminating SuiteCompleted or SuiteAborted event.
   //
   // Searches sequentially through the array to find the specified
   // SuiteCompleted event and its preceding SuiteStarting event.
@@ -167,9 +178,11 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
   // events.)
   //
   private def locateSuite(orderedEvents: Array[Event],
-                          endEvent: SuiteCompleted):
+                          endEvent: Event):
   (Int, Int) = {
     require(orderedEvents.size > 0)
+    require(endEvent.isInstanceOf[SuiteCompleted] ||
+            endEvent.isInstanceOf[SuiteAborted])
 
     var startIndex = 0
     var endIndex   = 0
@@ -183,7 +196,22 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
           startIndex = idx
 
         case e: SuiteCompleted =>
-          if (event == endEvent) endIndex = idx
+          if (event == endEvent) {
+            endIndex = idx
+            assert(
+              e.suiteName ==
+                orderedEvents(startIndex).asInstanceOf[SuiteStarting].
+                suiteName)
+          }
+
+        case e: SuiteAborted =>
+          if (event == endEvent) {
+            endIndex = idx
+            assert(
+              e.suiteName ==
+                orderedEvents(startIndex).asInstanceOf[SuiteStarting].
+                suiteName)
+          }
 
         case _ =>
       }
@@ -191,8 +219,6 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
     }
     assert(endIndex > 0)
     assert(orderedEvents(startIndex).isInstanceOf[SuiteStarting])
-    assert(endEvent.suiteName == 
-           orderedEvents(startIndex).asInstanceOf[SuiteStarting].suiteName)
 
     (startIndex, endIndex)
   }
