@@ -64,7 +64,8 @@ path&gt; [...]]
  * and show results in graphical user interface (GUI).
  * </p>
  *
- * <a name="configMapSection"><h2>Specifying the config map</h2></a>
+ * <a name="configMapSection"></a>
+ * <h2>Specifying the config map</h2>
  *
  * <p>
  * A <em>config map</em> contains pairs consisting of a string key and a value that may be of any type. (Keys that start with
