@@ -51,6 +51,40 @@ abstract class StackDepthException(val message: Option[String], val cause: Optio
   * always initialized with a cause passed to the constructor of superclass <code>
   */
   override final def initCause(throwable: Throwable): Throwable = { throw new IllegalStateException }
+
+  /**
+   * Indicates whether this object can be equal to the passed object.
+   */
+  def canEqual(other: Any): Boolean = other.isInstanceOf[StackDepthException]
+
+  /**
+   * Indicates whether this object is equal to the passed object. If the passed object is
+   * a <code>StackDepthException</code>, equality requires equal <code>message</code>,
+   * <code>cause</code>, and <code>failedCodeStackDepth</code> fields, as well as equal
+   * return values of <code>getStackTrace</code>.
+   */
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: StackDepthException => 
+        (that canEqual this) &&
+        message == that.message &&
+        cause == that.cause &&
+        failedCodeStackDepth == that.failedCodeStackDepth &&
+        getStackTrace.deep == that.getStackTrace.deep
+      case _ => false
+    }
+
+  /**
+   * Returns a hash code value for this object.
+   */
+  override def hashCode: Int =
+    41 * (
+      41 * (
+        41 * (
+          41 + message.hashCode
+        ) + cause.hashCode
+      ) + failedCodeStackDepth.hashCode
+    ) + getStackTrace.hashCode
 }
 
 /*

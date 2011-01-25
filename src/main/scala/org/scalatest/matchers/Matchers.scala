@@ -4512,7 +4512,7 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
           left match {
             case leftArray: Array[_] => 
               MatchResult(
-                leftArray.deepEquals(right),
+                leftArray.deepEquals(right), // TODO: Change to leftArray.deep equals (right.deep)
                 FailureMessages("didNotEqual", left, right),
                 FailureMessages("equaled", left, right)
               )

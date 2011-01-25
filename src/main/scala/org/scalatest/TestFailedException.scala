@@ -155,7 +155,33 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
    * the modified optional detail message for the result instance of <code>TestFailedException</code>.
    */
   def modifyMessage(fun: Option[String] => Option[String]): TestFailedException = {
-    this
+    val mod = new TestFailedException(fun(message), cause, failedCodeStackDepth)
+    mod.setStackTrace(getStackTrace)
+    mod
   }
+
+  /**
+   * Indicates whether this object can be equal to the passed object.
+   */
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[TestFailedException]
+
+  /**
+   * Indicates whether this object is equal to the passed object. If the passed object is
+   * a <code>TestFailedException</code>, equality requires equal <code>message</code>,
+   * <code>cause</code>, and <code>failedCodeStackDepth</code> fields, as well as equal
+   * return values of <code>getStackTrace</code>.
+   */
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: TestFailedException => super.equals(that)
+      case _ => false
+    }
+
+  /**
+   * Returns a hash code value for this object.
+   */
+  // Don't need to change it. Implementing it only so as to not freak out people who know
+  // that if you override equals you must override hashCode.
+  override def hashCode: Int = super.hashCode
 }
 

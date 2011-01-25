@@ -267,6 +267,11 @@ class TestFailedExceptionSpec extends Spec with ShouldMatchers {
       assert(tfe.cause.isEmpty)
       assert(tfe.getCause == null)
     }
+
+    it("should be equal to itself") {
+      val tfe = new TestFailedException(Some("doody"), None, 3)
+      assert(tfe equals tfe)
+    }
   }
 }
  

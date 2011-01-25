@@ -188,4 +188,28 @@ class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwa
   def modifyMessage(fun: Option[String] => Option[String]): JUnitTestFailedError = {
     this
   }
+
+  /**
+   * Indicates whether this object can be equal to the passed object.
+   */
+  def canEqual(other: Any): Boolean = other.isInstanceOf[JUnitTestFailedError]
+
+  /**
+   * Indicates whether this object is equal to the passed object. If the passed object is
+   * a <code>JUnitTestFailedError</code>, equality requires equal <code>message</code>,
+   * <code>cause</code>, and <code>failedCodeStackDepth</code> fields, as well as equal
+   * return values of <code>getStackTrace</code>.
+   */
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: JUnitTestFailedError => super.equals(that)
+      case _ => false
+    }
+
+  /**
+   * Returns a hash code value for this object.
+   */
+  // Don't need to change it. Implementing it only so as to not freak out people who know
+  // that if you override equals you must override hashCode.
+  override def hashCode: Int = super.hashCode
 }

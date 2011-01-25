@@ -48,5 +48,29 @@ class DuplicateTestNameException(testName: String, failedCodeStackDepth: Int)
     e.setStackTrace(truncated)
     e
   }
+
+  /**
+   * Indicates whether this object can be equal to the passed object.
+   */
+  override def canEqual(other: Any): Boolean = other.isInstanceOf[DuplicateTestNameException]
+
+  /**
+   * Indicates whether this object is equal to the passed object. If the passed object is
+   * a <code>DuplicateTestNameException</code>, equality requires equal <code>message</code>,
+   * <code>cause</code>, and <code>failedCodeStackDepth</code> fields, as well as equal
+   * return values of <code>getStackTrace</code>.
+   */
+  override def equals(other: Any): Boolean =
+    other match {
+      case that: DuplicateTestNameException => super.equals(that)
+      case _ => false
+    }
+
+  /**
+   * Returns a hash code value for this object.
+   */
+  // Don't need to change it. Implementing it only so as to not freak out people who know
+  // that if you override equals you must override hashCode.
+  override def hashCode: Int = super.hashCode
 }
 
