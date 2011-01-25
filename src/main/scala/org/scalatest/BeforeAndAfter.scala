@@ -25,7 +25,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-@deprecated
+@deprecated // deprecated in 1.0, so remove in 1.4
 trait BeforeAndAfter extends BeforeAndAfterEach with BeforeAndAfterAll {
   this: Suite =>
 }
