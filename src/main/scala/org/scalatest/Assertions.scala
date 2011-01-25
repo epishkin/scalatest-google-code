@@ -682,11 +682,20 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
   }
 
   def withClue(clue: String)(fun: => Unit) {
+    def prepend(currentMessage: Option[String]) =
+      currentMessage match {
+        case Some(msg) => Some(clue + msg)
+        case None => Some(clue)
+      }
     try {
       fun
     }
     catch {
-      case e: AppendClueMethod[_] => throw e.appendClue("\n" + clue)
+      case e: ModifiableMessage[_] =>
+        if (clue != "")
+          throw e.modifyMessage(prepend)
+        else
+          throw e
     }
   }
 }

@@ -21,7 +21,7 @@ import org.scalatest.junit.JUnitTestFailedError
 class ClueSpec extends FlatSpec with ShouldMatchers {
 
 // TOTEST: clue object with toString. clue object with null toString. all-whitespace clue string
-  it should "return the an exception with an equal message option if passed a function that returns the same option passed to it" in {
+  "The modifyMessage method on TFE" should "return the an exception with an equal message option if passed a function that returns the same option passed to it" in {
     val tfe = new TestFailedException("before", 3)
     tfe.modifyMessage(opt => opt) should equal (tfe)
   }
@@ -37,36 +37,23 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     tfe.modifyMessage(fun).message.get should be ("clue message")
   }
 
-/*
-  it should "return the new exception with the clue string appended if passed an object with a non-empty toString" in {
-    val tfe = new TestFailedException("message", 3)
-    val clue = new Object { override def toString = "clue" }
-    tfe.appendClue(clue).message.get should be (clue + " message ")
-  }
-
-  "The appendClue method on JUTFE" should "return the same exception if passed an empty string" ignore {
+  "The modifyMessage method on JUTFE" should "return the an exception with an equal message option if passed a function that returns the same option passed to it" in {
     val jutfe = new JUnitTestFailedError("before", 3)
-    jutfe.appendClue("") should be theSameInstanceAs jutfe
+    jutfe.modifyMessage(opt => opt) should equal (jutfe)
   }
 
-  ignore should "return the same exception if passed an all-whitespace string" in {
-    val jutfe = new JUnitTestFailedError("before", 3)
-    jutfe.appendClue("   ") should be theSameInstanceAs jutfe
+  it should "return the new exception with the clue string prepended, separated by a space char if passed a function that does that" in {
+    val jutfe = new JUnitTestFailedError("message", 3)
+    val clue = "clue"
+    val fun: (Option[String] => Option[String]) =
+      opt => opt match {
+        case Some(msg) => Some(clue + " " + msg)
+        case None => Some(clue)
+      }
+    jutfe.modifyMessage(fun).message.get should be ("clue message")
   }
 
-  ignore should "return the new exception with the clue string appended if passed an object with a non-empty toString" in {
-    val jutfe = new JUnitTestFailedError("before", 3)
-    val after = new Object { override def toString = "after" }
-    jutfe.appendClue(after).message.get should be ("before\n" + after)
-  }
-
-  ignore should "return the new exception with the clue string appended if passed a non-empty string" in {
-    val jutfe = new JUnitTestFailedError("before", 3)
-    val after = "after"
-    jutfe.appendClue(after).message.get should be ("before\n" + after)
-  }
-
-  "The withClue construct" should "allow to pass through any non-AppendClueMethod exception" ignore {
+  "The withClue construct" should "allow any non-ModifiableMessage exception to pass through" in {
     val iae = new IllegalArgumentException
     val caught = intercept[IllegalArgumentException] {
       withClue("howdy") {
@@ -76,7 +63,7 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     caught should be theSameInstanceAs (iae)
   }
 
-  ignore should "given an empty clue string, rethrow the same TFE exception" in {
+  it should "given an empty clue string, rethrow the same TFE exception" in {
     val tfe = new TestFailedException("before", 3)
     val caught = intercept[TestFailedException] {
       withClue("") {
@@ -86,14 +73,17 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     caught should be theSameInstanceAs (tfe)
   }
 
-  ignore should "given an all-whitespace clue string, rethrow the same TFE exception" in {
-    val tfe = new TestFailedException("before", 3)
+  it should "given an all-whitespace clue string, should throw a new TFE with the white space prepended to the old message" in {
+    val tfe = new TestFailedException("message", 3)
+    val white = "    "
     val caught = intercept[TestFailedException] {
-      withClue("   ") {
+      withClue(white) {
         throw tfe 
       }
     }
-    caught should be theSameInstanceAs (tfe)
+    caught should not be theSameInstanceAs (tfe)
+    caught.message should be ('defined)
+    caught.message.get should equal (white + "message")
   }
 
   ignore should "given a non-empty clue string, throw a new instance of the caught TFE exception that has all fields the same except an appended clue string" in {
@@ -108,6 +98,7 @@ class ClueSpec extends FlatSpec with ShouldMatchers {
     caught.message.get should equal ("before\nafter")
   }
 
+/*
   ignore should "given a non-empty clue string, throw a new instance of the caught JUTFE exception that has all fields the same except an appended clue string" in {
     val jutfe = new JUnitTestFailedError("before", 3)
     val caught = intercept[JUnitTestFailedError] {

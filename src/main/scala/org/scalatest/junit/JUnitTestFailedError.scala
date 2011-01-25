@@ -69,6 +69,7 @@ import _root_.junit.framework.AssertionFailedError
 class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwable], val failedCodeStackDepth: Int)
     extends AssertionFailedError(if (message.isDefined) message.get else "") with StackDepth with ModifiableMessage[JUnitTestFailedError] {
 
+// TODO: CHange above to a message.getOrElse(""), and same in other exceptions most likely
   if (message == null) throw new NullPointerException("message was null")
   message match {
     case Some(null) => throw new NullPointerException("message was a Some(null)")
@@ -186,7 +187,9 @@ class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwa
    * the modified optional detail message for the result instance of <code>TestFailedException</code>.
    */
   def modifyMessage(fun: Option[String] => Option[String]): JUnitTestFailedError = {
-    this
+    val mod = new JUnitTestFailedError(fun(message), cause, failedCodeStackDepth)
+    mod.setStackTrace(getStackTrace)
+    mod
   }
 
   /**
@@ -202,14 +205,24 @@ class JUnitTestFailedError(val message: Option[String], val cause: Option[Throwa
    */
   override def equals(other: Any): Boolean =
     other match {
-      case that: JUnitTestFailedError => super.equals(that)
+      case that: JUnitTestFailedError => 
+        (that canEqual this) &&
+        message == that.message &&
+        cause == that.cause &&
+        failedCodeStackDepth == that.failedCodeStackDepth &&
+        getStackTrace.deep == that.getStackTrace.deep
       case _ => false
     }
 
   /**
    * Returns a hash code value for this object.
    */
-  // Don't need to change it. Implementing it only so as to not freak out people who know
-  // that if you override equals you must override hashCode.
-  override def hashCode: Int = super.hashCode
+  override def hashCode: Int =
+    41 * (
+      41 * (
+        41 * (
+          41 + message.hashCode
+        ) + cause.hashCode
+      ) + failedCodeStackDepth.hashCode
+    ) + getStackTrace.hashCode
 }
