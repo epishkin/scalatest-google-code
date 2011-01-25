@@ -17,7 +17,7 @@ package org.scalatest.mock
 
 import org.scalatest._
 import org.easymock.IExpectationSetters
-import org.easymock.classextension.EasyMock
+import org.easymock.EasyMock
 import org.easymock.EasyMock.{expect => easyMockExpect, expectLastCall}
 import scala.reflect.Manifest
 
@@ -127,6 +127,10 @@ import scala.reflect.Manifest
  *   classUnderTest.addDocument("Document", new Array[Byte](0))
  * }
  * </pre>
+ *
+ * <p>
+ * Note: As of ScalaTest 1.2.1, this trait supports EasyMock 3, with no dependencies on EasyMock class extension.
+ * </p>
  *
  * @author Bill Venners
  * @author George Berger
