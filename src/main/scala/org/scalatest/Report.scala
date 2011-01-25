@@ -31,7 +31,7 @@ import java.util.Date
  *
  * @author Bill Venners
  */
-@deprecated
+@deprecated // deprecated in 1.0, remove in 1.4
 @serializable
 class Report(val name: String, val message: String, val throwable: Option[Throwable], val rerunnable: Option[Rerunnable],
     val threadName: String, val date: Date) {
