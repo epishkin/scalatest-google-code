@@ -31,7 +31,7 @@ import java.util.Date
  *
  * @author Bill Venners
  */
-@deprecated
+@deprecated // deprecated in 1.0, so remove in 1.4
 @serializable
 class SpecReport(
   override val name: String,
