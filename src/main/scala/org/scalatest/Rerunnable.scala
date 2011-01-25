@@ -32,7 +32,7 @@ trait Rerunnable {
   /**
    * <strong>Note: This trait has been deprecated and will be removed in a future version of ScalaTest.</strong>
    */
-  @deprecated
+  @deprecated // deprecated in 1.0, so remove in 1.4
   def rerun(reporter: Reporter, stopper: Stopper, includes: Set[String], excludes: Set[String],
       properties: Map[String, Any], distributor: Option[Distributor], loader: ClassLoader): Unit
 }
