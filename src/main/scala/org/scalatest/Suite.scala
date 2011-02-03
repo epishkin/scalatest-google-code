@@ -182,9 +182,7 @@ import org.scalatest.tools.StandardOutReporter
  * for <code>Runner</code></a> for more detail.
  * </p>
  *
- * <p>
- * <strong>Assertions and ===</strong>
- * </p>
+ * <h2>Assertions and ===</h2>
  *
  * <p>
  * Inside test methods in a <code>Suite</code>, you can write assertions by invoking <code>assert</code> and passing in a <code>Boolean</code> expression,
@@ -245,9 +243,7 @@ import org.scalatest.tools.StandardOutReporter
  * <code>Equalizer</code></a> and the <code>convertToEqualizer</code> method.
  * </p>
  *
- * <p>
- * <strong>Expected results</strong>
- * </p>
+ * <h2>Expected results</h2>
  *
  * Although <code>===</code> provides a natural, readable extension to Scala's <code>assert</code> mechanism,
  * as the operands become lengthy, the code becomes less readable. In addition, the <code>===</code> comparison
@@ -271,9 +267,7 @@ import org.scalatest.tools.StandardOutReporter
  * the detail message in the <code>TestFailedException</code> will read, "Expected 2, but got 3."
  * </p>
  *
- * <p>
- * <strong>Intercepted exceptions</strong>
- * </p>
+ * <h2>Intercepted exceptions</h2>
  *
  * <p>
  * Sometimes you need to test whether a method throws an expected exception under certain circumstances, such

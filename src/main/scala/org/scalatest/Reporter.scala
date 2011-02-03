@@ -89,9 +89,7 @@ import org.scalatest.events.Event
  * may be reported via the <code>SuiteStarting</code>, <code>SuiteAborted</code>, and
  * <code>SuiteCompleted</code> events.
  *
- * <p>
- * <strong>Extensibility</strong>
- * </p>
+ * <h2>Extensibility</h2>
  *
  * <p>
  * You can create classes that extend <code>ReportFunction</code> to report test results in custom ways, and to

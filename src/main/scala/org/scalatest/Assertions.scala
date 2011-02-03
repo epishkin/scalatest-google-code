@@ -88,9 +88,7 @@ import scala.reflect.Manifest
  * <code>Equalizer</code></a> and the <code>convertToEqualizer</code> method.
  * </p>
  *
- * <p>
- * <strong>Expected results</strong>
- * </p>
+ * <h2>Expected results</h2>
  *
  * Although <code>===</code> provides a natural, readable extension to Scala's <code>assert</code> mechanism,
  * as the operands become lengthy, the code becomes less readable. In addition, the <code>===</code> comparison
@@ -114,9 +112,7 @@ import scala.reflect.Manifest
  * the detail message in the <code>TestFailedException</code> will read, "Expected 2, but got 3."
  * </p>
  *
- * <p>
- * <strong>Intercepted exceptions</strong>
- * </p>
+ * <h2>Intercepted exceptions</h2>
  *
  * <p>
  * Sometimes you need to test whether a method throws an expected exception under certain circumstances, such
