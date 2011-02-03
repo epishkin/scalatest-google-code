@@ -30,6 +30,10 @@ import org.scalatest.events._
  * You create tests by defining methods that are annotated with <code>Test</code>, and can create fixtures with
  * methods annotated with <code>Before</code> and <code>After</code>. For example:
  *
+ * <p><b>BECAUSE OF A SCALADOC BUG IN SCALA 2.8, I HAD TO PUT A SPACE AFTER THE AT SIGN IN ANNOTATION EXAMPLES. IF YOU
+ * WANT TO COPY AND PASTE FROM THESE EXAMPLES, YOU'LL NEED TO REMOVE THE SPACE BY HAND, OR COPY FROM
+ * THE <a href="http://www.scalatest.org/scaladoc/doc-1.1/org/scalatest/junit/JUnitSuite.html">JUNITSUITE SCALADOC FOR VERSION 1.1</a> INSTEAD, WHICH IS ALSO VALID FOR 1.3. - Bill Venners</b></p>
+ *
  * <pre>
  * import org.scalatest.junit.JUnitSuite
  * import scala.collection.mutable.ListBuffer
@@ -41,19 +45,19 @@ import org.scalatest.events._
  *   var sb: StringBuilder = _
  *   var lb: ListBuffer[String] = _
  *
- *   @Before override def initialize() {
+ *   @ Before override def initialize() {
  *     sb = new StringBuilder("ScalaTest is ")
  *     lb = new ListBuffer[String]
  *   }
  *
- *   @Test def verifyEasy() {
+ *   @ Test def verifyEasy() {
  *     sb.append("easy!")
  *     assert(sb.toString === "ScalaTest is easy!")
  *     assert(lb.isEmpty)
  *     lb += "sweet"
  *   }
  *
- *   @Test def verifyFun() {
+ *   @ Test def verifyFun() {
  *     sb.append("fun!")
  *     assert(sb.toString === "ScalaTest is fun!")
  *     assert(lb.isEmpty)

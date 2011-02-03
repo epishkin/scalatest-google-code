@@ -250,9 +250,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * }
  * </pre>
  *
- * <p>
- * <strong>Configuring fixtures and tests</strong>
- * </p>
+ * <h2>Configuring fixtures and tests</h2>
  * 
  * <p>
  * Sometimes you may want to write tests that are configurable. For example, you may want to write

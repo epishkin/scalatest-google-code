@@ -27,7 +27,10 @@ import org.testng.TestListenerAdapter
  * A suite of tests that can be run with either TestNG or ScalaTest. This trait allows you to mark any
  * method as a test using TestNG's <code>@Test</code> annotation, and supports all other TestNG annotations.
  * Here's an example:
- * </p>
+ *
+ * <p><b>BECAUSE OF A SCALADOC BUG IN SCALA 2.8, I HAD TO PUT A SPACE AFTER THE AT SIGN IN ANNOTATION EXAMPLES. IF YOU
+ * WANT TO COPY AND PASTE FROM THESE EXAMPLES, YOU'LL NEED TO REMOVE THE SPACE BY HAND, OR COPY FROM
+ * THE <a href="http://www.scalatest.org/scaladoc/doc-1.1/org/scalatest/testng/TestNGSuite.html">TESTNGSUITE SCALADOC FOR VERSION 1.1</a> INSTEAD, WHICH IS ALSO VALID FOR 1.3. - Bill Venners</b></p>
  *
  * <pre>
  * import org.scalatest.testng.TestNGSuite
@@ -40,13 +43,13 @@ import org.testng.TestListenerAdapter
  *   var sb: StringBuilder = _
  *   var lb: ListBuffer[String] = _
  * 
- *   @Configuration { val beforeTestMethod = true }
+ *   @ Configuration { val beforeTestMethod = true }
  *   def setUpFixture() {
  *     sb = new StringBuilder("ScalaTest is ")
  *     lb = new ListBuffer[String]
  *   }
  * 
- *   @Test { val invocationCount = 3 }
+ *   @ Test { val invocationCount = 3 }
  *   def easyTest() {
  *     sb.append("easy!")
  *     assert(sb.toString === "ScalaTest is easy!")
@@ -54,7 +57,7 @@ import org.testng.TestListenerAdapter
  *     lb += "sweet"
  *   }
  * 
- *   @Test { val groups = Array("com.mycompany.groups.SlowTest") }
+ *   @ Test { val groups = Array("com.mycompany.groups.SlowTest") }
  *   def funTest() {
  *     sb.append("fun!")
  *     assert(sb.toString === "ScalaTest is fun!")

@@ -149,9 +149,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     And the stack should still be empty 
  * </pre>
  *
- * <p>
- * <strong>Shared fixtures</strong>
- * </p>
+ * <h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -501,9 +499,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * an example.
  * </p>
  *
- * <p>
- * <a name="SharedScenarios"><strong>Shared scenarios</strong></a>
- * </p>
+ * <a name="SharedScenarios"></a><h2>Shared scenarios</h2>
  *
  * <p>
  * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
@@ -914,9 +910,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <li><code>pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)</code></li>
  * </ul>
  *
- * <p>
- * <strong>Tagging tests</strong>
- * </p>
+ * <h2>Tagging tests</h2>
  *
  * <p>
  * A <code>FeatureSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
@@ -981,9 +975,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * will be run.
  * </p>
  *
- * <p>
- * <strong>Ignored tests</strong>
- * </p>
+ * <h2>Ignored tests</h2>
  *
  * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
@@ -1033,9 +1025,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   Scenario: subtraction
  * </pre>
  *
- * <p>
- * <strong>Informers</strong>
- * </p>
+ * <h2>Informers</h2>
  *
  * <p>
  * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
@@ -1142,9 +1132,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     Then the result is the difference of the two numbers 
  * </pre>
  *
- * <p>
- * <strong>Pending tests</strong>
- * </p>
+ * <h2>Pending tests</h2>
  *
  * <p>
  * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of

@@ -170,9 +170,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * <code>TestRegistrationClosedException</code>.
  * </p>
  *
- * <p>
- * <strong>Shared fixtures</strong>
- * </p>
+ * <h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -507,9 +505,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * an example.
  * </p>
  *
- * <p>
- * <a name="SharedTests"><strong>Shared tests</strong></a>
- * </p>
+ * <a name="SharedTests"></a><h2>Shared tests</h2>
  *
  * <p>
  * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
@@ -781,9 +777,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * of <code>when</code>, <em>verb</em>, and <code>that</code> clauses.
  * </p>
  *
- * <p>
- * <a name="TaggingTests"><strong>Tagging tests</strong></a>
- * </p>
+ * <a name="TaggingTests"></a><h2>Tagging tests</h2>
  *
  * A <code>FlatSpec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
  * As with any suite, when executing a <code>FlatSpec</code>, groups of tests can
@@ -843,9 +837,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * will be run.
  * </p>
  *
- * <p>
- * <a name="IgnoredTests"><strong>Ignored tests</strong></a>
- * </p>
+ * <a name="IgnoredTests"></a><h2>Ignored tests</h2>
  *
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
  * good intention of resurrecting the test at a later time, <code>FlatSpec</code> provides a method
@@ -943,9 +935,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * - should throw NoSuchElementException if an empty stack is popped
  * </pre>
  *
- * <p>
- * <strong>Informers</strong>
- * </p>
+ * <h2>Informers</h2>
  *
  * <p>
  * One of the parameters to the primary <code>run</code> method is a <code>Reporter</code>, which
@@ -1045,9 +1035,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   + Then the result is the difference of the two numbers 
  * </pre>
  *
- * <p>
- * <a name="PendingTests"><strong>Pending tests</strong></a>
- * </p>
+ * <a name="PendingTests"><h2>Pending tests</h2></a>
  *
  * <p>
  * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of

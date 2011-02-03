@@ -110,9 +110,7 @@ import verb.BehaveWord
  * - should throw NoSuchElementException if an empty stack is popped
  * </pre>
  *
- * <p>
- * <strong>Shared fixtures</strong>
- * </p>
+ * <h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -448,9 +446,7 @@ import verb.BehaveWord
  * an example.
  * </p>
  *
- * <p>
- * <a name="SharedTests"><strong>Shared tests</strong></a>
- * </p>
+ * <a name="SharedTests"></a><h2>Shared tests</h2>
  *
  * <p>
  * Sometimes you may want to run the same test code on different fixture objects. In other words, you may want to write tests that are "shared"
@@ -715,9 +711,7 @@ import verb.BehaveWord
  * If the <code>"should be empty"</code> test was factored out into a behavior function, it could be called repeatedly so long
  * as each invocation of the behavior function is inside a different set of <code>describe</code> clauses.
  *
- * <p>
- * <strong>Tagging tests</strong>
- * </p>
+ * <h2>Tagging tests</h2>
  *
  * <p>
  * A <code>Spec</code>'s tests may be classified into groups by <em>tagging</em> them with string names.
@@ -778,9 +772,7 @@ import verb.BehaveWord
  * will be run.
  * </p>
  *
- * <p>
- * <strong>Ignored tests</strong>
- * </p>
+ * <h2>Ignored tests</h2>
  *
  * <p>
  * To support the common use case of &#8220;temporarily&#8221; disabling a test, with the
@@ -833,9 +825,7 @@ import verb.BehaveWord
  * - should throw NoSuchElementException if an empty stack is popped
  * </pre>
  *
- * <p>
- * <strong>Pending tests</strong>
- * </p>
+ * <h2>Pending tests</h2>
  *
  * <p>
  * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of

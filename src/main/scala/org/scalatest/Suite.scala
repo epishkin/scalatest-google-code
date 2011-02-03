@@ -327,9 +327,7 @@ import org.scalatest.tools.StandardOutReporter
  * assert(caught.getMessage === "String index out of range: -1")
  * </pre>
  *
- * <p>
- * <strong>Using other assertions</strong>
- * </p>
+ * <h2>Using other assertions</h2>
  *
  * <p>
  * ScalaTest also supports another style of assertions via its matchers DSL. By mixing in
@@ -391,9 +389,7 @@ import org.scalatest.tools.StandardOutReporter
  * }
  * </pre>
  *
- * <p>
- * <strong>Nested suites</strong>
- * </p>
+ * <h2>Nested suites</h2>
  *
  * <p>
  * A <code>Suite</code> can refer to a collection of other <code>Suite</code>s,
@@ -449,9 +445,7 @@ import org.scalatest.tools.StandardOutReporter
  * for <code>Runner</code></a> for more information.
  * </p>
  *
- * <p>
- * <strong>Shared fixtures</strong>
- * </p>
+ * <h2>Shared fixtures</h2>
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -778,9 +772,7 @@ import org.scalatest.tools.StandardOutReporter
  * an example.
  * </p>
  *
- * <p>
- * <a name="configMapSection"><strong>The config map</strong></a>
- * </p>
+ * <a name="configMapSection"></a><h2>The config map</h2>
  *
  * <p>
  * In some cases you may need to pass information to a suite of tests.
@@ -803,9 +795,7 @@ import org.scalatest.tools.StandardOutReporter
  * for instructions on how to access the config map in tests.)
  * </p>
  *
- * <p>
- * <strong>Tagging tests</strong>
- * </p>
+ * <h2>Tagging tests</h2>
  *
  * <p>
  * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
@@ -818,13 +808,17 @@ import org.scalatest.tools.StandardOutReporter
  * write in Java:
  * </p>
  *
+ * <p><b>BECAUSE OF A SCALADOC BUG IN SCALA 2.8, I HAD TO PUT A SPACE AFTER THE AT SIGN IN ONE THE TARGET ANNOTATION EXAMPLE BELOW. IF YOU
+ * WANT TO COPY AND PASTE FROM THIS EXAMPLE, YOU'LL NEED TO REMOVE THE SPACE BY HAND, OR COPY FROM
+ * THE <a href="http://www.scalatest.org/scaladoc/doc-1.1/org/scalatest/Suite.html">SUITE SCALADOC FOR VERSION 1.1</a> INSTEAD, WHICH IS ALSO VALID FOR 1.3. - Bill Venners</b></p>
+ *
  * <pre>
  * import java.lang.annotation.*; 
  * import org.scalatest.TagAnnotation
  * 
  * @TagAnnotation
  * @Retention(RetentionPolicy.RUNTIME)
- * @Target({ElementType.METHOD, ElementType.TYPE})
+ * @ Target({ElementType.METHOD, ElementType.TYPE})
  * public @interface SlowAsMolasses {}
  * </pre>
  *
@@ -856,9 +850,7 @@ import org.scalatest.tools.StandardOutReporter
  * themselves annotated by <code>TagAnnotation</code> will be considered tag annotations.</strong>
  * </p>
  * 
- * <p>
- * <strong>Ignored tests</strong>
- * </p>
+ * <h2>Ignored tests</h2>
  *
  * <p>
  * Another common use case is that tests must be &#8220;temporarily&#8221; disabled, with the
@@ -914,9 +906,7 @@ import org.scalatest.tools.StandardOutReporter
  * attempt to encourage ignored tests to be eventually fixed and added back into the active suite of tests.
  * </p>
  *
- * <p>
- * <strong>Pending tests</strong>
- * </p>
+ * <h2>Pending tests</h2>
  *
  * <p>
  * A <em>pending test</em> is one that has been given a name but is not yet implemented. The purpose of
@@ -977,9 +967,7 @@ import org.scalatest.tools.StandardOutReporter
  * Test Pending - MySuite: testSubtraction
  * </pre>
  * 
- * <p>
- * <strong>Informers</strong>
- * </p>
+ * <h2>Informers</h2>
  *
  * <p>
  * One of the parameters to the primary <code>run</code> method is an <code>Reporter</code>, which
@@ -1016,9 +1004,7 @@ import org.scalatest.tools.StandardOutReporter
  * Test Succeeded - MySuite: testAddition(Reporter)
  * </pre>
  *
- * <p>
- * <strong>Executing suites in parallel</strong>
- * </p>
+ * <h2>Executing suites in parallel</h2>
  *
  * <p>
  * The primary <code>run</code> method takes as its last parameter an optional <code>Distributor</code>. If 
@@ -1029,9 +1015,7 @@ import org.scalatest.tools.StandardOutReporter
  * <code>Suite</code>s put into the <code>Distributor</code> to be run in parallel via a pool of threads.
  * </p>
  *
- * <p>
- * <strong>Treatement of <code>java.lang.Error</code>s</strong>
- * </p>
+ * <h2>Treatement of <code>java.lang.Error</code>s</h2>
  *
  * <p>
  * The Javadoc documentation for <code>java.lang.Error</code> states:
@@ -1073,9 +1057,7 @@ import org.scalatest.tools.StandardOutReporter
  * <code>Error</code>s as test failures, or indicate errors in some other way that has nothing to do with exceptions.
  * </p>
  *
- * <p>
- * <strong>Extensibility</strong>
- * </p>
+ * <h2>Extensibility</h2>
  *
  * <p>
  * Trait <code>Suite</code> provides default implementations of its methods that should
