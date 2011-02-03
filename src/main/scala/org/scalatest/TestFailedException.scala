@@ -25,8 +25,7 @@ package org.scalatest
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
  * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
  *
- * @throws NullPointerException if <code>message</code> is <code>null</code>, or <code>Some(null)</code>.
- * @throws NullPointerException if <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
  *
  * @author Bill Venners
  */
@@ -117,8 +116,7 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
    * @param cause the cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
    * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
    *
-   * @throws NullPointerException if <code>message</code> is <code>null</code>.
-   * @throws NullPointerException if <code>cause</code> is <code>null</code>.
+   * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>.
    */
   def this(message: String, cause: Throwable, failedCodeStackDepth: Int) =
     this(

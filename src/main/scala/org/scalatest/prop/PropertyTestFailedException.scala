@@ -29,8 +29,7 @@ import org.scalatest._
  * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it
  * @param args the argument values, if any
  *
- * @throws NullPointerException if <code>message</code> is <code>null</code>, or <code>Some(null)</code>.
- * @throws NullPointerException if <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
  *
  * @author Bill Venners
  */

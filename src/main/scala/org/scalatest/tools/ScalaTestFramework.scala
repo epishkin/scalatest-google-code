@@ -7,6 +7,40 @@ import org.scalatest.tools.Runner.parseCompoundArgIntoSet
 /**
  * Class that makes ScalaTest tests visible to sbt.
  *
+ * <p>
+ * To use ScalaTest from within sbt, simply add a line like this to your project file, replacing 1.3 with whatever version you desire:
+ * </p>
+ *
+ * <pre>
+ * val scalatest = "org.scalatest" % "scalatest" % "1.3"
+ * </pre>
+ *
+ * <p>
+ * You can configure the output shown when running with sbt in three ways: 1) turn off color, 2) show
+ * full stack traces, and 3) show durations for everything. To do that
+ * you need to add test options, like this:
+ * </p>
+ *
+ * <pre>
+ * override def testOptions = super.testOptions ++
+ *   Seq(TestArgument(TestFrameworks.ScalaTest, "-oD"))
+ * </pre>
+ *
+ * <p>
+ * After the -o, place any combination of:
+ * </p>
+ *
+ * <ul>
+ * <li>D - show durations</li>
+ * <li>F - show full stack traces</li>
+ * <li>W - without color</li>
+ * </ul>
+ *
+ * <p>
+ * For example, "-oDF" would show complete stack traces and durations (the amount
+ * of time spent in each test).
+ * </p>
+ *
  * @author Josh Cough
  * @author Bill Venners
  */

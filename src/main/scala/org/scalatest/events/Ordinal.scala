@@ -204,7 +204,7 @@ final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) 
    * its nested <code>Suite</code>s will be ordered before the next <code>Ordinal</code> for the current <code>Suite</code>.
    * </p>
    *
-   * @returns a tuple whose first element is the first <code>Ordinal</code> for the new <code>Suite</code> and whose
+   * @return a tuple whose first element is the first <code>Ordinal</code> for the new <code>Suite</code> and whose
    *          second element is the next <code>Ordinal</code> for the current <code>Suite</code> or other entity, such
    *          as a runner.
    */
@@ -225,7 +225,7 @@ final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) 
    * in the same order as the set of <code>List[Int]</code>s that are returned by invoking this method on each of the <code>Ordinal</code>s.
    * The first element of the returned <code>List[Int]</code> is the <code>runStamp</code>.
    *
-   * @returns a <code>List[Int]</code> representation of this <code>Ordinal</code>.
+   * @return a <code>List[Int]</code> representation of this <code>Ordinal</code>.
    */
   def toList: List[Int] = runStamp :: stamps.toList
 
@@ -264,7 +264,7 @@ final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) 
    * Indicates whether the passed object is equal to this one.
    *
    * @param the object with which to compare this one for equality
-   * @returns true if the passed object is equal to this one
+   * @return true if the passed object is equal to this one
    */
   override def equals(other: Any): Boolean =
     other match {
@@ -277,7 +277,7 @@ final class Ordinal private (val runStamp: Int, private val stamps: Array[Int]) 
   /**
    * Returns a hash code value for this object.
    *
-   * @returns a hash code for this object
+   * @return a hash code for this object
    */
   override def hashCode: Int =
     41 * (

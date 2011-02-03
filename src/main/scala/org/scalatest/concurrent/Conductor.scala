@@ -235,6 +235,15 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
  * created by Bill Pugh and Nat Ayewah of the University of Maryland.
  * </p>
  *
+ * <p>
+ * Although useful, bear in mind that a <code>Conductor</code>'s results are not guaranteed to be
+ * accurate 100% of the time. The reason is that it uses <code>java.lang.Thread</code>'s <code>getState</code> method to
+ * decide when to advance the beat. This kind of use is advised against in the Javadoc documentation for
+ * <code>getState</code>, which says, "This method is designed for use in monitoring of the system state, not for
+ * synchronization." In short, sometimes the return value of <code>getState</code may be inacurrate, which in turn means
+ * that sometimes a <code>Conductor</code> may decide to advance the beat too early.
+ * </p>
+ *
  * @author Josh Cough
  * @author Bill Venners
  */
