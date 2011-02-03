@@ -9,6 +9,7 @@
     <property name="scalasrc.examples" value="src/examples/scala" />
     <property name="javasrc.examples" value="src/examples/java" />
     <property name="resources" value="src/main/resources" />
+    <property name="html" value="src/main/html" />
     <property name="images" value="${resources}/images" />
     <property name="build" value="target" />
     <property name="jar.contents" value="${build}/jar_contents" />
@@ -156,6 +157,12 @@
 
     <target name="compile-main" depends="init">
 
+        <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
+        <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
+            <include name="org/scalatest/Ignore.java" />
+            <include name="org/scalatest/tools/ScalaTestTask.java" />
+        </javac>
+
         <!-- If ever want to see the typer output, add -Xprint:typer to the addparams like this: -->
         <!--<scalac srcdir="${scalasrc}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" addparams="-no-specialization -Xprint:typer" fork="true" jvmargs="${jvmargs}" />-->
 
@@ -165,11 +172,6 @@
         <!-- Compile the Scala code from ${build.generated.src} into ${classes}. Scalac will parse any referenced .java files. -->
         <scalac srcdir="${build.generated.src}" destdir="${classes}" target="jvm-1.5" classpathref="build.class.path" />
 
-        <!-- Compile the Java code from ${javasrc} into ${classes} -->
-        <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
-            <include name="org/scalatest/Ignore.java" />
-            <include name="org/scalatest/tools/ScalaTestTask.java" />
-        </javac>
     </target>
 
     <target name="compile-tests" depends="compile-main">
@@ -210,6 +212,8 @@
         <scaladoc addparams="-no-specialization" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" doctitle="ScalaTest ${release}">
             <include name="**/*.scala" />
         </scaladoc>
+        <delete file="${doc}/lib/template.css"/>
+        <copy file="${html}/template.css" todir="${doc}/lib" />
         <!--
       <javadoc sourcepath="${example}"
         destdir="${demodoc}"
@@ -220,6 +224,7 @@
         bottom="Copyright (C) 2001-2009 Artima, Inc. All rights reserved."/>
 -->
     </target>
+
 
     <target name="dist" depends="compile">
         <!-- Create the distribution directory -->
