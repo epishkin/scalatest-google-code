@@ -157,6 +157,49 @@ import scala.reflect.Manifest
  * the exception has the expected values.
  * </p>
  *
+ * <h2>Getting a clue</h2>
+ *
+ * <p>
+ * If you want more information that is provided by default by the methods if this trait,
+ * you can supply a "clue" string in one of several ways.
+ * The extra information (or "clues") you provide will
+ * be included in the detail message of the thrown exception. Both
+ * <code>assert</code> and <code>expect</code> provide a way for a clue to be
+ * included directly, <code>intercept</code> does not.
+ * Here's an example of clues provided directly in <code>assert</code>:
+ * </p>
+ *
+ * <pre>
+ * assert(1 + 1 === 3, "this is a clue")
+ * </pre>
+ *
+ * <p>
+ * and in <code>expect</code>:
+ * </p>
+ *
+ * <pre>
+ * expect(3, "this is a clue") { 1 + 1 }
+ * </pre>
+ *
+ * <p>
+ * The exceptions thrown by the previous two statements will include the clue
+ * string, <code>"this is a clue"</code>, in the exception's detail message.
+ * To get the same clue in the detail message of an exception thrown
+ * by a failed <code>intercept</code> call requires using <code>withClue</code>:
+ * </p>
+ *
+ * <pre>
+ * withClue("this is a clue") {
+ *   intercept[IndexOutOfBoundsException] {
+ *     "hi".charAt(-1)
+ *   }
+ * }
+ * </pre>
+ *
+ * The <code>withClue</code> method will only prepend the clue string to the detail
+ * message of exception types that mix in the <code>ModifiableMessage</code> trait.
+ * See the documentation for <a href="ModifiableMessage.html"><code>ModifiableMessage</code></a> for more information.
+
  * @author Bill Venners
  */
 trait Assertions {
@@ -678,9 +721,34 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
   }
 
   /**
-   * If clue does not end in a white space character, one space will be added
+   * Executes the block of code passed as the second parameter, and, if it
+   * completes abruptly with a <code>ModifiableMessage</code> exception,
+   * prepends the "clue" string passed as the first parameter to the beginning of the detail message
+   * of that thrown exception, then rethrows it. If clue does not end in a white space
+   * character, one space will be added
    * between it and the existing detail message (unless the detail message is
    * not defined).
+   *
+   * <p>
+   * This method allows you to add more information about what went wrong that will be
+   * reported when a test fails. Here's an example:
+   * </p>
+   *
+   * <pre>
+   * withClue("(Employee's name was: " + employee.name + ")") {
+   *   intercept[IllegalArgumentException] {
+   *     employee.getTask(-1)
+   *   }
+   * }
+   * </pre>
+   *
+   * <p>
+   * If an invocation of <code>intercept</code> completed abruptly with an exception, the resulting message would be something like:
+   * </p>
+   *
+   * <pre>
+   * (Employee's name was Bob Jones) Expected IllegalArgumentException to be thrown, but no exception was thrown
+   * </pre>
   */
   def withClue(clue: Any)(fun: => Unit) {
     def prepend(currentMessage: Option[String]) =

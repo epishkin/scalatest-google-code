@@ -23,7 +23,7 @@ package org.scalatest
  * used to wrap a <code>Reporter</code> and provide easy ways to send custom information
  * to that <code>Reporter</code> via an <code>InfoProvided</code> event.
  * <code>Informer</code> contains an <code>apply</code> method that takes an object.
- * The <code>Informer</code> will invoke <code>toString<code> on the passed object and
+ * The <code>Informer</code> will invoke <code>toString</code> on the passed object and
  * forward the resulting string to the <code>Reporter</code> as the <code>message</code>
  * parameter of an <code>InfoProvided</code> event.
  * </p>
