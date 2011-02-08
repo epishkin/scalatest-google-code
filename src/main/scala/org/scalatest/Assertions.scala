@@ -16,6 +16,7 @@
 package org.scalatest
 
 import scala.reflect.Manifest
+import Assertions.areEqualComparingArraysStructurally
 
 /**
  * Trait that contains ScalaTest's basic assertion methods.
@@ -280,7 +281,7 @@ trait Assertions {
      * </p>
      */
     def ===(right: Any) =
-      if (left == right)
+      if (areEqualComparingArraysStructurally(left, right))
         None
       else {
         val (leftee, rightee) = Suite.getObjectsForFailureMessage(left, right)
@@ -821,4 +822,11 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
  *
  * @author Bill Venners
  */
-object Assertions extends Assertions
+object Assertions extends Assertions {
+  private[scalatest] def areEqualComparingArraysStructurally(left: Any, right: Any) = {
+      left match {
+        case leftArray: Array[_] => leftArray.deepEquals(right)
+        case _ => left == right
+    }
+  }
+}
