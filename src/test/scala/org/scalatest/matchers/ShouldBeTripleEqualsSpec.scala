@@ -29,9 +29,27 @@ class ShouldBeTripleEqualsSpec extends Spec with ShouldMatchers with Checkers wi
     describe("when used with Arrays") {
       it("should compare arrays structurally") {
         Array(1, 2) should be === Array(1, 2)
+        val a1 = Array(1, 2, 3)
+        val a2 = Array(1, 2, 3)
+        val a3 = Array(4, 5, 6)
+        a1 should not be theSameInstanceAs (a2)
+        a1 should be === a2
+        intercept[TestFailedException] {
+          a1 should be === a3
+        }
+      }
+      it("should compare arrays deeply") {
+        val a1 = Array(1, Array("a", "b"), 3)
+        val a2 = Array(1, Array("a", "b"), 3)
+        val a3 = Array(1, Array("c", "d"), 3)
+        a1 should not be theSameInstanceAs (a2)
+        a1 should be === a2
+        intercept[TestFailedException] {
+          a1 should be === a3
+        }
       }
     }
-    
+
     describe("when used with nulls") {
       it("should not throw NullPointerException") {
         val s: String = null
@@ -39,6 +57,9 @@ class ShouldBeTripleEqualsSpec extends Spec with ShouldMatchers with Checkers wi
           s should be === Array(1, 2)
         }
         s should be === null
+        intercept[TestFailedException] {
+          "hi" should be === null
+        }
       }
     }
 
