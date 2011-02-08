@@ -211,7 +211,7 @@ import org.scalatest.verb.ShouldVerb
  * not have an appropriately named predicate method, you'll get a <code>TestFailedException</code>
  * at runtime with a detail message that explains the problem.
  * (For the details on how a field or method is selected during this
- * process, see the documentation for <a href="Matchers.BeWord.html"><code>BeWord</code></a>.)
+ * process, see the documentation for <a href="Matchers$BeWord.html"><code>BeWord</code></a>.)
  * </p>
  * 
  * <p>
@@ -665,7 +665,7 @@ import org.scalatest.verb.ShouldVerb
  * in a the string <code>"Programming in Scala"</code>. If all specified properties exist and have their expected values, respectively,
  * execution will continue. If one or more of the properties either does not exist, or exists but results in an unexpected value,
  * a <code>TestFailedException</code> will be thrown that explains the problem. (For the details on how a field or method is selected during this
- * process, see the documentation for <a href="Matchers.HavePropertyMatcherGenerator.html"><code>HavePropertyMatcherGenerator</code></a>.)
+ * process, see the documentation for <a href="Matchers$HavePropertyMatcherGenerator.html"><code>HavePropertyMatcherGenerator</code></a>.)
  * </p>
  * 
  * <p>
@@ -1964,7 +1964,7 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
            val message = Resources("exceptionExpected", clazz.getName)
            throw newTestFailedException(message)
            // throw new TestFailedException(message, 2)
-         case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase iSAssignableFrom succeeded above
+         case Some(e) => e.asInstanceOf[T] // I know this cast will succeed, becuase isAssignableFrom succeeded above
        }
      }
   }
