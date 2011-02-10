@@ -207,7 +207,7 @@
     </target>
 
     <target name="doc" depends="compile-main">
-        <javadoc sourcepath="${javasrc}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2010 Artima, Inc. All rights reserved." />
+        <javadoc sourcepath="${javasrc}" destdir="${jdoc}" packagenames="org.scalatest,org.scalatest.tools" classpathref="build.class.path" windowtitle="ScalaTest ${release}" doctitle="ScalaTest ${release}" bottom="Copyright (C) 2001-2011 Artima, Inc. All rights reserved." />
 
         <scaladoc addparams="-no-specialization" srcref="scaladoc.source.path" destdir="${doc}" classpathref="build.class.path" doctitle="ScalaTest ${release}">
             <include name="**/*.scala" />
