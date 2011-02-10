@@ -789,7 +789,7 @@ import org.scalatest.tools.StandardOutReporter
  * for instructions on how to access the config map in tests.)
  * </p>
  *
- * <h2>Tagging tests</h2>
+ * <a name="TaggingTests"></a><h2>Tagging tests</h2>
  *
  * <p>
  * A <code>Suite</code>'s tests may be classified into groups by <em>tagging</em> them with string names. When executing
