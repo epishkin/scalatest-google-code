@@ -836,14 +836,6 @@ import org.scalatest.tools.StandardOutReporter
  * will be run.
  * </p>
  *
- * <p>
- * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 1.0, when "groups" were renamed
- * to "tags." In 1.0 and 1.1, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
- * method. Any annotation on a <code>Suite</code> method will be considered a tag until 1.2, to give users time to add
- * <code>TagAnnotation</code>s on any tag annotations they made prior to the 1.0 release. From 1.2 onward, only annotations
- * themselves annotated by <code>TagAnnotation</code> will be considered tag annotations.</strong>
- * </p>
- * 
  * <h2>Ignored tests</h2>
  *
  * <p>
