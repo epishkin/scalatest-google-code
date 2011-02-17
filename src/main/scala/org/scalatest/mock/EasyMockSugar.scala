@@ -129,7 +129,30 @@ import scala.reflect.Manifest
  * </pre>
  *
  * <p>
- * Note: As of ScalaTest 1.2.1, this trait supports EasyMock 3, with no dependencies on EasyMock class extension.
+ * An alternative approach is to place your mock objects in a <code>MockObjects</code> holder object referenced
+ * from an implicit <code>val</code>, then use the overloaded variant of <code>whenExecuting</code> that
+ * takes an implicit <code>MockObjects</code> parameter. Here's how that would look:
+ * </p>
+ *
+ * <pre>
+ * implicit val mocks = MockObjects(mock[Collaborator])
+ *
+ * expecting {
+ *   mockCollaborator.documentAdded("Document")
+ *   mockCollaborator.documentChanged("Document")
+ *   lastCall.times(3)
+ * }
+ *
+ * whenExecuting {
+ *   classUnderTest.addDocument("Document", new Array[Byte](0))
+ *   classUnderTest.addDocument("Document", new Array[Byte](0))
+ *   classUnderTest.addDocument("Document", new Array[Byte](0))
+ *   classUnderTest.addDocument("Document", new Array[Byte](0))
+ * }
+ * </pre>
+ *
+ * <p>
+ * Note: As of ScalaTest 1.3, this trait supports EasyMock 3, with no dependencies on EasyMock class extension.
  * </p>
  *
  * @author Bill Venners
@@ -215,8 +238,6 @@ trait EasyMockSugar {
    *   lastCall.times(3)
    * }
    * </pre>
-   *
-   * @param value - the result of invoking a method on mock prior to invoking <code>replay</code>.
    */
   def lastCall[T]: IExpectationSetters[T] = expectLastCall()
 
@@ -356,7 +377,7 @@ trait EasyMockSugar {
    * </pre>
    *
    * <p>
-   * This trait enables you to use the following, more declarative syntax instead:
+   * This method enables you to use the following, more declarative syntax instead:
    * </p>
    * 
    * <pre>
@@ -382,19 +403,95 @@ trait EasyMockSugar {
    * <p>
    * The <code>whenExecuting</code> method will first invoke <code>EasyMock.reply</code>
    * once for each mock you supplied, execute the passed function, then
-   * invoke <code>EasyMock.verify</code> once for each mock you supplied.
+   * invoke <code>EasyMock.verify</code> once for each mock you supplied. If an exception
+   * is thrown by the passed function, <code>whenExecuting</code> will complete abruptly with
+   * that same exception without executing verify on any of the mocks.
    * </p>
+   *
+   * @param mocks one or more mock objects to invoke <code>replay</code> before using and <code>verify</code> after using.
+   * @throws IllegalArgumentException if no mocks are passed
    */
-  def whenExecuting(mock: AnyRef, moreMocks: AnyRef*)(fun: => Unit) = {
+  def whenExecuting(mocks: AnyRef*)(fun: => Unit) = {
 
-    EasyMock.replay(mock)
-    for (m <- moreMocks)
+    require(mocks.length > 0, "Must pass at least one mock to whenExecuting, but mocks.length was 0.") 
+
+    for (m <- mocks)
       EasyMock.replay(m)
 
     fun
 
-    EasyMock.verify(mock)
-    for (m <- moreMocks)
+    // Don't put this in a try block, so that if fun throws an exception 
+    // it propagates out immediately and shows up as the cause of the failed test
+    for (m <- mocks)
       EasyMock.verify(m)
+  }
+
+  /**
+   * Holder class for a collection of mocks that can be passed implicitly to one form of the
+   * overloaded <code>whenExecuting</code> method.
+   *
+   * @param mocks one or more mock objects that you intend to pass to <code>whenExecuting</code>
+   * @throws IllegalArgumentException if no mocks are passed
+   */
+  case class MockObjects(mocks: AnyRef*) {
+    require(mocks.length > 0, "Must pass at least one mock to MockObjects constructor, but mocks.length was 0.") 
+  }
+
+  /**
+   * Invokes <code>replay</code> on the mock object or objects passed via an implicit parameter,
+   * executes the passed function, then invokes <code>verify</code> on the passed mock object or objects.
+   *
+   * <p>
+   * Once you've set expectations on some mock objects, you must invoke <code>replay</code> on
+   * the mocks to indicate you are done setting expectations, and will start using the mocks.
+   * After using the mocks, you must invoke <code>verify</code> to check to make sure the mocks
+   * were used in accordance with the expectations you set on it. Here's how that looks when you
+   * use the EasyMock API directly:
+   * </p>
+   *
+   *
+   * <pre>
+   * replay(mock)
+   * classUnderTest.addDocument("Document", new Array[Byte](0))
+   * classUnderTest.addDocument("Document", new Array[Byte](0))
+   * classUnderTest.addDocument("Document", new Array[Byte](0))
+   * classUnderTest.addDocument("Document", new Array[Byte](0))
+   * verify(mock)
+   * </pre>
+   *
+   * <p>
+   * This method enables you to use the following, more declarative syntax instead:
+   * </p>
+   * 
+   * <pre>
+   * implicit val mocks = MockObjects(mockCollaborator)
+   *
+   * whenExecuting {
+   *   classUnderTest.addDocument("Document", new Array[Byte](0))
+   *   classUnderTest.addDocument("Document", new Array[Byte](0))
+   *   classUnderTest.addDocument("Document", new Array[Byte](0))
+   *   classUnderTest.addDocument("Document", new Array[Byte](0))
+   * }
+   * </pre>
+   *
+   * <p>
+   * If you are working with multiple mock objects at once, you simply pass
+   * them all to <code>MockObjects</code>, like this:
+   * </p>
+   *
+   * <pre>
+   * implicit val mocks = MockObjects(mock1, mock2, mock3)
+   * </pre>
+   *
+   * <p>
+   * The <code>whenExecuting</code> method will first invoke <code>EasyMock.reply</code>
+   * once for each mock you supplied, execute the passed function, then
+   * invoke <code>EasyMock.verify</code> once for each mock you supplied. If an exception
+   * is thrown by the passed function, <code>whenExecuting</code> will complete abruptly with
+   * that same exception without executing verify on any of the mocks.
+   * </p>
+   */
+  def whenExecuting(fun: => Unit)(implicit mocks: MockObjects) {
+    whenExecuting(mocks.mocks: _*)(fun)
   }
 }
