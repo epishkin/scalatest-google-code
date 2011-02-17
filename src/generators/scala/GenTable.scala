@@ -40,7 +40,7 @@ class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
 }
 """
 
-val tableObjectApplyTemplate = """
+val tablesTraitApplyTemplate = """
   def apply[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) =
     new TableFor$n$(heading, rows: _*)
 """
@@ -573,9 +573,9 @@ trait FunSuite$num$[$typeParams$] extends FunSuite {
       bw.write(st.toString)
     }
 
-    bw.write("\nobject Table {\n")
+    bw.write("\ntrait Tables {\n")
     for (i <- 2 to 22) {
-      val st = new org.antlr.stringtemplate.StringTemplate(tableObjectApplyTemplate)
+      val st = new org.antlr.stringtemplate.StringTemplate(tablesTraitApplyTemplate)
       val alphaLower = alpha.take(i).mkString(", ")
       val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
       val strings = List.fill(i)("String").mkString(", ")
@@ -587,6 +587,7 @@ trait FunSuite$num$[$typeParams$] extends FunSuite {
     }
 
     bw.write("}\n")
+    bw.write("\nobject Tables extends Tables\n\n")
   }
   finally {
     bw.close()
