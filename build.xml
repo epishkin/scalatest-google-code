@@ -145,10 +145,16 @@
         <delete dir="test-output" quiet="true" />
     </target>
 
-    <target name="gencode" depends="init">
-        <!-- First, compile the code generator from ${generators} into ${build.generators} -->
+    <target name="compile-codegenerators" depends="init">
         <scalac srcdir="${generators}" destdir="${build.generators}" target="jvm-1.5" classpathref="build.generators.class.path" />
+    </target>
+
+    <target name="gentables" depends="init, compile-codegenerators">
         <!-- Then, run it. -->
+        <java classname="GenTable" classpathref="run.generators.class.path" fork="false" />
+    </target>
+
+    <target name="gencode" depends="init, compile-codegenerators">
         <java classname="GenMustMatchers" classpathref="run.generators.class.path" fork="false" />
         <java classname="GenMustMatchersTests" classpathref="run.generators.class.path" fork="false" />
     </target>
