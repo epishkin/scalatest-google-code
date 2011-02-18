@@ -28,12 +28,27 @@ package prop
 val tableTemplate = """
 class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
   def apply(fun: ($alphaUpper$) => Unit) {
-    for (($alphaLower$) <- rows) {
+    for ((($alphaLower$), idx) <- rows.zipWithIndex) {
       try {
         fun($alphaLower$)
       }
       catch {
         case _: UnmetConditionException =>
+        case e =>
+          val ($alphaName$) = heading
+
+          throw new PropertyTestFailedException(
+            FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
+              "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else e.getMessage) + "\n" +
+              "  " + FailureMessages("occurredAtRow", idx) + "\n" +
+$namesAndValues$
+              "  )",
+            Some(e),
+            0, //getStackDepth("TableFor2.scala", "apply"),
+            FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)),
+            List($alphaLower$),
+            List($alphaName$)
+          )
       }
     }
   }
@@ -82,11 +97,15 @@ val propertyCheckForAllTemplate = """
         val st = new org.antlr.stringtemplate.StringTemplate(tableTemplate)
         val alphaLower = alpha.take(i).mkString(", ")
         val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
+        val alphaName = alpha.take(i).map(_ + "Name").mkString(", ")
+        val namesAndValues = alpha.take(i).map(c => "              \"    \" + " + c + "Name + \" = \" + " + c).mkString("", " + \",\" + \"\\n\" +\n", " + \"\\n\" +\n")
         val strings = List.fill(i)("String").mkString(", ")
         st.setAttribute("n", i)
         st.setAttribute("alphaLower", alphaLower)
         st.setAttribute("alphaUpper", alphaUpper)
+        st.setAttribute("alphaName", alphaName)
         st.setAttribute("strings", strings)
+        st.setAttribute("namesAndValues", namesAndValues)
         bw.write(st.toString)
       }
 
@@ -152,4 +171,13 @@ $if (moreThanFour)$
  *   $exampleParams$
  * ] {
 $else$
+*/
+
+/*
+IAException was thrown...
+Thrown exception's message: 1 did not equal 7
+Occurred at row N (zero-based), which had values (
+  n = 0,
+  d = 1
+)
 */
