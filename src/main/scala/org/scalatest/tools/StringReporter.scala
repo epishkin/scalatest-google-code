@@ -424,3 +424,18 @@ if a StackDepth and no F specified, then show the truncated form.
   //  else Resources("indentOnce", indent(s, times - 1))
 }
  
+private[scalatest] object StringReporter {
+  def countTrailingEOLs(s: String): Int = s.length - s.lastIndexWhere(_ != '\n') - 1
+  def countLeadingEOLs(s: String): Int = {
+    val idx = s.findIndexOf(_ != '\n')
+    if (idx != -1) idx else 0
+  }
+  def colorizeLinesIndividually(text: String, ansiColor: String): String =
+    if (text.trim.isEmpty) text
+    else {
+      ("\n" * countLeadingEOLs(text)) +
+      text.split("\n").dropWhile(_.isEmpty).map(ansiColor + _ + ansiReset).mkString("\n") +
+      ("\n" * countTrailingEOLs(text))
+    }
+}
+

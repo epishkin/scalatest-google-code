@@ -3,6 +3,7 @@ package org.scalatest.tools
 import org.scalatools.testing._
 import org.scalatest.tools.Runner.parsePropertiesArgsIntoMap
 import org.scalatest.tools.Runner.parseCompoundArgIntoSet
+import StringReporter.colorizeLinesIndividually
 
 /**
  * Class that makes ScalaTest tests visible to sbt.
@@ -142,7 +143,8 @@ class ScalaTestFramework extends Framework {
       protected def printPossiblyInColor(text: String, ansiColor: String) {
         import PrintReporter.ansiReset
         loggers.foreach { logger =>
-          logger.info(if (logger.ansiCodesSupported && presentInColor) ansiColor + text + ansiReset else text)
+          // logger.info(if (logger.ansiCodesSupported && presentInColor) ansiColor + text + ansiReset else text)
+          logger.info(if (logger.ansiCodesSupported && presentInColor) colorizeLinesIndividually(text, ansiColor) else text)
         }
       }
 

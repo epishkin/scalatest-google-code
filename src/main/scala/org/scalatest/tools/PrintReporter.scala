@@ -29,6 +29,7 @@ import java.io.StringWriter
 import org.scalatest.events._
 import PrintReporter._
 import org.scalatest.junit.JUnitTestFailedError
+import StringReporter.colorizeLinesIndividually
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -90,7 +91,7 @@ presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) {
     )
 
   protected def printPossiblyInColor(text: String, ansiColor: String) {
-    pw.println(if (presentInColor) ansiColor + text + ansiReset else text)
+    pw.println(if (presentInColor) colorizeLinesIndividually(text, ansiColor) else text)
   }
 
   override def apply(event: Event) {
