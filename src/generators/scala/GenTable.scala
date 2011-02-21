@@ -44,7 +44,7 @@ class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
 $namesAndValues$
               "  )",
             Some(e),
-            0, //getStackDepth("TableFor2.scala", "apply"),
+            7, //getStackDepth("TableFor2.scala", "apply"),
             FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)),
             List($alphaLower$),
             List($alphaName$)

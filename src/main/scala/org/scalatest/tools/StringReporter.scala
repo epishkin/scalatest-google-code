@@ -166,7 +166,8 @@ if a StackDepth and no F specified, then show the truncated form.
           def useTruncatedStackTrace =
             !presentTestFailedExceptionStackTraces && (
               throwable match {
-                case e: Throwable with StackDepth => e.cause.isEmpty // If there's a cause inside, show the whole stack trace
+                // case e: Throwable with StackDepth => e.cause.isEmpty // If there's a cause inside, show the whole stack trace
+                case e: Throwable with StackDepth => true // If there's a cause inside, show the whole stack trace
                 case _ => false
               }
             )
@@ -200,7 +201,13 @@ if a StackDepth and no F specified, then show the truncated form.
                     case _ => 0
                   }
 
-                stackTraceThisThrowable.head :: "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
+                val stackTraceThisThrowableTruncated = 
+                  stackTraceThisThrowable.head :: "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
+
+                if (cause == null)
+                  stackTraceThisThrowableTruncated
+                else
+                  stackTraceThisThrowableTruncated ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
               }
           }
           stackTrace(throwable, false)
