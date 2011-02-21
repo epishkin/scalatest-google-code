@@ -49,7 +49,7 @@ trait StackDepth { this: Throwable =>
    * by <code>failedCodeStackDepth</code>.
    *
    * <p>
-   * This is a <code>def</code> instead of a </code>val<code> because exceptions are mutable: their stack trace can
+   * This is a <code>def</code> instead of a <code>val</code> because exceptions are mutable: their stack trace can
    * be changed after the exception is created. This is done, for example, by the <code>SeveredStackTraces</code> trait.
    * </p>
    *
