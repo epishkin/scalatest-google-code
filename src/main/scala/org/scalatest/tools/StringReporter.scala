@@ -29,7 +29,7 @@ import java.io.StringWriter
 import org.scalatest.events._
 import PrintReporter._
 import org.scalatest.junit.JUnitTestFailedError
-import org.scalatest.prop.PropertyTestFailedException
+import org.scalatest.prop.PropertyCheckFailedException
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -167,8 +167,7 @@ if a StackDepth and no F specified, then show the truncated form.
           def useTruncatedStackTrace =
             !presentTestFailedExceptionStackTraces && (
               throwable match {
-                // case e: Throwable with StackDepth => e.cause.isEmpty // If there's a cause inside, show the whole stack trace
-                case e: Throwable with StackDepth => true // If there's a cause inside, show the whole stack trace
+                case e: Throwable with StackDepth => true
                 case _ => false
               }
             )
@@ -177,10 +176,13 @@ if a StackDepth and no F specified, then show the truncated form.
             val className = throwable.getClass.getName 
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val colonMessageOrEmptyString =
-              if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty && !throwable.isInstanceOf[PropertyTestFailedException])
-                ": " + throwable.getMessage.trim
-              else
-                ""
+              throwable match {
+                case pcfe: PropertyCheckFailedException => 
+                  ": " + pcfe.undecoratedMessage.trim
+                case _ if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) =>
+                    ": " + throwable.getMessage.trim
+                case _ => ""
+              }
             val labeledClassNameWithMessage =
               "  " + labeledClassName + colonMessageOrEmptyString
 
