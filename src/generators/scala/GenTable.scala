@@ -84,13 +84,47 @@ val propertyCheckForAllTemplate = """
   }
 """
 
+val tableSuitePreamble = """
+
+import matchers.ShouldMatchers
+
+class TableSuite extends FunSuite with PropertyChecks with ShouldMatchers {
+"""
+
+val tableSuiteTemplate = """
+  test("table for $n$ that succeeds") {
+
+    val examples =
+      Table(
+        ($argNames$),
+$columnsOfOnes$
+      )
+
+    forAll (examples) { ($names$) => $sumOfArgs$ should equal ($n$) }
+  }
+
+  test("table for $n$, which fails") {
+
+    val examples =
+      Table(
+        ($argNames$),
+$columnsOfTwos$
+      )
+
+    intercept[TablePropertyCheckFailedException] {
+      forAll (examples) { ($names$) => $sumOfArgs$ should equal ($n$) }
+    }
+  }
+"""
 
 // For some reason that I don't understand, I need to leave off the stars before the <pre> when 
 // they are next to ST commands. So I say  "   <pre>" sometimes instead of " * <pre>".
 
   val thisYear = Calendar.getInstance.get(Calendar.YEAR)
-  val dir = new File("target/generated/src/main/scala/org/scalatest/prop")
-  dir.mkdirs()
+  val mainDir = new File("target/generated/src/main/scala/org/scalatest/prop")
+  val testDir = new File("target/generated/src/test/scala/org/scalatest/prop")
+  mainDir.mkdirs()
+  testDir.mkdirs()
 
   def genTables() {
 
@@ -167,8 +201,43 @@ val propertyCheckForAllTemplate = """
     }
   }
 
+  def genTableSuite() {
+
+    val bw = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/prop/TableSuite.scala"))
+ 
+    try {
+      val st = new org.antlr.stringtemplate.StringTemplate(copyrightTemplate)
+      st.setAttribute("year", thisYear);
+      bw.write(st.toString)
+      bw.write(tableSuitePreamble)
+      val alpha = "abcdefghijklmnopqrstuv"
+      for (i <- 1 to 22) {
+        val st = new org.antlr.stringtemplate.StringTemplate(tableSuiteTemplate)
+        val rowOfOnes = List.fill(i)("  1").mkString(", ")
+        val rowOfTwos = List.fill(i)("  2").mkString(", ")
+        val columnsOfOnes = List.fill(i)("        (" + rowOfOnes + ")").mkString(",\n")
+        val columnsOfTwos = List.fill(i)("        (" + rowOfTwos + ")").mkString(",\n")
+        val argNames = alpha.map("\"" + _ + "\"").take(i).mkString(", ")
+        val names = alpha.take(i).mkString(", ")
+        val sumOfArgs = alpha.take(i).mkString(" + ")
+        st.setAttribute("n", i)
+        st.setAttribute("columnsOfOnes", columnsOfOnes)
+        st.setAttribute("columnsOfTwos", columnsOfTwos)
+        st.setAttribute("argNames", argNames)
+        st.setAttribute("names", names)
+        st.setAttribute("sumOfArgs", sumOfArgs)
+        bw.write(st.toString)
+      }
+
+      bw.write("}\n")
+    }
+    finally {
+      bw.close()
+    }
+  }
   genTables()
   genPropertyChecks()
+  genTableSuite()
 }
 
 /*
