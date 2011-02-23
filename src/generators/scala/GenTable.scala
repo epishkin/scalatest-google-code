@@ -39,7 +39,14 @@ class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
 
           throw new PropertyTestFailedException(
             FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
-              "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else e.getMessage) + "\n" +
+              "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
+              (
+                e match {
+                  case sd: StackDepth if sd.failedCodeFileNameAndLineNumberString.isDefined =>
+                    "  " + FailureMessages("thrownExceptionsLocation", UnquotedString(sd.failedCodeFileNameAndLineNumberString.get)) + "\n"
+                  case _ => ""
+                }
+              ) +
               "  " + FailureMessages("occurredAtRow", idx) + "\n" +
 $namesAndValues$
               "  )",
@@ -55,9 +62,9 @@ $namesAndValues$
 }
 """
 
-val tablesTraitApplyTemplate = """
-  def apply[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) =
-    new TableFor$n$(heading, rows: _*)
+val tableObjectApplyTemplate = """
+    def apply[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) =
+      new TableFor$n$(heading, rows: _*)
 """
 
 val propertyCheckPreamble = """
@@ -108,22 +115,6 @@ val propertyCheckForAllTemplate = """
         st.setAttribute("namesAndValues", namesAndValues)
         bw.write(st.toString)
       }
-
-      bw.write("\ntrait Tables {\n")
-      for (i <- 2 to 22) {
-        val st = new org.antlr.stringtemplate.StringTemplate(tablesTraitApplyTemplate)
-        val alphaLower = alpha.take(i).mkString(", ")
-        val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
-        val strings = List.fill(i)("String").mkString(", ")
-        st.setAttribute("n", i)
-        st.setAttribute("alphaLower", alphaLower)
-        st.setAttribute("alphaUpper", alphaUpper)
-        st.setAttribute("strings", strings)
-        bw.write(st.toString)
-      }
-
-      bw.write("}\n")
-      bw.write("\nobject Tables extends Tables\n\n")
     }
     finally {
       bw.close()
@@ -152,6 +143,21 @@ val propertyCheckForAllTemplate = """
         bw.write(st.toString)
       }
 
+
+      bw.write("\n  object Table {\n")
+      for (i <- 2 to 22) {
+        val st = new org.antlr.stringtemplate.StringTemplate(tableObjectApplyTemplate)
+        val alphaLower = alpha.take(i).mkString(", ")
+        val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
+        val strings = List.fill(i)("String").mkString(", ")
+        st.setAttribute("n", i)
+        st.setAttribute("alphaLower", alphaLower)
+        st.setAttribute("alphaUpper", alphaUpper)
+        st.setAttribute("strings", strings)
+        bw.write(st.toString)
+      }
+
+      bw.write("  }\n")
       bw.write("}\n")
       bw.write("\nobject PropertyChecks extends PropertyChecks\n\n")
     }

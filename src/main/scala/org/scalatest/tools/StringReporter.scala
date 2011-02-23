@@ -29,6 +29,7 @@ import java.io.StringWriter
 import org.scalatest.events._
 import PrintReporter._
 import org.scalatest.junit.JUnitTestFailedError
+import org.scalatest.prop.PropertyTestFailedException
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -176,7 +177,7 @@ if a StackDepth and no F specified, then show the truncated form.
             val className = throwable.getClass.getName 
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val colonMessageOrEmptyString =
-              if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty)
+              if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty && !throwable.isInstanceOf[PropertyTestFailedException])
                 ": " + throwable.getMessage.trim
               else
                 ""
