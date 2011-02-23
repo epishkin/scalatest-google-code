@@ -100,7 +100,7 @@ val propertyCheckForAllTemplate = """
       st.setAttribute("year", thisYear);
       bw.write(st.toString)
       val alpha = "abcdefghijklmnopqrstuv"
-      for (i <- 2 to 22) {
+      for (i <- 1 to 22) {
         val st = new org.antlr.stringtemplate.StringTemplate(tableTemplate)
         val alphaLower = alpha.take(i).mkString(", ")
         val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
@@ -131,7 +131,7 @@ val propertyCheckForAllTemplate = """
       bw.write(st.toString)
       bw.write(propertyCheckPreamble)
       val alpha = "abcdefghijklmnopqrstuv"
-      for (i <- 2 to 22) {
+      for (i <- 1 to 22) {
         val st = new org.antlr.stringtemplate.StringTemplate(propertyCheckForAllTemplate)
         val alphaLower = alpha.take(i).mkString(", ")
         val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
@@ -145,7 +145,7 @@ val propertyCheckForAllTemplate = """
 
 
       bw.write("\n  object Table {\n")
-      for (i <- 2 to 22) {
+      for (i <- 1 to 22) {
         val st = new org.antlr.stringtemplate.StringTemplate(tableObjectApplyTemplate)
         val alphaLower = alpha.take(i).mkString(", ")
         val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
