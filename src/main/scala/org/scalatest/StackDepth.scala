@@ -56,10 +56,48 @@ trait StackDepth { this: Throwable =>
    * @return a user-presentable string containing the filename and line number that caused the failed test
    */
   def failedCodeFileNameAndLineNumberString: Option[String] = {
-    val stackTraceElement = getStackTrace()(failedCodeStackDepth)
+    for (fileName <- failedCodeFileName; lineNum <- failedCodeLineNumber) yield
+      fileName + ":" + lineNum
+  }
+
+  private def stackTraceElement = getStackTrace()(failedCodeStackDepth)
+
+  /**
+   * A string that provides the filename of the line of code that failed, suitable
+   * for presenting to a user, which is taken from this exception's <code>StackTraceElement</code> at the depth specified
+   * by <code>failedCodeStackDepth</code>.
+   *
+   * <p>
+   * This is a <code>def</code> instead of a <code>val</code> because exceptions are mutable: their stack trace can
+   * be changed after the exception is created. This is done, for example, by the <code>SeveredStackTraces</code> trait.
+   * </p>
+   *
+   * @return a string containing the filename that caused the failed test
+   */
+  def failedCodeFileName: Option[String] = {
     val fileName = stackTraceElement.getFileName
     if (fileName != null) {
-      Some(fileName + ":" + stackTraceElement.getLineNumber)
+      Some(fileName)
+    }
+    else None
+  }
+
+  /**
+   * A string that provides the line number of the line of code that failed, suitable
+   * for presenting to a user, which is taken from this exception's <code>StackTraceElement</code> at the depth specified
+   * by <code>failedCodeStackDepth</code>.
+   *
+   * <p>
+   * This is a <code>def</code> instead of a <code>val</code> because exceptions are mutable: their stack trace can
+   * be changed after the exception is created. This is done, for example, by the <code>SeveredStackTraces</code> trait.
+   * </p>
+   *
+   * @return a string containing the line number that caused the failed test
+   */
+  def failedCodeLineNumber: Option[Int] = {
+    val lineNum = stackTraceElement.getLineNumber
+    if (lineNum > 0) {
+      Some(lineNum)
     }
     else None
   }
