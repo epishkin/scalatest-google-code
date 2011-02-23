@@ -32,6 +32,8 @@ class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
 
   def length: Int = rows.length
 
+  def iterator: Iterator[($alphaUpper$)] = rows.iterator
+
   def apply(fun: ($alphaUpper$) => Unit) {
     for ((($alphaLower$), idx) <- rows.zipWithIndex) {
       try {
@@ -121,7 +123,7 @@ $columnsOfTwos$
     }
   }
 
-  test("table for $n$ apply and length methods work correctly") {
+  test("table for $n$ apply, length, and iterator methods work correctly") {
 
     val examples =
       Table(
@@ -134,6 +136,14 @@ $columnsOfIndexes$
     }
 
     examples.length should equal (10)
+
+    var i = 0
+    for (example <- examples.iterator) {
+      example should equal ($listOfIs$)
+      i += 1
+    }
+
+    examples.iterator.length should equal (10)
   }
 """
 
