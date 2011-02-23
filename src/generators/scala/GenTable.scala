@@ -37,8 +37,8 @@ class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
         case e =>
           val ($alphaName$) = heading
 
-          throw new PropertyTestFailedException(
-            FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
+          throw new TablePropertyCheckFailedException(
+            FailureMessages("tablePropertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
               "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
               (
                 e match {
@@ -52,9 +52,10 @@ $namesAndValues$
               "  )",
             Some(e),
             7, //getStackDepth("TableFor2.scala", "apply"),
-            FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)),
+            FailureMessages("undecoratedPropertyCheckFailureMessage"),
             List($alphaLower$),
-            List($alphaName$)
+            List($alphaName$),
+            idx
           )
       }
     }
