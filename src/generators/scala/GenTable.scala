@@ -27,6 +27,7 @@ package prop
 
 val tableTemplate = """
 class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
+  def apply(idx: Int): ($alphaUpper$) = rows(idx)
   def apply(fun: ($alphaUpper$) => Unit) {
     for ((($alphaLower$), idx) <- rows.zipWithIndex) {
       try {
@@ -113,6 +114,19 @@ $columnsOfTwos$
 
     intercept[TablePropertyCheckFailedException] {
       forAll (examples) { ($names$) => $sumOfArgs$ should equal ($n$) }
+    }
+  }
+
+  test("table for $n$ apply method works correctly") {
+
+    val examples =
+      Table(
+        ($argNames$),
+$columnsOfIndexes$
+      )
+
+    for (i <- 0 to 9) {
+      examples(i) should equal ($listOfIs$)
     }
   }
 """
@@ -215,17 +229,24 @@ $columnsOfTwos$
         val st = new org.antlr.stringtemplate.StringTemplate(tableSuiteTemplate)
         val rowOfOnes = List.fill(i)("  1").mkString(", ")
         val rowOfTwos = List.fill(i)("  2").mkString(", ")
+        val listOfIs = List.fill(i)("i").mkString(", ")
         val columnsOfOnes = List.fill(i)("        (" + rowOfOnes + ")").mkString(",\n")
         val columnsOfTwos = List.fill(i)("        (" + rowOfTwos + ")").mkString(",\n")
+        val rawRows =                              
+          for (idx <- 0 to 9) yield                
+            List.fill(i)("  " + idx).mkString("        (", ", ", ")")
+        val columnsOfIndexes = rawRows.mkString(",\n")
         val argNames = alpha.map("\"" + _ + "\"").take(i).mkString(", ")
         val names = alpha.take(i).mkString(", ")
         val sumOfArgs = alpha.take(i).mkString(" + ")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
+        st.setAttribute("columnsOfIndexes", columnsOfIndexes)
         st.setAttribute("argNames", argNames)
         st.setAttribute("names", names)
         st.setAttribute("sumOfArgs", sumOfArgs)
+        st.setAttribute("listOfIs", listOfIs)
         bw.write(st.toString)
       }
 
@@ -235,6 +256,7 @@ $columnsOfTwos$
       bw.close()
     }
   }
+
   genTables()
   genPropertyChecks()
   genTableSuite()
