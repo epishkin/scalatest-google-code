@@ -13,41 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.prop
-
-import org.scalatest._
+package org.scalatest
+package prop
 
 /**
- * Exception that indicates a test failed. The purpose of this exception is to encapsulate information about
- * the stack depth at which the line of test code that failed resides, so that information can be presented to
- * the user that makes it quick to find the failing line of test code. (I.e., the user need not scan through the
- * stack trace to find the correct filename and line number of the failing test.)
- *
- * @param message an optional detail message for this <code>TestFailedException</code>.
- * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
- * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
- * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it
- * @param args the argument values, if any
- *
- * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ * <strong>This exception class has been deprecated and will be removed in a future version of ScalaTest. Please
+ * change uses of this class to use <code>ScalaCheckPropertyCheckFailedException</code> instead.</strong>
  *
  * @author Bill Venners
  */
+@deprecated
 class PropertyTestFailedException(
   message: String,
   cause: Option[Throwable],
   failedCodeStackDepth: Int,
-  val undecoratedMessage: String,
-  val args: List[Any],
-  val labels: List[String]
-) extends TestFailedException(Some(message), cause, failedCodeStackDepth) {
-
-  if (message == null) throw new NullPointerException("message was null")
-
-  if (cause == null) throw new NullPointerException("cause was null")
-  cause match {
-    case Some(null) => throw new NullPointerException("cause was a Some(null)")
-    case _ =>
-  }
-}
-
+  undecoratedMessage: String,
+  args: List[Any],
+  labels: List[String]
+) extends ScalaCheckPropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, labels)
