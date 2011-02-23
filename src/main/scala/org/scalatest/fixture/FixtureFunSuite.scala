@@ -449,7 +449,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
       throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
 
     if (atomic.get.testsMap.keySet.contains(testName))
-      throw new DuplicateTestNameException(Resources("duplicateTestName", testName), getStackDepth("FunSuite.scala", "test"))
+      throw new DuplicateTestNameException(testName, getStackDepth("FunSuite.scala", "test"))
 
     val oldBundle = atomic.get
     var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
