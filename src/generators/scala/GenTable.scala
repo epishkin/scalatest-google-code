@@ -27,7 +27,11 @@ package prop
 
 val tableTemplate = """
 class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
+
   def apply(idx: Int): ($alphaUpper$) = rows(idx)
+
+  def length: Int = rows.length
+
   def apply(fun: ($alphaUpper$) => Unit) {
     for ((($alphaLower$), idx) <- rows.zipWithIndex) {
       try {
@@ -117,7 +121,7 @@ $columnsOfTwos$
     }
   }
 
-  test("table for $n$ apply method works correctly") {
+  test("table for $n$ apply and length methods work correctly") {
 
     val examples =
       Table(
@@ -128,6 +132,8 @@ $columnsOfIndexes$
     for (i <- 0 to 9) {
       examples(i) should equal ($listOfIs$)
     }
+
+    examples.length should equal (10)
   }
 """
 
