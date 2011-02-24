@@ -1018,7 +1018,7 @@ import org.scalatest.tools.StandardOutReporter
  * have arisen that should cause the run to abort. For example, if a test completes abruptly with an <code>OutOfMemoryError</code>, 
  * it will not be reported as a test failure, but will instead cause the run to abort. Because not everyone uses <code>Error</code>s only to represent serious
  * problems, however, ScalaTest only behaves this way for the following exception types (and their subclasses):
- * <p>
+ * </p>
  *
  * <ul>
  * <li><code>java.lang.annotation.AnnotationFormatError</code></li>
