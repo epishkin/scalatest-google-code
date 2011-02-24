@@ -23,16 +23,24 @@ val copyrightTemplate = """/*
  */
 package org.scalatest
 package prop
+
+import scala.collection.mutable.Builder
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.IndexedSeqLike
+import scala.collection.generic.CanBuildFrom
 """
 
 val tableTemplate = """
-class TableFor$n$[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) {
+class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*) extends IndexedSeq[($alphaUpper$)] with IndexedSeqLike[($alphaUpper$), TableFor$n$[$alphaUpper$]] {
 
   def apply(idx: Int): ($alphaUpper$) = rows(idx)
 
   def length: Int = rows.length
 
-  def iterator: Iterator[($alphaUpper$)] = rows.iterator
+  override protected[this] def newBuilder: Builder[($alphaUpper$), TableFor$n$[$alphaUpper$]] =
+    new ArrayBuffer mapResult { (buf: Seq[($alphaUpper$)]) =>
+      new TableFor$n$(heading, buf: _*)
+    }
 
   def apply(fun: ($alphaUpper$) => Unit) {
     for ((($alphaLower$), idx) <- rows.zipWithIndex) {
@@ -67,6 +75,23 @@ $namesAndValues$
       }
     }
   }
+
+  override def toString: String = stringPrefix + "(" + heading.toString + ", " +  rows.mkString(", ") + ")"
+}
+
+object TableFor$n$ {
+
+  implicit def canBuildFrom[$alphaUpper$]: CanBuildFrom[TableFor$n$[$alphaUpper$], ($alphaUpper$), TableFor$n$[$alphaUpper$]] =
+    new CanBuildFrom[TableFor$n$[$alphaUpper$], ($alphaUpper$), TableFor$n$[$alphaUpper$]] {
+      def apply(): Builder[($alphaUpper$), TableFor$n$[$alphaUpper$]] =
+        new ArrayBuffer mapResult { (buf: Seq[($alphaUpper$)]) =>
+          new TableFor$n$(($argsNamedArg$))
+        }
+      def apply(from: TableFor$n$[$alphaUpper$]): Builder[($alphaUpper$), TableFor$n$[$alphaUpper$]] =
+        new ArrayBuffer mapResult { (buf: Seq[($alphaUpper$)]) =>
+          new TableFor$n$(from.heading, buf: _*)
+        }
+    }
 }
 """
 
@@ -172,11 +197,16 @@ $columnsOfIndexes$
         val alphaName = alpha.take(i).map(_ + "Name").mkString(", ")
         val namesAndValues = alpha.take(i).map(c => "              \"    \" + " + c + "Name + \" = \" + " + c).mkString("", " + \",\" + \"\\n\" +\n", " + \"\\n\" +\n")
         val strings = List.fill(i)("String").mkString(", ")
+        val argsNamedArgSeq =
+          for (argsIdx <- 0 until i) yield
+            "\"" + "arg" + argsIdx + "\""
+        val argsNamedArg = argsNamedArgSeq.mkString(",")                                  
         st.setAttribute("n", i)
         st.setAttribute("alphaLower", alphaLower)
         st.setAttribute("alphaUpper", alphaUpper)
         st.setAttribute("alphaName", alphaName)
         st.setAttribute("strings", strings)
+        st.setAttribute("argsNamedArg", argsNamedArg)
         st.setAttribute("namesAndValues", namesAndValues)
         bw.write(st.toString)
       }
