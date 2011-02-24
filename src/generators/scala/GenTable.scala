@@ -56,7 +56,7 @@ $columnsOfIndexes$
  *
  * <p>
  * Because you supplied $n$ members in each tuple, the type you'll get back will be a <code>TableFor$n$</code>.
- * <p>
+ * </p>
  *
  * <p>
  * The table provides an <code>apply</code> method that takes a function with a parameter list that matches
@@ -96,33 +96,60 @@ $columnsOfIndexes$
  * </pre>
  *
  * <p>
- * Note: the <code>failureOf</code> method will execute the supplied code (a by-name parameter) and catch any exception. If no exception is thrown by the code,
- * <code>failureOf</code> will result in <code>None</code>, indicating the "property check" succeeded. If the supplied code completes
- * abruptly in an exception that would normally cause a test to fail, <code>failureOf</code> will result in a <code>Some</code> wrapping
- * that exception. For example, the previous for expression would give you:
+ * Note: the <code>failureOf</code> method, contained in the <code>FailureOf</code> trait, will execute the supplied code (a by-name parameter) and
+ * catch any exception. If no exception is thrown by the code, <code>failureOf</code> will result in <code>None</code>, indicating the "property check"
+ * succeeded. If the supplied code completes abruptly in an exception that would normally cause a test to fail, <code>failureOf</code> will result in
+ * a <code>Some</code> wrapping that exception. For example, the previous for expression would give you:
  * </p>
  *
  * <pre>
- * Vector(None, None, None, None, None, None, None, Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
+ * Vector(None, None, None, None, None, None, None,
+ *     Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
  * </pre>
  *
  * <p>
  * This shows that all the property checks succeeded, except for the one at index 7.
  * <p>
  *
+ * @param heading a tuple containing string names of the columns in this table
+ * @param rows a variable length parameter list of <code>Tuple$n$</code>s containing the data of this table
+ *
  * @author Bill Venners 
  */
 class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*) extends IndexedSeq[($alphaUpper$)] with IndexedSeqLike[($alphaUpper$), TableFor$n$[$alphaUpper$]] {
 
+  /**
+   * Selects a row of data by its index.
+   */
   def apply(idx: Int): ($alphaUpper$) = rows(idx)
 
+  /**
+   * The number of rows of data in the table. (This does not include the <code>heading</code> tuple)
+   */
   def length: Int = rows.length
 
+  /**
+   * Creates a new <code>Builder</code> for <code>TableFor$n$</code>s.
+   */
   override protected[this] def newBuilder: Builder[($alphaUpper$), TableFor$n$[$alphaUpper$]] =
     new ArrayBuffer mapResult { (buf: Seq[($alphaUpper$)]) =>
       new TableFor$n$(heading, buf: _*)
     }
 
+  /**
+   * Applies the passed property check function to each row of this <code>TableFor$n$</code>.
+   *
+   * <p>
+   * If the property checks for all rows succeed (the property check function returns normally when passed
+   * the data for each row), this <code>apply</code> method returns normally. If the property check function
+   * completes abruptly with an exception for any row, this <code>apply</code> method wraps that exception
+   * in a <code>TablePropertyCheckFailedException</code> and completes abruptly with that exception. Once
+   * the property check function throws an exception for a row, this <code>apply</code> method will complete
+   * abruptly immediately and subsequent rows will not be checked against the function.
+   * </p>
+   *
+   * @param fun the property check function to apply to each row of this <code>TableFor$n$</code>
+   */
   def apply(fun: ($alphaUpper$) => Unit) {
     for ((($alphaLower$), idx) <- rows.zipWithIndex) {
       try {
@@ -157,6 +184,9 @@ $namesAndValues$
     }
   }
 
+  /**
+   * A string representation of this object, which includes the heading strings as well as the rows of data.
+   */
   override def toString: String = stringPrefix + "(" + heading.toString + ", " +  rows.mkString(", ") + ")"
 }
 
@@ -168,6 +198,9 @@ $namesAndValues$
  */
 object TableFor$n$ {
 
+  /**
+   * Implicit method enabling higher order functions of <code>TableFor$n$</code> to return sequences of type <code>TableFor$n$</code>.
+   */
   implicit def canBuildFrom[$alphaUpper$]: CanBuildFrom[TableFor$n$[$alphaUpper$], ($alphaUpper$), TableFor$n$[$alphaUpper$]] =
     new CanBuildFrom[TableFor$n$[$alphaUpper$], ($alphaUpper$), TableFor$n$[$alphaUpper$]] {
       def apply(): Builder[($alphaUpper$), TableFor$n$[$alphaUpper$]] =
@@ -182,7 +215,82 @@ object TableFor$n$ {
 }
 """
 
+val tableObjectPreamble = """
+  /**
+   * Object containing one <code>apply</code> factory method for each <code>TableFor&lt;n&gt;</code> class.
+   * 
+   * <p>
+   * For example, you could create a table of 5 rows and 2 colums like this:
+   * </p>
+   *
+   * <pre>
+   * import org.scalatest.prop.PropertyChecks._
+   *
+   * val examples =
+   *   Table(
+   *     ("a", "b"),
+   *     (  1,   2),
+   *     (  2,   4),
+   *     (  4,   8),
+   *     (  8,  16),
+   *     ( 16,  32)
+   *   )
+   * </pre>
+   *
+   * <p>
+   * Because you supplied 2 members in each tuple, the type you'll get back will be a <code>TableFor2</code>. If
+   * you wanted a table with just one column you could write this:
+   * </p>
+   *
+   * <pre>
+   * val moreExamples =
+   *   Table(
+   *     "powerOfTwo",
+   *          1,
+   *          2,
+   *          4,
+   *          8,
+   *          16
+   *   )
+   * </pre>
+   *
+   * <p>
+   * Or if you wanted a table with 10 columns and 10 rows, you could do this:
+   * </p>
+   *
+   * <pre>
+   * val multiplicationTable =
+   *   Table(
+   *     ("a", "b", "c", "d", "e", "f", "g", "h", "i", "j"),
+   *     (  1,   2,   3,   4,   5,   6,   7,   8,   9,  10),
+   *     (  2,   4,   6,   8,  10,  12,  14,  16,  18,  20),
+   *     (  3,   6,   9,  12,  15,  18,  21,  24,  27,  30),
+   *     (  4,   8,  12,  16,  20,  24,  28,  32,  36,  40),
+   *     (  5,  10,  15,  20,  25,  30,  35,  40,  45,  50),
+   *     (  6,  12,  18,  24,  30,  36,  42,  48,  54,  60),
+   *     (  7,  14,  21,  28,  35,  42,  49,  56,  63,  70),
+   *     (  8,  16,  24,  32,  40,  48,  56,  64,  72,  80),
+   *     (  9,  18,  27,  36,  45,  54,  63,  72,  81,  90),
+   *     ( 10,  20,  30,  40,  50,  60,  70,  80,  90, 100)
+   *   )
+   * </pre>
+   *
+   * <p>
+   * The type of <code>multiplecationTable</code> would be <code>TableFor10</code>. You can pass the resulting
+   * tables to a <code>forAll</code> method (defined in trait <code>PropertyChecks</code>), to perform a property
+   * check with the data in the table. Or, because tables are sequences of tuples, you can treat them as a <code>Seq</code>.
+   * </p>
+   */
+  object Table {
+"""
+
 val tableObjectApplyTemplate = """
+    /**
+     * Factory method for creating a new <code>TableFor$n$</code>.
+     *
+     * @param heading a tuple containing string names of the columns in this table
+     * @param rows a variable length parameter list of <code>Tuple$n$</code>s containing the data of this table
+     */
     def apply[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) =
       new TableFor$n$(heading, rows: _*)
 """
@@ -190,6 +298,93 @@ val tableObjectApplyTemplate = """
 val propertyCheckPreamble = """
 trait PropertyChecks {
 
+  /**
+   * Evaluates the passed code block if the passed boolean condition is true, else throws <code>UnmetConditionException</code>.
+   *
+   * <p>
+   * The <code>whenever</code> method can be used inside property check functions to skip invocations of the function with
+   * data for which it is known the property would fail. For example, given the following <code>Fraction</code> class:
+   * </p>
+   *
+   * <pre>
+   * class Fraction(n: Int, d: Int) {
+   *
+   *   require(d != 0)
+   *   require(d != Integer.MIN_VALUE)
+   *   require(n != Integer.MIN_VALUE)
+   *
+   *   val numer = if (d < 0) -1 * n else n
+   *   val denom = d.abs
+   *
+   *   override def toString = numer + " / " + denom
+   * }
+   * </pre>
+   *
+   * <p>
+   * You could create a table of numerators and denominators to pass to the constructor of the
+   * <code>Fraction</code> class like this:
+   * </p>
+   *
+   * <pre>
+   * import org.scalatest.prop.PropertyChecks._
+   *
+   * val fractions =
+   *   Table(
+   *     ("n", "d"),
+   *     (  1,   2),
+   *     ( -1,   2),
+   *     (  1,  -2),
+   *     ( -1,  -2),
+   *     (  3,   1),
+   *     ( -3,   1),
+   *     ( -3,   0),
+   *     (  3,  -1),
+   *     (  3,  Integer.MIN_VALUE),
+   *     (Integer.MIN_VALUE, 3),
+   *     ( -3,  -1)
+   *   )
+   * </pre>
+   *
+   * <p>
+   * Imagine you wanted to check a property against this class with data that includes some
+   * value that are rejected by the constructor, such as a denominator of zero, which should
+   * result in an <code>IllegalArgumentException</code>. You could use <code>whenever</code>
+   * to skip any rows in the <code>fraction</code> that represent illegal arguments, like this:
+   * </p>
+   *
+   * <pre>
+   * import org.scalatest.matchers.ShouldMatchers._
+   *
+   * forAll (fractions) { (n: Int, d: Int) =>
+   *
+   *   whenever (d != 0 && d != Integer.MIN_VALUE
+   *       && n != Integer.MIN_VALUE) {
+   *
+   *     val f = new Fraction(n, d)
+   *
+   *     if (n < 0 && d < 0 || n > 0 && d > 0)
+   *       f.numer should be > 0
+   *     else if (n != 0)
+   *       f.numer should be < 0
+   *     else
+   *       f.numer should be === 0
+   *
+   *     f.denom should be > 0
+   *   }
+   * }
+   * </pre>
+   *
+   * <p>
+   * In this example, rows 6, 8, and 9 have values that would cause a false to be passed 
+   * to <code>whenever</code>. (For example, in row 6, <code>d</code> is 0, which means <code>d</code> <code>!=</code> <code>0</code>
+   * will be false.) For those rows, <code>whenever</code> will throw <code>UnmetConditionException</code>,
+   * which will cause the <code>forAll</code> method to skip that row.
+   * </p>
+   *
+   * @param condition the boolean condition that determines whether <code>whenever</code> will evaluate the 
+   *    <code>fun</code> function (<code>condition<code> is true) or throws <code>UnmetConditionException</code> (<code>condition<code> is false)
+   * @param fun the function to evaluate if the specified <code>condition</code> is true
+   */
   def whenever(condition: => Boolean)(fun: => Unit) {
     if (!condition)
       throw new UnmetConditionException(condition _)
@@ -198,6 +393,13 @@ trait PropertyChecks {
 """
 
 val propertyCheckForAllTemplate = """
+  /**
+   * Performs a property check by applying the specified property check function to each row
+   * of the specified <code>TableFor$n$</code>.
+   *
+   * @param table the table of data with which to perform the property check
+   * @param fun the property check function to apply to each row of data in the table
+   */
   def forAll[$alphaUpper$](table: TableFor$n$[$alphaUpper$])(fun: ($alphaUpper$) => Unit) {
     table(fun)
   }
@@ -335,7 +537,7 @@ $columnsOfIndexes$
       }
 
 
-      bw.write("\n  object Table {\n")
+      bw.write(tableObjectPreamble)
       for (i <- 1 to 22) {
         val st = new org.antlr.stringtemplate.StringTemplate(tableObjectApplyTemplate)
         val alphaLower = alpha.take(i).mkString(", ")
