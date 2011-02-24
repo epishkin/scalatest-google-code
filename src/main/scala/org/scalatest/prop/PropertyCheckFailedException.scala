@@ -22,9 +22,9 @@ package prop
  * @param message a detail message, not optional) for this <code>PropertyCheckFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>PropertyCheckFailedException</code> to be thrown.
  * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
- * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it
- * @param args the argument values
- * @param args the argument values
+ * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it.
+ * @param args the argument values that caused the property check to fail.
+ * @param optionalArgNames an optional list of string names for the arguments.
  *
  * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
  *
@@ -47,6 +47,16 @@ class PropertyCheckFailedException(
     case _ =>
   }
 
+  /**
+   * A list of names for the arguments that caused the property check to fail.
+   *
+   * <p>
+   * If the <code>optionalArgNames</code> class parameter is defined, this method returns
+   * the <code>List[String]</code> contained in the <code>Some</code>. Otherwise, it returns
+   * a list that gives <code>"arg0"</code> for the zeroeth argument, <code>"arg1"</code> for the
+   * first argument, <code>"arg2"</code> for the second argument, and so on.
+   * </p>
+   */
   def argNames: List[String] =
     optionalArgNames match {
       case Some(argNames) => argNames

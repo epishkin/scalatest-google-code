@@ -1100,7 +1100,7 @@ import org.scalatest.tools.StandardOutReporter
  * @author Bill Venners
  */
 @serializable
-trait Suite extends Assertions with AbstractSuite { thisSuite =>
+trait Suite extends Assertions with AbstractSuite with FailureOf { thisSuite =>
 
   import Suite.TestMethodPrefix, Suite.InformerInParens, Suite.IgnoreAnnotation
 

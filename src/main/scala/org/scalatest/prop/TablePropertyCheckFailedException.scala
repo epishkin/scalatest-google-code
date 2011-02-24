@@ -24,7 +24,8 @@ package prop
  * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
  * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it
  * @param args the argument values
- * @param args the argument values
+ * @param namesOfArgs a list of string names for the arguments
+ * @param row the index of the table row that failed the property check, causing this exception to be thrown
  *
  * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
  *
@@ -38,14 +39,4 @@ class TablePropertyCheckFailedException(
   args: List[Any],
   namesOfArgs: List[String],
   val row: Int
-) extends PropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, Some(namesOfArgs)) {
-
-  if (message == null) throw new NullPointerException("message was null")
-
-  if (cause == null) throw new NullPointerException("cause was null")
-  cause match {
-    case Some(null) => throw new NullPointerException("cause was a Some(null)")
-    case _ =>
-  }
-}
-
+) extends PropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, Some(namesOfArgs))

@@ -20,11 +20,12 @@ import org.scalatest._
 /**
  * Exception that indicates a ScalaCheck property check failed.
  *
- * @param message an optional detail message for this <code>TestFailedException</code>.
+ * @param message an detail message for this <code>ScalaCheckPropertyCheckFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
  * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
  * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it
  * @param args the argument values, if any
+ * @param labels the labels, if any (see the ScalaCheck user guide for information on labels)
  *
  * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
  *
