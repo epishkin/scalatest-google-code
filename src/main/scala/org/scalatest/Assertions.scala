@@ -778,6 +778,56 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
     fun
   }
 */
+  /**
+   * Executes the supplied code (a by-name parameter) and returns in an optional throwable indicating whether the passed
+   * expression failed (threw an exception that would normally cause a test to fail) or succeeded (did not throw any exception).
+   *
+   * <p>
+   * Because <code>Error</code>s are used to denote serious errors, trait <code>Suite</code> and its subtypes in the
+   * ScalaTest API do not always treat a test that completes abruptly with an <code>Error</code> as a test failure, but sometimes as
+   * an indication that serious problems have arisen that should cause the run to abort. For example, if a test completes abruptly
+   * with an <code>OutOfMemoryError</code>, it will not be reported as a test failure, but will instead cause the run to abort.
+   * Because not everyone uses <code>Error</code>s only to represent serious problems, however, ScalaTest only behaves this way
+   * for the following exception types (and their subclasses):
+   * </p>
+   *
+   * <ul>
+   * <li><code>java.lang.annotation.AnnotationFormatError</code></li>
+   * <li><code>java.awt.AWTError</code></li>
+   * <li><code>java.nio.charset.CoderMalfunctionError</code></li>
+   * <li><code>javax.xml.parsers.FactoryConfigurationError</code></li>
+   * <li><code>java.lang.LinkageError</code></li>
+   * <li><code>java.lang.ThreadDeath</code></li>
+   * <li><code>javax.xml.transform.TransformerFactoryConfigurationError</code></li>
+   * <li><code>java.lang.VirtualMachineError</code></li>
+   * </ul>
+   *
+   * <p>
+   * The previous list includes all <code>Error</code>s that exist as part of Java 1.5 API, excluding <code>java.lang.AssertionError</code>. ScalaTest
+   * does treat a thrown <code>AssertionError</code> as an indication of a test failure. In addition, any other <code>Error</code> that is not an instance of a
+   * type mentioned in the previous list will be caught by the <code>Suite</code> traits in the ScalaTest API and reported as the cause of a test failure. 
+   * </p>
+   *
+   * <p>
+   * If the code supplied to <code>failureOf</code> completes abruptly in one of the errors in the previous list, <code>failureOf</code>
+   * will not return it wrapped in an option, but rather will complete abruptly with the same exception. The <code>failureOf</code> method
+   * will wrap any other exception thrown by the supplied code in a <code>Some</code> and return it.
+   * </p>
+   */
+  def failureOf(f: => Unit): Option[Throwable] = {
+    
+    try {                                         
+      f                                           
+      None                                        
+    }                                             
+    catch {                                       
+      case e =>
+        if (!Suite.anErrorThatShouldCauseAnAbort(e))
+          Some(e)                           
+        else
+          throw e
+    }
+  }
 }
 
 /**
