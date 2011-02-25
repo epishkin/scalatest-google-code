@@ -1,3 +1,18 @@
+/*
+ * Copyright 2001-2011 Artima, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import java.io.File
 import java.io.FileWriter
 import java.io.BufferedWriter
@@ -23,7 +38,9 @@ val copyrightTemplate = """/*
  */
 package org.scalatest
 package prop
+"""
 
+val importsForTableForNTemplate = """
 import scala.collection.mutable.Builder
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.IndexedSeqLike
@@ -43,7 +60,7 @@ val tableTemplate = """
  *
  * <p>
  * A handy way to create a <code>TableFor$n$</code> is via an <code>apply</code> factory method in the <code>Table</code>
- * singleton object provided by the <code>PropertyChecks</code> trait. Here's an example:
+ * singleton object provided by the <code>Tables</code> trait. Here's an example:
  * </p>
  *
  * <pre>
@@ -72,7 +89,7 @@ $columnsOfIndexes$
  * 
  * <p>
  * The usual way you'd invoke the <code>apply</code> method that checks a property is via a <code>forAll</code> method
- * provided by trait <code>PropertyChecks</code>. The <code>forAll</code> method takes a <code>TableFor$n$</code> as its
+ * provided by trait <code>TableDrivenPropertyChecks</code>. The <code>forAll</code> method takes a <code>TableFor$n$</code> as its
  * first argument, then in a curried argument list takes the property check function. It invokes <code>apply</code> on
  * the <code>TableFor$n$</code>, passing in the property check function. Here's an example:
  * </p>
@@ -216,6 +233,8 @@ object TableFor$n$ {
 """
 
 val tableObjectPreamble = """
+trait Tables {
+
   /**
    * Object containing one <code>apply</code> factory method for each <code>TableFor&lt;n&gt;</code> class.
    * 
@@ -224,14 +243,14 @@ val tableObjectPreamble = """
    * </p>
    *
    * <pre>
-   * import org.scalatest.prop.PropertyChecks._
+   * import org.scalatest.prop.Tables._
    *
    * val examples =
    *   Table(
    *     ("a", "b"),
    *     (  1,   2),
    *     (  2,   4),
-   *     (  4,   8),
+     *     (  4,   8),
    *     (  8,  16),
    *     ( 16,  32)
    *   )
@@ -276,7 +295,7 @@ val tableObjectPreamble = """
    * </pre>
    *
    * <p>
-   * The type of <code>multiplecationTable</code> would be <code>TableFor10</code>. You can pass the resulting
+   * The type of <code>multiplicationTable</code> would be <code>TableFor10</code>. You can pass the resulting
    * tables to a <code>forAll</code> method (defined in trait <code>PropertyChecks</code>), to perform a property
    * check with the data in the table. Or, because tables are sequences of tuples, you can treat them as a <code>Seq</code>.
    * </p>
@@ -285,18 +304,18 @@ val tableObjectPreamble = """
 """
 
 val tableObjectApplyTemplate = """
-    /**
-     * Factory method for creating a new <code>TableFor$n$</code>.
-     *
-     * @param heading a tuple containing string names of the columns in this table
-     * @param rows a variable length parameter list of <code>Tuple$n$</code>s containing the data of this table
-     */
-    def apply[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) =
-      new TableFor$n$(heading, rows: _*)
+      /**
+       * Factory method for creating a new <code>TableFor$n$</code>.
+       *
+       * @param heading a tuple containing string names of the columns in this table
+       * @param rows a variable length parameter list of <code>Tuple$n$</code>s containing the data of this table
+       */
+      def apply[$alphaUpper$](heading: ($strings$), rows: ($alphaUpper$)*) =
+        new TableFor$n$(heading, rows: _*)
 """
 
 val propertyCheckPreamble = """
-trait PropertyChecks {
+trait TableDrivenPropertyChecks extends Tables {
 
   /**
    * Evaluates the passed code block if the passed boolean condition is true, else throws <code>UnmetConditionException</code>.
@@ -326,7 +345,7 @@ trait PropertyChecks {
    * </p>
    *
    * <pre>
-   * import org.scalatest.prop.PropertyChecks._
+   * import org.scalatest.prop.TableDrivenPropertyChecks._
    *
    * val fractions =
    *   Table(
@@ -409,7 +428,7 @@ val tableSuitePreamble = """
 
 import matchers.ShouldMatchers
 
-class TableSuite extends FunSuite with PropertyChecks with ShouldMatchers {
+class TableSuite extends FunSuite with TableDrivenPropertyChecks with ShouldMatchers {
 """
 
 val tableSuiteTemplate = """
@@ -470,7 +489,7 @@ $columnsOfIndexes$
   mainDir.mkdirs()
   testDir.mkdirs()
 
-  def genTables() {
+  def genTableForNs() {
 
     val bw = new BufferedWriter(new FileWriter("target/generated/src/main/scala/org/scalatest/prop/Table.scala"))
  
@@ -478,6 +497,8 @@ $columnsOfIndexes$
       val st = new org.antlr.stringtemplate.StringTemplate(copyrightTemplate)
       st.setAttribute("year", thisYear);
       bw.write(st.toString)
+      val imports = new org.antlr.stringtemplate.StringTemplate(importsForTableForNTemplate)
+      bw.write(imports.toString)
       val alpha = "abcdefghijklmnopqrstuv"
       for (i <- 1 to 22) {
         val st = new org.antlr.stringtemplate.StringTemplate(tableTemplate)
@@ -516,7 +537,7 @@ $columnsOfIndexes$
 
   def genPropertyChecks() {
 
-    val bw = new BufferedWriter(new FileWriter("target/generated/src/main/scala/org/scalatest/prop/PropertyChecks.scala"))
+    val bw = new BufferedWriter(new FileWriter("target/generated/src/main/scala/org/scalatest/prop/TableDrivenPropertyChecks.scala"))
  
     try {
       val st = new org.antlr.stringtemplate.StringTemplate(copyrightTemplate)
@@ -536,8 +557,24 @@ $columnsOfIndexes$
         bw.write(st.toString)
       }
 
+      bw.write("}\n")
+      bw.write("\nobject TableDrivenPropertyChecks extends TableDrivenPropertyChecks\n\n")
+    }
+    finally {
+      bw.close()
+    }
+  }
 
+  def genTables() {
+
+    val bw = new BufferedWriter(new FileWriter("target/generated/src/main/scala/org/scalatest/prop/Tables.scala"))
+
+    try {
+      val st = new org.antlr.stringtemplate.StringTemplate(copyrightTemplate)
+      st.setAttribute("year", thisYear);
+      bw.write(st.toString)
       bw.write(tableObjectPreamble)
+      val alpha = "abcdefghijklmnopqrstuv"
       for (i <- 1 to 22) {
         val st = new org.antlr.stringtemplate.StringTemplate(tableObjectApplyTemplate)
         val alphaLower = alpha.take(i).mkString(", ")
@@ -552,13 +589,13 @@ $columnsOfIndexes$
 
       bw.write("  }\n")
       bw.write("}\n")
-      bw.write("\nobject PropertyChecks extends PropertyChecks\n\n")
+      bw.write("\nobject Tables extends Tables\n\n")
     }
     finally {
       bw.close()
     }
   }
-
+ 
   def genTableSuite() {
 
     val bw = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/prop/TableSuite.scala"))
@@ -601,8 +638,9 @@ $columnsOfIndexes$
     }
   }
 
-  genTables()
+  genTableForNs()
   genPropertyChecks()
+  genTables()
   genTableSuite()
 }
 
