@@ -74,21 +74,4 @@ class AssertionsSpec extends Spec {
       }
     }
   }
-
-  describe("The failureOf method") {
-    it("should return None if no exception is thrown") {
-      val result = failureOf { assert(1 + 1 === 2) }
-      assert(result === None)
-    }
-    it("should return the exception if TestFailedException is thrown") {
-      val result = failureOf { assert(1 + 1 === 3) }
-      assert(result.isDefined)
-      assert(result.get.isInstanceOf[TestFailedException])
-    }
-    it("if UnknownError is thrown, should complete abruptly with that exception") {
-      intercept[UnknownError] {
-        failureOf { throw new UnknownError }
-      }
-    }
-  }
 }
