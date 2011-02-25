@@ -348,6 +348,8 @@ trait Checkers {
  * Companion object that facilitates the importing of <code>Checkers</code> members as 
  * an alternative to mixing it in. One use case is to import <code>Checkers</code> members so you can use
  * them in the Scala interpreter.
+ *
+ * @author Bill Venners
  */
 object Checkers extends Checkers
 
