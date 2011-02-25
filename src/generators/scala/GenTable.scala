@@ -21,6 +21,102 @@ import scala.collection.JavaConversions._
 
 object GenTable extends Application {
 
+val scaladocForTableFor1VerbatimString = """
+/**
+ * A table with 1 column.
+ *
+ * <p>
+ * This table is a sequence of objects, where each object represents one row of the (one-column) table.
+ * This table also carries with it a <em>heading</em> tuple that gives a string name to the
+ * lone column of the table.
+ * </p>
+ *
+ * <p>
+ * A handy way to create a <code>TableFor1</code> is via an <code>apply</code> factory method in the <code>Table</code>
+ * singleton object provided by the <code>Tables</code> trait. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * val examples =
+ *   Table(
+ *     "a",
+ *       0,
+ *       1,
+ *       2,
+ *       3,
+ *       4,
+ *       5,
+ *       6,
+ *       7,
+ *       8,
+ *       9
+ *   )
+ * </pre>
+ *
+ * <p>
+ * Because you supplied a list of non-tuple objects, the type you'll get back will be a <code>TableFor1</code>.
+ * </p>
+ *
+ * <p>
+ * The table provides an <code>apply</code> method that takes a function with a parameter list that matches
+ * the type of the objects contained in this table. The <code>apply</code> method will invoke the
+ * function with the object in each row passed as the lone argument, in ascending order by index. (<em>I.e.</em>,
+ * the zeroth object is checked first, then the object with index 1, then index 2, and so on until all the rows
+ * have been checked (or until a failure occurs). The function represents a property of the code under test
+ * that should succeed for every row of the table. If the function returns normally, that indicates the property
+ * check succeeded for that row. If the function completes abruptly with an exception, that indicates the
+ * property check failed and the <code>apply</code> method will complete abruptly with a
+ * <code>TablePropertyCheckFailedException</code> that wraps the exception thrown by the supplied property function.
+ * </p>
+ * 
+ * <p>
+ * The usual way you'd invoke the <code>apply</code> method that checks a property is via a <code>forAll</code> method
+ * provided by trait <code>TableDrivenPropertyChecks</code>. The <code>forAll</code> method takes a <code>TableFor1</code> as its
+ * first argument, then in a curried argument list takes the property check function. It invokes <code>apply</code> on
+ * the <code>TableFor1</code>, passing in the property check function. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * forAll (examples) { (a) =>
+ *   a should equal (a * 1)
+ * }
+ * </pre>
+ *
+ * <p>
+ * Because <code>TableFor1</code> is a <code>Seq[(A)]</code>, you can use it as a <code>Seq</code>. For example, here's how
+ * you could get a sequence of optional exceptions for each row of the table, indicating whether a property check succeeded or failed
+ * on each row of the table:
+ * </p>
+ *
+ * <pre>
+ * for (row <- examples) yield {
+ *   failureOf { row._1 should not equal (7) }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Note: the <code>failureOf</code> method, contained in the <code>FailureOf</code> trait, will execute the supplied code (a by-name parameter) and
+ * catch any exception. If no exception is thrown by the code, <code>failureOf</code> will result in <code>None</code>, indicating the "property check"
+ * succeeded. If the supplied code completes abruptly in an exception that would normally cause a test to fail, <code>failureOf</code> will result in
+ * a <code>Some</code> wrapping that exception. For example, the previous for expression would give you:
+ * </p>
+ *
+ * <pre>
+ * Vector(None, None, None, None, None, None, None,
+ *     Some(org.scalatest.TestFailedException: 7 equaled 7), None, None)
+ * </pre>
+ *
+ * <p>
+ * This shows that all the property checks succeeded, except for the one at index 7.
+ * <p>
+ *
+ * @param heading a string name for the lone column of this table
+ * @param rows a variable length parameter list of objects containing the data of this table
+ *
+ * @author Bill Venners 
+ */
+"""
+
 val copyrightTemplate = """/*
  * Copyright 2001-$year$ Artima, Inc.
  *
@@ -47,7 +143,7 @@ import scala.collection.IndexedSeqLike
 import scala.collection.generic.CanBuildFrom
 """
 
-val tableTemplate = """
+val tableScaladocTemplate = """
 /**
  * A table with $n$ columns.
  *
@@ -133,6 +229,9 @@ $columnsOfIndexes$
  *
  * @author Bill Venners 
  */
+"""
+
+val tableTemplate = """
 class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*) extends IndexedSeq[($alphaUpper$)] with IndexedSeqLike[($alphaUpper$), TableFor$n$[$alphaUpper$]] {
 
   /**
@@ -233,6 +332,12 @@ object TableFor$n$ {
 """
 
 val tableObjectPreamble = """
+/**
+ * Trait containing the <code>Table</code> object, which offers one <code>apply</code> factory method for
+ * each <code>TableForN</code> class, <code>TableFor1</code> through <code>TableFor22</code>.
+ * 
+ * @author Bill Venners
+ */
 trait Tables {
 
   /**
@@ -299,6 +404,8 @@ trait Tables {
    * tables to a <code>forAll</code> method (defined in trait <code>PropertyChecks</code>), to perform a property
    * check with the data in the table. Or, because tables are sequences of tuples, you can treat them as a <code>Seq</code>.
    * </p>
+   * 
+   * @author Bill Venners
    */
   object Table {
 """
@@ -314,7 +421,117 @@ val tableObjectApplyTemplate = """
         new TableFor$n$(heading, rows: _*)
 """
 
+val tablesCompanionObjectVerbatimString = """
+/**
+ * Companion object that facilitates the importing of <code>Tables</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>Tables</code> members so you can use
+ * them in the Scala interpreter:
+ *
+ * <pre>
+ * Welcome to Scala version 2.8.0.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
+ * Type in expressions to have them evaluated.
+ * Type :help for more information.
+ * 
+ * scala> import org.scalatest.prop.Tables._
+ * import org.scalatest.prop.Tables._
+ * 
+ * scala> val examples =
+ *   |   Table(
+ *   |     ("a", "b"),
+ *   |     (  1,   2),
+ *   |     (  3,   4)
+ *   |   )
+ * examples: org.scalatest.prop.TableFor2[Int,Int] = TableFor2((1,2), (3,4))
+ * </pre>
+ *
+ * @author Bill Venners
+ */
+object Tables extends Tables
+"""
+
 val propertyCheckPreamble = """
+/**
+ * Trait containing methods that faciliate property checks against tables of data.
+ *
+ * <p>
+ * This trait contains one <code>forAll</code> method for each <code>TableForN</code> class, <code>TableFor1</code>
+ * through <code>TableFor22</code>, which allow properties to be checked against the rows of a table. It also
+ * contains a <code>wherever</code> method that can be used to indicate a property need only hold whenever some
+ * condition is true.
+ * </p>
+ *
+ * <p>
+ * For an example of trait <code>TableDrivenPropertyChecks</code> in action, imagine you want to test this <code>Fraction</code> class:
+ * </p>
+ *  
+ * <pre>
+ * class Fraction(n: Int, d: Int) {
+ *
+ *   require(d != 0)
+ *   require(d != Integer.MIN_VALUE)
+ *   require(n != Integer.MIN_VALUE)
+ *
+ *   val numer = if (d < 0) -1 * n else n
+ *   val denom = d.abs
+ *
+ *   override def toString = numer + " / " + denom
+ * }
+ * </pre>
+ *
+ * <p>
+ * You could create a table of numerators and denominators to pass to the constructor of the
+ * <code>Fraction</code> class using one of the <code>apply</code> factory methods declared
+ * in <code>Table</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.prop.TableDrivenPropertyChecks._
+ *
+ * val fractions =
+ *   Table(
+ *     ("n", "d"),
+ *     (  1,   2),
+ *     ( -1,   2),
+ *     (  1,  -2),
+ *     ( -1,  -2),
+ *     (  3,   1),
+ *     ( -3,   1),
+ *     ( -3,   0),
+ *     (  3,  -1),
+ *     (  3,  Integer.MIN_VALUE),
+ *     (Integer.MIN_VALUE, 3),
+ *     ( -3,  -1)
+ *   )
+ * </pre>
+ *
+ * <p>
+ * You could then check a property against each row of the table using a <code>forAll</code> method, like this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalatest.matchers.ShouldMatchers._
+ *
+ * forAll (fractions) { (n: Int, d: Int) =>
+ *
+ *   whenever (d != 0 && d != Integer.MIN_VALUE
+ *       && n != Integer.MIN_VALUE) {
+ *
+ *     val f = new Fraction(n, d)
+ *
+ *     if (n < 0 && d < 0 || n > 0 && d > 0)
+ *       f.numer should be > 0
+ *     else if (n != 0)
+ *       f.numer should be < 0
+ *     else
+ *       f.numer should be === 0
+ *
+ *     f.denom should be > 0
+ *   }
+ * }
+ * </pre>
+ *
+ * @author Bill Venners
+ */
 trait TableDrivenPropertyChecks extends Tables {
 
   /**
@@ -404,9 +621,9 @@ trait TableDrivenPropertyChecks extends Tables {
    *    <code>fun</code> function (<code>condition<code> is true) or throws <code>UnmetConditionException</code> (<code>condition<code> is false)
    * @param fun the function to evaluate if the specified <code>condition</code> is true
    */
-  def whenever(condition: => Boolean)(fun: => Unit) {
+  def whenever(condition: Boolean)(fun: => Unit) {
     if (!condition)
-      throw new UnmetConditionException(condition _)
+      throw new UnmetConditionException
     fun
   }
 """
@@ -422,6 +639,55 @@ val propertyCheckForAllTemplate = """
   def forAll[$alphaUpper$](table: TableFor$n$[$alphaUpper$])(fun: ($alphaUpper$) => Unit) {
     table(fun)
   }
+"""
+
+val tableDrivenPropertyChecksCompanionObjectVerbatimString = """
+/*
+ * Companion object that facilitates the importing of <code>TableDrivenPropertyChecks</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>TableDrivenPropertyChecks</code> members so you can use
+ * them in the Scala interpreter:
+ *
+ * <pre>
+ * Welcome to Scala version 2.8.0.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_22).
+ * Type in expressions to have them evaluated.
+ * Type :help for more information.
+ *
+ * scala> import org.scalatest.prop.TableDrivenPropertyChecks._
+ * import org.scalatest.prop.TableDrivenPropertyChecks._
+ *
+ * scala> val examples =                                       
+ *   |   Table(                                             
+ *   |     ("a", "b"),                                      
+ *   |     (  1,   2),                                      
+ *   |     (  3,   4)                                       
+ *   |   )
+ * examples: org.scalatest.prop.TableFor2[Int,Int] = TableFor2((1,2), (3,4))
+ *
+ * scala> import org.scalatest.matchers.ShouldMatchers._
+ * import org.scalatest.matchers.ShouldMatchers._
+ *
+ * scala> forAll (examples) { (a, b) => a should be < b }
+ * 
+ * scala> forAll (examples) { (a, b) => a should be > b }
+ * org.scalatest.prop.TablePropertyCheckFailedException: TestFailedException (included as this TablePropertyCheckFailedException's cause) was thrown during property evaluation.
+ * Message: 1 was not greater than 2
+ * Location: <console>:13
+ * Occurred at table row 0 (zero based, not counting headings), which had values (
+ *   a = 1,
+ *   b = 2
+ * )
+ * at org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:355)
+ * at org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:346)
+ * at scala.collection.mutable.ResizableArray$class.foreach(ResizableArray.scala:57)
+ * at scala.collection.mutable.ArrayBuffer.foreach(ArrayBuffer.scala:43)
+ * at org.scalatest.prop.TableFor2.apply(Table.scala:346)
+ * at org.scalatest.prop.TableDrivenPropertyChecks$class.forAll(TableDrivenPropertyChecks.scala:133)
+ * ...
+ * </pre>
+ *
+ * @author Bill Venners
+ */
+object TableDrivenPropertyChecks extends TableDrivenPropertyChecks
 """
 
 val tableSuitePreamble = """
@@ -501,7 +767,9 @@ $columnsOfIndexes$
       bw.write(imports.toString)
       val alpha = "abcdefghijklmnopqrstuv"
       for (i <- 1 to 22) {
-        val st = new org.antlr.stringtemplate.StringTemplate(tableTemplate)
+        val st = new org.antlr.stringtemplate.StringTemplate(
+          (if (i == 1) scaladocForTableFor1VerbatimString else tableScaladocTemplate) + tableTemplate
+        )
         val alphaLower = alpha.take(i).mkString(", ")
         val alphaUpper = alpha.take(i).toUpperCase.mkString(", ")
         val alphaName = alpha.take(i).map(_ + "Name").mkString(", ")
@@ -558,7 +826,7 @@ $columnsOfIndexes$
       }
 
       bw.write("}\n")
-      bw.write("\nobject TableDrivenPropertyChecks extends TableDrivenPropertyChecks\n\n")
+      bw.write(tableDrivenPropertyChecksCompanionObjectVerbatimString)
     }
     finally {
       bw.close()
@@ -589,7 +857,7 @@ $columnsOfIndexes$
 
       bw.write("  }\n")
       bw.write("}\n")
-      bw.write("\nobject Tables extends Tables\n\n")
+      bw.write(tablesCompanionObjectVerbatimString)
     }
     finally {
       bw.close()
