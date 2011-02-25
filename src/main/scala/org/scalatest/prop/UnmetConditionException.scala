@@ -15,5 +15,14 @@
  */
 package org.scalatest.prop
 
-class UnmetConditionException(val condition: () => Boolean) extends RuntimeException
+/**
+ * Exception that indicates a condition required by a property was not met by
+ * a set of input parameters.
+ *
+ * This exception is thrown by the <code>whenever</code> method defined in trait <code>TableDrivenPropertyChecks</code>
+ * when the given condition is false. The <code>forAll</code> methods defined in trait <code>TableDrivenPropertyChecks</code>
+ * catch the <code>UnmetConditionException</code> and ignore it, moving on to try the next row in the table it is checking
+ * a property against.
+ */
+class UnmetConditionException extends RuntimeException
 
