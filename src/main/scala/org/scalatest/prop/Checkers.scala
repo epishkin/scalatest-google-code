@@ -84,7 +84,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  */
 trait Checkers {
 
-  this: Suite =>
+ // this: Suite =>
 
   /**
    * Convert the passed 1-arg function into a property, and check it.
@@ -343,4 +343,11 @@ trait Checkers {
     strs.mkString("\n")
   }
 }
+
+/**
+ * Companion object that facilitates the importing of <code>Checkers</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>Checkers</code> members so you can use
+ * them in the Scala interpreter.
+ */
+object Checkers extends Checkers
 
