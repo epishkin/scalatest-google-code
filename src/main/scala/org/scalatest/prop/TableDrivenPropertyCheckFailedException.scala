@@ -31,7 +31,7 @@ package prop
  *
  * @author Bill Venners
  */
-class TablePropertyCheckFailedException(
+class TableDrivenPropertyCheckFailedException(
   message: String,
   cause: Option[Throwable],
   failedCodeStackDepth: Int,

@@ -66,7 +66,7 @@ val scaladocForTableFor1VerbatimString = """
  * that should succeed for every row of the table. If the function returns normally, that indicates the property
  * check succeeded for that row. If the function completes abruptly with an exception, that indicates the
  * property check failed and the <code>apply</code> method will complete abruptly with a
- * <code>TablePropertyCheckFailedException</code> that wraps the exception thrown by the supplied property function.
+ * <code>TableDrivenPropertyCheckFailedException</code> that wraps the exception thrown by the supplied property function.
  * </p>
  * 
  * <p>
@@ -180,7 +180,7 @@ $columnsOfIndexes$
  * that should succeed for every row of the table. If the function returns normally, that indicates the property
  * check succeeded for that row. If the function completes abruptly with an exception, that indicates the
  * property check failed and the <code>apply</code> method will complete abruptly with a
- * <code>TablePropertyCheckFailedException</code> that wraps the exception thrown by the supplied property function.
+ * <code>TableDrivenPropertyCheckFailedException</code> that wraps the exception thrown by the supplied property function.
  * </p>
  * 
  * <p>
@@ -259,7 +259,7 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
    * If the property checks for all rows succeed (the property check function returns normally when passed
    * the data for each row), this <code>apply</code> method returns normally. If the property check function
    * completes abruptly with an exception for any row, this <code>apply</code> method wraps that exception
-   * in a <code>TablePropertyCheckFailedException</code> and completes abruptly with that exception. Once
+   * in a <code>TableDrivenPropertyCheckFailedException</code> and completes abruptly with that exception. Once
    * the property check function throws an exception for a row, this <code>apply</code> method will complete
    * abruptly immediately and subsequent rows will not be checked against the function.
    * </p>
@@ -276,7 +276,7 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
         case e =>
           val ($alphaName$) = heading
 
-          throw new TablePropertyCheckFailedException(
+          throw new TableDrivenPropertyCheckFailedException(
             FailureMessages("tablePropertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
               "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
               (
@@ -669,7 +669,7 @@ val tableDrivenPropertyChecksCompanionObjectVerbatimString = """
  * scala> forAll (examples) { (a, b) => a should be < b }
  * 
  * scala> forAll (examples) { (a, b) => a should be > b }
- * org.scalatest.prop.TablePropertyCheckFailedException: TestFailedException (included as this TablePropertyCheckFailedException's cause) was thrown during property evaluation.
+ * org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException (included as this exception's cause) was thrown during property evaluation.
  * Message: 1 was not greater than 2
  * Location: <console>:13
  * Occurred at table row 0 (zero based, not counting headings), which had values (
@@ -717,7 +717,7 @@ $columnsOfOnes$
 $columnsOfTwos$
       )
 
-    intercept[TablePropertyCheckFailedException] {
+    intercept[TableDrivenPropertyCheckFailedException] {
       forAll (examples) { ($names$) => $sumOfArgs$ should equal ($n$) }
     }
   }
