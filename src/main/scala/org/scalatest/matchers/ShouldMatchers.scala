@@ -18,6 +18,7 @@ package org.scalatest.matchers
 import org.scalatest._
 import scala.reflect.Manifest
 import org.scalatest.verb.ShouldVerb
+import scala.collection.Traversable
 
 /**
  * Trait that provides a domain specific language (DSL) for expressing assertions in tests
@@ -310,7 +311,7 @@ import org.scalatest.verb.ShouldVerb
  * seven should be (6 plusOrMinus 2)
  * </pre>
  * 
- * <h2>Iterables, collections, sequences, and maps</h2> PDQ: traversables, iterables, sets, sequences, and maps
+ * <h2>Traversables, iterables, sets, sequences, and maps</h2>
  * 
  * <p>
  * You can use some of the syntax shown previously with <code>Iterable</code> and its
@@ -332,8 +333,8 @@ import org.scalatest.verb.ShouldVerb
  * list should have length (9)
  * </pre>
  * 
- * <p> PDQ: Change Collection to Traversable
- * You can check the size of any <code>Collection</code>, like this:
+ * <p>
+ * You can check the size of any <code>Traversable</code>, like this:
  * </p>
  * 
  * <pre class="indent">
@@ -591,7 +592,7 @@ import org.scalatest.verb.ShouldVerb
  * </p>
  * 
  * <pre class="indent">
- * collection should (contain (7) or contain (8) and have size (9))
+ * traversable should (contain (7) or contain (8) and have size (9))
  * </pre>
  * 
  * <p>
@@ -599,7 +600,7 @@ import org.scalatest.verb.ShouldVerb
  * </p>
  * 
  * <pre class="indent">
- * collection should ((contain (7) or contain (8)) and have size (9))
+ * traversable should ((contain (7) or contain (8)) and have size (9))
  * </pre>
  * 
  * <p>
@@ -607,7 +608,7 @@ import org.scalatest.verb.ShouldVerb
  * </p>
  * 
  * <pre class="indent">
- * collection should (contain (7) or (contain (8) and have size (9)))
+ * traversable should (contain (7) or (contain (8) and have size (9)))
  * </pre>
  * 
  * <h2>Working with <code>Option</code>s</h2>
@@ -1433,10 +1434,10 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * <pre>
      * map should have size (3)
      *     ^
-     * </pre> PDQ: Probably change Collection to Traversable here. Not sure why it is Collection. Oh, I guess because, well I don't know.
+     * </pre>
      */
-    def should(haveWord: HaveWord): ResultOfHaveWordForCollection[(K, V)] = {
-      new ResultOfHaveWordForCollection(left, true)
+    def should(haveWord: HaveWord): ResultOfHaveWordForTraversable[(K, V)] = {
+      new ResultOfHaveWordForTraversable(left, true)
     }
 
     /**
@@ -1517,22 +1518,22 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
    *
    * <p>
    * This class is used in conjunction with an implicit conversion to enable <code>should</code> methods to
-   * be invoked on objects of type <code>scala.Collection[T]</code>. PDQ: make it a TraversableShouldWrapper
+   * be invoked on objects of type <code>scala.Collection[T]</code>.
    * </p>
    *
    * @author Bill Venners
    */
-  final class CollectionShouldWrapper[T](left: Collection[T]) {
+  final class TraversableShouldWrapper[T](left: Traversable[T]) {
 
     /**
      * This method enables syntax such as the following:
      *
      * <pre>
-     * collection should equal (Set(1, 2, 3))
-     *            ^
+     * traversable should equal (Set(1, 2, 3))
+     *             ^
      * </pre>
      */
-    def should(rightMatcher: Matcher[Collection[T]]) {
+    def should(rightMatcher: Matcher[Traversable[T]]) {
       ShouldMethodHelper.shouldMatcher(left, rightMatcher)
     }
 
@@ -1540,33 +1541,33 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
      * This method enables syntax such as the following:
      *
      * <pre>
-     * collection should have size (3)
-     *            ^
-     * </pre> PDQ: Collection => Traversable here
-     */
-    def should(haveWord: HaveWord): ResultOfHaveWordForCollection[T] = 
-      new ResultOfHaveWordForCollection(left, true)
-
-    /**
-     * This method enables syntax such as the following: PDQ: Collection => Traversable
-     *
-     * <pre>
-     * collection should be theSameInstanceAs anotherObject
-     *            ^
+     * traversable should have size (3)
+     *             ^
      * </pre>
      */
-    def should(beWord: BeWord): ResultOfBeWordForAnyRef[Collection[T]] = new ResultOfBeWordForAnyRef(left, true)
+    def should(haveWord: HaveWord): ResultOfHaveWordForTraversable[T] = 
+      new ResultOfHaveWordForTraversable(left, true)
 
     /**
-     * This method enables syntax such as the following: PDQ: more Collection to Traversable
+     * This method enables syntax such as the following:
      *
      * <pre>
-     * collection should not have size (3)
-     *            ^
+     * traversable should be theSameInstanceAs anotherObject
+     *             ^
      * </pre>
      */
-    def should(notWord: NotWord): ResultOfNotWordForCollection[T, Collection[T]] =
-      new ResultOfNotWordForCollection(left, false)
+    def should(beWord: BeWord): ResultOfBeWordForAnyRef[Traversable[T]] = new ResultOfBeWordForAnyRef(left, true)
+
+    /**
+     * This method enables syntax such as the following:
+     *
+     * <pre>
+     * traversable should not have size (3)
+     *             ^
+     * </pre>
+     */
+    def should(notWord: NotWord): ResultOfNotWordForTraversable[T, Traversable[T]] =
+      new ResultOfNotWordForTraversable(left, false)
   }
 
   /**
@@ -2025,9 +2026,9 @@ trait ShouldMatchers extends Matchers with ShouldVerb {
 
   /**
    * Implicitly converts an object of type <code>scala.Collection[T]</code> to a <code>CollectionShouldWrapper</code>,
-   * to enable <code>should</code> methods to be invokable on that object. PDF: CHange Collection to Traversable
+   * to enable <code>should</code> methods to be invokable on that object.
    */
-  implicit def convertToCollectionShouldWrapper[T](o: Collection[T]): CollectionShouldWrapper[T] = new CollectionShouldWrapper[T](o)
+  implicit def convertToTraversableShouldWrapper[T](o: Traversable[T]): TraversableShouldWrapper[T] = new TraversableShouldWrapper[T](o)
 
   /**
    * Implicitly converts an object of type <code>scala.Seq[T]</code> to a <code>SeqShouldWrapper[T]</code>,
