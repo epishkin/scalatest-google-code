@@ -149,6 +149,20 @@ passed methodName will be "ignore":
 0 org.scalatest.FunSuite$class.ignore(FunSuite.scala:624)
 1 org.scalatest.Q36Suite.ignore(ShouldBehaveLikeSpec.scala:23)
 2 org.scalatest.Q36Suite$$anonfun$1.apply(ShouldBehaveLikeSpec.scala:25)
+
+Not sure yet what to do with TableDrivenPropertyCheckFailedExeptions. It seems to 
+work fine hard-coded at 7. Can't find a case that doesn't work. Will release it hard-coded at 7 and see
+if someone else runs across one, and if so, I'll fix it then. (So the code that throws that exception
+doesn't call the getStackDepth helper method at this point.)
+
+0 org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:356)
+1 org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:347)
+2 scala.collection.mutable.ResizableArray$class.foreach(ResizableArray.scala:57)
+3 scala.collection.mutable.ArrayBuffer.foreach(ArrayBuffer.scala:43)
+4 org.scalatest.prop.TableFor2.apply(Table.scala:347)
+5 org.scalatest.prop.TableDrivenPropertyChecks$class.forAll(TableDrivenPropertyChecks.scala:215)
+6 org.scalatest.prop.PropertyChecksSuite.forAll(PropertyChecksSuite.scala:21)
+org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:48) <-- this should not be cut
 */
 private[scalatest] object StackDepthExceptionHelper {
 
