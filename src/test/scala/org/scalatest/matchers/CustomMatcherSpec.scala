@@ -94,5 +94,44 @@ class CustomMatcherSpec extends Spec with ShouldMatchers with CustomMatchers {
       }
     }
   }
+
+  describe("the compose method") {
+    describe("on functions that return a matcher") {
+      it("should return another function that returns a usable matcher") {
+        val beAsIntEqual =  (equal (_: Int)) compose ((_: String).toInt)
+        3 should beAsIntEqual ("3")
+        3 should not (beAsIntEqual ("4"))
+      }
+    }
+
+    describe("on matchers themselves") {
+      it("should return a usable matcher") {
+        val beOdd =
+          new Matcher[Int] {
+            def apply(left: Int) =
+              MatchResult(
+                left % 2 == 1,
+                left + " was not odd",
+                left + " was odd"
+              )
+          }
+
+        3 should beOdd
+        4 should not (beOdd)
+
+        // val beOddAsInt = beOdd compose ((_: String).toInt)
+        val beOddAsInt = beOdd compose { (s: String) => s.toInt }
+
+        "3" should beOddAsInt
+        "4" should not (beOddAsInt)
+
+        case class Product(name: String)
+        case class LineItem(product: Product)
+        def haveProduct(p: Product) = equal(p) compose  { (lineItem: LineItem) => lineItem.product }
+
+        LineItem(Product("widgets")) should (haveProduct(Product("widgets")))
+      }
+    }
+  }
 }
  

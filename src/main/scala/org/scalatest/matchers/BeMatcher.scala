@@ -112,7 +112,7 @@ import org.scalatest._
  *
  * @author Bill Venners
 */
-trait BeMatcher[-T] extends Function1[T, MatchResult] {
+trait BeMatcher[-T] extends Function1[T, MatchResult] { thisBeMatcher =>
 
   /**
    * Check to see if the specified object, <code>left</code>, matches, and report the result in
@@ -135,5 +135,63 @@ trait BeMatcher[-T] extends Function1[T, MatchResult] {
    * @return the <code>MatchResult</code> that represents the result of the match
    */
   def apply(left: T): MatchResult
+
+  /**
+   * Compose this <code>BeMatcher</code> with the passed function, returning a new <code>BeMatcher</code>.
+   *
+   * <p>
+   * This method overrides <code>compose</code> on <code>Function1</code> to
+   * return a more specific function type of <code>BeMatcher</code>. For example, given
+   * an <code>odd</code> matcher defined like this:
+   * </p>
+   *
+   * <pre>
+   * val odd =
+   *   new BeMatcher[Int] {
+   *     def apply(left: Int) =
+   *       MatchResult(
+   *         left % 2 == 1,
+   *         left.toString + " was even",
+   *         left.toString + " was odd"
+   *       )
+   *   }
+   * </pre>
+   *
+   * <p>
+   * You could use <code>odd</code> like this:
+   * </p>
+   *
+   * <pre>
+   * 3 should be (odd)
+   * 4 should not be (odd)
+   * </pre>
+   *
+   * <p>
+   * If for some odd reason, you wanted a <code>BeMatcher[String]</code> that 
+   * checked whether a string, when converted to an <code>Int</code>,
+   * was odd, you could make one by composing <code>odd</code> with
+   * a function that converts a string to an <code>Int</code>, like this:
+   * </p>
+   *
+   * <pre>
+   * val oddAsInt = odd compose { (s: String) => s.toInt }
+   * </pre>
+   *
+   * <p>
+   * Now you have a <code>BeMatcher[String]</code> whose <code>apply</code> method first
+   * invokes the converter function to convert the passed string to an <code>Int</code>,
+   * then passes the resulting <code>Int</code> to <code>odd</code>. Thus, you could use
+   * <code>oddAsInt</code> like this:
+   * </p>
+   *
+   * <pre>
+   * "3" should be (oddAsInt)
+   * "4" should not be (oddAsInt)
+   * </pre>
+   */
+  override def compose[U](g: U => T): BeMatcher[U] =
+    new BeMatcher[U] {
+      def apply(u: U) = thisBeMatcher.apply(g(u))
+    }
 }
 
