@@ -21,7 +21,7 @@ import Arbitrary._
 import Prop._
 import scala.reflect.BeanProperty
 
-trait BookPropertyMatchers { this: Matchers => 
+trait BookPropertyMatchers { // this: Matchers => 
 
   case class Book(
     var title: String,
