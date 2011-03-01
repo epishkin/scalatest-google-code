@@ -154,6 +154,11 @@
         <java classname="GenTable" classpathref="run.generators.class.path" fork="false" />
     </target>
 
+    <target name="gendeprecatedshouldtests" depends="init, compile-codegenerators">
+        <!-- Then, run it. -->
+        <java classname="GenDeprecatedShouldMatchersTests" classpathref="run.generators.class.path" fork="false" />
+    </target>
+
     <target name="gencode" depends="init, compile-codegenerators">
         <java classname="GenMustMatchers" classpathref="run.generators.class.path" fork="false" />
         <java classname="GenMustMatchersTests" classpathref="run.generators.class.path" fork="false" />
