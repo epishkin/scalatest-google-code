@@ -129,7 +129,6 @@ private[scalatest] object Helper {
     }
     builder.toString
   }
-
 }
 
 import Helper.accessProperty
