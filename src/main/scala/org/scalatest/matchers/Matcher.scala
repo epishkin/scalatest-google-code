@@ -296,3 +296,24 @@ trait Matcher[-T] extends Function1[T, MatchResult] { thisMatcher =>
     }
 }
 
+/**
+ * Companion object for trait <code>Matcher</code> that provides a
+ * factory method that creates a <code>Matcher[T]</code> from a
+ * passed function of type <code>(T => MatchResult)</code>.
+ *
+ * @author Bill Venners
+ */
+object Matcher {
+
+  /**
+   * Factory method that creates a <code>Matcher[T]</code> from a
+   * passed function of type <code>(T => MatchResult)</code>.
+   *
+   * @author Bill Venners
+   */
+  def apply[T](fun: T => MatchResult): Matcher[T] =
+    new Matcher[T] {
+      def apply(left: T) = fun(left)
+    }
+}
+
