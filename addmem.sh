@@ -1,4 +1,4 @@
-JAVA_OPTS="-Xmx2000M"
+JAVA_OPTS="-Xmx2500M"
 export JAVA_OPTS
-ANT_OPTS="-Xmx256m -Dscala.home=$SCALA_HOME"
+ANT_OPTS="-Xmx512m -Dscala.home=$SCALA_HOME"
 export ANT_OPTS
