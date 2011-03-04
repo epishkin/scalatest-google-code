@@ -623,4 +623,21 @@ and that's fine. It actually gives them a way to do it if they want to do it.
       */
     }
   }
+
+  describe("the compose method on HavePropertyMatcher") {
+    it("should return another HavePropertyMatcher") {
+      val book1 = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
+      val book2 = new Book("The Handmaid's Tail", "Atwood", 1985, 200, true)
+      val badBook = new Book("Some Bad Book", "Bad Author", 1999, 150, false)
+      case class Library(books: List[Book])
+      val goodLibrary = Library(List(book1, book2))
+      val badLibrary = Library(List(badBook, book1, book2))
+
+      def goodBooksToRead(expectedValue: Boolean) =
+        new GoodReadMatcher(expectedValue) compose { (lib: Library) => lib.books.head }
+
+      goodLibrary should have (goodBooksToRead(true))
+      badLibrary should not be (goodBooksToRead(true))
+    }
+  }
 }
