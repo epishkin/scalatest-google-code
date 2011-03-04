@@ -656,4 +656,15 @@ class ShouldBePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers
       badLibrary should not be (filledWithGoodReads)
     }
   }
+  describe("A factory method on BeMatcher's companion object") {
+    it("should produce a be-matcher that executes the passed function when its apply is called") {
+      val f = { (s: String) => MatchResult(s.length < 3, "s was not less than 3", "s was less than 3") }
+      val lessThanThreeInLength = BeMatcher(f)
+      "" should be (lessThanThreeInLength)
+      "x" should be (lessThanThreeInLength)
+      "xx" should be (lessThanThreeInLength)
+      "xxx" should not be (lessThanThreeInLength)
+      "xxxx" should not be (lessThanThreeInLength)
+    }
+  }
 }
