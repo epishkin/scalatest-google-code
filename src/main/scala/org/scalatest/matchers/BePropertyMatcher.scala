@@ -149,3 +149,23 @@ trait BePropertyMatcher[-T] extends Function1[T, BePropertyMatchResult] {
     }
 }
 
+/**
+ * Companion object for trait <code>BePropertyMatcher</code> that provides a
+ * factory method that creates a <code>BePropertyMatcher[T]</code> from a
+ * passed function of type <code>(T => BePropertyMatchResult)</code>.
+ *
+ * @author Bill Venners
+ */
+object BePropertyMatcher {
+
+  /**
+   * Factory method that creates a <code>BePropertyMatcher[T]</code> from a
+   * passed function of type <code>(T => BePropertyMatchResult)</code>.
+   *
+   * @author Bill Venners
+   */
+  def apply[T](fun: T => BePropertyMatchResult): BePropertyMatcher[T] =
+    new BePropertyMatcher[T] {
+      def apply(left: T) = fun(left)
+    }
+}
