@@ -133,6 +133,8 @@ import org.scalatest._
 */
 trait HavePropertyMatcher[-T, P] extends Function1[T, HavePropertyMatchResult[P]] {
 
+  thisHavePropertyMatcher =>
+
   /**
    * Check to see if a property on the specified object, <code>objectWithProperty</code>, matches its
    * expected value, and report the result in
@@ -148,5 +150,18 @@ trait HavePropertyMatcher[-T, P] extends Function1[T, HavePropertyMatchResult[P]
    * @return the <code>HavePropertyMatchResult</code> that represents the result of the match
    */
   def apply(objectWithProperty: T): HavePropertyMatchResult[P]
+
+  /**
+   * Compose this <code>HavePropertyMatcher</code> with the passed function, returning a new <code>HavePropertyMatcher</code>.
+   *
+   * <p>
+   * This method overrides <code>compose</code> on <code>Function1</code> to
+   * return a more specific function type of <code>HavePropertyMatcher</code>.
+   * </p>
+   */
+  override def compose[U](g: U => T): HavePropertyMatcher[U, P] =
+    new HavePropertyMatcher[U, P] {
+      def apply(u: U) = thisHavePropertyMatcher.apply(g(u))
+    }
 }
 
