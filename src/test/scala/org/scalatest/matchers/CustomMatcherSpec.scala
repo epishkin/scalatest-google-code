@@ -127,10 +127,22 @@ class CustomMatcherSpec extends Spec with ShouldMatchers with CustomMatchers {
 
         case class Product(name: String)
         case class LineItem(product: Product)
-        def haveProduct(p: Product) = equal(p) compose  { (lineItem: LineItem) => lineItem.product }
+        def haveProduct(p: Product) = equal(p) compose { (lineItem: LineItem) => lineItem.product }
 
         LineItem(Product("widgets")) should (haveProduct(Product("widgets")))
       }
+    }
+  }
+
+  describe("A factory method on Matcher's companion object") {
+    it("should produce a matcher that executes the passed function when its apply is called") {
+      val f = { (s: String) => MatchResult(s.length < 3, "s was not less than 3", "s was less than 3") }
+      val haveLengthLessThanThree = Matcher(f)
+      "" should haveLengthLessThanThree
+      "x" should haveLengthLessThanThree
+      "xx" should haveLengthLessThanThree
+      "xxx" should not (haveLengthLessThanThree)
+      "xxxx" should not (haveLengthLessThanThree)
     }
   }
 }
