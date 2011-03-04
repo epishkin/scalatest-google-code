@@ -117,6 +117,8 @@ import org.scalatest._
 */
 trait BePropertyMatcher[-T] extends Function1[T, BePropertyMatchResult] {
 
+  thisBePropertyMatcher => 
+
   /**
    * Check to see if a <code>Boolean</code> property on the specified object, <code>objectWithProperty</code>, matches its
    * expected value, and report the result in
@@ -132,5 +134,18 @@ trait BePropertyMatcher[-T] extends Function1[T, BePropertyMatchResult] {
    * @return the <code>BePropertyMatchResult</code> that represents the result of the match
    */
   def apply(objectWithProperty: T): BePropertyMatchResult
+
+  /**
+   * Compose this <code>BePropertyMatcher</code> with the passed function, returning a new <code>BePropertyMatcher</code>.
+   *
+   * <p>
+   * This method overrides <code>compose</code> on <code>Function1</code> to
+   * return a more specific function type of <code>BePropertyMatcher</code>.
+   * </p>
+   */
+  override def compose[U](g: U => T): BePropertyMatcher[U] =
+    new BePropertyMatcher[U] {
+      def apply(u: U) = thisBePropertyMatcher.apply(g(u))
+    }
 }
 
