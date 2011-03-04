@@ -643,4 +643,17 @@ class ShouldBePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers
       assert(caught9.getMessage === "MyFile(temp.txt,true,false) was an file, and MyFile(temp.txt,true,false) was an file")
     }
   }
+  describe("the compose method on BePropertyMatcher") {
+    it("should return another BePropertyMatcher") {
+      val book1 = new Book("A Tale of Two Cities", "Dickens", 1859, 45, true)
+      val book2 = new Book("The Handmaid's Tail", "Atwood", 1985, 200, true)
+      val badBook = new Book("Some Bad Book", "Bad Author", 1999, 150, false)
+      case class Library(books: List[Book])
+      val goodLibrary = Library(List(book1, book2))
+      val badLibrary = Library(List(badBook, book1, book2))
+      val filledWithGoodReads = goodRead compose { (lib: Library) => lib.books.head }
+      goodLibrary should be (filledWithGoodReads)
+      badLibrary should not be (filledWithGoodReads)
+    }
+  }
 }
