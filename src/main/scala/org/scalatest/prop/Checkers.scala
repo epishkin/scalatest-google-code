@@ -202,7 +202,7 @@ trait Checkers {
         case Test.Proved(args) =>
 
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(
+          throw new ScalaCheckPropertyCheckFailedException(
             prettyTestStats(result),
             None,
             getStackDepth("ScalaCheck.scala", "check"),
@@ -214,7 +214,7 @@ trait Checkers {
         case Test.Passed => // Should never get here, because this is executed only if !result.passed. Better to refactor this away
 
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(
+          throw new ScalaCheckPropertyCheckFailedException(
             prettyTestStats(result),
             None,
             getStackDepth("ScalaCheck.scala", "check"),
@@ -226,7 +226,7 @@ trait Checkers {
         case Test.Exhausted =>
 
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(
+          throw new ScalaCheckPropertyCheckFailedException(
             prettyTestStats(result),
             None,
             getStackDepth("ScalaCheck.scala", "check"),
@@ -238,7 +238,7 @@ trait Checkers {
         case Test.Failed(scalaCheckArgs, scalaCheckLabels) =>
 
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(
+          throw new ScalaCheckPropertyCheckFailedException(
             prettyTestStats(result),
             None,
             getStackDepth("ScalaCheck.scala", "check"),
@@ -249,7 +249,7 @@ trait Checkers {
 
         case Test.PropException(scalaCheckArgs, e, scalaCheckLabels) =>
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(
+          throw new ScalaCheckPropertyCheckFailedException(
             prettyTestStats(result),
             Some(e),
             getStackDepth("ScalaCheck.scala", "check"),
@@ -260,7 +260,7 @@ trait Checkers {
 
         case Test.GenException(e) =>
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(
+          throw new ScalaCheckPropertyCheckFailedException(
             prettyTestStats(result),
             Some(e),
             getStackDepth("ScalaCheck.scala", "check"),
@@ -271,7 +271,7 @@ trait Checkers {
 
         case _ =>
           val (args, labels) = argsAndLabels(result)
-          throw new PropertyTestFailedException(prettyTestStats(result), None, getStackDepth("ScalaCheck.scala", "check"), "FILL ME IN", args, labels)
+          throw new ScalaCheckPropertyCheckFailedException(prettyTestStats(result), None, getStackDepth("ScalaCheck.scala", "check"), "FILL ME IN", args, labels)
       }
     }
   }
@@ -321,7 +321,7 @@ trait Checkers {
           result.discarded + " tests were discarded."
 
     case Test.PropException(args, e, labels) =>
-      "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during property evaluation:\n" + prettyLabels(labels) + prettyArgs(args)
+      FailureMessages("scalaCheckPropertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + prettyLabels(labels) + prettyArgs(args)
 
     case Test.GenException(e) =>
       "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during argument generation."
@@ -342,6 +342,89 @@ trait Checkers {
     )
     strs.mkString("\n")
   }
+
+  /**
+   * Returns a ScalaCheck <code>Prop</code> that succeeds if the passed by-name
+   * parameter, <code>fun</code>, returns normally; fails if it throws
+   * an exception.
+   *
+   * <p>
+   * This method enables ScalaTest assertions and matcher expressions to be used 
+   * in property checks. Here's an example:
+   * </p>
+   *
+   * <pre>
+   * check((s: String, t: String) => successOf(s + t should endWith (s)))
+   * </pre>
+   *
+   * <p>
+   * The detail message of the <code>TestFailedException</code> that will likely
+   * be thrown by the matcher expression will be added as a label to the ScalaCheck
+   * <code>Prop</code> returned by <code>successOf</code>. This, this property
+   * check might fail with an exception like:
+   * </p>
+   *
+   * <pre>
+   * org.scalatest.prop.ScalaCheckPropertyCheckFailedException: TestFailedException (included as this exception's cause) was thrown during property evaluation.
+   * Label of failing property: "ab" did not end with substring "a" (script.scala:24)
+   * > ARG_0 = "?" (1 shrinks)
+   * > ARG_1 = "?" (1 shrinks)
+   * 	at org.scalatest.prop.Checkers$class.check(Checkers.scala:252)
+   * 	at org.scalatest.prop.Checkers$.check(Checkers.scala:354)
+   *    ...
+   * </pre>
+   *
+   * <p>
+   * One use case for using matcher expressions in your properties is to 
+   * get helpful error messages without using ScalaCheck labels. For example,
+   * instead of:
+   * </p>
+   *
+   * <pre>
+   * val complexProp = forAll { (m: Int, n: Int) =>
+   *   val res = n * m
+   *   (res >= m)    :| "result > #1" &&
+   *   (res >= n)    :| "result > #2" &&
+   *   (res < m + n) :| "result not sum"
+   * }
+   * </pre>
+   * 
+   * <p>
+   * You could write:
+   * </p>
+   *
+   * <pre>
+   * val complexProp = forAll { (m: Int, n: Int) =>
+   *   successOf {
+   *     val res = n * m
+   *     res should be >= m
+   *     res should be >= n
+   *     res should be < (m + n)
+   *   }
+   * </pre>
+   *
+   * @param fun the expression to evaluate to determine what <code>Prop</code>
+   *            to return
+   * @return a ScalaCheck property that passes if the passed by-name parameter,
+   *         <code>fun</code>, returns normally, fails if it throws an exception
+   */
+  def successOf(fun: => Unit): Prop =
+    try {
+      fun
+      Prop.passed
+    }
+    catch {
+      case e: StackDepth =>
+        val msgPart = if (e.message.isDefined) e.message.get + " " else ""
+        val fileLinePart =
+          if (e.failedCodeFileNameAndLineNumberString.isDefined)
+            "(" + e.failedCodeFileNameAndLineNumberString.get + ")"
+          else
+            ""
+        val lbl = msgPart + fileLinePart
+        Prop.exception(e).label(lbl)
+      case e => Prop.exception(e) // Not sure what to do here
+    }
 }
 
 /**
