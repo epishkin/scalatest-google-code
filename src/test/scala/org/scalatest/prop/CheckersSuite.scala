@@ -19,6 +19,7 @@ import org.scalatest._
 import org.scalacheck._
 import Arbitrary._
 import Prop._
+import org.scalatest.matchers.ShouldMatchers._
 
 class CheckersSuite extends Suite with Checkers {
 
@@ -80,7 +81,82 @@ class CheckersSuite extends Suite with Checkers {
       (res < m + n) :| "result not sum"
     }
 
-    intercept[PropertyTestFailedException] {
+    intercept[ScalaCheckPropertyCheckFailedException] {
+      check(complexProp)
+    }
+
+    // This code shows up in the front page for ScalaTest
+    import scala.collection.mutable.Stack
+    check {
+      (list: List[Int]) => {
+        val stack = new Stack[Int]
+        for (element <- list) stack.push(element)
+        stack.elements.toList == list.reverse
+      }
+    }
+  }
+
+  def testCheckPropWithSuccessOf() {
+
+    // Ensure a success does not fail in an exception
+    val propConcatLists = forAll((a: List[Int], b: List[Int]) => successOf(a.size + b.size should equal ((a ::: b).size)))
+    check(propConcatLists)
+
+    // Ensure a failed property does throw an assertion error
+    val propConcatListsBadly = forAll((a: List[Int], b: List[Int]) => successOf(a.size + b.size should equal ((a ::: b).size + 1)))
+    intercept[TestFailedException] {
+      check(propConcatListsBadly)
+    }
+
+    // Ensure a property that throws an exception causes an assertion error
+    val propConcatListsExceptionally = forAll((a: List[Int], b: List[Int]) => successOf(throw new StringIndexOutOfBoundsException))
+    intercept[TestFailedException] {
+      check(propConcatListsExceptionally)
+    }
+
+    // Ensure a property that doesn't generate enough test cases throws an assertion error
+    val propTrivial = forAll((n: Int) => (n == 0) ==> successOf(n should equal (0)))
+    intercept[TestFailedException] {
+      check(propTrivial)
+    }
+
+    // Make sure a Generator that doesn't throw an exception works OK
+    val smallIntegers = Gen.choose(0, 100)
+    val propSmallInteger = Prop.forAll(smallIntegers)(n => successOf(n should (be >= 0 and be <= 100)))
+    check(propSmallInteger)
+
+    // Make sure a Generator that doesn't throw an exception works OK
+    val smallEvenIntegers = Gen.choose(0, 200) suchThat (_ % 2 == 0)
+    val propEvenInteger = Prop.forAll(smallEvenIntegers)(n => successOf { n should (be >= 0 and be <= 200); n % 2 should equal (0)})
+    check(propEvenInteger)
+
+    // Make sure a Generator t throws an exception results in an TestFailedException
+    // val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (throw new ArrayIndexOutOfBoundsException)
+    val myArrayException = new ArrayIndexOutOfBoundsException
+    val smallEvenIntegerWithBug = Gen.choose(0, 200) suchThat (n => throw myArrayException )
+    val propEvenIntegerWithBuggyGen = Prop.forAll(smallEvenIntegerWithBug)(n => successOf { n should (be >= 0 and be <= 200); n % 2 should equal (0)})
+    val caught1 = intercept[TestFailedException] {
+      check(propEvenIntegerWithBuggyGen)
+    }
+    assert(caught1.getCause === myArrayException)
+
+    // Make sure that I get a thrown exception back as the TFE's cause
+    val myIAE = new IllegalArgumentException
+    val caught2 = intercept[TestFailedException] {
+      check((s: String, t: String, u: String) => successOf{ throw myIAE })
+    }
+    assert(caught2.getCause === myIAE)
+
+    val complexProp = forAll { (m: Int, n: Int) =>
+      successOf {
+        val res = n * m
+        res should be >= m
+        res should be >= n
+        res should be < (m + n)
+      }
+    }
+
+    intercept[ScalaCheckPropertyCheckFailedException] {
       check(complexProp)
     }
 
