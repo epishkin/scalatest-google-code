@@ -657,7 +657,7 @@ class ShouldBePropertyMatcherSpec extends Spec with ShouldMatchers with Checkers
     }
   }
   describe("A factory method on BePropertyMatcher's companion object") {
-    it("should produce a be-matcher that executes the passed function when its apply is called") {
+    it("should produce a be-property-matcher that executes the passed function when its apply is called") {
       val f = { (s: String) => BePropertyMatchResult(s.isEmpty, "empty") }
       val empty = BePropertyMatcher(f)
       "" should be (empty)

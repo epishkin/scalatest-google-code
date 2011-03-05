@@ -640,4 +640,25 @@ and that's fine. It actually gives them a way to do it if they want to do it.
       badLibrary should not be (goodBooksToRead(true))
     }
   }
+
+  describe("A factory method on HavePropertyMatcher's companion object") {
+    it("should produce a have-matcher that executes the passed function when its apply is called") {
+      case class Person(name: String)
+      def name(expectedName: String) = {
+        HavePropertyMatcher {
+          (person: Person) => HavePropertyMatchResult(
+            person.name == expectedName,
+            "name",
+            expectedName,
+            person.name
+          )
+        }
+      }
+      Person("Bob") should have (name("Bob"))
+      Person("Sally") should not have (name("George"))
+      Person("Cindy") should have (name("Cindy"))
+      Person("Doug") should have (name("Doug"))
+      Person("Alicia") should have (name("Alicia"))
+    }
+  }
 }
