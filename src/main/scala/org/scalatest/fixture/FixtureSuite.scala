@@ -384,7 +384,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
    * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
    * </p>
    */
-  protected trait OneArgTest extends (FixtureParam => Unit) {
+  protected trait OneArgTest extends (FixtureParam => Unit) { thisOneArgTest =>
 
     /**
      * The name of this test.
@@ -401,6 +401,38 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
      * to configure the fixture and test.
      */
     def configMap: Map[String, Any]
+
+    /**
+     * Convert this <code>OneArgTest</code> to a <code>NoArgTest</code> whose
+     * <code>name</code> and <code>configMap</code> methods return the same values
+     * as this <code>OneArgTest</code>, and whose <code>apply</code> method invokes
+     * this <code>OneArgTest</code>'s apply method,
+     * passing in the given <code>fixture</code>.
+     *
+     * <p>
+     * This method makes it easier to invoke the <code>withFixture</code> method
+     * that takes a <code>NoArgTest</code>. For example, if a <code>FixtureSuite</code> 
+     * mixes in <code>SeveredStackTraces</code>, it will inherit an implementation
+     * of <code>withFixture(NoArgTest)</code> provided by
+     * <code>SeveredStackTraces</code> that implements the stack trace severing
+     * behavior. If the <code>FixtureSuite</code> does not delegate to that
+     * <code>withFixture(NoArgTest)</code> method, the stack trace severing behavior
+     * will not happen. Here's how that might look in a <code>FixtureSuite</code>
+     * whose <code>FixtureParam</code> is <code>StringBuilder</code>:
+     * </p>
+     *
+     * <pre>
+     * def withFixture(test: OneArgTest) {
+     *   withFixture(test.toNoArgTest(new StringBuilder))
+     * }
+     * </pre>
+     */
+    def toNoArgTest(fixture: FixtureParam) =
+      new NoArgTest {
+        val name = thisOneArgTest.name
+        def configMap = thisOneArgTest.configMap
+        def apply() { thisOneArgTest(fixture) }
+      }
   }
 
   /*

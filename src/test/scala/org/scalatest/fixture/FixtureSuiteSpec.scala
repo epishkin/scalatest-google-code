@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.scalatest.fixture
+package org.scalatest
+package fixture
 
-import org.scalatest._
 import collection.immutable.TreeSet
 import events.TestFailed
+import events.TestSucceeded
 import mock.MockitoSugar
 
 class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with SharedHelpers {
@@ -923,4 +924,32 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       assert(a.correctConfigMapWasPassed)
     }
   }
+  describe("A OneArgTest") {
+    it("should provide an easy way to invoke a NoArgTest") {
+
+      var noArgWithFixtureWasCalled = false
+
+      val a = new FixtureSuite {
+
+        type FixtureParam = String
+
+        override def withFixture(test: NoArgTest) {
+          noArgWithFixtureWasCalled = true
+          test()
+        }
+
+        def withFixture(test: OneArgTest) {
+          withFixture(test.toNoArgTest("hi"))
+        }
+
+        def testSomething(fixture: String) { assert(fixture === "hi") }
+      }
+
+      val rep = new EventRecordingReporter
+      a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
+      assert(noArgWithFixtureWasCalled)
+      assert(rep.eventsReceived.exists(_.isInstanceOf[TestSucceeded]))
+    }
+  }
 }
+
