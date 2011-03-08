@@ -30,6 +30,7 @@ import org.scalatest.events._
 import PrintReporter._
 import org.scalatest.junit.JUnitTestFailedError
 import org.scalatest.prop.PropertyCheckFailedException
+import org.scalatest.prop.TableDrivenPropertyCheckFailedException
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -177,6 +178,8 @@ if a StackDepth and no F specified, then show the truncated form.
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val colonMessageOrEmptyString =
               throwable match {
+                case tdpcfe: TableDrivenPropertyCheckFailedException => 
+                  ": " + tdpcfe.getMessage.trim
                 case pcfe: PropertyCheckFailedException => 
                   ": " + pcfe.undecoratedMessage.trim
                 case _ if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) =>
