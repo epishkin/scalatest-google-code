@@ -158,7 +158,7 @@
 
     <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
-    <target name="compile-main" depends="init">
+    <target name="compile-main" depends="init, gentables">
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
         <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
