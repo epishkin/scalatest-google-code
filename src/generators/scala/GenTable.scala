@@ -110,6 +110,35 @@ val scaladocForTableFor1VerbatimString = """
  * This shows that all the property checks succeeded, except for the one at index 7.
  * <p>
  *
+ * <p>
+ * One other way to use a <code>TableFor1</code> is to test subsequent return values
+ * of a stateful function. Imagine, for example, you had an object named <code>FiboGen</code>
+ * whose <code>next</code> method returned the <em>next</em> fibonacci number, where next
+ * means the next number in the series following the number previously returned by <code>next</code>.
+ * So the first time <code>next</code> was called, it would return 0. The next time it was called
+ * it would return 1. Then 1. Then 2. Then 3, and so on. <code>FiboGen</code> would need to
+ * be stateful, because it has to remember where it is in the series. In such a situation,
+ * you could create a <code>TableFor1</code> (a table with one column, which you could alternatively
+ * think of as one row), in which each row represents
+ * the next value you expect.
+ * </p>
+ *
+ * <pre>
+ * val first14FiboNums =
+ *   Table("n", 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
+ * </pre>
+ *
+ * <p>
+ * Then in your <code>forAll</code> simply call the function and compare it with the
+ * expected return value, like this:
+ * </p>
+ *
+ * <pre>
+ *  forAll (first14FiboNums) { n =>
+ *    FiboGen.next should equal (n)
+ *  }
+ * </pre>
+ *
  * @param heading a string name for the lone column of this table
  * @param rows a variable length parameter list of objects containing the data of this table
  *
