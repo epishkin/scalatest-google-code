@@ -26,6 +26,11 @@ val scaladocForTableFor1VerbatimString = """
  * A table with 1 column.
  *
  * <p>
+ * For an overview of using tables, see the documentation for trait
+ * <a href="TableDrivenPropertyChecks.html">TableDrivenPropertyChecks</a>.
+ * </p>
+ *
+ * <p>
  * This table is a sequence of objects, where each object represents one row of the (one-column) table.
  * This table also carries with it a <em>heading</em> tuple that gives a string name to the
  * lone column of the table.
@@ -175,6 +180,11 @@ import scala.collection.generic.CanBuildFrom
 val tableScaladocTemplate = """
 /**
  * A table with $n$ columns.
+ *
+ * <p>
+ * For an introduction to using tables, see the documentation for trait
+ * <a href="TableDrivenPropertyChecks.html">TableDrivenPropertyChecks</a>.
+ * </p>
  *
  * <p>
  * This table is a sequence of <code>Tuple$n$</code> objects, where each tuple represents one row of the table.
@@ -365,6 +375,11 @@ val tableObjectPreamble = """
  * Trait containing the <code>Table</code> object, which offers one <code>apply</code> factory method for
  * each <code>TableForN</code> class, <code>TableFor1</code> through <code>TableFor22</code>.
  * 
+ * <p>
+ * For an introduction to using tables, see the documentation for trait
+ * <a href="TableDrivenPropertyChecks.html">TableDrivenPropertyChecks</a>.
+ * </p>
+ *
  * @author Bill Venners
  */
 trait Tables {
@@ -508,7 +523,20 @@ val propertyCheckPreamble = """
  * </pre>
  *
  * <p>
- * You could create a table of numerators and denominators to pass to the constructor of the
+ * <code>TableDrivenPropertyChecks</code> allows you to create tables with
+ * between 1 and 22 columns and any number of rows. You create a table by passing
+ * tuples to one of the factory methods of object <code>Table</code>. Each tuple must have the 
+ * same arity (number of members). The first tuple you pass must all be strings, because
+ * it define names for the columns. Subsequent tuples define the data. After the initial tuple
+ * that contains string column names, all tuples must have the same type. For example,
+ * if the first tuple after the column names contains two <code>Int</code>s, all subsequent
+ * tuples must contain two <code>Int</code> (<em>i.e.</em>, have type
+ * <code>Tuple2[Int, Int]</code>).
+ * </p>
+ *
+ * <p>
+ * To test the behavior of <code>Fraction</code>, you could create a table
+ * of numerators and denominators to pass to the constructor of the
  * <code>Fraction</code> class using one of the <code>apply</code> factory methods declared
  * in <code>Table</code>, like this:
  * </p>
@@ -518,8 +546,8 @@ val propertyCheckPreamble = """
  *
  * val fractions =
  *   Table(
- *     ("n", "d"),
- *     (  1,   2),
+ *     ("n", "d"),  // First tuple defines column names
+ *     (  1,   2),  // Subsequent tuples define the data
  *     ( -1,   2),
  *     (  1,  -2),
  *     ( -1,  -2),
@@ -559,6 +587,126 @@ val propertyCheckPreamble = """
  * }
  * </pre>
  *
+ * <p>
+ * Trait <code>TableDrivenPropertyChecks</code> provides 22 overloaded <code>forAll</code> methods
+ * that allow you to check properties using the data provided by a table. Each <code>forAll</code>
+ * method takes two parameter lists. The first parameter list is a table. The second parameter list
+ * is a function whose argument types and number matches that of the tuples in the table. For
+ * example, if the tuples in the table supplied to <code>forAll</code> each contain an
+ * <code>Int</code>, a <code>String</code>, and a <code>List[Char]</code>, then the function supplied
+ * to <code>forAll</code> must take 3 parameters, an <code>Int</code>, a <code>String</code>,
+ * and a <code>List[Char]</code>. The <code>forAll</code> method will pass each row of data to
+ * the function, and generate a <code>TableDrivenPropertyCheckFailedException</code> if the function
+ * completes abruptly for any row of data with any exception that would <a href="../Suite.html#errorHandling">normally cause</a> a test to
+ * fail in ScalaTest other than <code>UnmetConditionException</code>. An
+ * <code>UnmetConditionException</code>,
+ * which is thrown by the <code>whenever</code> method (also defined in this trait) to indicate
+ * a condition required by the property function is not met by a row
+ * of passed data, will simply cause <code>forAll</code> to skip that row of data.
+ * <p>
+ *
+ * <h2>Testing stateful functions</h2>
+ *
+ * <p>
+ * One way to use a table with one column is to test subsequent return values
+ * of a stateful function. Imagine, for example, you had an object named <code>FiboGen</code>
+ * whose <code>next</code> method returned the <em>next</em> fibonacci number, where next
+ * means the next number in the series following the number previously returned by <code>next</code>.
+ * So the first time <code>next</code> was called, it would return 0. The next time it was called
+ * it would return 1. Then 1. Then 2. Then 3, and so on. <code>FiboGen</code> would need to
+ * maintain state, because it has to remember where it is in the series. In such a situation,
+ * you could create a <code>TableFor1</code> (a table with one column, which you could alternatively
+ * think of as one row), in which each row represents
+ * the next value you expect.
+ * </p>
+ *
+ * <pre>
+ * val first14FiboNums =
+ *   Table("n", 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
+ * </pre>
+ *
+ * <p>
+ * Then in your <code>forAll</code> simply call the function and compare it with the
+ * expected return value, like this:
+ * </p>
+ *
+ * <pre>
+ *  forAll (first14FiboNums) { n =>
+ *    FiboGen.next should equal (n)
+ *  }
+ * </pre>
+ *
+ * <h2>Testing mutable objects</h2>
+ *
+ * <p>
+ * If you need to test a mutable object, one way you can use tables is to specify
+ * state transitions in a table. For example, imagine you wanted to test this mutable
+ * <code>Counter</code> class:
+ *
+ * <pre>
+      class Counter {
+        private var c = 0
+        def reset() { c = 0 }
+        def click() { c += 1 }
+        def enter(n: Int) { c = n }
+        def count = c
+      }
+ * </pre>
+ *
+ * <p>
+ * A <code>Counter</code> keeps track of how many times its <code>click</code> method
+ * is called. The count starts out at zero and increments with each <code>click</code>
+ * invocation. You can also set the count to a specific value by calling <code>enter</code>
+ * and passing the value in. And the <code>reset</code> method returns the count back to
+ * zero. You could define the actions that initiate state transitions with case classes, like this:
+ * </p>
+ *
+ * <pre>
+      abstract class Action
+      case object Start extends Action
+      case object Click extends Action
+      case class Enter(n: Int) extends Action
+ * </pre>
+ *
+ * <p>
+ * Given these actions, you could define a state-transition table like this:
+ * </p>
+ *
+ * <pre>
+      val stateTransitions =
+        Table(
+          ("action", "expectedCount"),
+          (Start,    0),
+          (Click,    1),
+          (Click,    2),
+          (Click,    3),
+          (Enter(5), 5),
+          (Click,    6),
+          (Enter(1), 1),
+          (Click,    2),
+          (Click,    3)
+        )
+ * </pre>
+ *
+ * <p>
+ * To use this in a test, simply do a pattern match inside the function you pass
+ * to <code>forAll</code>. Make a pattern for each action, and have the body perform that
+ * action when there's a match. Then check that the actual value equals the expected value:
+ * </p>
+ *
+ * <pre>
+      val counter = new Counter
+      forAll (stateTransitions) { (action, expectedCount) =>
+        action match {
+          case Start => counter.reset()
+          case Click => counter.click()
+          case Enter(n) => counter.enter(n)
+        }
+        counter.count should equal (expectedCount)
+      }
+ * </pre>
+ *
+ * </p>
  * @author Bill Venners
  */
 trait TableDrivenPropertyChecks extends Tables {

@@ -17,7 +17,12 @@ package org.scalatest
 package prop
 
 /**
- * Exception that indicates a property check failed.
+ * Exception that indicates a table-driven property check failed.
+ *
+ * <p>
+ * For an introduction to using tables, see the documentation for trait
+ * <a href="TableDrivenPropertyChecks.html">TableDrivenPropertyChecks</a>.
+ * </p>
  *
  * @param message a detail message, not optional) for this <code>PropertyCheckFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>PropertyCheckFailedException</code> to be thrown.

@@ -1001,7 +1001,8 @@ import org.scalatest.tools.StandardOutReporter
  * <code>Suite</code>s put into the <code>Distributor</code> to be run in parallel via a pool of threads.
  * </p>
  *
- * <h2>Treatement of <code>java.lang.Error</code>s</h2>
+ * <a name="errorHandling"></a>
+ * <h2>Treatment of <code>java.lang.Error</code>s</h2>
  *
  * <p>
  * The Javadoc documentation for <code>java.lang.Error</code> states:
