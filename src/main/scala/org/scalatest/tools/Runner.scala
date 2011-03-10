@@ -591,7 +591,7 @@ object Runner {
       case None => { // Run the test without a GUI
         withClassLoaderAndDispatchReporter(runpathList, reporterConfigs, None, passFailReporter) {
           (loader, dispatchReporter) => {
-            doRunRunRunADoRunRun(dispatchReporter, suitesList, junitsList, new Stopper {}, filter,
+            doRunRunRunDaDoRunRun(dispatchReporter, suitesList, junitsList, new Stopper {}, filter,
                 propertiesMap, concurrent, membersOnlyList, wildcardList, testNGList, runpathList, loader, new RunDoneListener {}, 1, numThreads) 
           }
         }
@@ -1335,7 +1335,7 @@ object Runner {
     }
   }
 
-  private[scalatest] def doRunRunRunADoRunRun(
+  private[scalatest] def doRunRunRunDaDoRunRun(
     dispatch: DispatchReporter,
     suitesList: List[String],
     junitsList: List[String],
