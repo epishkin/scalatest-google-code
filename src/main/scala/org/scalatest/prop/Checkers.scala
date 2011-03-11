@@ -197,81 +197,58 @@ trait Checkers {
     val result = Test.check(prms, p)
     if (!result.passed) {
 
-      result.status match {
+      val (args, labels) = argsAndLabels(result)
 
-        case Test.Proved(args) =>
-
-          val (args, labels) = argsAndLabels(result)
-          throw new ScalaCheckPropertyCheckFailedException(
-            prettyTestStats(result),
-            None,
-            getStackDepth("ScalaCheck.scala", "check"),
-            FailureMessages("propertyProved"),
-            args,
-            labels
-          )
-
-        case Test.Passed => // Should never get here, because this is executed only if !result.passed. Better to refactor this away
-
-          val (args, labels) = argsAndLabels(result)
-          throw new ScalaCheckPropertyCheckFailedException(
-            prettyTestStats(result),
-            None,
-            getStackDepth("ScalaCheck.scala", "check"),
-            FailureMessages("propertyPassed", result.succeeded),
-            args,
-            labels
-          )
+      
+      (result.status: @unchecked) match {
 
         case Test.Exhausted =>
 
-          val (args, labels) = argsAndLabels(result)
-          throw new ScalaCheckPropertyCheckFailedException(
+          throw new GeneratorDrivenPropertyCheckFailedException(
             prettyTestStats(result),
             None,
             getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyExhausted", result.succeeded, result.discarded),
             args,
+            None,
             labels
           )
 
         case Test.Failed(scalaCheckArgs, scalaCheckLabels) =>
 
-          val (args, labels) = argsAndLabels(result)
-          throw new ScalaCheckPropertyCheckFailedException(
+          throw new GeneratorDrivenPropertyCheckFailedException(
             prettyTestStats(result),
             None,
             getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyFailed", result.succeeded),
             args,
+            None,
             labels
           )
 
         case Test.PropException(scalaCheckArgs, e, scalaCheckLabels) =>
-          val (args, labels) = argsAndLabels(result)
-          throw new ScalaCheckPropertyCheckFailedException(
+
+          throw new GeneratorDrivenPropertyCheckFailedException(
             prettyTestStats(result),
             Some(e),
             getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyException", UnquotedString(e.getClass.getName)),
             args,
+            None,
             labels
           )
 
         case Test.GenException(e) =>
-          val (args, labels) = argsAndLabels(result)
-          throw new ScalaCheckPropertyCheckFailedException(
+
+          throw new GeneratorDrivenPropertyCheckFailedException(
             prettyTestStats(result),
             Some(e),
             getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("generatorException", UnquotedString(e.getClass.getName)),
             args,
+            None,
             labels
           )
-
-        case _ =>
-          val (args, labels) = argsAndLabels(result)
-          throw new ScalaCheckPropertyCheckFailedException(prettyTestStats(result), None, getStackDepth("ScalaCheck.scala", "check"), "FILL ME IN", args, labels)
       }
     }
   }
@@ -334,11 +311,11 @@ trait Checkers {
   }
 
   private def prettyArgs(args: List[Arg[_]]) = {
-    val strs = for((a,i) <- args.zipWithIndex) yield (
-      "> " +
-      (if (a.label == "") "ARG_" + i else a.label) +
-      " = \"" + a.arg +
-      (if (a.shrinks > 0) "\" (" + a.shrinks + " shrinks)" else "\"")
+    val strs = for((a, i) <- args.zipWithIndex) yield (
+      "    " +
+      (if (a.label == "") "arg" + i else a.label) +
+      " = " + a.arg + (if (i < args.length - 1) "," else "") +
+      (if (a.shrinks > 0) " // " + a.shrinks + (if (a.shrinks == 1) " shrink" else " shrinks") else "")
     )
     strs.mkString("\n")
   }
@@ -365,10 +342,10 @@ trait Checkers {
    * </p>
    *
    * <pre>
-   * org.scalatest.prop.ScalaCheckPropertyCheckFailedException: TestFailedException (included as this exception's cause) was thrown during property evaluation.
+   * org.scalatest.prop.GeneratorDrivenPropertyCheckFailedException: TestFailedException (included as this exception's cause) was thrown during property evaluation.
    * Label of failing property: "ab" did not end with substring "a" (script.scala:24)
-   * > ARG_0 = "?" (1 shrinks)
-   * > ARG_1 = "?" (1 shrinks)
+   * > arg0 = "?" (1 shrinks)
+   * > arg1 = "?" (1 shrinks)
    * 	at org.scalatest.prop.Checkers$class.check(Checkers.scala:252)
    * 	at org.scalatest.prop.Checkers$.check(Checkers.scala:354)
    *    ...

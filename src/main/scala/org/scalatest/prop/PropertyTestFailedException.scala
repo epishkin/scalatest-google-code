@@ -30,4 +30,4 @@ class PropertyTestFailedException(
   undecoratedMessage: String,
   args: List[Any],
   labels: List[String]
-) extends ScalaCheckPropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, labels)
+) extends GeneratorDrivenPropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, None, labels)

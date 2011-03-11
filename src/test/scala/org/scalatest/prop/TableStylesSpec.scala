@@ -44,9 +44,9 @@ class TableStyleSpec extends Spec with ShouldMatchers with TableDrivenPropertyCh
         Table("n", 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233)
 
       forAll (first14FiboNums) { n => FiboGen.next should equal (n) }
-
     }
   }
+
   describe("A TableFor2") {
     it("should be usable to test mutable objects in a state machine-like way") {
 

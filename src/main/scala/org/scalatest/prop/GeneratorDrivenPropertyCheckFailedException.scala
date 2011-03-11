@@ -31,12 +31,13 @@ import org.scalatest._
  *
  * @author Bill Venners
  */
-class ScalaCheckPropertyCheckFailedException(
+class GeneratorDrivenPropertyCheckFailedException(
   message: String,
   cause: Option[Throwable],
   failedCodeStackDepth: Int,
   undecoratedMessage: String,
   args: List[Any],
+  namesOfArgs: Option[List[String]],
   val labels: List[String]
 ) extends PropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, None)
 

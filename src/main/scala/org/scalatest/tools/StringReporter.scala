@@ -179,7 +179,7 @@ if a StackDepth and no F specified, then show the truncated form.
             val colonMessageOrEmptyString =
               throwable match {
                 case tdpcfe: TableDrivenPropertyCheckFailedException => 
-                  ": " + tdpcfe.getMessage.trim
+                  ": " + tdpcfe.undecoratedMessage.trim
                 case pcfe: PropertyCheckFailedException => 
                   ": " + pcfe.undecoratedMessage.trim
                 case _ if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) =>

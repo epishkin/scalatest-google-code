@@ -19,7 +19,7 @@ package prop
 /**
  * Exception that indicates a property check failed.
  *
- * @param message a detail message, not optional) for this <code>PropertyCheckFailedException</code>.
+ * @param message a detail message (not optional) for this <code>PropertyCheckFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>PropertyCheckFailedException</code> to be thrown.
  * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
  * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it.
