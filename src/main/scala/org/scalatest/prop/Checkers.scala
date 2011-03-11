@@ -84,8 +84,6 @@ repeatedly pass generated data to the function. In this case, the test data is c
  */
 trait Checkers {
 
- // this: Suite =>
-
   /**
    * Convert the passed 1-arg function into a property, and check it.
    *
@@ -199,7 +197,6 @@ trait Checkers {
 
       val (args, labels) = argsAndLabels(result)
 
-      
       (result.status: @unchecked) match {
 
         case Test.Exhausted =>
@@ -229,7 +226,18 @@ trait Checkers {
         case Test.PropException(scalaCheckArgs, e, scalaCheckLabels) =>
 
           throw new GeneratorDrivenPropertyCheckFailedException(
-            prettyTestStats(result),
+            FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" +
+              "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
+              (
+                e match {
+                  case sd: StackDepth if sd.failedCodeFileNameAndLineNumberString.isDefined =>
+                    "  " + FailureMessages("thrownExceptionsLocation", UnquotedString(sd.failedCodeFileNameAndLineNumberString.get)) + "\n"
+                  case _ => ""
+                }
+              ) +
+              "  " + FailureMessages("occurredOnValues") + "\n" +
+              prettyArgs(scalaCheckArgs) + "\n" +
+              "  )",
             Some(e),
             getStackDepth("ScalaCheck.scala", "check"),
             FailureMessages("propertyException", UnquotedString(e.getClass.getName)),
@@ -298,7 +306,7 @@ trait Checkers {
           result.discarded + " tests were discarded."
 
     case Test.PropException(args, e, labels) =>
-      FailureMessages("scalaCheckPropertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + prettyLabels(labels) + prettyArgs(args)
+      FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + prettyLabels(labels) + prettyArgs(args)
 
     case Test.GenException(e) =>
       "Exception \"" + e + "\" (included as the TestFailedException's cause) was thrown during argument generation."
@@ -320,7 +328,7 @@ trait Checkers {
     strs.mkString("\n")
   }
 
-  /**
+  /*
    * Returns a ScalaCheck <code>Prop</code> that succeeds if the passed by-name
    * parameter, <code>fun</code>, returns normally; fails if it throws
    * an exception.
@@ -385,7 +393,7 @@ trait Checkers {
    * @return a ScalaCheck property that passes if the passed by-name parameter,
    *         <code>fun</code>, returns normally, fails if it throws an exception
    */
-  def successOf(fun: => Unit): Prop =
+  private def successOf(fun: => Unit): Prop =
     try {
       fun
       Prop.passed

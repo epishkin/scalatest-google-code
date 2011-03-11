@@ -316,7 +316,7 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
           val ($alphaName$) = heading
 
           throw new TableDrivenPropertyCheckFailedException(
-            FailureMessages("tablePropertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
+            FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
               "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
               (
                 e match {
@@ -329,7 +329,7 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
 $namesAndValues$
               "  )",
             Some(e),
-            7, //getStackDepth("TableFor2.scala", "apply"),
+            7,
             FailureMessages("undecoratedPropertyCheckFailureMessage"),
             List($alphaLower$),
             List($alphaName$),
@@ -709,9 +709,9 @@ val propertyCheckPreamble = """
  * </p>
  * @author Bill Venners
  */
-trait TableDrivenPropertyChecks extends Tables {
+trait TableDrivenPropertyChecks extends Whenever with Tables {
 
-  /**
+  /*
    * Evaluates the passed code block if the passed boolean condition is true, else throws <code>UnmetConditionException</code>.
    *
    * <p>
@@ -798,11 +798,13 @@ trait TableDrivenPropertyChecks extends Tables {
    *    <code>fun</code> function (<code>condition<code> is true) or throws <code>UnmetConditionException</code> (<code>condition<code> is false)
    * @param fun the function to evaluate if the specified <code>condition</code> is true
    */
+/*
   def whenever(condition: Boolean)(fun: => Unit) {
     if (!condition)
       throw new UnmetConditionException
     fun
   }
+*/
 """
 
 val propertyCheckForAllTemplate = """
