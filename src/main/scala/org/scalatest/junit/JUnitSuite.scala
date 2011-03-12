@@ -45,7 +45,7 @@ import org.scalatest.events._
  *   var sb: StringBuilder = _
  *   var lb: ListBuffer[String] = _
  *
- *   @ Before override def initialize() {
+ *   @ Before def initialize() {
  *     sb = new StringBuilder("ScalaTest is ")
  *     lb = new ListBuffer[String]
  *   }
