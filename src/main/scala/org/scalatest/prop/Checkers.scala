@@ -201,11 +201,17 @@ trait Checkers {
 
         case Test.Exhausted =>
 
+          val failureMsg =
+            if (result.succeeded == 1)
+              FailureMessages("propCheckExhaustedAfterOne", result.discarded)
+            else
+              FailureMessages("propCheckExhausted", result.succeeded, result.discarded)
+
           throw new GeneratorDrivenPropertyCheckFailedException(
-            prettyTestStats(result),
+            failureMsg,
             None,
             getStackDepth("ScalaCheck.scala", "check"),
-            FailureMessages("propertyExhausted", result.succeeded, result.discarded),
+            failureMsg,
             args,
             None,
             labels
