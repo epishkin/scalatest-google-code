@@ -171,32 +171,151 @@ private[scalatest] object StackDepthExceptionHelper {
     val temp = new RuntimeException
     val stackTraceList = temp.getStackTrace.toList.tail // drop the first one, which is this getStackDepth method
 
-    val fileNameIsCheckersDotScalaList: List[Boolean] =
+    val fileNameIsDesiredList: List[Boolean] =
       for (element <- stackTraceList) yield
         element.getFileName == fileName // such as "Checkers.scala"
 
-    val methodNameIsCheckList: List[Boolean] =
+    val methodNameIsDesiredList: List[Boolean] =
       for (element <- stackTraceList) yield
         element.getMethodName == methodName // such as "check"
 
-    // For element 0, the previous file name was not Checkers.scala, because there is no previous
+    // For element 0, the previous file name was not desired, because there is no previous
     // one, so you start with false. For element 1, it depends on whether element 0 of the stack trace
-    // had file name Checkers.scala, and so forth.
-    val previousFileNameIsCheckersDotScalaList: List[Boolean] = false :: (fileNameIsCheckersDotScalaList.dropRight(1))
+    // had the desired file name, and so forth.
+    val previousFileNameIsDesiredList: List[Boolean] = false :: (fileNameIsDesiredList.dropRight(1))
 
     // Zip these two related lists together. They now have two boolean values together, when both
-    // are true, that's a stack trace element that should be included in the stack depth. In the 
-    val zipped1 = methodNameIsCheckList zip previousFileNameIsCheckersDotScalaList
-    val methodNameIsCheckAndPreviousFileNameIsCheckersDotScalaList: List[Boolean] =
-      for ((methodNameIsCheck, previousFileNameIsCheckersDotScala) <- zipped1) yield
-        methodNameIsCheck && previousFileNameIsCheckersDotScala
+    // are true, that's a stack trace element that should be included in the stack depth.
+    val zipped1 = methodNameIsDesiredList zip previousFileNameIsDesiredList
+    val methodNameAndPreviousFileNameAreDesiredList: List[Boolean] =
+      for ((methodNameIsDesired, previousFileNameIsDesired) <- zipped1) yield
+        methodNameIsDesired && previousFileNameIsDesired
 
     // Zip the two lists together, that when one or the other is true is an include.
-    val zipped2 = fileNameIsCheckersDotScalaList zip methodNameIsCheckAndPreviousFileNameIsCheckersDotScalaList
+    val zipped2 = fileNameIsDesiredList zip methodNameAndPreviousFileNameAreDesiredList
     val includeInStackDepthList: List[Boolean] =
-      for ((fileNameIsCheckersDotScala, methodNameIsCheckAndPreviousFileNameIsCheckersDotScala) <- zipped2) yield
-        fileNameIsCheckersDotScala || methodNameIsCheckAndPreviousFileNameIsCheckersDotScala
+      for ((fileNameIsDesired, methodNameAndPreviousFileNameAreDesired) <- zipped2) yield
+        fileNameIsDesired || methodNameAndPreviousFileNameAreDesired
 
     includeInStackDepthList.takeWhile(include => include).length
+  }
+
+/*
+mixing in trait GeneratorDrivenPropertyChecks:
+
+at org.scalatest.prop.Checkers$.doCheck(Checkers.scala:234)
+at org.scalatest.prop.GeneratorDrivenPropertyChecks$class.forAll(GeneratorDrivenPropertyChecks.scala:51)
+at org.scalatest.prop.PropertyChecksSuite.forAll(PropertyChecksSuite.scala:23)
+at org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:37) <-- actual stack depth
+at org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:37) <-- add one to zap duplication
+at org.scalatest.FunSuite$$anon$4.apply(FunSuite.scala:1146)
+at org.scalatest.Suite$class.withFixture(Suite.scala:1478)
+at org.scalatest.prop.PropertyChecksSuite.withFixture(PropertyChecksSuite.scala:23)
+at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1143)
+at org.scalatest.prop.PropertyChecksSuite.runTest(PropertyChecksSuite.scala:23)
+at org.scalatest.FunSuite$$anonfun$runTests$1.apply(FunSuite.scala:1252)
+
+importing GeneratorDrivenPropertyChecks._
+
+at org.scalatest.prop.Checkers$.doCheck(Checkers.scala:234)
+at org.scalatest.prop.GeneratorDrivenPropertyChecks$class.forAll(GeneratorDrivenPropertyChecks.scala:51)
+at org.scalatest.prop.GeneratorDrivenPropertyChecks$.forAll(GeneratorDrivenPropertyChecks.scala:55)
+at org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:38) <-- actual stack depth
+at org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:38) <-- add one to zap duplication
+at org.scalatest.FunSuite$$anon$4.apply(FunSuite.scala:1146)
+at org.scalatest.Suite$class.withFixture(Suite.scala:1478)
+at org.scalatest.prop.PropertyChecksSuite.withFixture(PropertyChecksSuite.scala:24)
+at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1143)
+at org.scalatest.prop.PropertyChecksSuite.runTest(PropertyChecksSuite.scala:24)
+at org.scalatest.FunSuite$$anonfun$runTests$1.apply(FunSuite.scala:1252)
+
+What I'm doing here is including everything up to the first appearance of the desired method one stack
+trace element beyond an appearance of the desired file name.
+
+mixing in trait TableDrivenPropertyChecks:
+
+at org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:396)
+at org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:387)
+at scala.collection.mutable.ResizableArray$class.foreach(ResizableArray.scala:57)
+at scala.collection.mutable.ArrayBuffer.foreach(ArrayBuffer.scala:43)
+at org.scalatest.prop.TableFor2.apply(Table.scala:387)
+at org.scalatest.prop.TableDrivenPropertyChecks$class.forAll(TableDrivenPropertyChecks.scala:350)
+at org.scalatest.prop.OtherSuite.forAll(OtherSuite.scala:21)
+at org.scalatest.prop.OtherSuite$$anonfun$2.apply(OtherSuite.scala:48) <-- stack depth should be 7
+at org.scalatest.prop.OtherSuite$$anonfun$2.apply(OtherSuite.scala:33)
+at org.scalatest.FunSuite$$anon$4.apply(FunSuite.scala:1146)
+at org.scalatest.Suite$class.withFixture(Suite.scala:1478)
+at org.scalatest.prop.OtherSuite.withFixture(OtherSuite.scala:21)
+at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1143)
+at org.scalatest.prop.OtherSuite.runTest(OtherSuite.scala:21)
+
+importing TableDrivenPropertyChecks._:
+
+at org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:396)
+at org.scalatest.prop.TableFor2$$anonfun$apply$4.apply(Table.scala:387)
+at scala.collection.mutable.ResizableArray$class.foreach(ResizableArray.scala:57)
+at scala.collection.mutable.ArrayBuffer.foreach(ArrayBuffer.scala:43)
+at org.scalatest.prop.TableFor2.apply(Table.scala:387)
+at org.scalatest.prop.TableDrivenPropertyChecks$class.forAll(TableDrivenPropertyChecks.scala:350)
+at org.scalatest.prop.TableDrivenPropertyChecks$.forAll(TableDrivenPropertyChecks.scala:619)
+at org.scalatest.prop.OtherSuite$$anonfun$2.apply(OtherSuite.scala:49) <-- stack depth should be 7
+at org.scalatest.prop.OtherSuite$$anonfun$2.apply(OtherSuite.scala:34)
+at org.scalatest.FunSuite$$anon$4.apply(FunSuite.scala:1146)
+at org.scalatest.Suite$class.withFixture(Suite.scala:1478)
+at org.scalatest.prop.OtherSuite.withFixture(OtherSuite.scala:22)
+at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1143)
+at org.scalatest.prop.OtherSuite.runTest(OtherSuite.scala:22)
+at org.scalatest.FunSuite$$anonfun$runTests$1.apply(FunSuite.scala:1252)
+
+*/
+  def getStackDepthForPropCheck(fileName: String, methodName: String): Int = {
+
+    val temp = new RuntimeException
+    val stackTraceList = temp.getStackTrace.toList.tail // drop the first one, which is this getStackDepth method
+
+    val fileNameIsDesiredList: List[Boolean] =
+      for (element <- stackTraceList) yield
+        element.getFileName == fileName // such as "Checkers.scala"
+
+    val methodNameIsDesiredList: List[Boolean] =
+      for (element <- stackTraceList) yield
+        element.getMethodName == methodName // such as "check"
+
+    // For element 0, the previous file name was not desired, because there is no previous
+    // one, so you start with false. For element 1, it depends on whether element 0 of the stack trace
+    // had the desired file name, and so forth.
+    val previousFileNameIsDesiredList: List[Boolean] = false :: (fileNameIsDesiredList.dropRight(1))
+
+    // Zip these two related lists together. They now have two boolean values together, when both
+    // are true, that's a stack trace element that should be included in the stack depth.
+    val zipped1 = methodNameIsDesiredList zip previousFileNameIsDesiredList
+    val methodNameAndPreviousFileNameAreDesiredList: List[Boolean] =
+      for ((methodNameIsDesired, previousFileNameIsDesired) <- zipped1) yield
+        methodNameIsDesired && previousFileNameIsDesired
+
+    // Include all falses up to the first true in the stack depth count
+    val result = methodNameAndPreviousFileNameAreDesiredList.takeWhile(b => !b).length + 1
+
+    def hasSameFileNameAndLineNumber(e1: StackTraceElement, e2: StackTraceElement) = {
+      if (e1.getFileName == null || e1.getLineNumber < 0 || e2.getFileName == null || e2.getLineNumber < 0) false
+      else (e1.getFileName == e2.getFileName && e1.getLineNumber == e2.getLineNumber)
+    }
+
+    // For some reason, the same filename and line number is showing up twice at the stack depth for
+    // GeneratorDrivenPropertyChecks. Would look prettier to cut off one of them.
+    //
+    // TEST FAILED - PropertyChecksSuite: fraction property check (PropertyChecksSuite.scala:38) (202 milliseconds)
+    //   Gave up after 0 successful property evaluations. 500 evaluations were discarded.
+    //   org.scalatest.prop.GeneratorDrivenPropertyCheckFailedException: Gave up after 0 successful property evaluations. 500 evaluations were discarded.
+    //   ...
+    //   at org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:38)
+    //   at org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:38)
+    //   at org.scalatest.FunSuite$$anon$4.apply(FunSuite.scala:1146)
+    //   at org.scalatest.Suite$class.withFixture(Suite.scala:1478)
+    //   at org.scalatest.prop.PropertyChecksSuite.withFixture(PropertyChecksSuite.scala:24)
+    //   at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1143)
+    //   at org.scalatest.prop.PropertyChecksSuite.runTest(PropertyChecksSuite.scala:24)
+    //   ...
+    if ((stackTraceList.length > result + 1) && hasSameFileNameAndLineNumber(stackTraceList(result), stackTraceList(result + 1))) result + 1 else result
   }
 }

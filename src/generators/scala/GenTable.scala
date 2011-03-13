@@ -175,6 +175,7 @@ import scala.collection.mutable.Builder
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.IndexedSeqLike
 import scala.collection.generic.CanBuildFrom
+import StackDepthExceptionHelper.getStackDepthForPropCheck
 """
 
 val tableScaladocTemplate = """
@@ -329,7 +330,7 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
 $namesAndValues$
               "  )",
             Some(e),
-            7,
+            getStackDepthForPropCheck("TableDrivenPropertyChecks.scala", "forAll"),
             FailureMessages("undecoratedPropertyCheckFailureMessage"),
             List($alphaLower$),
             List($alphaName$),

@@ -23,7 +23,7 @@ import org.scalacheck.Pretty
 import org.scalacheck.Arg
 import org.scalacheck.Prop
 import org.scalacheck.Test
-import org.scalatest.StackDepthExceptionHelper.getStackDepth
+import org.scalatest.StackDepthExceptionHelper.getStackDepthForPropCheck
 
 /**
  * Trait that contains several &#8220;check&#8221; methods that perform ScalaCheck property checks.
@@ -191,6 +191,30 @@ trait Checkers {
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check(p: Prop, prms: Test.Params) {
+    Checkers.doCheck(p, prms, "Checkers.scala", "check")
+  }
+
+  /**
+   * Check a property.
+   *
+   * @param p the property to check
+   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
+   */
+  def check(p: Prop) {
+    check(p, Test.defaultParams)
+  }
+}
+
+/**
+ * Companion object that facilitates the importing of <code>Checkers</code> members as 
+ * an alternative to mixing it in. One use case is to import <code>Checkers</code> members so you can use
+ * them in the Scala interpreter.
+ *
+ * @author Bill Venners
+ */
+object Checkers extends Checkers {
+
+  private[prop] def doCheck(p: Prop, prms: Test.Params, stackDepthFileName: String, stackDepthMethodName: String) {
 
     val result = Test.check(prms, p)
     if (!result.passed) {
@@ -210,7 +234,9 @@ trait Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             failureMsg,
             None,
-            getStackDepth("ScalaCheck.scala", "check"),
+            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
+            // getStackDepth("ScalaCheck.scala", "check"),
+            // { val x = getStackDepth("GeneratorDrivenPropertyChecks$class.scala", "forAll"); println("stackDepth:" + x); x},
             failureMsg,
             args,
             None,
@@ -222,7 +248,7 @@ trait Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             prettyTestStats(result),
             None,
-            getStackDepth("ScalaCheck.scala", "check"),
+            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
             FailureMessages("propertyFailed", result.succeeded),
             args,
             None,
@@ -245,7 +271,7 @@ trait Checkers {
               prettyArgs(scalaCheckArgs) + "\n" +
               "  )",
             Some(e),
-            getStackDepth("ScalaCheck.scala", "check"),
+            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
             FailureMessages("propertyException", UnquotedString(e.getClass.getName)),
             args,
             None,
@@ -257,7 +283,7 @@ trait Checkers {
           throw new GeneratorDrivenPropertyCheckFailedException(
             prettyTestStats(result),
             Some(e),
-            getStackDepth("ScalaCheck.scala", "check"),
+            getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
             FailureMessages("generatorException", UnquotedString(e.getClass.getName)),
             args,
             None,
@@ -283,16 +309,6 @@ trait Checkers {
     val labels: List[String] = for (scalaCheckLabel <- scalaCheckLabels.elements.toList) yield scalaCheckLabel
 
     (args, labels)
-  }
-
-  /**
-   * Check a property.
-   *
-   * @param p the property to check
-   * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
-   */
-  def check(p: Prop) {
-    check(p, Test.defaultParams)
   }
 
   // TODO: Internationalize these, and make them consistent with FailureMessages stuff (only strings get quotes around them, etc.)
@@ -333,6 +349,7 @@ trait Checkers {
     )
     strs.mkString("\n")
   }
+}
 
   /*
    * Returns a ScalaCheck <code>Prop</code> that succeeds if the passed by-name
@@ -398,7 +415,6 @@ trait Checkers {
    *            to return
    * @return a ScalaCheck property that passes if the passed by-name parameter,
    *         <code>fun</code>, returns normally, fails if it throws an exception
-   */
   private def successOf(fun: => Unit): Prop =
     try {
       fun
@@ -416,14 +432,4 @@ trait Checkers {
         Prop.exception(e).label(lbl)
       case e => Prop.exception(e) // Not sure what to do here
     }
-}
-
-/**
- * Companion object that facilitates the importing of <code>Checkers</code> members as 
- * an alternative to mixing it in. One use case is to import <code>Checkers</code> members so you can use
- * them in the Scala interpreter.
- *
- * @author Bill Venners
- */
-object Checkers extends Checkers
-
+   */
