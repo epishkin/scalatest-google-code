@@ -146,6 +146,11 @@
         <java classname="GenTable" classpathref="run.generators.class.path" fork="false" />
     </target>
 
+    <target name="gengen" depends="init, compile-codegenerators">
+        <!-- Then, run it. -->
+        <java classname="GenGen" classpathref="run.generators.class.path" fork="false" />
+    </target>
+
     <target name="gendeprecatedshouldtests" depends="init, compile-codegenerators">
         <!-- Then, run it. -->
         <java classname="GenDeprecatedShouldMatchersTests" classpathref="run.generators.class.path" fork="false" />
@@ -158,7 +163,7 @@
 
     <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
-    <target name="compile-main" depends="init, gentables">
+    <target name="compile-main" depends="init, gentables, gengen">
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
         <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
