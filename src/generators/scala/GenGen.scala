@@ -543,59 +543,24 @@ val generatorDrivenPropertyChecksCompanionObjectVerbatimString = """
 object GeneratorDrivenPropertyChecks extends GeneratorDrivenPropertyChecks
 """
 
-val tableSuitePreamble = """
+val generatorSuitePreamble = """
 
 import matchers.ShouldMatchers
 
-class TableSuite extends FunSuite with TableDrivenPropertyChecks with ShouldMatchers {
+class GeneratorDrivenSuite extends FunSuite with GeneratorDrivenPropertyChecks with ShouldMatchers {
 """
 
-val tableSuiteTemplate = """
-  test("table for $n$ that succeeds") {
+val generatorSuiteTemplate = """
+  test("generator-driven property that takes $n$ args, which succeeds") {
 
-    val examples =
-      Table(
-        ($argNames$),
-$columnsOfOnes$
-      )
-
-    forAll (examples) { ($names$) => $sumOfArgs$ should equal ($n$) }
+    forAll { ($namesAndTypes$) => $sumOfArgLengths$ should equal (($sumOfArgs$).length) }
   }
 
-  test("table for $n$, which fails") {
+  test("generator-driven property that takes $n$ args, which fails") {
 
-    val examples =
-      Table(
-        ($argNames$),
-$columnsOfTwos$
-      )
-
-    intercept[TableDrivenPropertyCheckFailedException] {
-      forAll (examples) { ($names$) => $sumOfArgs$ should equal ($n$) }
+    intercept[GeneratorDrivenPropertyCheckFailedException] {
+      forAll { ($namesAndTypes$) => $sumOfArgLengths$ should be < 0 }
     }
-  }
-
-  test("table for $n$ apply, length, and iterator methods work correctly") {
-
-    val examples =
-      Table(
-        ($argNames$),
-$columnsOfIndexes$
-      )
-
-    for (i <- 0 to 9) {
-      examples(i) should equal ($listOfIs$)
-    }
-
-    examples.length should equal (10)
-
-    var i = 0
-    for (example <- examples.iterator) {
-      example should equal ($listOfIs$)
-      i += 1
-    }
-
-    examples.iterator.length should equal (10)
   }
 """
 
@@ -723,18 +688,18 @@ $columnsOfIndexes$
     }
   }
  
-  def genTableSuite() {
+  def genGeneratorDrivenSuite() {
 
-    val bw = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/prop/TableSuite.scala"))
+    val bw = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/prop/GeneratorDrivenSuite.scala"))
  
     try {
       val st = new org.antlr.stringtemplate.StringTemplate(copyrightTemplate)
       st.setAttribute("year", thisYear);
       bw.write(st.toString)
-      bw.write(tableSuitePreamble)
+      bw.write(generatorSuitePreamble)
       val alpha = "abcdefghijklmnopqrstuv"
-      for (i <- 1 to 22) {
-        val st = new org.antlr.stringtemplate.StringTemplate(tableSuiteTemplate)
+      for (i <- 1 to 6) {
+        val st = new org.antlr.stringtemplate.StringTemplate(generatorSuiteTemplate)
         val rowOfOnes = List.fill(i)("  1").mkString(", ")
         val rowOfTwos = List.fill(i)("  2").mkString(", ")
         val listOfIs = List.fill(i)("i").mkString(", ")
@@ -746,14 +711,18 @@ $columnsOfIndexes$
         val columnsOfIndexes = rawRows.mkString(",\n")
         val argNames = alpha.map("\"" + _ + "\"").take(i).mkString(", ")
         val names = alpha.take(i).mkString(", ")
+        val namesAndTypes = alpha.take(i).map(_ + ": String").mkString(", ")
         val sumOfArgs = alpha.take(i).mkString(" + ")
+        val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
         st.setAttribute("columnsOfIndexes", columnsOfIndexes)
         st.setAttribute("argNames", argNames)
         st.setAttribute("names", names)
+        st.setAttribute("namesAndTypes", namesAndTypes)
         st.setAttribute("sumOfArgs", sumOfArgs)
+        st.setAttribute("sumOfArgLengths", sumOfArgLengths)
         st.setAttribute("listOfIs", listOfIs)
         bw.write(st.toString)
       }
@@ -768,7 +737,7 @@ $columnsOfIndexes$
   //genTableForNs()
   genPropertyChecks()
   //genTables()
-  //genTableSuite()
+  genGeneratorDrivenSuite()
 }
 
 /*
