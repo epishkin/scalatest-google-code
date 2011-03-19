@@ -178,7 +178,83 @@ import org.scalacheck.Prop._
 import org.scalacheck.Test.defaultParams
 
 /**
- * Trait containing methods that faciliate property checks against generated data.
+ * Trait containing methods that faciliate property checks against generated data using ScalaCheck.
+ *
+ * <p>
+ * This trait contains <code>forAll</code> methods that provide various ways to check properties using
+ * generated data. Use of this trait requires that ScalaCheck be on the class path when you compile and run your tests.
+ * It also contains a <code>wherever</code> method that can be used to indicate a property need only hold whenever
+ * some condition is true.
+ * </p>
+ *
+ * <p>
+ * For an example of trait <code>GeneratorDrivenPropertyChecks</code> in action, imagine you want to test this <code>Fraction</code> class:
+ * </p>
+ *  
+ * <pre>
+ * class Fraction(n: Int, d: Int) {
+ *
+ *   require(d != 0)
+ *   require(d != Integer.MIN_VALUE)
+ *   require(n != Integer.MIN_VALUE)
+ *
+ *   val numer = if (d < 0) -1 * n else n
+ *   val denom = d.abs
+ *
+ *   override def toString = numer + " / " + denom
+ * }
+ * </pre>
+ *
+ * <p>
+ * To test the behavior of <code>Fraction</code>, you could mix in or import the members of <code>GeneratorDrivenPropertyChecks</code>
+ * (and <code>ShouldMatchers</code>) and check a property using a <code>forAll</code> method, like this:
+ * </p>
+ *
+ * <pre>
+ * forAll { (n: Int, d: Int) =>
+ *
+ *   whenever (d != 0 && d != Integer.MIN_VALUE
+ *       && n != Integer.MIN_VALUE) {
+ *
+ *     val f = new Fraction(n, d)
+ *
+ *     if (n < 0 && d < 0 || n > 0 && d > 0)
+ *       f.numer should be > 0
+ *     else if (n != 0)
+ *       f.numer should be < 0
+ *     else
+ *       f.numer should be === 0
+ *
+ *     f.denom should be > 0
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Trait <code>GeneratorDrivenPropertyChecks</code> provides overloaded <code>forAll</code> methods
+ * that allow you to check properties using the data provided by a ScalaCheck generator. The simplest form
+ * of <code>forAll</code> method takes two parameter lists, the second of which is implicit. The first parameter list
+ * is a "property" function with one to six parameters. An implicit <code>Arbitrary</code> generator and <code>Shrink</code> object needs to be supplied for
+ * The <code>forAll</code> method will pass each row of data to
+ * each parameter type. ScalaCheck provides many implicit <code>Arbitrary</code> generators for common types such as
+ * <code>Int</code>, <code>String</code>, <code>List[Float]</code>, <em>etc.</em>, in its <code>org.scalacheck.Arbitrary</code> companion
+ * object. So long as you use types for which ScalaCheck already provides implicit <code>Arbitrary</code> generators, you needn't
+ * worry about them. Same for <code>Shrink</code> objects, which are provided by ScalaCheck's <code>org.scalacheck.Shrink</code> companion
+ * object. Most often you can simply pass a property function to <code>forAll</code>, and the compiler will grab the implicit
+ * values provided by ScalaCheck.
+ * </p>
+ *
+ * <p>
+ * The <code>forAll</code> method use the supplied <code>Arbitrary</code> generators to generate example
+ * arguments and pass them to the property function, and
+ * generate a <code>GeneratorDrivenPropertyCheckFailedException</code> if the function
+ * completes abruptly any exception that would <a href="../Suite.html#errorHandling">normally cause</a> a test to
+ * fail in ScalaTest other than <code>UnmetConditionException</code>. An
+ * <code>UnmetConditionException</code>,
+ * which is thrown by the <code>whenever</code> method (also defined in this trait) to indicate
+ * a condition required by the property function is not met by a row
+ * of passed data, will simply cause <code>forAll</code> to skip that row of data.
+ * </p>
  *
  * @author Bill Venners
  */
@@ -189,6 +265,16 @@ val propertyCheckForAllTemplate = """
   /**
    * Performs a property check by applying the specified property check function to arguments
    * supplied by implicitly passed generators.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll { ($namesAndTypes$) =>
+   *   $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+   * }
+   * </pre>
    *
    * @param fun the property check function to apply to the generated arguments
    */
@@ -269,12 +355,18 @@ val generatorSuiteTemplate = """
         val arbShrinks = alpha.take(i).toUpperCase.map(
           c => "      arb" + c + ": Arbitrary[" + c + "], shr" + c + ": Shrink[" + c + "]"
         ).mkString(",\n")
+        val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
+        val namesAndTypes = alpha.take(i).map(_ + ": String").mkString(", ")
+        val sumOfArgs = alpha.take(i).mkString(" + ")
         st.setAttribute("n", i)
         st.setAttribute("argType", argType)
         st.setAttribute("arbShrinks", arbShrinks)
         st.setAttribute("alphaLower", alphaLower)
         st.setAttribute("alphaUpper", alphaUpper)
         st.setAttribute("strings", strings)
+        st.setAttribute("sumOfArgLengths", sumOfArgLengths)
+        st.setAttribute("namesAndTypes", namesAndTypes)
+        st.setAttribute("sumOfArgs", sumOfArgs)
         bw.write(st.toString)
       }
 
