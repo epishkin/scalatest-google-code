@@ -364,8 +364,56 @@ $arbShrinks$
    */
   def forAll[$alphaUpper$]($genArgsAndTypes$)(fun: ($alphaUpper$) => Unit)
     (implicit
-$arbShrinks$
+$shrinks$
     ) {
+      val propF = { ($argType$) =>
+        val (unmetCondition, exception) =
+          try {
+            fun($alphaLower$)
+            (false, None)
+          }
+          catch {
+            case e: UnmetConditionException => (true, None)
+            case e => (false, Some(e))
+          }
+        !unmetCondition ==> (
+          if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+        )
+      }
+      val prop = Prop.forAll($genArgs$)(propF)
+      Checkers.doCheck(prop, defaultParams, "GeneratorDrivenPropertyChecks.scala", "forAll")
+  }
+
+  /**
+   * Performs a property check by applying the specified property check function to named arguments
+   * supplied by the specified generators.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * import org.scalacheck.Gen
+   *
+   * // Define your own string generator:
+   * val famousLastWords = for {
+   *   s <- Gen.oneOf("the", "program", "compiles", "therefore", "it", "should", "work")
+   * } yield s
+   * 
+   * forAll ($nameGenTuples$) { ($namesAndTypes$) =>
+   *   $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+  def forAll[$alphaUpper$]($nameAndGenArgsAndTypes$)(fun: ($alphaUpper$) => Unit)
+    (implicit
+$shrinks$
+    ) {
+
+$tupleBusters$
+
       val propF = { ($argType$) =>
         val (unmetCondition, exception) =
           try {
@@ -450,6 +498,22 @@ val generatorSuiteTemplate = """
       }
     }
   }
+
+  test("generator-driven property that takes $n$ named args and generators, which succeeds") {
+
+    forAll ($nameGenTuples$) { ($namesAndTypes$) =>
+      $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, which fails") {
+
+    intercept[GeneratorDrivenPropertyCheckFailedException] {
+      forAll ($nameGenTuples$) { ($namesAndTypes$) =>
+        $sumOfArgLengths$ should be < 0
+      }
+    }
+  }
 """
 
 // For some reason that I don't understand, I need to leave off the stars before the <pre> when 
@@ -480,6 +544,9 @@ val generatorSuiteTemplate = """
         val arbShrinks = alpha.take(i).toUpperCase.map(
           c => "      arb" + c + ": Arbitrary[" + c + "], shr" + c + ": Shrink[" + c + "]"
         ).mkString(",\n")
+        val shrinks = alpha.take(i).toUpperCase.map(
+          c => "      shr" + c + ": Shrink[" + c + "]"
+        ).mkString(",\n")
         val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
         val namesAndTypes = alpha.take(i).map(_ + ": String").mkString(", ")
         val sumOfArgs = alpha.take(i).mkString(" + ")
@@ -489,9 +556,13 @@ val generatorSuiteTemplate = """
         val argNames = alpha.take(i).map("\"" + _ + "\"").mkString(", ")
         val argNameNames = alpha.take(i).toUpperCase.map("name" + _).mkString(", ")
         val argNameNamesAndTypes = alpha.take(i).toUpperCase.map("name" + _ + ": String").mkString(", ")
+        val nameGenTuples = alpha.take(i).map("(\"" + _ + "\", famousLastWords)").mkString(", ")
+        val nameAndGenArgsAndTypes = alpha.take(i).toUpperCase.map(c => "nameGen" + c + ": (String, Gen[" + c + "])").mkString(", ")
+        val tupleBusters = alpha.take(i).toUpperCase.map(c => "      val (name" + c + ", gen" + c + ") = nameGen" + c).mkString("\n")
         st.setAttribute("n", i)
         st.setAttribute("argType", argType)
         st.setAttribute("arbShrinks", arbShrinks)
+        st.setAttribute("shrinks", shrinks)
         st.setAttribute("alphaLower", alphaLower)
         st.setAttribute("alphaUpper", alphaUpper)
         st.setAttribute("strings", strings)
@@ -502,11 +573,13 @@ val generatorSuiteTemplate = """
         st.setAttribute("genArgsAndTypes", genArgsAndTypes)
         st.setAttribute("famousArgs", famousArgs)
         st.setAttribute("argNames", argNames)
+        st.setAttribute("tupleBusters", tupleBusters)
+        st.setAttribute("nameGenTuples", nameGenTuples)
+        st.setAttribute("nameAndGenArgsAndTypes", nameAndGenArgsAndTypes)
         st.setAttribute("argNameNames", argNameNames)
         st.setAttribute("argNameNamesAndTypes", argNameNamesAndTypes)
         bw.write(st.toString)
       }
-
       bw.write("}\n")
       bw.write(generatorDrivenPropertyChecksCompanionObjectVerbatimString)
     }
@@ -543,6 +616,7 @@ val generatorSuiteTemplate = """
         val sumOfArgs = alpha.take(i).mkString(" + ")
         val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
         val famousArgs = List.fill(i)("famousLastWords").mkString(", ")
+        val nameGenTuples = alpha.take(i).map("(\"" + _ + "\", famousLastWords)").mkString(", ")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
@@ -554,6 +628,7 @@ val generatorSuiteTemplate = """
         st.setAttribute("sumOfArgLengths", sumOfArgLengths)
         st.setAttribute("listOfIs", listOfIs)
         st.setAttribute("famousArgs", famousArgs)
+        st.setAttribute("nameGenTuples", nameGenTuples)
         bw.write(st.toString)
       }
 
