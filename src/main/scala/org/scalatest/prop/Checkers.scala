@@ -214,7 +214,7 @@ trait Checkers {
  */
 object Checkers extends Checkers {
 
-  private[prop] def doCheck(p: Prop, prms: Test.Params, stackDepthFileName: String, stackDepthMethodName: String) {
+  private[prop] def doCheck(p: Prop, prms: Test.Params, stackDepthFileName: String, stackDepthMethodName: String, argNames: Option[List[String]] = None) {
 
     val result = Test.check(prms, p)
     if (!result.passed) {
@@ -257,6 +257,15 @@ object Checkers extends Checkers {
 
         case Test.PropException(scalaCheckArgs, e, scalaCheckLabels) =>
 
+          val argsWithSpecifiedNames =
+            if (argNames.isDefined) {
+              // length of scalaCheckArgs should equal length of argNames
+              val zipped = argNames.get zip scalaCheckArgs
+              zipped map { case (argName, arg) => arg.copy(label = argName) }
+            }
+            else
+              scalaCheckArgs
+
           throw new GeneratorDrivenPropertyCheckFailedException(
             FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" +
               "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
@@ -268,7 +277,7 @@ object Checkers extends Checkers {
                 }
               ) +
               "  " + FailureMessages("occurredOnValues") + "\n" +
-              prettyArgs(scalaCheckArgs) + "\n" +
+              prettyArgs(argsWithSpecifiedNames) + "\n" +
               "  )",
             Some(e),
             getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
@@ -340,11 +349,12 @@ object Checkers extends Checkers {
     else "Labels of failing property: " + labels.mkString("\n") + "\n"
   }
 
+  import FailureMessages.decorateToStringValue
   private def prettyArgs(args: List[Arg[_]]) = {
     val strs = for((a, i) <- args.zipWithIndex) yield (
       "    " +
       (if (a.label == "") "arg" + i else a.label) +
-      " = " + a.arg + (if (i < args.length - 1) "," else "") +
+      " = " + decorateToStringValue(a.arg) + (if (i < args.length - 1) "," else "") +
       (if (a.shrinks > 0) " // " + a.shrinks + (if (a.shrinks == 1) " shrink" else " shrinks") else "")
     )
     strs.mkString("\n")
