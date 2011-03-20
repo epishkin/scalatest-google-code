@@ -174,6 +174,7 @@ val propertyCheckPreamble = """
 import org.scalacheck.Arbitrary
 import org.scalacheck.Shrink
 import org.scalacheck.Prop
+import org.scalacheck.Gen
 import org.scalacheck.Prop._
 import org.scalacheck.Test.defaultParams
 
@@ -299,6 +300,51 @@ $arbShrinks$
       val prop = Prop.forAll(propF)
       Checkers.doCheck(prop, defaultParams, "GeneratorDrivenPropertyChecks.scala", "forAll")
   }
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by the passed generators.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * import org.scalacheck.Gen
+   *
+   * // Define your own string generator:
+   * val famousLastWords = for {
+   *   s <- Gen.oneOf("the", "program", "compiles", "therefore", "it", "should", "work")
+   * } yield s
+   * 
+   * forAll ($famousArgs$) { ($namesAndTypes$) =>
+   *   $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+  def forAll[$alphaUpper$]($genArgsAndTypes$)(fun: ($alphaUpper$) => Unit)
+    (implicit
+$arbShrinks$
+    ) {
+      val propF = { ($argType$) =>
+        val (unmetCondition, exception) =
+          try {
+            fun($alphaLower$)
+            (false, None)
+          }
+          catch {
+            case e: UnmetConditionException => (true, None)
+            case e => (false, Some(e))
+          }
+        !unmetCondition ==> (
+          if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+        )
+      }
+      val prop = Prop.forAll($genArgs$)(propF)
+      Checkers.doCheck(prop, defaultParams, "GeneratorDrivenPropertyChecks.scala", "forAll")
+  }
 """
 
 val generatorDrivenPropertyChecksCompanionObjectVerbatimString = """
@@ -309,8 +355,13 @@ object GeneratorDrivenPropertyChecks extends GeneratorDrivenPropertyChecks
 val generatorSuitePreamble = """
 
 import matchers.ShouldMatchers
+import org.scalacheck.Gen
 
 class GeneratorDrivenSuite extends FunSuite with GeneratorDrivenPropertyChecks with ShouldMatchers {
+
+  val famousLastWords = for {
+    s <- Gen.oneOf("the", "program", "compiles", "therefore", "it", "should", "work")
+  } yield s
 """
 
 val generatorSuiteTemplate = """
@@ -323,6 +374,18 @@ val generatorSuiteTemplate = """
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       forAll { ($namesAndTypes$) => $sumOfArgLengths$ should be < 0 }
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, which succeeds") {
+
+    forAll ($famousArgs$) { ($namesAndTypes$) => $sumOfArgLengths$ should equal (($sumOfArgs$).length) }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, which fails") {
+
+    intercept[GeneratorDrivenPropertyCheckFailedException] {
+      forAll ($famousArgs$) { ($namesAndTypes$) => $sumOfArgLengths$ should be < 0 }
     }
   }
 """
@@ -358,6 +421,9 @@ val generatorSuiteTemplate = """
         val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
         val namesAndTypes = alpha.take(i).map(_ + ": String").mkString(", ")
         val sumOfArgs = alpha.take(i).mkString(" + ")
+        val genArgsAndTypes = alpha.take(i).toUpperCase.map(c => "gen" + c + ": Gen[" + c + "]").mkString(", ")
+        val genArgs = alpha.take(i).toUpperCase.map(c => "gen" + c).mkString(", ")
+        val famousArgs = List.fill(i)("famousLastWords").mkString(", ")
         st.setAttribute("n", i)
         st.setAttribute("argType", argType)
         st.setAttribute("arbShrinks", arbShrinks)
@@ -367,6 +433,9 @@ val generatorSuiteTemplate = """
         st.setAttribute("sumOfArgLengths", sumOfArgLengths)
         st.setAttribute("namesAndTypes", namesAndTypes)
         st.setAttribute("sumOfArgs", sumOfArgs)
+        st.setAttribute("genArgs", genArgs)
+        st.setAttribute("genArgsAndTypes", genArgsAndTypes)
+        st.setAttribute("famousArgs", famousArgs)
         bw.write(st.toString)
       }
 
@@ -404,6 +473,7 @@ val generatorSuiteTemplate = """
         val namesAndTypes = alpha.take(i).map(_ + ": String").mkString(", ")
         val sumOfArgs = alpha.take(i).mkString(" + ")
         val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
+        val famousArgs = List.fill(i)("famousLastWords").mkString(", ")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
@@ -414,6 +484,7 @@ val generatorSuiteTemplate = """
         st.setAttribute("sumOfArgs", sumOfArgs)
         st.setAttribute("sumOfArgLengths", sumOfArgLengths)
         st.setAttribute("listOfIs", listOfIs)
+        st.setAttribute("famousArgs", famousArgs)
         bw.write(st.toString)
       }
 
