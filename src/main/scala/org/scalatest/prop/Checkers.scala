@@ -201,7 +201,7 @@ trait Checkers {
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
   def check(p: Prop) {
-    check(p, Test.defaultParams)
+    check(p, Test.Params())
   }
 }
 
@@ -315,7 +315,7 @@ object Checkers extends Checkers {
     val args: List[Any] = for (scalaCheckArg <- scalaCheckArgs.toList) yield scalaCheckArg.arg
 
     // scalaCheckLabels is a Set[String], I think
-    val labels: List[String] = for (scalaCheckLabel <- scalaCheckLabels.elements.toList) yield scalaCheckLabel
+    val labels: List[String] = for (scalaCheckLabel <- scalaCheckLabels.iterator.toList) yield scalaCheckLabel
 
     (args, labels)
   }
@@ -345,7 +345,7 @@ object Checkers extends Checkers {
 
   private def prettyLabels(labels: Set[String]) = {
     if (labels.isEmpty) ""
-    else if (labels.size == 1) "Label of failing property: " + labels.elements.next + "\n"
+    else if (labels.size == 1) "Label of failing property: " + labels.iterator.next + "\n"
     else "Labels of failing property: " + labels.mkString("\n") + "\n"
   }
 
