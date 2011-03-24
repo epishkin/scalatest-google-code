@@ -70,11 +70,11 @@ package org.scalatest.prop
  * @param minSize the minimum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
  * @param maxSize the maximum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
  * @param workers specifies the number of worker threads * to use during property evaluation
- * @throw IllegalArgumentException if specified <code>minSuccessful</code> value is less than or equal to zero.
- * @throw IllegalArgumentException if specified <code>maxSkipped</code> value is less than zero.
- * @throw IllegalArgumentException if specified <code>minSize</code> value is less than zero.
- * @throw IllegalArgumentException if specified <code>maxSize</code> value is less than zero.
- * @throw IllegalArgumentException if specified <code>workers</code> value is less than or equal to zero.
+ * @throws IllegalArgumentException if the specified <code>minSuccessful</code> value is less than or equal to zero,
+ *   the specified <code>maxSkipped</code> value is less than zero,
+ *   the specified <code>minSize</code> value is less than zero,
+ *   the specified <code>maxSize</code> value is less than zero, or
+ *   the specified <code>workers</code> value is less than or equal to zero.
  *
  * @author Bill Venners
  */

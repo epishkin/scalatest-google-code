@@ -29,7 +29,7 @@ trait OptionalConfigParams {
    * Returns a <code>MinSuccessful</code> property check configuration parameter containing the passed value, which specifies the minimum number of successful
    * property evaluations required for the property to pass.
    *
-   * @throw IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
    */
   def minSuccessful(value: Int): MinSuccessful = new MinSuccessful(value)
 
@@ -37,7 +37,7 @@ trait OptionalConfigParams {
    * Returns a <code>MaxSkipped</code> property check configuration parameter containing the passed value, which specifies the maximum number of skipped
    * property evaluations allowed during property evaluation.
    *
-   * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
+   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
    */
   def maxSkipped(value: Int): MaxSkipped = new MaxSkipped(value)
 
@@ -46,7 +46,7 @@ trait OptionalConfigParams {
    * provide to ScalaCheck, which it will use when generating objects for which size matters (such as
    * strings or lists).
    *
-   * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
+   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
    */
   def minSize(value: Int): MinSize = new MinSize(value)
 
@@ -62,7 +62,7 @@ trait OptionalConfigParams {
    * both a maximum and minimum size are provided together.
    * </p>
    * 
-   * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
+   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
    */
   def maxSize(value: Int): MaxSize = new MaxSize(value)
 
@@ -70,7 +70,7 @@ trait OptionalConfigParams {
    * Returns a <code>Workers</code> property check configuration parameter containing the passed value, which specifies the number of worker threads
    * to use when evaluating a property.
    *
-   * @throw IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
    */
   def workers(value: Int): Workers = new Workers(value)
 }
