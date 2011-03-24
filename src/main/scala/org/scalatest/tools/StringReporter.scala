@@ -165,15 +165,16 @@ if a StackDepth and no F specified, then show the truncated form.
       throwable match {
         case Some(throwable) =>
 
-          def useTruncatedStackTrace =
-            !presentTestFailedExceptionStackTraces && (
-              throwable match {
-                case e: Throwable with StackDepth => true
-                case _ => false
-              }
-            )
-
           def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
+
+            def useTruncatedStackTrace =
+              !presentTestFailedExceptionStackTraces && (
+                throwable match {
+                  case e: Throwable with StackDepth => true
+                  case _ => false
+                }
+              )
+
             val className = throwable.getClass.getName 
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             val colonMessageOrEmptyString =
