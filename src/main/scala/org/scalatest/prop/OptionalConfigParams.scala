@@ -29,15 +29,15 @@ trait OptionalConfigParams {
    * Returns a <code>MinSuccessful</code> property check configuration parameter containing the passed value, which specifies the minimum number of successful
    * property evaluations required for the property to pass.
    *
-   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   * @throw IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
    */
   def minSuccessful(value: Int): MinSuccessful = new MinSuccessful(value)
 
   /**
    * Returns a <code>MaxSkipped</code> property check configuration parameter containing the passed value, which specifies the maximum number of skipped
-   * property evaluations required for the property to pass.
+   * property evaluations allowed during property evaluation.
    *
-   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
+   * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
    */
   def maxSkipped(value: Int): MaxSkipped = new MaxSkipped(value)
 
@@ -46,12 +46,12 @@ trait OptionalConfigParams {
    * provide to ScalaCheck, which it will use when generating objects for which size matters (such as
    * strings or lists).
    *
-   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
+   * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
    */
   def minSize(value: Int): MinSize = new MinSize(value)
 
   /**
-   * Returns a <code>MaxSize</code> property check configuration parameter containing the passed value, which specifies the minimum size parameter to
+   * Returns a <code>MaxSize</code> property check configuration parameter containing the passed value, which specifies the maximum size parameter to
    * provide to ScalaCheck, which it will use when generating objects for which size matters (such as
    * strings or lists).
    *
@@ -62,15 +62,15 @@ trait OptionalConfigParams {
    * both a maximum and minimum size are provided together.
    * </p>
    * 
-   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
+   * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
    */
   def maxSize(value: Int): MaxSize = new MaxSize(value)
 
   /**
-   * Returns a <code>Workers</code> property check configuration parameter containing the passed value, which suggests a number of worker threads
-   * to us to evaluate a property.
+   * Returns a <code>Workers</code> property check configuration parameter containing the passed value, which specifies the number of worker threads
+   * to use when evaluating a property.
    *
-   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   * @throw IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
    */
   def workers(value: Int): Workers = new Workers(value)
 }

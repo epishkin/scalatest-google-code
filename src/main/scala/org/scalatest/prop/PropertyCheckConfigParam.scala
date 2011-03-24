@@ -32,7 +32,7 @@ sealed abstract class PropertyCheckConfigParam
  * A <code>PropertyCheckConfigParam</code> that specifies the minimum number of successful
  * property evaluations required for the property to pass.
  *
- * @exception IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+ * @throw IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
  *
  * @author Bill Venners
  */
@@ -42,7 +42,7 @@ case class MinSuccessful(value: Int) extends PropertyCheckConfigParam {
 
 /**
  * A <code>PropertyCheckConfigParam</code> that specifies the maximum number of skipped
- * property evaluations required for the property to pass.
+ * property evaluations allowed during property evaluation.
  *
  * <p>
  * In <code>GeneratorDrivenPropertyChecks</code>, a property evaluation is skipped if it throws
@@ -84,7 +84,7 @@ case class MinSuccessful(value: Int) extends PropertyCheckConfigParam {
  * the property check will fail.
  * </p>
  *
- * @exception IllegalArgumentException if specified <code>value</code> is less than zero.
+ * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
  *
  * @author Bill Venners
  */
@@ -97,7 +97,7 @@ case class MaxSkipped(value: Int) extends PropertyCheckConfigParam {
  * provide to ScalaCheck, which it will use when generating objects for which size matters (such as
  * strings or lists).
  *
- * @exception IllegalArgumentException if specified <code>value</code> is less than zero.
+ * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
  *
  * @author Bill Venners
  */
@@ -106,7 +106,7 @@ case class MinSize(value: Int) extends PropertyCheckConfigParam {
 }
 
 /**
- * A <code>PropertyCheckConfigParam</code> that specifies the minimum size parameter to
+ * A <code>PropertyCheckConfigParam</code> that specifies the maximum size parameter to
  * provide to ScalaCheck, which it will use when generating objects for which size matters (such as
  * strings or lists).
  *
@@ -117,7 +117,7 @@ case class MinSize(value: Int) extends PropertyCheckConfigParam {
  * both a maximum and minimum size are provided together.
  * </p>
  * 
- * @exception IllegalArgumentException if specified <code>value</code> is less than zero.
+ * @throw IllegalArgumentException if specified <code>value</code> is less than zero.
  *
  * @author Bill Venners
  */
@@ -126,10 +126,10 @@ case class MaxSize(value: Int) extends PropertyCheckConfigParam {
 }
 
 /**
- * A <code>PropertyCheckConfigParam</code> that suggests a number of worker threads
- * to us to evaluate a property.
+ * A <code>PropertyCheckConfigParam</code> that specifies the number of worker threads
+ * to use when evaluating a property.
  *
- * @exception IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+ * @throw IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
  *
  * @author Bill Venners
  */
