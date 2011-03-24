@@ -267,6 +267,40 @@ at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1143)
 at org.scalatest.prop.OtherSuite.runTest(OtherSuite.scala:22)
 at org.scalatest.FunSuite$$anonfun$runTests$1.apply(FunSuite.scala:1252)
 
+forAll (minSize(10), maxSize(20)) { fun... } form. Stack trace is:
+The proper stack depth here should be the second one that has ack.scala:27
+Had bug. But turned out same algo works, but needed to send "apply" not "forAll"
+
+[scalatest]   org.scalatest.prop.GeneratorDrivenPropertyCheckFailedException: org.scalatest.TestFailedException (included as this exception's cause) was thrown during property evaluation.
+[scalatest]   at org.scalatest.prop.Checkers$.doCheck(Checkers.scala:269)
+[scalatest]   at org.scalatest.prop.GeneratorDrivenPropertyChecks$ConfiguredPropertyCheck.apply(GeneratorDrivenPropertyChecks.scala:432)
+[scalatest]   at org.scalatest.prop.AckSuite$$anonfun$1.apply(ack.scala:27)
+[scalatest]   at org.scalatest.prop.AckSuite$$anonfun$1.apply(ack.scala:27)
+[scalatest]   at org.scalatest.FunSuite$$anon$4.apply(FunSuite.scala:1146)
+[scalatest]   at org.scalatest.Suite$class.withFixture(Suite.scala:1478)
+[scalatest]   at org.scalatest.prop.AckSuite.withFixture(ack.scala:23)
+[scalatest]   at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1143)
+[scalatest]   at org.scalatest.prop.AckSuite.runTest(ack.scala:23)
+[scalatest]   at org.scalatest.FunSuite$$anonfun$runTests$1.apply(FunSuite.scala:1252)
+[scalatest]   at org.scalatest.FunSuite$$anonfun$runTests$1.apply(FunSuite.scala:1243)
+[scalatest]   at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:61)
+[scalatest]   at scala.collection.immutable.List.foreach(List.scala:45)
+[scalatest]   at org.scalatest.FunSuite$class.runTests(FunSuite.scala:1243)
+[scalatest]   at org.scalatest.prop.AckSuite.runTests(ack.scala:23)
+[scalatest]   at org.scalatest.Suite$class.run(Suite.scala:1773)
+[scalatest]   at org.scalatest.prop.AckSuite.org$scalatest$FunSuite$$super$run(ack.scala:23)
+[scalatest]   at org.scalatest.FunSuite$class.run(FunSuite.scala:1289)
+[scalatest]   at org.scalatest.prop.AckSuite.run(ack.scala:23)
+[scalatest]   at org.scalatest.tools.SuiteRunner.run(SuiteRunner.scala:59)
+[scalatest]   at org.scalatest.tools.Runner$$anonfun$doRunRunRunDaDoRunRun$3.apply(Runner.scala:1515)
+[scalatest]   at org.scalatest.tools.Runner$$anonfun$doRunRunRunDaDoRunRun$3.apply(Runner.scala:1512)
+[scalatest]   at scala.collection.LinearSeqOptimized$class.foreach(LinearSeqOptimized.scala:61)
+[scalatest]   at scala.collection.immutable.List.foreach(List.scala:45)
+[scalatest]   at org.scalatest.tools.Runner$.doRunRunRunDaDoRunRun(Runner.scala:1512)
+[scalatest]   at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:594)
+[scalatest]   at org.scalatest.tools.Runner$$anonfun$runOptionallyWithPassFailReporter$2.apply(Runner.scala:593)
+[scalatest]   at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1556)
+
 */
   def getStackDepthForPropCheck(fileName: String, methodName: String): Int = {
 
