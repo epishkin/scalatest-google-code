@@ -677,51 +677,6 @@ $arbShrinks$
   }
 
   /**
-   * Performs a property check by applying the specified property check function to arguments
-   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
-   * <code>PropertyGenConfig</code> object with explicitly passed parameter values.
-   *
-   * <p>
-   * Here's an example:
-   * </p>
-   *
-   * <pre>
-   * forAll (maxSize(1), maxSize(10)) { ($namesAndTypes$) =>
-   *   $sumOfArgLengths$ should equal (($sumOfArgs$).length)
-   * }
-   * </pre>
-   *
-   * @param fun the property check function to apply to the generated arguments
-   */
-  def forAll[$alphaUpper$](configParams: PropertyCheckConfigParam*): Fred$n$[$alphaUpper$] = new Fred$n$(configParams)
-
-  class Fred$n$[$alphaUpper$](configParams: Seq[PropertyCheckConfigParam]) {
-    def apply(fun: ($alphaUpper$) => Unit)
-      (implicit
-        config: PropertyCheckConfig,
-$arbShrinks$
-      ) {
-        val propF = { ($argType$) =>
-          val (unmetCondition, exception) =
-            try {
-              fun($alphaLower$)
-              (false, None)
-            }
-            catch {
-              case e: UnmetConditionException => (true, None)
-              case e => (false, Some(e))
-            }
-          !unmetCondition ==> (
-            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
-          )
-        }
-        val prop = Prop.forAll(propF)
-        val params = getParams(configParams, config)
-        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll")
-    }
-  }
-
-  /**
    * Performs a property check by applying the specified property check function with the specified
    * argument names to arguments supplied by implicitly passed generators.
    *
