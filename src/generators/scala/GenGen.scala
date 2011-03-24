@@ -176,7 +176,8 @@ import org.scalacheck.Shrink
 import org.scalacheck.Prop
 import org.scalacheck.Gen
 import org.scalacheck.Prop._
-import org.scalacheck.Test.defaultParams
+import org.scalacheck.Test.Params
+import Helper.getParams
 
 /**
  * Trait containing methods that faciliate property checks against generated data using ScalaCheck.
@@ -260,6 +261,11 @@ import org.scalacheck.Test.defaultParams
  * @author Bill Venners
  */
 trait GeneratorDrivenPropertyChecks extends Whenever {
+
+  /**
+   * Implicit <code>PropertyCheckConfig</code> value providing default configuration values. 
+   */
+  implicit val generatorDrivenConfig = PropertyCheckConfig()
 """
 
 val propertyCheckForAllTemplate = """
@@ -281,6 +287,7 @@ val propertyCheckForAllTemplate = """
    */
   def forAll[$alphaUpper$](fun: ($alphaUpper$) => Unit)
     (implicit
+      config: PropertyCheckConfig,
 $arbShrinks$
     ) {
       val propF = { ($argType$) =>
@@ -298,7 +305,8 @@ $arbShrinks$
         )
       }
       val prop = Prop.forAll(propF)
-      Checkers.doCheck(prop, defaultParams, "GeneratorDrivenPropertyChecks.scala", "forAll")
+      val params = getParams(Seq(), config)
+      Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll")
   }
 
   /**
@@ -317,8 +325,9 @@ $arbShrinks$
    *
    * @param fun the property check function to apply to the generated arguments
    */
-  def forAll[$alphaUpper$]($argNameNamesAndTypes$)(fun: ($alphaUpper$) => Unit)
+  def forAll[$alphaUpper$]($argNameNamesAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Unit)
     (implicit
+      config: PropertyCheckConfig,
 $arbShrinks$
     ) {
       val propF = { ($argType$) =>
@@ -336,7 +345,8 @@ $arbShrinks$
         )
       }
       val prop = Prop.forAll(propF)
-      Checkers.doCheck(prop, defaultParams, "GeneratorDrivenPropertyChecks.scala", "forAll", Some(List($argNameNames$)))
+      val params = getParams(configParams, config)
+      Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll", Some(List($argNameNames$)))
   }
 
   /**
@@ -362,8 +372,9 @@ $arbShrinks$
    *
    * @param fun the property check function to apply to the generated arguments
    */
-  def forAll[$alphaUpper$]($genArgsAndTypes$)(fun: ($alphaUpper$) => Unit)
+  def forAll[$alphaUpper$]($genArgsAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Unit)
     (implicit
+      config: PropertyCheckConfig,
 $shrinks$
     ) {
       val propF = { ($argType$) =>
@@ -381,7 +392,8 @@ $shrinks$
         )
       }
       val prop = Prop.forAll($genArgs$)(propF)
-      Checkers.doCheck(prop, defaultParams, "GeneratorDrivenPropertyChecks.scala", "forAll")
+      val params = getParams(configParams, config)
+      Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll")
   }
 
   /**
@@ -407,8 +419,9 @@ $shrinks$
    *
    * @param fun the property check function to apply to the generated arguments
    */
-  def forAll[$alphaUpper$]($nameAndGenArgsAndTypes$)(fun: ($alphaUpper$) => Unit)
+  def forAll[$alphaUpper$]($nameAndGenArgsAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Unit)
     (implicit
+      config: PropertyCheckConfig,
 $shrinks$
     ) {
 
@@ -429,7 +442,8 @@ $tupleBusters$
         )
       }
       val prop = Prop.forAll($genArgs$)(propF)
-      Checkers.doCheck(prop, defaultParams, "GeneratorDrivenPropertyChecks.scala", "forAll")
+      val params = getParams(configParams, config)
+      Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll")
   }
 """
 
