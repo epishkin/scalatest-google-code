@@ -260,12 +260,379 @@ import Helper.getParams
  *
  * @author Bill Venners
  */
-trait GeneratorDrivenPropertyChecks extends Whenever {
+trait GeneratorDrivenPropertyChecks extends Whenever with OptionalConfigParams {
 
   /**
    * Implicit <code>PropertyCheckConfig</code> value providing default configuration values. 
    */
   implicit val generatorDrivenConfig = PropertyCheckConfig()
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with explicitly passed parameter values.
+   *
+   * <p>
+   * This method creates a <code>ConfiguredPropertyCheck</code> object that has six overloaded apply methods
+   * that take a function. Thus it is used with functions of all six arities.
+   * Here are some examples:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String) =>
+   *   a.length should equal ((a).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String) =>
+   *   a.length + b.length should equal ((a + b).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String) =>
+   *   a.length + b.length + c.length should equal ((a + b + c).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String) =>
+   *   a.length + b.length + c.length + d.length should equal ((a + b + c + d).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String) =>
+   *   a.length + b.length + c.length + d.length + e.length should equal ((a + b + c + d + e).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String, f: String) =>
+   *   a.length + b.length + c.length + d.length + e.length + f.length should equal ((a + b + c + d + e + f).length)
+   * }
+   * </pre>
+   *
+   * @param configParams a variable length list of <code>PropertyCheckConfigParam</code> objects that should override corresponding
+   *   values in the <code>PropertyCheckConfig</code> implicitly passed to the <code>apply</code> methods of the <code>ConfiguredPropertyCheck</code>
+   *   object returned by this method.
+   */
+  def forAll(configParams: PropertyCheckConfigParam*): ConfiguredPropertyCheck = new ConfiguredPropertyCheck(configParams)
+
+  /**
+   * Performs a configured property checks by applying property check functions passed to its <code>apply</code> methods to arguments
+   * supplied by implicitly passed generators, modifying the values in the 
+   * <code>PropertyGenConfig</code> object passed implicitly to its <code>apply</code> methods with parameter values passed to its constructor.
+   *
+   * <p>
+   * Instances of this class are returned by trait <code>GeneratorDrivenPropertyChecks</code> <code>forAll</code> method that accepts a variable length
+   * argument list of <code>PropertyCheckConfigParam</code> objects. Thus it is used with functions of all six arities.
+   * Here are some examples:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String) =>
+   *   a.length should equal ((a).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String) =>
+   *   a.length + b.length should equal ((a + b).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String) =>
+   *   a.length + b.length + c.length should equal ((a + b + c).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String) =>
+   *   a.length + b.length + c.length + d.length should equal ((a + b + c + d).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String) =>
+   *   a.length + b.length + c.length + d.length + e.length should equal ((a + b + c + d + e).length)
+   * }
+   *
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String, f: String) =>
+   *   a.length + b.length + c.length + d.length + e.length + f.length should equal ((a + b + c + d + e + f).length)
+   * }
+   * </pre>
+   *
+   * <p>
+   * In the first example above, the <code>ConfiguredPropertyCheck</code> object is returned by:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10))
+   * </pre>
+   *
+   * <p>
+   * The code that follows is an invocation of one of the <code>ConfiguredPropertyCheck</code> <code>apply</code> methods:
+   * </p>
+   *
+   * <pre>
+   * { (a: String) =>
+   *   a.length should equal ((a).length)
+   * }
+   * </pre>
+   *
+   * @param configParams a variable length list of <code>PropertyCheckConfigParam</code> objects that should override corresponding
+   *   values in the <code>PropertyCheckConfig</code> implicitly passed to the <code>apply</code> methods of instances of this class.
+   *
+   * @author Bill Venners
+  */
+  class ConfiguredPropertyCheck(configParams: Seq[PropertyCheckConfigParam]) {
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with parameter values passed to this object's constructor.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String) =>
+   *   a.length should equal ((a).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+    def apply[A](fun: (A) => Unit)
+      (implicit
+        config: PropertyCheckConfig,
+      arbA: Arbitrary[A], shrA: Shrink[A]
+      ) {
+        val propF = { (a: A) =>
+          val (unmetCondition, exception) =
+            try {
+              fun(a)
+              (false, None)
+            }
+            catch {
+              case e: UnmetConditionException => (true, None)
+              case e => (false, Some(e))
+            }
+          !unmetCondition ==> (
+            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+          )
+        }
+        val prop = Prop.forAll(propF)
+        val params = getParams(configParams, config)
+        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "apply")
+    }
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with parameter values passed to this object's constructor.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String) =>
+   *   a.length + b.length should equal ((a + b).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+    def apply[A, B](fun: (A, B) => Unit)
+      (implicit
+        config: PropertyCheckConfig,
+      arbA: Arbitrary[A], shrA: Shrink[A],
+      arbB: Arbitrary[B], shrB: Shrink[B]
+      ) {
+        val propF = { (a: A, b: B) =>
+          val (unmetCondition, exception) =
+            try {
+              fun(a, b)
+              (false, None)
+            }
+            catch {
+              case e: UnmetConditionException => (true, None)
+              case e => (false, Some(e))
+            }
+          !unmetCondition ==> (
+            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+          )
+        }
+        val prop = Prop.forAll(propF)
+        val params = getParams(configParams, config)
+        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "apply")
+    }
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with parameter values passed to this object's constructor.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String) =>
+   *   a.length + b.length + c.length should equal ((a + b + c).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+    def apply[A, B, C](fun: (A, B, C) => Unit)
+      (implicit
+        config: PropertyCheckConfig,
+      arbA: Arbitrary[A], shrA: Shrink[A],
+      arbB: Arbitrary[B], shrB: Shrink[B],
+      arbC: Arbitrary[C], shrC: Shrink[C]
+      ) {
+        val propF = { (a: A, b: B, c: C) =>
+          val (unmetCondition, exception) =
+            try {
+              fun(a, b, c)
+              (false, None)
+            }
+            catch {
+              case e: UnmetConditionException => (true, None)
+              case e => (false, Some(e))
+            }
+          !unmetCondition ==> (
+            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+          )
+        }
+        val prop = Prop.forAll(propF)
+        val params = getParams(configParams, config)
+        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "apply")
+    }
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with parameter values passed to this object's constructor.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String) =>
+   *   a.length + b.length + c.length + d.length should equal ((a + b + c + d).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+    def apply[A, B, C, D](fun: (A, B, C, D) => Unit)
+      (implicit
+        config: PropertyCheckConfig,
+      arbA: Arbitrary[A], shrA: Shrink[A],
+      arbB: Arbitrary[B], shrB: Shrink[B],
+      arbC: Arbitrary[C], shrC: Shrink[C],
+      arbD: Arbitrary[D], shrD: Shrink[D]
+      ) {
+        val propF = { (a: A, b: B, c: C, d: D) =>
+          val (unmetCondition, exception) =
+            try {
+              fun(a, b, c, d)
+              (false, None)
+            }
+            catch {
+              case e: UnmetConditionException => (true, None)
+              case e => (false, Some(e))
+            }
+          !unmetCondition ==> (
+            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+          )
+        }
+        val prop = Prop.forAll(propF)
+        val params = getParams(configParams, config)
+        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "apply")
+    }
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with parameter values passed to this object's constructor.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String) =>
+   *   a.length + b.length + c.length + d.length + e.length should equal ((a + b + c + d + e).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+    def apply[A, B, C, D, E](fun: (A, B, C, D, E) => Unit)
+      (implicit
+        config: PropertyCheckConfig,
+      arbA: Arbitrary[A], shrA: Shrink[A],
+      arbB: Arbitrary[B], shrB: Shrink[B],
+      arbC: Arbitrary[C], shrC: Shrink[C],
+      arbD: Arbitrary[D], shrD: Shrink[D],
+      arbE: Arbitrary[E], shrE: Shrink[E]
+      ) {
+        val propF = { (a: A, b: B, c: C, d: D, e: E) =>
+          val (unmetCondition, exception) =
+            try {
+              fun(a, b, c, d, e)
+              (false, None)
+            }
+            catch {
+              case e: UnmetConditionException => (true, None)
+              case e => (false, Some(e))
+            }
+          !unmetCondition ==> (
+            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+          )
+        }
+        val prop = Prop.forAll(propF)
+        val params = getParams(configParams, config)
+        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "apply")
+    }
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with parameter values passed to this object's constructor.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll (minSize(1), maxSize(10)) { (a: String, b: String, c: String, d: String, e: String, f: String) =>
+   *   a.length + b.length + c.length + d.length + e.length + f.length should equal ((a + b + c + d + e + f).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+    def apply[A, B, C, D, E, F](fun: (A, B, C, D, E, F) => Unit)
+      (implicit
+        config: PropertyCheckConfig,
+      arbA: Arbitrary[A], shrA: Shrink[A],
+      arbB: Arbitrary[B], shrB: Shrink[B],
+      arbC: Arbitrary[C], shrC: Shrink[C],
+      arbD: Arbitrary[D], shrD: Shrink[D],
+      arbE: Arbitrary[E], shrE: Shrink[E],
+      arbF: Arbitrary[F], shrF: Shrink[F]
+      ) {
+        val propF = { (a: A, b: B, c: C, d: D, e: E, f: F) =>
+          val (unmetCondition, exception) =
+            try {
+              fun(a, b, c, d, e, f)
+              (false, None)
+            }
+            catch {
+              case e: UnmetConditionException => (true, None)
+              case e => (false, Some(e))
+            }
+          !unmetCondition ==> (
+            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+          )
+        }
+        val prop = Prop.forAll(propF)
+        val params = getParams(configParams, config)
+        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "apply")
+    }
+  }
 """
 
 val propertyCheckForAllTemplate = """
@@ -307,6 +674,51 @@ $arbShrinks$
       val prop = Prop.forAll(propF)
       val params = getParams(Seq(), config)
       Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll")
+  }
+
+  /**
+   * Performs a property check by applying the specified property check function to arguments
+   * supplied by implicitly passed generators, modifying the values in the implicitly passed 
+   * <code>PropertyGenConfig</code> object with explicitly passed parameter values.
+   *
+   * <p>
+   * Here's an example:
+   * </p>
+   *
+   * <pre>
+   * forAll (maxSize(1), maxSize(10)) { ($namesAndTypes$) =>
+   *   $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+   * }
+   * </pre>
+   *
+   * @param fun the property check function to apply to the generated arguments
+   */
+  def forAll[$alphaUpper$](configParams: PropertyCheckConfigParam*): Fred$n$[$alphaUpper$] = new Fred$n$(configParams)
+
+  class Fred$n$[$alphaUpper$](configParams: Seq[PropertyCheckConfigParam]) {
+    def apply(fun: ($alphaUpper$) => Unit)
+      (implicit
+        config: PropertyCheckConfig,
+$arbShrinks$
+      ) {
+        val propF = { ($argType$) =>
+          val (unmetCondition, exception) =
+            try {
+              fun($alphaLower$)
+              (false, None)
+            }
+            catch {
+              case e: UnmetConditionException => (true, None)
+              case e => (false, Some(e))
+            }
+          !unmetCondition ==> (
+            if (exception.isEmpty) Prop.passed else Prop.exception(exception.get)
+          )
+        }
+        val prop = Prop.forAll(propF)
+        val params = getParams(configParams, config)
+        Checkers.doCheck(prop, params, "GeneratorDrivenPropertyChecks.scala", "forAll")
+    }
   }
 
   /**
@@ -524,6 +936,71 @@ val generatorSuiteTemplate = """
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       forAll ($nameGenTuples$) { ($namesAndTypes$) =>
+        $sumOfArgLengths$ should be < 0
+      }
+    }
+  }
+
+  // Same thing, but with config params
+  test("generator-driven property that takes $n$ args, which succeeds, with config params") {
+
+    forAll (minSize(10), maxSize(20)) { ($namesAndTypes$) =>
+      $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+    }
+  }
+
+  test("generator-driven property that takes $n$ args, which fails, with config params") {
+
+    intercept[GeneratorDrivenPropertyCheckFailedException] {
+      forAll (minSize(10), maxSize(20)) { ($namesAndTypes$) =>
+        $sumOfArgLengths$ should be < 0
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, which succeeds, with config params") {
+
+    forAll ($argNames$, minSize(10), maxSize(20)) { ($namesAndTypes$) =>
+      $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, which fails, with config params") {
+
+    intercept[GeneratorDrivenPropertyCheckFailedException] {
+      forAll ($argNames$, minSize(10), maxSize(20)) { ($namesAndTypes$) =>
+        $sumOfArgLengths$ should be < 0
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, which succeeds, with config params") {
+
+    forAll ($famousArgs$, minSize(10), maxSize(20)) { ($namesAndTypes$) =>
+      $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, which fails, with config params") {
+
+    intercept[GeneratorDrivenPropertyCheckFailedException] {
+      forAll ($famousArgs$, minSize(10), maxSize(20)) { ($namesAndTypes$) =>
+        $sumOfArgLengths$ should be < 0
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, which succeeds, with config params") {
+
+    forAll ($nameGenTuples$, minSize(10), maxSize(20)) { ($namesAndTypes$) =>
+      $sumOfArgLengths$ should equal (($sumOfArgs$).length)
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, which fails, with config params") {
+
+    intercept[GeneratorDrivenPropertyCheckFailedException] {
+      forAll ($nameGenTuples$, minSize(10), maxSize(20)) { ($namesAndTypes$) =>
         $sumOfArgLengths$ should be < 0
       }
     }
