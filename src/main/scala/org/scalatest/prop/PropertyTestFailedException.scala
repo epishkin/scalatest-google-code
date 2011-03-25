@@ -18,11 +18,11 @@ package prop
 
 /**
  * <strong>This exception class has been deprecated and will be removed in a future version of ScalaTest. Please
- * change uses of this class to use <code>ScalaCheckPropertyCheckFailedException</code> instead.</strong>
+ * change uses of this class to use <code>GeneratorDrivenPropertyCheckFailedException</code> instead.</strong>
  *
  * @author Bill Venners
  */
-@deprecated
+@deprecated("Please use GeneratorDrivenPropertyCheckFailedException instead.")
 class PropertyTestFailedException(
   message: String,
   cause: Option[Throwable],
