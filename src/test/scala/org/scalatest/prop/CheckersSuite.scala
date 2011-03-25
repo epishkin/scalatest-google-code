@@ -91,7 +91,7 @@ class CheckersSuite extends Suite with Checkers {
       (list: List[Int]) => {
         val stack = new Stack[Int]
         for (element <- list) stack.push(element)
-        stack.elements.toList == list.reverse
+        stack.iterator.toList == list.reverse
       }
     }
   }
@@ -190,7 +190,7 @@ class CheckersSuite extends Suite with Checkers {
       (list: List[Int]) => {
         val stack = new Stack[Int]
         for (element <- list) stack.push(element)
-        stack.elements.toList == list.reverse
+        stack.iterator.toList == list.reverse
       }
     }
   }
