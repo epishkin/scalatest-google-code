@@ -260,7 +260,7 @@ import Helper.getParams
  *
  * @author Bill Venners
  */
-trait GeneratorDrivenPropertyChecks extends Whenever with OptionalConfigParams {
+trait GeneratorDrivenPropertyChecks extends Whenever with ConfigMethods {
 
   /**
    * Implicit <code>PropertyCheckConfig</code> value providing default configuration values. 

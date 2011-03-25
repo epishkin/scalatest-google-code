@@ -23,7 +23,7 @@ package org.scalatest.prop
  *
  * @author Bill Venners
  */
-trait OptionalConfigParams {
+trait ConfigMethods {
 
   /**
    * Returns a <code>MinSuccessful</code> property check configuration parameter containing the passed value, which specifies the minimum number of successful
@@ -80,4 +80,4 @@ trait OptionalConfigParams {
  * an alternative to mixing it in. One use case is to import <code>OptionalConfigParams</code> members so you can use
  * them in the Scala interpreter.
  */
-object OptionalConfigParams extends OptionalConfigParams
+object ConfigMethods extends ConfigMethods
