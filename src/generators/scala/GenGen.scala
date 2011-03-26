@@ -821,6 +821,7 @@ class GeneratorDrivenSuite extends FunSuite with GeneratorDrivenPropertyChecks w
 """
 
 val generatorSuiteTemplate = """
+
   test("generator-driven property that takes $n$ args, which succeeds") {
 
     forAll { ($namesAndTypes$) =>
@@ -949,7 +950,7 @@ val generatorSuiteTemplate = """
       }
     }
   }
-/*
+
   // Same thing, but set minSuccessful to 5 with param, prop fails after 5
   test("generator-driven property that takes $n$ args, which succeeds, with minSuccessful param set to 5") {
 
@@ -1216,7 +1217,7 @@ val generatorSuiteTemplate = """
       }
     }
   }
-*/
+
   // Same thing, but set default maxSkipped to 5, prop fails after 5
   test("generator-driven property that takes $n$ args, which succeeds, with default maxSkipped set to 5") {
 
@@ -1321,6 +1322,295 @@ val generatorSuiteTemplate = """
       }
     }
   }
+
+  // set minSize > maxSize with (param, param) (intercept IAE)
+  test("generator-driven property that takes $n$ args, which should throw IAE because manSize > maxSize, specified as (param, param)") {
+
+    intercept[IllegalArgumentException] {
+      forAll (minSize(5), maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, which should throw IAE because manSize > maxSize, specified as (param, param)") {
+
+    intercept[IllegalArgumentException] {
+      forAll ($argNames$, minSize(5), maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, which should throw IAE because manSize > maxSize, specified as (param, param)") {
+
+    intercept[IllegalArgumentException] {
+      forAll ($famousArgs$, minSize(5), maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, which should throw IAE because manSize > maxSize, specified as (param, param)") {
+
+    intercept[IllegalArgumentException] {
+      forAll ($nameGenTuples$, minSize(5), maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  // set minSize > maxSize with (param, default) (intercept IAE)
+  test("generator-driven property that takes $n$ args, which should throw IAE because manSize > maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 4)
+
+    intercept[IllegalArgumentException] {
+      forAll (minSize(5)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, which should throw IAE because manSize > maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 4)
+
+    intercept[IllegalArgumentException] {
+      forAll ($argNames$, minSize(5)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, which should throw IAE because manSize > maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 4)
+
+    intercept[IllegalArgumentException] {
+      forAll ($famousArgs$, minSize(5)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, which should throw IAE because manSize > maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 4)
+
+    intercept[IllegalArgumentException] {
+      forAll ($nameGenTuples$, minSize(5)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  // set minSize > maxSize with (default, param) (intercept IAE)
+  test("generator-driven property that takes $n$ args, which should throw IAE because manSize > maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    intercept[IllegalArgumentException] {
+      forAll (maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, which should throw IAE because manSize > maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    intercept[IllegalArgumentException] {
+      forAll ($argNames$, maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, which should throw IAE because manSize > maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    intercept[IllegalArgumentException] {
+      forAll ($famousArgs$, maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, which should throw IAE because manSize > maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    intercept[IllegalArgumentException] {
+      forAll ($nameGenTuples$, maxSize(4)) { ($namesAndTypes$) =>
+        1 + 1 should equal (2)
+      }
+    }
+  }
+
+/* THESE DONT WORK. I'VE ASKED RICKARD WHAT'S UP
+  // set minSize == maxSize with (param, param) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (param, param)") {
+
+    forAll (minSize(5), maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (param, param)") {
+
+    forAll ($argNames$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (param, param)") {
+
+    forAll ($famousArgs$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (param, param)") {
+
+    forAll ($nameGenTuples$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  // set minSize == maxSize with (param, default) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
+
+    forAll (minSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
+
+    forAll ($argNames$, minSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
+
+    forAll ($famousArgs$, minSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
+
+    forAll ($nameGenTuples$, minSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  // set minSize == maxSize with (default, param) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    forAll (maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    forAll ($argNames$, maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    forAll ($famousArgs$, maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    forAll ($nameGenTuples$, maxSize(5)) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  // set minSize == maxSize with (default, default) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+
+    forAll { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+
+    forAll ($argNames$) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+
+    forAll ($famousArgs$) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+
+    forAll ($nameGenTuples$) { ($namesAndTypes$) =>
+$lengthAssertions$
+    }
+  }
+*/
 """
 
 // For some reason that I don't understand, I need to leave off the stars before the <pre> when 
@@ -1424,6 +1714,7 @@ val generatorSuiteTemplate = """
         val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
         val famousArgs = List.fill(i)("famousLastWords").mkString(", ")
         val nameGenTuples = alpha.take(i).map("(famousLastWords, \"" + _ + "\")").mkString(", ")
+        val lengthAssertions = alpha.take(i).map("      " + _ + ".length should equal (5)").mkString("\n")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
@@ -1436,6 +1727,7 @@ val generatorSuiteTemplate = """
         st.setAttribute("listOfIs", listOfIs)
         st.setAttribute("famousArgs", famousArgs)
         st.setAttribute("nameGenTuples", nameGenTuples)
+        st.setAttribute("lengthAssertions", lengthAssertions)
         bw.write(st.toString)
       }
 
