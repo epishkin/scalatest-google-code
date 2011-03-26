@@ -18,14 +18,13 @@ package org.scalatest.prop
 import org.scalacheck.Test.Params
 
 /**
- * Trait providing methods returning <code>PropertyCheckConfigParam</code> objects that can be used to
- * override the configuration values provided by the implicit <code>PropertyCheckConfig</code> object
- * passed to the <code>forAll</code> methods of traits <code>GeneratorDrivenPropertyChecks</code> (for ScalaTest-style
+ * Trait providing methods and classes used to configure property checks provided by the
+ * the <code>forAll</code> methods of traits <code>GeneratorDrivenPropertyChecks</code> (for ScalaTest-style
  * property checks) and <code>Checkers</code> (for ScalaCheck-style property checks).
  *
  * @author Bill Venners
  */
-trait ConfigMethods {
+trait Configuration {
 
   /**
    * Configuration object for property checks.
@@ -336,8 +335,8 @@ trait ConfigMethods {
 }
 
 /**
- * Companion object that facilitates the importing of <code>OptionalConfigParams</code> members as
- * an alternative to mixing it in. One use case is to import <code>OptionalConfigParams</code> members so you can use
+ * Companion object that facilitates the importing of <code>Configuration</code> members as
+ * an alternative to mixing it in. One use case is to import <code>Configuration</code> members so you can use
  * them in the Scala interpreter.
  */
-object ConfigMethods extends ConfigMethods
+object Configuration extends Configuration

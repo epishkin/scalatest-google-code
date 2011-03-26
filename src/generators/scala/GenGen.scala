@@ -259,7 +259,7 @@ import org.scalacheck.Test.Params
  *
  * @author Bill Venners
  */
-trait GeneratorDrivenPropertyChecks extends Whenever with ConfigMethods {
+trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
 
   /**
    * Implicit <code>PropertyCheckConfig</code> value providing default configuration values. 

@@ -20,7 +20,7 @@ import matchers.ShouldMatchers
 
 class HelperSuite extends FunSuite with ShouldMatchers {
 
-  import ConfigMethods._
+  import Configuration._
 
   val DefaultMinSuccessful = 9
   val PassedMinSuccessful = 3

@@ -18,9 +18,9 @@ package prop
 
 import matchers.ShouldMatchers
 
-class ConfigMethodsSuite extends FunSuite with ShouldMatchers {
+class ConfigurationSuite extends FunSuite with ShouldMatchers {
 
-  import ConfigMethods._
+  import Configuration._
 
   test("minSuccussful throws IAE if less than 1") {
     intercept[IllegalArgumentException] {

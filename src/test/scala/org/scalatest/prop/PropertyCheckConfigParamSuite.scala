@@ -18,7 +18,7 @@ package prop
 
 import matchers.ShouldMatchers
 
-import ConfigMethods._
+import Configuration._
 
 class PropertyCheckConfigParamSuite extends FunSuite with ShouldMatchers {
 
