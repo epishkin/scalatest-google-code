@@ -99,10 +99,8 @@ trait Whenever {
    *    <code>fun</code> function (<code>condition<code> is true) or throws <code>UnmetConditionException</code> (<code>condition<code> is false)
    * @param fun the function to evaluate if the specified <code>condition</code> is true
    */
-  def whenever(condition: Boolean)(fun: => Unit) {
-    if (!condition)
-      throw new UnmetConditionException
-    fun
-  }
+  def whenever(condition: Boolean)(fun: => Any): Any =
+    if (!condition) Skip else fun
 }
 
+object Skip

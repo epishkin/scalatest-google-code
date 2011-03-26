@@ -312,7 +312,6 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
         fun($alphaLower$)
       }
       catch {
-        case _: UnmetConditionException =>
         case e =>
           val ($alphaName$) = heading
 
