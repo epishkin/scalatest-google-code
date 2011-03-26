@@ -69,7 +69,8 @@ class PropertyCheckConfigSuite extends FunSuite with ShouldMatchers {
       PropertyCheckConfig(minSize = 0).minSize should be (0)
       PropertyCheckConfig(minSize = 1).minSize should be (1)
       PropertyCheckConfig(minSize = 2).minSize should be (2)
-      PropertyCheckConfig(minSize = 5678).minSize should be (5678)
+      PropertyCheckConfig(minSize = 99).minSize should be (99)
+      PropertyCheckConfig(minSize = 100).minSize should be (100)
   }
 
   test("maxSize throws IAE if less than 0") {
@@ -104,5 +105,30 @@ class PropertyCheckConfigSuite extends FunSuite with ShouldMatchers {
       PropertyCheckConfig(workers = 1).workers should be (1)
       PropertyCheckConfig(workers = 2).workers should be (2)
       PropertyCheckConfig(workers = 5678).workers should be (5678)
+  }
+
+  test("Should throw IAE if minSize > maxSize") {
+    intercept[IllegalArgumentException] {
+      PropertyCheckConfig(minSize = 5, maxSize = 4)
+    }
+  }
+
+  test("Should not throw IAE if minSize == maxSize") {
+    PropertyCheckConfig(minSize = 5, maxSize = 5)
+  }
+
+  test("Should throw IAE if specified minSize > specified maxSize") {
+    intercept[IllegalArgumentException] {
+      PropertyCheckConfig(minSize = 5, maxSize = 4)
+    }
+  }
+
+  test("Should throw IAE if specified minSize > default maxSize of 100") {
+    intercept[IllegalArgumentException] {
+      PropertyCheckConfig(minSize = 101)
+    }
+    intercept[IllegalArgumentException] {
+      PropertyCheckConfig(minSize = 200)
+    }
   }
 }
