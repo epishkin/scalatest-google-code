@@ -322,9 +322,12 @@ trait Configuration {
     if (workersTotalFound > 1)
       throw new IllegalArgumentException("can pass at most Workers config parameters, but " + workersTotalFound + " were passed")
 
+    // Adding one to maxSkipped, because I think it is easier to understand that maxSkipped means the maximum number of times
+    // allowed that skipping will occur and the property can still pass. One more skip than this number and the property will fail
+    // because of it. ScalaCheck fails at exactly maxDiscardedTests.
     Params(
       if (minSuccessful != -1) minSuccessful else config.minSuccessful,
-      if (maxSkipped != -1) maxSkipped else config.maxSkipped,
+      (if (maxSkipped != -1) maxSkipped else config.maxSkipped) + 1,
       if (minSize != -1) minSize else config.minSize,
       if (maxSize != -1) maxSize else config.maxSize,
       Params().rng,
