@@ -18,6 +18,8 @@ package prop
 
 import matchers.ShouldMatchers
 
+import ConfigMethods._
+
 class PropertyCheckConfigSuite extends FunSuite with ShouldMatchers {
 
   test("minSuccussful throws IAE if less than 1") {

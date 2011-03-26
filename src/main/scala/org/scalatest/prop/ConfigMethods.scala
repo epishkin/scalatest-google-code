@@ -15,6 +15,8 @@
  */
 package org.scalatest.prop
 
+import org.scalacheck.Test.Params
+
 /**
  * Trait providing methods returning <code>PropertyCheckConfigParam</code> objects that can be used to
  * override the configuration values provided by the implicit <code>PropertyCheckConfig</code> object
@@ -25,6 +27,205 @@ package org.scalatest.prop
  */
 trait ConfigMethods {
 
+  /**
+   * Configuration object for property checks.
+   *
+   * <p>
+   * The default values for the parameters are:
+   * </p>
+   *
+   * <table>
+   * <tr>
+   * <td>
+   * minSuccessful
+   * </td>
+   * <td>
+   * 100
+   * </td>
+   * </tr>
+   * <tr>
+   * <td>
+   * maxSkipped
+   * </td>
+   * <td>
+   * 500
+   * </td>
+   * </tr>
+   * <tr>
+   * <td>
+   * minSize
+   * </td>
+   * <td>
+   * 0
+   * </td>
+   * </tr>
+   * <tr>
+   * <td>
+   * maxSize
+   * </td>
+   * <td>
+   * 100
+   * </td>
+   * </tr>
+   * <tr>
+   * <td>
+   * workers
+   * </td>
+   * <td>
+   * 1
+   * </td>
+   * </tr>
+   * </table>
+   *
+   * @param minSuccessful the minimum number of successful property evaluations required for the property to pass.
+   * @param maxSkipped the maximum number of skipped property evaluations allowed during a property check
+   * @param minSize the minimum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
+   * @param maxSize the maximum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
+   * @param workers specifies the number of worker threads * to use during property evaluation
+   * @throws IllegalArgumentException if the specified <code>minSuccessful</code> value is less than or equal to zero,
+   *   the specified <code>maxSkipped</code> value is less than zero,
+   *   the specified <code>minSize</code> value is less than zero,
+   *   the specified <code>maxSize</code> value is less than zero, or
+   *   the specified <code>workers</code> value is less than or equal to zero.
+   *
+   * @author Bill Venners
+   */
+  case class PropertyCheckConfig(
+    minSuccessful: Int = 100,
+    maxSkipped: Int = 500,
+    minSize: Int = 0,
+    maxSize: Int = 100,
+    workers: Int = 1
+  ) {
+    require(minSuccessful > 0, "minSuccessful had value " + minSuccessful + ", but must be greater than zero")
+    require(maxSkipped >= 0, "maxSkipped had value " + maxSkipped + ", but must be greater than or equal to zero")
+    require(minSize >= 0, "minSize had value " + minSize + ", but must be greater than or equal to zero")
+    require(maxSize >= 0, "maxSize had value " + maxSize + ", but must be greater than or equal to zero")
+    require(workers > 0, "workers had value " + workers + ", but must be greater than zero")
+  }
+
+  /**
+   * Abstract class defining a family of configuration parameters for property checks.
+   * 
+   * <p>
+   * The subclasses of this abstract class are used to pass configuration information to
+   * the <code>forAll</code> methods of traits <code>PropertyChecks</code> (for ScalaTest-style
+   * property checks) and <code>Checkers</code>(for ScalaCheck-style property checks).
+   * </p>
+   *
+   * @author Bill Venners
+   */
+  sealed abstract class PropertyCheckConfigParam
+  
+  /**
+   * A <code>PropertyCheckConfigParam</code> that specifies the minimum number of successful
+   * property evaluations required for the property to pass.
+   *
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   *
+   * @author Bill Venners
+   */
+  case class MinSuccessful(value: Int) extends PropertyCheckConfigParam {
+    require(value > 0)
+  }
+  
+  /**
+   * A <code>PropertyCheckConfigParam</code> that specifies the maximum number of skipped
+   * property evaluations allowed during property evaluation.
+   *
+   * <p>
+   * In <code>GeneratorDrivenPropertyChecks</code>, a property evaluation is skipped if it throws
+   * <code>UnmetConditionException</code>, which is produce by <code>whenever</code> clause that
+   * evaluates to false. For example, consider this ScalaTest property check:
+   * </p>
+   *
+   * <pre>
+   * // forAll defined in <code>GeneratorDrivenPropertyChecks</code>
+   * forAll { (n: Int) => 
+   *   whenever (n > 0) {
+   *     doubleIt(n) should equal (n * 2)
+   *   }
+   * }
+   *
+   * </pre>
+   *
+   * <p>
+   * In the above code, whenever a non-positive <code>n</code> is passed, the property function will complete abruptly
+   * with <code>UnmetConditionException</code>.
+   * </p>
+   *
+   * <p>
+   * Simiarly, in <code>Checkers</code>, a property evaluation is skipped if the expression to the left
+   * of ScalaCheck's <code>==></code> operator is false. Here's an example:
+   * </p>
+   *
+   * <pre>
+   * // forAll defined in <code>Checkers</code>
+   * forAll { (n: Int) => 
+   *   (n > 0) ==> doubleIt(n) == (n * 2)
+   * }
+   *
+   * </pre>
+   *
+   * <p>
+   * For either kind of property check, <code>MaxSkipped</code> indicates the maximum number of skipped 
+   * evaluations that will be allowed. As soon as one past this number of evaluations indicates it needs to be skipped,
+   * the property check will fail.
+   * </p>
+   *
+   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
+   *
+   * @author Bill Venners
+   */
+  case class MaxSkipped(value: Int) extends PropertyCheckConfigParam {
+    require(value >= 0)
+  }
+  
+  /**
+   * A <code>PropertyCheckConfigParam</code> that specifies the minimum size parameter to
+   * provide to ScalaCheck, which it will use when generating objects for which size matters (such as
+   * strings or lists).
+   *
+   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
+   *
+   * @author Bill Venners
+   */
+  case class MinSize(value: Int) extends PropertyCheckConfigParam {
+    require(value >= 0)
+  }
+  
+  /**
+   * A <code>PropertyCheckConfigParam</code> that specifies the maximum size parameter to
+   * provide to ScalaCheck, which it will use when generating objects for which size matters (such as
+   * strings or lists).
+   *
+   * <p>
+   * Note that the maximum size should be greater than or equal to the minimum size. This requirement is
+   * enforced by the <code>PropertyCheckConfig</code> constructor and the <code>forAll</code> methods of
+   * traits <code>PropertyChecks</code> and <code>Checkers</code>. In other words, it is enforced at the point
+   * both a maximum and minimum size are provided together.
+   * </p>
+   * 
+   * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
+   *
+   * @author Bill Venners
+   */
+  case class MaxSize(value: Int) extends PropertyCheckConfigParam {
+    require(value >= 0)
+  }
+  
+  /**
+   * A <code>PropertyCheckConfigParam</code> that specifies the number of worker threads
+   * to use when evaluating a property.
+   *
+   * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
+   *
+   * @author Bill Venners
+   */
+  case class Workers(value: Int) extends PropertyCheckConfigParam {
+    require(value > 0)
+  }
+  
   /**
    * Returns a <code>MinSuccessful</code> property check configuration parameter containing the passed value, which specifies the minimum number of successful
    * property evaluations required for the property to pass.
@@ -73,6 +274,65 @@ trait ConfigMethods {
    * @throws IllegalArgumentException if specified <code>value</code> is less than or equal to zero.
    */
   def workers(value: Int): Workers = new Workers(value)
+
+  private[prop] def getParams(
+    configParams: Seq[PropertyCheckConfigParam],
+    config: PropertyCheckConfig
+  ): Params = {
+
+    var minSuccessful = -1
+    var maxSkipped = -1
+    var minSize = -1
+    var maxSize = -1
+    var workers = -1
+
+    var minSuccessfulTotalFound = 0
+    var maxSkippedTotalFound = 0
+    var minSizeTotalFound = 0
+    var maxSizeTotalFound = 0
+    var workersTotalFound = 0
+
+    for (configParam <- configParams) {
+      configParam match {
+        case param: MinSuccessful =>
+          minSuccessful = param.value
+          minSuccessfulTotalFound += 1
+        case param: MaxSkipped =>
+          maxSkipped = param.value
+          maxSkippedTotalFound += 1
+        case param: MinSize =>
+          minSize = param.value
+          minSizeTotalFound += 1
+        case param: MaxSize =>
+          maxSize = param.value
+          maxSizeTotalFound += 1
+        case param: Workers =>
+          workers = param.value
+          workersTotalFound += 1
+      }
+    }
+  
+    if (minSuccessfulTotalFound > 1)
+      throw new IllegalArgumentException("can pass at most MinSuccessful config parameters, but " + minSuccessfulTotalFound + " were passed")
+    if (maxSkippedTotalFound > 1)
+      throw new IllegalArgumentException("can pass at most MaxSkipped config parameters, but " + maxSkippedTotalFound + " were passed")
+    if (minSizeTotalFound > 1)
+      throw new IllegalArgumentException("can pass at most MinSize config parameters, but " + minSizeTotalFound + " were passed")
+    if (maxSizeTotalFound > 1)
+      throw new IllegalArgumentException("can pass at most MaxSize config parameters, but " + maxSizeTotalFound + " were passed")
+    if (workersTotalFound > 1)
+      throw new IllegalArgumentException("can pass at most Workers config parameters, but " + workersTotalFound + " were passed")
+
+    Params(
+      if (minSuccessful != -1) minSuccessful else config.minSuccessful,
+      if (maxSkipped != -1) maxSkipped else config.maxSkipped,
+      if (minSize != -1) minSize else config.minSize,
+      if (maxSize != -1) maxSize else config.maxSize,
+      Params().rng,
+      if (workers != -1) workers else config.workers,
+      Params().testCallback
+    )
+  }
 }
 
 /**
