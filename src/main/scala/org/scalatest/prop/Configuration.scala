@@ -84,7 +84,8 @@ trait Configuration {
    * @throws IllegalArgumentException if the specified <code>minSuccessful</code> value is less than or equal to zero,
    *   the specified <code>maxSkipped</code> value is less than zero,
    *   the specified <code>minSize</code> value is less than zero,
-   *   the specified <code>maxSize</code> value is less than zero, or
+   *   the specified <code>maxSize</code> value is less than zero,
+   *   the specified <code>minSize</code> is greater than the specified or default value of <code>maxSize</code>, or
    *   the specified <code>workers</code> value is less than or equal to zero.
    *
    * @author Bill Venners
@@ -100,6 +101,7 @@ trait Configuration {
     require(maxSkipped >= 0, "maxSkipped had value " + maxSkipped + ", but must be greater than or equal to zero")
     require(minSize >= 0, "minSize had value " + minSize + ", but must be greater than or equal to zero")
     require(maxSize >= 0, "maxSize had value " + maxSize + ", but must be greater than or equal to zero")
+    require(minSize <= maxSize, "minSize had value " + minSize + ", which must be less than or equal to maxSize, which had value " + maxSize)
     require(workers > 0, "workers had value " + workers + ", but must be greater than zero")
   }
 
