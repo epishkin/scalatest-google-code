@@ -254,7 +254,7 @@ import org.scalacheck.Test.Params
  * <code>UnmetConditionException</code>,
  * which is thrown by the <code>whenever</code> method (also defined in this trait) to indicate
  * a condition required by the property function is not met by a row
- * of passed data, will simply cause <code>forAll</code> to skip that row of data.
+ * of passed data, will simply cause <code>forAll</code> to discard that row of data.
  * </p>
  *
  * @author Bill Venners
@@ -1147,92 +1147,92 @@ val generatorSuiteTemplate = """
     }
   }
 
-  // Same thing, but set maxSkipped to 5 with param, prop fails after 5
-  test("generator-driven property that takes $n$ args, which succeeds, with maxSkipped param set to 5") {
+  // Same thing, but set maxDiscarded to 5 with param, prop fails after 5
+  test("generator-driven property that takes $n$ args, which succeeds, with maxDiscarded param set to 5") {
 
     var i = 0
-    forAll (maxSkipped(5)) { ($namesAndTypes$) =>
+    forAll (maxDiscarded(5)) { ($namesAndTypes$) =>
       i += 1
       whenever (i > 5) { 1 + 1 should equal (2) }
     }
   }
 
-  test("generator-driven property that takes $n$ args, which fails, with maxSkipped param set to 5") {
+  test("generator-driven property that takes $n$ args, which fails, with maxDiscarded param set to 5") {
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
-      forAll (maxSkipped(5)) { ($namesAndTypes$) =>
+      forAll (maxDiscarded(5)) { ($namesAndTypes$) =>
         i += 1
         whenever (i > 6) { 1 + 1 should equal (2) }
       }
     }
   }
 
-  test("generator-driven property that takes $n$ named args, which succeeds, with maxSkipped param set to 5") {
+  test("generator-driven property that takes $n$ named args, which succeeds, with maxDiscarded param set to 5") {
 
     var i = 0
-    forAll ($argNames$, maxSkipped(5)) { ($namesAndTypes$) =>
+    forAll ($argNames$, maxDiscarded(5)) { ($namesAndTypes$) =>
       i += 1
       whenever (i > 5) { 1 + 1 should equal (2) }
     }
   }
 
-  test("generator-driven property that takes $n$ named args, which fails, with maxSkipped param set to 5") {
+  test("generator-driven property that takes $n$ named args, which fails, with maxDiscarded param set to 5") {
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
-      forAll ($argNames$, maxSkipped(5)) { ($namesAndTypes$) =>
+      forAll ($argNames$, maxDiscarded(5)) { ($namesAndTypes$) =>
         i += 1
         whenever (i > 6) { 1 + 1 should equal (2) }
       }
     }
   }
 
-  test("generator-driven property that takes $n$ args and generators, which succeeds, with maxSkipped param set to 5") {
+  test("generator-driven property that takes $n$ args and generators, which succeeds, with maxDiscarded param set to 5") {
 
     var i = 0
-    forAll ($famousArgs$, maxSkipped(5)) { ($namesAndTypes$) =>
+    forAll ($famousArgs$, maxDiscarded(5)) { ($namesAndTypes$) =>
       i += 1
       whenever (i > 5) { 1 + 1 should equal (2) }
     }
   }
 
-  test("generator-driven property that takes $n$ args and generators, which fails, with maxSkipped param set to 5") {
+  test("generator-driven property that takes $n$ args and generators, which fails, with maxDiscarded param set to 5") {
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
-      forAll ($famousArgs$, maxSkipped(5)) { ($namesAndTypes$) =>
+      forAll ($famousArgs$, maxDiscarded(5)) { ($namesAndTypes$) =>
         i += 1
         whenever (i > 6) { 1 + 1 should equal (2) }
       }
     }
   }
 
-  test("generator-driven property that takes $n$ named args and generators, which succeeds, with maxSkipped param set to 5") {
+  test("generator-driven property that takes $n$ named args and generators, which succeeds, with maxDiscarded param set to 5") {
 
     var i = 0
-    forAll ($nameGenTuples$, maxSkipped(5)) { ($namesAndTypes$) =>
+    forAll ($nameGenTuples$, maxDiscarded(5)) { ($namesAndTypes$) =>
       i += 1
       whenever (i > 5) { 1 + 1 should equal (2) }
     }
   }
 
-  test("generator-driven property that takes $n$ named args and generators, which fails, with maxSkipped param set to 5") {
+  test("generator-driven property that takes $n$ named args and generators, which fails, with maxDiscarded param set to 5") {
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
-      forAll ($nameGenTuples$, maxSkipped(5)) { ($namesAndTypes$) =>
+      forAll ($nameGenTuples$, maxDiscarded(5)) { ($namesAndTypes$) =>
         i += 1
         whenever (i > 6) { 1 + 1 should equal (2) }
       }
     }
   }
 
-  // Same thing, but set default maxSkipped to 5, prop fails after 5
-  test("generator-driven property that takes $n$ args, which succeeds, with default maxSkipped set to 5") {
+  // Same thing, but set default maxDiscarded to 5, prop fails after 5
+  test("generator-driven property that takes $n$ args, which succeeds, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     var i = 0
     forAll { ($namesAndTypes$) =>
@@ -1241,10 +1241,10 @@ val generatorSuiteTemplate = """
     }
   }
 
-  test("generator-driven property that takes $n$ args, which fails, with default maxSkipped set to 5") {
+  test("generator-driven property that takes $n$ args, which fails, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
@@ -1255,10 +1255,10 @@ val generatorSuiteTemplate = """
     }
   }
 
-  test("generator-driven property that takes $n$ named args, which succeeds, with default maxSkipped set to 5") {
+  test("generator-driven property that takes $n$ named args, which succeeds, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     var i = 0
     forAll ($argNames$) { ($namesAndTypes$) =>
@@ -1267,10 +1267,10 @@ val generatorSuiteTemplate = """
     }
   }
 
-  test("generator-driven property that takes $n$ named args, which fails, with default maxSkipped set to 5") {
+  test("generator-driven property that takes $n$ named args, which fails, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
@@ -1281,10 +1281,10 @@ val generatorSuiteTemplate = """
     }
   }
 
-  test("generator-driven property that takes $n$ args and generators, which succeeds, with default maxSkipped set to 5") {
+  test("generator-driven property that takes $n$ args and generators, which succeeds, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     var i = 0
     forAll ($famousArgs$) { ($namesAndTypes$) =>
@@ -1293,10 +1293,10 @@ val generatorSuiteTemplate = """
     }
   }
 
-  test("generator-driven property that takes $n$ args and generators, which fails, with default maxSkipped set to 5") {
+  test("generator-driven property that takes $n$ args and generators, which fails, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
@@ -1307,10 +1307,10 @@ val generatorSuiteTemplate = """
     }
   }
 
-  test("generator-driven property that takes $n$ named args and generators, which succeeds, with default maxSkipped set to 5") {
+  test("generator-driven property that takes $n$ named args and generators, which succeeds, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     var i = 0
     forAll ($nameGenTuples$) { ($namesAndTypes$) =>
@@ -1319,10 +1319,10 @@ val generatorSuiteTemplate = """
     }
   }
 
-  test("generator-driven property that takes $n$ named args and generators, which fails, with default maxSkipped set to 5") {
+  test("generator-driven property that takes $n$ named args and generators, which fails, with default maxDiscarded set to 5") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSkipped = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxDiscarded = 5)
 
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0

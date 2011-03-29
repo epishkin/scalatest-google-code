@@ -44,7 +44,7 @@ trait Configuration {
    * </tr>
    * <tr>
    * <td>
-   * maxSkipped
+   * maxDiscarded
    * </td>
    * <td>
    * 500
@@ -77,12 +77,12 @@ trait Configuration {
    * </table>
    *
    * @param minSuccessful the minimum number of successful property evaluations required for the property to pass.
-   * @param maxSkipped the maximum number of skipped property evaluations allowed during a property check
+   * @param maxDiscarded the maximum number of discarded property evaluations allowed during a property check
    * @param minSize the minimum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
    * @param maxSize the maximum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
    * @param workers specifies the number of worker threads * to use during property evaluation
    * @throws IllegalArgumentException if the specified <code>minSuccessful</code> value is less than or equal to zero,
-   *   the specified <code>maxSkipped</code> value is less than zero,
+   *   the specified <code>maxDiscarded</code> value is less than zero,
    *   the specified <code>minSize</code> value is less than zero,
    *   the specified <code>maxSize</code> value is less than zero,
    *   the specified <code>minSize</code> is greater than the specified or default value of <code>maxSize</code>, or
@@ -92,13 +92,13 @@ trait Configuration {
    */
   case class PropertyCheckConfig(
     minSuccessful: Int = 100,
-    maxSkipped: Int = 500,
+    maxDiscarded: Int = 500,
     minSize: Int = 0,
     maxSize: Int = 100,
     workers: Int = 1
   ) {
     require(minSuccessful > 0, "minSuccessful had value " + minSuccessful + ", but must be greater than zero")
-    require(maxSkipped >= 0, "maxSkipped had value " + maxSkipped + ", but must be greater than or equal to zero")
+    require(maxDiscarded >= 0, "maxDiscarded had value " + maxDiscarded + ", but must be greater than or equal to zero")
     require(minSize >= 0, "minSize had value " + minSize + ", but must be greater than or equal to zero")
     require(maxSize >= 0, "maxSize had value " + maxSize + ", but must be greater than or equal to zero")
     require(minSize <= maxSize, "minSize had value " + minSize + ", which must be less than or equal to maxSize, which had value " + maxSize)
@@ -131,11 +131,11 @@ trait Configuration {
   }
   
   /**
-   * A <code>PropertyCheckConfigParam</code> that specifies the maximum number of skipped
+   * A <code>PropertyCheckConfigParam</code> that specifies the maximum number of discarded
    * property evaluations allowed during property evaluation.
    *
    * <p>
-   * In <code>GeneratorDrivenPropertyChecks</code>, a property evaluation is skipped if it throws
+   * In <code>GeneratorDrivenPropertyChecks</code>, a property evaluation is discarded if it throws
    * <code>UnmetConditionException</code>, which is produce by <code>whenever</code> clause that
    * evaluates to false. For example, consider this ScalaTest property check:
    * </p>
@@ -156,7 +156,7 @@ trait Configuration {
    * </p>
    *
    * <p>
-   * Simiarly, in <code>Checkers</code>, a property evaluation is skipped if the expression to the left
+   * Simiarly, in <code>Checkers</code>, a property evaluation is discarded if the expression to the left
    * of ScalaCheck's <code>==></code> operator is false. Here's an example:
    * </p>
    *
@@ -169,8 +169,8 @@ trait Configuration {
    * </pre>
    *
    * <p>
-   * For either kind of property check, <code>MaxSkipped</code> indicates the maximum number of skipped 
-   * evaluations that will be allowed. As soon as one past this number of evaluations indicates it needs to be skipped,
+   * For either kind of property check, <code>MaxDiscarded</code> indicates the maximum number of discarded 
+   * evaluations that will be allowed. As soon as one past this number of evaluations indicates it needs to be discarded,
    * the property check will fail.
    * </p>
    *
@@ -178,7 +178,7 @@ trait Configuration {
    *
    * @author Bill Venners
    */
-  case class MaxSkipped(value: Int) extends PropertyCheckConfigParam {
+  case class MaxDiscarded(value: Int) extends PropertyCheckConfigParam {
     require(value >= 0)
   }
   
@@ -236,12 +236,12 @@ trait Configuration {
   def minSuccessful(value: Int): MinSuccessful = new MinSuccessful(value)
 
   /**
-   * Returns a <code>MaxSkipped</code> property check configuration parameter containing the passed value, which specifies the maximum number of skipped
+   * Returns a <code>MaxDiscarded</code> property check configuration parameter containing the passed value, which specifies the maximum number of discarded
    * property evaluations allowed during property evaluation.
    *
    * @throws IllegalArgumentException if specified <code>value</code> is less than zero.
    */
-  def maxSkipped(value: Int): MaxSkipped = new MaxSkipped(value)
+  def maxDiscarded(value: Int): MaxDiscarded = new MaxDiscarded(value)
 
   /**
    * Returns a <code>MinSize</code> property check configuration parameter containing the passed value, which specifies the minimum size parameter to
@@ -282,13 +282,13 @@ trait Configuration {
   ): Params = {
 
     var minSuccessful = -1
-    var maxSkipped = -1
+    var maxDiscarded = -1
     var minSize = -1
     var maxSize = -1
     var workers = -1
 
     var minSuccessfulTotalFound = 0
-    var maxSkippedTotalFound = 0
+    var maxDiscardedTotalFound = 0
     var minSizeTotalFound = 0
     var maxSizeTotalFound = 0
     var workersTotalFound = 0
@@ -298,9 +298,9 @@ trait Configuration {
         case param: MinSuccessful =>
           minSuccessful = param.value
           minSuccessfulTotalFound += 1
-        case param: MaxSkipped =>
-          maxSkipped = param.value
-          maxSkippedTotalFound += 1
+        case param: MaxDiscarded =>
+          maxDiscarded = param.value
+          maxDiscardedTotalFound += 1
         case param: MinSize =>
           minSize = param.value
           minSizeTotalFound += 1
@@ -315,8 +315,8 @@ trait Configuration {
   
     if (minSuccessfulTotalFound > 1)
       throw new IllegalArgumentException("can pass at most MinSuccessful config parameters, but " + minSuccessfulTotalFound + " were passed")
-    if (maxSkippedTotalFound > 1)
-      throw new IllegalArgumentException("can pass at most MaxSkipped config parameters, but " + maxSkippedTotalFound + " were passed")
+    if (maxDiscardedTotalFound > 1)
+      throw new IllegalArgumentException("can pass at most MaxDiscarded config parameters, but " + maxDiscardedTotalFound + " were passed")
     if (minSizeTotalFound > 1)
       throw new IllegalArgumentException("can pass at most MinSize config parameters, but " + minSizeTotalFound + " were passed")
     if (maxSizeTotalFound > 1)
@@ -324,12 +324,12 @@ trait Configuration {
     if (workersTotalFound > 1)
       throw new IllegalArgumentException("can pass at most Workers config parameters, but " + workersTotalFound + " were passed")
 
-    // Adding one to maxSkipped, because I think it is easier to understand that maxSkipped means the maximum number of times
-    // allowed that skipping will occur and the property can still pass. One more skip than this number and the property will fail
+    // Adding one to maxDiscarded, because I think it is easier to understand that maxDiscarded means the maximum number of times
+    // allowed that discarding will occur and the property can still pass. One more discarded evaluation than this number and the property will fail
     // because of it. ScalaCheck fails at exactly maxDiscardedTests.
     Params(
       if (minSuccessful != -1) minSuccessful else config.minSuccessful,
-      (if (maxSkipped != -1) maxSkipped else config.maxSkipped) + 1,
+      (if (maxDiscarded != -1) maxDiscarded else config.maxDiscarded) + 1,
       if (minSize != -1) minSize else config.minSize,
       if (maxSize != -1) maxSize else config.maxSize,
       Params().rng,

@@ -48,20 +48,20 @@ class PropertyCheckConfigParamSuite extends FunSuite with ShouldMatchers {
       MinSuccessful(5678).value should be (5678)
   }
 
-  test("maxSkipped throws IAE if less than 0") {
+  test("maxDiscarded throws IAE if less than 0") {
     intercept[IllegalArgumentException] {
-      MaxSkipped(-1)
+      MaxDiscarded(-1)
     }
     intercept[IllegalArgumentException] {
-      MaxSkipped(-2)
+      MaxDiscarded(-2)
     }
   }
 
-  test("maxSkipped value is passed value, if valid") {
-      MaxSkipped(0).value should be (0)
-      MaxSkipped(1).value should be (1)
-      MaxSkipped(2).value should be (2)
-      MaxSkipped(5678).value should be (5678)
+  test("maxDiscarded value is passed value, if valid") {
+      MaxDiscarded(0).value should be (0)
+      MaxDiscarded(1).value should be (1)
+      MaxDiscarded(2).value should be (2)
+      MaxDiscarded(5678).value should be (5678)
   }
 
   test("minSize throws IAE if less than 0") {
