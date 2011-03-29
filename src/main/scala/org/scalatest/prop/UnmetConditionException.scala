@@ -16,13 +16,13 @@
 package org.scalatest.prop
 
 /**
- * Exception that indicates a condition required by a property was not met by
- * a set of input parameters.
+ * Exception that indicates an evaluation of a property should be discarded, because a condition
+ * required by a property was not met by the passed values.
  *
- * This exception is thrown by the <code>whenever</code> method defined in trait <code>TableDrivenPropertyChecks</code>
- * when the given condition is false. The <code>forAll</code> methods defined in trait <code>TableDrivenPropertyChecks</code>
- * catch the <code>UnmetConditionException</code> and ignore it, moving on to try the next row in the table it is checking
- * a property against.
+ * This exception is thrown by the <code>whenever</code> method defined in trait <code>Whenever</code>
+ * when the given condition is false. The <code>forAll</code> methods defined in trait <code>PropertyChecks</code>
+ * catch the <code>DiscardedEvaluationException</code> and ignore it, moving on to try the next set of parameter values it is checking
+ * th property against.
  */
-class UnmetConditionException extends RuntimeException
+class DiscardedEvaluationException extends RuntimeException
 

@@ -388,7 +388,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    *
    * @param fun the property check function to apply to the generated arguments
    */
-    def apply[A](fun: (A) => Any)
+    def apply[A](fun: (A) => Unit)
       (implicit
         config: PropertyCheckConfig,
       arbA: Arbitrary[A], shrA: Shrink[A]
@@ -396,10 +396,11 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
         val propF = { (a: A) =>
           val (unmetCondition, exception) =
             try {
-              val result = fun(a)
-              (result == Skip, None)
+              fun(a)
+              (false, None)
             }
             catch {
+              case e: DiscardedEvaluationException => (true, None)
               case e => (false, Some(e))
             }
           !unmetCondition ==> (
@@ -428,7 +429,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    *
    * @param fun the property check function to apply to the generated arguments
    */
-    def apply[A, B](fun: (A, B) => Any)
+    def apply[A, B](fun: (A, B) => Unit)
       (implicit
         config: PropertyCheckConfig,
       arbA: Arbitrary[A], shrA: Shrink[A],
@@ -437,10 +438,11 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
         val propF = { (a: A, b: B) =>
           val (unmetCondition, exception) =
             try {
-              val result = fun(a, b)
-              (result == Skip, None)
+              fun(a, b)
+              (false, None)
             }
             catch {
+              case e: DiscardedEvaluationException => (true, None)
               case e => (false, Some(e))
             }
           !unmetCondition ==> (
@@ -469,7 +471,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    *
    * @param fun the property check function to apply to the generated arguments
    */
-    def apply[A, B, C](fun: (A, B, C) => Any)
+    def apply[A, B, C](fun: (A, B, C) => Unit)
       (implicit
         config: PropertyCheckConfig,
       arbA: Arbitrary[A], shrA: Shrink[A],
@@ -479,10 +481,11 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
         val propF = { (a: A, b: B, c: C) =>
           val (unmetCondition, exception) =
             try {
-              val result = fun(a, b, c)
-              (result == Skip, None)
+              fun(a, b, c)
+              (false, None)
             }
             catch {
+              case e: DiscardedEvaluationException => (true, None)
               case e => (false, Some(e))
             }
           !unmetCondition ==> (
@@ -511,7 +514,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    *
    * @param fun the property check function to apply to the generated arguments
    */
-    def apply[A, B, C, D](fun: (A, B, C, D) => Any)
+    def apply[A, B, C, D](fun: (A, B, C, D) => Unit)
       (implicit
         config: PropertyCheckConfig,
       arbA: Arbitrary[A], shrA: Shrink[A],
@@ -522,10 +525,11 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
         val propF = { (a: A, b: B, c: C, d: D) =>
           val (unmetCondition, exception) =
             try {
-              val result = fun(a, b, c, d)
-              (result == Skip, None)
+              fun(a, b, c, d)
+              (false, None)
             }
             catch {
+              case e: DiscardedEvaluationException => (true, None)
               case e => (false, Some(e))
             }
           !unmetCondition ==> (
@@ -554,7 +558,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    *
    * @param fun the property check function to apply to the generated arguments
    */
-    def apply[A, B, C, D, E](fun: (A, B, C, D, E) => Any)
+    def apply[A, B, C, D, E](fun: (A, B, C, D, E) => Unit)
       (implicit
         config: PropertyCheckConfig,
       arbA: Arbitrary[A], shrA: Shrink[A],
@@ -566,10 +570,11 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
         val propF = { (a: A, b: B, c: C, d: D, e: E) =>
           val (unmetCondition, exception) =
             try {
-              val result = fun(a, b, c, d, e)
-              (result == Skip, None)
+              fun(a, b, c, d, e)
+              (false, None)
             }
             catch {
+              case e: DiscardedEvaluationException => (true, None)
               case e => (false, Some(e))
             }
           !unmetCondition ==> (
@@ -598,7 +603,7 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
    *
    * @param fun the property check function to apply to the generated arguments
    */
-    def apply[A, B, C, D, E, F](fun: (A, B, C, D, E, F) => Any)
+    def apply[A, B, C, D, E, F](fun: (A, B, C, D, E, F) => Unit)
       (implicit
         config: PropertyCheckConfig,
       arbA: Arbitrary[A], shrA: Shrink[A],
@@ -611,10 +616,11 @@ trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {
         val propF = { (a: A, b: B, c: C, d: D, e: E, f: F) =>
           val (unmetCondition, exception) =
             try {
-              val result = fun(a, b, c, d, e, f)
-              (result == Skip, None)
+              fun(a, b, c, d, e, f)
+              (false, None)
             }
             catch {
+              case e: DiscardedEvaluationException => (true, None)
               case e => (false, Some(e))
             }
           !unmetCondition ==> (
@@ -645,7 +651,7 @@ val propertyCheckForAllTemplate = """
    *
    * @param fun the property check function to apply to the generated arguments
    */
-  def forAll[$alphaUpper$](fun: ($alphaUpper$) => Any)
+  def forAll[$alphaUpper$](fun: ($alphaUpper$) => Unit)
     (implicit
       config: PropertyCheckConfig,
 $arbShrinks$
@@ -653,10 +659,11 @@ $arbShrinks$
       val propF = { ($argType$) =>
         val (unmetCondition, exception) =
           try {
-            val result = fun($alphaLower$)
-            (result == Skip, None)
+            fun($alphaLower$)
+            (false, None)
           }
           catch {
+            case e: DiscardedEvaluationException => (true, None)
             case e => (false, Some(e))
           }
         !unmetCondition ==> (
@@ -684,7 +691,7 @@ $arbShrinks$
    *
    * @param fun the property check function to apply to the generated arguments
    */
-  def forAll[$alphaUpper$]($argNameNamesAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Any)
+  def forAll[$alphaUpper$]($argNameNamesAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Unit)
     (implicit
       config: PropertyCheckConfig,
 $arbShrinks$
@@ -692,10 +699,11 @@ $arbShrinks$
       val propF = { ($argType$) =>
         val (unmetCondition, exception) =
           try {
-            val result = fun($alphaLower$)
-            (result == Skip, None)
+            fun($alphaLower$)
+            (false, None)
           }
           catch {
+            case e: DiscardedEvaluationException => (true, None)
             case e => (false, Some(e))
           }
         !unmetCondition ==> (
@@ -730,7 +738,7 @@ $arbShrinks$
    *
    * @param fun the property check function to apply to the generated arguments
    */
-  def forAll[$alphaUpper$]($genArgsAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Any)
+  def forAll[$alphaUpper$]($genArgsAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Unit)
     (implicit
       config: PropertyCheckConfig,
 $shrinks$
@@ -738,10 +746,11 @@ $shrinks$
       val propF = { ($argType$) =>
         val (unmetCondition, exception) =
           try {
-            val result = fun($alphaLower$)
-            (result == Skip, None)
+            fun($alphaLower$)
+            (false, None)
           }
           catch {
+            case e: DiscardedEvaluationException => (true, None)
             case e => (false, Some(e))
           }
         !unmetCondition ==> (
@@ -776,7 +785,7 @@ $shrinks$
    *
    * @param fun the property check function to apply to the generated arguments
    */
-  def forAll[$alphaUpper$]($nameAndGenArgsAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Any)
+  def forAll[$alphaUpper$]($nameAndGenArgsAndTypes$, configParams: PropertyCheckConfigParam*)(fun: ($alphaUpper$) => Unit)
     (implicit
       config: PropertyCheckConfig,
 $shrinks$
@@ -787,10 +796,11 @@ $tupleBusters$
       val propF = { ($argType$) =>
         val (unmetCondition, exception) =
           try {
-            val result = fun($alphaLower$)
-            (result == Skip, None)
+            fun($alphaLower$)
+            (false, None)
           }
           catch {
+            case e: DiscardedEvaluationException => (true, None)
             case e => (false, Some(e))
           }
         !unmetCondition ==> (
@@ -1458,159 +1468,41 @@ val generatorSuiteTemplate = """
     }
   }
 
-/* THESE DONT WORK. I'VE ASKED RICKARD WHAT'S UP
-  // set minSize == maxSize with (param, param) (ensure always passed with that size)
-  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (param, param)") {
-
-    forAll (minSize(5), maxSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (param, param)") {
-
-    forAll ($argNames$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (param, param)") {
-
-    forAll ($famousArgs$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (param, param)") {
-
-    forAll ($nameGenTuples$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  // set minSize == maxSize with (param, default) (ensure always passed with that size)
-  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (param, default)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
-
-    forAll (minSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (param, default)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
-
-    forAll ($argNames$, minSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (param, default)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
-
-    forAll ($famousArgs$, minSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (param, default)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
-
-    forAll ($nameGenTuples$, minSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  // set minSize == maxSize with (default, param) (ensure always passed with that size)
-  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (default, param)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+  // set maxSize with param (ensure always passed with a size less than maxSize)
+  test("generator-driven property that takes $n$ args, with maxSize specified as param") {
 
     forAll (maxSize(5)) { ($namesAndTypes$) =>
 $lengthAssertions$
     }
   }
 
-  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (default, param)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+  test("generator-driven property that takes $n$ named args, with maxSize specified as param") {
 
     forAll ($argNames$, maxSize(5)) { ($namesAndTypes$) =>
 $lengthAssertions$
     }
   }
 
-  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (default, param)") {
+  // set maxSize with default (ensure always passed with a size less than maxSize)
+  test("generator-driven property that takes $n$ args, with maxSize specified as default") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
-
-    forAll ($famousArgs$, maxSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (default, param)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
-
-    forAll ($nameGenTuples$, maxSize(5)) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  // set minSize == maxSize with (default, default) (ensure always passed with that size)
-  test("generator-driven property that takes $n$ args, with minSize == maxSize, specified as (default, default)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
 
     forAll { ($namesAndTypes$) =>
 $lengthAssertions$
     }
   }
 
-  test("generator-driven property that takes $n$ named args, with minSize == maxSize, specified as (default, default)") {
+  test("generator-driven property that takes $n$ named args, with maxSize specified as default") {
 
     // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
 
     forAll ($argNames$) { ($namesAndTypes$) =>
 $lengthAssertions$
     }
   }
-
-  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (default, default)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
-
-    forAll ($famousArgs$) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-
-  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (default, default)") {
-
-    // Hides the member
-    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
-
-    forAll ($nameGenTuples$) { ($namesAndTypes$) =>
-$lengthAssertions$
-    }
-  }
-*/
 """
 
 // For some reason that I don't understand, I need to leave off the stars before the <pre> when 
@@ -1714,7 +1606,7 @@ $lengthAssertions$
         val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
         val famousArgs = List.fill(i)("famousLastWords").mkString(", ")
         val nameGenTuples = alpha.take(i).map("(famousLastWords, \"" + _ + "\")").mkString(", ")
-        val lengthAssertions = alpha.take(i).map("      " + _ + ".length should equal (5)").mkString("\n")
+        val lengthAssertions = alpha.take(i).map("      " + _ + ".length should be <= 5").mkString("\n")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
