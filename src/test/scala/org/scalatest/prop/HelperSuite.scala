@@ -25,8 +25,8 @@ class HelperSuite extends FunSuite with ShouldMatchers {
   val DefaultMinSuccessful = 9
   val PassedMinSuccessful = 3
 
-  val DefaultMaxSkipped = 99
-  val PassedMaxSkipped = 33
+  val DefaultMaxDiscarded = 99
+  val PassedMaxDiscarded = 33
 
   val DefaultMinSize = 99
   val PassedMinSize = 33
@@ -40,7 +40,7 @@ class HelperSuite extends FunSuite with ShouldMatchers {
   val defaultConfig =
     PropertyCheckConfig(
       minSuccessful = DefaultMinSuccessful,
-      maxSkipped = DefaultMaxSkipped,
+      maxDiscarded = DefaultMaxDiscarded,
       minSize = DefaultMinSize,
       maxSize = DefaultMaxSize,
       workers = DefaultWorkers
@@ -59,25 +59,25 @@ class HelperSuite extends FunSuite with ShouldMatchers {
   }
 
   test("getParams returns default minSuccessful config param if none passed") {
-    val params = getParams(Seq(MaxSkipped(PassedMaxSkipped)), defaultConfig)
+    val params = getParams(Seq(MaxDiscarded(PassedMaxDiscarded)), defaultConfig)
     params.minSuccessfulTests should equal (DefaultMinSuccessful)
   }
 
-  // maxSkipped
-  test("getParams returns passed maxSkipped config param") {
-    val params = getParams(Seq(MaxSkipped(PassedMaxSkipped)), defaultConfig)
-    params.maxDiscardedTests should equal (PassedMaxSkipped)
+  // maxDiscarded
+  test("getParams returns passed maxDiscarded config param") {
+    val params = getParams(Seq(MaxDiscarded(PassedMaxDiscarded)), defaultConfig)
+    params.maxDiscardedTests should equal (PassedMaxDiscarded + 1)
   }
 
-  test("getParams throws IAE if passed multiple maxSkipped config params") {
+  test("getParams throws IAE if passed multiple maxDiscarded config params") {
     intercept[IllegalArgumentException] {
-      getParams(Seq(MaxSkipped(33), MaxSkipped(34)), defaultConfig)
+      getParams(Seq(MaxDiscarded(33), MaxDiscarded(34)), defaultConfig)
     }
   }
 
-  test("getParams returns default maxSkipped config param if none passed") {
+  test("getParams returns default maxDiscarded config param if none passed") {
     val params = getParams(Seq(MinSuccessful(PassedMinSuccessful)), defaultConfig)
-    params.maxDiscardedTests should equal (DefaultMaxSkipped)
+    params.maxDiscardedTests should equal (DefaultMaxDiscarded + 1)
   }
 
   // minSize
@@ -134,16 +134,16 @@ class HelperSuite extends FunSuite with ShouldMatchers {
   test("getParams returns all default if no config params passed") {
     val params = getParams(Seq(), defaultConfig)
     params.minSuccessfulTests should equal (DefaultMinSuccessful)
-    params.maxDiscardedTests should equal (DefaultMaxSkipped)
+    params.maxDiscardedTests should equal (DefaultMaxDiscarded + 1)
     params.minSize should equal (DefaultMinSize)
     params.maxSize should equal (DefaultMaxSize)
     params.workers should equal (DefaultWorkers)
   }
 
   test("getParams returns all passed if all config params passed") {
-    val params = getParams(Seq(MinSuccessful(PassedMinSuccessful), MaxSkipped(PassedMaxSkipped), MinSize(PassedMinSize), MaxSize(PassedMaxSize), Workers(PassedWorkers)), defaultConfig)
+    val params = getParams(Seq(MinSuccessful(PassedMinSuccessful), MaxDiscarded(PassedMaxDiscarded), MinSize(PassedMinSize), MaxSize(PassedMaxSize), Workers(PassedWorkers)), defaultConfig)
     params.minSuccessfulTests should equal (PassedMinSuccessful)
-    params.maxDiscardedTests should equal (PassedMaxSkipped)
+    params.maxDiscardedTests should equal (PassedMaxDiscarded + 1)
     params.minSize should equal (PassedMinSize)
     params.maxSize should equal (PassedMaxSize)
     params.workers should equal (PassedWorkers)

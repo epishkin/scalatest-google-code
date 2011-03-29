@@ -23,7 +23,8 @@ private[scalatest] object NodeFamily {
     var subNodes: List[Node] = Nil
   }
 
-  case class Trunk extends Branch(None)
+  // Could Trunk be a case object?
+  case class Trunk() extends Branch(None)
 
   case class TestLeaf(
     parent: Branch,

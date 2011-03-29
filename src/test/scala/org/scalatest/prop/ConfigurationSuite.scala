@@ -40,20 +40,20 @@ class ConfigurationSuite extends FunSuite with ShouldMatchers {
       minSuccessful(5678).value should be (5678)
   }
 
-  test("maxSkipped throws IAE if less than 0") {
+  test("maxDiscarded throws IAE if less than 0") {
     intercept[IllegalArgumentException] {
-      maxSkipped(-1)
+      maxDiscarded(-1)
     }
     intercept[IllegalArgumentException] {
-      maxSkipped(-2)
+      maxDiscarded(-2)
     }
   }
 
-  test("maxSkipped value is passed value, if valid") {
-      maxSkipped(0).value should be (0)
-      maxSkipped(1).value should be (1)
-      maxSkipped(2).value should be (2)
-      maxSkipped(5678).value should be (5678)
+  test("maxDiscarded value is passed value, if valid") {
+      maxDiscarded(0).value should be (0)
+      maxDiscarded(1).value should be (1)
+      maxDiscarded(2).value should be (2)
+      maxDiscarded(5678).value should be (5678)
   }
 
   test("minSize throws IAE if less than 0") {
