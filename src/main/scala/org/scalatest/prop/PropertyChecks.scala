@@ -21,7 +21,7 @@ package prop
  *
  * @author Bill Venners
  */
-class PropertyChecks extends TableDrivenPropertyChecks with GeneratorDrivenPropertyChecks
+trait PropertyChecks extends TableDrivenPropertyChecks with GeneratorDrivenPropertyChecks
 
 object PropertyChecks extends PropertyChecks
 

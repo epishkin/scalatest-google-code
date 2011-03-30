@@ -82,7 +82,7 @@ repeatedly pass generated data to the function. In this case, the test data is c
  *
  * @author Bill Venners
  */
-trait Checkers {
+trait Checkers extends Configuration {
 
   /**
    * Convert the passed 1-arg function into a property, and check it.
@@ -90,12 +90,13 @@ trait Checkers {
    * @param f the function to be converted into a property and checked
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
-  def check[A1,P](f: A1 => P)
+  def check[A1,P](f: A1 => P, configParams: PropertyCheckConfigParam*)
     (implicit
+      config: PropertyCheckConfig,
       p: P => Prop,
       a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty
     ) {
-    check(Prop.forAll(f)(p, a1, s1, pp1))
+    check(Prop.forAll(f)(p, a1, s1, pp1), configParams: _*)(config)
   }
 
   /**
@@ -104,13 +105,15 @@ trait Checkers {
    * @param f the function to be converted into a property and checked
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
-  def check[A1,A2,P](f: (A1,A2) => P)
+  def check[A1,A2,P](f: (A1,A2) => P, configParams: PropertyCheckConfigParam*)
     (implicit
+      config: PropertyCheckConfig,
       p: P => Prop,
       a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
       a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty
     ) {
-    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2))
+    val params = getParams(configParams, config)
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2), configParams: _*)(config)
   }
 
   /**
@@ -119,14 +122,15 @@ trait Checkers {
    * @param f the function to be converted into a property and checked
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
-  def check[A1,A2,A3,P](f: (A1,A2,A3) => P)
+  def check[A1,A2,A3,P](f: (A1,A2,A3) => P, configParams: PropertyCheckConfigParam*)
     (implicit
+      config: PropertyCheckConfig,
       p: P => Prop,
       a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
       a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
       a3: Arbitrary[A3], s3: Shrink[A3], pp3: A3 => Pretty
     ) {
-    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3), configParams: _*)(config)
   }
 
   /**
@@ -135,15 +139,16 @@ trait Checkers {
    * @param f the function to be converted into a property and checked
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
-  def check[A1,A2,A3,A4,P](f: (A1,A2,A3,A4) => P)
+  def check[A1,A2,A3,A4,P](f: (A1,A2,A3,A4) => P, configParams: PropertyCheckConfigParam*)
     (implicit
+      config: PropertyCheckConfig,
       p: P => Prop,
       a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
       a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
       a3: Arbitrary[A3], s3: Shrink[A3], pp3: A3 => Pretty,
       a4: Arbitrary[A4], s4: Shrink[A4], pp4: A4 => Pretty
     ) {
-    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4), configParams: _*)(config)
   }
 
   /**
@@ -152,8 +157,9 @@ trait Checkers {
    * @param f the function to be converted into a property and checked
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
-  def check[A1,A2,A3,A4,A5,P](f: (A1,A2,A3,A4,A5) => P)
+  def check[A1,A2,A3,A4,A5,P](f: (A1,A2,A3,A4,A5) => P, configParams: PropertyCheckConfigParam*)
     (implicit
+      config: PropertyCheckConfig,
       p: P => Prop,
       a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
       a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
@@ -161,7 +167,7 @@ trait Checkers {
       a4: Arbitrary[A4], s4: Shrink[A4], pp4: A4 => Pretty,
       a5: Arbitrary[A5], s5: Shrink[A5], pp5: A5 => Pretty
     ) {
-    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4, a5, s5, pp5))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4, a5, s5, pp5), configParams: _*)(config)
   }
 
   /**
@@ -170,8 +176,9 @@ trait Checkers {
    * @param f the function to be converted into a property and checked
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
-  def check[A1,A2,A3,A4,A5,A6,P](f: (A1,A2,A3,A4,A5,A6) => P)
+  def check[A1,A2,A3,A4,A5,A6,P](f: (A1,A2,A3,A4,A5,A6) => P, configParams: PropertyCheckConfigParam*)
     (implicit
+      config: PropertyCheckConfig,
       p: P => Prop,
       a1: Arbitrary[A1], s1: Shrink[A1], pp1: A1 => Pretty,
       a2: Arbitrary[A2], s2: Shrink[A2], pp2: A2 => Pretty,
@@ -180,7 +187,7 @@ trait Checkers {
       a5: Arbitrary[A5], s5: Shrink[A5], pp5: A5 => Pretty,
       a6: Arbitrary[A6], s6: Shrink[A6], pp6: A6 => Pretty
     ) {
-    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4, a5, s5, pp5, a6, s6, pp6))
+    check(Prop.forAll(f)(p, a1, s1, pp1, a2, s2, pp2, a3, s3, pp3, a4, s4, pp4, a5, s5, pp5, a6, s6, pp6), configParams: _*)(config)
   }
 
   /**
@@ -200,8 +207,9 @@ trait Checkers {
    * @param p the property to check
    * @throws TestFailedException if a test case is discovered for which the property doesn't hold.
    */
-  def check(p: Prop) {
-    check(p, Test.Params())
+  def check(p: Prop, configParams: PropertyCheckConfigParam*)(implicit config: PropertyCheckConfig) {
+    val params = getParams(configParams, config)
+    check(p, params)
   }
 }
 

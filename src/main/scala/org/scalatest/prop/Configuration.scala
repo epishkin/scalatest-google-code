@@ -337,6 +337,11 @@ trait Configuration {
       Params().testCallback
     )
   }
+
+  /**
+   * Implicit <code>PropertyCheckConfig</code> value providing default configuration values.
+   */
+  implicit val generatorDrivenConfig = PropertyCheckConfig()
 }
 
 /**
