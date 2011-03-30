@@ -828,6 +828,22 @@ class GeneratorDrivenSuite extends FunSuite with GeneratorDrivenPropertyChecks w
   val famousLastWords = for {
     s <- Gen.oneOf("the", "program", "compiles", "therefore", "it", "should", "work")
   } yield s
+
+  val sevenEleven: Gen[String] =
+    Gen.sized { (size: Int) =>
+      if (size >= 7 && size <= 11)
+        Gen.value("OKAY")
+      else
+        throw new Exception("expected 7 <= size <= 11 but got " + size)
+    }
+
+  val fiveFive: Gen[String] =
+    Gen.sized { (size: Int) =>
+      if (size == 5)
+        Gen.value("OKAY")
+      else
+        throw new Exception("expected size 5 but got " + size)
+    }
 """
 
 val generatorSuiteTemplate = """
@@ -1503,6 +1519,194 @@ $lengthAssertions$
 $lengthAssertions$
     }
   }
+ 
+  // set minSize == maxSize with (param, param) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (param, param)") {
+
+    pendingUntilFixed {
+      forAll ($fiveFiveArgs$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (param, param)") {
+
+    pendingUntilFixed {
+      forAll ($fiveFiveNameGenTuples$, minSize(5), maxSize(5)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  // set minSize == maxSize with (param, default) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
+
+    pendingUntilFixed {
+      forAll ($fiveFiveArgs$, minSize(5)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 5)
+
+    pendingUntilFixed {
+      forAll ($fiveFiveNameGenTuples$, minSize(5)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  // set minSize == maxSize with (default, param) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    pendingUntilFixed {
+      forAll ($fiveFiveArgs$, maxSize(5)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5)
+
+    pendingUntilFixed {
+      forAll ($fiveFiveNameGenTuples$, maxSize(5)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  // set minSize == maxSize with (default, default) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize == maxSize, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+
+    pendingUntilFixed {
+      forAll ($fiveFiveArgs$) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize == maxSize, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 5, maxSize = 5)
+
+    pendingUntilFixed {
+      forAll ($fiveFiveNameGenTuples$) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  // set minSize to 7 and maxSize to 11 with (param, param) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize to 7 and maxSize to 11, specified as (param, param)") {
+
+    pendingUntilFixed {
+      forAll ($sevenElevenArgs$, minSize(7), maxSize(11)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize to 7 and maxSize to 11, specified as (param, param)") {
+
+    pendingUntilFixed {
+      forAll ($sevenElevenNameGenTuples$, minSize(7), maxSize(11)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  // set minSize to 7 and maxSize to 11 with (param, default) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize to 7 and maxSize to 11, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 11)
+
+    pendingUntilFixed {
+      forAll ($sevenElevenArgs$, minSize(7)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize to 7 and maxSize to 11, specified as (param, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(maxSize = 11)
+
+    pendingUntilFixed {
+      forAll ($sevenElevenNameGenTuples$, minSize(7)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  // set minSize to 7 and maxSize to 11 with (default, param) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize to 7 and maxSize to 11, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 7)
+
+    pendingUntilFixed {
+      forAll ($sevenElevenArgs$, maxSize(11)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize to 7 and maxSize to 11, specified as (default, param)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 7)
+
+    pendingUntilFixed {
+      forAll ($sevenElevenNameGenTuples$, maxSize(11)) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  // set minSize to 7 and maxSize to 11 with (default, default) (ensure always passed with that size)
+  test("generator-driven property that takes $n$ args and generators, with minSize to 7 and maxSize to 11, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 7, maxSize = 11)
+
+    pendingUntilFixed {
+      forAll ($sevenElevenArgs$) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
+
+  test("generator-driven property that takes $n$ named args and generators, with minSize to 7 and maxSize to 11, specified as (default, default)") {
+
+    // Hides the member
+    implicit val generatorDrivenConfig = PropertyCheckConfig(minSize = 7, maxSize = 11)
+
+    pendingUntilFixed {
+      forAll ($sevenElevenNameGenTuples$) { ($namesAndTypes$) =>
+$okayAssertions$
+      }
+    }
+  }
 """
 
 // For some reason that I don't understand, I need to leave off the stars before the <pre> when 
@@ -1605,8 +1809,13 @@ $lengthAssertions$
         val sumOfArgs = alpha.take(i).mkString(" + ")
         val sumOfArgLengths = alpha.take(i).map(_ + ".length").mkString(" + ")
         val famousArgs = List.fill(i)("famousLastWords").mkString(", ")
+        val sevenElevenArgs = List.fill(i)("sevenEleven").mkString(", ")
+        val fiveFiveArgs = List.fill(i)("fiveFive").mkString(", ")
         val nameGenTuples = alpha.take(i).map("(famousLastWords, \"" + _ + "\")").mkString(", ")
+        val fiveFiveNameGenTuples = alpha.take(i).map("(fiveFive, \"" + _ + "\")").mkString(", ")
+        val sevenElevenNameGenTuples = alpha.take(i).map("(sevenEleven, \"" + _ + "\")").mkString(", ")
         val lengthAssertions = alpha.take(i).map("      " + _ + ".length should be <= 5").mkString("\n")
+        val okayAssertions = alpha.take(i).map("        " + _ + " should be (\"OKAY\")").mkString("\n")
         st.setAttribute("n", i)
         st.setAttribute("columnsOfOnes", columnsOfOnes)
         st.setAttribute("columnsOfTwos", columnsOfTwos)
@@ -1618,8 +1827,13 @@ $lengthAssertions$
         st.setAttribute("sumOfArgLengths", sumOfArgLengths)
         st.setAttribute("listOfIs", listOfIs)
         st.setAttribute("famousArgs", famousArgs)
+        st.setAttribute("sevenElevenArgs", sevenElevenArgs)
+        st.setAttribute("fiveFiveArgs", fiveFiveArgs)
         st.setAttribute("nameGenTuples", nameGenTuples)
+        st.setAttribute("fiveFiveNameGenTuples", fiveFiveNameGenTuples)
+        st.setAttribute("sevenElevenNameGenTuples", sevenElevenNameGenTuples)
         st.setAttribute("lengthAssertions", lengthAssertions)
+        st.setAttribute("okayAssertions", okayAssertions)
         bw.write(st.toString)
       }
 
