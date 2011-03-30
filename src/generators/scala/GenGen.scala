@@ -822,9 +822,9 @@ val generatorSuitePreamble = """
 
 import matchers.ShouldMatchers
 import org.scalacheck.Gen
+"""
 
-class GeneratorDrivenSuite extends FunSuite with GeneratorDrivenPropertyChecks with ShouldMatchers {
-
+val generatorSuitePostamble = """
   val famousLastWords = for {
     s <- Gen.oneOf("the", "program", "compiles", "therefore", "it", "should", "work")
   } yield s
@@ -1781,15 +1781,25 @@ $okayAssertions$
     }
   }
 
-  def genGeneratorDrivenSuite() {
+  // Invitation style indicates how GeneratorDrivenPropertyChecks is imported
+  def genGeneratorDrivenSuite(mixinInvitationStyle: Boolean, withTables: Boolean) {
 
-    val bw = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/prop/GeneratorDrivenSuite.scala"))
+    val traitOrObjectName = if (withTables) "PropertyChecks" else "GeneratorDrivenPropertyChecks"
+    val suiteClassName = traitOrObjectName + (if (mixinInvitationStyle) "Mixin" else "Import") + "Suite" 
+    val fileName = suiteClassName + ".scala" 
+
+    val bw = new BufferedWriter(new FileWriter("target/generated/src/test/scala/org/scalatest/prop/" + fileName))
  
     try {
       val st = new org.antlr.stringtemplate.StringTemplate(copyrightTemplate)
       st.setAttribute("year", thisYear);
       bw.write(st.toString)
       bw.write(generatorSuitePreamble)
+      if (!mixinInvitationStyle)
+      bw.write("import " + traitOrObjectName + "._\n")
+      bw.write("\n")
+      bw.write("class " + suiteClassName + " extends FunSuite " + (if (mixinInvitationStyle) "with GeneratorDrivenPropertyChecks" else "") + " with ShouldMatchers {\n")
+      bw.write(generatorSuitePostamble)
       val alpha = "abcdefghijklmnopqrstuv"
       for (i <- 1 to 6) {
         val st = new org.antlr.stringtemplate.StringTemplate(generatorSuiteTemplate)
@@ -1845,6 +1855,9 @@ $okayAssertions$
   }
 
   genPropertyChecks()
-  genGeneratorDrivenSuite()
+  genGeneratorDrivenSuite(true, false)
+  genGeneratorDrivenSuite(false, false)
+  genGeneratorDrivenSuite(true, true)
+  genGeneratorDrivenSuite(false, true)
 }
 
