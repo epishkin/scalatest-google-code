@@ -1361,13 +1361,6 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   }
 
   /**
-   * <strong>The <code>groups</code> methods has been deprecated and will be removed in a future version of ScalaTest.
-   * Please call (and override) <code>tags</code> instead.</strong>
-   */
-  @deprecated // deprecated in 1.0, so remove in 1.4
-  final def groups: Map[String, Set[String]] = tags
-
-  /**
   * An <code>Set</code> of test names. If this <code>Suite</code> contains no tests, this method returns an empty <code>Set</code>.
   *
   * <p>

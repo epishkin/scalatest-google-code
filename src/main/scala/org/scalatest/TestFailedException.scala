@@ -45,20 +45,6 @@ class TestFailedException(message: Option[String], cause: Option[Throwable], fai
   }
 
   /**
-   * <strong><code>failedTestCodeStackDepth</code> has been deprecated and will be removed in a future version of
-   * ScalaTest. Please call <code>failedCodeStackDepth</code> instead.</strong>
-   */
-  @deprecated // deprecated in 1.0, remove in 1.4
-  val failedTestCodeStackDepth: Int = failedCodeStackDepth
-
-  /**
-   * <strong><code>failedTestCodeFileNameAndLineNumberString</code> has been deprecated and will be removed in a future version of
-   * ScalaTest. Please call <code>failedCodeFileNameAndLineNumberString</code> instead.</strong>
-   */
-   @deprecated // deprecated in 1.0, remove in 1.4
-   val failedTestCodeFileNameAndLineNumberString: Option[String] = failedCodeFileNameAndLineNumberString
-
-  /**
    * Create a <code>TestFailedException</code> with specified stack depth and no detail message or cause.
    *
    * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.

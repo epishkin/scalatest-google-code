@@ -532,7 +532,7 @@ class ScalaTestAntTask extends Task {
    * <b>Note: The <code>concurrent</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
    * Please use the <code>parallel</code> attribute instead.</b>
    */
-  @deprecated
+  @deprecated("Please use parallel instead")
   def setConcurrent(concurrent: Boolean) {
     Console.err.println("WARNING: 'concurrent' attribute is deprecated " +
                         "- please use 'parallel' instead")
@@ -588,7 +588,7 @@ class ScalaTestAntTask extends Task {
    * <b>The <code>property</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
    * Please use the <code>config</code> attribute instead.</b>
    */
-  @deprecated
+  @deprecated("Please use config instead")
   def addConfiguredProperty(property: NameValuePair) {
     Console.err.println("WARNING: <property> is deprecated - " +
                         "please use <config> instead [name: " +
@@ -664,7 +664,7 @@ class ScalaTestAntTask extends Task {
    * <b>The <code>includes</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
    * Please use the <code>tagsToInclude</code> attribute instead.</b>
    */
-  @deprecated
+  @deprecated("Please use tagsToInclude instead")
   def addConfiguredIncludes(includes: TextElement) {
     Console.err.println("WARNING: 'includes' is deprecated - " +
                         "use 'tagsToInclude' instead [includes: " +
@@ -684,7 +684,7 @@ class ScalaTestAntTask extends Task {
    * <b>The <code>excludes</code> attribute has been deprecated and will be removed in a future version of ScalaTest.
    * Please use the <code>tagsToExclude</code> attribute instead.</b>
    */
-  @deprecated
+  @deprecated("Please use tagsToExclude instead")
   def addConfiguredExcludes(excludes: TextElement) {
     Console.err.println("WARNING: 'excludes' is deprecated - " +
                         "use 'tagsToExclude' instead [excludes: " +
