@@ -30,13 +30,13 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("should test this", "should test that")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new FlatSpec {}
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new FlatSpec {
@@ -45,7 +45,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("should test that", "should test this")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
 
       val d = new FlatSpec {
@@ -55,7 +55,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("A Tester should test that", "A Tester should test this")) {
-        d.testNames.elements.toList
+        d.testNames.iterator.toList
       }
 
       val e = new FlatSpec {
@@ -65,7 +65,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("A Tester should test this", "A Tester should test that")) {
-        e.testNames.elements.toList
+        e.testNames.iterator.toList
       }
     }
 
@@ -272,7 +272,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         }
 
         expect(List("A Tester should test this", "A Tester should test that")) {
-          e.testNames.elements.toList
+          e.testNames.iterator.toList
         }
 
       }
@@ -1083,7 +1083,7 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
       assert(e.expectedTestCount(Filter()) === 2)
 
-      val f = new SuperSuite(List(a, b, c, d, e))
+      val f = new NestedSuites(a, b, c, d, e)
       assert(f.expectedTestCount(Filter()) === 10)
     }
 

@@ -33,7 +33,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       }
 
       expect(List("should do that", "should do this")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new FixtureSpec {
@@ -42,7 +42,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       }
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new FixtureSpec {
@@ -55,7 +55,7 @@ class FixtureSpecSpec extends org.scalatest.Spec with PrivateMethodTester with S
       }
 
       expect(List("should do this", "should do that")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
     }
 

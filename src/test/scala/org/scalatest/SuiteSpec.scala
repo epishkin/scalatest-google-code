@@ -38,13 +38,13 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       }
 
       expect(List("testThat", "testThis")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new Suite {}
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new Suite {
@@ -53,7 +53,7 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       }
 
       expect(List("testThat", "testThis")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
     }
     
@@ -484,7 +484,7 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
       assert(e.expectedTestCount(Filter()) === 2)
 
-      val f = new SuperSuite(List(a, b, c, d, e))
+      val f = new NestedSuites(a, b, c, d, e)
       assert(f.expectedTestCount(Filter()) === 10)
     }
 

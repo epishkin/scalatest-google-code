@@ -825,7 +825,11 @@ THIS DOESN'T OVERLOAD. I THINK I'LL EITHER NEED TO USE interceptWithMessage OR J
 object Assertions extends Assertions {
   private[scalatest] def areEqualComparingArraysStructurally(left: Any, right: Any) = {
       left match {
-        case leftArray: Array[_] => leftArray.deepEquals(right)
+        case leftArray: Array[_] =>
+          right match {
+            case rightArray: Array[_] => leftArray.deep.equals(rightArray.deep)
+            case _ => left == right
+        }
         case _ => left == right
     }
   }

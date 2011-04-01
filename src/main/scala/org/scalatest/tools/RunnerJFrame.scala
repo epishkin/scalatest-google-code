@@ -623,7 +623,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
     runsFailuresItem.addActionListener(
       new ActionListener() {
         def actionPerformed(ae: ActionEvent) {
-          viewOptions = runsAndFailures ** eventTypesToCollect
+          viewOptions = runsAndFailures intersect eventTypesToCollect
           updateViewOptionsAndEventsList()
         }
       }
@@ -736,7 +736,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
   }
 
   private def reorderCollectedEvents() {
-    collectedEvents = collectedEvents.sort((a, b) => a.event.ordinal > b.event.ordinal)
+    collectedEvents = collectedEvents.sortWith((a, b) => a.event.ordinal > b.event.ordinal)
   }
 
   private def refreshEventsJList() {
@@ -1349,7 +1349,7 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
   def showErrorDialog(title: String, msg: String) {
     val jOptionPane: JOptionPane = new NarrowJOptionPane(msg, JOptionPane.ERROR_MESSAGE)
     val jd: JDialog = jOptionPane.createDialog(RunnerJFrame.this, title)
-    jd.show()
+    jd.setVisible(true)
   }
 
   private class RunnerThread extends Thread {

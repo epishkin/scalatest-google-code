@@ -25,7 +25,7 @@ private[fixture] object FixtureNodeFamily  {
     var subNodes: List[Node] = Nil
   }
 
-  case class Trunk extends Branch(None)
+  class Trunk extends Branch(None)
 
   case class FixtureTestLeaf[FixtureParam](
     parent: Branch,
@@ -52,7 +52,7 @@ private[fixture] object FixtureNodeFamily  {
   // because that needs to be in the test name
   private[scalatest] def getPrefix(branch: Branch): String = {
     branch match {
-      case Trunk() => ""
+      case _: Trunk => ""
       // Call to getPrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionName) =>
@@ -70,7 +70,7 @@ private[fixture] object FixtureNodeFamily  {
   // that needs to go into the first part of the specText that gets printed out for a test.
   private[scalatest] def getPrefixWithoutVerb(branch: Branch): String = {
     branch match {
-      case Trunk() => ""
+      case _: Trunk => ""
       // Call to getPrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionName) =>
@@ -87,7 +87,7 @@ private[fixture] object FixtureNodeFamily  {
   // So it goes up to the verb and stops
   private[scalatest] def getFormattedSpecTextPrefix(branch: Branch): String = {
     branch match {
-      case Trunk() => ""
+      case _: Trunk => ""
       // Call to getTestPrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionName) =>

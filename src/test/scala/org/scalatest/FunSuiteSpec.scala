@@ -29,13 +29,13 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       }
 
       expect(List("test this", "test that")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new FunSuite {}
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new FunSuite {
@@ -44,7 +44,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       }
 
       expect(List("test that", "test this")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
     }
 
@@ -633,7 +633,7 @@ class FunSuiteSpec extends Spec with SharedHelpers {
       assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
       assert(e.expectedTestCount(Filter()) === 2)
 
-      val f = new SuperSuite(List(a, b, c, d, e))
+      val f = new NestedSuites(a, b, c, d, e)
       assert(f.expectedTestCount(Filter()) === 10)
     }
     it("should generate a TestPending message when the test body is (pending)") {

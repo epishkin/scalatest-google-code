@@ -50,7 +50,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new FixtureSuite {
@@ -59,7 +59,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new FixtureSuite {
@@ -70,7 +70,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
     }
 
@@ -133,7 +133,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new FixtureSuite {
@@ -142,7 +142,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new FixtureSuite {
@@ -153,7 +153,7 @@ class FixtureSuiteSpec extends org.scalatest.Spec with PrivateMethodTester with 
       }
 
       expect(List("testThat(FixtureParam)", "testThis(FixtureParam)")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
     }
 

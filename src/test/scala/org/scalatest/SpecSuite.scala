@@ -85,8 +85,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
     val a = new MySpec
     a.execute()
     assert(a.testNames.size === 2)
-    assert(a.testNames.elements.toList(0) === "should get invoked")
-    assert(a.testNames.elements.toList(1) === "should also get invoked")
+    assert(a.testNames.iterator.toList(0) === "should get invoked")
+    assert(a.testNames.iterator.toList(1) === "should also get invoked")
   }
  
   test("plain-old specifier test names should include an enclosing describe string, separated by a space") {
@@ -98,8 +98,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
     val a = new MySpec
     assert(a.testNames.size === 2)
-    assert(a.testNames.elements.toList(0) === "A Stack must allow me to pop")
-    assert(a.testNames.elements.toList(1) === "A Stack must allow me to push")
+    assert(a.testNames.iterator.toList(0) === "A Stack must allow me to pop")
+    assert(a.testNames.iterator.toList(1) === "A Stack must allow me to push")
   }
 
   test("plain-old test names should properly nest plain-old descriptions in test names") {
@@ -115,12 +115,12 @@ class SpecSuite extends FunSuite with SharedHelpers {
     }
     val a = new MySpec
     assert(a.testNames.size === 2)
-    assert(a.testNames.elements.toList(0) === "A Stack (when not empty) must allow me to pop")
-    assert(a.testNames.elements.toList(1) === "A Stack (when not full) must allow me to push")
+    assert(a.testNames.iterator.toList(0) === "A Stack (when not empty) must allow me to pop")
+    assert(a.testNames.iterator.toList(1) === "A Stack (when not full) must allow me to push")
   }
   
-  test("should be able to mix in BeforeAndAfter without any problems") {
-    class MySpec extends Spec with ShouldMatchers with BeforeAndAfter {
+  test("should be able to mix in BeforeAndAfterEach with BeforeAndAfterAll without any problems") {
+    class MySpec extends Spec with ShouldMatchers with BeforeAndAfterEach with BeforeAndAfterAll {
       describe("A Stack") {
         describe("(when not empty)") {
           it("should allow me to pop") {}
@@ -1133,7 +1133,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
  
   // Testing Shared behaviors
   test("a shared specifier invoked with 'should behave like a' should get invoked") {
-    class MySpec extends Spec with BeforeAndAfter {
+    class MySpec extends Spec with BeforeAndAfterEach with BeforeAndAfterAll {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) {
         it("should be invoked") {
@@ -1156,7 +1156,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
   }
   
   test("two examples in a shared behavior should get invoked") {
-    class MySpec extends Spec with BeforeAndAfter {
+    class MySpec extends Spec with BeforeAndAfterEach with BeforeAndAfterAll {
       var sharedExampleInvoked = false
       var sharedExampleAlsoInvoked = false
       def invocationVerifier(i: Int) {
@@ -1252,7 +1252,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
         }
       }
     }
-    class MySpec extends Spec with BeforeAndAfter {
+    class MySpec extends Spec with BeforeAndAfterEach with BeforeAndAfterAll {
       var sharedExampleInvoked = false
       def invocationVerifier(i: Int) {
         it("it should be invoked") {

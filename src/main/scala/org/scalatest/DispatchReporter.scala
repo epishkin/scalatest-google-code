@@ -123,7 +123,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
                   updatedSummary(summary, ordinal) match {
                     case None => oldRunCompleted
                     case newSummary @ Some(_) =>
-                      counterMap.removeKey(ordinal.runStamp)
+                      counterMap.remove(ordinal.runStamp)
                       // Update the RunCompleted so that it is the same except it has a new Some(Summary)
                       RunCompleted(ordinal, duration, newSummary, formatter, payload, threadName, timeStamp)
                   }
@@ -132,7 +132,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
                   updatedSummary(summary, ordinal) match {
                     case None => oldRunStopped
                     case newSummary @ Some(_) =>
-                      counterMap.removeKey(ordinal.runStamp)
+                      counterMap.remove(ordinal.runStamp)
                       // Update the RunStopped so that it is the same except it has a new Some(Summary)
                       RunStopped(ordinal, duration, newSummary, formatter, payload, threadName, timeStamp)
                   }
@@ -141,7 +141,7 @@ private[scalatest] class DispatchReporter(val reporters: List[Reporter], out: Pr
                   updatedSummary(summary, ordinal) match {
                     case None => oldRunAborted
                     case newSummary @ Some(_) =>
-                      counterMap.removeKey(ordinal.runStamp)
+                      counterMap.remove(ordinal.runStamp)
                       // Update the RunAborted so that it is the same except it has a new Some(Summary)
                       RunAborted(ordinal, message, throwable, duration, newSummary, formatter, payload, threadName, timeStamp)
                   }

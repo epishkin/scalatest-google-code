@@ -608,7 +608,7 @@ object Runner {
   private[scalatest] def checkArgsForValidity(args: Array[String]) = {
 
     val lb = new ListBuffer[String]
-    val it = args.elements
+    val it = args.iterator
     while (it.hasNext) {
       val s = it.next
       // Style advice
@@ -662,7 +662,7 @@ object Runner {
     val wildcard = new ListBuffer[String]()
     val testNGXMLFiles = new ListBuffer[String]()
 
-    val it = args.elements
+    val it = args.iterator
     while (it.hasNext) {
 
       val s = it.next
@@ -797,7 +797,7 @@ object Runner {
     // The reporterArg passed includes the initial -, as in "-oFI",
     // so the first config param will be at index 2
     val configString = reporterArg.substring(2)
-    val it = configString.elements
+    val it = configString.iterator
     var set = Set[ReporterConfigParam]()
     while (it.hasNext) 
       it.next match {
@@ -869,7 +869,7 @@ object Runner {
 
     // TODO: also check and print a user friendly message for this
     // again here, i had to skip some things, so I had to use an iterator.
-    val it = args.elements
+    val it = args.iterator
     while (it.hasNext)
       it.next.take(2).toString match {
         case "-g" =>
@@ -920,7 +920,7 @@ object Runner {
       }
 
     def buildFileReporterConfigurationList(args: List[String]) = {
-      val it = args.elements
+      val it = args.iterator
       val lb = new ListBuffer[FileReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
@@ -932,7 +932,7 @@ object Runner {
     val fileReporterConfigurationList = buildFileReporterConfigurationList(args)
 
     def buildXmlReporterConfigurationList(args: List[String]) = {
-      val it = args.elements
+      val it = args.iterator
       val lb = new ListBuffer[XmlReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
@@ -945,7 +945,7 @@ object Runner {
     val xmlReporterConfigurationList = buildXmlReporterConfigurationList(args)
 
     def buildHtmlReporterConfigurationList(args: List[String]) = {
-      val it = args.elements
+      val it = args.iterator
       val lb = new ListBuffer[HtmlReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
@@ -969,7 +969,7 @@ object Runner {
       }
 
     def buildCustomReporterConfigurationList(args: List[String]) = {
-      val it = args.elements
+      val it = args.iterator
       val lb = new ListBuffer[CustomReporterConfiguration]
       while (it.hasNext) {
         val arg = it.next
@@ -1015,7 +1015,7 @@ object Runner {
       throw new NullPointerException("dashArg invalid: " + dashArg)
 
     val lb = new ListBuffer[String]
-    val it = args.elements
+    val it = args.iterator
     while (it.hasNext) {
       val dashS = it.next
       if (dashS != dashArg)
@@ -1594,7 +1594,7 @@ object Runner {
   
               // file.toURL may throw MalformedURLException too, but for now
               // just let that propagate up.
-              file.toURL() // If a dir, comes back terminated by a slash
+              file.toURI.toURL // If a dir, comes back terminated by a slash
             }
           }
         }

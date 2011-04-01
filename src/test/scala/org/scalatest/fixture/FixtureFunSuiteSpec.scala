@@ -32,7 +32,7 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       expect(List("that", "this")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new FixtureFunSuite {
@@ -41,7 +41,7 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new FixtureFunSuite {
@@ -54,7 +54,7 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       expect(List("this", "that")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
     }
 

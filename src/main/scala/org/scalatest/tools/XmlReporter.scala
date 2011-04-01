@@ -107,7 +107,7 @@ private[scalatest] class XmlReporter(directory: String) extends Reporter {
       events.toList.filter(
         e => e.ordinal.toList.dropRight(1) == ordinalPrefix)
 
-    val orderedEvents = samePrefixEvents.sort((a,b)=>a<b).toArray
+    val orderedEvents = samePrefixEvents.sortWith((a, b) => a < b).toArray
 
     val (startIndex, endIndex) = locateSuite(orderedEvents, endEvent)
 

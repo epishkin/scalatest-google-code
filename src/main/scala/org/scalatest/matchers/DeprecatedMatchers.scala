@@ -22,6 +22,7 @@ import scala.util.matching.Regex
 import java.lang.reflect.Field
 import scala.reflect.Manifest
 import Helper.transformOperatorChars
+import Assertions.areEqualComparingArraysStructurally
 
 // TODO: drop generic support for be as an equality comparison, in favor of specific ones.
 // TODO: mention on JUnit and TestNG docs that you can now mix in DeprecatedShouldMatchers or DeprecatedMustMatchers
@@ -63,9 +64,9 @@ trait DeprecatedMatchers extends Assertions { matchers =>
         val methodNameToInvoke = mangledPropertyName
 
         // methodNameToInvokeWithIs would be "isEmpty"
-        val methodNameToInvokeWithIs = "is"+ mangledPropertyName(0).toUpperCase + mangledPropertyName.substring(1)
+        val methodNameToInvokeWithIs = "is"+ mangledPropertyName(0).toUpper + mangledPropertyName.substring(1)
 
-        val firstChar = propertyName(0).toLowerCase
+        val firstChar = propertyName(0).toLower
         val methodNameStartsWithVowel = firstChar == 'a' || firstChar == 'e' || firstChar == 'i' ||
           firstChar == 'o' || firstChar == 'u'
 
@@ -1837,7 +1838,7 @@ trait DeprecatedMatchers extends Assertions { matchers =>
       new Matcher[Iterable[T]] {
         def apply(left: Iterable[T]) =
           MatchResult(
-            left.elements.contains(expectedElement), 
+            left.iterator.contains(expectedElement), 
             FailureMessages("didNotContainExpectedElement", left, expectedElement),
             FailureMessages("containedExpectedElement", left, expectedElement)
           )
@@ -2455,7 +2456,7 @@ trait DeprecatedMatchers extends Assertions { matchers =>
               val methodNameToInvoke = mangledPropertyName
 
               // methodNameToInvokeWithGet would be "getTitle"
-              val methodNameToInvokeWithGet = "get"+ mangledPropertyName(0).toUpperCase + mangledPropertyName.substring(1)
+              val methodNameToInvokeWithGet = "get"+ mangledPropertyName(0).toUpper + mangledPropertyName.substring(1)
 
               throw newTestFailedException(Resources("propertyNotFound", methodNameToInvoke, expectedValue.toString, methodNameToInvokeWithGet))
 
@@ -2819,7 +2820,7 @@ e>DeprecatedMustMatchers</code></a> for an overview of
    *
    * @author Bill Venners
    */
-class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
+  class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
 
     /**
      * This method enables the following syntax:
@@ -2835,7 +2836,8 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedSize" else "hadExpectedSize",
             left,
-            expectedSize)
+            expectedSize
+          )
         )
     }
 
@@ -2853,7 +2855,9 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
           FailureMessages(
             if (shouldBeTrue) "didNotHaveExpectedLength" else "hadExpectedLength",
             left,
-            expectedLength)        )
+            expectedLength
+          )
+        )
     }
   }
 
@@ -4408,20 +4412,11 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
   def equal(right: Any): Matcher[Any] =
       new Matcher[Any] {
         def apply(left: Any) =
-          left match {
-            case leftArray: Array[_] => 
-              MatchResult(
-                leftArray.deepEquals(right), // TODO: Change to leftArray.deep equals (right.deep)
-                FailureMessages("didNotEqual", left, right),
-                FailureMessages("equaled", left, right)
-              )
-            case _ => 
-              MatchResult(
-                left == right,
-                FailureMessages("didNotEqual", left, right),
-                FailureMessages("equaled", left, right)
-              )
-        }
+          MatchResult(
+            areEqualComparingArraysStructurally(left, right),
+            FailureMessages("didNotEqual", left, right),
+            FailureMessages("equaled", left, right)
+          )
       }
 
 
@@ -4675,20 +4670,11 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
     def ===(right: Any): Matcher[Any] =
       new Matcher[Any] {
         def apply(left: Any) =
-          left match {
-            case leftArray: Array[_] =>
-              MatchResult(
-                leftArray.deepEquals(right),
-                FailureMessages("wasNotEqualTo", left, right),
-                FailureMessages("wasEqualTo", left, right)
-              )
-            case _ =>
-              MatchResult(
-                left == right,
-                FailureMessages("wasNotEqualTo", left, right),
-                FailureMessages("wasEqualTo", left, right)
-              )
-        }
+          MatchResult(
+            areEqualComparingArraysStructurally(left, right),
+            FailureMessages("wasNotEqualTo", left, right),
+            FailureMessages("wasEqualTo", left, right)
+          )
       }
 
     /**
@@ -5019,15 +5005,9 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
                 FailureMessages("wasNotNull", right),
                 FailureMessages("midSentenceWasNull")
               )
-            case leftArray: Array[_] => 
-              MatchResult(
-                leftArray.deepEquals(right),
-                FailureMessages("wasNotEqualTo", left, right),
-                FailureMessages("wasEqualTo", left, right)
-              )
             case _ => 
               MatchResult(
-                left == right,
+                areEqualComparingArraysStructurally(left, right),
                 FailureMessages("wasNotEqualTo", left, right),
                 FailureMessages("wasEqualTo", left, right)
               )
@@ -5577,15 +5557,9 @@ class ResultOfHaveWordForArray[T](left: Array[T], shouldBeTrue: Boolean) {
                 FailureMessages("midSentenceWasNull"),
                 FailureMessages("wasNotNull", right)
               )
-            case leftArray: Array[_] => 
-              MatchResult(
-                !leftArray.deepEquals(right),
-                FailureMessages("wasEqualTo", left, right),
-                FailureMessages("wasNotEqualTo", left, right)
-              )
             case _ => 
               MatchResult(
-                left != right,
+                !areEqualComparingArraysStructurally(left, right),
                 FailureMessages("wasEqualTo", left, right),
                 FailureMessages("wasNotEqualTo", left, right)
               )

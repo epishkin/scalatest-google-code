@@ -196,7 +196,7 @@ class ScalaTestFramework extends Framework {
       val excludes = new ListBuffer[String]()
       var repoArg: Option[String] = None
 
-      val it = args.elements
+      val it = args.iterator
       while (it.hasNext) {
 
         val s = it.next

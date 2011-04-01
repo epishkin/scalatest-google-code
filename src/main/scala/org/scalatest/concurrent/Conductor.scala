@@ -845,7 +845,7 @@ final class Conductor {
   /**
    * Base class for the possible states of the Conductor.
    */
-  private sealed case class ConductorState(testWasStarted: Boolean, testIsFinished: Boolean)
+  private sealed class ConductorState(val testWasStarted: Boolean, val testIsFinished: Boolean)
 
   /**
    * The initial state of the Conductor.

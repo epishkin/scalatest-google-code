@@ -40,8 +40,8 @@ import scala.collection.Traversable
  * 
  * <p>
  * The <code>left should equal (right)</code> syntax works by calling <code>==</code>  on the <code>left</code>
- * value, passing in the <code>right</code> value, on every type except arrays. If <code>left</code> is an array, <code>deepEquals</code>
- * will be invoked on <code>left</code>, passing in <code>right</code>. Thus, even though this expression
+ * value, passing in the <code>right</code> value, on every type except arrays. If both <code>left</code> and right are arrays, <code>deep</code>
+ * will be invoked on both <code>left</code> and <code>right</code> before comparing them with <em>==</em>. Thus, even though this expression
  * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
  * </p>
  * 
@@ -50,7 +50,7 @@ import scala.collection.Traversable
  * </pre>
  *
  * <p>
- * The following expression will <em>not</em> result in a <code>TestFailedException</code>, because <code>deepEquals</code> compares
+ * The following expression will <em>not</em> result in a <code>TestFailedException</code>, because ScalaTest compares
  * the two arrays structurally, taking into consideration the equality of the array's contents:
  * </p>
  *
@@ -159,8 +159,8 @@ import scala.collection.Traversable
  *
  * <p>
  * The <code>left should be === (right)</code> syntax works by calling <code>==</code>  on the <code>left</code>
- * value, passing in the <code>right</code> value, on every type except arrays. If <code>left</code> is an array, <code>deepEquals</code>
- * will be invoked on <code>left</code>, passing in <code>right</code>. Thus, even though this expression
+ * value, passing in the <code>right</code> value, on every type except arrays. If both <code>left</code> and right are arrays, <code>deep</code>
+ * will be invoked on both <code>left</code> and <code>right</code> before comparing them with <em>==</em>. Thus, even though this expression
  * will yield false, because <code>Array</code>'s <code>equals</code> method compares object identity:
  * </p>
  *
@@ -169,7 +169,7 @@ import scala.collection.Traversable
  * </pre>
  *
  * <p>
- * The following expression will <em>not</em> result in a <code>TestFailedException</code>, because <code>deepEquals</code> compares
+ * The following expression will <em>not</em> result in a <code>TestFailedException</code>, because ScalaTest compares
  * the two arrays structurally, taking into consideration the equality of the array's contents:
  * </p>
  *
@@ -455,7 +455,8 @@ import scala.collection.Traversable
  * </pre>
  * 
  * <p>
- * As with <code>equal</code>, using <code>be</code> on arrays results in <code>deepEquals</code> being called, not <code>equals</code>. As a result,
+ * As with <code>equal</code>, using <code>be</code> on two arrays results in <code>deep</code> being called on both arrays prior to
+ * calling <code>equal</code>. As a result,
  * the following expression would <em>not</em> throw a <code>TestFailedException</code>:
  * </p>
  *

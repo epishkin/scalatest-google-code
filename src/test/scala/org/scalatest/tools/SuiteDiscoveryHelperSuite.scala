@@ -88,19 +88,19 @@ class SuiteDiscoveryHelperSuite extends Suite {
   }
 
   def testExtractClassNames() {
-    assert(sdtf.extractClassNames(List("bob.class").elements, '/').toList === List("bob"))
-    assert(sdtf.extractClassNames(List("bob.class", "manifest.txt", "a/b/c/bob.class").elements, '/').toList === List("bob", "a.b.c.bob"))
-    assert(sdtf.extractClassNames(List("bob.class", "manifest.txt", "a\\b\\c\\bob.class").elements, '\\').toList === List("bob", "a.b.c.bob"))
-    assert(sdtf.extractClassNames(List("bob.class", "manifest.txt", "/a/b/c/bob.class").elements, '/').toList === List("bob", "a.b.c.bob"))
+    assert(sdtf.extractClassNames(List("bob.class").iterator, '/').toList === List("bob"))
+    assert(sdtf.extractClassNames(List("bob.class", "manifest.txt", "a/b/c/bob.class").iterator, '/').toList === List("bob", "a.b.c.bob"))
+    assert(sdtf.extractClassNames(List("bob.class", "manifest.txt", "a\\b\\c\\bob.class").iterator, '\\').toList === List("bob", "a.b.c.bob"))
+    assert(sdtf.extractClassNames(List("bob.class", "manifest.txt", "/a/b/c/bob.class").iterator, '/').toList === List("bob", "a.b.c.bob"))
   }
 
   def testProcessFileNames() {
 
     val loader = getClass.getClassLoader
-    val discoveredSet1 = sdtf.processFileNames(List("doesNotExist.txt", "noSuchfile.class").elements, '/', loader)
+    val discoveredSet1 = sdtf.processFileNames(List("doesNotExist.txt", "noSuchfile.class").iterator, '/', loader)
     assert(discoveredSet1.isEmpty)
 
-    val discoveredSet2 = sdtf.processFileNames(List("org/scalatest/EasySuite.class", "noSuchfile.class", "org/scalatest/FastAsLight.class").elements, '/', loader)
+    val discoveredSet2 = sdtf.processFileNames(List("org/scalatest/EasySuite.class", "noSuchfile.class", "org/scalatest/FastAsLight.class").iterator, '/', loader)
     assert(discoveredSet2 === Set("org.scalatest.EasySuite"))
 
     val fileNames3 =
@@ -118,7 +118,7 @@ class SuiteDiscoveryHelperSuite extends Suite {
         // "org.scalatest.RunnerSuite", dropped this when moved RunnerSuite to tools
         "org.scalatest.SuiteSuite"
       )
-    val discoveredSet3 = sdtf.processFileNames(fileNames3.elements, '/', loader)
+    val discoveredSet3 = sdtf.processFileNames(fileNames3.iterator, '/', loader)
     assert(discoveredSet3 === classNames3)
 
     // Test with backslashes
@@ -131,7 +131,7 @@ class SuiteDiscoveryHelperSuite extends Suite {
         "noSuchfile.class",
         "org\\scalatest\\FastAsLight.class"
       )
-    val discoveredSet4 = sdtf.processFileNames(fileNames4.elements, '\\', loader)
+    val discoveredSet4 = sdtf.processFileNames(fileNames4.iterator, '\\', loader)
     assert(discoveredSet4 === classNames3)
 
     // Test with leading slashes
@@ -144,7 +144,7 @@ class SuiteDiscoveryHelperSuite extends Suite {
         "/noSuchfile.class",
         "/org/scalatest/FastAsLight.class"
       )
-    val discoveredSet5 = sdtf.processFileNames(fileNames5.elements, '/', loader)
+    val discoveredSet5 = sdtf.processFileNames(fileNames5.iterator, '/', loader)
     assert(discoveredSet5 === classNames3)
   }
 

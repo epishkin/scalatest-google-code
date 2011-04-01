@@ -15,6 +15,7 @@
  */
 package org.scalatest
 
+// elements
 import org.scalatest.events._
 
 class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
@@ -168,13 +169,13 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("it should test this", "it should test that")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new WordSpec {}
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new WordSpec {
@@ -183,7 +184,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("it should test that", "it should test this")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
 
       val d = new WordSpec {
@@ -194,7 +195,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("A Tester should test that", "A Tester should test this")) {
-        d.testNames.elements.toList
+        d.testNames.iterator.toList
       }
 
       val e = new WordSpec {
@@ -205,7 +206,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       }
 
       expect(List("A Tester should test this", "A Tester should test that")) {
-        e.testNames.elements.toList
+        e.testNames.iterator.toList
       }
     }
 
@@ -829,7 +830,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
       assert(e.expectedTestCount(Filter()) === 2)
 
-      val f = new SuperSuite(List(a, b, c, d, e))
+      val f = new NestedSuites(a, b, c, d, e)
       assert(f.expectedTestCount(Filter()) === 10)
     }
     it("should generate a TestPending message when the test body is (pending)") {

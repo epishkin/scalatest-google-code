@@ -153,7 +153,7 @@ class FilterSpec extends Spec {
         // other exclude tag should "overpower" the Ignore tag.
         for (testName <- testNames) {
           if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore") &&
-                  ((tags(testName) - "org.scalatest.Ignore") ** tagsToExclude).isEmpty)
+                  ((tags(testName) - "org.scalatest.Ignore") intersect tagsToExclude).isEmpty)
             assert(filtered exists (tuple => tuple._1 == testName && tuple._2 == true), testName + " was in the tags map as ignored, but did not show up in the result of apply marked as ignored") 
         }
 
@@ -206,7 +206,7 @@ class FilterSpec extends Spec {
         for ((testName, _) <- filtered) {
           assert(tags contains testName, "tags did not contain as a key the test name: " + testName)
           val tagsForTestName = tags(testName)
-          val intersection = tagsToInclude ** tagsForTestName
+          val intersection = tagsToInclude intersect tagsForTestName
           assert(intersection.size != 0, "None of the tags for the test name showed up in the non-empty tags to include set")
         }
         for ((testName, ignore) <- filtered) {
@@ -229,8 +229,8 @@ class FilterSpec extends Spec {
         // other exclude tag should "overpower" the Ignore tag.
         for (testName <- testNames) {
           if (tags.contains(testName) && tags(testName).exists(_ == "org.scalatest.Ignore") &&
-                  ((tags(testName) ** tagsToInclude).size > 0) &&
-                  ((tags(testName) - "org.scalatest.Ignore") ** tagsToExclude).isEmpty)
+                  ((tags(testName) intersect tagsToInclude).size > 0) &&
+                  ((tags(testName) - "org.scalatest.Ignore") intersect tagsToExclude).isEmpty)
             assert(filtered exists (tuple => tuple._1 == testName && tuple._2 == true), testName + " was in the tags map as ignored, but did not show up in the result of apply marked as ignored") 
         }
       }

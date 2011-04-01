@@ -35,7 +35,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       expect(List("Something should do that", "Something should do this")) {
-        a.testNames.elements.toList
+        a.testNames.iterator.toList
       }
 
       val b = new FixtureWordSpec {
@@ -44,7 +44,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       expect(List[String]()) {
-        b.testNames.elements.toList
+        b.testNames.iterator.toList
       }
 
       val c = new FixtureWordSpec {
@@ -59,7 +59,7 @@ class FixtureWordSpecSpec extends org.scalatest.Spec with PrivateMethodTester wi
       }
 
       expect(List("Something should do this", "Something should do that")) {
-        c.testNames.elements.toList
+        c.testNames.iterator.toList
       }
     }
 
