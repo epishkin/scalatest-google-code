@@ -706,6 +706,52 @@ val propertyCheckPreamble = """
       }
  * </pre>
  *
+ * <h2>Testing invalid argument combinations</h2>
+ * 
+ * <p>
+ * A table-driven property check can also be helpful to ensure that the proper exception is thrown when invalid data is
+ * passed to a method or constructor. For example, the <code>Fraction</code> constructor shown above should throw <code>IllegalArgumentException</code>
+ * if <code>Integer.MIN_VALUE</code> is passed for either the numerator or denominator, or zero is passed for the denominator. This yields the
+ * following five combinations of invalid data:
+ * </p>
+ *
+ * <table style="border-collapse: collapse; border: 1px solid black">
+ * <tr><th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black"><code>n</code></th><th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black"><code>d</code></td></th>
+ * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td></tr>
+ * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">a valid value</td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td></tr>
+ * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">a valid value</td></tr>
+ * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">zero</td></tr>
+ * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">a valid value</td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">zero</td></tr>
+ * </table>
+ *
+ * <p>
+ * You an express these combinations in a table:
+ * </p>
+ *
+ * <pre>
+ * val invalidCombos =
+ *   Table(
+ *     ("n",               "d"),
+ *     (Integer.MIN_VALUE, Integer.MIN_VALUE),
+ *     (1,                 Integer.MIN_VALUE),
+ *     (Integer.MIN_VALUE, 1),
+ *     (Integer.MIN_VALUE, 0),
+ *     (1,                 0)
+ *   )
+ * </pre>
+ * 
+ * <p>
+ * Given this table, you could check that all invalid combinations produce <code>IllegalArgumentException</code>, like this:
+ * </p>
+ *
+ * <pre>
+ * forAll (invalidCombos) { (n: Int, d: Int) =>
+ *   evaluating {
+ *     new Fraction(n, d)
+ *   } should produce [IllegalArgumentException]
+ * }
+ * </pre>
+ *
  * </p>
  * @author Bill Venners
  */

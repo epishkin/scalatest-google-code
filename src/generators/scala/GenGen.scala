@@ -246,16 +246,183 @@ import org.scalacheck.Test.Params
  * </p>
  *
  * <p>
- * The <code>forAll</code> method use the supplied <code>Arbitrary</code> generators to generate example
+ * The <code>forAll</code> methods use the supplied <code>Arbitrary</code> generators to generate example
  * arguments and pass them to the property function, and
  * generate a <code>GeneratorDrivenPropertyCheckFailedException</code> if the function
- * completes abruptly any exception that would <a href="../Suite.html#errorHandling">normally cause</a> a test to
- * fail in ScalaTest other than <code>UnmetConditionException</code>. An
- * <code>UnmetConditionException</code>,
- * which is thrown by the <code>whenever</code> method (also defined in this trait) to indicate
+ * completes abruptly for any exception that would <a href="../Suite.html#errorHandling">normally cause</a> a test to
+ * fail in ScalaTest other than <code>DiscardedEvaluationException</code>. An
+ * <code>DiscardedEvaluationException</code>,
+ * which is thrown by the <code>whenever</code> method (defined in trait <code>Whenever</code>, which this trait extends) to indicate
  * a condition required by the property function is not met by a row
  * of passed data, will simply cause <code>forAll</code> to discard that row of data.
  * </p>
+ *
+ * <h2>Supplying argument names</h2>
+ *
+ * <p>
+ * You can optionally specify string names for the arguments passed to a property function, which will be used
+ * in any error message when describing the argument values that caused the failure. To supply the names, place them in a comma separated list
+ * in parentheses after <code>forAll</code> before the property function (a curried form of <code>forAll</code>). Here's
+ * an example:
+ * </p>
+ *
+ * <pre>
+ * forAll ("a", "b") { (a: String, b: String) =>
+ *   a.length + b.length should equal ((a + b).length + 1) // Should fail
+ * }
+ * </pre>
+ *
+ * <p>
+ * When this fails, you'll see an error message that includes this:
+ * </p>
+ *
+ * <pre>
+ * Occurred when passed generated values (
+ *   a = "",
+ *   b = ""
+ * )
+ * </pre>
+ *
+ * <p>
+ * When you don't supply argument names, the error message will say <code>arg0</code>, <code>arg1</code>, <em>etc.</em>.
+ * For example, this property check:
+ * </p>
+ *
+ * <pre>
+ * forAll { (a: String, b: String) =>
+ *   a.length + b.length should equal ((a + b).length + 1) // Should fail
+ * }
+ * </pre>
+ *
+ * <p>
+ * Will fail with an error message that includes:
+ * </p>
+ *
+ * <pre>
+ * Occurred when passed generated values (
+ *   arg0 = "",
+ *   arg1 = ""
+ * )
+ * </pre>
+ *
+ * <h2>Supplying generators</h2>
+ *
+ * <p>
+ * ScalaCheck provides a nice library of compositors that makes it easy to create your own custom generators. If you
+ * want to supply custom generators to a property check, place them in parentheses after <code>forAll</code>, before
+ * the property check function (a curried form of <code>forAll</code>).
+ * </p>
+ *
+ * <p>
+ * For example, to create a generator of even integers between (and including) -2000 and 2000, you could write this:
+ * </p>
+ *
+ * <pre>
+ * import org.scalacheck.Gen
+ *
+ * val evenInts = for(n <- Gen.choose(-1000, 1000)) yield 2 * n
+ * </pre>
+ *
+ * <p>
+ * Given this generator, you could use it on a property check like this:
+ * </p>
+ *
+ * <pre>
+ * forAll (evenInts) { (n) => n % 2 should equal (0) }
+ * </pre>
+ *
+ * <p>
+ * Custom generators are necessary when you want to pass data types not supported by ScalaCheck's arbitrary generators,
+ * but are also useful when some of the values in the full range for the passed types are not valid. For such values you
+ * would use a <code>whenever</code> clause. In the <code>Fraction</code> class shown above, neither the passed numerator or
+ * denominator can be <code>Integer.MIN_VALUE</code>, and the passed denominator cannot be zero. This shows up in the
+ * <code>whenever</code> clause like this:
+ * </p>
+ *
+ * <pre>
+ *   whenever (d != 0 && d != Integer.MIN_VALUE
+ *       && n != Integer.MIN_VALUE) { ...
+ * </pre>
+ *
+ * <p>
+ * You could in addition define generators for the numerator and denominator that only produce valid values, like this:
+ * </p>
+ *
+ * <pre>
+ * val validNumers = for(n <- Gen.choose(Integer.MIN_VALUE + 1, Integer.MAX_VALUE)) yield n
+ * val validDenoms = for(d <- validN if d != 0) yield d
+ * </pre>
+ *
+ * <p>
+ * You could then use them in the property check like this:
+ * </p>
+ *
+ * <pre>
+ * forAll (validNumers, validDenoms) { (n: Int, d: Int) =>
+ *
+ *   whenever (d != 0 && d != Integer.MIN_VALUE
+ *       && n != Integer.MIN_VALUE) {
+ *
+ *     val f = new Fraction(n, d)
+ *
+ *     if (n < 0 && d < 0 || n > 0 && d > 0)
+ *       f.numer should be > 0
+ *     else if (n != 0)
+ *       f.numer should be < 0
+ *     else
+ *       f.numer should be === 0
+ *
+ *     f.denom should be > 0
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Note that even if you are use generators that don't produce the invalid values, you still need the
+ * <code>whenever</code> clause. The reason is that once a property fails, ScalaCheck will try and shrink
+ * the values to the smallest values that still cause the property to fail. During this shrinking process ScalaCheck
+ * may pass invalid values. The <code>whenever</code> clause is still needed to guard against those values. (The
+ * <code>whenever</code> clause also clarifies to readers of the code exactly what the property is in a succinct
+ * way, without requiring that they find and understand the generator definitions.)
+ * </p>
+ *
+ * <h2>Supplying both generators and argument names</h2>
+ *
+ * <p>
+ * If you want to supply both generators and named arguments, you can do so by providing a list of <code>(&lt;generator&gt;, &lt;name&gt;)</code> pairs
+ * in parentheses after <code>forAll</code>, before the property function. Here's an example:
+ * </p>
+ *
+ * <pre>
+ * forAll ((validNumers, "n"), (validDenoms, "d")) { (n: Int, d: Int) =>
+ *
+ *   whenever (d != 0 && d != Integer.MIN_VALUE
+ *       && n != Integer.MIN_VALUE) {
+ *
+ *     val f = new Fraction(n, d)
+ *
+ *     if (n < 0 && d < 0 || n > 0 && d > 0)
+ *       f.numer should be > 0
+ *     else if (n != 0)
+ *       f.numer should be < 0
+ *     else
+ *       f.numer should be === 0
+ *
+ *     f.denom should be > 0
+ *   }
+ * }
+ * </pre>
+ *
+ * <p>
+ * Were this property check to fail, it would mention the names n and d in the error message, like this:
+ * </p>
+ *
+ * <pre>
+ * Occurred when passed generated values (
+ *   n = 17,
+ *   d = 21
+ * )
+ * </pre>
  *
  * @author Bill Venners
  */
