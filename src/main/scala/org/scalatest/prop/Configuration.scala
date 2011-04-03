@@ -19,8 +19,8 @@ import org.scalacheck.Test.Params
 
 /**
  * Trait providing methods and classes used to configure property checks provided by the
- * the <code>forAll</code> methods of traits <code>GeneratorDrivenPropertyChecks</code> (for ScalaTest-style
- * property checks) and <code>Checkers</code> (for ScalaCheck-style property checks).
+ * the <code>forAll</code> methods of trait <code>GeneratorDrivenPropertyChecks</code> (for ScalaTest-style
+ * property checks) and the <code>check</code> methods <code>Checkers</code> (for ScalaCheck-style property checks).
  *
  * @author Bill Venners
  */
@@ -33,44 +33,44 @@ trait Configuration {
    * The default values for the parameters are:
    * </p>
    *
-   * <table>
+   * <table style="border-collapse: collapse; border: 1px solid black">
    * <tr>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * minSuccessful
    * </td>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * 100
    * </td>
    * </tr>
    * <tr>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * maxDiscarded
    * </td>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * 500
    * </td>
    * </tr>
    * <tr>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * minSize
    * </td>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * 0
    * </td>
    * </tr>
    * <tr>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * maxSize
    * </td>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * 100
    * </td>
    * </tr>
    * <tr>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * workers
    * </td>
-   * <td>
+   * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
    * 1
    * </td>
    * </tr>
@@ -80,7 +80,7 @@ trait Configuration {
    * @param maxDiscarded the maximum number of discarded property evaluations allowed during a property check
    * @param minSize the minimum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
    * @param maxSize the maximum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists).
-   * @param workers specifies the number of worker threads * to use during property evaluation
+   * @param workers specifies the number of worker threads to use during property evaluation
    * @throws IllegalArgumentException if the specified <code>minSuccessful</code> value is less than or equal to zero,
    *   the specified <code>maxDiscarded</code> value is less than zero,
    *   the specified <code>minSize</code> value is less than zero,
@@ -156,7 +156,7 @@ trait Configuration {
    * </p>
    *
    * <p>
-   * Simiarly, in <code>Checkers</code>, a property evaluation is discarded if the expression to the left
+   * Similarly, in <code>Checkers</code>, a property evaluation is discarded if the expression to the left
    * of ScalaCheck's <code>==></code> operator is false. Here's an example:
    * </p>
    *

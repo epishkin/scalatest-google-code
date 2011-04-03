@@ -257,7 +257,7 @@ import org.scalacheck.Test.Params
  * of passed data, will simply cause <code>forAll</code> to discard that row of data.
  * </p>
  *
- * <h2>Supplying argument names</h2>
+ * <a name="supplyingArgumentNames"></a><h2>Supplying argument names</h2>
  *
  * <p>
  * You can optionally specify string names for the arguments passed to a property function, which will be used
@@ -305,7 +305,7 @@ import org.scalacheck.Test.Params
  * )
  * </pre>
  *
- * <h2>Supplying generators</h2>
+ * <a name="supplyingGenerators"></a><h2>Supplying generators</h2>
  *
  * <p>
  * ScalaCheck provides a nice library of compositors that makes it easy to create your own custom generators. If you
@@ -320,7 +320,7 @@ import org.scalacheck.Test.Params
  * <pre>
  * import org.scalacheck.Gen
  *
- * val evenInts = for(n <- Gen.choose(-1000, 1000)) yield 2 * n
+ * val evenInts = for (n <- Gen.choose(-1000, 1000)) yield 2 * n
  * </pre>
  *
  * <p>
@@ -386,7 +386,7 @@ import org.scalacheck.Test.Params
  * way, without requiring that they find and understand the generator definitions.)
  * </p>
  *
- * <h2>Supplying both generators and argument names</h2>
+ * <a name="supplyingGeneratorsAndArgNames"></a><h2>Supplying both generators and argument names</h2>
  *
  * <p>
  * If you want to supply both generators and named arguments, you can do so by providing a list of <code>(&lt;generator&gt;, &lt;name&gt;)</code> pairs
@@ -424,6 +424,152 @@ import org.scalacheck.Test.Params
  * )
  * </pre>
  *
+ * <a name="propCheckConfig"></a><h2>Property check configuration</h2>
+ *
+ * <p>
+ * The property checks performed by the <code>forAll</code> methods of this trait can be flexibly configured via the services
+ * provided by supertrait <code>Configuration</code>.  The five configuration parameters for property checks along with their 
+ * default values and meanings are described in the following table:
+ * </p>
+ *
+ * <table style="border-collapse: collapse; border: 1px solid black">
+ * <tr>
+ * <th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black">
+ * <strong>Configuration Parameter</strong>
+ * </th>
+ * <th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black">
+ * <strong>Default Value</strong>
+ * </th>
+ * <th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black">
+ * <strong>Meaning</strong>
+ * </th>
+ * </tr>
+ * <tr>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * minSuccessful
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * 100
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
+ * the minimum number of successful property evaluations required for the property to pass
+ * </td>
+ * </tr>
+ * <tr>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * maxDiscarded
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * 500
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
+ * the maximum number of discarded property evaluations allowed during a property check
+ * </td>
+ * </tr>
+ * <tr>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * minSize
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * 0
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
+ * the minimum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists)
+ * </td>
+ * </tr>
+ * <tr>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * maxSize
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * 100
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
+ * the maximum size parameter to provide to ScalaCheck, which it will use when generating objects for which size matters (such as strings or lists)
+ * </td>
+ * </tr>
+ * <tr>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * workers
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">
+ * 1
+ * </td>
+ * <td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: left">
+ * specifies the number of worker threads to use during property evaluation
+ * </td>
+ * </tr>
+ * </table>
+ *
+ * <p>
+ * The <code>forAll</code> methods of trait <code>GeneratorDrivenPropertyChecks</code> each take a <code>PropertyCheckConfig</code>
+ * object as an implicit parameter. This object provides values for each of the five configuration parameters. Trait <code>Configuration</code>
+ * provides an implicit <code>val</code> named <code>generatorDrivenConfig</code> with each configuration parameter set to its default value. 
+ * If you want to set one or more configuration parameters to a different value for all property checks in a suite you can override this
+ * val (or hide it, for example, if you are importing the members of the <code>GeneratorDrivenPropertyChecks</code> companion object rather
+ * than mixing in the trait.) For example, if
+ * you want all parameters at their defaults except for <code>minSize</code> and <code>maxSize</code>, you can override
+ * <code>generatorDrivenConfig</code>, like this:
+ *
+ * <pre>
+ * implicit override val generatorDrivenConfig =
+ *   PropertyCheckConfig(minSize = 10, maxSize = 20)
+ * </pre>
+ *
+ * <p>
+ * Or, if hide it by declaring a variable of the same name in whatever scope you want the changed values to be in effect:
+ * </p>
+ *
+ * <pre>
+ * implicit val generatorDrivenConfig =
+ *   PropertyCheckConfig(minSize = 10, maxSize = 20)
+ * </pre>
+ *
+ * <p>
+ * In addition to taking a <code>PropertyCheckConfig</code> object as an implicit parameter, the <code>forAll</code> methods of trait
+ * <code>GeneratorDrivenPropertyChecks</code> also take a variable length argument list of <code>PropertyCheckConfigParam</code>
+ * objects that you can use to override the values provided by the implicit <code>PropertyCheckConfig</code> for a single <code>forAll</code>
+ * invocation. For example, if you want to set <code>minSuccessful</code> to 500 for just one particular <code>forAll</code> invocation,
+ * you can do so like this:
+ * </p>
+ *
+ * <pre>
+ * forAll (minSuccessful(500)) { (n: Int, d: Int) => ...
+ * </pre>
+ *
+ * <p>
+ * This invocation of <code>forAll</code> will use 500 for <code>minSuccessful</code> and whatever values are specified by the 
+ * implicitly passed <code>PropertyCheckConfig</code> object for the other configuration parameters.
+ * If you want to set multiple configuration parameters in this way, just list them separated by commas:
+ * </p>
+ * 
+ * <pre>
+ * forAll (minSuccessful(500), maxDiscarded(300)) { (n: Int, d: Int) => ...
+ * </pre>
+ *
+ * <p>
+ * If you are using an overloaded form of <code>forAll</code> that already takes an initial parameter list, just
+ * add the configuration parameters after the list of generators, names, or generator/name pairs, as in:
+ * </p>
+ * 
+ * <pre>
+ * // If providing argument names
+ * forAll ("n", "d", minSuccessful(500), maxDiscarded(300)) {
+ *   (n: Int, d: Int) => ...
+ *
+ * // If providing generators
+ * forAll (validNumers, validDenoms, minSuccessful(500), maxDiscarded(300)) {
+ *   (n: Int, d: Int) => ...
+ *
+ * // If providing (&lt;generators&gt;, &lt;name&gt;) pairs
+ * forAll ((validNumers, "n"), (validDenoms, "d"), minSuccessful(500), maxDiscarded(300)) {
+ *   (n: Int, d: Int) => ...
+ * </pre>
+ *
+ * <p>
+ * For more information, see the documentation for supertrait <a href="Configuration.html"><code>Configuration</code></a>.
+ * </p>
+ * 
  * @author Bill Venners
  */
 trait GeneratorDrivenPropertyChecks extends Whenever with Configuration {

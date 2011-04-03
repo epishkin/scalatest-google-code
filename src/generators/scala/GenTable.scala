@@ -605,7 +605,7 @@ val propertyCheckPreamble = """
  * of passed data, will simply cause <code>forAll</code> to skip that row of data.
  * <p>
  *
- * <h2>Testing stateful functions</h2>
+ * <a name="testingStatefulFunctions"></a><h2>Testing stateful functions</h2>
  *
  * <p>
  * One way to use a table with one column is to test subsequent return values
@@ -636,7 +636,7 @@ val propertyCheckPreamble = """
  *  }
  * </pre>
  *
- * <h2>Testing mutable objects</h2>
+ * <a name="testingMutables"></a><h2>Testing mutable objects</h2>
  *
  * <p>
  * If you need to test a mutable object, one way you can use tables is to specify
@@ -706,7 +706,7 @@ val propertyCheckPreamble = """
       }
  * </pre>
  *
- * <h2>Testing invalid argument combinations</h2>
+ * <a name="invalidArgCombos"></a><h2>Testing invalid argument combinations</h2>
  * 
  * <p>
  * A table-driven property check can also be helpful to ensure that the proper exception is thrown when invalid data is
@@ -716,7 +716,7 @@ val propertyCheckPreamble = """
  * </p>
  *
  * <table style="border-collapse: collapse; border: 1px solid black">
- * <tr><th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black"><code>n</code></th><th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black"><code>d</code></td></th>
+ * <tr><th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black"><code>n</code></th><th style="background-color: #CCCCCC; border-width: 1px; padding: 3px; text-align: center; border: 1px solid black"><code>d</code></th></tr>
  * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td></tr>
  * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">a valid value</td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td></tr>
  * <tr><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center"><code>Integer.MIN_VALUE</code></td><td style="border-width: 1px; padding: 3px; border: 1px solid black; text-align: center">a valid value</td></tr>
