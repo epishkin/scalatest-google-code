@@ -725,7 +725,7 @@ val propertyCheckPreamble = """
  * </table>
  *
  * <p>
- * You an express these combinations in a table:
+ * You can express these combinations in a table:
  * </p>
  *
  * <pre>
