@@ -349,8 +349,10 @@ import org.scalacheck.Test.Params
  * </p>
  *
  * <pre>
- * val validNumers = for(n <- Gen.choose(Integer.MIN_VALUE + 1, Integer.MAX_VALUE)) yield n
- * val validDenoms = for(d <- validN if d != 0) yield d
+ * val validNumers =
+ *   for (n <- Gen.choose(Integer.MIN_VALUE + 1, Integer.MAX_VALUE)) yield n
+ * val validDenoms =
+ *   for (d <- validNumers if d != 0) yield d
  * </pre>
  *
  * <p>
