@@ -1297,7 +1297,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll (minSuccessful(5)) { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1307,7 +1307,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll (minSuccessful(5)) { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
@@ -1317,7 +1317,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll ($argNames$, minSuccessful(5)) { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1327,7 +1327,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll ($argNames$, minSuccessful(5)) { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
@@ -1337,7 +1337,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll ($famousArgs$, minSuccessful(5)) { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1347,7 +1347,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll ($famousArgs$, minSuccessful(5)) { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
@@ -1357,7 +1357,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll ($nameGenTuples$, minSuccessful(5)) { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1367,7 +1367,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll ($nameGenTuples$, minSuccessful(5)) { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
@@ -1381,7 +1381,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1394,7 +1394,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
@@ -1407,7 +1407,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll ($argNames$) { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1420,7 +1420,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll ($argNames$) { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
@@ -1433,7 +1433,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll ($famousArgs$) { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1446,7 +1446,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll ($famousArgs$) { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
@@ -1459,7 +1459,7 @@ val generatorSuiteTemplate = """
 
     var i = 0
     forAll ($nameGenTuples$) { ($namesAndTypes$) =>
-      i should be < 5
+      i should not be 5
       i += 1
     }
   }
@@ -1472,7 +1472,7 @@ val generatorSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       forAll ($nameGenTuples$) { ($namesAndTypes$) =>
-        i should be < 4
+        i should not be 4
         i += 1
       }
     }
