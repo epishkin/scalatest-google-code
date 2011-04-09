@@ -527,7 +527,8 @@ final class Conductor {
       currentState set TestStarted
 
     // wait until all threads are definitely ready to go
-    testThreadsStartingCounter.waitUntilAllTestThreadsHaveStarted()
+    if (threads.size > 0)
+      testThreadsStartingCounter.waitUntilAllTestThreadsHaveStarted()
 
     // release the latch, allowing all threads to start
     // wait for all the test threads to start before starting the clock

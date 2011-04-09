@@ -15,6 +15,8 @@
  */
 package org.scalatest.concurrent
 
+import java.util.concurrent.CountDownLatch
+
 /*
  * Keeps the main thread from allowing the test threads to execute their bodies
  * until all of them are started, and ready to go. When a test thread is started,
@@ -25,17 +27,21 @@ package org.scalatest.concurrent
  * blocks in the wait set if the count is not 0. (The count is only non-zero when
  * one or more test threads have been created but not yet gotten their run methods
  * going.) This is only used for threads started by the main thread. By the time
- * conduct is invoked, all threads started by the main thread will have called
- * increment. (Increment in this case will be called by the main thread.) After
+ * conduct is invoked, all threads started by the main thread will likely have called
+ * increment. But just in case, th main thread calling waitUntilAllTestThreadsHaveStarted
+ * awaits on a latch that reaches its terminal state only after at least one
+ * thread has incremented count. (Increment in this case will be called by the main thread.) After
  * those threads go, they may actually call thread method again, but the main thread
  * will only call waitUntilAllTestThreadsHaveStarted once, so it won't matter. - bv
  */
 private[concurrent] class TestThreadsStartingCounter {
   private var count: Int = 0
+  private val latch = new CountDownLatch(1)
   def increment() {
     synchronized {
       count += 1
     }
+    latch.countDown()
   }
   def decrement() {
     synchronized {
@@ -44,6 +50,7 @@ private[concurrent] class TestThreadsStartingCounter {
     }
   }
   def waitUntilAllTestThreadsHaveStarted() {
+    latch.await()
     synchronized {
       while (count != 0) {
         wait()
