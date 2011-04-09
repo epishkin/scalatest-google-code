@@ -15,10 +15,15 @@
  */
 package org.scalatest.prop
 
+/**
+ * Trait that contains the <code>whenever</code> clause that can be used in table- or generator-driven property checks.
+ *
+ * @author Bill Venners
+ */
 trait Whenever {
 
   /**
-   * Evaluates the passed code block if the passed boolean condition is true, else throws <code>UnmetConditionException</code>.
+   * Evaluates the passed code block if the passed boolean condition is true, else throws <code>DiscardedEvaluationException</code>.
    *
    * <p>
    * The <code>whenever</code> method can be used inside property check functions to discard invocations of the function with
@@ -91,12 +96,12 @@ trait Whenever {
    * <p>
    * In this example, rows 6, 8, and 9 have values that would cause a false to be passed
    * to <code>whenever</code>. (For example, in row 6, <code>d</code> is 0, which means <code>d</code> <code>!=</code> <code>0</code>
-   * will be false.) For those rows, <code>whenever</code> will throw <code>UnmetConditionException</code>,
+   * will be false.) For those rows, <code>whenever</code> will throw <code>DiscardedEvaluationException</code>,
    * which will cause the <code>forAll</code> method to discard that row.
    * </p>
    *
    * @param condition the boolean condition that determines whether <code>whenever</code> will evaluate the
-   *    <code>fun</code> function (<code>condition<code> is true) or throws <code>UnmetConditionException</code> (<code>condition<code> is false)
+   *    <code>fun</code> function (<code>condition</code> is true) or throws <code>DiscardedEvaluationException</code> (<code>condition</code> is false)
    * @param fun the function to evaluate if the specified <code>condition</code> is true
    */
   def whenever(condition: Boolean)(fun: => Unit) {
