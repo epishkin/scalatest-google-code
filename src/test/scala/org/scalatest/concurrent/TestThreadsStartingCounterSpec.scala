@@ -32,6 +32,7 @@ class TestThreadsStartingCounterSpec extends FixtureWordSpec with ShouldMatchers
         counter.waitUntilAllTestThreadsHaveStarted()
         beat should be (1) // TODO: On Azul and Mac this failed with 0 was not equal to 1. I think there's a race condition in this test.
         // Is it possible that this second thread goes before the first one, so it doesn't know. Yes, because this is in a thread. Race condition.
+        // The race condition was in the actual class. I fixed it, and so far this test hasn't passed. Makes one nervous to make a change like that. - bv 4/8/2011
       }
     }
     "go right ahead if the same number of threads have called increment and decrement" in { conductor => import conductor._

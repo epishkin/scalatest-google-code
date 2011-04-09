@@ -29,6 +29,7 @@ class VolatileString {
 
 class ConductorFixtureSuite extends FixtureFunSuite with ConductorFixture with ShouldMatchers {
     
+  // On Mac got: "ABCFEDGHI" was not equal to "ABCDEFGHI"
   test("metronome order") { conductor => import conductor._
 
     val volatileString = new VolatileString
