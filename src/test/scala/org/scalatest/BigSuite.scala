@@ -48,7 +48,7 @@ So the knobs we can turn are:
 */
 class BigSuite(nestedSuiteCount: Option[Int]) extends Suite { thisSuite =>
 
-  def this() = this(None)
+  //def this() = this(None)
   
   override def nestedSuites = {
 

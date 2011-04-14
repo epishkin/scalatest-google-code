@@ -89,7 +89,7 @@ class BigSuiteSuite extends FunSuite with SharedHelpers {
     assert(bs.nestedSuites.size === 0)
   }
   test("A BigSuite() has no nested suites if a system property is empty") {
-    val bs = new BigSuite()
+    val bs = new BigSuite(None)
     assert(bs.nestedSuites.size === 0)
   }
   test("A BigSuite(None) has 1 nested suite if a system property says so") {
@@ -99,7 +99,7 @@ class BigSuiteSuite extends FunSuite with SharedHelpers {
   }
   test("A BigSuite() has 1 nested suite if a system property says so") {
     System.setProperty("org.scalatest.BigSuite.size", "1")
-    val bs = new BigSuite()
+    val bs = new BigSuite(None)
     assert(bs.nestedSuites.size === 1)
   }
   test("A BigSuite(None) has no nested suites if a system property is not parsable as an Int") {
@@ -109,7 +109,7 @@ class BigSuiteSuite extends FunSuite with SharedHelpers {
   }
   test("A BigSuite() has no nested suites if a system property is not parsable as an Int") {
     System.setProperty("org.scalatest.BigSuite.size", "bob")
-    val bs = new BigSuite()
+    val bs = new BigSuite(None)
     assert(bs.nestedSuites.size === 0)
   }
   test("A BigSuite(None) has 2 nested suites if a system property says 2") {
@@ -119,7 +119,7 @@ class BigSuiteSuite extends FunSuite with SharedHelpers {
   }
   test("A BigSuite() has 2 nested suites if a system property says 2") {
     System.setProperty("org.scalatest.BigSuite.size", "2")
-    val bs = new BigSuite()
+    val bs = new BigSuite(None)
     assert(bs.nestedSuites.size === 2)
   }
   test("A BigSuite(None) has 4 nested suites if a system property says 4") {
@@ -129,7 +129,7 @@ class BigSuiteSuite extends FunSuite with SharedHelpers {
   }
   test("A BigSuite() has 4 nested suites if a system property says 4") {
     System.setProperty("org.scalatest.BigSuite.size", "4")
-    val bs = new BigSuite()
+    val bs = new BigSuite(None)
     assert(bs.nestedSuites.size === 4)
   }
 }
