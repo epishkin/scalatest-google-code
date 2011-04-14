@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
+import FunSuite.IgnoreTagName 
 
 /**
  * A sister trait to <code>org.scalatest.FunSuite</code> that can pass a fixture object into its tests.
@@ -345,64 +346,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
-  private val IgnoreTagName = "org.scalatest.Ignore"
-
-  private abstract class FunNode
-  private case class TestNode(testName: String, fun: FixtureParam => Any) extends FunNode
-  private case class InfoNode(message: String) extends FunNode
-
-  // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
-  // the primary constructor, but testNames, tags, and runTest get invoked directly or indirectly
-  // by run. When running tests concurrently with ScalaTest Runner, different threads can
-  // instantiate and run the suite. Instead of synchronizing, I put them in an immutable Bundle object (and
-  // all three collections--testNamesList, testsMap, and tagsMap--are immuable collections), then I put the Bundle
-  // in an AtomicReference. Since the expected use case is the test method will be called
-  // from the primary constructor, which will be all done by one thread, I just in effect use optimistic locking on the Bundle.
-  // If two threads ever called test at the same time, they could get a ConcurrentModificationException.
-  // Test names are in reverse order of test registration method invocations
-  private class Bundle private(
-    val testNamesList: List[String],
-    val doList: List[FunNode],
-    val testsMap: Map[String, TestNode],
-    val tagsMap: Map[String, Set[String]],
-    val registrationClosed: Boolean
-  ) {
-    def unpack = (testNamesList, doList, testsMap, tagsMap, registrationClosed)
-  }
-
-  private object Bundle {
-    def apply(
-      testNamesList: List[String],
-      doList: List[FunNode],
-      testsMap: Map[String, TestNode],
-      tagsMap: Map[String, Set[String]],
-      registrationClosed: Boolean
-    ): Bundle =
-      new Bundle(testNamesList, doList,testsMap, tagsMap, registrationClosed)
-  }
-
-  private val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
-
-  private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
-    val shouldBeOldBundle = atomic.getAndSet(newBundle)
-    if (!(shouldBeOldBundle eq oldBundle))
-      throw new ConcurrentModificationException(Resources("concurrentFixtureFunSuiteBundleMod"))
-  }
-
-  private class RegistrationInformer extends Informer {
-    def apply(message: String) {
-      if (message == null)
-        throw new NullPointerException
-      val oldBundle = atomic.get
-      var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-      doList ::= InfoNode(message)
-      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
-    }
-  }
-
-  // The informer will be a registration informer until run is called for the first time. (This
-  // is the registration phase of a FixtureFunSuite's lifecycle.)
-  private final val atomicInformer = new AtomicReference[Informer](new RegistrationInformer)
+  private val funFamily = new FunFamily[FixtureParam => Any]("concurrentFixtureFunSuiteBundleMod", "FixtureFunSuite")
+  import funFamily._
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -413,16 +358,6 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * throw an exception. This method can be called safely by any thread.
    */
   implicit protected def info: Informer = atomicInformer.get
-
-  private val zombieInformer =
-    new Informer {
-      private val complaint = Resources("cantCallInfoNow", "FixtureFunSuite")
-      def apply(message: String) {
-        if (message == null)
-          throw new NullPointerException
-        throw new IllegalStateException(complaint)
-      }
-    }
 
   /**
    * Register a test with the specified name, optional tags, and function value that takes no arguments.
@@ -439,30 +374,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
   protected def test(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
-
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-    if (testTags.exists(_ == null))
-      throw new NullPointerException("a test tag was null")
-
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth("FunSuite.scala", "test"))
-
-    if (atomic.get.testsMap.keySet.contains(testName))
-      throw new DuplicateTestNameException(testName, getStackDepth("FunSuite.scala", "test"))
-
-    val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-
-    val testNode = TestNode(testName, f)
-    testsMap += (testName -> testNode)
-    testNamesList ::= testName
-    doList ::= testNode
-    val tagNames = Set[String]() ++ testTags.map(_.name)
-    if (!tagNames.isEmpty)
-      tagsMap += (testName -> tagNames)
-
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
+    testImpl(testName, f, "FixtureFunSuite.scala", testTags: _*)
   }
 
   /**
@@ -481,24 +393,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
   protected def ignore(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
-
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-    if (testTags.exists(_ == null))
-      throw new NullPointerException("a test tag was null")
-
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth("FunSuite.scala", "ignore"))
-
-    test(testName)(f) // Call test without passing the tags
-
-    val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-
-    val tagNames = Set[String]() ++ testTags.map(_.name)
-    tagsMap += (testName -> (tagNames + IgnoreTagName))
-
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
+    ignoreImpl(testName, f, "FixtureFunSuite.scala", testTags: _*)
   }
 
   /**
