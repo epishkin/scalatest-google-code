@@ -2105,7 +2105,7 @@ val checkersSuiteTemplate = """
     var i = 0
     check(
       ($namesAndTypes$) => {
-        val res = i < 5
+        val res = i != 5
         i += 1
         res
       },
@@ -2119,7 +2119,7 @@ val checkersSuiteTemplate = """
       var i = 0
       check(
         ($namesAndTypes$) => {
-          val res = i < 4
+          val res = i != 4
           i += 1
         res
         },
@@ -2132,7 +2132,7 @@ val checkersSuiteTemplate = """
 
     var i = 0
     val prop = forAll ($famousArgs$) { ($namesAndTypes$) =>
-      val res = i < 5
+      val res = i != 5
       i += 1
       res
     }
@@ -2144,7 +2144,7 @@ val checkersSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       val prop = forAll ($famousArgs$) { ($namesAndTypes$) =>
-        val res = i < 4
+        val res = i != 4
         i += 1
         res
       }
@@ -2160,7 +2160,7 @@ val checkersSuiteTemplate = """
 
     var i = 0
     check { ($namesAndTypes$) =>
-      val res = i < 5
+      val res = i != 5
       i += 1
       res
     }
@@ -2174,7 +2174,7 @@ val checkersSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       check { ($namesAndTypes$) =>
-        val res = i < 4
+        val res = i != 4
         i += 1
         res
       }
@@ -2188,7 +2188,7 @@ val checkersSuiteTemplate = """
 
     var i = 0
     val prop = forAll ($famousArgs$) { ($namesAndTypes$) =>
-      val res = i < 5
+      val res = i != 5
       i += 1
       res
     }
@@ -2203,7 +2203,7 @@ val checkersSuiteTemplate = """
     intercept[GeneratorDrivenPropertyCheckFailedException] {
       var i = 0
       val prop = forAll ($famousArgs$) { ($namesAndTypes$) =>
-        val res = i < 4
+        val res = i != 4
         i += 1
         res
       }
