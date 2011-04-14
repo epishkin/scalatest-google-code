@@ -1324,28 +1324,15 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * should never return an empty <code>Set</code> as a value. If a tag has no tests, its name should not appear as a key in the
    * returned <code>Map</code>.
    * </p>
-   * 
-   * <p>
-   * <strong>Note, the <code>TagAnnotation</code> annotation was introduced in ScalaTest 1.0, when "groups" were renamed
-   * to "tags." In 1.0 and 1.1, the <code>TagAnnotation</code> will continue to not be required by an annotation on a <code>Suite</code>
-   * method. Any annotation on a <code>Suite</code> method will be considered a tag until 1.2, to give users time to add
-   * <code>TagAnnotation</code>s on any tag annotations they made prior to the 1.0 release. From 1.2 onward, only annotations
-   * themselves annotated by <code>TagAnnotation</code> will be considered tag annotations.</strong>
-   * </p>
    */
   def tags: Map[String, Set[String]] = {
 
     def getTags(testName: String) =
-/* AFTER THE DEPRECATION CYCLE FOR GROUPS TO TAGS (1.2), REPLACE THE FOLLOWING FOR LOOP WITH THIS COMMENTED OUT ONE
-   THAT MAKES SURE ANNOTATIONS ARE TAGGED WITH TagAnnotation.
       for {
         a <- getMethodForTestName(testName).getDeclaredAnnotations
         annotationClass = a.annotationType
         if annotationClass.isAnnotationPresent(classOf[TagAnnotation])
       } yield annotationClass.getName
-*/
-      for (a <- getMethodForTestName(testName).getDeclaredAnnotations)
-        yield a.annotationType.getName
 
     val elements =
       for (testName <- testNames; if !getTags(testName).isEmpty)
@@ -1431,7 +1418,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
   private def testMethodTakesInformer(testName: String) = testName.endsWith(InformerInParens)
 
-  private def getMethodForTestName(testName: String) =
+  private[scalatest] def getMethodForTestName(testName: String) =
     getClass.getMethod(
       simpleNameForTest(testName),
       (if (testMethodTakesInformer(testName)) Array(classOf[Informer]) else new Array[Class[_]](0)): _*

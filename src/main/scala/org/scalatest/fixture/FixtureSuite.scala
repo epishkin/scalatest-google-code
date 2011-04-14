@@ -435,40 +435,6 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
       }
   }
 
-  /*
-   * Trait whose instances encapsulate a test function that takes no fixture and config map.
-   *
-   * <p>
-   * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
-   * to <code>FixtureSuite</code>'s <code>withFixture</code> method for test methods that take no
-   * fixture, such as:
-   * </p>
-   *
-   * <pre>
-   * def testSomething() {
-   *   // ...
-   * }
-   * def testSomethingElse(info: Informer) {
-   *   // ...
-   * }
-   * </pre>
-   *
-   * <p>
-   * This trait enables <code>withFixture</code> method implementatinos to detect test that
-   * don't require a fixture. If a fixture is expensive to create and cleanup, <code>withFixture</code>
-   * method implementations can opt to not create fixtures for tests that don't need them.
-   * For more detail and examples, see the
-   * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
-   * </p>
-   */
-  /* protected trait FixturelessTest extends OneArgTest with (() => Unit) {
-
-    /**
-     * Run the test that takes no <code>Fixture</code>.
-     */
-    def apply()
-  } */
-
   /**
    *  Run the passed test function with a fixture created by this method.
    *
@@ -497,20 +463,15 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     def apply() { test() }
   }
 
-  // Need to override this one becaue it call getMethodForTestName
+  /* Need to override this one because it calls getMethodForTestName
   override def tags: Map[String, Set[String]] = {
 
     def getTags(testName: String) =
-/* AFTER THE DEPRECATION CYCLE FOR GROUPS TO TAGS (0.9.8), REPLACE THE FOLLOWING FOR LOOP WITH THIS COMMENTED OUT ONE
-   THAT MAKES SURE ANNOTATIONS ARE TAGGED WITH TagAnnotation.
       for {
         a <- getMethodForTestName(testName).getDeclaredAnnotations
         annotationClass = a.annotationType
         if annotationClass.isAnnotationPresent(classOf[TagAnnotation])
       } yield annotationClass.getName
-*/
-      for (a <- getMethodForTestName(testName).getDeclaredAnnotations)
-        yield a.annotationType.getName
 
     val elements =
       for (testName <- testNames; if !getTags(testName).isEmpty)
@@ -518,6 +479,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
     Map() ++ elements
   }
+*/
 
   override def testNames: Set[String] = {
 
@@ -675,7 +637,8 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), None, rerunnable))
   }
 
-  private def getMethodForTestName(testName: String) = {
+  // Overriding this in FixtureSuite to reduce duplication of tags method
+  private[scalatest] override def getMethodForTestName(testName: String) = {
     val candidateMethods = getClass.getMethods.filter(_.getName == simpleNameForTest(testName))
     val found =
       if (testMethodTakesAFixtureAndInformer(testName))

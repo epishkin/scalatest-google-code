@@ -235,12 +235,10 @@ trait JUnitSuite extends Suite with AssertionsForJUnit { thisSuite =>
   // Returns just tests that have org.junit.Ignore on them, but calls it org.scalatest.Ignore!
   override def tags: Map[String, Set[String]] = {
 
-    def hasIgnoreTag(testName: String) = getMethodForTestName(testName).getAnnotation(classOf[org.junit.Ignore]) != null
-      /*for {
-        a <- getMethodForTestName(testName).getDeclaredAnnotations
-        annotationClass = a.annotationType
-        if annotationClass == classOf[Ignore])
-      } yield annotationClass.getName   */
+    def getMethodForJUnitTestName(testName: String) =
+      getClass.getMethod(testName, new Array[Class[_]](0): _*)
+
+    def hasIgnoreTag(testName: String) = getMethodForJUnitTestName(testName).getAnnotation(classOf[org.junit.Ignore]) != null
 
     val elements =
       for (testName <- testNames; if hasIgnoreTag(testName))
@@ -248,9 +246,6 @@ trait JUnitSuite extends Suite with AssertionsForJUnit { thisSuite =>
 
     Map() ++ elements
   }
-
-  private def getMethodForTestName(testName: String) =
-    getClass.getMethod(testName, new Array[Class[_]](0): _*)
 
   override def run(testName: Option[String], report: Reporter, stopper: Stopper,
       filter: Filter, configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
