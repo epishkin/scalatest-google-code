@@ -602,5 +602,112 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       }
     }
   }
+  describe("the stopper") {
+    it("should stop nested suites from being executed") {
+      class SuiteA extends Suite {
+        var executed = false;
+        override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+          executed = true
+          super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
+        }
+      }
+      class SuiteB extends Suite {
+        var executed = false;
+        override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+          executed = true
+          super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
+        }
+      }
+      class SuiteC extends Suite {
+        var executed = false;
+        override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+          executed = true
+          super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
+        }
+      }
+      class SuiteD extends Suite {
+        var executed = false;
+        override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+          executed = true
+          super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
+          stopper match {
+            case s: MyStopper => s.stop = true
+            case _ =>
+          }
+        }
+      }
+      class SuiteE extends Suite {
+        var executed = false;
+        override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+          executed = true
+          super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
+        }
+      }
+      class SuiteF extends Suite {
+        var executed = false;
+        override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+          executed = true
+          super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
+        }
+      }
+      class SuiteG extends Suite {
+        var executed = false;
+        override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
+              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
+          executed = true
+          super.run(testName, reporter, stopper, filter, configMap, distributor, tracker)
+        }
+      }
+
+      val a = new SuiteA
+      val b = new SuiteB
+      val c = new SuiteC
+      val d = new SuiteD
+      val e = new SuiteE
+      val f = new SuiteF
+      val g = new SuiteG
+
+      val x = NestedSuites(a, b, c, d, e, f, g)
+      x.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+
+      assert(a.executed)
+      assert(b.executed)
+      assert(c.executed)
+      assert(d.executed)
+      assert(e.executed)
+      assert(f.executed)
+      assert(g.executed)
+
+      class MyStopper extends Stopper {
+        var stop = false
+        override def apply() = stop
+      }
+
+      val h = new SuiteA
+      val i = new SuiteB
+      val j = new SuiteC
+      val k = new SuiteD
+      val l = new SuiteE
+      val m = new SuiteF
+      val n = new SuiteG
+
+      val y = NestedSuites(h, i, j, k, l, m, n)
+      y.run(None, SilentReporter, new MyStopper, Filter(), Map(), None, new Tracker)
+
+      assert(k.executed)
+      assert(i.executed)
+      assert(j.executed)
+      assert(k.executed)
+      assert(!l.executed)
+      assert(!m.executed)
+      assert(!n.executed)
+    }
+  }
 }
 

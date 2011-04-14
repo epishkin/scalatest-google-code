@@ -1668,7 +1668,6 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
       for ((tn, ignoreTest) <- filter(testNames, tags))
         if (ignoreTest) {
-          // report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
           val testSucceededIcon = Resources("testSucceededIconChar")
           val formattedText = Resources("iconPlusShortName", testSucceededIcon, tn)
           report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedText, tn, 1))))
@@ -1879,7 +1878,13 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     }
 
     distributor match {
-      case None => nestedSuites.foreach(callExecuteOnSuite)
+      case None =>
+        val nestedSuitesArray = nestedSuites.toArray
+        for (i <- 0 until nestedSuitesArray.length) {
+          if (!stopRequested()) {
+            callExecuteOnSuite(nestedSuitesArray(i))
+          }
+        }
       case Some(distribute) =>
         for (nestedSuite <- nestedSuites)
           distribute(nestedSuite, tracker.nextTracker())
