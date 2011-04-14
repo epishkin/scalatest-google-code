@@ -62,6 +62,18 @@ class NestedSuites(suitesToNest: Suite*) extends Suite {
 }
 
 /**
+ * Companion object to class <code>NestedSuites</code> that offers an <code>apply</code> factory method
+ * for creating a <code>NestedSuites</code> instance.
+ */
+object NestedSuites {
+
+  /**
+   * Factory method for creating a <code>NestedSuites</code> instance.
+   */
+  def apply(suitesToNest: Suite*): NestedSuites = new NestedSuites(suitesToNest: _*)
+}
+
+/**
  * <strong>SuperSuite has been deprecated and will be removed in a future
  * release of ScalaTest. Please change any uses of <code>SuperSuite</code>
  * to a corresponding use of <code>NestedSuites</code> instead.</strong>
