@@ -80,6 +80,7 @@ class ScalaTestFramework extends Framework {
     def run(testClassName: String, fingerprint: TestFingerprint, eventHandler: EventHandler, args: Array[String]) {
       val testClass = Class.forName(testClassName, true, testLoader).asSubclass(classOf[Suite])
 
+println("sbt args: " + args.toList)
       if (isAccessibleSuite(testClass)) {
 
         val (propertiesArgsList, includesArgsList,
