@@ -587,7 +587,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     }
   }
 
-  private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+  // probably delete this and just inherit the superclass one
+  private[scalatest] override def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker, duration: Long) {
 
     val message =

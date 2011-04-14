@@ -30,14 +30,19 @@ import Suite.parseSimpleName
 import Suite.stripDollars
 import Suite.formatterForSuiteStarting
 import Suite.formatterForSuiteCompleted
+import Suite.checkForPublicNoArgConstructor
 import Suite.formatterForSuiteAborted
 import Suite.anErrorThatShouldCauseAnAbort
 import Suite.getSimpleNameOfAnObjectsClass
 import Suite.takesInformer
+import Suite.isTestMethodGoodies
+import Suite.testMethodTakesAnInformer
 import scala.collection.immutable.TreeSet
+import Suite.getIndentedText
 import org.scalatest.events._
 import org.scalatest.tools.StandardOutReporter
-
+import Suite.checkRunTestParamsForNull
+import Suite.getIndentedTextForInfo
 
 /**
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
@@ -1389,18 +1394,8 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
     def isTestMethod(m: Method) = {
 
-      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
-
-      // name must have at least 4 chars (minimum is "test")
-      val simpleName = m.getName
-      val firstFour = if (simpleName.length >= 4) simpleName.substring(0, 4) else "" 
-
-      val paramTypes = m.getParameterTypes
-      val hasNoParams = paramTypes.length == 0
-
-      // Discover testNames(Informer) because if we didn't it might be confusing when someone
-      // actually wrote a testNames(Informer) method and it was silently ignored.
-      val isTestNames = simpleName == "testNames"
+      // Factored out to share code with FixtureSuite.testNames
+      val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames) = isTestMethodGoodies(m)
 
       isInstanceMethod && (firstFour == "test") && ((hasNoParams && !isTestNames) || takesInformer(m))
     }
@@ -1412,13 +1407,19 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     TreeSet[String]() ++ testNameArray
   }
 
-  private def testMethodTakesInformer(testName: String) = testName.endsWith(InformerInParens)
-
   private[scalatest] def getMethodForTestName(testName: String) =
-    getClass.getMethod(
-      simpleNameForTest(testName),
-      (if (testMethodTakesInformer(testName)) Array(classOf[Informer]) else new Array[Class[_]](0)): _*
-    )
+    try {
+      getClass.getMethod(
+        simpleNameForTest(testName),
+        (if (testMethodTakesAnInformer(testName)) Array(classOf[Informer]) else new Array[Class[_]](0)): _*
+      )
+    }
+    catch {
+      case e: NoSuchMethodException =>
+        throw new IllegalArgumentException(Resources("testNotFound", testName))
+      case e =>
+        throw e
+    }
 
   /**
    *  Run the passed test function in the context of a fixture established by this method.
@@ -1446,6 +1447,40 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    */
   protected def withFixture(test: NoArgTest) {
     test()
+  }
+
+  // Factoring out this code common to runTest in both Suite and FixtureSuite, and make it a MotionToSuppress.
+  private[scalatest] def reportTestStarting(report: Reporter, tracker: Tracker, testName: String, rerunnable: Option[Rerunner]) {
+    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(MotionToSuppress), rerunnable))
+  }
+
+  private[scalatest] def reportTestPending(report: Reporter, tracker: Tracker, testName: String, formatter: Formatter) {
+    report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(formatter)))
+  }
+
+  private[scalatest] def reportTestSucceeded(report: Reporter, tracker: Tracker, testName: String, duration: Long, formatter: Formatter, rerunnable: Option[Rerunner]) {
+    report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), Some(formatter), rerunnable))
+  }
+
+  // Factored out to share this with FixtureSuite.runTest
+  private[scalatest] def getRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
+
+    val stopRequested = stopper
+    val report = wrapReporterIfNecessary(reporter)
+    val method = getMethodForTestName(testName)
+
+    // Create a Rerunner if the Suite has a no-arg constructor
+    val hasPublicNoArgConstructor = checkForPublicNoArgConstructor(getClass)
+
+    val rerunnable =
+      if (hasPublicNoArgConstructor)
+        Some(new TestRerunner(getClass.getName, testName))
+      else
+        None
+
+    val testStartTime = System.currentTimeMillis
+
+    (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime)
   }
 
   /**
@@ -1476,43 +1511,23 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    */
   protected def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || configMap == null || tracker == null)
-      throw new NullPointerException
+    checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
-    val stopRequested = stopper
-    val report = wrapReporterIfNecessary(reporter)
-    val method =
-      try {
-        getMethodForTestName(testName)
-      }
-      catch {
-        case e: NoSuchMethodException =>
-          throw new IllegalArgumentException(Resources("testNotFound", testName))
-        case e =>
-          throw e
-      }
+    val (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime) =
+      getRunTestGoodies(stopper, reporter, testName)
 
-    // Create a Rerunner if the Suite has a no-arg constructor
-    val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
+    reportTestStarting(report, tracker, testName, rerunnable)
 
-    val rerunnable =
-      if (hasPublicNoArgConstructor)
-        Some(new TestRerunner(getClass.getName, testName))
-      else
-        None
-
-    val testStartTime = System.currentTimeMillis
-
-    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
+    val formatter = getIndentedText(testName, 1)
 
     val args: Array[Object] =
-      if (testMethodTakesInformer(testName)) {
+      if (testMethodTakesAnInformer(testName)) {
         val informer =
           new Informer {
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+              report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))), None, None, Some(getIndentedTextForInfo(message, 2))))
             }
           }
         Array(informer)  
@@ -1529,14 +1544,14 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
         }
       )
       val duration = System.currentTimeMillis - testStartTime
-      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
+      reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
     }
     catch { 
       case ite: InvocationTargetException =>
         val t = ite.getTargetException
         t match {
           case _: TestPendingException =>
-            report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
+            reportTestPending(report, tracker, testName, formatter)
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
@@ -1652,8 +1667,12 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       case None =>
 
       for ((tn, ignoreTest) <- filter(testNames, tags))
-        if (ignoreTest)
-          report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
+        if (ignoreTest) {
+          // report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
+          val testSucceededIcon = Resources("testSucceededIconChar")
+          val formattedText = Resources("iconPlusShortName", testSucceededIcon, tn)
+          report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedText, tn, 1))))
+        }
         else
           runTest(tn, report, stopRequested, configMap, tracker)
     }
@@ -1748,7 +1767,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     }
   }
 
-  private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+  private[scalatest] def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
     val message =
@@ -1757,7 +1776,8 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       else
         throwable.toString
 
-    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), None, rerunnable))
+    val formatter = getIndentedText(testName, 1)
+    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
   }
 
   /**
@@ -2140,5 +2160,50 @@ private[scalatest] object Suite {
   def takesInformer(m: Method) = {
     val paramTypes = m.getParameterTypes
     paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
+  }
+
+  def isTestMethodGoodies(m: Method) = {
+
+    val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
+
+    // name must have at least 4 chars (minimum is "test")
+    val simpleName = m.getName
+    val firstFour = if (simpleName.length >= 4) simpleName.substring(0, 4) else "" 
+
+    val paramTypes = m.getParameterTypes
+    val hasNoParams = paramTypes.length == 0
+
+    // Discover testNames(Informer) because if we didn't it might be confusing when someone
+    // actually wrote a testNames(Informer) method and it was silently ignored.
+    val isTestNames = simpleName == "testNames"
+
+    (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames)
+  }
+
+  def testMethodTakesAnInformer(testName: String) = testName.endsWith(InformerInParens)
+
+  def checkRunTestParamsForNull(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+    if (reporter == null)
+      throw new NullPointerException("reporter was null")
+    if (stopper == null)
+      throw new NullPointerException("stopper was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
+    if (tracker == null)
+      throw new NullPointerException("tracker was null")
+  }
+ 
+  def getIndentedText(testName: String, level: Int) = {
+    val testSucceededIcon = Resources("testSucceededIconChar")
+    val formattedText = ("  " * (level - 1)) + Resources("iconPlusShortName", testSucceededIcon, testName)
+    IndentedText(formattedText, testName, level)
+  }
+
+  def getIndentedTextForInfo(message: String, level: Int) = {
+    val infoProvidedIcon = Resources("infoProvidedIconChar")
+    val formattedText = ("  " * (level - 1)) + Resources("iconPlusShortName", infoProvidedIcon, message)
+    IndentedText(formattedText, message, 2)
   }
 }

@@ -25,13 +25,17 @@ import org.scalatest.Suite.InformerInParens
 import FixtureSuite.FixtureAndInformerInParens
 import FixtureSuite.FixtureInParens
 import FixtureSuite.testMethodTakesAFixtureAndInformer
-import FixtureSuite.testMethodTakesAnInformer
+import Suite.testMethodTakesAnInformer
 import FixtureSuite.testMethodTakesAFixture
 import FixtureSuite.simpleNameForTest
 import FixtureSuite.argsArrayForTestName
 import Suite.takesInformer
+import Suite.isTestMethodGoodies
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
+import Suite.checkRunTestParamsForNull
+import Suite.getIndentedText
+import Suite.getIndentedTextForInfo
 
 /**
  * <code>Suite</code> that can pass a fixture object into its tests.
@@ -466,13 +470,6 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   override def testNames: Set[String] = {
 
-/* Try using shared one in Suite companion object. If that works, delete this.
-    def takesInformer(m: Method) = {
-      val paramTypes = m.getParameterTypes
-      paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
-    }
-*/
-
     def takesTwoParamsOfTypesAnyAndInformer(m: Method) = {
       val paramTypes = m.getParameterTypes
       val hasTwoParams = paramTypes.length == 2
@@ -483,18 +480,8 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
     def isTestMethod(m: Method) = {
 
-      val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
-
-      // name must have at least 4 chars (minimum is "test")
-      val simpleName = m.getName
-      val firstFour = if (simpleName.length >= 4) simpleName.substring(0, 4) else "" 
-
-      val paramTypes = m.getParameterTypes
-      val hasNoParams = paramTypes.length == 0
-
-      // Discover testNames(Informer) because if we didn't it might be confusing when someone
-      // actually wrote a testNames(Informer) method and it was silently ignored.
-      val isTestNames = simpleName == "testNames"
+      // Factored out to share code with Suite.testNames
+      val (isInstanceMethod, simpleName, firstFour, paramTypes, hasNoParams, isTestNames) = isTestMethodGoodies(m)
 
       // Also, will discover both
       // testNames(Object) and testNames(Object, Informer). Reason is if I didn't discover these
@@ -518,26 +505,14 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || configMap == null || tracker == null)
-      throw new NullPointerException
+    checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
-    val stopRequested = stopper
-    val report = wrapReporterIfNecessary(reporter)
-    val method = getMethodForTestName(testName)
+    val (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime) =
+      getRunTestGoodies(stopper, reporter, testName)
 
-    // Create a Rerunner if the Suite has a no-arg constructor
-    val hasPublicNoArgConstructor = checkForPublicNoArgConstructor(getClass)
+    reportTestStarting(report, tracker, testName, rerunnable)
 
-    val rerunnable =
-      if (hasPublicNoArgConstructor)
-        Some(new TestRerunner(getClass.getName, testName))
-      else
-        None
-
-    val testStartTime = System.currentTimeMillis
-
-    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
-
+    val formatter = getIndentedText(testName, 1)
 
     try {
       if (testMethodTakesAFixtureAndInformer(testName) || testMethodTakesAFixture(testName)) {
@@ -551,7 +526,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
                     def apply(message: String) {
                       if (message == null)
                         throw new NullPointerException
-                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))), None, None, Some(getIndentedTextForInfo(message, 2))))
                     }
                   }
                 Array(anyRefFixture, informer)
@@ -574,7 +549,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
                     def apply(message: String) {
                       if (message == null)
                         throw new NullPointerException
-                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName)))))
+                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))), None, None, Some(getIndentedTextForInfo(message, 2))))
                     }
                   }
                 Array(informer)
@@ -589,14 +564,14 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
       }
 
       val duration = System.currentTimeMillis - testStartTime
-      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
+      reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
     }
     catch { 
       case ite: InvocationTargetException =>
         val t = ite.getTargetException
         t match {
           case _: TestPendingException =>
-            report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
+            reportTestPending(report, tracker, testName, formatter)
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
@@ -607,19 +582,6 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
         handleFailedTest(e, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
       case e => throw e
     }
-  }
-
-  // TODO: This is identical with the one in Suite. Factor it out to an object somewhere.
-  private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
-
-    val message =
-      if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
-        throwable.getMessage
-      else
-        throwable.toString
-
-    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), None, rerunnable))
   }
 
   // Overriding this in FixtureSuite to reduce duplication of tags method
@@ -656,48 +618,6 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
          throw new IllegalArgumentException(Resources("testNotFound", testName))
      }
   }
-
-   /*
-  /*
-   * Object that encapsulates a test function, which does not take a fixture,
-   * and a config map.
-   *
-   * <p>
-   * The <code>FixtureSuite</code> trait's implementation of <code>runTest</code> passes instances of this trait
-   * to <code>FixtureSuite</code>'s <code>withFixture</code> method for tests that do not require a fixture to
-   * be passed.  For more detail and examples, see the
-   * <a href="FixtureSuite.html">documentation for trait <code>FixtureSuite</code></a>.
-   * </p>
-   */
-  protected trait NoArgTestFunction extends (FixtureParam => Any) {
-
-    /**
-     * Run the test, ignoring the passed <code>Fixture</code>.
-     *
-     * <p>
-     * This traits implementation of this method invokes the overloaded form
-     * of <code>apply</code> that takes no parameters.
-     * </p>
-     */
-    final def apply(fixture: Fixture): Any = {
-      apply()
-    }
-
-    /**
-     * Run the test without a <code>Fixture</code>.
-     */
-    def apply()
-  }
-
-  protected class WithoutWord {
-    def fixture(fun: => Any): NoArgTestFunction = {
-      new NoArgTestFunction {
-        def apply() { fun }
-      }
-    }
-  }
-
-  protected def without = new WithoutWord  */
 }
 
 private object FixtureSuite {
@@ -706,7 +626,6 @@ private object FixtureSuite {
   val FixtureInParens = "(FixtureParam)"
 
   private def testMethodTakesAFixtureAndInformer(testName: String) = testName.endsWith(FixtureAndInformerInParens)
-  private def testMethodTakesAnInformer(testName: String) = testName.endsWith(InformerInParens)
   private def testMethodTakesAFixture(testName: String) = testName.endsWith(FixtureInParens)
 
   private def simpleNameForTest(testName: String) =
