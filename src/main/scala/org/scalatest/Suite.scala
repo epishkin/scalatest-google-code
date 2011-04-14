@@ -33,6 +33,7 @@ import Suite.formatterForSuiteCompleted
 import Suite.formatterForSuiteAborted
 import Suite.anErrorThatShouldCauseAnAbort
 import Suite.getSimpleNameOfAnObjectsClass
+import Suite.takesInformer
 import scala.collection.immutable.TreeSet
 import org.scalatest.events._
 import org.scalatest.tools.StandardOutReporter
@@ -1386,11 +1387,6 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   */
   def testNames: Set[String] = {
 
-    def takesInformer(m: Method) = {
-      val paramTypes = m.getParameterTypes
-      paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
-    }
-
     def isTestMethod(m: Method) = {
 
       val isInstanceMethod = !Modifier.isStatic(m.getModifiers())
@@ -2140,4 +2136,9 @@ private[scalatest] object Suite {
       case _: VirtualMachineError => true
       case _ => false
     }
+
+  def takesInformer(m: Method) = {
+    val paramTypes = m.getParameterTypes
+    paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
+  }
 }

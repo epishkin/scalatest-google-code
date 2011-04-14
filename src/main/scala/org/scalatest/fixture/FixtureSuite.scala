@@ -29,6 +29,7 @@ import FixtureSuite.testMethodTakesAnInformer
 import FixtureSuite.testMethodTakesAFixture
 import FixtureSuite.simpleNameForTest
 import FixtureSuite.argsArrayForTestName
+import Suite.takesInformer
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 
@@ -463,30 +464,14 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     def apply() { test() }
   }
 
-  /* Need to override this one because it calls getMethodForTestName
-  override def tags: Map[String, Set[String]] = {
-
-    def getTags(testName: String) =
-      for {
-        a <- getMethodForTestName(testName).getDeclaredAnnotations
-        annotationClass = a.annotationType
-        if annotationClass.isAnnotationPresent(classOf[TagAnnotation])
-      } yield annotationClass.getName
-
-    val elements =
-      for (testName <- testNames; if !getTags(testName).isEmpty)
-        yield testName -> (Set() ++ getTags(testName))
-
-    Map() ++ elements
-  }
-*/
-
   override def testNames: Set[String] = {
 
+/* Try using shared one in Suite companion object. If that works, delete this.
     def takesInformer(m: Method) = {
       val paramTypes = m.getParameterTypes
       paramTypes.length == 1 && classOf[Informer].isAssignableFrom(paramTypes(0))
     }
+*/
 
     def takesTwoParamsOfTypesAnyAndInformer(m: Method) = {
       val paramTypes = m.getParameterTypes
