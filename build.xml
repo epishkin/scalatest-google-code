@@ -195,7 +195,7 @@
         <scalac srcdir="${build.generated.tests}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" deprecation="yes" addparams="-no-specialization" fork="true" jvmargs="${jvmargs}" />
 
         <!-- Compile the Java code from ${javasrc.test} into ${build.tests} -->
-        <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="1500M" fork="true" classpath="${classes}:${org.scala-lang:scala-library:jar}:${junit:junit:jar}" debug="yes" />
+        <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="2000M" fork="true" classpath="${classes}:${org.scala-lang:scala-library:jar}:${junit:junit:jar}" debug="yes" />
     </target>
 
     <target name="compile-examples" depends="compile-main">
@@ -506,6 +506,7 @@
 
         <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
             <!--<reporter type="graphic"/>-->
+            <!--<reporter type="file" filename="test.out" config="ND"/>-->
             <reporter type="stdout" config="ND"/>
             <suite classname="${class}"/>
         </scalatest>
@@ -646,7 +647,7 @@
                  uri="antlib:org.apache.maven.artifact.ant"
                  classpathref="maven-ant-tasks.classpath" />
 
-        <copy file="pom.xml" todir="${build}" overwrite="true">
+        <copy file="deploy.xml" tofile="${build}/pom.xml" overwrite="true">
             <filterset>
                 <filter token="RELEASE" value="${release}" />
             </filterset>
