@@ -1189,12 +1189,11 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * <code>junit.framework.TestCase</code>, which enables the creating of classes that
    * can be run with either ScalaTest or JUnit 3.
    * </p>
-   */
+   *
   final def execute() {
     run(None, new StandardOutReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
   }
 
-  /**
    * Executes this <code>Suite</code> with the specified <code>configMap</code>, printing results to the standard output.
    *
    * <p>
@@ -1226,12 +1225,11 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * @param configMap a <code>Map</code> of key-value pairs that can be used by the executing <code>Suite</code> of tests.
    *
    * @throws NullPointerException if the passed <code>configMap</code> parameter is <code>null</code>.
-   */
+   *
   final def execute(configMap: Map[String, Any]) {
     run(None, new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
-  /**
    * Executes the test specified as <code>testName</code> in this <code>Suite</code>, printing results to the standard output.
    *
    * <p>
@@ -1265,10 +1263,11 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * @throws NullPointerException if the passed <code>testName</code> parameter is <code>null</code>.
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
-   */
+   *
   final def execute(testName: String) {
     run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
   }
+*/
 
   /**
    * Executes the test specified as <code>testName</code> in this <code>Suite</code> with the specified <code>configMap</code>, printing
@@ -1308,8 +1307,8 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
-  final def execute(testName: String, configMap: Map[String, Any]) {
-    run(Some(testName), new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
+  final def execute(testName: String = null, configMap: Map[String, Any] = Map()) {
+    run(if (testName != null) Some(testName) else None, new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
   /**

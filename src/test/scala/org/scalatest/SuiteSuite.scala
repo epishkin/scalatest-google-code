@@ -266,5 +266,67 @@ class SuiteSuite extends Suite with PrivateMethodTester with SharedHelpers {
     // arrays of arrays print pretty
     assert(prettifyArrays(Array(Array(1, 2), Array(3, 4))) === "Array(Array(1, 2), Array(3, 4))")
   }
+
+  def testExecute() {
+    class TestWasCalledSuite extends Suite {
+      var theTestThisCalled = false
+      var theTestThatCalled = false
+      var theTestThisConfigMapWasEmpty = true
+      var theTestThatConfigMapWasEmpty = true
+      override def withFixture(test: NoArgTest) {
+        if (test.configMap.size > 0)
+          test.name match {
+            case "testThis" => theTestThisConfigMapWasEmpty = false
+            case "testThat" => theTestThatConfigMapWasEmpty = false
+            case _ => throw new Exception("Should never happen")
+          }
+        test()
+      }
+      def testThis() { theTestThisCalled = true }
+      def testThat() { theTestThatCalled = true }
+    }
+
+    val s1 = new TestWasCalledSuite
+    s1.execute()
+    assert(s1.theTestThisCalled)
+    assert(s1.theTestThatCalled)
+    assert(s1.theTestThisConfigMapWasEmpty)
+    assert(s1.theTestThatConfigMapWasEmpty)
+
+    val s2 = new TestWasCalledSuite
+    s2.execute("testThis")
+    assert(s2.theTestThisCalled)
+    assert(!s2.theTestThatCalled)
+    assert(s2.theTestThisConfigMapWasEmpty)
+    assert(s2.theTestThatConfigMapWasEmpty)
+
+    val s3 = new TestWasCalledSuite
+    s3.execute(configMap = Map("s" -> "s"))
+    assert(s3.theTestThisCalled)
+    assert(s3.theTestThatCalled)
+    assert(!s3.theTestThisConfigMapWasEmpty)
+    assert(!s3.theTestThatConfigMapWasEmpty)
+
+    val s4 = new TestWasCalledSuite
+    s4.execute("testThis", Map("s" -> "s"))
+    assert(s4.theTestThisCalled)
+    assert(!s4.theTestThatCalled)
+    assert(!s4.theTestThisConfigMapWasEmpty)
+    assert(s4.theTestThatConfigMapWasEmpty)
+
+    val s5 = new TestWasCalledSuite
+    s5.execute(testName = "testThis")
+    assert(s5.theTestThisCalled)
+    assert(!s5.theTestThatCalled)
+    assert(s5.theTestThisConfigMapWasEmpty)
+    assert(s5.theTestThatConfigMapWasEmpty)
+
+    val s6 = new TestWasCalledSuite
+    s6.execute(testName = "testThis", configMap = Map("s" -> "s"))
+    assert(s6.theTestThisCalled)
+    assert(!s6.theTestThatCalled)
+    assert(!s6.theTestThisConfigMapWasEmpty)
+    assert(s6.theTestThatConfigMapWasEmpty)
+  }
 }
 
