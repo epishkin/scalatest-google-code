@@ -1105,16 +1105,6 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
   import Suite.TestMethodPrefix, Suite.InformerInParens, Suite.IgnoreAnnotation
 
-/*
-* @param nestedSuites A <CODE>List</CODE> of <CODE>Suite</CODE>
-* objects. The specified <code>List</code> must be non-empty. Each element must be non-<code>null</code> and an instance
-* of <CODE>org.scalatest.Suite</CODE>.
-*
-* @throws NullPointerException if <CODE>nestedSuites</CODE>
-* is <CODE>null</CODE> or any element of <CODE>nestedSuites</CODE>
-* set is <CODE>null</CODE>.
-*/
-  
   /**
    * A test function taking no arguments, which also provides a test name and config map.
    *
@@ -1145,7 +1135,6 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     def configMap: Map[String, Any]
   }
 
-  // should nestedSuites return a Set[String] instead?
   /**
   * A <code>List</code> of this <code>Suite</code> object's nested <code>Suite</code>s. If this <code>Suite</code> contains no nested <code>Suite</code>s,
   * this method returns an empty <code>List</code>. This trait's implementation of this method returns an empty <code>List</code>.
@@ -1307,7 +1296,13 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
    * @throws IllegalArgumentException if <code>testName</code> is defined, but no test with the specified test name
    *     exists in this <code>Suite</code>
    */
-  final def execute(testName: String = null, configMap: Map[String, Any] = Map()) {
+  final def execute(
+    testName: String = null,
+    configMap: Map[String, Any] = Map(),
+    color: Boolean = true,
+    durations: Boolean = false,
+    fullTraces: Boolean = false
+  ) {
     run(if (testName != null) Some(testName) else None, new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
@@ -2132,32 +2127,13 @@ private[scalatest] object Suite {
     }
 
   private[scalatest] def formatterForSuiteStarting(suite: Suite): Option[Formatter] =
-    suite match {
-      case spec: Spec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
-      case spec: FlatSpec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
-      case spec: WordSpec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
-      case spec: FeatureSpec => Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
-      case _ => None
-    }
+      Some(IndentedText(suite.suiteName + ":", suite.suiteName, 0))
 
   private[scalatest] def formatterForSuiteCompleted(suite: Suite): Option[Formatter] =
-    suite match {
-      case spec: Spec => Some(MotionToSuppress)
-      case spec: FlatSpec => Some(MotionToSuppress)
-      case spec: WordSpec => Some(MotionToSuppress)
-      case spec: FeatureSpec => Some(MotionToSuppress)
-      case _ => None
-    }
+      Some(MotionToSuppress)
 
-  private[scalatest] def formatterForSuiteAborted(suite: Suite, message: String): Option[Formatter] = {
-    suite match {
-      case spec: Spec => Some(IndentedText(message, message, 0))
-      case spec: FlatSpec => Some(IndentedText(message, message, 0))
-      case spec: WordSpec => Some(IndentedText(message, message, 0))
-      case spec: FeatureSpec => Some(IndentedText(message, message, 0))
-      case _ => None
-    }
-  }
+  private[scalatest] def formatterForSuiteAborted(suite: Suite, message: String): Option[Formatter] =
+      Some(IndentedText(message, message, 0))
 
   private def simpleNameForTest(testName: String) =
     if (testName.endsWith(InformerInParens))
