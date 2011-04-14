@@ -508,7 +508,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
     val (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime) =
-      getRunTestGoodies(stopper, reporter, testName)
+      getSuiteRunTestGoodies(stopper, reporter, testName)
 
     reportTestStarting(report, tracker, testName, rerunnable)
 

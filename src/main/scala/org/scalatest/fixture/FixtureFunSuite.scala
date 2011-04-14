@@ -23,6 +23,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import FunSuite.IgnoreTagName 
+import Suite.checkRunTestParamsForNull
 
 /**
  * A sister trait to <code>org.scalatest.FunSuite</code> that can pass a fixture object into its tests.
@@ -417,28 +418,37 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param configMap a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws IllegalArgumentException if <code>testName</code> is defined but a test with that name does not exist on this <code>FixtureFunSuite</code>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || configMap == null)
-      throw new NullPointerException
+    checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
+    val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
+      getRunTestGoodies(stopper, reporter, testName)
+
+/*
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
 
     // Create a Rerunner if the FunSuite has a no-arg constructor
-    val hasPublicNoArgConstructor = org.scalatest.Suite.checkForPublicNoArgConstructor(getClass)
+    val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
 
     val rerunnable =
       if (hasPublicNoArgConstructor)
         Some(new TestRerunner(getClass.getName, testName))
       else
         None
-
+     
     val testStartTime = System.currentTimeMillis
-    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
+*/
+    reportTestStarting(report, tracker, testName, rerunnable)
+    // report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
+
+    if (!atomic.get.testsMap.contains(testName))
+      throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
 
     try {
 

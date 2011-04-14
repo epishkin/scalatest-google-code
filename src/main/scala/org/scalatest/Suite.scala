@@ -1,5 +1,5 @@
 /*
- * Copyright 2001-2008 Artima, Inc.
+ * Copyright 2001-2011 Artima, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1463,11 +1463,17 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   }
 
   // Factored out to share this with FixtureSuite.runTest
+  private[scalatest] def getSuiteRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
+    val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) = getRunTestGoodies(stopper, reporter, testName)
+    val method = getMethodForTestName(testName)
+    (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime)
+  }
+
+  // Sharing this with FunSuite and FixtureFunSuite as well as Suite and FixtureSuite
   private[scalatest] def getRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
 
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
-    val method = getMethodForTestName(testName)
 
     // Create a Rerunner if the Suite has a no-arg constructor
     val hasPublicNoArgConstructor = checkForPublicNoArgConstructor(getClass)
@@ -1480,7 +1486,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
     val testStartTime = System.currentTimeMillis
 
-    (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime)
+    (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime)
   }
 
   /**
@@ -1514,7 +1520,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
     val (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime) =
-      getRunTestGoodies(stopper, reporter, testName)
+      getSuiteRunTestGoodies(stopper, reporter, testName)
 
     reportTestStarting(report, tracker, testName, rerunnable)
 

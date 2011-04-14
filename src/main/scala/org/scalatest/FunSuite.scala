@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
+import Suite.checkRunTestParamsForNull
 
 /**
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
@@ -994,14 +995,18 @@ trait FunSuite extends Suite { thisSuite =>
    * @param reporter the <code>Reporter</code> to which results will be reported
    * @param stopper the <code>Stopper</code> that will be consulted to determine whether to stop execution early.
    * @param configMap a <code>Map</code> of properties that can be used by the executing <code>Suite</code> of tests.
+   * @throws IllegalArgumentException if <code>testName</code> is defined but a test with that name does not exist on this <code>FunSuite</code>
    * @throws NullPointerException if any of <code>testName</code>, <code>reporter</code>, <code>stopper</code>, or <code>configMap</code>
    *     is <code>null</code>.
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || configMap == null)
-      throw new NullPointerException
+    checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
+    val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
+      getRunTestGoodies(stopper, reporter, testName)
+
+/*
     val stopRequested = stopper
     val report = wrapReporterIfNecessary(reporter)
 
@@ -1015,7 +1020,12 @@ trait FunSuite extends Suite { thisSuite =>
         None
      
     val testStartTime = System.currentTimeMillis
-    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
+*/
+    reportTestStarting(report, tracker, testName, rerunnable)
+    // report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
+
+    if (!atomic.get.testsMap.contains(testName))
+      throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
 
     try {
 
@@ -1150,11 +1160,8 @@ trait FunSuite extends Suite { thisSuite =>
     }
   }
 
-  @volatile private var wasRunBefore = false
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-
-    wasRunBefore = true
 
     val stopRequested = stopper
 

@@ -897,5 +897,20 @@ class FixtureFunSuiteSpec extends org.scalatest.Spec with PrivateMethodTester wi
         ensureTestFailedEventReceived(spec, "should blow up")
       }
     }
+
+    it("should throw IllegalArgumentException if passed a testName that doesn't exist") {
+      class MySuite extends FixtureFunSuite {
+        type FixtureParam = String
+        def withFixture(test: OneArgTest) {
+          test("hi")
+        }
+        test("one") {s => () }
+        test("two") {s => () }
+      }
+      val suite = new MySuite
+      intercept[IllegalArgumentException] {
+        suite.run(Some("three"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      }
+    }
   }
 }

@@ -731,6 +731,17 @@ class FunSuiteSpec extends Spec with SharedHelpers {
         ensureTestFailedEventReceived(spec, "should blow up")
       }
     }
+
+    it("should throw IllegalArgumentException if passed a testName that doesn't exist") {
+      class MySuite extends FunSuite {
+        test("one") {}
+        test("two") {}
+      }
+      val suite = new MySuite
+      intercept[IllegalArgumentException] {
+        suite.run(Some("three"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      }
+    }
   }
 }
 
