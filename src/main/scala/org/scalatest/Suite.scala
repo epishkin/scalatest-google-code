@@ -1666,14 +1666,17 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
       case None =>
 
-      for ((tn, ignoreTest) <- filter(testNames, tags))
-        if (ignoreTest) {
-          val testSucceededIcon = Resources("testSucceededIconChar")
-          val formattedText = Resources("iconPlusShortName", testSucceededIcon, tn)
-          report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedText, tn, 1))))
+      for ((tn, ignoreTest) <- filter(testNames, tags)) {
+        if (!stopRequested()) {
+          if (ignoreTest) {
+            val testSucceededIcon = Resources("testSucceededIconChar")
+            val formattedText = Resources("iconPlusShortName", testSucceededIcon, tn)
+            report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedText, tn, 1))))
+          }
+          else
+            runTest(tn, report, stopRequested, configMap, tracker)
         }
-        else
-          runTest(tn, report, stopRequested, configMap, tracker)
+      }
     }
   }
 

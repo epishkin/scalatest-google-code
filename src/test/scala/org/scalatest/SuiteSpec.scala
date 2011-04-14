@@ -708,6 +708,51 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       assert(!m.executed)
       assert(!n.executed)
     }
+
+    it("should stop tests from being executed") {
+
+      class MySuite extends Suite {
+        var testsExecutedCount = 0
+        def test1() { testsExecutedCount += 1 }
+        def test2() { testsExecutedCount += 1 }
+        def test3() { testsExecutedCount += 1 }
+        def test4() {
+          testsExecutedCount += 1
+        }
+        def test5() { testsExecutedCount += 1 }
+        def test6() { testsExecutedCount += 1 }
+        def test7() { testsExecutedCount += 1 }
+      }
+
+      val x = new MySuite
+      x.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      assert(x.testsExecutedCount === 7)
+
+      class MyStopper extends Stopper {
+        var stop = false
+        override def apply() = stop
+      }
+
+      val myStopper = new MyStopper
+
+      class MyStoppingSuite extends Suite {
+        var testsExecutedCount = 0
+        def test1() { testsExecutedCount += 1 }
+        def test2() { testsExecutedCount += 1 }
+        def test3() { testsExecutedCount += 1 }
+        def test4() {
+          testsExecutedCount += 1
+          myStopper.stop = true
+        }
+        def test5() { testsExecutedCount += 1 }
+        def test6() { testsExecutedCount += 1 }
+        def test7() { testsExecutedCount += 1 }
+      }
+
+      val y = new MyStoppingSuite
+      y.run(None, SilentReporter, myStopper, Filter(), Map(), None, new Tracker)
+      assert(y.testsExecutedCount === 4)
+    }
   }
 }
 
