@@ -26,6 +26,7 @@ import org.scalatest.events._
 import java.util.Collections
 import java.util.HashSet
 import java.util.regex.Pattern
+import Suite.getIndentedText
 
   private[junit] class MyRunListener(report: Reporter,
                                      config: Map[String, Any],
@@ -50,8 +51,8 @@ import java.util.regex.Pattern
         else
           Resources("jUnitTestFailed")
 
-      report(TestFailed(theTracker.nextOrdinal(), message, testClassName,
-                        Some(testClass), testName, throwable))
+      val formatter = getIndentedText(testName, 1)
+      report(TestFailed(theTracker.nextOrdinal(), message, testClassName, Some(testClass), testName, throwable, None, Some(formatter), None))
       // TODO: can I add a duration?
     }
 
@@ -59,8 +60,8 @@ import java.util.regex.Pattern
       if (!failedTests.contains(description.getDisplayName)) {
         val (testName, testClass, testClassName) =
           parseTestDescription(description)
-        report(TestSucceeded(theTracker.nextOrdinal(), testClassName,
-                             Some(testClass), testName))
+        val formatter = getIndentedText(testName, 1)
+        report(TestSucceeded(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, None, Some(formatter), None))
         // TODO: can I add a duration?
       }
     }
@@ -68,8 +69,9 @@ import java.util.regex.Pattern
     override def testIgnored(description: Description) {
       val (testName, testClass, testClassName) =
         parseTestDescription(description)
-      report(TestIgnored(theTracker.nextOrdinal(), testClassName,
-                         Some(testClass), testName))
+      val testSucceededIcon = Resources("testSucceededIconChar")
+      val formattedText = Resources("iconPlusShortName", testSucceededIcon, testName)
+      report(TestIgnored(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, Some(IndentedText(formattedText, testName, 1))))
     }
 
     override def testRunFinished(result: Result) {
@@ -83,8 +85,7 @@ import java.util.regex.Pattern
     override def testStarted(description: Description) {
       val (testName, testClass, testClassName) =
         parseTestDescription(description)
-      report(TestStarting(theTracker.nextOrdinal(), testClassName, 
-                         Some(testClass), testName))
+      report(TestStarting(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, Some(MotionToSuppress), None))
     }
 
     //
