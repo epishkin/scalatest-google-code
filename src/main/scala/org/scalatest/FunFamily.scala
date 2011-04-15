@@ -140,5 +140,61 @@ private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, s
     if (testTags.exists(_ == null))
       throw new NullPointerException("a test tag was null")
   }
+
+  def runTestsImpl(
+    theSuite: Suite,
+    testName: Option[String],
+    reporter: Reporter,
+    stopper: Stopper,
+    filter: Filter,
+    configMap: Map[String, Any],
+    distributor: Option[Distributor],
+    tracker: Tracker,
+    info: String => Unit,
+    runTest: (String, Reporter, Stopper, Map[String, Any], Tracker) => Unit
+  ) {
+    if (testName == null)
+      throw new NullPointerException("testName was null")
+    if (reporter == null)
+      throw new NullPointerException("reporter was null")
+    if (stopper == null)
+      throw new NullPointerException("stopper was null")
+    if (filter == null)
+      throw new NullPointerException("filter was null")
+    if (configMap == null)
+      throw new NullPointerException("configMap was null")
+    if (distributor == null)
+      throw new NullPointerException("distributor was null")
+    if (tracker == null)
+      throw new NullPointerException("tracker was null")
+
+    val stopRequested = stopper
+
+    // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
+    // so that exceptions are caught and transformed
+    // into error messages on the standard error stream.
+    val report = theSuite.wrapReporterIfNecessary(reporter)
+
+    // If a testName is passed to run, just run that, else run the tests returned
+    // by testNames.
+    testName match {
+      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
+      case None =>
+
+        val doList = atomic.get.doList.reverse
+        for (node <- doList) {
+          node match {
+            case InfoNode(message) => info(message)
+            case TestNode(tn, _) =>
+              val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
+              if (!filterTest)
+                if (ignoreTest)
+                  theSuite.reportTestIgnored(report, tracker, tn)
+                else
+                  runTest(tn, report, stopRequested, configMap, tracker)
+          }
+        }
+    }
+  }
 }
 
