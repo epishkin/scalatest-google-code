@@ -493,6 +493,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
+    runImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, super.run)
+/*
     val stopRequested = stopper
 
     // Set the flag that indicates registration is closed (because run has now been invoked),
@@ -521,6 +523,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
     }
     if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
+*/
   }
 
   /**

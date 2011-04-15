@@ -196,5 +196,47 @@ private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, s
         }
     }
   }
+
+  def runImpl(
+    theSuite: Suite,
+    testName: Option[String],
+    reporter: Reporter,
+    stopper: Stopper,
+    filter: Filter,
+    configMap: Map[String, Any],
+    distributor: Option[Distributor],
+    tracker: Tracker,
+    superRun: (Option[String], Reporter, Stopper, Filter, Map[String, Any], Option[Distributor], Tracker) => Unit
+  ) {
+    val stopRequested = stopper
+
+    // Set the flag that indicates registration is closed (because run has now been invoked),
+    // which will disallow any further invocations of "test" or "ignore" with
+    // an RegistrationClosedException.    
+    val oldBundle = atomic.get
+    val (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+    if (!registrationClosed)
+      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, true))
+
+    val report = theSuite.wrapReporterIfNecessary(reporter)
+
+    val informerForThisSuite =
+      ConcurrentInformer2(
+        (message, isConstructingThread) => theSuite.reportInfoProvided(report, tracker, None, message, 1, isConstructingThread)
+      )
+
+    atomicInformer.set(informerForThisSuite)
+
+    var swapAndCompareSucceeded = false
+    try {
+      superRun(testName, report, stopRequested, filter, configMap, distributor, tracker)
+    }
+    finally {
+      val shouldBeInformerForThisSuite = atomicInformer.getAndSet(zombieInformer)
+      swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
+    }
+    if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
+      throw new ConcurrentModificationException(Resources("concurrentInformerMod", theSuite.getClass.getName))
+  }
 }
 
