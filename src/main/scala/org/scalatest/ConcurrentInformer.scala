@@ -50,4 +50,9 @@ private[scalatest] abstract class ConcurrentInformer(nameInfo: NameInfo) extends
     val (constructingThread, nameInfo) = atomic.get
     if (Thread.currentThread == constructingThread) nameInfo else None
   }
+
+  def isConstructingThread: Boolean = {
+    val (constructingThread, _) = atomic.get
+    Thread.currentThread == constructingThread
+  }
 }
