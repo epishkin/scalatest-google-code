@@ -526,7 +526,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
                     def apply(message: String) {
                       if (message == null)
                         throw new NullPointerException
-                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))), None, None, Some(getIndentedTextForInfo(message, 2))))
+                      reportInfoProvided(report, tracker, Some(testName), message, 2, true)
                     }
                   }
                 Array(anyRefFixture, informer)
@@ -549,7 +549,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
                     def apply(message: String) {
                       if (message == null)
                         throw new NullPointerException
-                      report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))), None, None, Some(getIndentedTextForInfo(message, 2))))
+                      reportInfoProvided(report, tracker, Some(testName), message, 2, true)
                     }
                   }
                 Array(informer)

@@ -1462,6 +1462,36 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), Some(formatter), rerunnable))
   }
 
+  private[scalatest] def reportTestIgnored(report: Reporter, tracker: Tracker, testName: String) {
+    val testSucceededIcon = Resources("testSucceededIconChar")
+    val formattedText = Resources("iconPlusShortName", testSucceededIcon, testName)
+    report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(IndentedText(formattedText, testName, 1))))
+  }
+
+  // If not fired in the context of a test, then testName will be None
+  private[scalatest] def reportInfoProvided(
+    report: Reporter,
+    tracker: Tracker,
+    testName: Option[String],
+    message: String,
+    level: Int,
+    includeNameInfo: Boolean
+  ) {
+    report(
+      InfoProvided(
+        tracker.nextOrdinal(),
+        message,
+        if (includeNameInfo)
+          Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
+        else
+          None,
+        None,
+        None,
+        Some(getIndentedTextForInfo(message, level))
+      )
+    )
+  }
+
   // Factored out to share this with FixtureSuite.runTest
   private[scalatest] def getSuiteRunTestGoodies(stopper: Stopper, reporter: Reporter, testName: String) = {
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) = getRunTestGoodies(stopper, reporter, testName)
@@ -1533,7 +1563,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
             def apply(message: String) {
               if (message == null)
                 throw new NullPointerException
-              report(InfoProvided(tracker.nextOrdinal(), message, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))), None, None, Some(getIndentedTextForInfo(message, 2))))
+              reportInfoProvided(report, tracker, Some(testName), message, 2, true)
             }
           }
         Array(informer)  
@@ -1675,9 +1705,12 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       for ((tn, ignoreTest) <- filter(testNames, tags)) {
         if (!stopRequested()) {
           if (ignoreTest) {
+            reportTestIgnored(report, tracker, tn)
+/*
             val testSucceededIcon = Resources("testSucceededIconChar")
             val formattedText = Resources("iconPlusShortName", testSucceededIcon, tn)
             report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedText, tn, 1))))
+*/
           }
           else
             runTest(tn, report, stopRequested, configMap, tracker)

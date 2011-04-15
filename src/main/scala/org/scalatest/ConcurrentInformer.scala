@@ -56,3 +56,25 @@ private[scalatest] abstract class ConcurrentInformer(nameInfo: NameInfo) extends
     Thread.currentThread == constructingThread
   }
 }
+
+// Getting rid of the NameInfo passed to ConcurrentInformer. After go through entire
+// refactor can rename ConcurrentInformer2 to ConcurrentInformer, deleting the old one
+private[scalatest] class ConcurrentInformer2(fire: (String, Boolean) => Unit) extends Informer {
+
+  private final val atomic = new AtomicReference[Thread](Thread.currentThread)
+
+  def isConstructingThread: Boolean = {
+    val constructingThread = atomic.get
+    Thread.currentThread == constructingThread
+  }
+
+  def apply(message: String) {
+    if (message == null)
+      throw new NullPointerException
+    fire(message, isConstructingThread) // Fire the info provided event using the passed function
+  }
+}
+
+private[scalatest] object ConcurrentInformer2 {
+  def apply(fire: (String, Boolean) => Unit) = new ConcurrentInformer2(fire)
+}

@@ -22,6 +22,7 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import Suite.checkRunTestParamsForNull
+import Suite.getIndentedText
 
 /**
  * A suite of tests in which each test is represented as a function value. The &#8220;<code>Fun</code>&#8221; in <code>FunSuite</code> stands
@@ -987,7 +988,6 @@ trait FunSuite extends Suite { thisSuite =>
     ListSet(atomic.get.testNamesList.toArray: _*)
   }
 
-  // runTest should throw IAE if a test name is passed that doesn't exist. Looks like right now it just reports a test failure.
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by <code>testName</code>.
    *
@@ -1006,42 +1006,23 @@ trait FunSuite extends Suite { thisSuite =>
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
       getRunTestGoodies(stopper, reporter, testName)
 
-/*
-    val stopRequested = stopper
-    val report = wrapReporterIfNecessary(reporter)
-
-    // Create a Rerunner if the FunSuite has a no-arg constructor
-    val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
-
-    val rerunnable =
-      if (hasPublicNoArgConstructor)
-        Some(new TestRerunner(getClass.getName, testName))
-      else
-        None
-     
-    val testStartTime = System.currentTimeMillis
-*/
     reportTestStarting(report, tracker, testName, rerunnable)
-    // report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, None, rerunnable))
 
     if (!atomic.get.testsMap.contains(testName))
       throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
+
+    val formatter = getIndentedText(testName, 1)
 
     try {
 
       val theTest = atomic.get.testsMap(testName)
 
       val informerForThisTest =
-        new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
-          def apply(message: String) {
-            if (message == null)
-              throw new NullPointerException
-            report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
-          }
-        }
+        ConcurrentInformer2(
+          (message, isConstructingThread) => reportInfoProvided(report, tracker, Some(testName), message, 2, isConstructingThread)
+        )
 
       val oldInformer = atomicInformer.getAndSet(informerForThisTest)
-      var swapAndCompareSucceeded = false
       try {
         val theConfigMap = configMap
         withFixture(
@@ -1054,18 +1035,17 @@ trait FunSuite extends Suite { thisSuite =>
       }
       finally {
         val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
-        swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
+        val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
+        if (!swapAndCompareSucceeded)
+          throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
       }
 
-      if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-        throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-
       val duration = System.currentTimeMillis - testStartTime
-      report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), None, rerunnable))
+      reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
     }
     catch { 
       case _: TestPendingException =>
-        report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
+        reportTestPending(report, tracker, testName, formatter)
       case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
@@ -1073,6 +1053,7 @@ trait FunSuite extends Suite { thisSuite =>
     }
   }
 
+/*
   // Probably delete this and just inherit the superclass one
   private[scalatest] override def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker, duration: Long) {
@@ -1085,6 +1066,7 @@ trait FunSuite extends Suite { thisSuite =>
 
     reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), None, rerunnable))
   }
+*/
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
@@ -1152,7 +1134,7 @@ trait FunSuite extends Suite { thisSuite =>
               val (filterTest, ignoreTest) = filter(tn, tags)
               if (!filterTest)
                 if (ignoreTest)
-                  report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn))
+                  reportTestIgnored(report, tracker, tn)
                 else
                   runTest(tn, report, stopRequested, configMap, tracker)
           }
@@ -1176,13 +1158,9 @@ trait FunSuite extends Suite { thisSuite =>
     val report = wrapReporterIfNecessary(reporter)
 
     val informerForThisSuite =
-      new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)) {
-        def apply(message: String) {
-          if (message == null)
-            throw new NullPointerException
-          report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
-        }
-      }
+      ConcurrentInformer2(
+        (message, isConstructingThread) => reportInfoProvided(report, tracker, None, message, 1, isConstructingThread)
+      )
 
     atomicInformer.set(informerForThisSuite)
 
