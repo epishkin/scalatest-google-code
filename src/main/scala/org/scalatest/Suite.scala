@@ -1706,11 +1706,6 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
         if (!stopRequested()) {
           if (ignoreTest) {
             reportTestIgnored(report, tracker, tn)
-/*
-            val testSucceededIcon = Resources("testSucceededIconChar")
-            val formattedText = Resources("iconPlusShortName", testSucceededIcon, tn)
-            report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedText, tn, 1))))
-*/
           }
           else
             runTest(tn, report, stopRequested, configMap, tracker)

@@ -1053,21 +1053,6 @@ trait FunSuite extends Suite { thisSuite =>
     }
   }
 
-/*
-  // Probably delete this and just inherit the superclass one
-  private[scalatest] override def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      rerunnable: Option[Rerunner], reporter: Reporter, tracker: Tracker, duration: Long) {
-
-    val message =
-      if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
-        throwable.getMessage
-      else
-        throwable.toString
-
-    reporter(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), None, rerunnable))
-  }
-*/
-
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
