@@ -43,6 +43,7 @@ import org.scalatest.events._
 import org.scalatest.tools.StandardOutReporter
 import Suite.checkRunTestParamsForNull
 import Suite.getIndentedTextForInfo
+import Suite.getMessageForException
 
 /**
  * A suite of tests. A <code>Suite</code> instance encapsulates a conceptual
@@ -1307,9 +1308,9 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     configMap: Map[String, Any] = Map(),
     color: Boolean = true,
     durations: Boolean = false,
-    fullTraces: Boolean = false
+    fullStacks: Boolean = false
   ) {
-    run(if (testName != null) Some(testName) else None, new StandardOutReporter, new Stopper {}, Filter(), configMap, None, new Tracker)
+    run(if (testName != null) Some(testName) else None, new StandardOutReporter(durations, color, fullStacks), new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
   /**
@@ -1806,12 +1807,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
   private[scalatest] def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
-    val message =
-      if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
-        throwable.getMessage
-      else
-        throwable.toString
-
+    val message = getMessageForException(throwable)
     val formatter = getIndentedText(testName, 1)
     report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
   }
@@ -2248,4 +2244,10 @@ private[scalatest] object Suite {
     val formattedText = ("  " * (level - 1)) + Resources("iconPlusShortName", infoProvidedIcon, message)
     IndentedText(formattedText, message, 2)
   }
+
+  def getMessageForException(e: Throwable): String =
+    if (e.getMessage != null)
+      e.getMessage
+    else
+      Resources("exceptionThrown", e.getClass.getName) // Say something like, "java.lang.Exception was thrown."
 }
