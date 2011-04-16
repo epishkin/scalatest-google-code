@@ -24,6 +24,7 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import verb.BehaveWord
+import FunSuite.IgnoreTagName 
 
 /**
  * A sister trait to <code>org.scalatest.Spec</code>, which passes a fixture object into each test.
@@ -346,8 +347,6 @@ import verb.BehaveWord
  * @author Bill Venners
  */
 trait FixtureSpec extends FixtureSuite { thisSuite =>
-
-  private val IgnoreTagName = "org.scalatest.Ignore"
 
   private class Bundle private(
     val trunk: Trunk,
