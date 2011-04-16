@@ -23,6 +23,7 @@ import java.util.ConcurrentModificationException
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import verb.BehaveWord
+import FunSuite.IgnoreTagName 
 
 /**
  * Trait that facilitates a &#8220;behavior-driven&#8221; style of development (BDD), in which tests
@@ -896,8 +897,6 @@ import verb.BehaveWord
  * @author Bill Venners
  */
 trait Spec extends Suite { thisSuite =>
-
-  private val IgnoreTagName = "org.scalatest.Ignore"
 
   private class Bundle private(
     val trunk: Trunk,
