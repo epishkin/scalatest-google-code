@@ -22,20 +22,26 @@ package org.scalatest
  * Having a stack depth is more useful in a testing environment in which test failures are implemented as
  * thrown exceptions, as is the case in ScalaTest's built-in suite traits.
  *
- * @param message an optional detail message for this <code>StackDepthException</code>.
+ * @param messageFun an optional function that produces a detail message for this <code>StackDepthException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>StackDepthException</code> to be thrown.
- * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+ * @param failedCodeStackDepthFun a function that produces the depth in the stack trace of this exception at which the line of test code that failed resides.
  *
- * @throws NullPointerException if either <code>message</code> of <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if either <code>messageFun</code> of <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
  *
  * @author Bill Venners
  */
-abstract class StackDepthException(val message: Option[String], val cause: Option[Throwable], val failedCodeStackDepth: Int)
-    extends RuntimeException(if (message.isDefined) message.get else "", if (cause.isDefined) cause.get else null) with StackDepth {
+abstract class StackDepthException(
+  val messageFun: Option[StackDepthException => String],
+  val cause: Option[Throwable],
+  val failedCodeStackDepthFun: StackDepthException => Int
+) extends RuntimeException(if (cause.isDefined) cause.get else null) with StackDepth {
 
-  if (message == null) throw new NullPointerException("message was null")
-  message match {
-    case Some(null) => throw new NullPointerException("message was a Some(null)")
+//abstract class StackDepthException(val message: Option[String], val cause: Option[Throwable], val failedCodeStackDepth: Int)
+//    extends RuntimeException(if (message.isDefined) message.get else "", if (cause.isDefined) cause.get else null) with StackDepth {
+
+  if (messageFun == null) throw new NullPointerException("messageFun was null")
+  messageFun match {
+    case Some(null) => throw new NullPointerException("messageFun was a Some(null)")
     case _ =>
   }
 
@@ -44,6 +50,62 @@ abstract class StackDepthException(val message: Option[String], val cause: Optio
     case Some(null) => throw new NullPointerException("cause was a Some(null)")
     case _ =>
   }
+
+  // Maybe deprecate this, but probably not. Seems useful enough.
+  /**
+   * Constructs a StackDepthException with pre-determined message and failedCodeStackDepth. (This was the constructor form
+   * prior to ScalaTest 1.5.)
+   *
+   * @param message an optional detail message for this <code>StackDepthException</code>.
+   * @param cause an optional cause, the <code>Throwable</code> that caused this <code>StackDepthException</code> to be thrown.
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if either <code>message</code> of <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+   */
+  def this(message: Option[String], cause: Option[Throwable], failedCodeStackDepth: Int) =
+    this(
+      message match {
+        case null => throw new NullPointerException("message was null")
+        case Some(null) => throw new NullPointerException("message was a Some(null)")
+        case Some(m) => Some(e => m)
+        case None => None
+      },
+      cause,
+      e => failedCodeStackDepth
+    )
+
+  /**
+   * An optional detail message for this <code>StackDepth</code> exception.
+   *
+   * <p>
+   * One reason this is lazy is to delay any searching of the stack trace until it is actually needed. It will
+   * usually be needed, but not always. For example, exceptions thrown during a shrink phase of a failed property
+   * will often be StackDepthExceptions, but whose message will never be used. The other reason is to remove the need
+   * to create a different exception before creating this one just for the purpose of searching through its stack
+   * trace for the proper stack depth.
+   * </p>
+   */
+  lazy val message: Option[String] = messageFun map { f => f(this) }
+ 
+  /**
+   * The depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * <p>
+   * One reason this is lazy is to delay any searching of the stack trace until it is actually needed. It will
+   * usually be needed, but not always. For example, exceptions thrown during a shrink phase of a failed property
+   * will often be StackDepthExceptions, but whose failedCodeStackDepth will never be used. The other reason is to remove the need
+   * to create a different exception before creating this one just for the purpose of searching through its stack
+   * trace for the proper stack depth.
+   * </p>
+   */
+  lazy val failedCodeStackDepth: Int = failedCodeStackDepthFun(this)
+
+  /**
+   * Returns the detail message string of this <code>StackDepthException</code>.
+   *
+   * @returns the detail message string of this <code>StackDepthException</code> instance (which may be <code>null</code>).
+   */
+  override def getMessage: String = if (message.isDefined) message.get else null
 
   /*
   * Throws <code>IllegalStateException</code>, because <code>StackDepthException</code>s are
