@@ -26,7 +26,7 @@ package org.scalatest
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>StackDepthException</code> to be thrown.
  * @param failedCodeStackDepthFun a function that produces the depth in the stack trace of this exception at which the line of test code that failed resides.
  *
- * @throws NullPointerException if either <code>messageFun</code> of <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if either <code>messageFun</code>, <code>cause</code> or <code>failedCodeStackDepthFun</code> is <code>null</code>, or <code>Some(null)</code>.
  *
  * @author Bill Venners
  */
@@ -51,8 +51,8 @@ abstract class StackDepthException(
   if (failedCodeStackDepthFun == null) throw new NullPointerException("failedCodeStackDepthFun was null")
 
   /**
-   * Constructs a StackDepthException with pre-determined message and failedCodeStackDepth. (This was the constructor form
-   * prior to ScalaTest 1.5.)
+   * Constructs a <code>StackDepthException</code> with pre-determined <code>message</code> and <code>failedCodeStackDepth</code>. (This was
+   * the primary constructor form prior to ScalaTest 1.5.)
    *
    * @param message an optional detail message for this <code>StackDepthException</code>.
    * @param cause an optional cause, the <code>Throwable</code> that caused this <code>StackDepthException</code> to be thrown.
