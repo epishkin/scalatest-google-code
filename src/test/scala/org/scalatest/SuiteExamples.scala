@@ -22,13 +22,16 @@ trait SuiteExamples extends Tables {
 
   type FixtureServices
 
-  // def funSuite: FunSuite
+//  def funSuite: FunSuite with FixtureServices
+//  def fixtureFunSuite: FixtureFunSuite with FixtureServices
   def spec: Spec with FixtureServices
   def fixtureSpec: FixtureSpec with FixtureServices
 
   def examples =
     Table(
       "suite",
+//      funSuite,
+ //     fixtureFunSuite,
       spec,
       fixtureSpec
     )
