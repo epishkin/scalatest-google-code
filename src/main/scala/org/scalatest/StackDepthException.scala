@@ -36,9 +36,6 @@ abstract class StackDepthException(
   val failedCodeStackDepthFun: StackDepthException => Int
 ) extends RuntimeException(if (cause.isDefined) cause.get else null) with StackDepth {
 
-//abstract class StackDepthException(val message: Option[String], val cause: Option[Throwable], val failedCodeStackDepth: Int)
-//    extends RuntimeException(if (message.isDefined) message.get else "", if (cause.isDefined) cause.get else null) with StackDepth {
-
   if (messageFun == null) throw new NullPointerException("messageFun was null")
   messageFun match {
     case Some(null) => throw new NullPointerException("messageFun was a Some(null)")
@@ -51,7 +48,8 @@ abstract class StackDepthException(
     case _ =>
   }
 
-  // Maybe deprecate this, but probably not. Seems useful enough.
+  if (failedCodeStackDepthFun == null) throw new NullPointerException("failedCodeStackDepthFun was null")
+
   /**
    * Constructs a StackDepthException with pre-determined message and failedCodeStackDepth. (This was the constructor form
    * prior to ScalaTest 1.5.)
@@ -107,7 +105,7 @@ abstract class StackDepthException(
    *
    * @returns the detail message string of this <code>StackDepthException</code> instance (which may be <code>null</code>).
    */
-  override def getMessage: String = if (message.isDefined) message.get else null
+  override def getMessage: String = message.orNull
 
   /*
   * Throws <code>IllegalStateException</code>, because <code>StackDepthException</code>s are
