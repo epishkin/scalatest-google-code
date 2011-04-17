@@ -29,16 +29,14 @@ class InfoInsideTestFiredAfterTestProp extends SuiteProp {
   }
 
   trait Services {
-    val msg: String
-    val testName: String
+    val msg = "hi there, dude"
+    val testName = "test name"
   }
 
   type FixtureServices = Services
 
   def funSuite =
     new FunSuite with Services {
-      val msg = "hi there, dude"
-      val testName = "test name"
       test(testName) {
         info(msg)
       }
@@ -46,8 +44,6 @@ class InfoInsideTestFiredAfterTestProp extends SuiteProp {
 
   def fixtureFunSuite =
     new StringFixtureFunSuite with Services {
-      val msg = "hi there, dude"
-      val testName = "test name"
       test(testName) { s =>
         info(msg)
       }
@@ -55,8 +51,6 @@ class InfoInsideTestFiredAfterTestProp extends SuiteProp {
 
   def spec =
     new Spec with Services {
-      val msg = "hi there, dude"
-      val testName = "test name"
       it(testName) {
         info(msg)
       }
@@ -64,8 +58,6 @@ class InfoInsideTestFiredAfterTestProp extends SuiteProp {
 
   def fixtureSpec =
     new StringFixtureSpec with Services {
-      val msg = "hi there, dude"
-      val testName = "test name"
       it(testName) { s =>
         info(msg)
       }
