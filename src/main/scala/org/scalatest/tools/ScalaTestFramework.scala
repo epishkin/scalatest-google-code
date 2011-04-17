@@ -90,19 +90,20 @@ println("sbt args: " + args.toList)
         val tagsToExclude: Set[String] = parseCompoundArgIntoSet(excludesArgsList, "-l")
         val filter = org.scalatest.Filter(if (tagsToInclude.isEmpty) None else Some(tagsToInclude), tagsToExclude)
 
-        val (presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) =
+        val (presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) =
           repoArg match {
             case Some(arg) => (
               arg contains 'D',
               !(arg contains 'W'),
+              arg contains 'S',
               arg contains 'F'
              )
-             case None => (false, true, false)
+             case None => (false, true, false, false)
           }
 
         //  def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
         //              configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
-        val repo = new ScalaTestReporter(eventHandler, presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces)
+        val repo = new ScalaTestReporter(eventHandler, presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces)
         testClass.newInstance.run(None, repo, new Stopper {},
           filter, propertiesMap, None, new Tracker)
       }
@@ -136,8 +137,8 @@ println("sbt args: " + args.toList)
 */
 
     private class ScalaTestReporter(eventHandler: EventHandler, presentAllDurations: Boolean,
-        presentInColor: Boolean, presentTestFailedExceptionStackTraces: Boolean) extends StringReporter(
-        presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) {
+        presentInColor: Boolean, presentStackTraces: Boolean, presentFullStackTraces: Boolean) extends StringReporter(
+        presentAllDurations, presentInColor, true, presentFullStackTraces) {
 
       import org.scalatest.events._
 

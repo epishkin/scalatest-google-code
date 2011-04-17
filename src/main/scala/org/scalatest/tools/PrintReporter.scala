@@ -38,8 +38,8 @@ import StringReporter.colorizeLinesIndividually
  * @author Bill Venners
  */
 private[scalatest] abstract class PrintReporter(pw: PrintWriter, presentAllDurations: Boolean,
-        presentInColor: Boolean, presentTestFailedExceptionStackTraces: Boolean) extends StringReporter(
-presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) {
+        presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) extends StringReporter(
+presentAllDurations, presentInColor, presentShortStackTraces, presentFullStackTraces) {
 
   /**
   * Construct a <code>PrintReporter</code> with passed
@@ -54,7 +54,8 @@ presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) {
     os: OutputStream,
     presentAllDurations: Boolean,
     presentInColor: Boolean,
-    presentTestFailedExceptionStackTraces: Boolean
+    presentShortStackTraces: Boolean,
+    presentFullStackTraces: Boolean
   ) =
     this(
       new PrintWriter(
@@ -64,7 +65,8 @@ presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) {
       ),
       presentAllDurations,
       presentInColor,
-      presentTestFailedExceptionStackTraces
+      presentShortStackTraces,
+      presentFullStackTraces
     )
 
   /**
@@ -81,13 +83,15 @@ presentAllDurations, presentInColor, presentTestFailedExceptionStackTraces) {
     filename: String,
     presentAllDurations: Boolean,
     presentInColor: Boolean,
-    presentTestFailedExceptionStackTraces: Boolean
+    presentShortStackTraces: Boolean,
+    presentFullStackTraces: Boolean
   ) =
     this(
       new PrintWriter(new BufferedOutputStream(new FileOutputStream(new File(filename)), BufferSize)),
       presentAllDurations,
       presentInColor,
-      presentTestFailedExceptionStackTraces
+      presentShortStackTraces,
+      presentFullStackTraces
     )
 
   protected def printPossiblyInColor(text: String, ansiColor: String) {

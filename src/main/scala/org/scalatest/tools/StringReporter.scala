@@ -39,7 +39,7 @@ import org.scalatest.prop.TableDrivenPropertyCheckFailedException
  * @author Bill Venners
  */
 private[scalatest] abstract class StringReporter(presentAllDurations: Boolean,
-        presentInColor: Boolean, presentTestFailedExceptionStackTraces: Boolean) extends ResourcefulReporter {
+        presentInColor: Boolean, presentShortStackTraces: Boolean, presentFullStackTraces: Boolean) extends ResourcefulReporter {
 
   private def withPossibleLineNumber(stringToPrint: String, throwable: Option[Throwable]): String = {
     throwable match {
@@ -176,24 +176,23 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
           }
     }
 
-    val stringToPrintWithPossibleLineNumber = withPossibleLineNumber(stringToPrint, throwable)
-
-    val stringToPrintWithPossibleLineNumberAndDuration =
+    val stringToPrintWithPossibleDuration =
       duration match {
         case Some(milliseconds) =>
           if (presentAllDurations)
-            Resources("withDuration", stringToPrintWithPossibleLineNumber, makeDurationString(milliseconds))
+            Resources("withDuration", stringToPrint, makeDurationString(milliseconds))
           else
-            stringToPrintWithPossibleLineNumber
-        case None => stringToPrintWithPossibleLineNumber
+            stringToPrint
+        case None => stringToPrint
       }
 
-    // If there's a message, put it on the next line, indented two spaces, unless this is an IndentedText
-    val possiblyEmptyMessage =
-      formatter match {
-        case Some(IndentedText(_, _, _)) => ""
-        case _ =>
-          Reporter.messageOrThrowablesDetailMessage(message, throwable)
+    // If there's a message, put it on the next line, indented two spaces
+    val possiblyEmptyMessage = Reporter.messageOrThrowablesDetailMessage(message, throwable)
+
+    val possiblyEmptyMessageWithPossibleLineNumber =
+      throwable match {
+        case Some(e: PropertyCheckFailedException) => possiblyEmptyMessage // PCFEs already include the line number
+        case _ => withPossibleLineNumber(possiblyEmptyMessage, throwable)
       }
 
     // I don't want to put a second line out there if the event's message contains the throwable's message,
@@ -213,68 +212,60 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
 
           def stackTrace(throwable: Throwable, isCause: Boolean): List[String] = {
 
-            def useTruncatedStackTrace =
-              !presentTestFailedExceptionStackTraces && (
-                throwable match {
-                  case e: Throwable with StackDepth => true
-                  case _ => false
-                }
-              )
-
             val className = throwable.getClass.getName 
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
-            val colonMessageOrEmptyString =
-              throwable match {
-                case tdpcfe: TableDrivenPropertyCheckFailedException => 
-                  //": " + tdpcfe.getMessage.trim oops , I lost the fancy message with this change
-                  ": " + tdpcfe.undecoratedMessage.trim
-                case pcfe: PropertyCheckFailedException => 
-                  ": " + pcfe.undecoratedMessage.trim
-                case _ if (throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) =>
-                    ": " + throwable.getMessage.trim
-                case _ => ""
-              }
-            val labeledClassNameWithMessage =
-              "  " + labeledClassName + colonMessageOrEmptyString
+            // Only show the : message if a cause, because first one will have its message printed out 
+            val colonMessageOrJustColon =
+              if (isCause && throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) 
+                ": " + throwable.getMessage.trim
+              else
+                ":"
 
-               // Indent each stack trace item two spaces, and prepend that with an "at "
+            val labeledClassNameWithMessage =
+              "  " + labeledClassName + colonMessageOrJustColon
+
+            if (presentShortStackTraces || presentFullStackTraces || !(throwable.isInstanceOf[StackDepth])) {
+
+              // Indent each stack trace item two spaces, and prepend that with an "at "
               val stackTraceElements = throwable.getStackTrace.toList map { "  at " + _.toString }
               val cause = throwable.getCause
 
               val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
-              if (!useTruncatedStackTrace) {
+
+              if (presentFullStackTraces) {
                 if (cause == null)
                   stackTraceThisThrowable
                 else
                   stackTraceThisThrowable ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
               }
               else {
-                val stackDepth =
-                  throwable match {
-                    case e: Throwable with StackDepth => e.failedCodeStackDepth
-                    case _ => 0
-                  }
 
                 val stackTraceThisThrowableTruncated = 
-                  stackTraceThisThrowable.head :: "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
-
+                  throwable match {
+                    case e: Throwable with StackDepth =>
+                      val stackDepth = e.failedCodeStackDepth
+                      stackTraceThisThrowable.head :: "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
+                    case _ => // In case of IAE or what not, show top 14 stack frames
+                      stackTraceThisThrowable.head :: stackTraceThisThrowable.take(14) ::: List("  ...")
+                  }
+    
                 if (cause == null)
                   stackTraceThisThrowableTruncated
                 else
                   stackTraceThisThrowableTruncated ::: stackTrace(cause, true) // Not tail recursive, but shouldn't be too deep
               }
+            }
+            else
+              Nil
           }
           stackTrace(throwable, false)
-         /* if (!throwableIsAStackDepthWithRedundantMessage || !useTruncatedStackTrace)
-            stackTrace(throwable, false)
-          else List() */
         case None => List()
       }
 
-    if (possiblyEmptyMessage.isEmpty)
-      stringToPrintWithPossibleLineNumberAndDuration :: getStackTrace(throwable)
+    if (possiblyEmptyMessageWithPossibleLineNumber.isEmpty)
+      stringToPrintWithPossibleDuration :: getStackTrace(throwable)
     else
-      stringToPrintWithPossibleLineNumberAndDuration :: "  " + possiblyEmptyMessage :: getStackTrace(throwable)
+      stringToPrintWithPossibleDuration :: "  " + possiblyEmptyMessageWithPossibleLineNumber :: getStackTrace(throwable)
   }
 
   private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String]): Option[String] =

@@ -1308,9 +1308,10 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     configMap: Map[String, Any] = Map(),
     color: Boolean = true,
     durations: Boolean = false,
+    shortStacks: Boolean = false,
     fullStacks: Boolean = false
   ) {
-    run(if (testName != null) Some(testName) else None, new StandardOutReporter(durations, color, fullStacks), new Stopper {}, Filter(), configMap, None, new Tracker)
+    run(if (testName != null) Some(testName) else None, new StandardOutReporter(durations, color, shortStacks, fullStacks), new Stopper {}, Filter(), configMap, None, new Tracker)
   }
 
   /**

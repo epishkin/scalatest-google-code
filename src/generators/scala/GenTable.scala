@@ -316,7 +316,8 @@ class TableFor$n$[$alphaUpper$](val heading: ($strings$), rows: ($alphaUpper$)*)
           val ($alphaName$) = heading
 
           throw new TableDrivenPropertyCheckFailedException(
-            sde => FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" + 
+            sde => FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + 
+              ( sde.failedCodeFileNameAndLineNumberString match { case Some(s) => " (" + s + ")"; case None => "" }) + "\n" + 
               "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
               (
                 e match {
