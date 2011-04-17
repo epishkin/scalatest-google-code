@@ -108,6 +108,52 @@ Or show a truncated one like this:
 
 If F is specified for the reporter, then show the full stack trace (or if it is not a StackDepth). But
 if a StackDepth and no F specified, then show the truncated form.
+
+Now want to change from:
+- should do something interesting *** FAILED *** (<console>:18) (0 milliseconds)
+  org.scalatest.TestFailedException: 2 did not equal 3
+
+To:
+
+- should do something interesting *** FAILED *** (0 milliseconds)
+  2 did not equal 3 (<console>:18)
+  org.scalatest.TestFailedException: 
+
+The second line would only be printed out if there was an exception. That way
+when I add noStacks option, I get:
+
+- should do something interesting *** FAILED *** (0 milliseconds)
+  2 did not equal 3 (<console>:18)
+
+Or for a prop check get:
+
+- should do something interesting *** FAILED *** (0 milliseconds)
+  Property check failed. (InfoInsideTestFiredAfterTestProp.scala:24)
+  Message: 2 was not less than 1
+  Location: InfoInsideTestFiredAfterTestProp.scala:27
+  Occurred at table row 0 (zero based, not counting headings), which had values ( / This shouldb e had value without the s
+    suite = org.scalatest.InfoInsideTestFiredAfterTestProp$$anon$3@18a4edc4
+  )
+
+Easiest thing is if the exception message just printed this out. Then StringReporter would just print the message always,
+and not print it after the outermost exception
+org.scalatest.prop.TableDrivenPropertyCheckFailedException:
+...
+
+And does print it out after the subsequent ones:
+org.scalatest.TestFailedException: 2 did not equal 3
+
+And it would not need to put the line number there. It would already be in the message. It would use the message sent with
+the event. Message should just be the throwable's message, or "<exception class> was thrown" Then it is easy. Always
+use the message from the event.
+
+org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException (included as this exception's cause) was thrown during property evaluation.
+[scalatest]   Message: 
+[scalatest]   Location: InfoInsideTestFiredAfterTestProp.scala:27
+[scalatest]   Occurred at table row 0 (zero based, not counting headings), which had values (
+[scalatest]     suite = org.scalatest.InfoInsideTestFiredAfterTestProp$$anon$3@18a4edc4
+[scalatest]   )
+
  */
   // Called for TestFailed, InfoProvided (because it can have a throwable in it), SuiteAborted, and RunAborted
   private def stringsToPrintOnError(noteResourceName: String, errorResourceName: String, message: String, throwable: Option[Throwable],
@@ -180,6 +226,7 @@ if a StackDepth and no F specified, then show the truncated form.
             val colonMessageOrEmptyString =
               throwable match {
                 case tdpcfe: TableDrivenPropertyCheckFailedException => 
+                  //": " + tdpcfe.getMessage.trim oops , I lost the fancy message with this change
                   ": " + tdpcfe.undecoratedMessage.trim
                 case pcfe: PropertyCheckFailedException => 
                   ": " + pcfe.undecoratedMessage.trim
@@ -273,7 +320,7 @@ if a StackDepth and no F specified, then show the truncated form.
 
         if (testCount < 0)
           throw new IllegalArgumentException
-  
+
         val string = Resources("runStarting", testCount.toString)
         printPossiblyInColor(string, ansiCyan)
 
