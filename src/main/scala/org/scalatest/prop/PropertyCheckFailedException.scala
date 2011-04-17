@@ -19,31 +19,44 @@ package prop
 /**
  * Exception that indicates a property check failed.
  *
- * @param message a detail message (not optional) for this <code>PropertyCheckFailedException</code>.
+ * @param messageFun a function that returns a detail message (not optional) for this <code>PropertyCheckFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>PropertyCheckFailedException</code> to be thrown.
- * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+ * @param failedCodeStackDepthFun a function that returns the depth in the stack trace of this exception at which the line of test code that failed resides.
  * @param undecoratedMessage just a short message that has no redundancy with args, labels, etc. The regular "message" has everything in it.
  * @param args the argument values that caused the property check to fail.
  * @param optionalArgNames an optional list of string names for the arguments.
  *
- * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if any parameter is <code>null</code> or <code>Some(null)</code>.
  *
  * @author Bill Venners
  */
 class PropertyCheckFailedException(
-  message: String,
+  messageFun: StackDepthException => String,
   cause: Option[Throwable],
-  failedCodeStackDepth: Int,
+  failedCodeStackDepthFun: StackDepthException => Int,
   val undecoratedMessage: String,
   val args: List[Any],
   optionalArgNames: Option[List[String]]
-) extends TestFailedException(Some(message), cause, failedCodeStackDepth) {
+) extends TestFailedException(sde => Some(messageFun(sde)), cause, failedCodeStackDepthFun) {
 
-  if (message == null) throw new NullPointerException("message was null")
+  if (messageFun == null) throw new NullPointerException("messageFun was null")
 
   if (cause == null) throw new NullPointerException("cause was null")
   cause match {
     case Some(null) => throw new NullPointerException("cause was a Some(null)")
+    case _ =>
+  }
+
+  if (failedCodeStackDepthFun == null) throw new NullPointerException("failedCodeStackDepthFun was null")
+
+  if (undecoratedMessage == null) throw new NullPointerException("undecoratedMessage was null")
+
+  if (args == null) throw new NullPointerException("args was null")
+
+  if (optionalArgNames == null) throw new NullPointerException("optionalArgNames was null")
+
+  optionalArgNames match {
+    case Some(null) => throw new NullPointerException("optionalArgNames was a Some(null)")
     case _ =>
   }
 

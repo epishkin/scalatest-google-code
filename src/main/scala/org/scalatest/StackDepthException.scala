@@ -259,14 +259,12 @@ Conductor from conduct method: Stack depth should be 3 or 4. Both of which are t
 [scalatest] 	at org.scalatest.concurrent.ConductorSuite.withFixture(ConductorSuite.scala:23)
 [scalatest] 	at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1028)
 [scalatest] 	at org.scalatest.concurrent.ConductorSuite.runTest(ConductorSuite.scala:23)
-
 */
 private[scalatest] object StackDepthExceptionHelper {
 
   def getStackDepth(fileName: String, methodName: String): (StackDepthException => Int) = { sde =>
 
     val stackTraceList = sde.getStackTrace.toList
-    //val stackTraceList = sde.getStackTrace.toList.tail // drop the first one, which is this function call
 
     val fileNameIsDesiredList: List[Boolean] =
       for (element <- stackTraceList) yield
@@ -399,10 +397,9 @@ Had bug. But turned out same algo works, but needed to send "apply" not "forAll"
 [scalatest]   at org.scalatest.tools.Runner$.withClassLoaderAndDispatchReporter(Runner.scala:1556)
 
 */
-  def getStackDepthForPropCheck(fileName: String, methodName: String): Int = {
+  def getStackDepthForPropCheck(fileName: String, methodName: String): (StackDepthException => Int) = { sde =>
 
-    val temp = new RuntimeException
-    val stackTraceList = temp.getStackTrace.toList.tail // drop the first one, which is this getStackDepth method
+    val stackTraceList = sde.getStackTrace.toList
 
     val fileNameIsDesiredList: List[Boolean] =
       for (element <- stackTraceList) yield

@@ -24,9 +24,9 @@ class PropertyCheckFailedExceptionSuite extends FunSuite with ShouldMatchers {
 
     val e =
       new PropertyCheckFailedException(
-        "msg",
+        sde => "msg",
         None,
-        7,
+        sde => 7,
         "msg",
         List(1, 2, 3),
         None
@@ -39,9 +39,9 @@ class PropertyCheckFailedExceptionSuite extends FunSuite with ShouldMatchers {
 
     val e =
       new PropertyCheckFailedException(
-        "msg",
+        sde => "msg",
         None,
-        7,
+        sde => 7,
         "msg",
         List(1, 2, 3),
         Some(List("a", "b", "c"))

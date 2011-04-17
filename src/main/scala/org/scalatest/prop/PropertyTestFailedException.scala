@@ -30,4 +30,4 @@ class PropertyTestFailedException(
   undecoratedMessage: String,
   args: List[Any],
   labels: List[String]
-) extends GeneratorDrivenPropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, None, labels)
+) extends GeneratorDrivenPropertyCheckFailedException(sde => message, cause, sde => failedCodeStackDepth, undecoratedMessage, args, None, labels)

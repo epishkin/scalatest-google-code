@@ -21,7 +21,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 class StackDepthExceptionSpec extends Spec with ShouldMatchers with TableDrivenPropertyChecks {
 
   class FunException(
-    messageFun: Option[StackDepthException => String],
+    messageFun: StackDepthException => Option[String],
     cause: Option[Throwable],
     failedCodeStackDepthFun: StackDepthException => Int
   ) extends StackDepthException(messageFun, cause, failedCodeStackDepthFun) {
@@ -46,78 +46,97 @@ class StackDepthExceptionSpec extends Spec with ShouldMatchers with TableDrivenP
     }
   }
 
-  describe("A StackDepthException") {
-    it("should throw NPE if passed nulls or Some(null)s") {
+  val invalidFunCombos =
+    Table[StackDepthException => Option[String], Option[Throwable], StackDepthException => Int](
+      ("messageFun",     "cause",              "failedCodeStackDepthFun"),
+      (null,             Some(new Exception),  e => 17),
+      (e => Some("hi"),  null,                 e => 17),
+      (e => Some("hi"),  Some(null),           e => 17),
+      (e => Some("hi"),  Some(new Exception),  null)
+    )
 
-      val invalidFunCombos =
-        Table[Option[StackDepthException => String], Option[Throwable], StackDepthException => Int](
-          ("messageFun",     "cause",              "failedCodeStackDepthFun"),
-          (null,             Some(new Exception),  e => 17),
-          (Some(null),       Some(new Exception),  e => 17),
-          (Some(e => "hi"),  null,                 e => 17),
-          (Some(e => "hi"),  Some(null),           e => 17),
-          (Some(e => "hi"),  Some(new Exception),  null)
-        )
+  val invalidNoFunCombos =
+    Table(
+      ("message",   "cause"),
+      (null,        Some(new Exception)),
+      (Some(null),  Some(new Exception)),
+      (Some("hi"),  null),
+      (Some("hi"),  Some(null))
+    )
+
+  describe("A StackDepthException") {
+
+    it should behave like aStackDepthExceptionWhenGivenNulls(
+      (message, cause, failedCodeStackDepth) => new NoFunException(message, cause, failedCodeStackDepth),
+      (messageFun, cause, failedCodeStackDepthFun) => new FunException(messageFun, cause, failedCodeStackDepthFun)
+    )
+  }
+
+  describe("A TestFailedException") {
+
+    it should behave like aStackDepthExceptionWhenGivenNulls(
+      (message, cause, failedCodeStackDepth) => new TestFailedException(message, cause, failedCodeStackDepth),
+      (messageFun, cause, failedCodeStackDepthFun) => new TestFailedException(messageFun, cause, failedCodeStackDepthFun)
+    )
+  }
+
+  def aStackDepthExceptionWhenGivenNulls(
+    newSDE: (Option[String], Option[Throwable], Int) => StackDepthException,
+    newFunSDE: (StackDepthException => Option[String], Option[Throwable], StackDepthException => Int) => StackDepthException
+  ) {
+
+    it("should throw NPE if passed nulls or Some(null)s") {
 
       forAll (invalidFunCombos) { (msgFun, cause, fcsdFun) =>
         evaluating {
-          new FunException(msgFun, cause, fcsdFun)
+          newFunSDE(msgFun, cause, fcsdFun)
         } should produce [NullPointerException]
       }
 
-      val invalidNoFunCombos =
-        Table(
-          ("message",   "cause"),
-          (null,        Some(new Exception)),
-          (Some(null),  Some(new Exception)),
-          (Some("hi"),  null),
-          (Some("hi"),  Some(null))
-        )
-
       forAll (invalidNoFunCombos) { (msg, cause) =>
         evaluating {
-          new NoFunException(msg, cause, 17)
+          newSDE(msg, cause, 17)
         } should produce [NullPointerException]
       }
     }
 
     it("should produce the Some(message) from getMessage, or null if message was None") {
-      
-      val eDefined = new NoFunException(Some("howdy!"), None, 17)
+    
+      val eDefined = newSDE(Some("howdy!"), None, 17)
       eDefined.getMessage should be ("howdy!")
-      
-      val eEmpty = new NoFunException(None, None, 17)
+    
+      val eEmpty = newSDE(None, None, 17)
       eEmpty.getMessage should be (null)
     }
 
     it("should produce the Some(cause) from getCause, or null if cause was None") {
-      
+    
       val e = new Exception
 
-      val eDefined = new NoFunException(Some("howdy!"), Some(e), 17)
+      val eDefined = newSDE(Some("howdy!"), Some(e), 17)
       eDefined.getCause should be (e)
-      
-      val eEmpty = new NoFunException(Some("howdy!"), None, 17)
+    
+      val eEmpty = newSDE(Some("howdy!"), None, 17)
       eEmpty.getCause should be (null)
     }
 
     it("should produce the Some(message) from message, or None if message was None") {
-      
-      val eDefined = new NoFunException(Some("howdy!"), None, 17)
+    
+      val eDefined = newSDE(Some("howdy!"), None, 17)
       eDefined.message should be (Some("howdy!"))
-      
-      val eEmpty = new NoFunException(None, None, 17)
+    
+      val eEmpty = newSDE(None, None, 17)
       eEmpty.message should be (None)
     }
 
     it("should produce the Some(cause) from cause, or None if cause was None") {
-      
+    
       val e = new Exception
 
-      val eDefined = new NoFunException(Some("howdy!"), Some(e), 17)
+      val eDefined = newSDE(Some("howdy!"), Some(e), 17)
       eDefined.cause should be (Some(e))
-      
-      val eEmpty = new NoFunException(Some("howdy!"), None, 17)
+    
+      val eEmpty = newSDE(Some("howdy!"), None, 17)
       eEmpty.cause should be (None)
     }
   }

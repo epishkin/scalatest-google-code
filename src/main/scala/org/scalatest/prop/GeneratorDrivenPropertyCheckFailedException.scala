@@ -32,12 +32,12 @@ import org.scalatest._
  * @author Bill Venners
  */
 class GeneratorDrivenPropertyCheckFailedException(
-  message: String,
+  messageFun: StackDepthException => String,
   cause: Option[Throwable],
-  failedCodeStackDepth: Int,
+  failedCodeStackDepthFun: StackDepthException => Int,
   undecoratedMessage: String,
   args: List[Any],
   namesOfArgs: Option[List[String]],
   val labels: List[String]
-) extends PropertyCheckFailedException(message, cause, failedCodeStackDepth, undecoratedMessage, args, None)
+) extends PropertyCheckFailedException(messageFun, cause, failedCodeStackDepthFun, undecoratedMessage, args, None)
 

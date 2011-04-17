@@ -381,7 +381,7 @@ object Checkers extends Checkers {
               FailureMessages("propCheckExhausted", result.succeeded, result.discarded)
 
           throw new GeneratorDrivenPropertyCheckFailedException(
-            failureMsg,
+            sde => failureMsg,
             None,
             getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
             // getStackDepth("ScalaCheck.scala", "check"),
@@ -395,7 +395,7 @@ object Checkers extends Checkers {
         case Test.Failed(scalaCheckArgs, scalaCheckLabels) =>
 
           throw new GeneratorDrivenPropertyCheckFailedException(
-            prettyTestStats(result),
+            sde => prettyTestStats(result),
             None,
             getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
             FailureMessages("propertyFailed", result.succeeded),
@@ -416,7 +416,7 @@ object Checkers extends Checkers {
               scalaCheckArgs
 
           throw new GeneratorDrivenPropertyCheckFailedException(
-            FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" +
+            sde => FailureMessages("propertyException", UnquotedString(e.getClass.getSimpleName)) + "\n" +
               "  " + FailureMessages("thrownExceptionsMessage", if (e.getMessage == null) "None" else UnquotedString(e.getMessage)) + "\n" +
               (
                 e match {
@@ -439,7 +439,7 @@ object Checkers extends Checkers {
         case Test.GenException(e) =>
 
           throw new GeneratorDrivenPropertyCheckFailedException(
-            prettyTestStats(result),
+            sde => prettyTestStats(result),
             Some(e),
             getStackDepthForPropCheck(stackDepthFileName, stackDepthMethodName),
             FailureMessages("generatorException", UnquotedString(e.getClass.getName)),

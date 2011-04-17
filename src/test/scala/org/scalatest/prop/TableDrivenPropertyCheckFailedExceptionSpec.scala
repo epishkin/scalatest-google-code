@@ -74,20 +74,20 @@ class TableDrivenPropertyCheckFailedExceptionSpec extends Spec with ShouldMatche
 
     it("should return the cause in both cause and getCause") {
       val theCause = new IllegalArgumentException("howdy")
-      val tfe = new TableDrivenPropertyCheckFailedException("doody", Some(theCause), 3, "howdy", List(1, 2, 3), List("a", "b", "c"), 7)
+      val tfe = new TableDrivenPropertyCheckFailedException(sde => "doody", Some(theCause), sde => 3, "howdy", List(1, 2, 3), List("a", "b", "c"), 7)
       assert(tfe.cause.isDefined)
       assert(tfe.cause.get === theCause)
       assert(tfe.getCause == theCause)
     }
 
     it("should return None in cause and null in getCause if no cause") {
-      val tfe = new TableDrivenPropertyCheckFailedException("doody", None, 3, "howdy", List(1, 2, 3), List("a", "b", "c"), 7)
+      val tfe = new TableDrivenPropertyCheckFailedException(sde => "doody", None, sde => 3, "howdy", List(1, 2, 3), List("a", "b", "c"), 7)
       assert(tfe.cause.isEmpty)
       assert(tfe.getCause == null)
     }
 
     it("should be equal to itself") {
-      val tfe = new TableDrivenPropertyCheckFailedException("doody", None, 3, "howdy", List(1, 2, 3), List("a", "b", "c"), 7)
+      val tfe = new TableDrivenPropertyCheckFailedException(sde => "doody", None, sde => 3, "howdy", List(1, 2, 3), List("a", "b", "c"), 7)
       assert(tfe equals tfe)
     }
   }
