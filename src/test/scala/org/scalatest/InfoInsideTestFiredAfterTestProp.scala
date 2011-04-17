@@ -20,11 +20,11 @@ import org.scalatest.prop.TableDrivenPropertyChecks
 
 class InfoInsideTestFiredAfterTestProp extends SuiteProp {
 
-  test("When info appears in the code of a successful test, it should be reported after the TestSucceeded") {
+  test("When info appears in the code of a successful test, it should be reported after the TestSucceeded.") {
     forAll (examples) { suite =>
         val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
           getIndexesForInformerEventOrderTests(suite, suite.testName, suite.msg)
-        assert(testSucceededIndex < infoProvidedIndex)
+        testSucceededIndex should be < infoProvidedIndex
     }
   }
 
@@ -34,6 +34,24 @@ class InfoInsideTestFiredAfterTestProp extends SuiteProp {
   }
 
   type FixtureServices = Services
+
+  def funSuite =
+    new FunSuite with Services {
+      val msg = "hi there, dude"
+      val testName = "test name"
+      test(testName) {
+        info(msg)
+      }
+    }
+
+  def fixtureFunSuite =
+    new StringFixtureFunSuite with Services {
+      val msg = "hi there, dude"
+      val testName = "test name"
+      test(testName) { s =>
+        info(msg)
+      }
+    }
 
   def spec =
     new Spec with Services {
