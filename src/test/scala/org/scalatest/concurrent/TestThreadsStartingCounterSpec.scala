@@ -40,7 +40,7 @@ class TestThreadsStartingCounterSpec extends FixtureWordSpec with ShouldMatchers
       thread {
         counter.increment
         counter.decrement
-        beat should be (0)
+        beat should be (0) // Failed with: 1 was not equal to 0
       }
       thread {
         waitForBeat(1)
