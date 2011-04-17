@@ -21,28 +21,41 @@ package org.scalatest
  * the user that makes it quick to find the failing line of test code. (In other words, the user need not scan through the
  * stack trace to find the correct filename and line number of the failing test.)
  *
- * @param message an optional detail message for this <code>TestFailedException</code>.
+ * @param messageFun an optional function that produces a detail message for this <code>TestFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
- * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+ * @param failedCodeStackDepthFun a function that produces the depth in the stack trace of this exception at which the line of test code that failed resides.
  *
- * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+ * @throws NullPointerException if either <code>messageFun</code>, <code>cause</code> or <code>failedCodeStackDepthFun</code> is <code>null</code>, or <code>Some(null)</code>.
  *
  * @author Bill Venners
  */
-class TestFailedException(message: Option[String], cause: Option[Throwable], failedCodeStackDepth: Int)
-    extends StackDepthException(message, cause, failedCodeStackDepth) with ModifiableMessage[TestFailedException] {
-  
-  if (message == null) throw new NullPointerException("message was null")
-  message match {
-    case Some(null) => throw new NullPointerException("message was a Some(null)")
-    case _ =>
-  }
+class TestFailedException(
+  messageFun: Option[StackDepthException => String],
+  cause: Option[Throwable],
+  failedCodeStackDepthFun: StackDepthException => Int
+) extends StackDepthException(messageFun, cause, failedCodeStackDepthFun) with ModifiableMessage[TestFailedException] {
 
-  if (cause == null) throw new NullPointerException("cause was null")
-  cause match {
-    case Some(null) => throw new NullPointerException("cause was a Some(null)")
-    case _ =>
-  }
+  /**
+   * Constructs a <code>TestFailedException</code> with pre-determined <code>message</code> and <code>failedCodeStackDepth</code>. (This was
+   * the primary constructor form prior to ScalaTest 1.5.)
+   *
+   * @param message an optional detail message for this <code>StackDepthException</code>.
+   * @param cause an optional cause, the <code>Throwable</code> that caused this <code>StackDepthException</code> to be thrown.
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if either <code>message</code> of <code>cause</code> is <code>null</code>, or <code>Some(null)</code>.
+   */
+  def this(message: Option[String], cause: Option[Throwable], failedCodeStackDepth: Int) =
+    this(
+      message match {
+        case null => throw new NullPointerException("message was null")
+        case Some(null) => throw new NullPointerException("message was a Some(null)")
+        case Some(m) => Some(e => m)
+        case None => None
+      },
+      cause,
+      e => failedCodeStackDepth
+    )
 
   /**
    * Create a <code>TestFailedException</code> with specified stack depth and no detail message or cause.
