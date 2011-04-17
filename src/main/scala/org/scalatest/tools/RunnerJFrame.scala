@@ -325,15 +325,11 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
             }
 
             val mainMessage =
-              holder.throwable match {
-                case Some(ex: PropertyTestFailedException) => Some(ex.undecoratedMessage)
-                case _ =>
-                  holder.message match {
-                    case Some(msg) =>
-                      val trimmed = msg.trim
-                      if (trimmed.length > 0) Some(trimmed) else None
+              holder.message match {
+                case Some(msg) =>
+                  val trimmed = msg.trim
+                  if (trimmed.length > 0) Some(trimmed) else None
                     case _ => None
-                  }
               }
 
             import EventHolder.suiteAndTestName
@@ -414,11 +410,12 @@ private[scalatest] class RunnerJFrame(val eventTypesToCollect: Set[EventToPresen
                   {
                     if (mainMessage.isDefined) {
                       <tr valign="top"><td align="right"><span class="label">{ Resources("DetailsMessage") + ":" }</span></td><td align="left">
-                      {
+                      { // Put <br>'s in for line returns at least, so property check failure messages look better
+                        def lineSpans = for (line <- mainMessage.get.split('\n')) yield <span>{ line }<br/></span>
                         if (isFailureEvent) {
-                          <span class="dark">{ mainMessage.get }</span>
+                          <span class="dark">{ lineSpans }</span>
                         } else {
-                          <span>{ mainMessage.get }</span>
+                          <span>{ lineSpans }</span>
                         }
                       }
                       </td></tr>
