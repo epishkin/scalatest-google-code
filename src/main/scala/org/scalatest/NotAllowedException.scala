@@ -23,17 +23,29 @@ package org.scalatest
  *
  * @param message a string that explains the problem
  * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that attempted
- *   to register the test with the duplicate name resides.
+ *    something not allowed resides.
  *
- * @throws NullPointerException if <code>message</code> is <code>null</code>
+ * @throws NullPointerException if either <code>message</code> or <code>failedCodeStackDepthFun</code> is <code>null</code>
  *
  * @author Bill Venners
  */
-class NotAllowedException(message: String, failedCodeStackDepth: Int)
-    extends StackDepthException(Some(message), None, failedCodeStackDepth) {
+class NotAllowedException(message: String, failedCodeStackDepthFun: StackDepthException => Int)
+    extends StackDepthException(Some(message), None, failedCodeStackDepthFun) {
 
-  if (message == null)
-    throw new NullPointerException("message was null")
+  if (message == null) throw new NullPointerException("message was null")
+  if (failedCodeStackDepthFun == null) throw new NullPointerException("failedCodeStackDepthFun was null")
+
+  /**
+   * Constructs a <code>NotAllowedException</code> with pre-determined <code>message</code> and
+   * <code>failedCodeStackDepth</code>. (This was the primary constructor form prior to ScalaTest 1.5.)
+   *
+   * @param message the exception's detail message
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that attempted
+   *    something not allowed resides.
+   *
+   * @throws NullPointerException if <code>message</code> is <code>null</code>
+   */
+  def this(message: String, failedCodeStackDepth: Int) = this(message, e => failedCodeStackDepth)
 
   /**
    * Returns an exception of class <code>NotAllowedException</code> with <code>failedExceptionStackDepth</code> set to 0 and 

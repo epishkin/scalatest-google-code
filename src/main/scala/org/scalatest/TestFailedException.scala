@@ -21,7 +21,7 @@ package org.scalatest
  * the user that makes it quick to find the failing line of test code. (In other words, the user need not scan through the
  * stack trace to find the correct filename and line number of the failing test.)
  *
- * @param messageFun an optional function that produces a detail message for this <code>TestFailedException</code>.
+ * @param messageFun a function that produces an optional detail message for this <code>TestFailedException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>TestFailedException</code> to be thrown.
  * @param failedCodeStackDepthFun a function that produces the depth in the stack trace of this exception at which the line of test code that failed resides.
  *
@@ -30,7 +30,7 @@ package org.scalatest
  * @author Bill Venners
  */
 class TestFailedException(
-  messageFun: Option[StackDepthException => String],
+  messageFun: StackDepthException => Option[String],
   cause: Option[Throwable],
   failedCodeStackDepthFun: StackDepthException => Int
 ) extends StackDepthException(messageFun, cause, failedCodeStackDepthFun) with ModifiableMessage[TestFailedException] {
@@ -50,8 +50,7 @@ class TestFailedException(
       message match {
         case null => throw new NullPointerException("message was null")
         case Some(null) => throw new NullPointerException("message was a Some(null)")
-        case Some(m) => Some(e => m)
-        case None => None
+        case _ => { e => message }
       },
       cause,
       e => failedCodeStackDepth

@@ -42,16 +42,30 @@ package org.scalatest
  * the user need not scan through the stack trace to find the correct filename and line number of the offending code.)
  * </p>
  *
- * @param testName the test name that was attempted to be registered after registration had closed
+ * @param message the exception's detail message
  * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that attempted
  *   to register the test after registration had been closed.
  *
- * @throws NullPointerException if <code>testName</code> is <code>null</code>
+ * @throws NullPointerException if either <code>message</code> or <code>failedCodeStackDepthFun</code> is <code>null</code>
  *
  * @author Bill Venners
  */
-class TestRegistrationClosedException(message: String, failedCodeStackDepth: Int)
-    extends StackDepthException(Some(message), None, failedCodeStackDepth) {
+class TestRegistrationClosedException(message: String, failedCodeStackDepthFun: StackDepthException => Int)
+    extends StackDepthException(Some(message), None, failedCodeStackDepthFun) {
+
+  if (message == null) throw new NullPointerException("message was null")
+  if (failedCodeStackDepthFun == null) throw new NullPointerException("failedCodeStackDepthFun was null")
+
+  /**
+   * Constructs a <code>TestRegistrationClosedException</code> with a <code>message</code> and a pre-determined 
+   * and <code>failedCodeStackDepth</code>. (This was the primary constructor form prior to ScalaTest 1.5.)
+   *
+   * @param message the exception's detail message
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if <code>message</code> is <code>null</code>
+   */
+  def this(message: String, failedCodeStackDepth: Int) = this(message, e => failedCodeStackDepth)
 
   /**
    * Returns an exception of class <code>TestRegistrationClosedException</code> with <code>failedExceptionStackDepth</code> set to 0 and 

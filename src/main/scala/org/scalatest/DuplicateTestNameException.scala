@@ -23,18 +23,33 @@ package org.scalatest
  * stack trace to find the correct filename and line number of the offending code.)
  *
  * @param testName the test name that was attempted to be registered twice
- * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of code that attempted
+ * @param failedCodeStackDepthFun the depth in the stack trace of this exception at which the line of code that attempted
  *   to register the test with the duplicate name resides.
  *
  * @throws NullPointerException if <code>testName</code> is <code>null</code>
  *
  * @author Bill Venners
  */
-class DuplicateTestNameException(testName: String, failedCodeStackDepth: Int)
-    extends StackDepthException(Some(Resources("duplicateTestName", testName)), None, failedCodeStackDepth) {
+class DuplicateTestNameException(testName: String, failedCodeStackDepthFun: StackDepthException => Int)
+    extends StackDepthException(
+      Some(Resources("duplicateTestName", testName)),
+      None,
+      failedCodeStackDepthFun
+    ) {
   
   if (testName == null)
     throw new NullPointerException("testName was null")
+
+  /**
+   * Constructs a <code>DuplicateTestNameException</code> with pre-determined <code>failedCodeStackDepth</code>. (This was
+   * the primary constructor form prior to ScalaTest 1.5.)
+   *
+   * @param testName the test name found to be duplicate
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if <code>testName</code> is <code>null</code>
+   */
+  def this(testName: String, failedCodeStackDepth: Int) = this(testName, e => failedCodeStackDepth)
 
   /**
    * Returns an exception of class <code>DuplicateTestNameException</code> with <code>failedExceptionStackDepth</code> set to 0 and 

@@ -22,7 +22,7 @@ package org.scalatest
  * Having a stack depth is more useful in a testing environment in which test failures are implemented as
  * thrown exceptions, as is the case in ScalaTest's built-in suite traits.
  *
- * @param messageFun an optional function that produces a detail message for this <code>StackDepthException</code>.
+ * @param messageFun an function that produces an optional detail message for this <code>StackDepthException</code>.
  * @param cause an optional cause, the <code>Throwable</code> that caused this <code>StackDepthException</code> to be thrown.
  * @param failedCodeStackDepthFun a function that produces the depth in the stack trace of this exception at which the line of test code that failed resides.
  *
@@ -31,16 +31,12 @@ package org.scalatest
  * @author Bill Venners
  */
 abstract class StackDepthException(
-  val messageFun: Option[StackDepthException => String],
+  val messageFun: StackDepthException => Option[String],
   val cause: Option[Throwable],
   val failedCodeStackDepthFun: StackDepthException => Int
 ) extends RuntimeException(if (cause.isDefined) cause.get else null) with StackDepth {
 
   if (messageFun == null) throw new NullPointerException("messageFun was null")
-  messageFun match {
-    case Some(null) => throw new NullPointerException("messageFun was a Some(null)")
-    case _ =>
-  }
 
   if (cause == null) throw new NullPointerException("cause was null")
   cause match {
@@ -51,7 +47,29 @@ abstract class StackDepthException(
   if (failedCodeStackDepthFun == null) throw new NullPointerException("failedCodeStackDepthFun was null")
 
   /**
-   * Constructs a <code>StackDepthException</code> with pre-determined <code>message</code> and <code>failedCodeStackDepth</code>. (This was
+   * Constructs a <code>StackDepthException</code> with an optional pre-determined <code>message</code>, optional cause, and
+   * a <code>failedCodeStackDepth</code> function.
+   *
+   * @param message an optional detail message for this <code>StackDepthException</code>.
+   * @param cause an optional cause, the <code>Throwable</code> that caused this <code>StackDepthException</code> to be thrown.
+   * @param failedCodeStackDepth the depth in the stack trace of this exception at which the line of test code that failed resides.
+   *
+   * @throws NullPointerException if either <code>message</code> or <code>cause</code> is <code>null</code> or <code>Some(null)</code>, or <code>failedCodeStackDepthFun</code> is <code>null</code>.
+   */
+  def this(message: Option[String], cause: Option[Throwable], failedCodeStackDepthFun: StackDepthException => Int) =
+    this(
+      message match {
+        case null => throw new NullPointerException("message was null")
+        case Some(null) => throw new NullPointerException("message was a Some(null)")
+        case _ => (e: StackDepthException) => message
+      },
+      cause,
+      failedCodeStackDepthFun
+    )
+
+  /**
+   * Constructs a <code>StackDepthException</code> with an optional pre-determined <code>message</code>,
+   * optional <code>cause</code>, and and <code>failedCodeStackDepth</code>. (This was
    * the primary constructor form prior to ScalaTest 1.5.)
    *
    * @param message an optional detail message for this <code>StackDepthException</code>.
@@ -65,11 +83,10 @@ abstract class StackDepthException(
       message match {
         case null => throw new NullPointerException("message was null")
         case Some(null) => throw new NullPointerException("message was a Some(null)")
-        case Some(m) => Some(e => m)
-        case None => None
+        case _ => (e: StackDepthException) => message
       },
       cause,
-      e => failedCodeStackDepth
+      (e: StackDepthException) => failedCodeStackDepth
     )
 
   /**
@@ -84,7 +101,7 @@ abstract class StackDepthException(
    * stack depth, such as the failed file name and line number.
    * </p>
    */
-  lazy val message: Option[String] = messageFun map { f => f(this) }
+  lazy val message: Option[String] = messageFun(this)
  
   /**
    * The depth in the stack trace of this exception at which the line of test code that failed resides.
@@ -225,13 +242,31 @@ doesn't call the getStackDepth helper method at this point.)
 5 org.scalatest.prop.TableDrivenPropertyChecks$class.forAll(TableDrivenPropertyChecks.scala:215)
 6 org.scalatest.prop.PropertyChecksSuite.forAll(PropertyChecksSuite.scala:21)
 org.scalatest.prop.PropertyChecksSuite$$anonfun$2.apply(PropertyChecksSuite.scala:48) <-- this should not be cut
+
+Conductor from conduct method: Stack depth should be 3 or 4. Both of which are the same
+
+[scalatest] org.scalatest.NotAllowedException: A Conductor's conduct method can only be invoked once.
+[scalatest] 	at org.scalatest.concurrent.Conductor.conduct(Conductor.scala:525)
+[scalatest] 	at org.scalatest.concurrent.Conductor.conduct(Conductor.scala:476)
+[scalatest] 	at org.scalatest.concurrent.ConductorSuite$$anonfun$1$$anonfun$2.apply(ConductorSuite.scala:30)
+[scalatest] 	at org.scalatest.concurrent.ConductorSuite$$anonfun$1$$anonfun$2.apply(ConductorSuite.scala:30)
+[scalatest] 	at org.scalatest.Assertions$class.intercept(Assertions.scala:515)
+[scalatest] 	at org.scalatest.concurrent.ConductorSuite.intercept(ConductorSuite.scala:23)
+[scalatest] 	at org.scalatest.concurrent.ConductorSuite$$anonfun$1.apply(ConductorSuite.scala:30)
+[scalatest] 	at org.scalatest.concurrent.ConductorSuite$$anonfun$1.apply(ConductorSuite.scala:27)
+[scalatest] 	at org.scalatest.FunSuite$$anon$1.apply(FunSuite.scala:1031)
+[scalatest] 	at org.scalatest.Suite$class.withFixture(Suite.scala:1450)
+[scalatest] 	at org.scalatest.concurrent.ConductorSuite.withFixture(ConductorSuite.scala:23)
+[scalatest] 	at org.scalatest.FunSuite$class.runTest(FunSuite.scala:1028)
+[scalatest] 	at org.scalatest.concurrent.ConductorSuite.runTest(ConductorSuite.scala:23)
+
 */
 private[scalatest] object StackDepthExceptionHelper {
 
-  def getStackDepth(fileName: String, methodName: String): Int = {
+  def getStackDepth(fileName: String, methodName: String): (StackDepthException => Int) = { sde =>
 
-    val temp = new RuntimeException
-    val stackTraceList = temp.getStackTrace.toList.tail // drop the first one, which is this getStackDepth method
+    val stackTraceList = sde.getStackTrace.toList
+    //val stackTraceList = sde.getStackTrace.toList.tail // drop the first one, which is this function call
 
     val fileNameIsDesiredList: List[Boolean] =
       for (element <- stackTraceList) yield
