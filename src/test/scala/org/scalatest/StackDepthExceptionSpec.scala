@@ -65,14 +65,13 @@ class StackDepthExceptionSpec extends Spec with ShouldMatchers with TableDrivenP
         } should produce [NullPointerException]
       }
 
-/*
       val invalidNoFunCombos =
         Table(
           ("message",   "cause"),
           (null,        Some(new Exception)),
           (Some(null),  Some(new Exception)),
           (Some("hi"),  null),
-          (Some("hi"),  Some(null)),
+          (Some("hi"),  Some(null))
         )
 
       forAll (invalidNoFunCombos) { (msg, cause) =>
@@ -80,7 +79,6 @@ class StackDepthExceptionSpec extends Spec with ShouldMatchers with TableDrivenP
           new NoFunException(msg, cause, 17)
         } should produce [NullPointerException]
       }
-*/
     }
 
     it("should produce the Some(message) from getMessage, or null if message was None") {
