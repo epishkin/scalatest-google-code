@@ -192,9 +192,11 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
     val possiblyEmptyMessageWithPossibleLineNumber =
       throwable match {
         case Some(e: PropertyCheckFailedException) => possiblyEmptyMessage // PCFEs already include the line number
-        case _ => withPossibleLineNumber(possiblyEmptyMessage, throwable)
+        case Some(e: StackDepth) => withPossibleLineNumber(possiblyEmptyMessage, throwable) // Show it in the stack depth case
+        case _ => "" // Don't show it in the non-stack depth case. It will be shown after the exception class name and colon.
       }
 
+/*
     // I don't want to put a second line out there if the event's message contains the throwable's message,
     // or if niether the event message or throwable message has any message in it.
     val throwableIsAStackDepthWithRedundantMessage =
@@ -205,6 +207,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
           (possiblyEmptyMessage.isEmpty && (t.getMessage == null || t.getMessage.trim.isEmpty))) // This part detects when both have no message
         case _ => false
       }
+*/
 
     def getStackTrace(throwable: Option[Throwable]): List[String] =
       throwable match {
@@ -215,8 +218,12 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
             val className = throwable.getClass.getName 
             val labeledClassName = if (isCause) Resources("DetailsCause") + ": " + className else className
             // Only show the : message if a cause, because first one will have its message printed out 
+            // Or if it is a non-StackDepth exception, because if they throw Exception with no message, the
+            // message was coming out as "java.lang.Exception" then on the next line it repeated it. In the
+            // case of no exception message, I think it looks best to just say the class name followed by a colon
+            // and nothing else.
             val colonMessageOrJustColon =
-              if (isCause && throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) 
+              if ((throwable.getMessage != null && !throwable.getMessage.trim.isEmpty) && (isCause || !(throwable.isInstanceOf[StackDepth])))
                 ": " + throwable.getMessage.trim
               else
                 ":"
@@ -240,13 +247,14 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
               }
               else {
 
+                // The drop(1) or drop(stackDepth + 1) that extra one is the labeledClassNameWithMessage
                 val stackTraceThisThrowableTruncated = 
                   throwable match {
                     case e: Throwable with StackDepth =>
                       val stackDepth = e.failedCodeStackDepth
                       stackTraceThisThrowable.head :: "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
-                    case _ => // In case of IAE or what not, show top 14 stack frames
-                      stackTraceThisThrowable.head :: stackTraceThisThrowable.take(14) ::: List("  ...")
+                    case _ => // In case of IAE or what not, show top 10 stack frames
+                      stackTraceThisThrowable.head :: stackTraceThisThrowable.drop(1).take(10) ::: List("  ...")
                   }
     
                 if (cause == null)
