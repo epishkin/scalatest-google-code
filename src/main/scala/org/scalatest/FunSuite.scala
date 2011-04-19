@@ -925,7 +925,7 @@ import Suite.getIndentedText
  */
 trait FunSuite extends Suite { thisSuite =>
 
-  private val funFamily = new FunFamily[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
+  private final val funFamily = new Engine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
   import funFamily._
 
   /**

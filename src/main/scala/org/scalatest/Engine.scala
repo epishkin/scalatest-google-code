@@ -24,7 +24,7 @@ import Suite.getIndentedText
 import Suite.anErrorThatShouldCauseAnAbort
 
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
-private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
+private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
 
 /*
   sealed abstract class Node(parentOption: Option[Branch])
@@ -86,7 +86,7 @@ private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, s
       new Bundle(testNamesList, doList,testsMap, tagsMap, registrationClosed)
   }
 
-  val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
+  final val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
 
   def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
     val shouldBeOldBundle = atomic.getAndSet(newBundle)
@@ -109,7 +109,7 @@ private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, s
   // is the registration phase of a FunSuite's lifecycle.)
   final val atomicInformer = new AtomicReference[Informer](new RegistrationInformer)
 
-  val zombieInformer =
+  final val zombieInformer =
     new Informer {
       private val complaint = Resources("cantCallInfoNow", simpleClassName)
       def apply(message: String) {

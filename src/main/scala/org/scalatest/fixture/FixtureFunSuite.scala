@@ -348,7 +348,7 @@ import Suite.getIndentedText
  */
 trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
-  private val funFamily = new FunFamily[FixtureParam => Any]("concurrentFixtureFunSuiteBundleMod", "FixtureFunSuite")
+  private final val funFamily = new Engine[FixtureParam => Any]("concurrentFixtureFunSuiteBundleMod", "FixtureFunSuite")
   import funFamily._
 
   /**
