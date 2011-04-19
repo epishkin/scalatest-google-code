@@ -434,58 +434,6 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
     runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, invokeWithFixture)
   }
-/*
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
-
-    checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
-
-    val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
-      getRunTestGoodies(stopper, reporter, testName)
-
-    reportTestStarting(report, tracker, testName, rerunnable)
-
-    if (!atomic.get.testsMap.contains(testName))
-      throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
-
-    val formatter = getIndentedText(testName, 1)
-
-    val informerForThisTest =
-      MessageRecordingInformer2(
-        (message, isConstructingThread) => reportInfoProvided(report, tracker, Some(testName), message, 2, isConstructingThread)
-      )
-
-    val oldInformer = atomicInformer.getAndSet(informerForThisTest)
-
-    try {
-
-      val theTest = atomic.get.testsMap(testName)
-
-      theTest.fun match {
-        case wrapper: NoArgTestWrapper[_] =>
-          withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
-        case fun => withFixture(new TestFunAndConfigMap(testName, fun, configMap))
-      }
-
-      val duration = System.currentTimeMillis - testStartTime
-      reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
-    }
-    catch {
-      case _: TestPendingException =>
-        reportTestPending(report, tracker, testName, formatter)
-      case e if !anErrorThatShouldCauseAnAbort(e) =>
-        val duration = System.currentTimeMillis - testStartTime
-        handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
-      case e => throw e
-    }
-    finally {
-      informerForThisTest.fireRecordedMessages()
-      val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
-      val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
-      if (!swapAndCompareSucceeded)
-        throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-    }
-  }
-*/
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
@@ -508,36 +456,6 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     runImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, super.run)
-/*
-    val stopRequested = stopper
-
-    // Set the flag that indicates registration is closed (because run has now been invoked),
-    // which will disallow any further invocations of "test" or "ignore" with
-    // an RegistrationClosedException.
-    val oldBundle = atomic.get
-    val (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-    if (!registrationClosed)
-      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, true))
-
-    val report = wrapReporterIfNecessary(reporter)
-
-    val informerForThisSuite =
-      ConcurrentInformer2(
-        (message, isConstructingThread) => reportInfoProvided(report, tracker, None, message, 1, isConstructingThread)
-      )
-
-    atomicInformer.set(informerForThisSuite)
-    var swapAndCompareSucceeded = false
-    try {
-      super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
-    }
-    finally {
-      val shouldBeInformerForThisSuite = atomicInformer.getAndSet(zombieInformer)
-      swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
-    }
-    if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-*/
   }
 
   /**

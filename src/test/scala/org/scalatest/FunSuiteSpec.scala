@@ -161,19 +161,6 @@ class FunSuiteSpec extends Spec with SharedHelpers {
     }
 
     describe("(with info calls)") {
-      it("should, when the info appears in the code of a successful test, report the info between the TestStarting and TestSucceeded") {
-        val msg = "hi there, dude"
-        val testName = "test name"
-        class MySuite extends FunSuite {
-          test(testName) {
-            info(msg)
-          }
-        }
-        val (infoProvidedIndex, testStartingIndex, testSucceededIndex) =
-          getIndexesForInformerEventOrderTests(new MySuite, testName, msg)
-        assert(testStartingIndex < infoProvidedIndex)
-        assert(infoProvidedIndex < testSucceededIndex)
-      }
       it("should, when the info appears in the body before a test, report the info before the test") {
         val msg = "hi there, dude"
         val testName = "test name"

@@ -25,7 +25,32 @@ import Suite.anErrorThatShouldCauseAnAbort
 
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
 private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
-// class FunFamily[T] {
+
+/*
+  sealed abstract class Node(parentOption: Option[Branch])
+
+  abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
+    var subNodes: List[Node] = Nil
+  }
+
+  case object Trunk extends Branch(None)
+
+  case class TestLeaf(
+    parent: Branch,
+    testName: String, // The full test name
+    specText: String, // The last portion of the test name that showed up on an inner most nested level
+    fun: T
+  ) extends Node(Some(parent))
+
+  case class InfoLeaf(parent: Branch, message: String) extends Node(Some(parent))
+
+  case class DescriptionBranch(
+    parent: Branch,
+    descriptionName: String,
+    childPrefix: Option[String] // If defined, put it at the beginning of any child specText or message
+  ) extends Branch(Some(parent))   
+
+*/
 
   abstract class FunNode
   case class TestNode(testName: String, fun: T) extends FunNode
@@ -198,6 +223,7 @@ private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, s
         throw new ConcurrentModificationException(Resources("concurrentInformerMod", theSuite.getClass.getName))
     }
   }
+
   def runTestsImpl(
     theSuite: Suite,
     testName: Option[String],
