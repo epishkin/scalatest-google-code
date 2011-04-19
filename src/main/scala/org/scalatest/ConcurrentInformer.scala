@@ -78,3 +78,38 @@ private[scalatest] class ConcurrentInformer2(fire: (String, Boolean) => Unit) ex
 private[scalatest] object ConcurrentInformer2 {
   def apply(fire: (String, Boolean) => Unit) = new ConcurrentInformer2(fire)
 }
+
+private[scalatest] class MessageRecordingInformer2(fire: (String, Boolean) => Unit) extends ConcurrentInformer2(fire) {
+
+  private var messages = List[String]()
+
+  // Should only be called by the thread that constructed this
+  // ConcurrentInformer, because don't want to worry about synchronization here. Just send stuff from
+  // other threads whenever they come in. So only call record after first checking isConstructingThread
+  private def record(message: String) {
+    require(isConstructingThread)
+    messages ::= message
+  }
+
+  // Returns them in order recorded
+  private def recordedMessages: List[String] = messages.reverse
+
+  override def apply(message: String) {
+    if (message == null)
+      throw new NullPointerException
+    if (isConstructingThread)
+      record(message)
+    else 
+      fire(message, false) // Fire the info provided event using the passed function
+  }
+
+  // send out any recorded messages
+  def fireRecordedMessages() {
+    for (message <- recordedMessages)
+      fire(message, true) // Fire the info provided event using the passed function
+  }
+}
+
+private[scalatest] object MessageRecordingInformer2 {
+  def apply(fire: (String, Boolean) => Unit) = new MessageRecordingInformer2(fire)
+}

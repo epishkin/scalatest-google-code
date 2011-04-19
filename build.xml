@@ -12,6 +12,7 @@
     <property name="scalasrc" value="src/main/scala" />
     <property name="javasrc" value="src/main/java" />
     <property name="scalasrc.test" value="src/test/scala" />
+    <property name="symlinksrc.test" value="src/test/symlink" />
     <property name="javasrc.test" value="src/test/java" />
     <property name="scalasrc.examples" value="src/examples/scala" />
     <property name="javasrc.examples" value="src/examples/java" />
@@ -168,8 +169,8 @@
 
     <target name="compile" depends="compile-main, compile-tests, compile-examples"/>
 
-   <!-- <target name="compile-main" depends="init">-->
-    <target name="compile-main" depends="init, gentables, gengen">
+   <target name="compile-main" depends="init">
+   <!--  <target name="compile-main" depends="init, gentables, gengen">-->
 
         <!-- Compile the Java code from ${javasrc} into ${classes}  Needs to go first because TagAnnotation used in Suite -->
         <javac srcdir="${javasrc}" destdir="${classes}" memoryMaximumSize="1500M" fork="true" classpathref="build.class.path" debug="yes">
@@ -186,6 +187,11 @@
 
     </target>
 
+    <target name="compile-java-tests" depends="compile-main">
+        <!-- Compile the Java code from ${javasrc.test} into ${build.tests} -->
+        <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="2000M" fork="true" classpath="${classes}:${org.scala-lang:scala-library:jar}:${junit:junit:jar}" debug="yes" />
+    </target>
+
     <target name="compile-tests" depends="compile-main">
 
         <!-- Compile the Scala code from ${scalasrc.test} into ${build.tests} -->
@@ -196,6 +202,13 @@
 
         <!-- Compile the Java code from ${javasrc.test} into ${build.tests} -->
         <javac srcdir="${javasrc.test}" destdir="${build.tests}" memoryMaximumSize="2000M" fork="true" classpath="${classes}:${org.scala-lang:scala-library:jar}:${junit:junit:jar}" debug="yes" />
+    </target>
+
+    <target name="compile-symlinks" depends="compile-main">
+
+        <!-- Compile the Scala code from ${symlinksrc.test} into ${build.tests} -->
+        <scalac srcdir="${symlinksrc.test}:${javasrc.test}" destdir="${build.tests}" target="jvm-1.5" classpathref="build.test.class.path" deprecation="yes" addparams="-no-specialization" fork="true" jvmargs="${jvmargs} -XX:+UseConcMarkSweepGC"/>
+
     </target>
 
     <target name="compile-examples" depends="compile-main">
@@ -302,7 +315,7 @@
             <jvmarg value="-XX:MaxPermSize=512m"/>
             <reporter type="graphic" />
             <reporter type="junitxml" directory="target"/>
-            <reporter type="stdout" config="D"/>
+            <reporter type="stdout" config="DNCXEHLO"/>
             <membersonly package="org.scalatest" />
             <membersonly package="org.scalatest.fixture" />
             <membersonly package="org.scalatest.concurrent" />
@@ -498,7 +511,7 @@
 -->
     </target>
 
-    <target name="runsuite" depends="compile,copyprops,taskdefscalatest"
+    <target name="runsuite" depends="compile-main,compile-tests,copyprops,taskdefscalatest"
             description="run a specified suite (use -Dclass=classname)">
 
         <fail message="class not defined (use -Dclass=classname)"
@@ -507,6 +520,7 @@
         <scalatest runpath="${build.tests};${classes}" haltonfailure="true">
             <!--<reporter type="graphic"/>-->
             <!--<reporter type="file" filename="test.out" config="ND"/>-->
+            <!--<reporter type="stdout" />-->
             <reporter type="stdout" config="ND"/>
             <suite classname="${class}"/>
         </scalatest>

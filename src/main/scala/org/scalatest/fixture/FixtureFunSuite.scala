@@ -436,28 +436,21 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
     val formatter = getIndentedText(testName, 1)
 
+    val informerForThisTest =
+      MessageRecordingInformer2(
+        (message, isConstructingThread) => reportInfoProvided(report, tracker, Some(testName), message, 2, isConstructingThread)
+      )
+
+    val oldInformer = atomicInformer.getAndSet(informerForThisTest)
+
     try {
 
       val theTest = atomic.get.testsMap(testName)
 
-      val informerForThisTest =
-        ConcurrentInformer2(
-          (message, isConstructingThread) => reportInfoProvided(report, tracker, Some(testName), message, 2, isConstructingThread)
-        )
-
-      val oldInformer = atomicInformer.getAndSet(informerForThisTest)
-      try {
-        theTest.fun match {
-          case wrapper: NoArgTestWrapper[_] =>
-            withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
-          case fun => withFixture(new TestFunAndConfigMap(testName, fun, configMap))
-        }
-      }
-      finally {
-        val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
-        val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
-        if (!swapAndCompareSucceeded)
-          throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
+      theTest.fun match {
+        case wrapper: NoArgTestWrapper[_] =>
+          withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
+        case fun => withFixture(new TestFunAndConfigMap(testName, fun, configMap))
       }
 
       val duration = System.currentTimeMillis - testStartTime
@@ -470,6 +463,13 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
         val duration = System.currentTimeMillis - testStartTime
         handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
       case e => throw e
+    }
+    finally {
+      informerForThisTest.fireRecordedMessages()
+      val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
+      val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
+      if (!swapAndCompareSucceeded)
+        throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
     }
   }
 
