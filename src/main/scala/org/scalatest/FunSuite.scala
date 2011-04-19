@@ -1015,62 +1015,6 @@ trait FunSuite extends Suite { thisSuite =>
     runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, invokeWithFixture)
   }
 
-/*
-  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
-
-    checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
-
-    val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
-      getRunTestGoodies(stopper, reporter, testName)
-
-    reportTestStarting(report, tracker, testName, rerunnable)
-
-    if (!atomic.get.testsMap.contains(testName))
-      throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
-
-    val formatter = getIndentedText(testName, 1)
-
-    val informerForThisTest =
-      MessageRecordingInformer2(
-        (message, isConstructingThread) => reportInfoProvided(report, tracker, Some(testName), message, 2, isConstructingThread)
-      )
-
-    val oldInformer = atomicInformer.getAndSet(informerForThisTest)
-
-    try {
-
-      val theTest = atomic.get.testsMap(testName)
-
-      val theConfigMap = configMap
-      withFixture(
-        new NoArgTest {
-          def name = testName
-          def apply() { theTest.fun() }
-          def configMap = theConfigMap
-        }
-      )
-
-      val duration = System.currentTimeMillis - testStartTime
-      reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
-    }
-    catch { 
-      case _: TestPendingException =>
-        reportTestPending(report, tracker, testName, formatter)
-      case e if !anErrorThatShouldCauseAnAbort(e) =>
-        val duration = System.currentTimeMillis - testStartTime
-        handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
-      case e => throw e
-    }
-    finally {
-      informerForThisTest.fireRecordedMessages()
-      val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
-      val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
-      if (!swapAndCompareSucceeded)
-        throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-    }
-  }
-*/
-
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.

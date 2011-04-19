@@ -424,6 +424,19 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
+    def invokeWithFixture(theTest: TestNode) {
+      theTest.fun match {
+        case wrapper: NoArgTestWrapper[_] =>
+          withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
+        case fun => withFixture(new TestFunAndConfigMap(testName, fun, configMap))
+      }
+    }
+
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, invokeWithFixture)
+  }
+/*
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
+
     checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
@@ -472,6 +485,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
         throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
     }
   }
+*/
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
