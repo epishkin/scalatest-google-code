@@ -49,13 +49,6 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     childPrefix: Option[String] // If defined, put it at the beginning of any child specText or message
   ) extends Branch(Some(parent))   
 
-
-/*
-  abstract class FunNode
-  case class TestNode(testName: String, fun: T) extends FunNode
-  case class InfoNode(message: String) extends FunNode
-*/
-
   // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, tags, and runTest get invoked directly or indirectly
   // by run. When running tests concurrently with ScalaTest Runner, different threads can
@@ -66,27 +59,27 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
   // If two threads ever called test at the same time, they could get a ConcurrentModificationException.
   // Test names are in reverse order of test registration method invocations
   class Bundle private(
+    val currentBranch: Branch,
     val testNamesList: List[String],
-    val doList: List[Node],
     val testsMap: Map[String, TestLeaf],
     val tagsMap: Map[String, Set[String]],
     val registrationClosed: Boolean
   ) {
-    def unpack = (testNamesList, doList, testsMap, tagsMap, registrationClosed)
+    def unpack = (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed)
   }
 
   object Bundle {
     def apply(
+      currentBranch: Branch,
       testNamesList: List[String],
-      doList: List[Node],
       testsMap: Map[String, TestLeaf],
       tagsMap: Map[String, Set[String]],
       registrationClosed: Boolean
     ): Bundle =
-      new Bundle(testNamesList, doList,testsMap, tagsMap, registrationClosed)
+      new Bundle(currentBranch, testNamesList, testsMap, tagsMap, registrationClosed)
   }
 
-  final val atomic = new AtomicReference[Bundle](Bundle(List(), List(), Map(), Map(), false))
+  final val atomic = new AtomicReference[Bundle](Bundle(Trunk, List(), Map(), Map(), false))
 
   def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
     val shouldBeOldBundle = atomic.getAndSet(newBundle)
@@ -99,9 +92,9 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       if (message == null)
         throw new NullPointerException
       val oldBundle = atomic.get
-      var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-      doList ::= InfoLeaf(Trunk, message)
-      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
+      var (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+      currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
+      updateAtomic(oldBundle, Bundle(currentBranch, testNamesList, testsMap, tagsMap, registrationClosed))
     }
   }
 
@@ -221,7 +214,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
       case None =>
 
-        val doList = atomic.get.doList.reverse
+        val doList = atomic.get.currentBranch.subNodes.reverse
         for (node <- doList) {
           node match {
             case InfoLeaf(_, message) => info(message)
@@ -254,9 +247,9 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     // which will disallow any further invocations of "test" or "ignore" with
     // an RegistrationClosedException.    
     val oldBundle = atomic.get
-    val (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+    val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
     if (!registrationClosed)
-      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, true))
+      updateAtomic(oldBundle, Bundle(currentBranch, testNamesList, testsMap, tagsMap, true))
 
     val report = theSuite.wrapReporterIfNecessary(reporter)
 
