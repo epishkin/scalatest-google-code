@@ -925,7 +925,7 @@ import Suite.getIndentedText
  */
 trait FunSuite extends Suite { thisSuite =>
 
-  private final val funFamily = new Engine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
+  private final val funFamily = new FunSuiteEngine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
   import funFamily._
 
   /**
@@ -1001,7 +1001,7 @@ trait FunSuite extends Suite { thisSuite =>
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    def invokeWithFixture(theTest: TestNode) {
+    def invokeWithFixture(theTest: TestLeaf) {
       val theConfigMap = configMap
       withFixture(
         new NoArgTest {

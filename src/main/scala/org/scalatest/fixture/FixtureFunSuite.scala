@@ -348,7 +348,7 @@ import Suite.getIndentedText
  */
 trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
-  private final val funFamily = new Engine[FixtureParam => Any]("concurrentFixtureFunSuiteBundleMod", "FixtureFunSuite")
+  private final val funFamily = new FunSuiteEngine[FixtureParam => Any]("concurrentFixtureFunSuiteBundleMod", "FixtureFunSuite")
   import funFamily._
 
   /**
@@ -424,7 +424,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    def invokeWithFixture(theTest: TestNode) {
+    def invokeWithFixture(theTest: TestLeaf) {
       theTest.fun match {
         case wrapper: NoArgTestWrapper[_] =>
           withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))

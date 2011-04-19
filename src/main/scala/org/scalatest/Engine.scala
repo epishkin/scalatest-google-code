@@ -26,7 +26,6 @@ import Suite.anErrorThatShouldCauseAnAbort
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
 private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
 
-/*
   sealed abstract class Node(parentOption: Option[Branch])
 
   abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
@@ -50,11 +49,12 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     childPrefix: Option[String] // If defined, put it at the beginning of any child specText or message
   ) extends Branch(Some(parent))   
 
-*/
 
+/*
   abstract class FunNode
   case class TestNode(testName: String, fun: T) extends FunNode
   case class InfoNode(message: String) extends FunNode
+*/
 
   // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
   // the primary constructor, but testNames, tags, and runTest get invoked directly or indirectly
@@ -67,8 +67,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
   // Test names are in reverse order of test registration method invocations
   class Bundle private(
     val testNamesList: List[String],
-    val doList: List[FunNode],
-    val testsMap: Map[String, TestNode],
+    val doList: List[Node],
+    val testsMap: Map[String, TestLeaf],
     val tagsMap: Map[String, Set[String]],
     val registrationClosed: Boolean
   ) {
@@ -78,8 +78,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
   object Bundle {
     def apply(
       testNamesList: List[String],
-      doList: List[FunNode],
-      testsMap: Map[String, TestNode],
+      doList: List[Node],
+      testsMap: Map[String, TestLeaf],
       tagsMap: Map[String, Set[String]],
       registrationClosed: Boolean
     ): Bundle =
@@ -100,7 +100,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
         throw new NullPointerException
       val oldBundle = atomic.get
       var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-      doList ::= InfoNode(message)
+      doList ::= InfoLeaf(Trunk, message)
       updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
     }
   }
@@ -119,49 +119,6 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       }
     }
 
-  // Shared between FunSuite.test and fixture.FixtureFunSuite.test
-  def testImpl(testName: String, f: T, sourceFileName: String, testTags: Tag*) {
-
-    checkTestOrIgnoreParamsForNull(testName, testTags: _*)
-
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth(sourceFileName, "test"))
-
-    if (atomic.get.testsMap.keySet.contains(testName))
-      throw new DuplicateTestNameException(testName, getStackDepth(sourceFileName, "test"))
-
-    val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-
-    val testNode = TestNode(testName, f)
-    testsMap += (testName -> testNode)
-    testNamesList ::= testName
-    doList ::= testNode
-    val tagNames = Set[String]() ++ testTags.map(_.name)
-    if (!tagNames.isEmpty)
-      tagsMap += (testName -> tagNames)
-
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
-  }
-
-  def ignoreImpl(testName: String, f: T, sourceFileName: String, testTags: Tag*) {
-
-    checkTestOrIgnoreParamsForNull(testName, testTags: _*)
-
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth(sourceFileName, "ignore"))
-
-    testImpl(testName, f, sourceFileName) // Call test without passing the tags
-
-    val oldBundle = atomic.get
-    var (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-
-    val tagNames = Set[String]() ++ testTags.map(_.name)
-    tagsMap += (testName -> (tagNames + IgnoreTagName))
-
-    updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, registrationClosed))
-  }
-
   private def checkTestOrIgnoreParamsForNull(testName: String, testTags: Tag*) {
     if (testName == null)
       throw new NullPointerException("testName was null")
@@ -176,7 +133,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     stopper: Stopper,
     configMap: Map[String, Any],
     tracker: Tracker,
-    invokeWithFixture: TestNode => Unit
+    invokeWithFixture: TestLeaf => Unit
   ) {
 
     checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
@@ -267,8 +224,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
         val doList = atomic.get.doList.reverse
         for (node <- doList) {
           node match {
-            case InfoNode(message) => info(message)
-            case TestNode(tn, _) =>
+            case InfoLeaf(_, message) => info(message)
+            case TestLeaf(_, tn, _, _) =>
               val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
               if (!filterTest)
                 if (ignoreTest)
