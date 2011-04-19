@@ -1001,6 +1001,23 @@ trait FunSuite extends Suite { thisSuite =>
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
+    def invokeWithFixture(theTest: TestNode) {
+      val theConfigMap = configMap
+      withFixture(
+        new NoArgTest {
+          def name = testName
+          def apply() { theTest.fun() }
+          def configMap = theConfigMap
+        }
+      )
+    }
+
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, invokeWithFixture)
+  }
+
+/*
+  protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
+
     checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
 
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
@@ -1052,6 +1069,7 @@ trait FunSuite extends Suite { thisSuite =>
         throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
     }
   }
+*/
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values

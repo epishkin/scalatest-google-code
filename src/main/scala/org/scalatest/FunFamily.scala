@@ -19,6 +19,9 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import FunSuite.IgnoreTagName 
+import Suite.checkRunTestParamsForNull
+import Suite.getIndentedText
+import Suite.anErrorThatShouldCauseAnAbort
 
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
 private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
@@ -141,6 +144,60 @@ private[scalatest] class FunFamily[T](concurrentBundleModResourceName: String, s
       throw new NullPointerException("a test tag was null")
   }
 
+  def runTestImpl(
+    theSuite: Suite,
+    testName: String,
+    reporter: Reporter,
+    stopper: Stopper,
+    configMap: Map[String, Any],
+    tracker: Tracker,
+    invokeWithFixture: TestNode => Unit
+  ) {
+
+    checkRunTestParamsForNull(testName, reporter, stopper, configMap, tracker)
+
+    val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
+      theSuite.getRunTestGoodies(stopper, reporter, testName)
+
+    theSuite.reportTestStarting(report, tracker, testName, rerunnable)
+
+    if (!atomic.get.testsMap.contains(testName))
+      throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
+
+    val formatter = getIndentedText(testName, 1)
+
+    val informerForThisTest =
+      MessageRecordingInformer2(
+        (message, isConstructingThread) => theSuite.reportInfoProvided(report, tracker, Some(testName), message, 2, isConstructingThread)
+      )
+
+    val oldInformer = atomicInformer.getAndSet(informerForThisTest)
+
+    try {
+
+      val theTest = atomic.get.testsMap(testName)
+
+      invokeWithFixture(theTest)
+
+      val duration = System.currentTimeMillis - testStartTime
+      theSuite.reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
+    }
+    catch { 
+      case _: TestPendingException =>
+        theSuite.reportTestPending(report, tracker, testName, formatter)
+      case e if !anErrorThatShouldCauseAnAbort(e) =>
+        val duration = System.currentTimeMillis - testStartTime
+        theSuite.handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
+      case e => throw e
+    }
+    finally {
+      informerForThisTest.fireRecordedMessages()
+      val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
+      val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
+      if (!swapAndCompareSucceeded)
+        throw new ConcurrentModificationException(Resources("concurrentInformerMod", theSuite.getClass.getName))
+    }
+  }
   def runTestsImpl(
     theSuite: Suite,
     testName: Option[String],
