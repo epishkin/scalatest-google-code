@@ -1052,38 +1052,6 @@ trait FunSuite extends Suite { thisSuite =>
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     runImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, super.run)
-
-/*
-    val stopRequested = stopper
-
-    // Set the flag that indicates registration is closed (because run has now been invoked),
-    // which will disallow any further invocations of "test" or "ignore" with
-    // an RegistrationClosedException.    
-    val oldBundle = atomic.get
-    val (testNamesList, doList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-    if (!registrationClosed)
-      updateAtomic(oldBundle, Bundle(testNamesList, doList, testsMap, tagsMap, true))
-
-    val report = wrapReporterIfNecessary(reporter)
-
-    val informerForThisSuite =
-      ConcurrentInformer2(
-        (message, isConstructingThread) => reportInfoProvided(report, tracker, None, message, 1, isConstructingThread)
-      )
-
-    atomicInformer.set(informerForThisSuite)
-
-    var swapAndCompareSucceeded = false
-    try {
-      super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
-    }
-    finally {
-      val shouldBeInformerForThisSuite = atomicInformer.getAndSet(zombieInformer)
-      swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
-    }
-    if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-*/
   }
 
   /**
