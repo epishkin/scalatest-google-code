@@ -43,4 +43,14 @@ class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
     child.subNodes ::= grandchild
     getTestNamePrefix(grandchild) should be ("child grandchild")
   }
+
+  "EngineSpec.getTestName" should "return the prefix, a space, and the testText" in {
+    val engine = new Engine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
+    import engine._
+    val child = DescriptionBranch(Trunk, "child", Some("child prefix"))
+    Trunk.subNodes ::= child
+    val grandchild = DescriptionBranch(child, "grandchild", None)
+    child.subNodes ::= grandchild
+    getTestName("howdy there", grandchild) should be ("child grandchild howdy there")
+  }
 }

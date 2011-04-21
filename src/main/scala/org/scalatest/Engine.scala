@@ -280,5 +280,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       case DescriptionBranch(parent, descriptionText, childPrefix) =>
         Resources("prefixSuffix", getTestNamePrefix(parent), descriptionText).trim
     }
+
+  private[scalatest] def getTestName(testText: String, parent: Branch): String =
+    Resources("prefixSuffix", getTestNamePrefix(parent), testText).trim
 }
 
