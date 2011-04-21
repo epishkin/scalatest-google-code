@@ -418,7 +418,8 @@ class SpecSuite extends FunSuite with SharedHelpers {
     var reportHadCorrectTestName = false
     var reportHadCorrectSpecText = false
     var reportHadCorrectFormattedSpecText = false
-    var infoProvidedHasBeenInvoked = false
+    var infoProvidedHasBeenInvokedOnce = false
+    var infoProvidedHasBeenInvokedTwice = false
     var theOtherMethodHasBeenInvoked = false
     class MyReporter extends Reporter {
       def apply(event: Event) {
@@ -426,20 +427,36 @@ class SpecSuite extends FunSuite with SharedHelpers {
           case InfoProvided(ordinal, message, nameInfo, aboutAPendingTest, throwable, formatter, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the other method
             assert(!theOtherMethodHasBeenInvoked)
-            infoProvidedHasBeenInvoked = true
-            if (message.indexOf("My Spec") != -1)
-              infoReportHadCorrectTestName = true
-            formatter match {
-              case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
-                if (rawText == "My Spec")
-                  infoReportHadCorrectSpecText = true
-                if (formattedText == "My Spec")
-                  infoReportHadCorrectFormattedSpecText = true
-              case _ =>
+            if (!infoProvidedHasBeenInvokedOnce) { 
+              infoProvidedHasBeenInvokedOnce = true
+              if (message.indexOf("My") >= 0)
+                infoReportHadCorrectTestName = true
+              formatter match {
+                case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                  if (rawText == "My")
+                    infoReportHadCorrectSpecText = true
+                  if (formattedText == "My")
+                    infoReportHadCorrectFormattedSpecText = true
+                case _ =>
+              }
+            }
+            else {
+println("XXXX: \""  + formatter + "\"")
+              infoProvidedHasBeenInvokedTwice = true
+              if (message.indexOf("Spec") < 0)
+                infoReportHadCorrectTestName = false
+              formatter match {
+                case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
+                  if (rawText != "Spec")
+                    infoReportHadCorrectSpecText = false
+                  if (formattedText != "  Spec")
+                    infoReportHadCorrectFormattedSpecText = false
+                case _ =>
+              }
             }
           case TestSucceeded(ordinal, suiteName, suiteClassName, testName, duration, formatter, rerunnable, payload, threadName, timeStamp) =>
             // infoProvided should be invoked before the this method
-            assert(infoProvidedHasBeenInvoked)
+            assert(infoProvidedHasBeenInvokedTwice)
             theOtherMethodHasBeenInvoked = true
             if (testName.indexOf("My Spec must start with proper words") != -1)
               reportHadCorrectTestName = true
@@ -447,7 +464,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
               case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
                 if (rawText == "must start with proper words")
                   reportHadCorrectSpecText = true
-                if (formattedText == "- must start with proper words")
+                if (formattedText == "  - must start with proper words")
                   reportHadCorrectFormattedSpecText = true
               case _ =>
             }
@@ -508,7 +525,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
               case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
                 if (rawText == "must start with proper words")
                   reportHadCorrectSpecText = true
-                if (formattedText == "- must start with proper words")
+                if (formattedText == "  - must start with proper words")
                   reportHadCorrectFormattedSpecText = true
               case _ =>
             }
@@ -569,7 +586,7 @@ class SpecSuite extends FunSuite with SharedHelpers {
               case Some(IndentedText(formattedText, rawText, indentationLevel)) =>
                 if (rawText == "must start with proper words")
                   reportHadCorrectSpecText = true
-                if (formattedText == "- must start with proper words")
+                if (formattedText == "  - must start with proper words")
                   reportHadCorrectFormattedSpecText = true
               case _ =>
             }
