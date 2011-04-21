@@ -80,6 +80,7 @@ final class JUnitRunner(suiteClass: java.lang.Class[Suite]) extends org.junit.ru
     }
     description
   }
+
   /**
    * Run this <code>Suite</code> of tests, reporting results to the passed <code>RunNotifier</code>.
    * This class's implementation of this method invokes <code>run</code> on an instance of the
