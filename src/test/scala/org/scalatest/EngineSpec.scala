@@ -43,16 +43,4 @@ class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
     child.subNodes ::= grandchild
     getTestNamePrefix(grandchild) should be ("child grandchild")
   }
-
-/*
-  it should "return the parent's child prefix for direct TestLeaf children of a description branch with a child prefix" in {
-    val engine = new Engine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
-    import engine._
-    val hasChildPrefix = DescriptionBranch(Trunk, "desc name", Some("child prefix"))
-    Trunk.subNodes ::= hasChildPrefix
-    val parentHasChildPrefix = TestLeaf(hasChildPrefix, "test name", "spec text", () => ())
-    hasChildPrefix.subNodes ::= parentHasChildPrefix
-    getTestNamePrefix(hasChildPrefix) should be ("child prefix")
-  }
-*/
 }

@@ -37,7 +37,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
   case class TestLeaf(
     parent: Branch,
     testName: String, // The full test name
-    specText: String, // The last portion of the test name that showed up on an inner most nested level
+    testText: String, // The last portion of the test name that showed up on an inner most nested level
     fun: T
   ) extends Node(Some(parent))
 
@@ -45,8 +45,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
 
   case class DescriptionBranch(
     parent: Branch,
-    descriptionName: String,
-    childPrefix: Option[String] // If defined, put it at the beginning of any child specText or message
+    descriptionText: String,
+    childPrefix: Option[String] // If defined, put it at the beginning of any child descriptionText or testText 
   ) extends Branch(Some(parent))   
 
   // Access to the testNamesList, testsMap, and tagsMap must be synchronized, because the test methods are invoked by
@@ -277,8 +277,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       case Trunk => ""
       // Call to getTestNamePrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
-      case DescriptionBranch(parent, descriptionName, childPrefix) =>
-        Resources("prefixSuffix", getTestNamePrefix(parent), descriptionName).trim
+      case DescriptionBranch(parent, descriptionText, childPrefix) =>
+        Resources("prefixSuffix", getTestNamePrefix(parent), descriptionText).trim
     }
 }
 
