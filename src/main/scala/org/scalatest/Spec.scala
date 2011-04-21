@@ -328,6 +328,8 @@ trait Spec extends Suite { thisSuite =>
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, runTest)
+/*
     if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
@@ -354,6 +356,7 @@ trait Spec extends Suite { thisSuite =>
       case None => runTestsInBranch(Trunk, report, stopRequested, filter, configMap, tracker)
       case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
     }
+*/
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,

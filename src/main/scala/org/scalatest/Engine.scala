@@ -192,6 +192,46 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     }
   }
 
+  private def runTestsInBranch(
+    theSuite: Suite,
+    branch: Branch,
+    report: Reporter,
+    stopRequested: Stopper,
+    filter: Filter,
+    configMap: Map[String, Any],
+    tracker: Tracker,
+    runTest: (String, Reporter, Stopper, Map[String, Any], Tracker) => Unit
+  ) {
+    branch match { 
+
+      case desc @ DescriptionBranch(_, descriptionText, _) =>
+
+        val indentationLevel = desc.indentationLevel
+        reportInfoProvided(theSuite, report, tracker, None, descriptionText, indentationLevel, true, false)
+
+      case Trunk =>
+    }
+    branch.subNodes.reverse.foreach { node =>
+      if (!stopRequested()) {
+        node match {
+          case testLeaf @ TestLeaf(_, testName, testText, _) =>
+            val (filterTest, ignoreTest) = filter(testName, theSuite.tags)
+            if (!filterTest)
+              if (ignoreTest) {
+                reportTestIgnored(theSuite, report, tracker, testName, testText, testLeaf.indentationLevel)
+              }
+              else
+                runTest(testName, report, stopRequested, configMap, tracker)
+
+          case infoLeaf @ InfoLeaf(_, message) =>
+            reportInfoProvided(theSuite, report, tracker, None, message, infoLeaf.indentationLevel, true)
+
+          case branch: Branch => runTestsInBranch(theSuite, branch, report, stopRequested, filter, configMap, tracker, runTest)
+        }
+      }
+    }
+  }
+
   def runTestsImpl(
     theSuite: Suite,
     testName: Option[String],
@@ -230,8 +270,10 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     // by testNames.
     testName match {
       case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
-      case None =>
+      case None => runTestsInBranch(theSuite, Trunk, report, stopRequested, filter, configMap, tracker, runTest)
 
+/*
+      case None =>
         val doList = atomic.get.currentBranch.subNodes.reverse
         for (node <- doList) {
           node match {
@@ -245,6 +287,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
                   runTest(tn, report, stopRequested, configMap, tracker)
           }
         }
+*/
     }
   }
 
