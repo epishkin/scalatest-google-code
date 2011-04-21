@@ -25,6 +25,7 @@ import Suite.checkRunTestParamsForNull
 import Suite.getIndentedText
 import Suite.indentation
 import verb.BehaveWord
+import Suite.reportInfoProvided
 
 trait Spec extends Suite { thisSuite =>
 
@@ -224,23 +225,31 @@ trait Spec extends Suite { thisSuite =>
     }
   }
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
+  private def runTestsInBranch(branch: Branch, report: Reporter, stopRequested: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
 
-    val stopRequested = stopper
-    // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
-    // so that exceptions are caught and transformed
-    // into error messages on the standard error stream.
-    val report = wrapReporterIfNecessary(reporter)
     branch match { 
 
       case desc @ DescriptionBranch(_, descriptionText, _) =>
 
-        report(InfoProvided(tracker.nextOrdinal(), descriptionText, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, None, Some(IndentedText(("  " * desc.indentationLevel) + descriptionText, descriptionText, desc.indentationLevel))))
+        val indentationLevel = desc.indentationLevel
+        reportInfoProvided(thisSuite, report, tracker, None, descriptionText, indentationLevel, true, false)
 
       case Trunk =>
     }
     branch.subNodes.reverse.foreach { node =>
       if (!stopRequested()) {
+/* From runTestsImpl:
+        node match {
+          case InfoLeaf(_, message) => info(message)
+          case TestLeaf(_, tn, _, _) =>
+            val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
+            if (!filterTest)
+              if (ignoreTest)
+                reportTestIgnored(theSuite, report, tracker, tn)
+              else
+                runTest(tn, report, stopRequested, configMap, tracker)
+        }
+*/
         node match {
           case testLeaf @ TestLeaf(_, tn, specText, _) =>
             val (filterTest, ignoreTest) = filter(tn, tags)
@@ -262,7 +271,7 @@ trait Spec extends Suite { thisSuite =>
               Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None,
                 None, Some(IndentedText(formattedText, message, infoLeaf.indentationLevel))))
 
-          case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
+          case branch: Branch => runTestsInBranch(branch, report, stopRequested, filter, configMap, tracker)
         }
       }
     }
@@ -355,9 +364,14 @@ trait Spec extends Suite { thisSuite =>
 
     val stopRequested = stopper
 
+    // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
+    // so that exceptions are caught and transformed
+    // into error messages on the standard error stream.
+    val report = wrapReporterIfNecessary(reporter)
+
     testName match {
-      case None => runTestsInBranch(Trunk, reporter, stopRequested, filter, configMap, tracker)
-      case Some(tn) => runTest(tn, reporter, stopRequested, configMap, tracker)
+      case None => runTestsInBranch(Trunk, report, stopRequested, filter, configMap, tracker)
+      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
     }
   }
 

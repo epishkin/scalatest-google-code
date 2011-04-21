@@ -23,6 +23,11 @@ import Suite.checkRunTestParamsForNull
 import Suite.getIndentedText
 import Suite.anErrorThatShouldCauseAnAbort
 import Suite.reportTestFailed
+import Suite.reportTestStarting
+import Suite.reportTestIgnored
+import Suite.reportTestSucceeded
+import Suite.reportTestPending
+import Suite.reportInfoProvided
 
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
 private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
@@ -145,7 +150,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     val (stopRequested, report, hasPublicNoArgConstructor, rerunnable, testStartTime) =
       theSuite.getRunTestGoodies(stopper, reporter, testName)
 
-    theSuite.reportTestStarting(report, tracker, testName, rerunnable)
+    reportTestStarting(theSuite, report, tracker, testName, rerunnable)
 
     if (!atomic.get.testsMap.contains(testName))
       throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
@@ -156,7 +161,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
 
     val informerForThisTest =
       MessageRecordingInformer2(
-        (message, isConstructingThread, testWasPending) => theSuite.reportInfoProvided(report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, Some(testWasPending))
+        (message, isConstructingThread, testWasPending) => reportInfoProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, true, Some(testWasPending))
       )
 
     val oldInformer = atomicInformer.getAndSet(informerForThisTest)
@@ -167,15 +172,15 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       invokeWithFixture(theTest)
 
       val duration = System.currentTimeMillis - testStartTime
-      theSuite.reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
+      reportTestSucceeded(theSuite, report, tracker, testName, duration, formatter, rerunnable)
     }
     catch { 
       case _: TestPendingException =>
-        theSuite.reportTestPending(report, tracker, testName, formatter)
+        reportTestPending(theSuite, report, tracker, testName, formatter)
         testWasPending = true // Set so info's printed out in the finally clause show up yellow
       case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
-        reportTestFailed(theSuite, e, testName, theTest.testText, rerunnable, report, tracker, duration, theTest.indentationLevel)
+        reportTestFailed(theSuite, report, e, testName, theTest.testText, rerunnable, tracker, duration, theTest.indentationLevel)
       case e => throw e
     }
     finally {
@@ -235,7 +240,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
               val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
               if (!filterTest)
                 if (ignoreTest)
-                  theSuite.reportTestIgnored(report, tracker, tn)
+                  reportTestIgnored(theSuite, report, tracker, tn)
                 else
                   runTest(tn, report, stopRequested, configMap, tracker)
           }
@@ -268,7 +273,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
 
     val informerForThisSuite =
       ConcurrentInformer2(
-        (message, isConstructingThread) => theSuite.reportInfoProvided(report, tracker, None, message, 1, isConstructingThread)
+        (message, isConstructingThread) => reportInfoProvided(theSuite, report, tracker, None, message, 1, isConstructingThread)
       )
 
     atomicInformer.set(informerForThisSuite)

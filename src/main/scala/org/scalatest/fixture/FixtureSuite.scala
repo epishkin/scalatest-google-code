@@ -36,6 +36,11 @@ import Suite.anErrorThatShouldCauseAnAbort
 import Suite.checkRunTestParamsForNull
 import Suite.getIndentedText
 import Suite.getIndentedTextForInfo
+import Suite.reportTestStarting
+import Suite.reportTestIgnored
+import Suite.reportTestSucceeded
+import Suite.reportTestPending
+import Suite.reportInfoProvided
 
 /**
  * <code>Suite</code> that can pass a fixture object into its tests.
@@ -510,7 +515,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
     val (stopRequested, report, method, hasPublicNoArgConstructor, rerunnable, testStartTime) =
       getSuiteRunTestGoodies(stopper, reporter, testName)
 
-    reportTestStarting(report, tracker, testName, rerunnable)
+    reportTestStarting(thisSuite, report, tracker, testName, rerunnable)
 
     val formatter = getIndentedText(testName, 1)
 
@@ -526,7 +531,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
                     def apply(message: String) {
                       if (message == null)
                         throw new NullPointerException
-                      reportInfoProvided(report, tracker, Some(testName), message, 2, true)
+                      reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, true)
                     }
                   }
                 Array(anyRefFixture, informer)
@@ -549,7 +554,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
                     def apply(message: String) {
                       if (message == null)
                         throw new NullPointerException
-                      reportInfoProvided(report, tracker, Some(testName), message, 2, true)
+                      reportInfoProvided(thisSuite, report, tracker, Some(testName), message, 2, true)
                     }
                   }
                 Array(informer)
@@ -564,14 +569,14 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
       }
 
       val duration = System.currentTimeMillis - testStartTime
-      reportTestSucceeded(report, tracker, testName, duration, formatter, rerunnable)
+      reportTestSucceeded(thisSuite, report, tracker, testName, duration, formatter, rerunnable)
     }
     catch { 
       case ite: InvocationTargetException =>
         val t = ite.getTargetException
         t match {
           case _: TestPendingException =>
-            reportTestPending(report, tracker, testName, formatter)
+            reportTestPending(thisSuite, report, tracker, testName, formatter)
           case e if !anErrorThatShouldCauseAnAbort(e) =>
             val duration = System.currentTimeMillis - testStartTime
             handleFailedTest(t, hasPublicNoArgConstructor, testName, rerunnable, report, tracker, duration)
