@@ -1669,7 +1669,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       for ((tn, ignoreTest) <- filter(testNames, tags)) {
         if (!stopRequested()) {
           if (ignoreTest) {
-            reportTestIgnored(this, report, tracker, tn)
+            reportTestIgnored(thisSuite, report, tracker, tn, tn, 1)
           }
           else
             runTest(tn, report, stopRequested, configMap, tracker)
@@ -2265,11 +2265,27 @@ It should (and at this point does) output this:
 
   // The icon is not included for branch description text, but is included for things sent via info(), given(),
   // when(), then(), etc. When it is included, reduce the level by 1, unless it is already 1 or 0.
-  def getIndentedTextForInfo(message: String, level: Int, includeIcon: Boolean) = {
+  def getIndentedTextForInfo(message: String, level: Int, includeIcon: Boolean, infoIsInsideATest: Boolean) = {
     val formattedText =
       if (includeIcon) {
         val infoProvidedIcon = Resources("infoProvidedIconChar")
-        ("  " * (if (level <= 1) level else (level - 1))) + Resources("iconPlusShortName", infoProvidedIcon, message)
+        //
+        // Inside a test, you want level 1 to stay 1
+        // [scalatest] - outermost test (5 milliseconds)
+        // [scalatest]   + in outermost test
+        //
+        // But outside a test, level 1 should be transformed to 0
+        // [scalatest] Apple
+        // [scalatest] + in Apple
+        //
+        val indentationLevel =
+          level match {
+            case 0 => 0
+            case 1 if infoIsInsideATest => 1
+            case _ => level - 1
+          }
+        ("  " * indentationLevel) + Resources("iconPlusShortName", infoProvidedIcon, message)
+        // ("  " * (if (level <= 1) level else (level - 1))) + Resources("iconPlusShortName", infoProvidedIcon, message)
       }
       else {
         ("  " * level) + message
@@ -2305,10 +2321,10 @@ It should (and at this point does) output this:
     report(TestSucceeded(tracker.nextOrdinal(), theSuite.suiteName, Some(theSuite.getClass.getName), testName, Some(duration), Some(formatter), rerunnable))
   }
 
-  def reportTestIgnored(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String) {
+  def reportTestIgnored(theSuite: Suite, report: Reporter, tracker: Tracker, testName: String, testText: String, level: Int) {
     val testSucceededIcon = Resources("testSucceededIconChar")
-    val formattedText = Resources("iconPlusShortName", testSucceededIcon, testName)
-    report(TestIgnored(tracker.nextOrdinal(), theSuite.suiteName, Some(theSuite.getClass.getName), testName, Some(IndentedText(formattedText, testName, 1))))
+    val formattedText = indentation(level - 1) + Resources("iconPlusShortName", testSucceededIcon, testText)
+    report(TestIgnored(tracker.nextOrdinal(), theSuite.suiteName, Some(theSuite.getClass.getName), testName, Some(IndentedText(formattedText, testText, level))))
   }
 
   // If not fired in the context of a test, then testName will be None
@@ -2333,7 +2349,7 @@ It should (and at this point does) output this:
           None,
         aboutAPendingTest,
         None,
-        Some(getIndentedTextForInfo(message, level, includeIcon))
+        Some(getIndentedTextForInfo(message, level, includeIcon, testName.isDefined))
       )
     )
   }

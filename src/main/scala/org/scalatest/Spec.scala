@@ -26,6 +26,7 @@ import Suite.getIndentedText
 import Suite.indentation
 import verb.BehaveWord
 import Suite.reportInfoProvided
+import Suite.reportTestIgnored
 
 trait Spec extends Suite { thisSuite =>
 
@@ -238,38 +239,18 @@ trait Spec extends Suite { thisSuite =>
     }
     branch.subNodes.reverse.foreach { node =>
       if (!stopRequested()) {
-/* From runTestsImpl:
         node match {
-          case InfoLeaf(_, message) => info(message)
-          case TestLeaf(_, tn, _, _) =>
-            val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
-            if (!filterTest)
-              if (ignoreTest)
-                reportTestIgnored(theSuite, report, tracker, tn)
-              else
-                runTest(tn, report, stopRequested, configMap, tracker)
-        }
-*/
-        node match {
-          case testLeaf @ TestLeaf(_, tn, specText, _) =>
-            val (filterTest, ignoreTest) = filter(tn, tags)
+          case testLeaf @ TestLeaf(_, testName, testText, _) =>
+            val (filterTest, ignoreTest) = filter(testName, tags)
             if (!filterTest)
               if (ignoreTest) {
-                val testSucceededIcon = Resources("testSucceededIconChar")
-                val formattedSpecText = indentation(testLeaf.indentationLevel - 1) + Resources("iconPlusShortName", testSucceededIcon, specText)
-                report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, testLeaf.indentationLevel))))
+                reportTestIgnored(thisSuite, report, tracker, testName, testText, testLeaf.indentationLevel)
               }
               else
-                runTest(tn, report, stopRequested, configMap, tracker)
+                runTest(testName, report, stopRequested, configMap, tracker)
 
           case infoLeaf @ InfoLeaf(_, message) =>
-            val infoProvidedIcon = Resources("infoProvidedIconChar")
-            val level = infoLeaf.indentationLevel
-            // pass one less than the level to indentation because of the "+ " placed to the left of the message i the formattedText
-            val formattedText = indentation(if (level > 0) level - 1 else 0) + Resources("iconPlusShortName", infoProvidedIcon, message)
-            report(InfoProvided(tracker.nextOrdinal(), message,
-              Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None,
-                None, Some(IndentedText(formattedText, message, infoLeaf.indentationLevel))))
+            reportInfoProvided(thisSuite, report, tracker, None, message, infoLeaf.indentationLevel, true)
 
           case branch: Branch => runTestsInBranch(branch, report, stopRequested, filter, configMap, tracker)
         }

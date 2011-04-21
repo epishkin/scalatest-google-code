@@ -240,7 +240,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
               val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
               if (!filterTest)
                 if (ignoreTest)
-                  reportTestIgnored(theSuite, report, tracker, tn)
+                  reportTestIgnored(theSuite, report, tracker, tn, tn, 1)
                 else
                   runTest(tn, report, stopRequested, configMap, tracker)
           }
