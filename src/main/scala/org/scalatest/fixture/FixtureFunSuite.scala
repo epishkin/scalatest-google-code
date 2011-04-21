@@ -348,8 +348,8 @@ import Suite.getIndentedText
  */
 trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
-  private final val funFamily = new FunSuiteEngine[FixtureParam => Any]("concurrentFixtureFunSuiteBundleMod", "FixtureFunSuite")
-  import funFamily._
+  private final val engine = new Engine[FixtureParam => Any]("concurrentFixtureFunSuiteBundleMod", "FixtureFunSuite")
+  import engine._
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -376,7 +376,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
   protected def test(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
-    testImpl(testName, f, "FixtureFunSuite.scala", testTags: _*)
+    registerTest(testName, f, "FixtureFunSuite.scala", testTags: _*)
   }
 
   /**
@@ -395,7 +395,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
   protected def ignore(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
-    ignoreImpl(testName, f, "FixtureFunSuite.scala", testTags: _*)
+    registerIgnoredTest(testName, f, "FixtureFunSuite.scala", testTags: _*)
   }
 
   /**
@@ -425,7 +425,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
     def invokeWithFixture(theTest: TestLeaf) {
-      theTest.fun match {
+      theTest.testFun match {
         case wrapper: NoArgTestWrapper[_] =>
           withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
         case fun => withFixture(new TestFunAndConfigMap(testName, fun, configMap))
@@ -437,7 +437,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty <code>Map</code>.
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty
+   * <code>Map</code>.
    *
    * <p>
    * This trait's implementation returns tags that were passed as strings contained in <code>Tag</code> objects passed to

@@ -22,11 +22,22 @@ import FunSuite.IgnoreTagName
 import Suite.checkRunTestParamsForNull
 import Suite.getIndentedText
 import Suite.anErrorThatShouldCauseAnAbort
+import Suite.reportTestFailed
 
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
 private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
 
-  sealed abstract class Node(parentOption: Option[Branch])
+  sealed abstract class Node(val parentOption: Option[Branch]) {
+    def indentationLevel: Int = {
+      def calcLevel(currentParentOpt: Option[Branch], currentLevel: Int): Int = 
+        currentParentOpt match {
+          case None => currentLevel
+          case Some(parent) => calcLevel(parent.parentOption, currentLevel + 1)
+        }
+      val level = calcLevel(parentOption, -1)
+      if (level < 0) 0 else level
+    }
+  }
 
   abstract class Branch(parentOption: Option[Branch]) extends Node(parentOption) {
     var subNodes: List[Node] = Nil
@@ -38,7 +49,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     parent: Branch,
     testName: String, // The full test name
     testText: String, // The last portion of the test name that showed up on an inner most nested level
-    fun: T
+    testFun: T
   ) extends Node(Some(parent))
 
   case class InfoLeaf(parent: Branch, message: String) extends Node(Some(parent))
@@ -139,18 +150,19 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     if (!atomic.get.testsMap.contains(testName))
       throw new IllegalArgumentException("No test in this suite has name: \"" + testName + "\"")
 
-    val formatter = getIndentedText(testName, 1)
+    val theTest = atomic.get.testsMap(testName)
+
+    val formatter = getIndentedText(theTest.testText, theTest.indentationLevel)
 
     val informerForThisTest =
       MessageRecordingInformer2(
-        (message, isConstructingThread) => theSuite.reportInfoProvided(report, tracker, Some(testName), message, 2, isConstructingThread)
+        (message, isConstructingThread, testWasPending) => theSuite.reportInfoProvided(report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, Some(testWasPending))
       )
 
     val oldInformer = atomicInformer.getAndSet(informerForThisTest)
+    var testWasPending = false
 
     try {
-
-      val theTest = atomic.get.testsMap(testName)
 
       invokeWithFixture(theTest)
 
@@ -160,13 +172,14 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     catch { 
       case _: TestPendingException =>
         theSuite.reportTestPending(report, tracker, testName, formatter)
+        testWasPending = true // Set so info's printed out in the finally clause show up yellow
       case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
-        theSuite.handleFailedTest(e, false, testName, rerunnable, report, tracker, duration)
+        reportTestFailed(theSuite, e, testName, theTest.testText, rerunnable, report, tracker, duration, theTest.indentationLevel)
       case e => throw e
     }
     finally {
-      informerForThisTest.fireRecordedMessages()
+      informerForThisTest.fireRecordedMessages(testWasPending)
       val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
       val swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
       if (!swapAndCompareSucceeded)
@@ -272,6 +285,53 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", theSuite.getClass.getName))
   }
 
+  def registerTest(testText: String, testFun: T, sourceFileName: String, testTags: Tag*): String = { // returns testName
+
+    checkRegisterTestParamsForNull(testText, testTags: _*)
+
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth(sourceFileName, "test"))
+
+    val oldBundle = atomic.get
+    var (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+
+    val testName = getTestName(testText, currentBranch)
+
+    if (atomic.get.testsMap.keySet.contains(testName))
+      throw new DuplicateTestNameException(testName, getStackDepth(sourceFileName, "test"))
+
+    val testLeaf = TestLeaf(currentBranch, testName, testText, testFun)
+    testsMap += (testName -> testLeaf)
+    testNamesList ::= testName
+    currentBranch.subNodes ::= testLeaf
+
+    val tagNames = Set[String]() ++ testTags.map(_.name)
+    if (!tagNames.isEmpty)
+      tagsMap += (testName -> tagNames)
+
+    updateAtomic(oldBundle, Bundle(currentBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+
+    testName
+  }
+
+  def registerIgnoredTest(testText: String, f: T, sourceFileName: String, testTags: Tag*) {
+
+    checkRegisterTestParamsForNull(testText, testTags: _*)
+
+    if (atomic.get.registrationClosed)
+      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth(sourceFileName, "ignore"))
+
+    val testName = registerTest(testText, f, sourceFileName) // Call test without passing the tags
+
+    val oldBundle = atomic.get
+    var (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+
+    val tagNames = Set[String]() ++ testTags.map(_.name)
+    tagsMap += (testName -> (tagNames + IgnoreTagName))
+
+    updateAtomic(oldBundle, Bundle(currentBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+  }
+
   private[scalatest] def getTestNamePrefix(branch: Branch): String =
     branch match {
       case Trunk => ""
@@ -283,5 +343,12 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
 
   private[scalatest] def getTestName(testText: String, parent: Branch): String =
     Resources("prefixSuffix", getTestNamePrefix(parent), testText).trim
+
+  private def checkRegisterTestParamsForNull(testText: String, testTags: Tag*) {
+    if (testText == null)
+      throw new NullPointerException("testText was null")
+    if (testTags.exists(_ == null))
+      throw new NullPointerException("a test tag was null")
+  }
 }
 

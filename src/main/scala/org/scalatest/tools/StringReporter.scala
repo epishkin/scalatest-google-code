@@ -31,6 +31,7 @@ import PrintReporter._
 import org.scalatest.junit.JUnitTestFailedError
 import org.scalatest.prop.PropertyCheckFailedException
 import org.scalatest.prop.TableDrivenPropertyCheckFailedException
+import Suite.indentation
 
 /**
  * A <code>Reporter</code> that prints test status information to
@@ -174,7 +175,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
             // Should not get here with built-in ScalaTest stuff, but custom stuff could get here.
             case None => Resources(errorResourceName, Resources("noNameSpecified"))
           }
-    }
+      }
 
     val stringToPrintWithPossibleDuration =
       duration match {
@@ -196,18 +197,11 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
         case _ => "" // Don't show it in the non-stack depth case. It will be shown after the exception class name and colon.
       }
 
-/*
-    // I don't want to put a second line out there if the event's message contains the throwable's message,
-    // or if niether the event message or throwable message has any message in it.
-    val throwableIsAStackDepthWithRedundantMessage =
-      throwable match {
-        case Some(t: Throwable with StackDepth) =>
-          ((t.getMessage != null &&
-          !t.getMessage.trim.isEmpty && possiblyEmptyMessage.indexOf(t.getMessage.trim) != -1) || // This part is where a throwable message exists
-          (possiblyEmptyMessage.isEmpty && (t.getMessage == null || t.getMessage.trim.isEmpty))) // This part detects when both have no message
-        case _ => false
+    val whiteSpace =
+      formatter match {
+        case Some(IndentedText(_, _, indentationLevel)) => indentation(indentationLevel)
+        case _ => indentation(1)
       }
-*/
 
     def getStackTrace(throwable: Option[Throwable]): List[String] =
       throwable match {
@@ -229,12 +223,12 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
                 ":"
 
             val labeledClassNameWithMessage =
-              "  " + labeledClassName + colonMessageOrJustColon
+              whiteSpace + labeledClassName + colonMessageOrJustColon
 
             if (presentShortStackTraces || presentFullStackTraces || !(throwable.isInstanceOf[StackDepth])) {
 
               // Indent each stack trace item two spaces, and prepend that with an "at "
-              val stackTraceElements = throwable.getStackTrace.toList map { "  at " + _.toString }
+              val stackTraceElements = throwable.getStackTrace.toList map { whiteSpace + "at " + _.toString }
               val cause = throwable.getCause
 
               val stackTraceThisThrowable = labeledClassNameWithMessage :: stackTraceElements
@@ -252,9 +246,9 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
                   throwable match {
                     case e: Throwable with StackDepth =>
                       val stackDepth = e.failedCodeStackDepth
-                      stackTraceThisThrowable.head :: "  ..." :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List("  ...")
+                      stackTraceThisThrowable.head :: (whiteSpace + "...") :: stackTraceThisThrowable.drop(stackDepth + 1).take(7) ::: List(whiteSpace + "...")
                     case _ => // In case of IAE or what not, show top 10 stack frames
-                      stackTraceThisThrowable.head :: stackTraceThisThrowable.drop(1).take(10) ::: List("  ...")
+                      stackTraceThisThrowable.head :: stackTraceThisThrowable.drop(1).take(10) ::: List(whiteSpace + "...")
                   }
     
                 if (cause == null)
@@ -273,7 +267,7 @@ org.scalatest.prop.TableDrivenPropertyCheckFailedException: TestFailedException 
     if (possiblyEmptyMessageWithPossibleLineNumber.isEmpty)
       stringToPrintWithPossibleDuration :: getStackTrace(throwable)
     else
-      stringToPrintWithPossibleDuration :: "  " + possiblyEmptyMessageWithPossibleLineNumber :: getStackTrace(throwable)
+      stringToPrintWithPossibleDuration :: (whiteSpace + possiblyEmptyMessageWithPossibleLineNumber) :: getStackTrace(throwable)
   }
 
   private def stringToPrintWhenNoError(resourceName: String, formatter: Option[Formatter], suiteName: String, testName: Option[String]): Option[String] =

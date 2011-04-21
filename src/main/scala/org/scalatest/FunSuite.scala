@@ -925,8 +925,8 @@ import Suite.getIndentedText
  */
 trait FunSuite extends Suite { thisSuite =>
 
-  private final val funFamily = new FunSuiteEngine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
-  import funFamily._
+  private final val engine = new Engine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
+  import engine._
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -952,8 +952,8 @@ trait FunSuite extends Suite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
-  protected def test(testName: String, testTags: Tag*)(f: => Unit) {
-    testImpl(testName, f _, "FunSuite.scala", testTags: _*)
+  protected def test(testName: String, testTags: Tag*)(testFun: => Unit) {
+    registerTest(testName, testFun _, "FunSuite.scala", testTags: _*)
   }
 
   /**
@@ -971,8 +971,8 @@ trait FunSuite extends Suite { thisSuite =>
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
-  protected def ignore(testName: String, testTags: Tag*)(f: => Unit) {
-    ignoreImpl(testName, f _, "FunSuite.scala", testTags: _*)
+  protected def ignore(testName: String, testTags: Tag*)(testFun: => Unit) {
+    registerIgnoredTest(testName, testFun _, "FunSuite.scala", testTags: _*)
   }
 
   /**
@@ -1006,7 +1006,7 @@ trait FunSuite extends Suite { thisSuite =>
       withFixture(
         new NoArgTest {
           def name = testName
-          def apply() { theTest.fun() }
+          def apply() { theTest.testFun() }
           def configMap = theConfigMap
         }
       )

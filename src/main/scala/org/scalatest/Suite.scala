@@ -1477,7 +1477,8 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     testName: Option[String],
     message: String,
     level: Int,
-    includeNameInfo: Boolean
+    includeNameInfo: Boolean,
+    aboutAPendingTest: Option[Boolean] = None
   ) {
     report(
       InfoProvided(
@@ -1487,7 +1488,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
           Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
         else
           None,
-        None,
+        aboutAPendingTest,
         None,
         Some(getIndentedTextForInfo(message, level))
       )
@@ -2234,16 +2235,77 @@ private[scalatest] object Suite {
       throw new NullPointerException("tracker was null")
   }
  
-  def getIndentedText(testName: String, level: Int) = {
+  /*
+   For info and test names, the formatted text should have one level shaved off so that the text will
+   line up correctly, and the icon is over to the left of that even with the enclosing level.
+
+   If a test is at the top level (not nested inside a describe, it's level is 0. So no need to subtract 1
+   to make room for the icon in that case. An info inside such a test will have level 1. And agin, in that
+   case no need to subtract 1. Such a test is "outermost test" and the info inside is "in outermost test" in:
+
+class ArghSpec extends Spec with GivenWhenThen {
+  info("in ArghSpec")
+  it("outermost test") {
+    info("in outermost test")
+  }
+  describe("Apple") {
+    info("in Apple")
+    describe("Boat") {
+      info("in Boat")
+      describe("Cat") {
+        info("in Cat")
+        describe("Dog") {
+          info("in Dog")
+          describe("Elephant") {
+            info("in Elephant")
+            it("Factory") {
+              info("in Factory (test)")
+              given("an empty Stack")
+              when("push is invoked")
+              then("it should have size 1")
+              and("pop should return the pushed value")
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+It should (and at this point does) output this:
+
+[scalatest] ArghSpec:
+[scalatest] + in ArghSpec 
+[scalatest] - outermost test (5 milliseconds)
+[scalatest]   + in outermost test 
+[scalatest] Apple 
+[scalatest] + in Apple 
+[scalatest]   Boat 
+[scalatest]   + in Boat 
+[scalatest]     Cat 
+[scalatest]     + in Cat 
+[scalatest]       Dog 
+[scalatest]       + in Dog 
+[scalatest]         Elephant 
+[scalatest]         + in Elephant 
+[scalatest]         - Factory (1 millisecond)
+[scalatest]           + in Factory (test) 
+[scalatest]           + Given an empty Stack 
+[scalatest]           + When push is invoked 
+[scalatest]           + Then it should have size 1 
+[scalatest]           + And pop should return the pushed value 
+
+  */
+  def getIndentedText(testText: String, level: Int) = {
     val testSucceededIcon = Resources("testSucceededIconChar")
-    val formattedText = ("  " * (level - 1)) + Resources("iconPlusShortName", testSucceededIcon, testName)
-    IndentedText(formattedText, testName, level)
+    val formattedText = ("  " * (if (level == 0) 0 else (level - 1))) + Resources("iconPlusShortName", testSucceededIcon, testText)
+    IndentedText(formattedText, testText, level)
   }
 
   def getIndentedTextForInfo(message: String, level: Int) = {
     val infoProvidedIcon = Resources("infoProvidedIconChar")
-    val formattedText = ("  " * (level - 1)) + Resources("iconPlusShortName", infoProvidedIcon, message)
-    IndentedText(formattedText, message, 2)
+    val formattedText = ("  " * (if (level == 1) 1 else (level - 1))) + Resources("iconPlusShortName", infoProvidedIcon, message)
+    IndentedText(formattedText, message, level)
   }
 
   def getMessageForException(e: Throwable): String =
@@ -2251,4 +2313,55 @@ private[scalatest] object Suite {
       e.getMessage
     else
       Resources("exceptionThrown", e.getClass.getName) // Say something like, "java.lang.Exception was thrown."
+
+  def indentation(level: Int) = "  " * level
+
+  def reportTestFailed(theSuite: Suite, throwable: Throwable, testName: String, testText: String,
+      rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long, level: Int) {
+
+    val message = getMessageForException(throwable)
+    val formatter = getIndentedText(testText, level)
+    report(TestFailed(tracker.nextOrdinal(), message, theSuite.suiteName, Some(theSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
+  }
+/*
+  private[scalatest] def reportTestStarting(report: Reporter, tracker: Tracker, testName: String, rerunnable: Option[Rerunner]) {
+    report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(MotionToSuppress), rerunnable))
+  }
+  private[scalatest] def reportInfoProvided(
+    report: Reporter,
+    tracker: Tracker,
+    testName: Option[String],
+    message: String,
+    level: Int,
+    includeNameInfo: Boolean,
+    aboutAPendingTest: Option[Boolean] = None
+  ) {
+    report(
+      InfoProvided(
+        tracker.nextOrdinal(),
+        message,
+        if (includeNameInfo)
+          Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), testName))
+        else
+          None,
+        aboutAPendingTest,
+        None,
+        Some(getIndentedTextForInfo(message, level))
+      )
+    )
+  }
+  private[scalatest] def reportTestPending(report: Reporter, tracker: Tracker, testName: String, formatter: Formatter) {
+    report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(formatter)))
+  }
+
+  private[scalatest] def reportTestSucceeded(report: Reporter, tracker: Tracker, testName: String, duration: Long, formatter: Formatter, rerunnable: Option[Rerunner]) {
+    report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(duration), Some(formatter), rerunnable))
+  }
+
+  private[scalatest] def reportTestIgnored(report: Reporter, tracker: Tracker, testName: String) {
+    val testSucceededIcon = Resources("testSucceededIconChar")
+    val formattedText = Resources("iconPlusShortName", testSucceededIcon, testName)
+    report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(IndentedText(formattedText, testName, 1))))
+  }
+*/
 }

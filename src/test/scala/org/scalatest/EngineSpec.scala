@@ -53,4 +53,24 @@ class EngineSpec extends FlatSpec with SharedHelpers with ShouldMatchers {
     child.subNodes ::= grandchild
     getTestName("howdy there", grandchild) should be ("child grandchild howdy there")
   }
+  "EngineSpec.getIndentationLevelForNode" should "return the indentation level for a test" in {
+    val engine = new Engine[() => Unit]("concurrentFunSuiteBundleMod", "FunSuite")
+    import engine._
+    val child = DescriptionBranch(Trunk, "child", Some("child prefix"))
+    Trunk.subNodes ::= child
+    val childTest = TestLeaf(Trunk, "child test", "child test", () => ())
+    Trunk.subNodes ::= childTest
+    val grandchild = DescriptionBranch(child, "grandchild", None)
+    child.subNodes ::= grandchild
+    val grandchildTest = TestLeaf(child, "grandchild test", "grandchild test", () => ())
+    child.subNodes ::= grandchildTest
+    val greatGrandchildTest = TestLeaf(grandchild, "great-grandchild test", "great-grandchild test", () => ())
+    grandchild.subNodes ::= greatGrandchildTest
+    Trunk.indentationLevel should be (0)
+    child.indentationLevel should be (0)
+    childTest.indentationLevel should be (0)
+    grandchild.indentationLevel should be (1)
+    grandchildTest.indentationLevel should be (1)
+    greatGrandchildTest.indentationLevel should be (2)
+  }
 }

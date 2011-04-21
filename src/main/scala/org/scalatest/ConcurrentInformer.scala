@@ -57,9 +57,7 @@ private[scalatest] abstract class ConcurrentInformer(nameInfo: NameInfo) extends
   }
 }
 
-// Getting rid of the NameInfo passed to ConcurrentInformer. After go through entire
-// refactor can rename ConcurrentInformer2 to ConcurrentInformer, deleting the old one
-private[scalatest] class ConcurrentInformer2(fire: (String, Boolean) => Unit) extends Informer {
+private[scalatest] abstract class ThreadAwareInformer extends Informer {
 
   private final val atomic = new AtomicReference[Thread](Thread.currentThread)
 
@@ -67,6 +65,11 @@ private[scalatest] class ConcurrentInformer2(fire: (String, Boolean) => Unit) ex
     val constructingThread = atomic.get
     Thread.currentThread == constructingThread
   }
+}
+
+// Getting rid of the NameInfo passed to ConcurrentInformer. After go through entire
+// refactor can rename ConcurrentInformer2 to ConcurrentInformer, deleting the old one
+private[scalatest] class ConcurrentInformer2(fire: (String, Boolean) => Unit) extends ThreadAwareInformer {
 
   def apply(message: String) {
     if (message == null)
@@ -79,7 +82,15 @@ private[scalatest] object ConcurrentInformer2 {
   def apply(fire: (String, Boolean) => Unit) = new ConcurrentInformer2(fire)
 }
 
-private[scalatest] class MessageRecordingInformer2(fire: (String, Boolean) => Unit) extends ConcurrentInformer2(fire) {
+//
+// Three params of function are the string message, a boolean indicating this was from the current thread, and
+// the last one is an optional boolean that indicates the message is about a pending test, in which case it would
+// be printed out in yellow.
+//
+// This kind of informer is only used during the execution of tests, to delay the printing out of info's fired
+// during tests until after the test succeeded, failed, or pending gets sent out.
+//
+private[scalatest] class MessageRecordingInformer2(fire: (String, Boolean, Boolean) => Unit) extends ThreadAwareInformer {
 
   private var messages = List[String]()
 
@@ -94,22 +105,22 @@ private[scalatest] class MessageRecordingInformer2(fire: (String, Boolean) => Un
   // Returns them in order recorded
   private def recordedMessages: List[String] = messages.reverse
 
-  override def apply(message: String) {
+  def apply(message: String) {
     if (message == null)
       throw new NullPointerException
     if (isConstructingThread)
       record(message)
     else 
-      fire(message, false) // Fire the info provided event using the passed function
+      fire(message, false, false) // Fire the info provided event using the passed function
   }
 
   // send out any recorded messages
-  def fireRecordedMessages() {
+  def fireRecordedMessages(testWasPending: Boolean) {
     for (message <- recordedMessages)
-      fire(message, true) // Fire the info provided event using the passed function
+      fire(message, true, testWasPending) // Fire the info provided event using the passed function
   }
 }
 
 private[scalatest] object MessageRecordingInformer2 {
-  def apply(fire: (String, Boolean) => Unit) = new MessageRecordingInformer2(fire)
+  def apply(fire: (String, Boolean, Boolean) => Unit) = new MessageRecordingInformer2(fire)
 }

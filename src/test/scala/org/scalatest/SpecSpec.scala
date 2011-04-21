@@ -200,12 +200,12 @@ class SpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should send an InfoProvided with an IndentedText formatter with level 1 when called outside a test") {
         val spec = new InfoBeforeTestSpec
         val indentedText = getIndentedTextFromInfoProvided(spec)
-        assert(indentedText === IndentedText("+ " + spec.msg, spec.msg, 1))
+        assert(indentedText === IndentedText("+ " + spec.msg, spec.msg, 0))
       }
       it("should send an InfoProvided with an IndentedText formatter with level 2 when called within a test") {
         val spec = new InfoInsideTestSpec
         val indentedText = getIndentedTextFromInfoProvided(spec)
-        assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
+        assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 1))
       }
     }
     it("should return registered tags, including ignore tags, from the tags method") {
