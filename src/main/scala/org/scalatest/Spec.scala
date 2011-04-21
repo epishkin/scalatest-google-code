@@ -226,38 +226,6 @@ trait Spec extends Suite { thisSuite =>
     }
   }
 
-  private def runTestsInBranch(branch: Branch, report: Reporter, stopRequested: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
-
-    branch match { 
-
-      case desc @ DescriptionBranch(_, descriptionText, _) =>
-
-        val indentationLevel = desc.indentationLevel
-        reportInfoProvided(thisSuite, report, tracker, None, descriptionText, indentationLevel, true, false)
-
-      case Trunk =>
-    }
-    branch.subNodes.reverse.foreach { node =>
-      if (!stopRequested()) {
-        node match {
-          case testLeaf @ TestLeaf(_, testName, testText, _) =>
-            val (filterTest, ignoreTest) = filter(testName, tags)
-            if (!filterTest)
-              if (ignoreTest) {
-                reportTestIgnored(thisSuite, report, tracker, testName, testText, testLeaf.indentationLevel)
-              }
-              else
-                runTest(testName, report, stopRequested, configMap, tracker)
-
-          case infoLeaf @ InfoLeaf(_, message) =>
-            reportInfoProvided(thisSuite, report, tracker, None, message, infoLeaf.indentationLevel, true)
-
-          case branch: Branch => runTestsInBranch(branch, report, stopRequested, filter, configMap, tracker)
-        }
-      }
-    }
-  }
-
   /**
   * An immutable <code>Set</code> of test names. If this <code>FunSuite</code> contains no tests, this method returns an empty <code>Set</code>.
   *
@@ -329,34 +297,6 @@ trait Spec extends Suite { thisSuite =>
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, runTest)
-/*
-    if (testName == null)
-      throw new NullPointerException("testName was null")
-    if (reporter == null)
-      throw new NullPointerException("reporter was null")
-    if (stopper == null)
-      throw new NullPointerException("stopper was null")
-    if (filter == null)
-      throw new NullPointerException("filter was null")
-    if (configMap == null)
-      throw new NullPointerException("configMap was null")
-    if (distributor == null)
-      throw new NullPointerException("distributor was null")
-    if (tracker == null)
-      throw new NullPointerException("tracker was null")
-
-    val stopRequested = stopper
-
-    // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
-    // so that exceptions are caught and transformed
-    // into error messages on the standard error stream.
-    val report = wrapReporterIfNecessary(reporter)
-
-    testName match {
-      case None => runTestsInBranch(Trunk, report, stopRequested, filter, configMap, tracker)
-      case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
-    }
-*/
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,

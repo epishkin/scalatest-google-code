@@ -271,23 +271,6 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     testName match {
       case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
       case None => runTestsInBranch(theSuite, Trunk, report, stopRequested, filter, configMap, tracker, runTest)
-
-/*
-      case None =>
-        val doList = atomic.get.currentBranch.subNodes.reverse
-        for (node <- doList) {
-          node match {
-            case InfoLeaf(_, message) => info(message)
-            case TestLeaf(_, tn, _, _) =>
-              val (filterTest, ignoreTest) = filter(tn, theSuite.tags)
-              if (!filterTest)
-                if (ignoreTest)
-                  reportTestIgnored(theSuite, report, tracker, tn, tn, 1)
-                else
-                  runTest(tn, report, stopRequested, configMap, tracker)
-          }
-        }
-*/
     }
   }
 
