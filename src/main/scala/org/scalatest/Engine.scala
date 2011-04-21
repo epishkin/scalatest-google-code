@@ -271,5 +271,14 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", theSuite.getClass.getName))
   }
+
+  private[scalatest] def getTestNamePrefix(branch: Branch): String =
+    branch match {
+      case Trunk => ""
+      // Call to getTestNamePrefix is not tail recursive, but I don't expect
+      // the describe nesting to be very deep (famous last words).
+      case DescriptionBranch(parent, descriptionName, childPrefix) =>
+        Resources("prefixSuffix", getTestNamePrefix(parent), descriptionName).trim
+    }
 }
 
