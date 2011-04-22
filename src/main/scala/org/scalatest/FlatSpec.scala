@@ -2408,7 +2408,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * "A Stack (when not full) must not be full"
    * </pre>
    */
-  //override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
   override def testNames: Set[String] = {
     // I'm returning a ListSet here so that they tests will be run in registration order
     ListSet(atomic.get.testNamesList.toArray: _*)
