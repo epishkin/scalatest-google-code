@@ -343,6 +343,24 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     }
   }
 
+  // Used by FlatSpec, which doesn't nest. So this one just makes a new one off of the trunk
+  def behaviorOfImpl(description: String, registrationClosedResource: String, sourceFile: String, methodName: String) {
+
+    val oldBundle = atomic.get
+    val (_, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+
+    if (registrationClosed)
+      throw new TestRegistrationClosedException(Resources(registrationClosedResource), getStackDepth(sourceFile, methodName))
+
+    // Need to use Trunk here. I think it will be visible to all threads because
+    // of the atomic, even though it wasn't inside it.
+    val newBranch = DescriptionBranch(Trunk, description, None)
+    Trunk.subNodes ::= newBranch
+
+    // Update atomic, making the current branch to the new branch
+    updateAtomic(oldBundle, Bundle(newBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+  }
+
   def currentBranchIsTrunk: Boolean = {
 
     val oldBundle = atomic.get
@@ -364,7 +382,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     val testName = getTestName(testText, currentBranch)
 
     if (atomic.get.testsMap.keySet.contains(testName))
-      throw new DuplicateTestNameException(testName, getStackDepth(sourceFileName, "test"))
+      throw new DuplicateTestNameException(testName, getStackDepth(sourceFileName, methodName))
 
     val testLeaf = TestLeaf(currentBranch, testName, testText, testFun)
     testsMap += (testName -> testLeaf)
