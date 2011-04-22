@@ -255,15 +255,15 @@ class FlatSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
           spec.callInfo()
         }
       }
-      it("should send an InfoProvided with an IndentedText formatter with level 1 when called outside a test") {
+      it("should send an InfoProvided with an IndentedText formatter with level 0 when called outside a test") {
         val spec = new InfoBeforeTestFlatSpec
         val indentedText = getIndentedTextFromInfoProvided(spec)
-        assert(indentedText === IndentedText("+ " + spec.msg, spec.msg, 1))
+        assert(indentedText === IndentedText("+ " + spec.msg, spec.msg, 0))
       }
-      it("should send an InfoProvided with an IndentedText formatter with level 2 when called within a test") {
+      it("should send an InfoProvided with an IndentedText formatter with level 1 when called within a test") {
         val spec = new InfoInsideTestFlatSpec
         val indentedText = getIndentedTextFromInfoProvided(spec)
-        assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
+        assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 1))
       }
       it("should work when using the shorthand notation for 'behavior of'") {
         val e = new FlatSpec with ShouldMatchers {
