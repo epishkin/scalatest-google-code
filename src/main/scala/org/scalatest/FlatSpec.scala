@@ -2225,28 +2225,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   }
 
   /**
-   * Register a test with the given spec text and test function value that takes no arguments.
-   *
-   * This method will register the test for later execution via an invocation of one of the <code>execute</code>
-   * methods. The name of the test will be a concatenation of the text of all surrounding describers,
-   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
-   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
-   *
-   * @param specText the specification text, which will be combined with the descText of any surrounding describers
-   * to form the test name
-   * @param testFun the test function
-   * @throws DuplicateTestNameException if a test with the same name has been registered previously
-   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
-   */
-  /* private def oldIt(specText: String)(testFun: => Unit) {
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
-    oldIt(specText, Array[Tag](): _*)(testFun)
-  } */
-
-  /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
    * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
