@@ -300,12 +300,12 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       it("should send an InfoProvided with an IndentedText formatter with level 1 when called outside a test") {
         val spec = new InfoBeforeTestSpec
         val indentedText = getIndentedTextFromInfoProvided(spec)
-        assert(indentedText === IndentedText("+ " + spec.msg, spec.msg, 1))
+        assert(indentedText === IndentedText("+ " + spec.msg, spec.msg, 0))
       }
       it("should send an InfoProvided with an IndentedText formatter with level 2 when called within a test") {
         val spec = new InfoInsideTestSpec
         val indentedText = getIndentedTextFromInfoProvided(spec)
-        assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 2))
+        assert(indentedText === IndentedText("  + " + spec.msg, spec.msg, 1))
       }
     }
     it("should return registered tags, including ignore tags, from the tags method") {
@@ -916,7 +916,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
         assert(event.message == "A WordSpec" || event.aboutAPendingTest.isDefined && !event.aboutAPendingTest.get)
       }
     }
-    it("should put parentheses around should clauses that follow when") {
+    it("should not put parentheses around should clauses that follow when") {
       val a = new WordSpec {
         "A Stack" when {
           "empty" should {
@@ -930,7 +930,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       a.run(None, rep, new Stopper {}, Filter(), Map(), None, new Tracker())
       val ts = rep.testSucceededEventsReceived
       assert(ts.size === 1)
-      assert(ts.head.testName === "A Stack (when empty) should chill out")
+      assert(ts.head.testName === "A Stack when empty should chill out")
     }
     it("should not put parentheses around should clauses that don't follow when") {
       val a = new WordSpec {
