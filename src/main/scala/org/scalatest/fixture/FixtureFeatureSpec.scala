@@ -479,7 +479,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     if (testTags.exists(_ == null))
       throw new NullPointerException("a test tag was null")
 
-    val testName = registerTest(specText, testFun)
+    val testName = registerTest(Resources("scenario", specText), testFun)
 
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed2) = oldBundle.unpack
@@ -537,7 +537,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       throw new NullPointerException("specText was null")
     if (testTags.exists(_ == null))
       throw new NullPointerException("a test tag was null")
-    val testName = registerTest(specText, testFun)
+    val testName = registerTest(Resources("scenario", specText), testFun)
     val tagNames = Set[String]() ++ testTags.map(_.name)
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
@@ -657,7 +657,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
             val (filterTest, ignoreTest) = filter(tn, tags)
             if (!filterTest)
               if (ignoreTest) {
-                val formattedSpecText = "  " + Resources("scenario", specText)
+                val formattedSpecText = "  " + specText
                 report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
               }
               else
@@ -697,7 +697,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       case Some(test) => {
         val report = wrapReporterIfNecessary(reporter)
 
-        val scenarioSpecText = Resources("scenario", test.specText)
+        val scenarioSpecText = test.specText
         val formattedSpecText = "  " + scenarioSpecText
 
         // Create a Rerunner if the Spec has a no-arg constructor

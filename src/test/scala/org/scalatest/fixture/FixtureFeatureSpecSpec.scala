@@ -31,7 +31,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
       }
 
-      expect(List("should do that", "should do this")) {
+      expect(List("Scenario: should do that", "Scenario: should do this")) {
         a.testNames.iterator.toList
       }
 
@@ -53,7 +53,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
       }
 
-      expect(List("should do this", "should do that")) {
+      expect(List("Scenario: should do this", "Scenario: should do that")) {
         c.testNames.iterator.toList
       }
     }
@@ -176,7 +176,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         ignore("test this") { fixture => }
         scenario("test that") { fixture => }
       }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"))) {
+      expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"))) {
         a.tags
       }
 
@@ -186,7 +186,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         scenario("test this") { fixture => }
         ignore("test that") { fixture => }
       }
-      expect(Map("test that" -> Set("org.scalatest.Ignore"))) {
+      expect(Map("Scenario: test that" -> Set("org.scalatest.Ignore"))) {
         b.tags
       }
 
@@ -196,7 +196,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         ignore("test this") { fixture => }
         ignore("test that") { fixture => }
       }
-      expect(Map("test this" -> Set("org.scalatest.Ignore"), "test that" -> Set("org.scalatest.Ignore"))) {
+      expect(Map("Scenario: test this" -> Set("org.scalatest.Ignore"), "Scenario: test that" -> Set("org.scalatest.Ignore"))) {
         c.tags
       }
 
@@ -206,7 +206,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         scenario("test this", mytags.SlowAsMolasses) { fixture => }
         ignore("test that", mytags.SlowAsMolasses) { fixture => }
       }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses"), "test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
+      expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses"), "Scenario: test that" -> Set("org.scalatest.Ignore", "org.scalatest.SlowAsMolasses"))) {
         d.tags
       }
 
@@ -224,7 +224,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         scenario("test this", mytags.SlowAsMolasses, mytags.WeakAsAKitten) { fixture => }
         scenario("test that", mytags.SlowAsMolasses) { fixture => }
       }
-      expect(Map("test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "test that" -> Set("org.scalatest.SlowAsMolasses"))) {
+      expect(Map("Scenario: test this" -> Set("org.scalatest.SlowAsMolasses", "org.scalatest.WeakAsAKitten"), "Scenario: test that" -> Set("org.scalatest.SlowAsMolasses"))) {
         f.tags
       }
     }
@@ -249,7 +249,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
     it("should execute one test when run is called with a defined testName") {
 
       val a = new TestWasCalledSuite
-      a.run(Some("this"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
+      a.run(Some("Scenario: this"), SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(a.theTestThisCalled)
       assert(!a.theTestThatCalled)
     }
@@ -338,7 +338,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       }
 
       val repE = new TestIgnoredTrackingReporter
-      e.run(Some("test this"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
+      e.run(Some("Scenario: test this"), repE, new Stopper {}, Filter(), Map(), None, new Tracker)
       assert(!repE.testIgnoredReceived)
       assert(e.theTestThisCalled)
       assert(!e.theTestThatCalled)
@@ -831,7 +831,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
 
         val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
+        ensureTestFailedEventReceived(spec, "Scenario: should blow up")
       }
       it("should, if they call a feature with a nested it from within an it clause, result in a TestFailedException when running the test") {
 
@@ -848,7 +848,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
 
         val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
+        ensureTestFailedEventReceived(spec, "Scenario: should blow up")
       }
       it("should, if they call a nested it from within an it clause, result in a TestFailedException when running the test") {
 
@@ -863,7 +863,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
 
         val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
+        ensureTestFailedEventReceived(spec, "Scenario: should blow up")
       }
       it("should, if they call a nested it with tags from within an it clause, result in a TestFailedException when running the test") {
 
@@ -878,7 +878,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
 
         val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
+        ensureTestFailedEventReceived(spec, "Scenario: should blow up")
       }
       it("should, if they call a feature with a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
@@ -895,7 +895,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
 
         val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
+        ensureTestFailedEventReceived(spec, "Scenario: should blow up")
       }
       it("should, if they call a nested ignore from within an it clause, result in a TestFailedException when running the test") {
 
@@ -910,7 +910,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
 
         val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
+        ensureTestFailedEventReceived(spec, "Scenario: should blow up")
       }
       it("should, if they call a nested ignore with tags from within an it clause, result in a TestFailedException when running the test") {
 
@@ -925,7 +925,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
         }
 
         val spec = new MySpec
-        ensureTestFailedEventReceived(spec, "should blow up")
+        ensureTestFailedEventReceived(spec, "Scenario: should blow up")
       }
       it("should, if they call a nested feature from within a feature clause, result in a SuiteAborted event when constructing the FeatureSpec") {
 
@@ -951,7 +951,7 @@ class FixtureFeatureSpecSpec extends org.scalatest.Spec with SharedHelpers {
       type FixtureParam = String
       var correctTestNameWasPassed = false
       def withFixture(test: OneArgTest) {
-        correctTestNameWasPassed = test.name == "should do something"
+        correctTestNameWasPassed = test.name == "Scenario: should do something"
         test("hi")
       }
       scenario("should do something") { fixture => }
