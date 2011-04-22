@@ -1177,23 +1177,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
     // TODO: This is what was being used before but it is wrong
     registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FlatSpec.scala", "it", testTags: _*)
-/*
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
-    if (specText == null)
-      throw new NullPointerException("specText was null")
-    if (testTags.exists(_ == null))
-      throw new NullPointerException("a test tag was null")
-
-    val testName = registerTest(specText, testFun)
-
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, testsList, registrationClosed2) = oldBundle.unpack
-    val tagNames = Set[String]() ++ testTags.map(_.name)
-    if (!tagNames.isEmpty)
-      tagsMap += (testName -> tagNames)
-
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2)) */
   }
 
   /**
@@ -1238,17 +1221,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
       // TODO: This is what was here, but it needs fixing.
       behaviorOfImpl(description, "describeCannotAppearInsideAnIt", "FlatSpec.scala", "describe")
-/*      if (atomic.get.registrationClosed)
-        throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "describe"))
-
-      val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-      val newBranch = DescriptionBranch(trunk, description)
-      trunk.subNodes ::= newBranch
-      currentBranch = newBranch
-
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))*/
     }
   }
 
@@ -2296,43 +2268,8 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
 
     // TODO: This is how these were, but it needs attention. Mentions "it".
     registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "FlatSpec.scala", "ignore", testTags: _*)
-/*    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
-    if (specText == null)
-      throw new NullPointerException("specText was null")
-    if (testTags.exists(_ == null))
-      throw new NullPointerException("a test tag was null")
-    val testName = registerTest(specText, testFun)
-    val tagNames = Set[String]() ++ testTags.map(_.name)
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-    tagsMap += (testName -> (tagNames + IgnoreTagName))
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))*/
   }
 
-  /**
-   * Register a test to ignore, which has the given spec text and test function value that takes no arguments.
-   * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
-   * methods. This method exists to make it easy to ignore an existing test by changing the call to <code>it</code>
-   * to <code>ignore</code> without deleting or commenting out the actual test code. The test will not be executed, but a
-   * report will be sent that indicates the test was ignored. The name of the test will be a concatenation of the text of all surrounding describers,
-   * from outside in, and the passed spec text, with one space placed between each item. (See the documenation
-   * for <code>testNames</code> for an example.) The resulting test name must not have been registered previously on
-   * this <code>Spec</code> instance.
-   *
-   * @param specText the specification text, which will be combined with the descText of any surrounding describers
-   * to form the test name
-   * @param testFun the test function
-   * @throws DuplicateTestNameException if a test with the same name has been registered previously
-   * @throws TestRegistrationClosedException if invoked after <code>run</code> has been invoked on this suite
-   * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
-   */
-  /* protected def oldIgnore(specText: String)(testFun: => Unit) {
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
-    oldIgnore(specText, Array[Tag](): _*)(testFun)
-  } */
-  
   /**
    * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>Spec</code> belong, and values
    * the <code>Set</code> of test names that belong to each tag. If this <code>FlatSpec</code> contains no tags, this method returns an empty <code>Map</code>.
@@ -2343,63 +2280,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * </p>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
- /*
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
-
-    val stopRequested = stopper
-    // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
-    // so that exceptions are caught and transformed
-    // into error messages on the standard error stream.
-    val report = wrapReporterIfNecessary(reporter)
-    branch match {
-      case desc @ DescriptionBranch(_, descriptionName) =>
-
-        def sendInfoProvidedMessage() {
-          // Need to use the full name of the description, which includes all the descriptions it is nested inside
-          // Call getPrefix and pass in this Desc, to get the full name
-          val descriptionFullName = getPrefix(desc).trim
-         
-
-          report(InfoProvided(tracker.nextOrdinal(), descriptionFullName, Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None, None, Some(IndentedText(descriptionFullName, descriptionFullName, 0))))
-        }
-        
-        // Only send an infoProvided message if the first thing in the subNodes is *not* sub-description, i.e.,
-        // it is a test, because otherwise we get a lame description that doesn't have any tests under it.
-        // But send it if the list is empty.
-        if (desc.subNodes.isEmpty)
-          sendInfoProvidedMessage() 
-        else
-          desc.subNodes.reverse.head match {
-            case ex: TestLeaf => sendInfoProvidedMessage()
-            case _ => // Do nothing in this case
-          }
-
-      case _ =>
-    }
-    branch.subNodes.reverse.foreach(
-      _ match {
-        case TestLeaf(_, tn, specText, _) =>
-          if (!stopRequested()) { // TODO: Seems odd to me to check for stop here but still fire infos
-            val (filterTest, ignoreTest) = filter(tn, tags)
-            if (!filterTest)
-              if (ignoreTest) {
-                val testSucceededIcon = Resources("testSucceededIconChar")
-                val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, specText)
-                report(TestIgnored(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), tn, Some(IndentedText(formattedSpecText, specText, 1))))
-              }
-              else
-                runTest(tn, report, stopRequested, configMap, tracker)
-          }
-        case InfoLeaf(_, message) =>
-          val infoProvidedIcon = Resources("infoProvidedIconChar")
-          val formattedText = Resources("iconPlusShortName", infoProvidedIcon, message)
-          report(InfoProvided(tracker.nextOrdinal(), message,
-            Some(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)), None,
-              None, Some(IndentedText(formattedText, message, 1))))
-        case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
-      }
-    )
-  }     */
 
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by
@@ -2428,103 +2308,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     }
 
     runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, true, invokeWithFixture)
-
-/*    if (testName == null || reporter == null || stopper == null || configMap == null)
-      throw new NullPointerException
-
-    atomic.get.testsList.find(_.testName == testName) match {
-      case None => throw new IllegalArgumentException("Requested test doesn't exist: " + testName)
-      case Some(test) => {
-        val report = wrapReporterIfNecessary(reporter)
-
-        val testSucceededIcon = Resources("testSucceededIconChar")
-        val formattedSpecText = Resources("iconPlusShortName", testSucceededIcon, test.specText)
-
-        // Create a Rerunner if the Spec has a no-arg constructor
-        val hasPublicNoArgConstructor = Suite.checkForPublicNoArgConstructor(getClass)
-
-        val rerunnable =
-          if (hasPublicNoArgConstructor)
-            Some(new TestRerunner(getClass.getName, testName))
-          else
-            None
-
-        val testStartTime = System.currentTimeMillis
-
-        // A TestStarting event won't normally show up in a specification-style output, but
-        // will show up in a test-style output.
-        report(TestStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(MotionToSuppress), rerunnable))
-
-        val formatter = IndentedText(formattedSpecText, test.specText, 1)
-        val informerForThisTest =
-          new MessageRecordingInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(testName))) {
-            def apply(message: String) {
-              if (message == null)
-                throw new NullPointerException
-              if (shouldRecord)
-                record(message)
-              else {
-                val infoProvidedIcon = Resources("infoProvidedIconChar")
-                val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-                report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread, None, None, Some(IndentedText(formattedText, message, 2))))
-              }
-            }
-          }
-
-        val oldInformer = atomicInformer.getAndSet(informerForThisTest)
-        var testWasPending = false
-        var swapAndCompareSucceeded = false
-        try {
-          val theConfigMap = configMap
-          withFixture(
-            new NoArgTest {
-              def name = testName
-              def apply() { test.f() }
-              def configMap = theConfigMap
-            }
-          )
-
-          val duration = System.currentTimeMillis - testStartTime
-          report(TestSucceeded(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(duration), Some(formatter), rerunnable))
-        }
-        catch {
-          case _: TestPendingException =>
-            report(TestPending(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), test.testName, Some(formatter)))
-            testWasPending = true
-          case e if !anErrorThatShouldCauseAnAbort(e) =>
-            val duration = System.currentTimeMillis - testStartTime
-            handleFailedTest(e, false, test.testName, test.specText, formattedSpecText, rerunnable, report, tracker, duration)
-          case e => throw e
-        }
-        finally {
-          // send out any recorded messages
-          for (message <- informerForThisTest.recordedMessages) {
-            val infoProvidedIcon = Resources("infoProvidedIconChar")
-            val formattedText = "  " + Resources("iconPlusShortName", infoProvidedIcon, message)
-            report(InfoProvided(tracker.nextOrdinal(), message, informerForThisTest.nameInfoForCurrentThread, Some(testWasPending), None, Some(IndentedText(formattedText, message, 2))))
-          }
-
-          val shouldBeInformerForThisTest = atomicInformer.getAndSet(oldInformer)
-          swapAndCompareSucceeded = shouldBeInformerForThisTest eq informerForThisTest
-        }
-        if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-          throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
-      }
-    }  */
   }
-         /*
-  private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
-      specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
-
-    val message =
-      if (throwable.getMessage != null) // [bv: this could be factored out into a helper method]
-        throwable.getMessage
-      else
-        throwable.toString
-
-    val formatter = IndentedText(formattedSpecText, specText, 1)
-    report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
-  }        */
 
   /**
    * Run zero to many of this <code>FlatSpec</code>'s tests.
@@ -2586,27 +2370,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
     runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, true, runTest)
-/*    if (testName == null)
-      throw new NullPointerException("testName was null")
-    if (reporter == null)
-      throw new NullPointerException("reporter was null")
-    if (stopper == null)
-      throw new NullPointerException("stopper was null")
-    if (filter == null)
-      throw new NullPointerException("filter was null")
-    if (configMap == null)
-      throw new NullPointerException("configMap was null")
-    if (distributor == null)
-      throw new NullPointerException("distributor was null")
-    if (tracker == null)
-      throw new NullPointerException("tracker was null")
-
-    val stopRequested = stopper
-
-    testName match {
-      case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, configMap, tracker)
-      case Some(tn) => runTest(tn, reporter, stopRequested, configMap, tracker)
-    }*/
   }
 
   /**
@@ -2655,39 +2418,6 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
     runImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, super.run)
-/*    val stopRequested = stopper
-
-    // Set the flag that indicates registration is closed (because run has now been invoked),
-    // which will disallow any further invocations of "describe", it", or "ignore" with
-    // an RegistrationClosedException.
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-    if (!registrationClosed)
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, true))
-
-    val report = wrapReporterIfNecessary(reporter)
-
-    val informerForThisSuite =
-      new ConcurrentInformer(NameInfo(thisSuite.suiteName, Some(thisSuite.getClass.getName), None)) {
-        def apply(message: String) {
-          if (message == null)
-            throw new NullPointerException
-          report(InfoProvided(tracker.nextOrdinal(), message, nameInfoForCurrentThread))
-        }
-      }
-
-    atomicInformer.set(informerForThisSuite)
-
-    var swapAndCompareSucceeded = false
-    try {
-      super.run(testName, report, stopRequested, filter, configMap, distributor, tracker)
-    }
-    finally {
-      val shouldBeInformerForThisSuite = atomicInformer.getAndSet(zombieInformer)
-      swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
-    }
-    if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName)) */
   }
 
   /**
