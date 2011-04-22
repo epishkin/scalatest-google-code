@@ -158,7 +158,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
 
     val theTest = atomic.get.testsMap(testName)
 
-    val formatter = getIndentedText(theTest.testText, theTest.indentationLevel, includeIcon)
+    val testTextWithOptionalPrefix = prependChildPrefix(theTest.parent, theTest.testText)
+    val formatter = getIndentedText(testTextWithOptionalPrefix, theTest.indentationLevel, includeIcon)
 
     val informerForThisTest =
       MessageRecordingInformer2(
@@ -204,15 +205,19 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     includeIcon: Boolean,
     runTest: (String, Reporter, Stopper, Map[String, Any], Tracker) => Unit
   ) {
-    branch match { 
 
-      case desc @ DescriptionBranch(_, descriptionText, _) =>
+    branch match {
 
+      case desc @ DescriptionBranch(parent, descriptionText, _) =>
+
+        val descriptionTextWithOptionalPrefix = prependChildPrefix(parent, descriptionText)
         val indentationLevel = desc.indentationLevel
-        reportInfoProvided(theSuite, report, tracker, None, descriptionText, indentationLevel, true, false)
+        reportInfoProvided(theSuite, report, tracker, None, descriptionTextWithOptionalPrefix, indentationLevel, true, false)
 
       case Trunk =>
     }
+
+
     branch.subNodes.reverse.foreach { node =>
       if (!stopRequested()) {
         node match {
@@ -220,7 +225,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
             val (filterTest, ignoreTest) = filter(testName, theSuite.tags)
             if (!filterTest)
               if (ignoreTest) {
-                reportTestIgnored(theSuite, report, tracker, testName, testText, testLeaf.indentationLevel)
+                val testTextWithOptionalPrefix = prependChildPrefix(branch, testText)
+                reportTestIgnored(theSuite, report, tracker, testName, testTextWithOptionalPrefix, testLeaf.indentationLevel)
               }
               else
                 runTest(testName, report, stopRequested, configMap, tracker)
@@ -233,6 +239,12 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       }
     }
   }
+
+  def prependChildPrefix(branch: Branch, testText: String): String =
+    branch match {
+      case DescriptionBranch(_, _, Some(cp)) => Resources("prefixSuffix", cp, testText)
+      case _ => testText
+    }
 
   def runTestsImpl(
     theSuite: Suite,
@@ -329,6 +341,30 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
 
     val oldBranch = currentBranch
     val newBranch = DescriptionBranch(currentBranch, description, None)
+    oldBranch.subNodes ::= newBranch
+
+    // Update atomic, making the current branch to the new branch
+    updateAtomic(oldBundle, Bundle(newBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+
+    fun // Execute the function
+
+    { // Put the old branch back as the current branch
+      val oldBundle = atomic.get
+      val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+      updateAtomic(oldBundle, Bundle(oldBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+    }
+  }
+
+  def newRegisterBranch(description: String, childPrefix: Option[String], fun: => Unit, registrationClosedResource: String, sourceFile: String, methodName: String) {
+
+    val oldBundle = atomic.get
+    val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+
+    if (registrationClosed)
+      throw new TestRegistrationClosedException(Resources(registrationClosedResource), getStackDepth(sourceFile, methodName))
+
+    val oldBranch = currentBranch
+    val newBranch = DescriptionBranch(currentBranch, description, childPrefix)
     oldBranch.subNodes ::= newBranch
 
     // Update atomic, making the current branch to the new branch
