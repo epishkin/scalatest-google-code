@@ -316,6 +316,30 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", theSuite.getClass.getName))
   }
 
+  def describeImpl(description: String, fun: => Unit, registrationClosedResource: String, sourceFile: String, methodName: String) {
+
+    val oldBundle = atomic.get
+    val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+
+    if (registrationClosed)
+      throw new TestRegistrationClosedException(Resources(registrationClosedResource), getStackDepth(sourceFile, methodName))
+
+    val oldBranch = currentBranch
+    val newBranch = DescriptionBranch(currentBranch, description, None)
+    oldBranch.subNodes ::= newBranch
+
+    // Update atomic, making the current branch to the new branch
+    updateAtomic(oldBundle, Bundle(newBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+
+    fun // Execute the function
+
+    { // Put the old branch back as the current branch
+      val oldBundle = atomic.get
+      val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
+      updateAtomic(oldBundle, Bundle(oldBranch, testNamesList, testsMap, tagsMap, registrationClosed))
+    }
+  }
+
   def registerTest(testText: String, testFun: T, sourceFileName: String, testTags: Tag*): String = { // returns testName
 
     checkRegisterTestParamsForNull(testText, testTags: _*)
