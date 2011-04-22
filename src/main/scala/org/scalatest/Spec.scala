@@ -1056,28 +1056,6 @@ trait Spec extends Suite { thisSuite =>
   protected def describe(description: String)(fun: => Unit) {
 
     describeImpl(description, fun, "describeCannotAppearInsideAnIt", "Spec.scala", "describe")
-/*
-    val oldBundle = atomic.get
-    val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-
-    if (registrationClosed)
-      throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
-
-    val oldBranch = currentBranch
-    val newBranch = DescriptionBranch(currentBranch, description, None)
-    oldBranch.subNodes ::= newBranch
-
-    // Update atomic, making the current branch to the new branch
-    updateAtomic(oldBundle, Bundle(newBranch, testNamesList, testsMap, tagsMap, registrationClosed))
-
-    fun // Execute the function
-
-    { // Put the old branch back as the current branch
-      val oldBundle = atomic.get
-      val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
-      updateAtomic(oldBundle, Bundle(oldBranch, testNamesList, testsMap, tagsMap, registrationClosed))
-    }
-*/
   }
 
   /**
