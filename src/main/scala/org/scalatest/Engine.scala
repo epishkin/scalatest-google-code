@@ -459,7 +459,12 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       // Call to getTestNamePrefix is not tail recursive, but I don't expect
       // the describe nesting to be very deep (famous last words).
       case DescriptionBranch(parent, descriptionText, childPrefix) =>
-        Resources("prefixSuffix", getTestNamePrefix(parent), descriptionText).trim
+        val optionalChildPrefixAndDescriptionText =
+          childPrefix match {
+            case Some(cp) => Resources("prefixSuffix", descriptionText, cp)
+            case _ => descriptionText
+          }
+        Resources("prefixSuffix", getTestNamePrefix(parent), optionalChildPrefixAndDescriptionText).trim
     }
 
   private[scalatest] def getTestName(testText: String, parent: Branch): String =
