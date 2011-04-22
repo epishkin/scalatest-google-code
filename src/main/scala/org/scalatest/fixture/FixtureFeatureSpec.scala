@@ -348,89 +348,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
-  private val IgnoreTagName = "org.scalatest.Ignore"
-
-  private class Bundle private(
-    val trunk: Trunk,
-    val currentBranch: Branch,
-    val tagsMap: Map[String, Set[String]],
-
-    // All tests, in reverse order of registration
-    val testsList: List[FixtureTestLeaf[FixtureParam]],
-
-    // Used to detect at runtime that they've stuck a describe or an it inside an it,
-    // which should result in a TestRegistrationClosedException
-    val registrationClosed: Boolean
-  ) {
-    def unpack = (trunk, currentBranch, tagsMap, testsList, registrationClosed)
-  }
-
-  private object Bundle {
-    def apply(
-      trunk: Trunk,
-      currentBranch: Branch,
-      tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[FixtureParam]],
-      registrationClosed: Boolean
-    ): Bundle =
-      new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
-
-    def initialize(
-      trunk: Trunk,
-      tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[FixtureParam]],
-      registrationClosed: Boolean
-    ): Bundle =
-      new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
-  }
-
-  private val atomic =
-    new AtomicReference[Bundle](
-      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[FixtureParam]](), false)
-    )
-
-  private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
-    val shouldBeOldBundle = atomic.getAndSet(newBundle)
-    if (!(shouldBeOldBundle eq oldBundle))
-      throw new ConcurrentModificationException(Resources("concurrentFixtureFeatureSpecBundleMod"))
-  }
-
-  private def registerTest(specText: String, f: FixtureParam => Any) = {
-
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-    val testName = getTestName(specText, currentBranch)
-    if (testsList.exists(_.testName == testName)) {
-      throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
-    }
-    val testShortName = specText
-    val test = FixtureTestLeaf(currentBranch, testName, specText, f)
-    currentBranch.subNodes ::= test
-    testsList ::= test
-
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-
-    testName
-  }
-
-  private class RegistrationInformer extends Informer {
-    def apply(message: String) {
-      if (message == null)
-        throw new NullPointerException
-
-      val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-      currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
-
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-    }
-  }
-
-  // The informer will be a registration informer until run is called for the first time. (This
-  // is the registration phase of a FixtureFeatureSpec's lifecycle.)
-  private final val atomicInformer = new AtomicReference[Informer](new RegistrationInformer)
+  private final val engine = new Engine[FixtureParam => Any]("concurrentFeatureSpecMod", "FixtureFeatureSpec")
+  import engine._
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -441,16 +360,6 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * throw an exception. This method can be called safely by any thread.
    */
   implicit protected def info: Informer = atomicInformer.get
-
-  private val zombieInformer =
-    new Informer {
-      private val complaint = Resources("cantCallInfoNow", "FixtureFeatureSpec")
-      def apply(message: String) {
-        if (message == null)
-          throw new NullPointerException
-        throw new IllegalStateException(complaint)
-      }
-    }
 
   /**
    * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
@@ -472,6 +381,8 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    */
   protected def scenario(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
 
+    registerTest(Resources("scenario", specText), testFun, "scenarioCannotAppearInsideAnotherScenario", "FixtureFeatureSpec.scala", "scenario", testTags: _*)
+ /*
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("scenarioCannotAppearInsideAnotherScenario"), getStackDepth("FixtureFeatureSpec.scala", "scenario"))
     if (specText == null)
@@ -487,9 +398,9 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     if (!tagNames.isEmpty)
       tagsMap += (testName -> tagNames)
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2)) */
   }
-
+ /* Delete if it works
   /**
    * Register a test with the given spec text and test function value that takes no arguments.
    *
@@ -510,7 +421,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("scenarioCannotAppearInsideAnotherScenario"), getStackDepth("FixtureFeatureSpec.scala", "scenario"))
     scenario(specText, Array[Tag](): _*)(testFun)
-  }
+  }*/
 
   /**
    * Register a test to ignore, which has the given spec text, optional tags, and test function value that takes no arguments.
@@ -531,7 +442,8 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    if (atomic.get.registrationClosed)
+    registerIgnoredTest(Resources("scenario", specText), testFun , "ignoreCannotAppearInsideAScenario", "FixtureFeatureSpec.scala", "ignore", testTags: _*)
+  /*  if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
@@ -542,9 +454,9 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
     tagsMap += (testName -> (tagNames + IgnoreTagName))
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))*/
   }
-
+/* Delete if it works
   /**
    * Register a test to ignore, which has the given spec text and test function value that takes no arguments.
    * This method will register the test for later ignoring via an invocation of one of the <code>execute</code>
@@ -566,7 +478,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
-  }
+  }*/
 
   /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
@@ -574,9 +486,14 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * (defined with <code>it</code>). This trait's implementation of this method will register the
    * description string and immediately invoke the passed function.
    */
-  protected def feature(description: String)(f: => Unit) {
+  protected def feature(description: String)(fun: => Unit) {
 
-    if (atomic.get.registrationClosed)
+    if (!currentBranchIsTrunk)
+      throw new NotAllowedException(Resources("cantNestFeatureClauses"), getStackDepth("FixtureFeatureSpec.scala", "feature"))
+
+    describeImpl(description, fun, "featureCannotAppearInsideAScenario", "FixtureFeatureSpec.scala", "feature")
+
+/*    if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("featureCannotAppearInsideAScenario"), getStackDepth("FixtureFeatureSpec.scala", "feature"))
 
     def createNewBranch() = {
@@ -604,7 +521,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     val oldBundle = atomic.get
     val (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
-    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))   */
   }
 
   /**
@@ -617,7 +534,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * </p>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
-
+    /*
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
 
     val stopRequested = stopper
@@ -672,7 +589,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
       }
     )
-  }
+  }   */
 
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by
@@ -689,7 +606,18 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || configMap == null)
+
+    def invokeWithFixture(theTest: TestLeaf) {
+      theTest.testFun match {
+        case wrapper: NoArgTestWrapper[_] =>
+          withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
+        case fun => withFixture(new TestFunAndConfigMap(testName, fun, configMap))
+      }
+    }
+
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, false, invokeWithFixture)
+
+/*    if (testName == null || reporter == null || stopper == null || configMap == null)
       throw new NullPointerException
 
     atomic.get.testsList.find(_.testName == testName) match {
@@ -765,9 +693,9 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
         if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
           throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
       }
-    }
+    }  */
   }
-
+        /*
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
@@ -779,7 +707,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
     val formatter = IndentedText(formattedSpecText, specText, 1)
     report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
-  }
+  }          */
 
   /**
    * <p>
@@ -842,7 +770,8 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    if (testName == null)
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, false, runTest)
+/*    if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
@@ -862,7 +791,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     testName match {
       case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, configMap, tracker)
       case Some(tn) => runTest(tn, reporter, stopRequested, configMap, tracker)
-    }
+    }   */
   }
 
   /**
@@ -876,12 +805,17 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
    * example itself, with all components separated by a space.
    * </p>
    */
-  override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
+  //override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
+  override def testNames: Set[String] = {
+    // I'm returning a ListSet here so that they tests will be run in registration order
+    ListSet(atomic.get.testNamesList.toArray: _*)
+  }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    val stopRequested = stopper
+    runImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, super.run)
+/*    val stopRequested = stopper
 
     // Set the flag that indicates registration is closed (because run has now been invoked),
     // which will disallow any further invocations of "describe", it", or "ignore" with
@@ -912,7 +846,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
       swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
     }
     if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
+      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))  */
   }
 
   /**
@@ -951,7 +885,7 @@ trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
     fixture => f
   }
 
-  // I need this implicit because the funciton is passed to scenario as the 2nd parameter list, and
+  // I need this implicit because the function is passed to scenario as the 2nd parameter list, and
   // I can't overload on that. I could if I took the ScenarioWord approach, but that has possibly a worse
   // downside of people could just say scenario("...") and nothing else.
   /**
