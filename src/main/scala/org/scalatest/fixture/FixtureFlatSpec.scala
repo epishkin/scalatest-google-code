@@ -347,89 +347,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
-  private val IgnoreTagName = "org.scalatest.Ignore"
-
-  private class Bundle private(
-    val trunk: Trunk,
-    val currentBranch: Branch,
-    val tagsMap: Map[String, Set[String]],
-
-    // All tests, in reverse order of registration
-    val testsList: List[FixtureTestLeaf[FixtureParam]],
-
-    // Used to detect at runtime that they've stuck a describe or an it inside an it,
-    // which should result in a TestRegistrationClosedException
-    val registrationClosed: Boolean
-  ) {
-    def unpack = (trunk, currentBranch, tagsMap, testsList, registrationClosed)
-  }
-
-  private object Bundle {
-    def apply(
-      trunk: Trunk,
-      currentBranch: Branch,
-      tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[FixtureParam]],
-      registrationClosed: Boolean
-    ): Bundle =
-      new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
-
-    def initialize(
-      trunk: Trunk,
-      tagsMap: Map[String, Set[String]],
-      testsList: List[FixtureTestLeaf[FixtureParam]],
-      registrationClosed: Boolean
-    ): Bundle =
-      new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
-  }
-
-  private val atomic =
-    new AtomicReference[Bundle](
-      Bundle.initialize(new Trunk, Map(), List[FixtureTestLeaf[FixtureParam]](), false)
-    )
-
-  private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
-    val shouldBeOldBundle = atomic.getAndSet(newBundle)
-    if (!(shouldBeOldBundle eq oldBundle))
-      throw new ConcurrentModificationException(Resources("concurrentFixtureFlatSpecBundleMod"))
-  }
-
-  private def registerTest(specText: String, f: FixtureParam => Any) = {
-
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-    val testName = getTestName(specText, currentBranch)
-    if (testsList.exists(_.testName == testName)) {
-      throw new DuplicateTestNameException(testName, getStackDepth("FlatSpec.scala", "it"))
-    }
-    val testShortName = specText
-    val test = FixtureTestLeaf(currentBranch, testName, specText, f)
-    currentBranch.subNodes ::= test
-    testsList ::= test
-
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-
-    testName
-  }
-
-  private class RegistrationInformer extends Informer {
-    def apply(message: String) {
-      if (message == null)
-        throw new NullPointerException
-
-      val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-      currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
-
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-    }
-  }
-
-  // The informer will be a registration informer until run is called for the first time. (This
-  // is the registration phase of a FixtureFlatSpec's lifecycle.)
-  private final val atomicInformer = new AtomicReference[Informer](new RegistrationInformer)
+  private final val engine = new Engine[FixtureParam => Any]("concurrentFixtureFlatSpecMod", "FixtureFlatSpec")
+  import engine._
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -440,16 +359,6 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * throw an exception. This method can be called safely by any thread.
    */
   implicit protected def info: Informer = atomicInformer.get
-
-  private val zombieInformer =
-    new Informer {
-      private val complaint = Resources("cantCallInfoNow", "FixtureFlatSpec")
-      def apply(message: String) {
-        if (message == null)
-          throw new NullPointerException
-        throw new IllegalStateException(complaint)
-      }
-    }
 
   /**
    * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
@@ -471,7 +380,9 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    */
   private def registerTestToRun(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
 
-    if (atomic.get.registrationClosed)
+    // TODO: This is what was being used before but it is wrong
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FixtureFlatSpec.scala", "it", testTags: _*)
+    /*if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("FlatSpec.scala", "it"))
     if (specText == null)
       throw new NullPointerException("specText was null")
@@ -486,7 +397,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     if (!tagNames.isEmpty)
       tagsMap += (testName -> tagNames)
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))  */
   }
 
   /**
@@ -528,7 +439,9 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      */
     def of(description: String) {
-      if (atomic.get.registrationClosed)
+      // TODO: This is what was here, but it needs fixing.
+      behaviorOfImpl(description, "describeCannotAppearInsideAnIt", "FixtureFlatSpec.scala", "describe")
+     /* if (atomic.get.registrationClosed)
         throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "describe"))
 
       val oldBundle = atomic.get
@@ -538,7 +451,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       trunk.subNodes ::= newBranch
       currentBranch = newBranch
 
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
+      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)) */
     }
   }
 
@@ -1798,7 +1711,10 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: FixtureParam => Any) {
-    if (atomic.get.registrationClosed)
+
+    // TODO: This is how these were, but it needs attention. Mentions "it".
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "FixtureFlatSpec.scala", "ignore", testTags: _*)
+    /*if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("FlatSpec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
@@ -1809,7 +1725,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
     tagsMap += (testName -> (tagNames + IgnoreTagName))
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)) */
   }
 
   /**
@@ -1846,7 +1762,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
 
-  private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
+ /* private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
 
     val stopRequested = stopper
     // Wrap any non-DispatchReporter, non-CatchReporter in a CatchReporter,
@@ -1901,7 +1817,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
       }
     )
-  }
+  } */
 
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by
@@ -1918,7 +1834,16 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || configMap == null)
+    def invokeWithFixture(theTest: TestLeaf) {
+      theTest.testFun match {
+        case wrapper: NoArgTestWrapper[_] =>
+          withFixture(new FixturelessTestFunAndConfigMap(testName, wrapper.test, configMap))
+        case fun => withFixture(new TestFunAndConfigMap(testName, fun, configMap))
+      }
+    }
+
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, true, invokeWithFixture)
+/*    if (testName == null || reporter == null || stopper == null || configMap == null)
       throw new NullPointerException
 
     atomic.get.testsList.find(_.testName == testName) match {
@@ -1996,10 +1921,10 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
         if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
           throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
       }
-    }
+    }   */
   }
 
-  private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
+  /*private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       specText: String, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
     val message =
@@ -2010,7 +1935,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
 
     val formatter = IndentedText(formattedSpecText, specText, 1)
     report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
-  }
+  }*/
 
   /**
    * <p>
@@ -2073,7 +1998,9 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    if (testName == null)
+
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, true, runTest)
+/*    if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
@@ -2093,7 +2020,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
     testName match {
       case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, configMap, tracker)
       case Some(tn) => runTest(tn, reporter, stopRequested, configMap, tracker)
-    }
+    }  */
   }
 
   /**
@@ -2107,12 +2034,18 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
    * example itself, with all components separated by a space.
    * </p>
    */
-  override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
+  // override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
+  override def testNames: Set[String] = {
+    // I'm returning a ListSet here so that they tests will be run in registration order
+    ListSet(atomic.get.testNamesList.toArray: _*)
+  }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    val stopRequested = stopper
+
+    runImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, super.run)
+/*    val stopRequested = stopper
 
     // Set the flag that indicates registration is closed (because run has now been invoked),
     // which will disallow any further invocations of "describe", it", or "ignore" with
@@ -2144,7 +2077,7 @@ trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
       swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
     }
     if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
+      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))*/
   }
 
   /**
