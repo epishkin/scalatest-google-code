@@ -961,7 +961,7 @@ trait Spec extends Suite { thisSuite =>
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
     def apply(specText: String, testTags: Tag*)(testFun: => Unit) {
-      registerTest(specText, testFun _, "Spec.scala", testTags: _*)
+      registerTest(specText, testFun _, "itCannotAppearInsideAnotherIt", "Spec.scala", "apply", testTags: _*)
     }
 
     /**
@@ -1045,7 +1045,7 @@ trait Spec extends Suite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(testText: String, testTags: Tag*)(testFun: => Unit) {
-    registerIgnoredTest(testText, testFun _, "Spec.scala", testTags: _*)
+    registerIgnoredTest(testText, testFun _, "ignoreCannotAppearInsideAnIt", "Spec.scala", "ignore", testTags: _*)
   }
 
   /**

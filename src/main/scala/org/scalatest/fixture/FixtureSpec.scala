@@ -404,7 +404,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
      * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
      */
     def apply(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-      registerTest(specText, testFun, "FixtureSpec.scala", testTags: _*)
+      registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "FixtureSpec.scala", "apply", testTags: _*)
     }
 
     /**
@@ -489,7 +489,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   protected def ignore(specText: String, testTags: Tag*)(testFun: FixtureParam => Any) {
-    registerIgnoredTest(specText, testFun, "FixtureSpec.scala", testTags: _*)
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "FixtureSpec.scala", "ignore", testTags: _*)
   }
 
   /**

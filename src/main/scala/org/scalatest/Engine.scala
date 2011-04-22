@@ -340,12 +340,13 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     }
   }
 
-  def registerTest(testText: String, testFun: T, sourceFileName: String, testTags: Tag*): String = { // returns testName
+  def registerTest(testText: String, testFun: T, testRegistrationClosedResourceName: String, sourceFileName: String, methodName: String, testTags: Tag*): String = { // returns testName
 
     checkRegisterTestParamsForNull(testText, testTags: _*)
 
     if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth(sourceFileName, "test"))
+      throw new TestRegistrationClosedException(Resources(testRegistrationClosedResourceName), getStackDepth(sourceFileName, methodName))
+//    throw new TestRegistrationClosedException(Resources("testCannotAppearInsideAnotherTest"), getStackDepth(sourceFileName, "test"))
 
     val oldBundle = atomic.get
     var (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
@@ -369,14 +370,15 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     testName
   }
 
-  def registerIgnoredTest(testText: String, f: T, sourceFileName: String, testTags: Tag*) {
+  def registerIgnoredTest(testText: String, f: T, testRegistrationClosedResourceName: String, sourceFileName: String, methodName: String, testTags: Tag*) {
 
     checkRegisterTestParamsForNull(testText, testTags: _*)
 
-    if (atomic.get.registrationClosed)
-      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth(sourceFileName, "ignore"))
+// If this works delete this. I think we can rely on registerTest's check
+//    if (atomic.get.registrationClosed)
+//      throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideATest"), getStackDepth(sourceFileName, "ignore"))
 
-    val testName = registerTest(testText, f, sourceFileName) // Call test without passing the tags
+    val testName = registerTest(testText, f, testRegistrationClosedResourceName, sourceFileName, methodName) // Call test without passing the tags
 
     val oldBundle = atomic.get
     var (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack

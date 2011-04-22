@@ -375,8 +375,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    * @throws NullPointerException if <code>testName</code> or any passed test tag is <code>null</code>
    */
-  protected def test(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
-    registerTest(testName, f, "FixtureFunSuite.scala", testTags: _*)
+  protected def test(testName: String, testTags: Tag*)(testFun: FixtureParam => Any) {
+    registerTest(testName, testFun, "testCannotAppearInsideAnotherTest", "FixtureFunSuite.scala", "test", testTags: _*)
   }
 
   /**
@@ -394,8 +394,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
    * @throws DuplicateTestNameException if a test with the same name has been registered previously
    * @throws NotAllowedException if <code>testName</code> had been registered previously
    */
-  protected def ignore(testName: String, testTags: Tag*)(f: FixtureParam => Any) {
-    registerIgnoredTest(testName, f, "FixtureFunSuite.scala", testTags: _*)
+  protected def ignore(testName: String, testTags: Tag*)(testFun: FixtureParam => Any) {
+    registerIgnoredTest(testName, testFun, "ignoreCannotAppearInsideATest", "FixtureFunSuite.scala", "ignore", testTags: _*)
   }
 
   /**
