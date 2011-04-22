@@ -31,7 +31,7 @@ class OrdinalSpec extends Spec with ShouldMatchers with Checkers {
             var ord = new Ordinal(99)
             for (i <- 0 until count)
               ord = ord.nextNewOldPair._1
-            ord.toList == 99 :: List.make(count + 1, 0)
+            ord.toList == 99 :: List.fill(count + 1)(0)
           }
         }
       )

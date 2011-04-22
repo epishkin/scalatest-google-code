@@ -35,7 +35,6 @@ import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import Suite.checkRunTestParamsForNull
 import Suite.getIndentedText
-import Suite.getIndentedTextForInfo
 import Suite.reportTestStarting
 import Suite.reportTestIgnored
 import Suite.reportTestSucceeded
@@ -517,7 +516,7 @@ trait FixtureSuite extends org.scalatest.Suite { thisSuite =>
 
     reportTestStarting(thisSuite, report, tracker, testName, rerunnable)
 
-    val formatter = getIndentedText(testName, 1)
+    val formatter = getIndentedText(testName, 1, true)
 
     try {
       if (testMethodTakesAFixtureAndInformer(testName) || testMethodTakesAFixture(testName)) {

@@ -148,7 +148,7 @@ import org.scalatools.testing.{Event, EventHandler, Result, Logger, Runner => Te
       val buf = new scala.collection.mutable.ArrayBuffer[Event]
       val listener = new EventHandler {
         def handle(event: Event) {
-          buf + event
+          buf += event
         }
       }
       runner.run(classname, fingerprint, listener, args)

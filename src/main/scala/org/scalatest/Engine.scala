@@ -142,6 +142,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     stopper: Stopper,
     configMap: Map[String, Any],
     tracker: Tracker,
+    includeIcon: Boolean,
     invokeWithFixture: TestLeaf => Unit
   ) {
 
@@ -157,11 +158,11 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
 
     val theTest = atomic.get.testsMap(testName)
 
-    val formatter = getIndentedText(theTest.testText, theTest.indentationLevel)
+    val formatter = getIndentedText(theTest.testText, theTest.indentationLevel, includeIcon)
 
     val informerForThisTest =
       MessageRecordingInformer2(
-        (message, isConstructingThread, testWasPending) => reportInfoProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, true, Some(testWasPending))
+        (message, isConstructingThread, testWasPending) => reportInfoProvided(theSuite, report, tracker, Some(testName), message, theTest.indentationLevel + 1, isConstructingThread, includeIcon, Some(testWasPending))
       )
 
     val oldInformer = atomicInformer.getAndSet(informerForThisTest)
@@ -180,7 +181,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
         testWasPending = true // Set so info's printed out in the finally clause show up yellow
       case e if !anErrorThatShouldCauseAnAbort(e) =>
         val duration = System.currentTimeMillis - testStartTime
-        reportTestFailed(theSuite, report, e, testName, theTest.testText, rerunnable, tracker, duration, theTest.indentationLevel)
+        reportTestFailed(theSuite, report, e, testName, theTest.testText, rerunnable, tracker, duration, theTest.indentationLevel, includeIcon)
       case e => throw e
     }
     finally {
@@ -200,6 +201,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     filter: Filter,
     configMap: Map[String, Any],
     tracker: Tracker,
+    includeIcon: Boolean,
     runTest: (String, Reporter, Stopper, Map[String, Any], Tracker) => Unit
   ) {
     branch match { 
@@ -224,9 +226,9 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
                 runTest(testName, report, stopRequested, configMap, tracker)
 
           case infoLeaf @ InfoLeaf(_, message) =>
-            reportInfoProvided(theSuite, report, tracker, None, message, infoLeaf.indentationLevel, true)
+            reportInfoProvided(theSuite, report, tracker, None, message, infoLeaf.indentationLevel, true, includeIcon)
 
-          case branch: Branch => runTestsInBranch(theSuite, branch, report, stopRequested, filter, configMap, tracker, runTest)
+          case branch: Branch => runTestsInBranch(theSuite, branch, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
         }
       }
     }
@@ -242,6 +244,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     distributor: Option[Distributor],
     tracker: Tracker,
     info: String => Unit,
+    includeIcon: Boolean,
     runTest: (String, Reporter, Stopper, Map[String, Any], Tracker) => Unit
   ) {
     if (testName == null)
@@ -270,7 +273,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     // by testNames.
     testName match {
       case Some(tn) => runTest(tn, report, stopRequested, configMap, tracker)
-      case None => runTestsInBranch(theSuite, Trunk, report, stopRequested, filter, configMap, tracker, runTest)
+      case None => runTestsInBranch(theSuite, Trunk, report, stopRequested, filter, configMap, tracker, includeIcon, runTest)
     }
   }
 
@@ -338,6 +341,13 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
       updateAtomic(oldBundle, Bundle(oldBranch, testNamesList, testsMap, tagsMap, registrationClosed))
     }
+  }
+
+  def currentBranchIsTrunk: Boolean = {
+
+    val oldBundle = atomic.get
+    var (currentBranch, _, _, _, _) = oldBundle.unpack
+    currentBranch == Trunk
   }
 
   def registerTest(testText: String, testFun: T, testRegistrationClosedResourceName: String, sourceFileName: String, methodName: String, testTags: Tag*): String = { // returns testName

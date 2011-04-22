@@ -51,7 +51,7 @@ import Suite.getIndentedText
         else
           Resources("jUnitTestFailed")
 
-      val formatter = getIndentedText(testName, 1)
+      val formatter = getIndentedText(testName, 1, true)
       report(TestFailed(theTracker.nextOrdinal(), message, testClassName, Some(testClass), testName, throwable, None, Some(formatter), None))
       // TODO: can I add a duration?
     }
@@ -60,7 +60,7 @@ import Suite.getIndentedText
       if (!failedTests.contains(description.getDisplayName)) {
         val (testName, testClass, testClassName) =
           parseTestDescription(description)
-        val formatter = getIndentedText(testName, 1)
+        val formatter = getIndentedText(testName, 1, true)
         report(TestSucceeded(theTracker.nextOrdinal(), testClassName, Some(testClass), testName, None, Some(formatter), None))
         // TODO: can I add a duration?
       }

@@ -24,7 +24,6 @@ import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import FunSuite.IgnoreTagName 
 import Suite.checkRunTestParamsForNull
-import Suite.getIndentedText
 
 /**
  * A sister trait to <code>org.scalatest.FunSuite</code> that can pass a fixture object into its tests.
@@ -432,7 +431,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
       }
     }
 
-    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, invokeWithFixture)
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, true, invokeWithFixture)
   }
 
   /**
@@ -450,7 +449,7 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, runTest)
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, true, runTest)
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,

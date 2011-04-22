@@ -22,7 +22,6 @@ import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import org.scalatest.events._
 import Suite.anErrorThatShouldCauseAnAbort
 import Suite.checkRunTestParamsForNull
-import Suite.getIndentedText
 import Suite.indentation
 import verb.BehaveWord
 import Suite.reportInfoProvided
@@ -1148,7 +1147,7 @@ trait Spec extends Suite { thisSuite =>
       )
     }
 
-    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, invokeWithFixture)
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, true, invokeWithFixture)
   }
 
   /**
@@ -1181,7 +1180,7 @@ trait Spec extends Suite { thisSuite =>
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, runTest)
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, true, runTest)
   }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,

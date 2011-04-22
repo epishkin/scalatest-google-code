@@ -1555,7 +1555,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
 
     reportTestStarting(this, report, tracker, testName, rerunnable)
 
-    val formatter = getIndentedText(testName, 1)
+    val formatter = getIndentedText(testName, 1, true)
 
     val args: Array[Object] =
       if (testMethodTakesAnInformer(testName)) {
@@ -1808,7 +1808,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
       rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
     val message = getMessageForException(throwable)
-    val formatter = getIndentedText(testName, 1)
+    val formatter = getIndentedText(testName, 1, true)
     report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
   }
 
@@ -2293,10 +2293,22 @@ It should (and at this point does) output this:
 [scalatest]           + Then it should have size 1 
 [scalatest]           + And pop should return the pushed value 
 
+FeatureSpec doesn't want any icons printed out. So adding includeIcon here. It
+was already in getIndentedTextForInfo because of descriptions being printed out
+without icons.
+
+This should really be named getIndentedTextForTest maybe, because I think it is just
+used for test events like succeeded/failed, etc.
   */
-  def getIndentedText(testText: String, level: Int) = {
-    val testSucceededIcon = Resources("testSucceededIconChar")
-    val formattedText = ("  " * (if (level == 0) 0 else (level - 1))) + Resources("iconPlusShortName", testSucceededIcon, testText)
+  def getIndentedText(testText: String, level: Int, includeIcon: Boolean) = {
+    val formattedText =
+      if (includeIcon) {
+        val testSucceededIcon = Resources("testSucceededIconChar")
+        ("  " * (if (level == 0) 0 else (level - 1))) + Resources("iconPlusShortName", testSucceededIcon, testText)
+      }
+      else {
+        ("  " * level) + testText
+      }
     IndentedText(formattedText, testText, level)
   }
 
@@ -2339,10 +2351,10 @@ It should (and at this point does) output this:
   def indentation(level: Int) = "  " * level
 
   def reportTestFailed(theSuite: Suite, report: Reporter, throwable: Throwable, testName: String, testText: String,
-      rerunnable: Option[Rerunner], tracker: Tracker, duration: Long, level: Int) {
+      rerunnable: Option[Rerunner], tracker: Tracker, duration: Long, level: Int, includeIcon: Boolean) {
 
     val message = getMessageForException(throwable)
-    val formatter = getIndentedText(testText, level)
+    val formatter = getIndentedText(testText, level, includeIcon)
     report(TestFailed(tracker.nextOrdinal(), message, theSuite.suiteName, Some(theSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
   }
 

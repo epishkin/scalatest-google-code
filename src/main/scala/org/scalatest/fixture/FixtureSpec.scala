@@ -559,7 +559,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
       }
     }
 
-    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, invokeWithFixture)
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, true, invokeWithFixture)
   }
 
   /**
@@ -623,7 +623,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, runTest)
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, true, runTest)
   }
 
   /**
