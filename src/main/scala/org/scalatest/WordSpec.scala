@@ -1259,89 +1259,8 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
-  private val IgnoreTagName = "org.scalatest.Ignore"
-
-  private class Bundle private(
-    val trunk: Trunk,
-    val currentBranch: Branch,
-    val tagsMap: Map[String, Set[String]],
-
-    // All tests, in reverse order of registration
-    val testsList: List[TestLeaf],
-
-    // Used to detect at runtime that they've stuck a describe or an it inside an it,
-    // which should result in a TestRegistrationClosedException
-    val registrationClosed: Boolean
-  ) {
-    def unpack = (trunk, currentBranch, tagsMap, testsList, registrationClosed)
-  }
-
-  private object Bundle {
-    def apply(
-      trunk: Trunk,
-      currentBranch: Branch,
-      tagsMap: Map[String, Set[String]],
-      testsList: List[TestLeaf],
-      registrationClosed: Boolean
-    ): Bundle =
-      new Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed)
-
-    def initialize(
-      trunk: Trunk,
-      tagsMap: Map[String, Set[String]],
-      testsList: List[TestLeaf],
-      registrationClosed: Boolean
-    ): Bundle =
-      new Bundle(trunk, trunk, tagsMap, testsList, registrationClosed)
-  }
-
-  private val atomic =
-    new AtomicReference[Bundle](
-      Bundle.initialize(new Trunk, Map(), List[TestLeaf](), false)
-    )
-
-  private def updateAtomic(oldBundle: Bundle, newBundle: Bundle) {
-    val shouldBeOldBundle = atomic.getAndSet(newBundle)
-    if (!(shouldBeOldBundle eq oldBundle))
-      throw new ConcurrentModificationException(Resources("concurrentWordSpecBundleMod"))
-  }
-
-  private def registerTest(specText: String, f: () => Unit) = {
-
-    val oldBundle = atomic.get
-    var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-    val testName = getTestName(specText, currentBranch)
-    if (testsList.exists(_.testName == testName)) {
-      throw new DuplicateTestNameException(testName, getStackDepth("Spec.scala", "it"))
-    }
-    val testShortName = specText
-    val test = TestLeaf(currentBranch, testName, specText, f)
-    currentBranch.subNodes ::= test
-    testsList ::= test
-
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-
-    testName
-  }
-
-  private class RegistrationInformer extends Informer {
-    def apply(message: String) {
-      if (message == null)
-        throw new NullPointerException
-
-      val oldBundle = atomic.get
-      var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
-
-      currentBranch.subNodes ::= InfoLeaf(currentBranch, message)
-
-      updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
-    }
-  }
-
-  // The informer will be a registration informer until run is called for the first time. (This
-  // is the registration phase of a WordSpec's lifecycle.)
-  private final val atomicInformer = new AtomicReference[Informer](new RegistrationInformer)
+  private final val engine = new Engine[() => Unit]("concurrentWordSpecMod", "WordSpec")
+  import engine._
 
   /**
    * Returns an <code>Informer</code> that during test execution will forward strings (and other objects) passed to its
@@ -1352,16 +1271,6 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * throw an exception. This method can be called safely by any thread.
    */
   implicit protected def info: Informer = atomicInformer.get
-
-  private val zombieInformer =
-    new Informer {
-      private val complaint = Resources("cantCallInfoNow", "WordSpec")
-      def apply(message: String) {
-        if (message == null)
-          throw new NullPointerException
-        throw new IllegalStateException(complaint)
-      }
-    }
 
   /**
    * Register a test with the given spec text, optional tags, and test function value that takes no arguments.
@@ -1382,8 +1291,9 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   private def registerTestToRun(specText: String, testTags: List[Tag], testFun: () => Unit) {
-
-    if (atomic.get.registrationClosed)
+    // TODO: This is what was being used before but it is wrong
+    registerTest(specText, testFun, "itCannotAppearInsideAnotherIt", "WordSpec.scala", "it", testTags: _*)
+/*    if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("itCannotAppearInsideAnotherIt"), getStackDepth("Spec.scala", "it"))
     if (specText == null)
       throw new NullPointerException("specText was null")
@@ -1398,7 +1308,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     if (!tagNames.isEmpty)
       tagsMap += (testName -> tagNames)
 
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed2))*/
   }
 
   /**
@@ -1442,7 +1352,10 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
    * @throws NullPointerException if <code>specText</code> or any passed test tag is <code>null</code>
    */
   private def registerTestToIgnore(specText: String, testTags: List[Tag], testFun: () => Unit) {
-    if (atomic.get.registrationClosed)
+
+    // TODO: This is how these were, but it needs attention. Mentions "it".
+    registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "WordSpec.scala", "ignore", testTags: _*)
+/*    if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     if (specText == null)
       throw new NullPointerException("specText was null")
@@ -1453,7 +1366,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     val oldBundle = atomic.get
     var (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
     tagsMap += (testName -> (tagNames + IgnoreTagName))
-    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, currentBranch, tagsMap, testsList, registrationClosed))*/
   }
 
   /**
@@ -1478,8 +1391,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
       throw new TestRegistrationClosedException(Resources("ignoreCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "ignore"))
     ignore(specText, Array[Tag](): _*)(testFun)
   } */
-  
-  /**
+ /*  /**
    * Describe a &#8220;subject&#8221; being specified and tested by the passed function value. The
    * passed function value may contain more describers (defined with <code>describe</code>) and/or tests
    * (defined with <code>it</code>). This trait's implementation of this method will register the
@@ -1503,10 +1415,12 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   private def registerDescriptionBranch(description: String, f: () => Unit) {
     registerBranch(f, DescriptionBranch(_, description))
   }
+*/
+  private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {
 
-  private def registerBranch(f: () => Unit, constructBranch: Branch => Branch) {
-
-    if (atomic.get.registrationClosed)
+    // TODO: Fix the resource name and method name
+    newRegisterBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "Spec.scala", "describe")
+ /*   if (atomic.get.registrationClosed)
       throw new TestRegistrationClosedException(Resources("describeCannotAppearInsideAnIt"), getStackDepth("Spec.scala", "describe"))
 
     def createNewBranch() = {
@@ -1531,7 +1445,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     val oldBundle = atomic.get
     val (trunk, currentBranch, tagsMap, testsList, registrationClosed) = oldBundle.unpack
 
-    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))
+    updateAtomic(oldBundle, Bundle(trunk, oldBranch, tagsMap, testsList, registrationClosed))  */
   }
 
   /**
@@ -1722,7 +1636,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def when(f: => Unit) {
-      registerDescriptionBranch(string + " (when", f _)
+      registerBranch(string, Some("when"), f _)
     }
 
     /**
@@ -1744,7 +1658,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def when(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
-      registerDescriptionBranch(string + " (when " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+      registerBranch(string, Some("when " + resultOfAfterWordApplication.text), resultOfAfterWordApplication.f)
     }
 
     /**
@@ -1764,7 +1678,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def that(f: => Unit) {
-      registerDescriptionBranch(string + " that", f _)
+      registerBranch(string + " that", None, f _)
     }
 
     /**
@@ -1786,7 +1700,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
      * </p>
      */
     def that(resultOfAfterWordApplication: ResultOfAfterWordApplication) {
-      registerDescriptionBranch(string + " that " + resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+      registerBranch(string + " that " + resultOfAfterWordApplication.text, None, resultOfAfterWordApplication.f)
     }
   }
 
@@ -1953,7 +1867,7 @@ one error found
    */
   protected implicit val subjectRegistrationFunction: StringVerbBlockRegistration =
     new StringVerbBlockRegistration {
-      def apply(left: String, verb: String, f: () => Unit) = registerVerbBranch(left, verb, f)
+      def apply(left: String, verb: String, f: () => Unit) = registerBranch(left, Some(verb), f)
     }
 
   /**
@@ -1982,9 +1896,9 @@ one error found
     (left, verb, resultOfAfterWordApplication) => {
       val afterWordFunction =
         () => {
-          registerDescriptionBranch(resultOfAfterWordApplication.text, resultOfAfterWordApplication.f)
+          registerBranch(resultOfAfterWordApplication.text, None, resultOfAfterWordApplication.f)
         }
-      registerVerbBranch(left, verb, afterWordFunction)
+      registerBranch(left, Some(verb), afterWordFunction)
     }
   }
 
@@ -1998,7 +1912,7 @@ one error found
    * </p>
    */
   override def tags: Map[String, Set[String]] = atomic.get.tagsMap
-
+   /*
   private def runTestsInBranch(branch: Branch, reporter: Reporter, stopper: Stopper, filter: Filter, configMap: Map[String, Any], tracker: Tracker) {
 
     val stopRequested = stopper
@@ -2040,7 +1954,7 @@ one error found
         case branch: Branch => runTestsInBranch(branch, reporter, stopRequested, filter, configMap, tracker)
       }
     )
-  }
+  } */
 
   /**
    * Run a test. This trait's implementation runs the test registered with the name specified by
@@ -2057,7 +1971,19 @@ one error found
    */
   protected override def runTest(testName: String, reporter: Reporter, stopper: Stopper, configMap: Map[String, Any], tracker: Tracker) {
 
-    if (testName == null || reporter == null || stopper == null || configMap == null)
+    def invokeWithFixture(theTest: TestLeaf) {
+      val theConfigMap = configMap
+      withFixture(
+        new NoArgTest {
+          def name = testName
+          def apply() { theTest.testFun() }
+          def configMap = theConfigMap
+        }
+      )
+    }
+
+    runTestImpl(thisSuite, testName, reporter, stopper, configMap, tracker, true, invokeWithFixture)
+/*    if (testName == null || reporter == null || stopper == null || configMap == null)
       throw new NullPointerException
 
     atomic.get.testsList.find(_.testName == testName) match {
@@ -2138,9 +2064,9 @@ one error found
         if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
           throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
       }
-    }
+    }*/
   }
-
+/*
   private def handleFailedTest(throwable: Throwable, hasPublicNoArgConstructor: Boolean, testName: String,
       test: TestLeaf, formattedSpecText: String, rerunnable: Option[Rerunner], report: Reporter, tracker: Tracker, duration: Long) {
 
@@ -2152,7 +2078,7 @@ one error found
 
     val formatter = IndentedText(formattedSpecText, getFormattedSpecTextPrefix(test.parent) + " " + test.specText, 1)
     report(TestFailed(tracker.nextOrdinal(), message, thisSuite.suiteName, Some(thisSuite.getClass.getName), testName, Some(throwable), Some(duration), Some(formatter), rerunnable))
-  }
+  }*/
 
   /**
    * Run zero to many of this <code>WordSpec</code>'s tests.
@@ -2216,7 +2142,8 @@ one error found
   protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
     
-    if (testName == null)
+    runTestsImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, info, true, runTest)
+/*    if (testName == null)
       throw new NullPointerException("testName was null")
     if (reporter == null)
       throw new NullPointerException("reporter was null")
@@ -2236,7 +2163,7 @@ one error found
     testName match {
       case None => runTestsInBranch(atomic.get.trunk, reporter, stopRequested, filter, configMap, tracker)
       case Some(tn) => runTest(tn, reporter, stopRequested, configMap, tracker)
-    }
+    } */
   }
 
   /**
@@ -2275,12 +2202,17 @@ one error found
    * "A Stack (when not full) must allow me to push"
    * </pre>
    */
-  override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
+  // override def testNames: Set[String] = ListSet(atomic.get.testsList.map(_.testName): _*)
+  override def testNames: Set[String] = {
+    // I'm returning a ListSet here so that they tests will be run in registration order
+    ListSet(atomic.get.testNamesList.toArray: _*)
+  }
 
   override def run(testName: Option[String], reporter: Reporter, stopper: Stopper, filter: Filter,
       configMap: Map[String, Any], distributor: Option[Distributor], tracker: Tracker) {
 
-    val stopRequested = stopper
+    runImpl(thisSuite, testName, reporter, stopper, filter, configMap, distributor, tracker, super.run)
+/*    val stopRequested = stopper
 
     // Set the flag that indicates registration is closed (because run has now been invoked),
     // which will disallow any further invocations of "describe", it", or "ignore" with
@@ -2312,7 +2244,7 @@ one error found
       swapAndCompareSucceeded = shouldBeInformerForThisSuite eq informerForThisSuite
     }
     if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
-      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))
+      throw new ConcurrentModificationException(Resources("concurrentInformerMod", thisSuite.getClass.getName))*/
   }
 
   /**
