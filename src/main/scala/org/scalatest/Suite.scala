@@ -1314,9 +1314,46 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     color: Boolean = true,
     durations: Boolean = false,
     shortStacks: Boolean = false,
-    fullStacks: Boolean = false
+    fullStacks: Boolean = false,
+    stats: Boolean = false
   ) {
-    run(if (testName != null) Some(testName) else None, new StandardOutReporter(durations, color, shortStacks, fullStacks), new Stopper {}, Filter(), configMap, None, new Tracker)
+    val dispatch = new DispatchReporter(List(new StandardOutReporter(durations, color, shortStacks, fullStacks)))
+    val tracker = new Tracker
+    val filter = Filter()
+    val runStartTime = System.currentTimeMillis
+    if (stats)
+      dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount(filter), configMap))
+    try {
+
+      run(
+        //if (testName != null) Some(testName) else None,
+        Option(testName),
+        dispatch,
+        new Stopper {},
+        filter,
+        configMap,
+        None,
+        tracker
+      )
+
+      if (stats) {
+        val duration = System.currentTimeMillis - runStartTime
+        dispatch(RunCompleted(tracker.nextOrdinal(), Some(duration)))
+      }
+    }
+    catch {
+      case e: InstantiationException =>
+        dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
+      case e: IllegalAccessException =>
+        dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
+      case e: NoClassDefFoundError =>
+        dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
+      case e: Throwable =>
+        dispatch(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e), Some(System.currentTimeMillis - runStartTime)))
+    }
+    finally {
+      dispatch.dispatchDisposeAndWaitUntilDone()
+    }
   }
 
   /**
