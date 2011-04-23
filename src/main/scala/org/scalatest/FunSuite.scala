@@ -73,7 +73,9 @@ import Suite.checkRunTestParamsForNull
  * <code>TestRegistrationClosedException</code>.
  * </p>
  *
- * <h2>Shared fixtures</h2>
+ * 
+ * <a name="SharedFixtures"></a><h2>Shared fixtures</h2>
+ *
  *
  * <p>
  * A test <em>fixture</em> is objects or other artifacts (such as files, sockets, database
@@ -625,42 +627,25 @@ import Suite.checkRunTestParamsForNull
  *
  * <pre>
  * scala> (new StackFunSuite).execute()
- * Test Starting - StackFunSuite: empty is invoked on an empty stack
- * Test Succeeded - StackFunSuite: empty is invoked on an empty stack
- * Test Starting - StackFunSuite: peek is invoked on an empty stack
- * Test Succeeded - StackFunSuite: peek is invoked on an empty stack
- * Test Starting - StackFunSuite: pop is invoked on an empty stack
- * Test Succeeded - StackFunSuite: pop is invoked on an empty stack
- * Test Starting - StackFunSuite: empty is invoked on this non-empty stack: Stack(9)
- * Test Succeeded - StackFunSuite: empty is invoked on this non-empty stack: Stack(9)
- * Test Starting - StackFunSuite: peek is invoked on this non-empty stack: Stack(9)
- * Test Succeeded - StackFunSuite: peek is invoked on this non-empty stack: Stack(9)
- * Test Starting - StackFunSuite: pop is invoked on this non-empty stack: Stack(9)
- * Test Succeeded - StackFunSuite: pop is invoked on this non-empty stack: Stack(9)
- * Test Starting - StackFunSuite: full is invoked on this non-full stack: Stack(9)
- * Test Succeeded - StackFunSuite: full is invoked on this non-full stack: Stack(9)
- * Test Starting - StackFunSuite: push is invoked on this non-full stack: Stack(9)
- * Test Succeeded - StackFunSuite: push is invoked on this non-full stack: Stack(9)
- * Test Starting - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Succeeded - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Starting - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Succeeded - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Starting - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Succeeded - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Starting - StackFunSuite: full is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Succeeded - StackFunSuite: full is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Starting - StackFunSuite: push is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Succeeded - StackFunSuite: push is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
- * Test Starting - StackFunSuite: full is invoked on a full stack
- * Test Succeeded - StackFunSuite: full is invoked on a full stack
- * Test Starting - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * Test Succeeded - StackFunSuite: empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * Test Starting - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * Test Succeeded - StackFunSuite: peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * Test Starting - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * Test Succeeded - StackFunSuite: pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
- * Test Starting - StackFunSuite: push is invoked on a full stack
- * Test Succeeded - StackFunSuite: push is invoked on a full stack
+ * StackFunSuite:
+ * - empty is invoked on an empty stack
+ * - peek is invoked on an empty stack
+ * - pop is invoked on an empty stack
+ * - empty is invoked on this non-empty stack: Stack(9)
+ * - peek is invoked on this non-empty stack: Stack(9)
+ * - pop is invoked on this non-empty stack: Stack(9)
+ * - full is invoked on this non-full stack: Stack(9)
+ * - push is invoked on this non-full stack: Stack(9)
+ * - empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * - peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * - pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * - full is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * - push is invoked on this non-full stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1)
+ * - full is invoked on a full stack
+ * - empty is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * - peek is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * - pop is invoked on this non-empty stack: Stack(9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+ * - push is invoked on a full stack
  * </pre>
  * 
  * <p>
@@ -813,9 +798,9 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre>
- * Test Ignored - MySuite: addition
- * Test Starting - MySuite: subtraction
- * Test Succeeded - MySuite: subtraction
+ * MySuite:
+ * - addition !!! IGNORED !!!
+ * - subtraction
  * </pre>
  *
  * <h2>Pending tests</h2>
@@ -875,10 +860,9 @@ import Suite.checkRunTestParamsForNull
  * </p>
  *
  * <pre>
- * Test Starting - MySuite: addition
- * Test Succeeded - MySuite: addition
- * Test Starting - MySuite: subtraction
- * Test Pending - MySuite: subtraction
+ * MySuite:
+ * - addition
+ * - subtraction (pending)
  * </pre>
  * 
  * <h2>Informers</h2>
@@ -915,9 +899,9 @@ import Suite.checkRunTestParamsForNull
  * included in the printed report:
  *
  * <pre>
- * Test Starting - MySuite: addition
- * Info Provided - MySuite.addition: Addition seems to work
- * Test Succeeded - MySuite: addition
+ * MySuite:
+ * - addition
+ *   + Addition seems to work 
  * </pre>
  *
  * @author Bill Venners
