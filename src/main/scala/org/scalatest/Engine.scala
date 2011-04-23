@@ -24,7 +24,7 @@ import org.scalatest.Suite._
 import fixture.NoArgTestWrapper
 
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
-private[scalatest] class SuperEngine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
+private[scalatest] sealed abstract class SuperEngine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
 
   sealed abstract class Node(val parentOption: Option[Branch]) {
     def indentationLevel: Int = {
