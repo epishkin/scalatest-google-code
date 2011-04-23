@@ -120,7 +120,7 @@ abstract class StackDepthException(
   /**
    * Returns the detail message string of this <code>StackDepthException</code>.
    *
-   * @returns the detail message string of this <code>StackDepthException</code> instance (which may be <code>null</code>).
+   * @return the detail message string of this <code>StackDepthException</code> instance (which may be <code>null</code>).
    */
   override def getMessage: String = message.orNull
 
