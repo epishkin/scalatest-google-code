@@ -82,26 +82,32 @@ final case object MotionToSuppress extends Formatter
  * </p>
  *
  * <ul>
- * <li><code>InfoProvided</code> reported with an:<br />
- * &nbsp;&nbsp;<code>IndentedText(<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;formattedText = "A Stack (when newly created)",<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;rawText = "A Stack (when newly created)",<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;indentationLevel = 0<br />
- * &nbsp;&nbsp;)</code>
+ * <li><code>InfoProvided</code> reported with an:
+ * <pre>
+ *   IndentedText(
+ *     formattedText = "A Stack (when newly created)",
+ *     rawText = "A Stack (when newly created)",
+ *     indentationLevel = 0
+ *   )
+ * </pre>
  * </li>
- * <li><code>TestSucceeded</code> reported with an:<br />
- * &nbsp;&nbsp;<code>IndentedText(<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;formattedText = "- should be empty",<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;rawText = "should be empty",<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;indentationLevel = 1<br />
- * &nbsp;&nbsp;)</code>
+ * <li><code>TestSucceeded</code> reported with an:
+ * <pre>
+ *   IndentedText(
+ *     formattedText = "- should be empty",
+ *     rawText = "should be empty",
+ *     indentationLevel = 1
+ *   )
+ * </pre>
  * </li>
- * <li><code>TestSucceeded</code> reported with an:<br />
- * &nbsp;&nbsp;<code>IndentedText(<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;formattedText = "- should complain when popped",<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;rawText = "should complain when popped",<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;indentationLevel = 1<br />
- * &nbsp;&nbsp;)</code>
+ * <li><code>TestSucceeded</code> reported with an:
+ * <pre>
+ *   IndentedText(
+ *     formattedText = "- should complain when popped",
+ *     rawText = "should complain when popped",
+ *     indentationLevel = 1
+ *   )
+ * </pre>
  * </li>
  * </ul>
  *
