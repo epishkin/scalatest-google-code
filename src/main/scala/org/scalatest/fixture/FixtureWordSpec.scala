@@ -612,7 +612,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
      * </p>
      */
     def is(testFun: => PendingNothing) {
-      registerTestToRun(string, List(), unusedFixtre => testFun)
+      registerTestToRun(string, List(), unusedFixtureParam => testFun)
     }
 
     /**
