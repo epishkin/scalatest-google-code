@@ -1142,7 +1142,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
-  private final val engine = new Engine[() => Unit]("concurrentSpecMod", "Spec")
+  private final val engine = new Engine("concurrentSpecMod", "Spec")
   import engine._
 
   /**

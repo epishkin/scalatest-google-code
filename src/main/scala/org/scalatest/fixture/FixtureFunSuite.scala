@@ -347,7 +347,7 @@ import Suite.checkRunTestParamsForNull
  */
 trait FixtureFunSuite extends FixtureSuite { thisSuite =>
 
-  private final val engine = new Engine[FixtureParam => Any]("concurrentFixtureFunSuiteMod", "FixtureFunSuite")
+  private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureFunSuiteMod", "FixtureFunSuite")
   import engine._
 
   /**
@@ -435,8 +435,8 @@ trait FixtureFunSuite extends FixtureSuite { thisSuite =>
   }
 
   /**
-   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FunSuite</code> belong, and values
-   * the <code>Set</code> of test names that belong to each tag. If this <code>FunSuite</code> contains no tags, this method returns an empty
+   * A <code>Map</code> whose keys are <code>String</code> tag names to which tests in this <code>FixtureFunSuite</code> belong, and values
+   * the <code>Set</code> of test names that belong to each tag. If this <code>FixtureFunSuite</code> contains no tags, this method returns an empty
    * <code>Map</code>.
    *
    * <p>

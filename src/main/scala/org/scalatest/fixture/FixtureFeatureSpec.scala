@@ -348,7 +348,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FixtureFeatureSpec extends FixtureSuite { thisSuite =>
 
-  private final val engine = new Engine[FixtureParam => Any]("concurrentFeatureSpecMod", "FixtureFeatureSpec")
+  private final val engine = new FixtureEngine[FixtureParam]("concurrentFeatureSpecMod", "FixtureFeatureSpec")
   import engine._
 
   /**

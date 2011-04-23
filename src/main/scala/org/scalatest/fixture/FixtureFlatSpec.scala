@@ -347,7 +347,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FixtureFlatSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
-  private final val engine = new Engine[FixtureParam => Any]("concurrentFixtureFlatSpecMod", "FixtureFlatSpec")
+  private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureFlatSpecMod", "FixtureFlatSpec")
   import engine._
 
   /**

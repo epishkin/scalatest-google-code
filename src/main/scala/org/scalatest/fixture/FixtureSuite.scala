@@ -17,29 +17,18 @@ package org.scalatest.fixture
 
 import org.scalatest._
 import collection.immutable.TreeSet
+import fixture.FixtureSuite._
+// import fixture.FixtureSuite.FixturelessTestFunAndConfigMap
+// import fixture.FixtureSuite.TestFunAndConfigMap
 import java.lang.reflect.{InvocationTargetException, Method, Modifier}
-import org.scalatest.Suite.checkForPublicNoArgConstructor
-import org.scalatest.Suite.TestMethodPrefix
-import org.scalatest.Suite.IgnoreAnnotation
-import org.scalatest.Suite.InformerInParens
 import FixtureSuite.FixtureAndInformerInParens
 import FixtureSuite.FixtureInParens
 import FixtureSuite.testMethodTakesAFixtureAndInformer
-import Suite.testMethodTakesAnInformer
 import FixtureSuite.testMethodTakesAFixture
 import FixtureSuite.simpleNameForTest
 import FixtureSuite.argsArrayForTestName
-import Suite.takesInformer
-import Suite.isTestMethodGoodies
 import org.scalatest.events._
-import Suite.anErrorThatShouldCauseAnAbort
-import Suite.checkRunTestParamsForNull
-import Suite.getIndentedText
-import Suite.reportTestStarting
-import Suite.reportTestIgnored
-import Suite.reportTestSucceeded
-import Suite.reportTestPending
-import Suite.reportInfoProvided
+import org.scalatest.Suite._
 
 /**
  * <code>Suite</code> that can pass a fixture object into its tests.

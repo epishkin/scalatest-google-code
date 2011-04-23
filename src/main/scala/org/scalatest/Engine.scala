@@ -19,18 +19,12 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.ConcurrentModificationException
 import org.scalatest.StackDepthExceptionHelper.getStackDepth
 import FunSuite.IgnoreTagName 
-import Suite.checkRunTestParamsForNull
-import Suite.getIndentedText
-import Suite.anErrorThatShouldCauseAnAbort
-import Suite.reportTestFailed
-import Suite.reportTestStarting
-import Suite.reportTestIgnored
-import Suite.reportTestSucceeded
-import Suite.reportTestPending
-import Suite.reportInfoProvided
+import org.scalatest.NodeFamily.TestLeaf
+import org.scalatest.Suite._
+import fixture.NoArgTestWrapper
 
 // T will be () => Unit for FunSuite and FixtureParam => Any for FixtureFunSuite
-private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
+private[scalatest] class SuperEngine[T](concurrentBundleModResourceName: String, simpleClassName: String)  {
 
   sealed abstract class Node(val parentOption: Option[Branch]) {
     def indentationLevel: Int = {
@@ -478,3 +472,8 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
   }
 }
 
+private[scalatest] class Engine(concurrentBundleModResourceName: String, simpleClassName: String)
+    extends SuperEngine[() => Unit](concurrentBundleModResourceName, simpleClassName)
+
+private[scalatest] class FixtureEngine[FixtureParam](concurrentBundleModResourceName: String, simpleClassName: String)
+    extends SuperEngine[FixtureParam => Any](concurrentBundleModResourceName, simpleClassName)

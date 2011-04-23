@@ -1246,7 +1246,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FeatureSpec extends Suite { thisSuite =>
 
-  private final val engine = new Engine[() => Unit]("concurrentFeatureSpecMod", "FeatureSpec")
+  private final val engine = new Engine("concurrentFeatureSpecMod", "FeatureSpec")
   import engine._
 
   /**

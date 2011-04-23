@@ -360,7 +360,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  */
 trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with CanVerb { thisSuite =>
 
-  private final val engine = new Engine[FixtureParam => Any]("concurrentFixtureWordSpecMod", "FixtureWordSpec")
+  private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureWordSpecMod", "FixtureWordSpec")
   import engine._
 
   /**

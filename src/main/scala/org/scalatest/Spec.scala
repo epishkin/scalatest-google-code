@@ -900,7 +900,7 @@ import Suite.reportTestIgnored
  */
 trait Spec extends Suite { thisSuite =>
 
-  private final val engine = new Engine[() => Unit]("concurrentSpecMod", "Spec")
+  private final val engine = new Engine("concurrentSpecMod", "Spec")
   import engine._
 
   /**

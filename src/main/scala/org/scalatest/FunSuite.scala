@@ -924,7 +924,7 @@ import Suite.checkRunTestParamsForNull
  */
 trait FunSuite extends Suite { thisSuite =>
 
-  private final val engine = new Engine[() => Unit]("concurrentFunSuiteMod", "FunSuite")
+  private final val engine = new Engine("concurrentFunSuiteMod", "FunSuite")
   import engine._
 
   /**

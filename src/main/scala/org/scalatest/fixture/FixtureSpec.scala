@@ -348,7 +348,7 @@ import FunSuite.IgnoreTagName
  */
 trait FixtureSpec extends FixtureSuite { thisSuite =>
 
-  private final val engine = new Engine[FixtureParam => Any]("concurrentFixtureSpecMod", "FixtureSpec")
+  private final val engine = new FixtureEngine[FixtureParam]("concurrentFixtureSpecMod", "FixtureSpec")
   import engine._
 
   /**
