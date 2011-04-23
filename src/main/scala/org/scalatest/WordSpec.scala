@@ -146,20 +146,22 @@ import Suite.anErrorThatShouldCauseAnAbort
  * 
  * <pre>
  * scala> (new StackSpec).execute()
- * A Stack (when empty) 
- * - should be empty 
- * - should complain on peek
- * - should complain on pop
- * A Stack (when full) 
- * - should be full
- * - should complain on push
+ * StackSpec:
+ * A Stack
+ *   when empty
+ *   - should be empty
+ *   - should complain on peek
+ *   - should complain on pop
+ *   when full
+ *   - should be full
+ *   - should complain on push
  * </pre>
  *
  * <p>
  * Note that the output does not exactly match the input in an effort to maximize readability.
  * Although the <code>WordSpec</code> code is nested, which can help you eliminate any repeated phrases
- * in the specification portion of your code, the output printed will have one line per subject per situation, and
- * one line per test.
+ * in the specification portion of your code, the output printed moves <code>when</code> and <code>should</code>
+ * down to the beginning of the next line.
  * </p>
  *
  * <p>
@@ -198,7 +200,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *     "provide an and operator" that {
  *       "returns silently when evaluating true and true" in {}
  *       "throws a TestFailedException when evaluating true and false" in {}
- *       "that throws a TestFailedException when evaluating false and true" in {}
+ *       "throws a TestFailedException when evaluating false and true" in {}
  *       "throws a TestFailedException when evaluating false and false" in {}
  *     }
  *     "provide an or operator" that {
@@ -210,6 +212,31 @@ import Suite.anErrorThatShouldCauseAnAbort
  *   }
  * }
  * </pre>
+ *
+ * <p>
+ * Running the above <code>AndOrSpec</code> in the interpreter would yield:
+ * </p>
+ * 
+ * <pre>
+ * scala> (new AndOrSpec).execute()
+ * AndOrSpec:
+ * The ScalaTest Matchers DSL
+ *   should provide an and operator that
+ *   - returns silently when evaluating true and true
+ *   - throws a TestFailedException when evaluating true and false
+ *   - throws a TestFailedException when evaluating false and true
+ *   - throws a TestFailedException when evaluating false and false
+ *   should provide an or operator that
+ *   - returns silently when evaluating true or true
+ *   - returns silently when evaluating true or false
+ *   - returns silently when evaluating false or true
+ *   - throws a TestFailedException when evaluating false or false
+ * </pre>
+ * 
+ * <p>
+ * Note that unlike <code>when</code> and <code>should</code>/<code>must</code>/<code>can</code>, a <code>that</code> appears
+ * in the output right where you put it in the input, at the end of the line, to maximize readability.
+ * </p>
  *
  * <p>
  * <a name="AfterWords">If</a> a word or phrase is repeated at the beginning of each string contained in a block, you can eliminate
@@ -244,6 +271,27 @@ import Suite.anErrorThatShouldCauseAnAbort
  * }
  * </pre>
  * 
+ *  <p>
+ *  Running the above version of <code>AndOrSpec</code> with the <code>provide</code> after word in the interpreter would give you:
+ *  </p>
+ * 
+ * <pre>
+ * scala> (new AndOrSpec).execute()
+ * AndOrSpec:
+ * The ScalaTest Matchers DSL
+ *   should provide
+ *     an and operator that
+ *     - returns silently when evaluating true and true
+ *     - throws a TestFailedException when evaluating true and false
+ *     - that throws a TestFailedException when evaluating false and true
+ *     - throws a TestFailedException when evaluating false and false
+ *     an or operator that
+ *     - returns silently when evaluating true or true
+ *     - returns silently when evaluating true or false
+ *     - returns silently when evaluating false or true
+ *     - throws a TestFailedException when evaluating false or false
+ * </pre>
+ *
  * <p>
  * Once you've defined an after word, you can place it after <code>when</code>, a verb
  * (<code>should</code>, <code>must</code>, or <code>can</code>), or
@@ -280,11 +328,15 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * scala> (new ScalaTestGUISpec).execute()
- * The ScalaTest GUI (when the user clicks on an event report in the list box) 
- * - should display a blue background in the clicked-on row in the list box
- * - should display the details for the event in the details area
- * - should display a rerun button that is enabled if the clicked-on event is rerunnable
- * - should display a rerun button that is disabled if the clicked-on event is not rerunnable
+ * ScalaTestGUISpec:
+ * The ScalaTest GUI
+ *   when the user clicks on an event report in the list box
+ *     should display
+ *     - a blue background in the clicked-on row in the list box
+ *     - the details for the event in the details area
+ *       a rerun button that is
+ *       - enabled if the clicked-on event is rerunnable
+ *       - disabled if the clicked-on event is not rerunnable
  * </pre>
  *
  * <p>
@@ -863,64 +915,59 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * scala> (new SharedTestExampleSpec).execute()
- * A Stack (when empty) 
- * - should be empty
- * - should complain on peek
- * - should complain on pop
- * A Stack (when it contains one item) 
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should not be full
- * - should add to the top on push
- * A Stack (when it contains one item less than capacity) 
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should not be full
- * - should add to the top on push
- * A Stack (when full) 
- * - should be full
- * - should be non-empty
- * - should return the top item on peek
- * - should not remove the top item on peek
- * - should remove the top item on pop
- * - should complain on a push
+ * SharedTestExampleSpec:
+ * A Stack
+ *   when empty
+ *   - should be empty
+ *   - should complain on peek
+ *   - should complain on pop
+ *   when it contains one item
+ *   - should be non-empty
+ *   - should return the top item on peek
+ *   - should not remove the top item on peek
+ *   - should remove the top item on pop
+ *   - should not be full
+ *   - should add to the top on push
+ *   when it contains one item less than capacity
+ *   - should be non-empty
+ *   - should return the top item on peek
+ *   - should not remove the top item on peek
+ *   - should remove the top item on pop
+ *   - should not be full
+ *   - should add to the top on push
+ *   when full
+ *   - should be full
+ *   - should be non-empty
+ *   - should return the top item on peek
+ *   - should not remove the top item on peek
+ *   - should remove the top item on pop
+ *   - should complain on a push
  * </pre>
  * 
  * <p>
  * One thing to keep in mind when using shared tests is that in ScalaTest, each test in a suite must have a unique name.
  * If you register the same tests repeatedly in the same suite, one problem you may encounter is an exception at runtime
- * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>FlatSpec</code> is to make sure
- * each invocation of a behavior function is in the context of a different <code>behavior of</code> clause, which will prepend a string to each test name.
- * For example, the following code in a <code>FlatSpec</code> would register a test with the name <code>"A Stack (when empty) should be empty"</code>:
+ * complaining that multiple tests are being registered with the same test name. A good way to solve this problem in a <code>WordSpec</code> is to make sure
+ * each invocation of a behavior function is in the context of a different surrounding <code>when</code>, 
+ * <code>should</code>/<code>must</code>/<code>can</code>, or <code>that</code> clause, because a tests name is the concatenation of its
+ * surrounding clauses and after words, followed by the "spec text".
+ * For example, the following code in a <code>WordSpec</code> would register a test with the name <code>"A Stack when empty should be empty"</code>:
  * </p>
  *
  * <pre>
- *   behavior of "A Stack (when empty)"
- *       
- *   it should "be empty" in {
- *     assert(emptyStack.empty)
+ * "A Stack" when {
+ *   "empty" should {
+ *     "be empty" in {
+ *       assert(emptyStack.empty)
+ *     }
  *   }
- *   // ...
+ * }
+ * // ...
  * </pre>
  *
  * <p>
- * Or, using the shorthand notation:
- * </p>
- *
- * <pre>
- *   "A Stack (when empty)" should "be empty" in {
- *     assert(emptyStack.empty)
- *   }
- *   // ...
- * </pre>
- *
- * <p>
- * If the <code>"should be empty"</code> test was factored out into a behavior function, it could be called repeatedly so long
- * as each invocation of the behavior function is in the context of a different <code>behavior of</code> clause.
+ * If the <code>"be empty"</code> test was factored out into a behavior function, it could be called repeatedly so long
+ * as each invocation of the behavior function is in the context of a different surrounding <code>when</code> clauses.
  * </p>
  *
  * <h2>Tagging tests</h2>
@@ -1034,6 +1081,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  * </p>
  *
  * <pre>
+ * StackSpec:
  * A Stack
  * - should pop values in last-in-first-out order !!! IGNORED !!!
  * - should throw NoSuchElementException if an empty stack is popped
@@ -1082,6 +1130,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * scala> (new ArithmeticSpec).execute()
+ * ArithmeticSpec:
  * The Scala language 
  * - should add correctly
  *   + addition seems to work 
@@ -1138,6 +1187,7 @@ import Suite.anErrorThatShouldCauseAnAbort
  *
  * <pre>
  * scala> (new ArithmeticSpec).execute()
+ * ArithmeticSpec:
  * The Scala language 
  * - should add correctly
  *   + Given two integers 
