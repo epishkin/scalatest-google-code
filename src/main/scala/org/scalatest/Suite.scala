@@ -163,10 +163,9 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre>
- * Test Starting - MySuite: testAddition
- * Test Succeeded - MySuite: testAddition
- * Test Starting - MySuite: testSubtraction
- * Test Succeeded - MySuite: testSubtraction
+ * MySuite:
+ * - testAddition
+ * - testSubtraction
  * </pre>
  *
  * <p>
@@ -182,8 +181,8 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre>
- * Test Starting - MySuite: testAddition
- * Test Succeeded - MySuite: testAddition
+ * MySuite:
+ * - testAddition
  * </pre>
  *
  * <p>
@@ -417,17 +416,22 @@ import Suite.reportInfoProvided
  *
  * <pre>
  * import org.scalatest.Suite
+ * import org.scalatest.NestedSuites
  *
- * class ASuite extends Suite
- * class BSuite extends Suite
- * class CSuite extends Suite
+ * class ASuite extends Suite {
+ *   def testA() {}
+ * }
+ * class BSuite extends Suite {
+ *   def testB() {}
+ * }
+ * class CSuite extends Suite {
+ *   def testC() {}
+ * }
  *
- * class AlphabetSuite extends SuperSuite(
- *   List(
- *     new ASuite,
- *     new BSuite,
- *     new CSuite
- *   )
+ * class AlphabetSuite extends NestedSuites(
+ *   new ASuite,
+ *   new BSuite,
+ *   new CSuite
  * )
  * </pre>
  *
@@ -436,14 +440,24 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre>
- * scala> (new AlphabetSuite).run()
+ * scala> (new AlphabetSuite).execute()
  * </pre>
  *
  * <p>
  * You will see reports printed to the standard output that indicate nested
  * suites&#8212;<code>ASuite</code>, <code>BSuite</code>, and
- * <code>CSuite</code>&#8212;were run.
+ * <code>CSuite</code>&#8212;were run:
  * </p>
+ *
+ * <pre>
+ * AlphabetSuite:
+ * ASuite:
+ * - testA
+ * BSuite:
+ * - testB
+ * CSuite:
+ * - testC
+ * </pre>
  *
  * <p>
  * Note that <code>Runner</code> can discover <code>Suite</code>s automatically, so you need not
@@ -890,9 +904,9 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre>
- * Test Starting - MySuite: testAddition
- * Test Succeeded - MySuite: testAddition
- * Test Ignored - MySuite: testSubtraction
+ * MySuite:
+ * - testAddition
+ * - testSubtraction !!! IGNORED !!!
  * </pre>
  * 
  * <p>
@@ -959,10 +973,9 @@ import Suite.reportInfoProvided
  * </p>
  *
  * <pre>
- * Test Starting - MySuite: testAddition
- * Test Succeeded - MySuite: testAddition
- * Test Starting - MySuite: testSubtraction
- * Test Pending - MySuite: testSubtraction
+ * MySuite:
+ * - testAddition
+ * - testSubtraction (pending)
  * </pre>
  * 
  * <h2>Informers</h2>
@@ -996,10 +1009,9 @@ import Suite.reportInfoProvided
  *
  * <pre>
  * scala> (new MySuite).run()
- * Test Starting - MySuite: testAddition(Reporter)
- * Info Provided - MySuite: testAddition(Reporter)
- *   Addition seems to work
- * Test Succeeded - MySuite: testAddition(Reporter)
+ * MySuite:
+ * - testAddition(Informer)
+ *   + Addition seems to work 
  * </pre>
  *
  * <h2>Executing suites in parallel</h2>
@@ -1323,7 +1335,19 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     val runStartTime = System.currentTimeMillis
     if (stats)
       dispatch(RunStarting(tracker.nextOrdinal(), expectedTestCount(filter), configMap))
+
+    val suiteStartTime = System.currentTimeMillis
+    def dispatchSuiteAborted(e: Throwable) {
+      val rawString = Resources("runOnSuiteException")
+      val formatter = formatterForSuiteAborted(thisSuite, rawString)
+      val duration = System.currentTimeMillis - suiteStartTime
+      dispatch(SuiteAborted(tracker.nextOrdinal(), rawString, thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(e), Some(duration), formatter, None))
+    }
+
     try {
+
+      val formatter = formatterForSuiteStarting(thisSuite)
+      dispatch(SuiteStarting(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), formatter))
 
       run(
         //if (testName != null) Some(testName) else None,
@@ -1336,6 +1360,9 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
         tracker
       )
 
+      val suiteCompletedFormatter = formatterForSuiteCompleted(thisSuite)
+      val duration = System.currentTimeMillis - suiteStartTime
+      dispatch(SuiteCompleted(tracker.nextOrdinal(), thisSuite.suiteName, Some(thisSuite.getClass.getName), Some(duration), suiteCompletedFormatter))
       if (stats) {
         val duration = System.currentTimeMillis - runStartTime
         dispatch(RunCompleted(tracker.nextOrdinal(), Some(duration)))
@@ -1343,12 +1370,16 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
     }
     catch {
       case e: InstantiationException =>
+        dispatchSuiteAborted(e)
         dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
       case e: IllegalAccessException =>
+        dispatchSuiteAborted(e)
         dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotInstantiateSuite", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
       case e: NoClassDefFoundError =>
+        dispatchSuiteAborted(e)
         dispatch(RunAborted(tracker.nextOrdinal(), Resources("cannotLoadClass", e.getMessage), Some(e), Some(System.currentTimeMillis - runStartTime)))
       case e: Throwable =>
+        dispatchSuiteAborted(e)
         dispatch(RunAborted(tracker.nextOrdinal(), Resources.bigProblems(e), Some(e), Some(System.currentTimeMillis - runStartTime)))
     }
     finally {
@@ -1895,7 +1926,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
           val formatter = formatterForSuiteCompleted(nestedSuite)
 
           val duration = System.currentTimeMillis - suiteStartTime
-          report(SuiteCompleted(tracker.nextOrdinal(), nestedSuite.suiteName, Some(thisSuite.getClass.getName), Some(duration), formatter, rerunnable))
+          report(SuiteCompleted(tracker.nextOrdinal(), nestedSuite.suiteName, Some(nestedSuite.getClass.getName), Some(duration), formatter, rerunnable))
         }
         catch {       
           case e: RuntimeException => {
@@ -1904,7 +1935,7 @@ trait Suite extends Assertions with AbstractSuite { thisSuite =>
             val formatter = formatterForSuiteAborted(nestedSuite, rawString)
 
             val duration = System.currentTimeMillis - suiteStartTime
-            report(SuiteAborted(tracker.nextOrdinal(), rawString, nestedSuite.suiteName, Some(thisSuite.getClass.getName), Some(e), Some(duration), formatter, rerunnable))
+            report(SuiteAborted(tracker.nextOrdinal(), rawString, nestedSuite.suiteName, Some(nestedSuite.getClass.getName), Some(e), Some(duration), formatter, rerunnable))
           }
         }
       }
