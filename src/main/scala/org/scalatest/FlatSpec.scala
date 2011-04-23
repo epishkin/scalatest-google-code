@@ -1220,7 +1220,7 @@ trait FlatSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
     def of(description: String) {
 
       // TODO: This is what was here, but it needs fixing.
-      behaviorOfImpl(description, "describeCannotAppearInsideAnIt", "FlatSpec.scala", "describe")
+      registerFlatBranch(description, "describeCannotAppearInsideAnIt", "FlatSpec.scala", "describe")
     }
   }
 

@@ -330,7 +330,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
     if (!swapAndCompareSucceeded)  // Do outside finally to workaround Scala compiler bug
       throw new ConcurrentModificationException(Resources("concurrentInformerMod", theSuite.getClass.getName))
   }
-
+  /*
   def describeImpl(description: String, fun: => Unit, registrationClosedResource: String, sourceFile: String, methodName: String) {
 
     val oldBundle = atomic.get
@@ -353,9 +353,9 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
       val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
       updateAtomic(oldBundle, Bundle(oldBranch, testNamesList, testsMap, tagsMap, registrationClosed))
     }
-  }
+  } */
 
-  def newRegisterBranch(description: String, childPrefix: Option[String], fun: => Unit, registrationClosedResource: String, sourceFile: String, methodName: String) {
+  def registerNestedBranch(description: String, childPrefix: Option[String], fun: => Unit, registrationClosedResource: String, sourceFile: String, methodName: String) {
 
     val oldBundle = atomic.get
     val (currentBranch, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack
@@ -380,7 +380,7 @@ private[scalatest] class Engine[T](concurrentBundleModResourceName: String, simp
   }
 
   // Used by FlatSpec, which doesn't nest. So this one just makes a new one off of the trunk
-  def behaviorOfImpl(description: String, registrationClosedResource: String, sourceFile: String, methodName: String) {
+  def registerFlatBranch(description: String, registrationClosedResource: String, sourceFile: String, methodName: String) {
 
     val oldBundle = atomic.get
     val (_, testNamesList, testsMap, tagsMap, registrationClosed) = oldBundle.unpack

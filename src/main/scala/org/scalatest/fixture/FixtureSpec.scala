@@ -522,7 +522,7 @@ trait FixtureSpec extends FixtureSuite { thisSuite =>
    * description string and immediately invoke the passed function.
    */
   protected def describe(description: String)(fun: => Unit) {
-    describeImpl(description, fun, "describeCannotAppearInsideAnIt", "FixtureSpec.scala", "describe")
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", "FixtureSpec.scala", "describe")
   }
 
   /**

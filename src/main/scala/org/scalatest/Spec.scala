@@ -1055,7 +1055,7 @@ trait Spec extends Suite { thisSuite =>
    */
   protected def describe(description: String)(fun: => Unit) {
 
-    describeImpl(description, fun, "describeCannotAppearInsideAnIt", "Spec.scala", "describe")
+    registerNestedBranch(description, None, fun, "describeCannotAppearInsideAnIt", "Spec.scala", "describe")
   }
 
   /**

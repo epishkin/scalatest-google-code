@@ -1344,7 +1344,7 @@ trait WordSpec extends Suite with ShouldVerb with MustVerb with CanVerb { thisSu
   private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {
 
     // TODO: Fix the resource name and method name
-    newRegisterBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "WordSpec.scala", "describe")
+    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "WordSpec.scala", "describe")
   }
 
   /**

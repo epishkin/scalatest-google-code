@@ -509,7 +509,7 @@ trait FixtureWordSpec extends FixtureSuite with ShouldVerb with MustVerb with Ca
   private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {
 
     // TODO: Fix the resource name and method name
-    newRegisterBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "FixtureWordSpec.scala", "describe")
+    registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "FixtureWordSpec.scala", "describe")
   }
 /*  private def registerBranch(f: () => Unit, constructBranch: Branch => Branch) {
 
