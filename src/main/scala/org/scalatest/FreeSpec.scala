@@ -86,12 +86,12 @@ trait FreeSpec extends Suite { thisSuite =>
     // TODO: This is how these were, but it needs attention. Mentions "it".
     registerIgnoredTest(specText, testFun, "ignoreCannotAppearInsideAnIt", "FreeSpec.scala", "ignore", testTags: _*)
   }
-
+  /*
   private def registerBranch(description: String, childPrefix: Option[String], fun: () => Unit) {
 
     // TODO: Fix the resource name and method name
     registerNestedBranch(description, childPrefix, fun(), "describeCannotAppearInsideAnIt", "FreeSpec.scala", "describe")
-  }
+  } */
 
   /**
    * Class that supports the registration of tagged tests.
@@ -176,8 +176,10 @@ trait FreeSpec extends Suite { thisSuite =>
   protected final class FreeSpecStringWrapper(string: String) {
 
     // TODO: Fill in Scaladoc
-    def - (f: => Unit) {
-      registerBranch(string, None, f _)
+    def - (fun: => Unit) {
+      // registerBranch(string, None, f _)
+      // TODO: Fix the resource name and method name
+      registerNestedBranch(string, None, fun, "describeCannotAppearInsideAnIt", "FreeSpec.scala", "describe")
     }
 
     /**
