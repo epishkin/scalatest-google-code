@@ -25,7 +25,7 @@ package org.scalatest
  * </p>
  *
  * <pre>
- * class StepsSuite extends NestedSuites {
+ * class StepsSuite extends Suites {
  *   new Step1Suite,
  *   new Step2Suite,
  *   new Step3Suite,
@@ -47,7 +47,7 @@ package org.scalatest
  *
  * @author Bill Venners
  */
-class NestedSuites(suitesToNest: Suite*) extends Suite {
+class Suites(suitesToNest: Suite*) extends Suite {
 
   for (s <- suitesToNest) {
     if (s == null)
@@ -62,23 +62,23 @@ class NestedSuites(suitesToNest: Suite*) extends Suite {
 }
 
 /**
- * Companion object to class <code>NestedSuites</code> that offers an <code>apply</code> factory method
- * for creating a <code>NestedSuites</code> instance.
+ * Companion object to class <code>Suites</code> that offers an <code>apply</code> factory method
+ * for creating a <code>Suites</code> instance.
  */
-object NestedSuites {
+object Suites {
 
   /**
-   * Factory method for creating a <code>NestedSuites</code> instance.
+   * Factory method for creating a <code>Suites</code> instance.
    */
-  def apply(suitesToNest: Suite*): NestedSuites = new NestedSuites(suitesToNest: _*)
+  def apply(suitesToNest: Suite*): Suites = new Suites(suitesToNest: _*)
 }
 
 /**
  * <strong>SuperSuite has been deprecated and will be removed in a future
  * release of ScalaTest. Please change any uses of <code>SuperSuite</code>
- * to a corresponding use of <code>NestedSuites</code> instead.</strong>
+ * to a corresponding use of <code>Suites</code> instead.</strong>
  */
-@deprecated("Please use NestedSuites instead.")
-class SuperSuite(suitesToNest: List[Suite]) extends NestedSuites(suitesToNest: _*)
+@deprecated("Please use Suites or Specs (org.scalatest.Specs, not specs written by Eric Torreborre, just to be clear) instead.")
+class SuperSuite(suitesToNest: List[Suite]) extends Suites(suitesToNest: _*)
 // deprecated in 1.5, so remove in 1.7 or later
 
