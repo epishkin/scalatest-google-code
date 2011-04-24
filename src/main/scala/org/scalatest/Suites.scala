@@ -64,6 +64,14 @@ class Suites(suitesToNest: Suite*) extends Suite {
 /**
  * Companion object to class <code>Suites</code> that offers an <code>apply</code> factory method
  * for creating a <code>Suites</code> instance.
+ *
+ * <p>
+ * One use case for this object is to run multiple specification-style suites in the Scala interpreter, like this:
+ * </p>
+ *
+ * <pre>
+ * scala> Suites(new MyFirstSuite, new MyNextSuite).execute()
+ * </pre>
  */
 object Suites {
 
@@ -78,7 +86,7 @@ object Suites {
  * release of ScalaTest. Please change any uses of <code>SuperSuite</code>
  * to a corresponding use of <a href="Suites.html"><code>Suites</code></a> or <a href="Specs.html"><code>Specs</code></a> instead.</strong>
  */
-@deprecated("Please use Suites or Specs (org.scalatest.Specs that is, not that other specs written by Eric Torreborre) instead.")
+@deprecated("Please use org.scalatest.Suites or org.scalatest.Specs instead.")
 class SuperSuite(suitesToNest: List[Suite]) extends Suites(suitesToNest: _*)
 // deprecated in 1.5, so remove in 1.7 or later
 
