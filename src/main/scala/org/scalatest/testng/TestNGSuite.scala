@@ -48,13 +48,13 @@ import org.testng.TestListenerAdapter
  *   var sb: StringBuilder = _
  *   var lb: ListBuffer[String] = _
  * 
- *   @ Configuration { val beforeTestMethod = true }
+ *   @ Configuration(beforeTestMethod = true)
  *   def setUpFixture() {
  *     sb = new StringBuilder("ScalaTest is ")
  *     lb = new ListBuffer[String]
  *   }
  * 
- *   @ Test { val invocationCount = 3 }
+ *   @ Test(invocationCount = 3)
  *   def easyTest() {
  *     sb.append("easy!")
  *     assert(sb.toString === "ScalaTest is easy!")
@@ -62,7 +62,7 @@ import org.testng.TestListenerAdapter
  *     lb += "sweet"
  *   }
  * 
- *   @ Test { val groups = Array("com.mycompany.groups.SlowTest") }
+ *   @ Test(groups = Array("com.mycompany.groups.SlowTest"))
  *   def funTest() {
  *     sb.append("fun!")
  *     assert(sb.toString === "ScalaTest is fun!")
