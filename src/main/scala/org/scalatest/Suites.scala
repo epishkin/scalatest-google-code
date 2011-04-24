@@ -76,9 +76,9 @@ object Suites {
 /**
  * <strong>SuperSuite has been deprecated and will be removed in a future
  * release of ScalaTest. Please change any uses of <code>SuperSuite</code>
- * to a corresponding use of <code>Suites</code> instead.</strong>
+ * to a corresponding use of <a href="Suites.html"><code>Suites</code></a> or <a href="Specs.html"><code>Specs</code></a> instead.</strong>
  */
-@deprecated("Please use Suites or Specs (org.scalatest.Specs, not specs written by Eric Torreborre, just to be clear) instead.")
+@deprecated("Please use Suites or Specs (org.scalatest.Specs that is, not that other specs written by Eric Torreborre) instead.")
 class SuperSuite(suitesToNest: List[Suite]) extends Suites(suitesToNest: _*)
 // deprecated in 1.5, so remove in 1.7 or later
 

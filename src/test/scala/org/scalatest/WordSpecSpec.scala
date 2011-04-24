@@ -830,7 +830,7 @@ class WordSpecSpec extends Spec with SharedHelpers with GivenWhenThen {
       assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
       assert(e.expectedTestCount(Filter()) === 2)
 
-      val f = new NestedSuites(a, b, c, d, e)
+      val f = new Suites(a, b, c, d, e)
       assert(f.expectedTestCount(Filter()) === 10)
     }
     it("should generate a TestPending message when the test body is (pending)") {

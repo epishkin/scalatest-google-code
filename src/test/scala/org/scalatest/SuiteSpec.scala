@@ -484,7 +484,7 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       assert(e.expectedTestCount(Filter(None, Set("org.scalatest.SlowAsMolasses"))) === 0)
       assert(e.expectedTestCount(Filter()) === 2)
 
-      val f = new NestedSuites(a, b, c, d, e)
+      val f = new Suites(a, b, c, d, e)
       assert(f.expectedTestCount(Filter()) === 10)
     }
 
@@ -673,7 +673,7 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       val f = new SuiteF
       val g = new SuiteG
 
-      val x = NestedSuites(a, b, c, d, e, f, g)
+      val x = Suites(a, b, c, d, e, f, g)
       x.run(None, SilentReporter, new Stopper {}, Filter(), Map(), None, new Tracker)
 
       assert(a.executed)
@@ -697,7 +697,7 @@ class SuiteSpec extends Spec with PrivateMethodTester with SharedHelpers {
       val m = new SuiteF
       val n = new SuiteG
 
-      val y = NestedSuites(h, i, j, k, l, m, n)
+      val y = Suites(h, i, j, k, l, m, n)
       y.run(None, SilentReporter, new MyStopper, Filter(), Map(), None, new Tracker)
 
       assert(k.executed)
